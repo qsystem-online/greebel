@@ -14,7 +14,7 @@ class MSRelations_model extends MY_Model {
         $rw = $qr->row();
         
 		$data = [
-            "" => $rw
+            "msRelations" => $rwMSRelations
 		];
 
 		return $data;
@@ -46,20 +46,18 @@ class MSRelations_model extends MY_Model {
         $rules[] = [
             'field' => 'PostalCode',
             'label' => 'Postal Code',
-            'rules' => 'required|min_length[5]',
+            'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
             )
         ];
         
         $rules[] = [
             'field' => 'NPWP',
             'label' => 'NPWP',
-            'rules' => 'required|min_length[5]',
+            'rules' => 'required',
             'errors' => array(
-                'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
+                'required' => '%s tidak boleh kosong'
             )
         ];
 

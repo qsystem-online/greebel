@@ -14,7 +14,7 @@ class MSCustpricinggroups_model extends MY_Model {
         $rw = $qr->row();
         
 		$data = [
-            "" => $rw
+            "mscustpricinggroups" => $rwMSCustpricinggroups
 		];
 
 		return $data;
@@ -26,26 +26,16 @@ class MSCustpricinggroups_model extends MY_Model {
         $rules[] = [
             'field' => 'CustPricingGroupName',
             'label' => 'Cust Pricing Group Name',
-            'rules' => 'required|min_length[5]',
+            'rules' => 'required|min_length[3]',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
-            )
-        ];
-
-        $rules[] = [
-            'field' => 'Date',
-            'label' => 'Date',
-            'rules' => array(
-                'required'),
-            'errors' => array(
-                'required' => '%s tidak boleh kosong'
+                'min_length' => 'Panjang %s paling sedikit 3 character'
             )
         ];
 
         $rules[] =[
 			'field' => 'PercentOfPriceList',
-			'label' => 'Percent Of Price List',
+			'label' => 'Percent',
 			'rules' => 'numeric',
 			'errors' => array(
 				'numeric' => '%s harus berupa angka',

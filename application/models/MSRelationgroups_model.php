@@ -14,7 +14,7 @@ class MSRelationgroups_model extends MY_Model {
         $rw = $qr->row();
         
 		$data = [
-            "" => $rw
+            "msrelationgroups" => $rw
 		];
 
 		return $data;
