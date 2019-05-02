@@ -9,12 +9,12 @@ class MSCustpricinggroups_model extends MY_Model {
     }
 
     public function getDataById($CustPricingGroupId ){
-        $ssql = "select * from " . $this->tableName ." where CustPricingGroupId = ? and fst_active = 'A'";
+        $ssql = "select CustPricingGroupId,CustPricingGroupName,PercentOfPriceList,DifferenceInAmount from " . $this->tableName ." where CustPricingGroupId = ? and fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$CustPricingGroupId]);
-        $rw = $qr->row();
+        $rwCustPricingGroupId = $qr->row();
         
 		$data = [
-            "mscustpricinggroups" => $rwMSCustpricinggroups
+            "mscustpricinggroups" => $rwCustPricingGroupId
 		];
 
 		return $data;
@@ -45,9 +45,10 @@ class MSCustpricinggroups_model extends MY_Model {
         $rules[] =[
 			'field' => 'DifferenceInAmount',
 			'label' => 'Amount',
-			'rules' => 'numeric',
+			'rules' => 'required|numeric',
 			'errors' => array(
-				'numeric' => '%s harus berupa angka',
+                'required' => '%s tidak boleh kosong',
+                'numeric' => '%s harus berupa angka'
 			)
 		];
 

@@ -177,37 +177,6 @@ class MSCustpricinggroups extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function add_save(){
-		$this->load->model('mscustpricinggroups_model');
-
-		$data = [
-			'CustPricingGroupName' => $this->input->get("CustPricingGroupName")
-		];
-		if ($this->db->insert('mscustpricinggroups', $data)) {
-			echo "insert success";
-		} else {
-			$error = $this->db->error();
-			print_r($error);
-		}
-		die();
-
-		echo "Table Name :" . $this->mscustpricinggroups_model->getTableName();
-		print_r($this->mscustpricinggroups_model->getRules());
-
-		$this->form_validation->set_rules($this->mscustpricinggroups_model->rules);
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-
-		if ($this->form_validation->run() == FALSE) {
-			echo form_error();
-		} else {
-			echo "Success";
-		}
-
-		//print_r($upload_data);
-
-		print_r($_FILES);
-	}
-
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("mscustpricinggroups");
