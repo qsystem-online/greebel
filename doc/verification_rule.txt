@@ -1,0 +1,33 @@
+[9:58 PM, 4/29/2019] ANDY SHUE2: Jadi ada 2 table :
+
+1.Master verifikasi (isi nya controller+Jenis Verifikasi+DepCode+UserLevel)
+
+2.List verifikasi control, isinya :
+No.transaksi+seqNo+Message + depCode + userLevel+User Id + status
+
+[9:59 PM, 4/29/2019] ANDY SHUE2: 
+Misalnya sales order ada 2 buah validasi
+
+
+1 validasi default, yaitu setiap SO harus divalidasi oleh kepala bagian, baru boleh lanjut ke Sj dan validasi ke 2 itu credit limit, yg harus du validasi oleh ka bagian dan kepala finance
+[10:03 PM, 4/29/2019] ANDY SHUE2: Di master verifikasi kita buat spt ini:
+Record 1 : “salesOrder”+”default”+”SLS”+”2”
+Record 2:
+“salesOrder”+”CreditLimit”+”SLS”+”2”
+Record 3:
+“salesOrder”+”default”+”FIN”+”2”
+[10:04 PM, 4/29/2019] ANDY SHUE2: Di program controller, saat create new SO, kita baca apakah di master verifikasi ada jenis validasi default ? klo ada, status SO di kasih “Suspend” dan lgs kita generate record di table list verifikasi kontrol
+
+Isi nya : “SO1904/001”+”1”+”Approval”+”SLS”+”2”+””+””
+Jika saat save SO kita cek credit limit masalah, maka kita baca ke master verifikasi cari controller salesorder dan jenis verifikasi creditLimit
+
+Akan dapat 2 records
+
+Lgs kita generate 2 record di table list verifikasi kontrol
+
+
+Isi nya:
+[10:08 PM, 4/29/2019] ANDY SHUE2: “SO1904/001”+”1”+”Credit Limit over”+”SLS”+”2”+””+””
+“SO1904/001”+”1”+”Credit Limit over”+”FIN”+”2”+””+””
+[10:09 PM, 4/29/2019] ANDY SHUE2: Saat user di dashboard validasi, maka user id dan status di table list verifikasi akan diisi
+[10:09 PM, 4/29/2019] ANDY SHUE2: Dan status di transaksi juga di update
