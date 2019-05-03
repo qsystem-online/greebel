@@ -126,7 +126,7 @@ class MSRelationgroups extends MY_Controller{
 		$this->load->model('MSRelationgroups_model');
 		$RelationGroupId = $this->input->post("RelationGroupId");
 		$data = $this->MSRelationgroups_model->getDataById($RelationGroupId);
-		$msrelationgroups = $data["msrelationgroups"];
+		$msrelationgroups = $data["msRelationgroups"];
 		if (!$msrelationgroups) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
 			$this->ajxResp["message"] = "Data id $RelationGroupId Not Found ";
@@ -169,37 +169,6 @@ class MSRelationgroups extends MY_Controller{
 		$this->ajxResp["message"] = "Data Saved !";
 		$this->ajxResp["data"]["insert_id"] = $RelationGroupId;
 		$this->json_output();
-	}
-
-	public function add_save(){
-		$this->load->model('MSRelationgroups_model');
-
-		$data = [
-			'RelationGroupName' => $this->input->get("RelationGroupName")
-		];
-		if ($this->db->insert('msrelationgroups', $data)) {
-			echo "insert success";
-		} else {
-			$error = $this->db->error();
-			print_r($error);
-		}
-		die();
-
-		echo "Table Name :" . $this->MSRelationgroups_model->getTableName();
-		print_r($this->MSRelationgroups_model->getRules());
-
-		$this->form_validation->set_rules($this->MSRelationgroups_model->rules);
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-
-		if ($this->form_validation->run() == FALSE) {
-			echo form_error();
-		} else {
-			echo "Success";
-		}
-
-		//print_r($upload_data);
-
-		print_r($_FILES);
 	}
 
 	public function fetch_list_data(){

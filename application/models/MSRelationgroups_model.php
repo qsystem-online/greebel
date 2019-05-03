@@ -9,12 +9,12 @@ class MSRelationgroups_model extends MY_Model {
     }
 
     public function getDataById($RelationGroupId ){
-        $ssql = "select * from " . $this->tableName ." where RelationGroupId = ? and fst_active = 'A'";
+        $ssql = "select RelationGroupId,RelationGroupName from " . $this->tableName ." where RelationGroupId = ? and fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$RelationGroupId]);
-        $rw = $qr->row();
+        $rwMSRelationgroups = $qr->row();
         
 		$data = [
-            "msrelationgroups" => $rw
+            "msRelationgroups" => $rwMSRelationgroups
 		];
 
 		return $data;
