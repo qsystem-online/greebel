@@ -126,7 +126,7 @@ class MSRelationgroups extends MY_Controller{
 		$this->load->model('MSRelationgroups_model');
 		$RelationGroupId = $this->input->post("RelationGroupId");
 		$data = $this->MSRelationgroups_model->getDataById($RelationGroupId);
-		$msrelationgroups = $data["msRelationgroups"];
+		$msrelationgroups = $data["msrelationgroups"];
 		if (!$msrelationgroups) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
 			$this->ajxResp["message"] = "Data id $RelationGroupId Not Found ";

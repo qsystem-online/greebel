@@ -23,10 +23,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-	<h1><?=lang("Master Relation Groups")?><small><?=lang("form")?></small></h1>
+	<h1><?=lang("Master Countries")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
-		<li><a href="#"><?= lang("Master Relation Groups") ?></a></li>
+		<li><a href="#"><?= lang("Master Countries") ?></a></li>
 		<li class="active title"><?=$title?></li>
 	</ol>
 </section>
@@ -41,24 +41,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmMSRelationgroups" class="form-horizontal" action="<?=site_url()?>pr/msrelationgroups/add" method="POST" enctype="multipart/form-data">			
+            <form id="frmMSCountries" class="form-horizontal" action="<?=site_url()?>pr/mscountries/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class='form-group'>
-                    <label for="RelationGroupId" class="col-sm-2 control-label"><?=lang("Relation Group ID")?></label>
+                    <label for="CountryId" class="col-sm-2 control-label"><?=lang("Country ID")?></label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="RelationGroupId" placeholder="<?=lang("(Autonumber)")?>" name="RelationGroupId" value="<?=$RelationGroupId?>" readonly>
-							<div id="RelationGroupId_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="CountryId" placeholder="<?=lang("(Autonumber)")?>" name="CountryId" value="<?=$CountryId?>" readonly>
+							<div id="CountryId_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-                    <label for="RelationGroupName" class="col-sm-2 control-label"><?=lang("Relation Group Name")?> *</label>
+                    <label for="CountryName" class="col-sm-2 control-label"><?=lang("Country Name")?> *</label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="RelationGroupName" placeholder="<?=lang("Relation Group Name")?>" name="RelationGroupName">
-							<div id="RelationGroupName_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="CountryName" placeholder="<?=lang("Country Name")?>" name="CountryName">
+							<div id="CountryName_err" class="text-danger"></div>
 						</div>
 					</div>
                 </div>
@@ -76,18 +76,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript">
 	$(function(){
 		<?php if($mode == "EDIT"){?>
-			init_form($("#RelationGroupId").val());
+			init_form($("#CountryId").val());
 		<?php } ?>
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			data = new FormData($("#frmMSRelationgroups")[0]);
+			data = new FormData($("#frmMSCountries")[0]);
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
-				url =  "<?= site_url() ?>pr/msrelationgroups/ajx_add_save";
+				url =  "<?= site_url() ?>pr/mscountries/ajx_add_save";
 			}else{
-				url =  "<?= site_url() ?>pr/msrelationgroups/ajx_edit_save";
+				url =  "<?= site_url() ?>pr/mscountries/ajx_edit_save";
 			}
 
 			//var formData = new FormData($('form')[0])
@@ -108,7 +108,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>pr/msrelationgroups/lizt";
+										window.location.href = "<?= site_url() ?>pr/mscountries/lizt";
 										return;
 									}
 								},
@@ -124,7 +124,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					}else if(resp.status == "SUCCESS") {
 						data = resp.data;
-						$("#RelationGroupId").val(data.insert_id);
+						$("#CountryId").val(data.insert_id);
 
 						//Clear all previous error
 						$(".text-danger").html("");
@@ -132,7 +132,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 
-						$('#RelationGroupName').prop('readonly', true);
+						$('#CountryName').prop('readonly', true);
 					}
 				},
 				error: function (e) {
@@ -145,16 +145,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 	});
 
-	function init_form(RelationGroupId){
+	function init_form(CountryId){
 		//alert("Init Form");
-		var url = "<?=site_url()?>pr/msrelationgroups/fetch_data/" + RelationGroupId;
+		var url = "<?=site_url()?>pr/mscountries/fetch_data/" + CountryId;
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.msrelationgroups);
+				console.log(resp.mscountries);
 
-				$.each(resp.msrelationgroups, function(name, val){
+				$.each(resp.mscountries, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){

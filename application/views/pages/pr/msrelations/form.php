@@ -42,7 +42,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmMSRelations" class="form-horizontal" action="<?=site_url()?>pages/pr/msrelations/add" method="POST" enctype="multipart/form-data">			
+            <form id="frmMSRelations" class="form-horizontal" action="<?=site_url()?>pr/msrelations/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
@@ -58,8 +58,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 					<label for="RelationType" class="col-md-2 control-label"><?=lang("Relation Type")?> *</label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="RelationType" placeholder="<?=lang("Relation Type")?>" name="RelationType">
-							<div id="RelationType_err" class="text-danger"></div>
+							<select class="form-control select2" id="RelationType" name="RelationType[]"  multiple="multiple">
+								<?php foreach ($msrelationgroups as $msrelationgroups) {	?>
+									<option value='<?= $msrelationgroups->RelationGroupId?>'><?= $msrelationgroups->RelationGroupName ?> </option>	
+								<?php } ?>								
+							</select>
 						</div>
 					</div>
 
@@ -72,6 +75,46 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
+					<label for="BusinessType" class="col-md-2 control-label"><?=lang("Business Type")?> *</label>
+						<div class="col-md-4">
+							<select class="form-control" id="BusinessType" name="BusinessType">
+								<option value='P'><?=lang("Personal")?></option>
+								<option value='C'><?=lang("Corporate")?></option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group">
+					<label for="Gender" class="col-md-2 control-label"><?=lang("Gender")?></label>
+						<div class="col-md-4">
+							<select class="form-control" id="Gender" name="Gender">
+								<option value='M'><?=lang("Male")?></option>
+								<option value='F'><?=lang("Female")?></option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group">
+					<label for="BirthDate" class="col-md-2 control-label"><?=lang("Birth Date")?> *</label>
+						<div class="col-md-4">
+							<div class="input-group date">
+								<div class="input-group-addon">
+									<i class="fa fa-calendar"></i>
+								</div>
+								<input type="text" class="form-control pull-right datepicker" id="BirthDate" name="BirthDate"/>								
+							</div>
+							<div id="BirthDate_err" class="text-danger"></div>
+							<!-- /.input group -->
+						</div>
+
+					<label for="BirthPlace" class="col-md-2 control-label"><?=lang("Birth Place")?> </label>
+						<div class="col-md-4">
+							<input type="text" class="form-control" id="BirthPlace" placeholder="<?=lang("Birth Place")?>" name="BirthPlace">
+							<div id="BirthPlace_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
 					<label for="Address" class="col-md-2 control-label"><?=lang("Address")?></label>
 						<div class="col-md-10">
 							<textarea class="form-control" id="Address" placeholder="<?=lang("Address")?>" name="Address"></textarea>
@@ -80,36 +123,60 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="PostalCode" class="col-md-2 control-label"><?=lang("Postal Code")?></label>
-						<div class="col-md-2">
-							<input type="text" class="form-control" id="PostalCode" placeholder="<?=lang("Postal Code")?>" name="PostalCode">
-							<div id="PostalCode_err" class="text-danger"></div>
+					<label for="Phone" class="col-md-2 control-label"><?=lang("Phone")?> </label>
+						<div class="col-md-4">
+							<input type="text" class="form-control" id="Phone" placeholder="<?=lang("Phone")?>" name="Phone">
+							<div id="Phone_err" class="text-danger"></div>
 						</div>
 
-					<label for="CountryId" class="col-md-2 control-label"><?=lang("Country ID")?></label>
-						<div class="col-md-2">
-							<input type="text" class="form-control" id="CountryId" placeholder="<?=lang("Country ID")?>" name="CountryId">
-							<div id="CountryId_err" class="text-danger"></div>
-						</div>
-					
-					<label for="ProvinceId" class="col-md-2 control-label"><?=lang("Province ID")?></label>
-						<div class="col-md-2">
-							<input type="text" class="form-control" id="ProvinceId" placeholder="<?=lang("Province ID")?>" name="ProvinceId">
-							<div id="ProvinceId_err" class="text-danger"></div>
+					<label for="Fax" class="col-md-2 control-label"><?=lang("Fax")?> </label>
+						<div class="col-md-4">
+							<input type="text" class="form-control" id="Fax" placeholder="<?=lang("Fax")?>" name="Fax">
+							<div id="Fax_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-					<label for="DistrictId" class="col-md-2 control-label"><?=lang("District ID")?></label>
-						<div class="col-md-2">
-							<input type="text" class="form-control" id="DistrictId" placeholder="<?=lang("District ID")?>" name="DistrictId">
-							<div id="DistrictId_err" class="text-danger"></div>
+					<label for="PostalCode" class="col-md-2 control-label"><?=lang("Postal Code")?></label>
+						<div class="col-md-4">
+							<input type="text" class="form-control" id="PostalCode" placeholder="<?=lang("Postal Code")?>" name="PostalCode">
+							<div id="PostalCode_err" class="text-danger"></div>
 						</div>
 
-					<label for="SubDistrictId" class="col-md-2 control-label"><?=lang("Sub District ID")?></label>
-						<div class="col-md-2">
-							<input type="text" class="form-control" id="SubDistrictId" placeholder="<?=lang("Sub District ID")?>" name="SubDistrictId">
+					<label for="select-CountryId" class="col-md-2 control-label"><?=lang("Country ID")?></label>
+						<div class="col-md-4">
+						<select id="select-CountryId" class="form-control select2" name="CountryId"></select>
+							<div id="CountryId_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+					<label for="select-ProvinceId" class="col-md-2 control-label"><?=lang("Province ID")?></label>
+						<div class="col-md-4">
+						<select id="select-ProvinceId" class="form-control select2" name="ProvinceId"></select>
+							<div id="ProvinceId_err" class="text-danger"></div>
+						</div>
+
+					<label for="select-DistrictId" class="col-md-2 control-label"><?=lang("District ID")?></label>
+						<div class="col-md-4">
+						<select id="select-DistrictId" class="form-control select2" name="DistrictId"></select>
+							<div id="DistrictId_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+					<label for="select-SubDistrictId" class="col-md-2 control-label"><?=lang("Sub District ID")?></label>
+						<div class="col-md-4">
+						<select id="select-SubDistrictId" class="form-control select2" name="SubDistrictId"></select>
 							<div id="SubDistrictId_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+					<label for="CustPricingGroupid" class="col-md-2 control-label"><?=lang("Cust Pricing Group ID")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="CustPricingGroupid" placeholder="<?=lang("Cust Pricing Group ID")?>" name="CustPricingGroupid">
+							<div id="CustPricingGroupid_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -149,6 +216,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			data = new FormData($("#frmMSRelations")[0]);
+			console.log(data);
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
@@ -172,10 +240,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.alert({
 							title: 'Message',
 							content: resp.message,
-							onDestroy: function(){
-								//alert('the user clicked yes');
-								window.location.href = "<?= site_url() ?>pr/msrelations/lizt";
-								return;
+							buttons : {
+								OK : function(){
+									if(resp.status == "SUCCESS"){
+										window.location.href = "<?= site_url() ?>pr/msrelations/lizt";
+										return;
+									}
+								},
 							}
 						});
 					}
@@ -195,7 +266,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
-
 						$('#RelationName').prop('readonly', true);
 					}
 				},
@@ -205,8 +275,100 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#btnSubmit").prop("disabled", false);
 				}
 			});
-
 		});
+
+		$("#select-CountryId"),select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>pr/msrelations/get_data_CountryId',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					data2 = [];
+					$.each(data,function(index,value){
+						data2.push({
+							"id" : value.CountryId
+						});
+					});
+					console.log(data2);
+					return {
+						result: data2
+					};
+				},
+				cache: true,
+			}
+		});
+
+		$("#select-ProvinceId"),select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>pr/msrelations/get_data_ProvinceId',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					data2 = [];
+					$.each(data,function(index,value){
+						data2.push({
+							"id" : value.ProvinceId
+						});
+					});
+					console.log(data2);
+					return {
+						result: data2
+					};
+				},
+				cache: true,
+			}
+		});
+
+		$("#select-DistrictId"),select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>pr/msrelations/get_data_DistrictId',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					data2 = [];
+					$.each(data,function(index,value){
+						data2.push({
+							"id" : value.DistrictId
+						});
+					});
+					console.log(data2);
+					return {
+						result: data2
+					};
+				},
+				cache: true,
+			}
+		});
+
+		$("#select-SubDistrictId"),select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>pr/msrelations/get_data_SubDistrictId',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					data2 = [];
+					$.each(data,function(index,value){
+						data2.push({
+							"id" : value.SubDistrictId
+						});
+					});
+					console.log(data2);
+					return {
+						result: data2
+					};
+				},
+				cache: true,
+			}
+		});
+
+		$(".datepicker").datepicker({
+			format:"yyyy-mm-dd"
+		});
+		
 	});
 
 	function init_form(RelationId){
@@ -230,8 +392,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							break;
 						default:
 							$el.val(val);
+							console.log(val);
 					}
 				});
+
+				$("#BirthDate").datepicker('update', dateFormat(resp.msrelations.BirthDate));
+
+				// menampilkan data di select2
+				var newOption = new Option(resp.msrelations.CountryId, true);
+				var newOption = new Option(resp.msrelations.ProvinceId, true);
+				var newOption = new Option(resp.msrelations.DistrictId, true);
+				var newOption = new Option(resp.msrelations.SubDistrictId, true);
+    			// Append it to the select
+    			$('#select-CountryId').append(newOption).trigger('change');
+				$('#select-ProvinceId').append(newOption).trigger('change');
+				$('#select-DistrictId').append(newOption).trigger('change');
+				$('#select-SubDistrictId').append(newOption).trigger('change');
 			},
 
 			error: function (e) {

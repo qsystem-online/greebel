@@ -34,7 +34,6 @@ class MSRelations extends MY_Controller{
 		];
 		$this->list['columns'] = [
 			['title' => 'Relation ID', 'width' => '15%', 'data' => 'RelationId'],
-			['title' => 'Relation Group ID', 'width' => '15%', 'data' => 'RelationGroupId'],
 			['title' => 'Relation Name', 'width' => '20%', 'data' => 'RelationName'],
 			['title' => 'Relation Type', 'width' => '15%', 'data' => 'RelationType'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
@@ -102,13 +101,20 @@ class MSRelations extends MY_Controller{
 
 		$data = [
 			"RelationType" => $this->input->post("RelationType"),
+			"BusinessType" => $this->input->post("BusinessType"),
 			"RelationName" => $this->input->post("RelationName"),
+			"Gender" => $this->input->post("Gender"),
+			"BirthDate" => $this->input->post("BirthDate"),
+			"BirthPlace" => $this->input->post("BirthPlace"),
 			"Address" => $this->input->post("Address"),
+			"Phone" => $this->input->post("Phone"),
+			"Fax" => $this->input->post("Fax"),
 			"PostalCode" => $this->input->post("PostalCode"),
 			"CountryId" => $this->input->post("CountryId"),
 			"ProvinceId" => $this->input->post("ProvinceId"),
 			"DistrictId" => $this->input->post("DistrictId"),
 			"SubDistrictId" => $this->input->post("SubDistrictId"),
+			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
 			"fst_active" => 'A'
@@ -161,13 +167,20 @@ class MSRelations extends MY_Controller{
 			"RelationId" => $RelationId,
 			"RelationGroupId" => $this->input->post("RelationGroupId"),
 			"RelationType" => $this->input->post("RelationType"),
+			"BusinessType" => $this->input->post("BusinessType"),
 			"RelationName" => $this->input->post("RelationName"),
+			"Gender" => $this->input->post("Gender"),
+			"BirthDate" => $this->input->post("BirthDate"),
+			"BirthPlace" => $this->input->post("BirthPlace"),
 			"Address" => $this->input->post("Address"),
+			"Phone" => $this->input->post("Phone"),
+			"Fax" => $this->input->post("Fax"),
 			"PostalCode" => $this->input->post("PostalCode"),
 			"CountryId" => $this->input->post("CountryId"),
 			"ProvinceId" => $this->input->post("ProvinceId"),
 			"DistrictId" => $this->input->post("DistrictId"),
 			"SubDistrictId" => $this->input->post("SubDistrictId"),
+			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
 			"fst_active" => 'A'
@@ -274,5 +287,41 @@ class MSRelations extends MY_Controller{
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
+	}
+
+	public function get_data_CountryId(){
+		$term = $this->input->get("term");
+		$ssql = "select CountryId from mscountries";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->json_output($rs);
+	}
+
+	public function get_data_ProvinceId(){
+		$term = $this->input->get("term");
+		$ssql = "select ProvinceId from msprovinces";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->json_output($rs);
+	}
+
+	public function get_data_DistrictId(){
+		$term = $this->input->get("term");
+		$ssql = "select DistrictId from msdistricts";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->json_output($rs);
+	}
+
+	public function get_data_SubDistrictId(){
+		$term = $this->input->get("term");
+		$ssql = "select SubDistrictId from mssubdistricts";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->json_output($rs);
 	}
 }

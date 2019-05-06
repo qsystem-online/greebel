@@ -10,8 +10,9 @@ class MSRelations_model extends MY_Model {
 
     public function getDataById($RelationId ){
         $ssql = "select * from " . $this->tableName ." where RelationId = ? and fst_active = 'A'";
+        $ssql = "select a.*,b.CountryId from " . $this->tableName . " a left join mscountries b on a.CountryId = b.CountryId left join msprovinces c on a.ProvinceId = c.ProvinceId left join msdistricts d on a.DistrictId = d.DistrictId left join mssubdistricts e on a.SubDistrictId = e.SubDistrictId where a.RelationId = ?";
 		$qr = $this->db->query($ssql,[$RelationId]);
-        $rw = $qr->row();
+        $rwMSRelations = $qr->row();
         
 		$data = [
             "msRelations" => $rwMSRelations
@@ -46,9 +47,10 @@ class MSRelations_model extends MY_Model {
         $rules[] = [
             'field' => 'PostalCode',
             'label' => 'Postal Code',
-            'rules' => 'required',
+            'rules' => 'required|min_length[5]',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
+                'min_length' => 'Panjang %s paling sedikit 5 character'
             )
         ];
         

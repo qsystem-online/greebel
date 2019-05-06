@@ -1,12 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class MSCustpricinggroups extends MY_Controller{
+class MSCountries extends MY_Controller{
 
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
-		$this->load->model('MSCustpricinggroups_model');
+		$this->load->model('MSCountries_model');
 	}
 
 	public function index(){
@@ -15,28 +15,26 @@ class MSCustpricinggroups extends MY_Controller{
 
 	public function lizt(){
 		$this->load->library('menus');
-		$this->list['page_name'] = "Master Cust Pricing Groups";
-		$this->list['list_name'] = "Master Cust Pricing Groups List";
-		$this->list['addnew_ajax_url'] = site_url() . 'pr/mscustpricinggroups/add';
+		$this->list['page_name'] = "Master Countries";
+		$this->list['list_name'] = "Master Countries List";
+		$this->list['addnew_ajax_url'] = site_url() . 'pr/mscountries/add';
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/mscustpricinggroups/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'pr/mscustpricinggroups/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'pr/mscustpricinggroups/edit/';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/mscountries/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'pr/mscountries/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'pr/mscountries/edit/';
 		$this->list['arrSearch'] = [
-			'CustPricingGroupId' => 'Groups ID',
-			'CustPricingGroupName' => 'Group Name'
+			'CountryId' => 'Country ID',
+			'RelationGroupName' => 'Groups Name'
 		];
 
 		$this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-			['title' => 'Master Cust Pricing Groups', 'link' => '#', 'icon' => ''],
+			['title' => 'Master Relation Groups', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Pricing Group Id', 'width' => '20%', 'data' => 'CustPricingGroupId'],
-            ['title' => 'Pricing Group Name', 'width' => '30%', 'data' => 'CustPricingGroupName'],
-            ['title' => 'Percent (%)', 'width' => '10%', 'data' => 'PercentOfPriceList'],
-            ['title' => 'Amount', 'width' => '15%', 'data' => 'DifferenceInAmount'],
+			['title' => 'Relation Groups ID', 'width' => '10%', 'data' => 'RelationGroupId'],
+			['title' => 'Relation Groups Name', 'width' => '25%', 'data' => 'RelationGroupName'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
@@ -52,7 +50,7 @@ class MSCustpricinggroups extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 
-	private function openForm($mode = "ADD", $CustPricingGroupId = 0){
+	private function openForm($mode = "ADD", $RelationGroupId = 0){
 		$this->load->library("menus");
 
 		if ($this->input->post("submit") != "") {
@@ -63,10 +61,10 @@ class MSCustpricinggroups extends MY_Controller{
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 
 		$data["mode"] = $mode;
-		$data["title"] = $mode == "ADD" ? "Add Master Cust Pricing Groups" : "Update Master Cust Pricing Groups";
-		$data["CustPricingGroupId"] = $CustPricingGroupId;
+		$data["title"] = $mode == "ADD" ? "Add Master Relation Groups" : "Update Master Relation Groups";
+		$data["RelationGroupId"] = $RelationGroupId;
 
-		$page_content = $this->parser->parse('pages/pr/mscustpricinggroups/form', $data, true);
+		$page_content = $this->parser->parse('pages/pr/mscountries/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 
 		$control_sidebar = NULL;
@@ -82,13 +80,13 @@ class MSCustpricinggroups extends MY_Controller{
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($CustPricingGroupId){
-		$this->openForm("EDIT", $CustPricingGroupId);
+	public function Edit($RelationGroupId){
+		$this->openForm("EDIT", $RelationGroupId);
 	}
 
 	public function ajx_add_save(){
-		$this->load->model('MSCustpricinggroups_model');
-		$this->form_validation->set_rules($this->MSCustpricinggroups_model->getRules("ADD", 0));
+		$this->load->model('mscountries_model');
+		$this->form_validation->set_rules($this->mscountries_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -101,14 +99,12 @@ class MSCustpricinggroups extends MY_Controller{
 		}
 
 		$data = [
-            "CustPricingGroupName" => $this->input->post("CustPricingGroupName"),
-            "PercentOfPriceList" => $this->input->post("PercentOfPriceList"),
-            "DifferenceInAmount" =>$this->input->post("DifferenceInAmount"),
+			"RelationGroupName" => $this->input->post("RelationGroupName"),
 			"fst_active" => 'A'
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->MSCustpricinggroups_model->insert($data);
+		$insertId = $this->mscountries_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -127,19 +123,19 @@ class MSCustpricinggroups extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('MSCustpricinggroups_model');
-		$CustPricingGroupId = $this->input->post("CustPricingGroupId");
-		$data = $this->MSCustpricinggroups_model->getDataById($CustPricingGroupId);
-		$mscustpricinggroups = $data["mscustpricinggroups"];
-		if (!$mscustpricinggroups) {
+		$this->load->model('mscountries_model');
+		$RelationGroupId = $this->input->post("RelationGroupId");
+		$data = $this->mscountries_model->getDataById($RelationGroupId);
+		$mscountries = $data["mscountries"];
+		if (!$mscountries) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
-			$this->ajxResp["message"] = "Data id $CustPricingGroupId Not Found ";
+			$this->ajxResp["message"] = "Data id $RelationGroupId Not Found ";
 			$this->ajxResp["data"] = [];
 			$this->json_output();
 			return;
 		}
 
-		$this->form_validation->set_rules($this->MSCustpricinggroups_model->getRules("EDIT", $CustPricingGroupId));
+		$this->form_validation->set_rules($this->mscountries_model->getRules("EDIT", $RelationGroupId));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -151,15 +147,13 @@ class MSCustpricinggroups extends MY_Controller{
 		}
 
 		$data = [
-			"CustPricingGroupId" => $CustPricingGroupId,
-            "CustPricingGroupName" => $this->input->post("CustPricingGroupName"),
-            "PercentOfPriceList" => $this->input->post("PercentOfPriceList"),
-            "DifferenceInAmount" =>$this->input->post("DifferenceInAmount"),
+			"RelationGroupId" => $RelationGroupId,
+			"RelationGroupName" => $this->input->post("RelationGroupName"),
 			"fst_active" => 'A'
 		];
 
 		$this->db->trans_start();
-		$this->MSCustpricinggroups_model->update($data);
+		$this->mscountries_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -173,19 +167,19 @@ class MSCustpricinggroups extends MY_Controller{
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $CustPricingGroupId;
+		$this->ajxResp["data"]["insert_id"] = $RelationGroupId;
 		$this->json_output();
 	}
 
 	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("mscustpricinggroups");
+		$this->datatables->setTableName("mscountries");
 
-		$selectFields = "CustPricingGroupId,CustPricingGroupName,PercentOfPriceList,DifferenceInAmount,'action' as action";
+		$selectFields = "RelationGroupId,RelationGroupName,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
-		$searchFields[] = $this->input->get('optionSearch'); //["CustPricingGroupId","CustPricingGroupName"];
+		$searchFields[] = $this->input->get('optionSearch'); //["RelationGroupId","RelationGroupName"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "fst_active !='D'";
 
@@ -196,8 +190,8 @@ class MSCustpricinggroups extends MY_Controller{
 		foreach ($arrData as $data) {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='" . $data["CustPricingGroupId"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["CustPricingGroupId"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='" . $data["RelationGroupId"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["RelationGroupId"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -206,10 +200,11 @@ class MSCustpricinggroups extends MY_Controller{
 		$this->json_output($datasources);
 	}
 
-	public function fetch_data($CustPricingGroupId){
-		$this->load->model("MSCustpricinggroups_model");
-		$data = $this->MSCustpricinggroups_model->getDataById($CustPricingGroupId);
-		
+	public function fetch_data($RelationGroupId){
+		$this->load->model("mscountries_model");
+		$data = $this->mscountries_model->getDataById($RelationGroupId);
+
+		//$this->load->library("datatables");		
 		$this->json_output($data);
 	}
 
@@ -221,9 +216,9 @@ class MSCustpricinggroups extends MY_Controller{
 			return;
 		}
 
-		$this->load->model("MSCustpricinggroups_model");
+		$this->load->model("mscountries_model");
 
-		$this->MSCustpricinggroups_model->delete($id);
+		$this->mscountries_model->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();

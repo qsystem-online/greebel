@@ -9,12 +9,12 @@ class MSCountries_model extends MY_Model {
     }
 
     public function getDataById($CountryId ){
-        $ssql = "select * from " . $this->tableName ." where CountryId = ? and fst_active = 'A'";
+        $ssql = "select CountryId,CountryName from " . $this->tableName ." where CountryId = ? and fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$CountryId]);
-        $rw = $qr->row();
+        $rwMSCountries = $qr->row();
         
 		$data = [
-            "" => $rw
+            "mscountries" => $rwMSCountries
 		];
 
 		return $data;
