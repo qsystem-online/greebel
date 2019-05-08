@@ -10,7 +10,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	td{
 		padding: 2px; !important 		
 	}
-
     .nav-tabs-custom>.nav-tabs>li.active>a{
         font-weight:bold;
         border-left-color: #3c8dbc;
@@ -59,9 +58,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<label for="RelationType" class="col-md-2 control-label"><?=lang("Relation Type")?> *</label>
 						<div class="col-md-10">
 							<select class="form-control select2" id="RelationType" name="RelationType[]"  multiple="multiple">
-								<?php foreach ($msrelationgroups as $msrelationgroups) {	?>
-									<option value='<?= $msrelationgroups->RelationGroupId?>'><?= $msrelationgroups->RelationGroupName ?> </option>	
-								<?php } ?>								
+								<option value="1"><?=lang("Customer")?></option>
+								<option value="2"><?=lang("Supplier/Vendor")?></option>
+								<option value="3"><?=lang("Expedisi")?></option>
 							</select>
 						</div>
 					</div>
@@ -82,14 +81,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<option value='C'><?=lang("Corporate")?></option>
 							</select>
 						</div>
-					</div>
 
-					<div class="form-group">
 					<label for="Gender" class="col-md-2 control-label"><?=lang("Gender")?></label>
 						<div class="col-md-4">
 							<select class="form-control" id="Gender" name="Gender">
-								<option value='M'><?=lang("Male")?></option>
-								<option value='F'><?=lang("Female")?></option>
+								<option value="M"><?=lang("Male")?></option>
+								<option value="F"><?=lang("Female")?></option>
 							</select>
 						</div>
 					</div>
@@ -143,32 +140,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="PostalCode_err" class="text-danger"></div>
 						</div>
 
-					<label for="select-CountryId" class="col-md-2 control-label"><?=lang("Country ID")?></label>
+					<label for="select-countryname" class="col-md-2 control-label"><?=lang("Country ID")?></label>
 						<div class="col-md-4">
-						<select id="select-CountryId" class="form-control select2" name="CountryId"></select>
-							<div id="CountryId_err" class="text-danger"></div>
+							<select id="select-countryname" class="form-control" name="CountryId">
+								<option value="0">-- <?=lang("Select Country")?> --</option>
+							</select>
+							<div id="CountryName_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-					<label for="select-ProvinceId" class="col-md-2 control-label"><?=lang("Province ID")?></label>
+					<label for="select-provincename" class="col-md-2 control-label"><?=lang("Province ID")?></label>
 						<div class="col-md-4">
-						<select id="select-ProvinceId" class="form-control select2" name="ProvinceId"></select>
-							<div id="ProvinceId_err" class="text-danger"></div>
+							<select id="select-provincename" class="form-control" name="ProvinceId">
+								<option value="0">-- <?=lang("Select Province")?> --</option>
+							</select>
+							<div id="ProvinceName_err" class="text-danger"></div>
 						</div>
 
-					<label for="select-DistrictId" class="col-md-2 control-label"><?=lang("District ID")?></label>
+					<label for="select-districtname" class="col-md-2 control-label"><?=lang("District ID")?></label>
 						<div class="col-md-4">
-						<select id="select-DistrictId" class="form-control select2" name="DistrictId"></select>
-							<div id="DistrictId_err" class="text-danger"></div>
+							<select id="select-districtname" class="form-control" name="DistrictId">
+								<option value="0">-- <?=lang("Select District")?> --</option>
+							</select>
+							<div id="DistrictName_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-					<label for="select-SubDistrictId" class="col-md-2 control-label"><?=lang("Sub District ID")?></label>
+					<label for="select-subdistrictname" class="col-md-2 control-label"><?=lang("Sub District ID")?></label>
 						<div class="col-md-4">
-						<select id="select-SubDistrictId" class="form-control select2" name="SubDistrictId"></select>
-							<div id="SubDistrictId_err" class="text-danger"></div>
+							<select id="select-subdistrictname" class="form-control" name="SubDistrictId">
+								<option value="0">-- <?=lang("Select Sub District")?> --</option>
+							</select>
+							<div id="SubDistrictName_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -277,100 +282,145 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-CountryId"),select2({
+		$("#select-countryname").select2({
 			width: '100%',
+			minimumInputLength: 3,
+			tokenSeparators: [",", " "],
 			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_data_CountryId',
+				url: '<?=site_url()?>pr/msrelations/get_mscountries',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
-					data2 = [];
+					items = [];
+					data = data.data;
 					$.each(data,function(index,value){
-						data2.push({
-							"id" : value.CountryId
+						items.push({
+							"id" : value.CountryId,
+							"text" : value.CountryName
 						});
 					});
-					console.log(data2);
+					console.log(items);
 					return {
-						result: data2
+						results: items
 					};
 				},
 				cache: true,
 			}
 		});
 
-		$("#select-ProvinceId"),select2({
+		$("#select-countryname").change(function(event){
+			event.preventDefault();
+			$('#select-provincename').val(null).trigger('change');
+			$("#select-provincename").select2({
+				width: '100%',
+				tokenSeparators: [",", " "],
+				ajax: {
+					url: '<?=site_url()?>pr/msrelations/get_msprovinces/'+$("#select-countryname").val(),
+					dataType: 'json',
+					delay: 250,
+					processResults: function (data){
+						items = [];
+						data = data.data;
+						$.each(data,function(index,value){
+							items.push({
+								"id" : value.ProvinceId,
+								"text" : value.ProvinceName
+							});
+						});
+						console.log(items);
+						return {
+							results: items
+						};
+					},
+					cache: true,
+				}
+			});
+		});
+
+		$("#select-provincename").change(function(event){
+			event.preventDefault();
+			$('#select-districtname').val(null).trigger('change');
+			$("#select-districtname").select2({
+				width: '100%',
+				tokenSeparators: [",", " "],
+				ajax: {
+					url: '<?=site_url()?>pr/msrelations/get_msdistricts/'+$("#select-provincename").val(),
+					dataType: 'json',
+					delay: 250,
+					processResults: function (data){
+						items = [];
+						data = data.data;
+						$.each(data,function(index,value){
+							items.push({
+								"id" : value.DistrictId,
+								"text" : value.DistrictName
+							});
+						});
+						console.log(items);
+						return {
+							results: items
+						};
+					},
+					cache: true,
+				}
+			});
+		});
+
+		$("#select-districtname").change(function(event){
+			event.preventDefault();
+			$('#select-subdistrictname').val(null).trigger('change');
+			$("#select-subdistrictname").select2({
+				width: '100%',
+				tokenSeparators: [",", " "],
+				ajax: {
+					url: '<?=site_url()?>pr/msrelations/get_mssubdistricts/'+$("#select-districtname").val(),
+					dataType: 'json',
+					delay: 250,
+					processResults: function (data){
+						data2 = [];
+						data = data.data;
+						$.each(data,function(index,value){
+							data2.push({
+								"id" : value.SubDistrictId,
+								"text" : value.SubDistrictName
+							});
+						});
+						console.log(data2);
+						return {
+							results: data2
+						};
+					},
+					cache: true,
+				}
+			});
+		});
+
+		/*$("#select-subdistrictname").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_data_ProvinceId',
+				url: '<?=site_url()?>pr/msrelations/get_mssubdistricts',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
 					data2 = [];
+					data = data.data;
 					$.each(data,function(index,value){
 						data2.push({
-							"id" : value.ProvinceId
+							"id" : value.SubDistrictId,
+							"text" : value.SubDistrictName
 						});
 					});
 					console.log(data2);
 					return {
-						result: data2
+						results: data2
 					};
 				},
 				cache: true,
 			}
-		});
-
-		$("#select-DistrictId"),select2({
-			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_data_DistrictId',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data){
-					data2 = [];
-					$.each(data,function(index,value){
-						data2.push({
-							"id" : value.DistrictId
-						});
-					});
-					console.log(data2);
-					return {
-						result: data2
-					};
-				},
-				cache: true,
-			}
-		});
-
-		$("#select-SubDistrictId"),select2({
-			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_data_SubDistrictId',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data){
-					data2 = [];
-					$.each(data,function(index,value){
-						data2.push({
-							"id" : value.SubDistrictId
-						});
-					});
-					console.log(data2);
-					return {
-						result: data2
-					};
-				},
-				cache: true,
-			}
-		});
-
-		$(".datepicker").datepicker({
-			format:"yyyy-mm-dd"
-		});
-		
+		});*/
 	});
 
+	// Update/Edit di form
 	function init_form(RelationId){
 		//alert("Init Form");
 		var url = "<?=site_url()?>pr/msrelations/fetch_data/" + RelationId;
@@ -398,16 +448,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				$("#BirthDate").datepicker('update', dateFormat(resp.msrelations.BirthDate));
 
-				// menampilkan data di select2
-				var newOption = new Option(resp.msrelations.CountryId, true);
-				var newOption = new Option(resp.msrelations.ProvinceId, true);
-				var newOption = new Option(resp.msrelations.DistrictId, true);
-				var newOption = new Option(resp.msrelations.SubDistrictId, true);
+				// menampilkan data di select2, menu edit/update
+				var newOption = new Option(resp.msrelations.CountryName, resp.msrelations.CountryId, true, true);
+				// Append it to the select
+    			$('#select-countryname').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.msrelations.ProvinceName, resp.msrelations.ProvinceId, true, true);
+				// Append it to the select
+				$('#select-provincename').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.msrelations.DistrictName, msrelations.DistrictId, true, true);
+				// Append it to the select
+				$('#select-districtname').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.msrelations.SubDistrictName, msrelations.SubDistrictId, true, true);
     			// Append it to the select
-    			$('#select-CountryId').append(newOption).trigger('change');
-				$('#select-ProvinceId').append(newOption).trigger('change');
-				$('#select-DistrictId').append(newOption).trigger('change');
-				$('#select-SubDistrictId').append(newOption).trigger('change');
+				$('#select-subdistrictname').append(newOption).trigger('change');
 			},
 
 			error: function (e) {

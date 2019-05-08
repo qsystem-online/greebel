@@ -86,8 +86,8 @@ class MSRelations extends MY_Controller{
 	}
 
 	public function ajx_add_save(){
-		$this->load->model('msrelations_model');
-		$this->form_validation->set_rules($this->msrelations_model->getRules("ADD", 0));
+		$this->load->model('MSRelations_model');
+		$this->form_validation->set_rules($this->MSRelations_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -100,11 +100,11 @@ class MSRelations extends MY_Controller{
 		}
 
 		$data = [
-			"RelationType" => $this->input->post("RelationType"),
+			"RelationType" => implode(",",$this->input->post("RelationType")),
 			"BusinessType" => $this->input->post("BusinessType"),
 			"RelationName" => $this->input->post("RelationName"),
 			"Gender" => $this->input->post("Gender"),
-			"BirthDate" => $this->input->post("BirthDate"),
+			"BirthDate" => dBDateFormat($this->input->post("BirthDate")),
 			"BirthPlace" => $this->input->post("BirthPlace"),
 			"Address" => $this->input->post("Address"),
 			"Phone" => $this->input->post("Phone"),
@@ -121,7 +121,7 @@ class MSRelations extends MY_Controller{
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->msrelations_model->insert($data);
+		$insertId = $this->MSRelations_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -140,11 +140,11 @@ class MSRelations extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('msrelations_model');
+		$this->load->model('MSRelations_model');
 		$RelationId = $this->input->post("RelationId");
-		$data = $this->msrelations_model->getDataById($RelationId);
-		$msrelations = $data["msrelations"];
-		if (!$msrelations) {
+		$data = $this->MSRelations_model->getDataById($RelationId);
+		$MSRelations = $data["msrelations"];
+		if (!$MSRelations) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
 			$this->ajxResp["message"] = "Data id $RelationId Not Found ";
 			$this->ajxResp["data"] = [];
@@ -152,7 +152,7 @@ class MSRelations extends MY_Controller{
 			return;
 		}
 
-		$this->form_validation->set_rules($this->msrelations_model->getRules("EDIT", $RelationId));
+		$this->form_validation->set_rules($this->MSRelations_model->getRules("EDIT", $RelationId));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -165,12 +165,11 @@ class MSRelations extends MY_Controller{
 
 		$data = [
 			"RelationId" => $RelationId,
-			"RelationGroupId" => $this->input->post("RelationGroupId"),
 			"RelationType" => $this->input->post("RelationType"),
 			"BusinessType" => $this->input->post("BusinessType"),
 			"RelationName" => $this->input->post("RelationName"),
 			"Gender" => $this->input->post("Gender"),
-			"BirthDate" => $this->input->post("BirthDate"),
+			"BirthDate" => dBDateFormat($this->input->post("BirthDate")),
 			"BirthPlace" => $this->input->post("BirthPlace"),
 			"Address" => $this->input->post("Address"),
 			"Phone" => $this->input->post("Phone"),
@@ -187,7 +186,7 @@ class MSRelations extends MY_Controller{
 		];
 
 		$this->db->trans_start();
-		$this->msrelations_model->update($data);
+		$this->MSRelations_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -203,37 +202,6 @@ class MSRelations extends MY_Controller{
 		$this->ajxResp["message"] = "Data Saved !";
 		$this->ajxResp["data"]["insert_id"] = $RelationId;
 		$this->json_output();
-	}
-
-	public function add_save(){
-		$this->load->model('msrelations_model');
-
-		$data = [
-			'RelationName' => $this->input->get("RelationName")
-		];
-		if ($this->db->insert('msrelations', $data)) {
-			echo "insert success";
-		} else {
-			$error = $this->db->error();
-			print_r($error);
-		}
-		die();
-
-		echo "Table Name :" . $this->msrelations_model->getTableName();
-		print_r($this->msrelations_model->getRules());
-
-		$this->form_validation->set_rules($this->msrelations_model->rules);
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-
-		if ($this->form_validation->run() == FALSE) {
-			echo form_error();
-		} else {
-			echo "Success";
-		}
-
-		//print_r($upload_data);
-
-		print_r($_FILES);
 	}
 
 	public function fetch_list_data(){
@@ -266,11 +234,55 @@ class MSRelations extends MY_Controller{
 	}
 
 	public function fetch_data($RelationId){
-		$this->load->model("msrelations_model");
-		$data = $this->msrelations_model->getDataById($RelationId);
+		$this->load->model("MSRelations_model");
+		$data = $this->MSRelations_model->getDataById($RelationId);
 
 		//$this->load->library("datatables");		
 		$this->json_output($data);
+	}
+
+	public function get_mscountries(){
+		$term = $this->input->get("term");
+		$ssql = "select CountryId, CountryName from mscountries where CountryName like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_msprovinces($countryId){
+		$term = $this->input->get("term");
+		$ssql = "select ProvinceId, ProvinceName from msprovinces where ProvinceName like ? and CountryId = ? order by ProvinceName";
+		$qr = $this->db->query($ssql,['%'.$term.'%',$countryId]);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_msdistricts($provinceId){
+		$term = $this->input->get("term");
+		$ssql = "select DistrictId, DistrictName from msdistricts where DistrictName like ? and ProvinceId = ? order by DistrictName";
+		$qr = $this->db->query($ssql,['%'.$term.'%',$provinceId]);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_mssubdistricts($districtId){
+		$term = $this->input->get("term");
+		$ssql = "select SubDistrictId, SubDistrictName from mssubdistricts where SubDistrictName like ? and DistrictId = ? order by SubDistrictName";
+		$qr = $this->db->query($ssql,['%'.$term.'%',$districtId]);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
 	}
 
 	public function delete($id){
@@ -281,47 +293,11 @@ class MSRelations extends MY_Controller{
 			return;
 		}
 
-		$this->load->model("msrelations_model");
+		$this->load->model("MSRelations_model");
 
-		$this->msrelations_model->delete($id);
+		$this->MSRelations_model->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
-	}
-
-	public function get_data_CountryId(){
-		$term = $this->input->get("term");
-		$ssql = "select CountryId from mscountries";
-		$qr = $this->db->query($ssql,['%'.$term.'%']);
-		$rs = $qr->result();
-		
-		$this->json_output($rs);
-	}
-
-	public function get_data_ProvinceId(){
-		$term = $this->input->get("term");
-		$ssql = "select ProvinceId from msprovinces";
-		$qr = $this->db->query($ssql,['%'.$term.'%']);
-		$rs = $qr->result();
-		
-		$this->json_output($rs);
-	}
-
-	public function get_data_DistrictId(){
-		$term = $this->input->get("term");
-		$ssql = "select DistrictId from msdistricts";
-		$qr = $this->db->query($ssql,['%'.$term.'%']);
-		$rs = $qr->result();
-		
-		$this->json_output($rs);
-	}
-
-	public function get_data_SubDistrictId(){
-		$term = $this->input->get("term");
-		$ssql = "select SubDistrictId from mssubdistricts";
-		$qr = $this->db->query($ssql,['%'.$term.'%']);
-		$rs = $qr->result();
-		
-		$this->json_output($rs);
 	}
 }

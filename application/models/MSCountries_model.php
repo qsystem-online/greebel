@@ -1,5 +1,6 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
+
 class MSCountries_model extends MY_Model {
     public $tableName = "mscountries";
     public $pkey = "CountryId";
@@ -9,7 +10,7 @@ class MSCountries_model extends MY_Model {
     }
 
     public function getDataById($CountryId ){
-        $ssql = "select CountryId,CountryName from " . $this->tableName ." where CountryId = ? and fst_active = 'A'";
+        $ssql = "select CountryId, CountryName from " . $this->tableName ." where CountryId = ? and fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$CountryId]);
         $rwMSCountries = $qr->row();
         
