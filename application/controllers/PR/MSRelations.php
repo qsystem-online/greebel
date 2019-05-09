@@ -116,7 +116,7 @@ class MSRelations extends MY_Controller{
 		}
 
 		$data = [
-			"RelationType" => implode(", ",$this->input->post("RelationType")),
+			"RelationType" => implode(",",$this->input->post("RelationType")),
 			"BusinessType" => $this->input->post("BusinessType"),
 			"RelationName" => $this->input->post("RelationName"),
 			"Gender" => $this->input->post("Gender"),
@@ -181,7 +181,7 @@ class MSRelations extends MY_Controller{
 
 		$data = [
 			"RelationId" => $RelationId,
-			"RelationType" => $this->input->post("RelationType"),
+			"RelationType" => implode(",",$this->input->post("RelationType")),
 			"BusinessType" => $this->input->post("BusinessType"),
 			"RelationName" => $this->input->post("RelationName"),
 			"Gender" => $this->input->post("Gender"),

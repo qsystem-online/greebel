@@ -426,11 +426,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 
 				$("#BirthDate").datepicker('update', dateFormat(resp.ms_relations.BirthDate));
-				var ms_relation = [];
-				$.each(resp.ms_relation, function(name, val){
-					ms_relation.push(val.RelationType);
-				})
-				$('#RelationType').append(newOption).trigger('change');
+
+				var relationType = resp.ms_relations.RelationType.split(",");
+				console.log(relationType);
+				$("#RelationType").val(relationType).trigger('change');
+
+				//$('#RelationType').append(newOption).trigger('change');
 
 				// menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.ms_relations.CountryName, resp.ms_relations.CountryId, true, true);
