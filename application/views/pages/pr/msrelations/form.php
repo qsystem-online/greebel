@@ -214,6 +214,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript">
 	$(function(){
+
 		<?php if($mode == "EDIT"){?>
 			init_form($("#RelationId").val());
 		<?php } ?>
@@ -221,7 +222,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			data = new FormData($("#frmMSRelations")[0]);
-			console.log(data);
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
@@ -272,6 +272,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 						$('#RelationName').prop('readonly', true);
+						//$("#tabs-relation-detail").show();
 					}
 				},
 				error: function (e) {
@@ -279,9 +280,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					console.log("ERROR : ", e);
 					$("#btnSubmit").prop("disabled", false);
 				}
+
 			});
 		});
 
+		$(".select2").select2();
+		
 		$("#select-countryname").select2({
 			width: '100%',
 			minimumInputLength: 3,
@@ -394,33 +398,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 			});
 		});
-
-		/*$("#select-subdistrictname").select2({
-			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_mssubdistricts',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data){
-					data2 = [];
-					data = data.data;
-					$.each(data,function(index,value){
-						data2.push({
-							"id" : value.SubDistrictId,
-							"text" : value.SubDistrictName
-						});
-					});
-					console.log(data2);
-					return {
-						results: data2
-					};
-				},
-				cache: true,
-			}
-		});*/
 	});
 
-	// Update/Edit di form
 	function init_form(RelationId){
 		//alert("Init Form");
 		var url = "<?=site_url()?>pr/msrelations/fetch_data/" + RelationId;
@@ -428,9 +407,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.msrelations);
+				console.log(resp.ms_relations);
 
-				$.each(resp.msrelations, function(name, val){
+				$.each(resp.ms_relations, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){
@@ -446,24 +425,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
-				$("#BirthDate").datepicker('update', dateFormat(resp.msrelations.BirthDate));
+				$("#BirthDate").datepicker('update', dateFormat(resp.ms_relations.BirthDate));
+				var ms_relation = [];
+				$.each(resp.ms_relation, function(name, val){
+					ms_relation.push(val.RelationType);
+				})
+				$('#RelationType').append(newOption).trigger('change');
 
 				// menampilkan data di select2, menu edit/update
-				var newOption = new Option(resp.msrelations.CountryName, resp.msrelations.CountryId, true, true);
+				var newOption = new Option(resp.ms_relations.CountryName, resp.ms_relations.CountryId, true, true);
 				// Append it to the select
     			$('#select-countryname').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.msrelations.ProvinceName, resp.msrelations.ProvinceId, true, true);
-				// Append it to the select
+				var newOption = new Option(resp.ms_relations.ProvinceName, resp.ms_relations.ProvinceId, true, true);
 				$('#select-provincename').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.msrelations.DistrictName, msrelations.DistrictId, true, true);
-				// Append it to the select
+				var newOption = new Option(resp.ms_relations.DistrictName, resp.ms_relations.DistrictId, true, true);
 				$('#select-districtname').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.msrelations.SubDistrictName, msrelations.SubDistrictId, true, true);
-    			// Append it to the select
+				var newOption = new Option(resp.ms_relations.SubDistrictName, resp.ms_relations.SubDistrictId, true, true);
 				$('#select-subdistrictname').append(newOption).trigger('change');
+
 			},
 
 			error: function (e) {
@@ -476,3 +458,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
+
+<script type="text/javascript">
+    $(function(){
+        $(".select2-container").addClass("form-control"); 
+        $(".select2-selection--single , .select2-selection--multiple").css({
+            "border":"0px solid #000",
+            "padding":"0px 0px 0px 0px"
+        });         
+        $(".select2-selection--multiple").css({
+            "margin-top" : "-5px",
+            "background-color":"unset"
+        });
+    });
+</script>

@@ -6,7 +6,7 @@ class MSRelations extends MY_Controller{
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
-		$this->load->model('MSRelations_model');
+		$this->load->model('msrelations_model');
 	}
 
 	public function index(){
@@ -32,10 +32,26 @@ class MSRelations extends MY_Controller{
 			['title' => 'Master Relations', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
+
 		$this->list['columns'] = [
 			['title' => 'Relation ID', 'width' => '15%', 'data' => 'RelationId'],
 			['title' => 'Relation Name', 'width' => '20%', 'data' => 'RelationName'],
-			['title' => 'Relation Type', 'width' => '15%', 'data' => 'RelationType'],
+			['title' => 'Relation Type', 'width' => '15%', 'data' => 'RelationType',
+				'render' => "function (data,type,row){
+					var relationType = data.split(\",\");
+					var nama = \"\";
+					relationType.forEach(function(value, index, array){ 				
+						if(value == 1){					
+							nama = nama + \",\" + \"Customer\";				
+						}else if(value == 2){					
+							nama = nama + \",\" + \"Supplier/Vendor\";				
+						}else if(value == 3){					
+							nama = nama + \",\" + \"Ekspedisi\"	;			
+						}
+					});
+					return nama.substring(1);
+				}"
+			],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
@@ -86,8 +102,8 @@ class MSRelations extends MY_Controller{
 	}
 
 	public function ajx_add_save(){
-		$this->load->model('MSRelations_model');
-		$this->form_validation->set_rules($this->MSRelations_model->getRules("ADD", 0));
+		$this->load->model('msrelations_model');
+		$this->form_validation->set_rules($this->msrelations_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -100,7 +116,7 @@ class MSRelations extends MY_Controller{
 		}
 
 		$data = [
-			"RelationType" => implode(",",$this->input->post("RelationType")),
+			"RelationType" => implode(", ",$this->input->post("RelationType")),
 			"BusinessType" => $this->input->post("BusinessType"),
 			"RelationName" => $this->input->post("RelationName"),
 			"Gender" => $this->input->post("Gender"),
@@ -121,7 +137,7 @@ class MSRelations extends MY_Controller{
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->MSRelations_model->insert($data);
+		$insertId = $this->msrelations_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -140,11 +156,11 @@ class MSRelations extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('MSRelations_model');
+		$this->load->model('msrelations_model');
 		$RelationId = $this->input->post("RelationId");
-		$data = $this->MSRelations_model->getDataById($RelationId);
-		$MSRelations = $data["msrelations"];
-		if (!$MSRelations) {
+		$data = $this->msrelations_model->getDataById($RelationId);
+		$msrelations = $data["ms_relations"];
+		if (!$msrelations) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
 			$this->ajxResp["message"] = "Data id $RelationId Not Found ";
 			$this->ajxResp["data"] = [];
@@ -152,7 +168,7 @@ class MSRelations extends MY_Controller{
 			return;
 		}
 
-		$this->form_validation->set_rules($this->MSRelations_model->getRules("EDIT", $RelationId));
+		$this->form_validation->set_rules($this->msrelations_model->getRules("EDIT", $RelationId));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -186,7 +202,7 @@ class MSRelations extends MY_Controller{
 		];
 
 		$this->db->trans_start();
-		$this->MSRelations_model->update($data);
+		$this->msrelations_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -208,7 +224,7 @@ class MSRelations extends MY_Controller{
 		$this->load->library("datatables");
 		$this->datatables->setTableName("msrelations");
 
-		$selectFields = "RelationId,RelationGroupId,RelationType,RelationName,'action' as action";
+		$selectFields = "RelationId,RelationType,RelationName,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
@@ -218,7 +234,8 @@ class MSRelations extends MY_Controller{
 
 		// Format Data
 		$datasources = $this->datatables->getData();
-		$arrData = $datasources["data"];
+		
+		$arrData = $datasources["data"];		
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
 			//action
@@ -234,10 +251,9 @@ class MSRelations extends MY_Controller{
 	}
 
 	public function fetch_data($RelationId){
-		$this->load->model("MSRelations_model");
-		$data = $this->MSRelations_model->getDataById($RelationId);
-
-		//$this->load->library("datatables");		
+		$this->load->model("msrelations_model");
+		$data = $this->msrelations_model->getDataById($RelationId);
+	
 		$this->json_output($data);
 	}
 
@@ -293,9 +309,9 @@ class MSRelations extends MY_Controller{
 			return;
 		}
 
-		$this->load->model("MSRelations_model");
+		$this->load->model("msrelations_model");
 
-		$this->MSRelations_model->delete($id);
+		$this->msrelations_model->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
