@@ -35,7 +35,7 @@ class MSMemberships extends MY_Controller{
 		$this->list['columns'] = [
             ['title' => 'Rec ID', 'width' => '8%', 'data' => 'RecId'],
             ['title' => 'Member No', 'width' => '12%', 'data' => 'MemberNo'],
-            ['title' => 'Relation Name', 'width' => '15%', 'data' => 'RelationId'],
+            ['title' => 'Relation ID', 'width' => '15%', 'data' => 'RelationId'],
             ['title' => 'Member Group ID', 'width' => '15%', 'data' => 'MemberGroupId'],
             ['title' => 'Name On Card', 'width' => '20%', 'data' => 'NameOnCard'],
             ['title' => 'Expiry Date', 'width' => '12%', 'data' => 'ExpiryDate'],
@@ -224,13 +224,11 @@ class MSMemberships extends MY_Controller{
     
     public function get_relations(){
 		$term = $this->input->get("term");
-		$ssql = "select RelationId, RelationName from msrelations where RelationName like ? order by RelationName";
+		$ssql = "select RelationId, RelationName from msrelations where RelationName like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["data"] = $rs;
-		$this->json_output();
+		$this->json_output($rs);
 	}
 
 	public function delete($id){
