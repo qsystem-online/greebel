@@ -46,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
-					<div class='form-group'>
+					<div class="form-group">
                     <label for="RelationId" class="col-md-2 control-label"><?=lang("Relation ID")?> #</label>
 						<div class="col-md-10">
 							<input type="text" class="form-control" id="RelationId" placeholder="<?=lang("(Autonumber)")?>" name="RelationId" value="<?=$RelationId?>" readonly>
@@ -143,7 +143,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<label for="select-countryname" class="col-md-2 control-label"><?=lang("Country ID")?></label>
 						<div class="col-md-4">
 							<select id="select-countryname" class="form-control" name="CountryId">
-								<option value="0">-- <?=lang("Select Country")?> --</option>
+								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="CountryName_err" class="text-danger"></div>
 						</div>
@@ -153,7 +153,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<label for="select-provincename" class="col-md-2 control-label"><?=lang("Province ID")?></label>
 						<div class="col-md-4">
 							<select id="select-provincename" class="form-control" name="ProvinceId">
-								<option value="0">-- <?=lang("Select Province")?> --</option>
+								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="ProvinceName_err" class="text-danger"></div>
 						</div>
@@ -161,7 +161,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<label for="select-districtname" class="col-md-2 control-label"><?=lang("District ID")?></label>
 						<div class="col-md-4">
 							<select id="select-districtname" class="form-control" name="DistrictId">
-								<option value="0">-- <?=lang("Select District")?> --</option>
+								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="DistrictName_err" class="text-danger"></div>
 						</div>
@@ -171,7 +171,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<label for="select-subdistrictname" class="col-md-2 control-label"><?=lang("Sub District ID")?></label>
 						<div class="col-md-4">
 							<select id="select-subdistrictname" class="form-control" name="SubDistrictId">
-								<option value="0">-- <?=lang("Select Sub District")?> --</option>
+								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="SubDistrictName_err" class="text-danger"></div>
 						</div>

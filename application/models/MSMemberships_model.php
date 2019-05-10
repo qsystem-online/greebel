@@ -9,12 +9,13 @@ class MSMemberShips_model extends MY_Model {
     }
 
     public function getDataById($RecId ){
-        $ssql = "select * from " . $this->tableName ." where RecId = ? and fst_active = 'A'";
+        //$ssql = "select * from " . $this->tableName ." where RecId = ? and fst_active = 'A'";
+        $ssql = "select a.*,b.RelationName from msmemberships a left join msrelations b on a.RelationId = b.RelationId where a.RecId = ? and a.fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$RecId]);
-        $rw = $qr->row();
+        $rwMSMemberships = $qr->row();
         
 		$data = [
-            "" => $rw
+            "ms_memberships" => $rwMSMemberships
 		];
 
 		return $data;
