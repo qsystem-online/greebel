@@ -13,7 +13,7 @@ class MSMemberships extends MY_Controller{
 		$this->lizt();
 	}
 
-    public function lizt(){
+  public function lizt(){
 		$this->load->library('menus');
 		$this->list['page_name'] = "Master Memberships";
 		$this->list['list_name'] = "Master Memberships List";
@@ -32,16 +32,18 @@ class MSMemberships extends MY_Controller{
 			['title' => 'Master Memberships', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
+
 		$this->list['columns'] = [
-            ['title' => 'Rec ID', 'width' => '8%', 'data' => 'RecId'],
-            ['title' => 'Member No', 'width' => '12%', 'data' => 'MemberNo'],
-            ['title' => 'Relation ID', 'width' => '15%', 'data' => 'RelationId'],
-            ['title' => 'Member Group ID', 'width' => '15%', 'data' => 'MemberGroupId'],
-            ['title' => 'Name On Card', 'width' => '20%', 'data' => 'NameOnCard'],
-            ['title' => 'Expiry Date', 'width' => '12%', 'data' => 'ExpiryDate'],
-            ['title' => 'Member Discount (%)', 'width' => '17%', 'data' => 'MemberDiscount'],
+			['title' => 'Rec ID', 'width' => '8%', 'data' => 'RecId'],
+			['title' => 'Member No', 'width' => '12%', 'data' => 'MemberNo'],
+			['title' => 'Relation Name', 'width' => '15%', 'data' => 'RelationName'],
+			['title' => 'Member Group ID', 'width' => '15%', 'data' => 'MemberGroupId'],
+			['title' => 'Name On Card', 'width' => '20%', 'data' => 'NameOnCard'],
+			['title' => 'Expiry Date', 'width' => '12%', 'data' => 'ExpiryDate'],
+			['title' => 'Member Discount (%)', 'width' => '17%', 'data' => 'MemberDiscount'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
+
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$page_content = $this->parser->parse('template/standardList', $this->list, true);
@@ -53,9 +55,9 @@ class MSMemberships extends MY_Controller{
 		$this->data['PAGE_CONTENT'] = $page_content;
 		$this->data['MAIN_FOOTER'] = $main_footer;
 		$this->parser->parse('template/main', $this->data);
-    }
+  }
     
-    private function openForm($mode = "ADD", $RecId = 0){
+  private function openForm($mode = "ADD", $RecId = 0){
 		$this->load->library("menus");
 
 		if ($this->input->post("submit") != "") {
@@ -79,17 +81,17 @@ class MSMemberships extends MY_Controller{
 		$this->data["MAIN_FOOTER"] = $main_footer;
 		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
 		$this->parser->parse('template/main', $this->data);
-    }
+  }
     
-    public function add(){
+  public function add(){
 		$this->openForm("ADD", 0);
 	}
 
 	public function Edit($RecId){
 		$this->openForm("EDIT", $RecId);
-    }
+  }
     
-    public function ajx_add_save(){
+  public function ajx_add_save(){
 		$this->load->model('MSMemberShips_model');
 		$this->form_validation->set_rules($this->MSMemberShips_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -104,12 +106,12 @@ class MSMemberships extends MY_Controller{
 		}
 
 		$data = [
-            "MemberNo" => $this->input->post("MemberNo"),
-            "RelationId" => $this->input->post("RelationId"),
-            "MemberGroupId" => $this->input->post("MemberGroupId"),
-            "NameOnCard" =>$this->input->post("NameOnCard"),
-            "ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
-            "MemberDiscount" =>$this->input->post("MemberDiscount"),
+			"MemberNo" => $this->input->post("MemberNo"),
+			"RelationId" => $this->input->post("RelationId"),
+			"MemberGroupId" => $this->input->post("MemberGroupId"),
+			"NameOnCard" =>$this->input->post("NameOnCard"),
+			"ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
+			"MemberDiscount" =>$this->input->post("MemberDiscount"),
 			"fst_active" => 'A'
 		];
 
@@ -130,9 +132,9 @@ class MSMemberships extends MY_Controller{
 		$this->ajxResp["message"] = "Data Saved !";
 		$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
-    }
+  }
     
-    public function ajx_edit_save(){
+  public function ajx_edit_save(){
 		$this->load->model('MSMemberShips_model');
 		$RecId = $this->input->post("RecId");
 		$data = $this->MSMemberShips_model->getDataById($RecId);
@@ -158,12 +160,12 @@ class MSMemberships extends MY_Controller{
 
 		$data = [
 			"RecId" => $RecId,
-            "MemberNo" => $this->input->post("MemberNo"),
-            "RelationId" => $this->input->post("RelationId"),
-            "MemberGroupId" => $this->input->post("MemberGroupId"),
-            "NameOnCard" =>$this->input->post("NameOnCard"),
-            "ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
-            "MemberDiscount" =>$this->input->post("MemberDiscount"),
+			"MemberNo" => $this->input->post("MemberNo"),
+			"RelationId" => $this->input->post("RelationId"),
+			"MemberGroupId" => $this->input->post("MemberGroupId"),
+			"NameOnCard" =>$this->input->post("NameOnCard"),
+			"ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
+			"MemberDiscount" =>$this->input->post("MemberDiscount"),
 			"fst_active" => 'A'
 		];
 
@@ -184,13 +186,13 @@ class MSMemberships extends MY_Controller{
 		$this->ajxResp["message"] = "Data Saved !";
 		$this->ajxResp["data"]["insert_id"] = $RecId;
 		$this->json_output();
-    }
+  }
     
-    public function fetch_list_data(){
+  public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("msmemberships");
+		$this->datatables->setTableName("(select a.*,b.RelationName from msmemberships a inner join msrelations b on a.RelationId = b.RelationId) a");
 
-		$selectFields = "RecId,MemberNo,RelationId,MemberGroupId,NameOnCard,ExpiryDate,MemberDiscount,'action' as action";
+		$selectFields = "a.RecId,a.MemberNo,a.RelationName,a.MemberGroupId,a.NameOnCard,a.ExpiryDate,a.MemberDiscount,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
@@ -211,18 +213,19 @@ class MSMemberships extends MY_Controller{
 
 			$arrDataFormated[] = $data;
 		}
+
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
-    }
+  }
     
-    public function fetch_data($RecId){
+  public function fetch_data($RecId){
 		$this->load->model("MSMemberShips_model");
 		$data = $this->MSMemberShips_model->getDataById($RecId);
 		
 		$this->json_output($data);
-    }
+  }
     
-    public function get_relations(){
+  public function get_relations(){
 		$term = $this->input->get("term");
 		$ssql = "select RelationId, RelationName from msrelations where RelationName like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);

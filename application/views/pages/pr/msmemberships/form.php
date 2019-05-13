@@ -63,7 +63,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-                    <label for="RelationId" class="col-md-2 control-label"><?=lang("Relation ID")?> *</label>
+                    <label for="RelationId" class="col-md-2 control-label"><?=lang("Relation Name")?> *</label>
                         <div class="col-md-4">
                             <select id="select-relationId" class="form-control" name="RelationId">
 								<option value="0">-- <?=lang("select")?> --</option>
@@ -176,7 +176,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
-						$('#NameOnCard').prop('readonly', true);
+						$('#RelationName').prop('readonly', true);
 						//$("#tabs-relation-detail").show();
 					}
 				},
