@@ -209,7 +209,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="RelationNotes" class="col-md-2 control-label"><?=lang("Relation Notes")?></label>
 							<div class="col-md-8">
-								<select id="select-relationnotes" class="form-control" name="relationnotes">
+								<select id="select-relationnotes" class="form-control" name="relationnotes1">
 									<option value="0">-- <?=lang("select")?> --</option>
 								</select>
 								<textarea class="form-control" id="RelationNotes" name="RelationNotes"></textarea>
@@ -503,6 +503,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				cache: true,
 			}
 		});
+		
+		var selected_relationnotes;
+		var arrDetail;
+
+		$('#select-relationnotes').on('select2:select', function (e) {
+			//console.log(selected_relationnotes);
+			var data = e.params.data;
+			selected_relationnotes = data;
+			//console.log(selected_relationnotes);
+
+			$("#btn-add-select-relationnotes").click(function(event){
+			event.preventDefault();
+			})
+
+			$("#RelationNotes").val(data.text);
+		});
+
 	});
 
 	function init_form(RelationId){
