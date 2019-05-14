@@ -508,16 +508,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		var arrDetail;
 
 		$('#select-relationnotes').on('select2:select', function (e) {
-			//console.log(selected_relationnotes);
+			console.log(selected_relationnotes);
 			var data = e.params.data;
 			selected_relationnotes = data;
 			//console.log(selected_relationnotes);
 
 			$("#btn-add-select-relationnotes").click(function(event){
-			event.preventDefault();
-			})
+				event.preventDefault();
+				//console.log(selected_relationnotes);
+				$("#RelationNotes").append(data.text);
+			});
 
-			$("#RelationNotes").val(data.text);
+			//$("#RelationNotes").val(data.text);
 		});
 
 	});
