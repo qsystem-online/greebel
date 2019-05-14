@@ -504,22 +504,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 		
+		var newline = "\r\n";
 		var selected_relationnotes;
 		var arrDetail;
 
 		$('#select-relationnotes').on('select2:select', function (e) {
-			console.log(selected_relationnotes);
+			//console.log(selected_relationnotes);
 			var data = e.params.data;
-			selected_relationnotes = data;
+			//selected_relationnotes = data;
 			//console.log(selected_relationnotes);
 
 			$("#btn-add-select-relationnotes").click(function(event){
 				event.preventDefault();
 				//console.log(selected_relationnotes);
-				$("#RelationNotes").append(data.text);
+				var sstr = $("#RelationNotes").val();
+				$("#RelationNotes").val(sstr + data.text + "\r\n");
+				console.clear();
 			});
-
-			//$("#RelationNotes").val(data.text);
 		});
 
 	});
