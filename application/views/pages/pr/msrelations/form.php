@@ -55,6 +55,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
+					<label for="select-relationgroupid" class="col-md-2 control-label"><?=lang("Relation Group Name")?></label>
+						<div class="col-md-10">
+							<select id="select-relationgroupid" class="form-control" name="RelationGroupId">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="RelationGroupId_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
 					<label for="RelationType" class="col-md-2 control-label"><?=lang("Relation Type")?> *</label>
 						<div class="col-md-10">
 							<select class="form-control select2" id="RelationType" name="RelationType[]"  multiple="multiple">
@@ -82,16 +92,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</select>
 						</div>
 
-					<label for="Gender" class="col-md-2 control-label"><?=lang("Gender")?></label>
-						<div class="col-md-4">
+					<label for="Gender" class="col-md-2 control-label personal-info"><?=lang("Gender")?></label>
+						<div class="col-md-4 personal-info">
 							<select class="form-control" id="Gender" name="Gender">
+								<option value="0">-- <?=lang("select")?> --</option>
 								<option value="M"><?=lang("Male")?></option>
 								<option value="F"><?=lang("Female")?></option>
 							</select>
 						</div>
 					</div>
 
-					<div class="form-group">
+					<div class="form-group personal-info">
 					<label for="BirthDate" class="col-md-2 control-label"><?=lang("Birth Date")?> *</label>
 						<div class="col-md-4">
 							<div class="input-group date">
@@ -178,10 +189,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="CustPricingGroupid" class="col-md-2 control-label"><?=lang("Cust Pricing Group ID")?></label>
+					<label for="select-custpricinggroupname" class="col-md-2 control-label"><?=lang("CustPricingGroup Name")?></label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="CustPricingGroupid" placeholder="<?=lang("Cust Pricing Group ID")?>" name="CustPricingGroupid">
-							<div id="CustPricingGroupid_err" class="text-danger"></div>
+							<select id="select-custpricinggroupname" class="form-control" name="CustPricingGroupId">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="CustPricingGroupId_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -194,12 +207,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-                    <label for="RelationNotes" class="col-md-2 control-label"><?=lang("Relation Notes")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="RelationNotes" placeholder="<?=lang("Relation Notes")?>" name="RelationNotes">
-							<div id="RelationNotes_err" class="text-danger"></div>
-						</div>
+						<label for="RelationNotes" class="col-md-2 control-label"><?=lang("Relation Notes")?></label>
+							<div class="col-md-8">
+								<select id="select-relationnotes" class="form-control" name="relationnotes">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<textarea class="form-control" id="RelationNotes" name="RelationNotes"></textarea>
+								<div id="RelationNotes_err" class="text-danger"></div>
+							</div>
+						<button id="btn-add-select-relationnotes" type="button" class="btn btn-default" ><?=lang("Add")?></button>
 					</div>
+
                 </div>
 				<!-- end box body -->
 
@@ -285,7 +303,44 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$(".select2").select2();
-		
+
+		$("#select-relationgroupid").select2({
+			width: '100%',
+			minimumInputLength: 3,
+			tokenSeparators: [",", " "],
+			ajax: {
+				url: '<?=site_url()?>pr/msrelations/get_msrelationgroups',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					items = [];
+					data = data.data;
+					$.each(data,function(index,value){
+						items.push({
+							"id" : value.RelationGroupId,
+							"text" : value.RelationGroupName
+						});
+					});
+					console.log(items);
+					return {
+						results: items
+					};
+				},
+				cache: true,
+			}
+		});
+
+		$("#BusinessType").change(function(event){
+			event.preventDefault();
+			$(".personal-info").hide();
+
+			$("#BusinessType").each(function(index){				
+				if ($(this).val() == "P"){
+					$(".personal-info").show();
+				} 
+			});
+		});
+
 		$("#select-countryname").select2({
 			width: '100%',
 			minimumInputLength: 3,
@@ -398,6 +453,56 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 			});
 		});
+
+		$("#select-custpricinggroupname").select2({
+			width: '100%',
+			tokenSeparators: [",", " "],
+			ajax: {
+				url: '<?=site_url()?>pr/msrelations/get_mscustpricinggroups',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					items = [];
+					data = data.data;
+					$.each(data,function(index,value){
+						items.push({
+							"id" : value.CustPricingGroupid,
+							"text" : value.CustPricingGroupName
+						});
+					});
+					console.log(items);
+					return {
+						results: items
+					};
+				},
+				cache: true,
+			}
+		});
+
+		$("#select-relationnotes").select2({
+			width: '100%',
+			tokenSeparators: [",", " "],
+			ajax: {
+				url: '<?=site_url()?>pr/msrelations/get_msrelationprintoutnotes',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					items = [];
+					data = data.data;
+					$.each(data,function(index,value){
+						items.push({
+							"id" : value.NoteId,
+							"text" : value.Notes
+						});
+					});
+					console.log(items);
+					return {
+						results: items
+					};
+				},
+				cache: true,
+			}
+		});
 	});
 
 	function init_form(RelationId){
@@ -429,7 +534,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				console.log(relationType);
 				$("#RelationType").val(relationType).trigger('change');
 
+				// masih salah
+				$("#BusinessType").each(function(index){				
+					if ($(this).val() == "C"){
+						$(".personal-info").hide();
+					} 
+				});
+
 				$("#BirthDate").datepicker('update', dateFormat(resp.ms_relations.BirthDate));
+
+				// menampilkan data di select2, menu edit/update
+				var newOption = new Option(resp.ms_relations.RelationGroupName, resp.ms_relations.RelationGroupId, true, true);
+				// Append it to the select
+    			$('#select-relationgroupid').append(newOption).trigger('change');
 
 				// menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.ms_relations.CountryName, resp.ms_relations.CountryId, true, true);
@@ -444,6 +561,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				var newOption = new Option(resp.ms_relations.SubDistrictName, resp.ms_relations.SubDistrictId, true, true);
 				$('#select-subdistrictname').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.ms_relations.CustPricingGroupName, resp.ms_relations.CustPricingGroupid, true, true);
+				$('#select-custpricinggroupname').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.ms_relations.Notes, true);
+				$('#select-relationnotes').append(newOption).trigger('change');
 
 			},
 

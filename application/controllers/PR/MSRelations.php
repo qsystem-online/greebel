@@ -116,6 +116,7 @@ class MSRelations extends MY_Controller{
 		}
 
 		$data = [
+			"RelationGroupId" => $this->input->post("RelationGroupId"),
 			"RelationType" => implode(",",$this->input->post("RelationType")),
 			"BusinessType" => $this->input->post("BusinessType"),
 			"RelationName" => $this->input->post("RelationName"),
@@ -181,6 +182,7 @@ class MSRelations extends MY_Controller{
 
 		$data = [
 			"RelationId" => $RelationId,
+			"RelationGroupId" => $this->input->post("RelationGroupId"),
 			"RelationType" => implode(",",$this->input->post("RelationType")),
 			"BusinessType" => $this->input->post("BusinessType"),
 			"RelationName" => $this->input->post("RelationName"),
@@ -224,7 +226,7 @@ class MSRelations extends MY_Controller{
 		$this->load->library("datatables");
 		$this->datatables->setTableName("msrelations");
 
-		$selectFields = "RelationId,RelationType,RelationName,'action' as action";
+		$selectFields = "RelationId,RelationGroupId,RelationType,RelationName,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
@@ -255,6 +257,17 @@ class MSRelations extends MY_Controller{
 		$data = $this->msrelations_model->getDataById($RelationId);
 	
 		$this->json_output($data);
+	}
+
+	public function get_msrelationgroups(){
+		$term = $this->input->get("term");
+		$ssql = "select RelationGroupId, RelationGroupName from msrelationgroups where RelationGroupName like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
 	}
 
 	public function get_mscountries(){
@@ -294,6 +307,28 @@ class MSRelations extends MY_Controller{
 		$term = $this->input->get("term");
 		$ssql = "select SubDistrictId, SubDistrictName from mssubdistricts where SubDistrictName like ? and DistrictId = ? order by SubDistrictName";
 		$qr = $this->db->query($ssql,['%'.$term.'%',$districtId]);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_mscustpricinggroups(){
+		$term = $this->input->get("term");
+		$ssql = "select CustPricingGroupId, CustPricingGroupName from mscustpricinggroups where CustPricingGroupName like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_msrelationprintoutnotes(){
+		$term = $this->input->get("term");
+		$ssql = "select NoteId, Notes from msrelationprintoutnotes where Notes like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
