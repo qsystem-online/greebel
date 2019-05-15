@@ -208,8 +208,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">
 						<label for="RelationNotes" class="col-md-2 control-label"><?=lang("Relation Notes")?></label>
-							<div class="col-md-8">
-								<select id="select-relationnotes" class="form-control" name="relationnotes1">
+							<div class="col-md-7">
+								<select id="select-relationnotes" class="form-control" name="RelationNotes">
 									<option value="0">-- <?=lang("select")?> --</option>
 								</select>
 								<textarea class="form-control" id="RelationNotes" name="RelationNotes"></textarea>
@@ -505,24 +505,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 		
 		var newline = "\r\n";
-		var selected_relationnotes;
-		var arrDetail;
-
+		
+		// Hasil masih double
 		$('#select-relationnotes').on('select2:select', function (e) {
 			//console.log(selected_relationnotes);
 			var data = e.params.data;
-			//selected_relationnotes = data;
-			//console.log(selected_relationnotes);
+			//var selected_relationnotes = data;
 
 			$("#btn-add-select-relationnotes").click(function(event){
 				event.preventDefault();
-				//console.log(selected_relationnotes);
 				var sstr = $("#RelationNotes").val();
 				$("#RelationNotes").val(sstr + data.text + "\r\n");
-				console.clear();
+				//console.clear();
 			});
 		});
-
 	});
 
 	function init_form(RelationId){
