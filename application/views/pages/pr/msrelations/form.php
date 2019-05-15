@@ -151,7 +151,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="PostalCode_err" class="text-danger"></div>
 						</div>
 
-					<label for="select-countryname" class="col-md-2 control-label"><?=lang("Country ID")?></label>
+					<label for="select-countryname" class="col-md-2 control-label"><?=lang("Country Name")?></label>
 						<div class="col-md-4">
 							<select id="select-countryname" class="form-control" name="CountryId">
 								<option value="0">-- <?=lang("select")?> --</option>
@@ -161,7 +161,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="select-provincename" class="col-md-2 control-label"><?=lang("Province ID")?></label>
+					<label for="select-provincename" class="col-md-2 control-label"><?=lang("Province Name")?></label>
 						<div class="col-md-4">
 							<select id="select-provincename" class="form-control" name="ProvinceId">
 								<option value="0">-- <?=lang("select")?> --</option>
@@ -169,7 +169,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="ProvinceName_err" class="text-danger"></div>
 						</div>
 
-					<label for="select-districtname" class="col-md-2 control-label"><?=lang("District ID")?></label>
+					<label for="select-districtname" class="col-md-2 control-label"><?=lang("District Name")?></label>
 						<div class="col-md-4">
 							<select id="select-districtname" class="form-control" name="DistrictId">
 								<option value="0">-- <?=lang("select")?> --</option>
@@ -179,7 +179,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="select-subdistrictname" class="col-md-2 control-label"><?=lang("Sub District ID")?></label>
+					<label for="select-subdistrictname" class="col-md-2 control-label"><?=lang("Sub District Name")?></label>
 						<div class="col-md-4">
 							<select id="select-subdistrictname" class="form-control" name="SubDistrictId">
 								<option value="0">-- <?=lang("select")?> --</option>
@@ -188,7 +188,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 
-					<div class="form-group">
+					<div class="form-group relation-info">
 					<label for="select-custpricinggroupname" class="col-md-2 control-label"><?=lang("CustPricingGroup Name")?></label>
 						<div class="col-md-10">
 							<select id="select-custpricinggroupname" class="form-control" name="CustPricingGroupId">
@@ -215,7 +215,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<textarea class="form-control" id="RelationNotes" name="RelationNotes"></textarea>
 								<div id="RelationNotes_err" class="text-danger"></div>
 							</div>
-						<button id="btn-add-select-relationnotes" type="button" class="btn btn-default" ><?=lang("Add")?></button>
+						<button id="btn-add-RelationNotes" type="button" class="btn btn-add" ><?=lang("Add")?></button>
 					</div>
 
                 </div>
@@ -306,7 +306,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#select-relationgroupid").select2({
 			width: '100%',
-			minimumInputLength: 3,
 			tokenSeparators: [",", " "],
 			ajax: {
 				url: '<?=site_url()?>pr/msrelations/get_msrelationgroups',
@@ -456,7 +455,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#select-custpricinggroupname").select2({
 			width: '100%',
-			tokenSeparators: [",", " "],
 			ajax: {
 				url: '<?=site_url()?>pr/msrelations/get_mscustpricinggroups',
 				dataType: 'json',
@@ -466,7 +464,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data = data.data;
 					$.each(data,function(index,value){
 						items.push({
-							"id" : value.CustPricingGroupid,
+							"id" : value.CustPricingGroupId,
 							"text" : value.CustPricingGroupName
 						});
 					});
@@ -477,6 +475,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				},
 				cache: true,
 			}
+		});
+
+		$("#RelationType").change(function(event){
+			event.preventDefault();
+			$(".relation-info").show();
+
+			$("#RelationType").each(function(index){				
+				if ($(this).val() >= "2"){
+					$(".relation-info").hide();
+				}
+			});
 		});
 
 		$("#select-relationnotes").select2({
@@ -505,19 +514,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 		
 		var newline = "\r\n";
+		var data = "";
 		
-		// Hasil masih double
 		$('#select-relationnotes').on('select2:select', function (e) {
-			//console.log(selected_relationnotes);
-			var data = e.params.data;
+			data = e.params.data;
 			//var selected_relationnotes = data;
+		});
 
-			$("#btn-add-select-relationnotes").click(function(event){
-				event.preventDefault();
-				var sstr = $("#RelationNotes").val();
-				$("#RelationNotes").val(sstr + data.text + "\r\n");
-				//console.clear();
-			});
+		$("#btn-add-RelationNotes").click(function(event){
+			event.preventDefault();
+			var sstr = $("#RelationNotes").val();alert (sstr);
+			$("#RelationNotes").val(sstr + data.text + "\r\n");
+			//console.log(selected_relationnotes);
 		});
 	});
 
@@ -550,10 +558,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				console.log(relationType);
 				$("#RelationType").val(relationType).trigger('change');
 
-				// masih salah
 				$("#BusinessType").each(function(index){				
 					if ($(this).val() == "C"){
 						$(".personal-info").hide();
+					} 
+				});
+
+				$("#RelationType").each(function(index){				
+					if ($(this).val() == "1"){
+						$(".relation-info").show();
 					} 
 				});
 
@@ -578,7 +591,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var newOption = new Option(resp.ms_relations.SubDistrictName, resp.ms_relations.SubDistrictId, true, true);
 				$('#select-subdistrictname').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.CustPricingGroupName, resp.ms_relations.CustPricingGroupid, true, true);
+				var newOption = new Option(resp.ms_relations.CustPricingGroupName, resp.ms_relations.CustPricingGroupId, true, true);
 				$('#select-custpricinggroupname').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.Notes, true);
