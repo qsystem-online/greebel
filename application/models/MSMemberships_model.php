@@ -66,4 +66,9 @@ class MSMemberShips_model extends MY_Model {
 
         return $rules;
     }
+
+    public function get_Memberships(){
+        $query = $this->db->get('msmemberships');
+		return $query->result_array();
+    }
 }

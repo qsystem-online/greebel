@@ -64,4 +64,9 @@ class MSRelations_model extends MY_Model {
 
         return $rules;
     }
+
+    public function get_Relations(){
+        $query = $this->db->get('msrelations');
+		return $query->result_array();
+    }
 }

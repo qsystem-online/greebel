@@ -351,4 +351,22 @@ class MSRelations extends MY_Controller{
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
 	}
+
+	public function report_relations(){
+        $this->load->library('pdf');
+        //$customPaper = array(0,0,381.89,595.28);
+        //$this->pdf->setPaper($customPaper, 'landscape');
+        $this->pdf->setPaper('A4', 'portrait');
+		//$this->pdf->setPaper('A4', 'landscape');
+		
+		$this->load->model("msrelations_model");
+		$listRelations = $this->msrelations_model->get_Relations();
+        $data = [
+			"datas" => $listRelations
+		];
+			
+        $this->pdf->load_view('report/relations_pdf', $data);
+        $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
+		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+    }
 }

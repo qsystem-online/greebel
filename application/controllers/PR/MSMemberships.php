@@ -190,7 +190,7 @@ class MSMemberships extends MY_Controller{
     
   public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("(select a.*,b.RelationName from msmemberships a inner join msrelations b on a.RelationId = b.RelationId) a");
+		$this->datatables->setTableName("(select a.*,b.RelationName from msmemberships a inner join msmemberships b on a.RelationId = b.RelationId) a");
 
 		$selectFields = "a.RecId,a.MemberNo,a.RelationName,a.MemberGroupId,a.NameOnCard,a.ExpiryDate,a.MemberDiscount,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
@@ -225,9 +225,9 @@ class MSMemberships extends MY_Controller{
 		$this->json_output($data);
   }
     
-  public function get_relations(){
+  public function get_Memberships(){
 		$term = $this->input->get("term");
-		$ssql = "select RelationId, RelationName from msrelations where RelationName like ?";
+		$ssql = "select RelationId, RelationName from msmemberships where RelationName like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -249,4 +249,22 @@ class MSMemberships extends MY_Controller{
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
 	}
+
+	public function report_memberships(){
+        $this->load->library('pdf');
+        //$customPaper = array(0,0,381.89,595.28);
+        //$this->pdf->setPaper($customPaper, 'landscape');
+        $this->pdf->setPaper('A4', 'portrait');
+		//$this->pdf->setPaper('A4', 'landscape');
+		
+		$this->load->model("msmemberships_model");
+		$listMemberships = $this->msmemberships_model->get_Memberships();
+        $data = [
+			"datas" => $listMemberships
+		];
+			
+        $this->pdf->load_view('report/memberships_pdf', $data);
+        $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
+		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+    }
 }

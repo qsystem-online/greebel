@@ -99,7 +99,8 @@ switch (ENVIRONMENT)
  * Set the path if it is not in the same directory as this file.
  */
 	//$system_path = 'E:\codeigniter\CI3.1.10\system';
-	$system_path = 'D:\CI3.1.10\system';
+
+	$system_path = 'C:\CI3.1.10\system';
 
 /*
  *---------------------------------------------------------------
