@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Report Master MemberShips</title>
+  <title>Report Master Users</title>
   <style type="text/css">
 
 @page {
@@ -36,8 +36,8 @@
     
     body{
         margin-top: 2cm;
-        margin-left: 1cm;
-        margin-right: 1cm;
+        margin-left: 2cm;
+        margin-right: 2cm;
         margin-bottom: 2cm;
     }
 
@@ -60,14 +60,6 @@
  
     .normal{
       width: auto;
-    }
-
-    .gen{
-        width: 60px;
-    }
-
-    .uid{
-        width: 75px;
     }
 
     table{
@@ -115,7 +107,7 @@
         </script>
     </footer>
 
-  <h3 text-align= "center">Table Master MemberShips</h3>
+  <h3 text-align= "center">Table Master Users</h3>
   <link href="style.css" type="text/css" rel="stylesheet" />
 	<table cellspacing='0'>
 
@@ -124,13 +116,11 @@
 	  	<thead>
 	  		<tr>
 	  			<th class="short">#</th>
-	  			<th class="uid">Rec ID</th>
-	  			<th class="normal">Member No</th>
-	  			<th class="gen">Relation Name</th>
-                <th class="normal">Member Group ID</th>
-                <th class="normal">Name On Card</th>
-                <th class="normal">Expiry Date</th>
-                <th class="normal">Member Discount</th>
+	  			<th class="normal">User ID</th>
+	  			<th class="normal">Full Name</th>
+	  			<th class="normal">Gender</th>
+                <th class="normal">Birthdate</th>
+                <th class="normal">Birthplace</th>
 	  		</tr>
 	  	</thead>
 	  	<tbody>
@@ -138,13 +128,11 @@
         <?php foreach($datas as $data): ?>
           <tr>
             <td><?php echo $no; ?></td>
-            <td><?php echo $data['RecId']; ?></td>
-            <td><?php echo $data['MemberNo']; ?></td>
-            <td><?php echo $data['RelationName']; ?></td>
-            <td><?php echo $data['MemberGroupId']; ?></td>
-            <td><?php echo $data['NameOnCard']; ?></td>
-            <td><?php echo $data['ExpiryDate']; ?></td>
-            <td><?php echo $data['MemberDiscount']; ?></td>
+            <td><?php echo $data['fin_user_id']; ?></td>
+            <td><?php echo $data['fst_fullname']; ?></td>
+            <td><?php echo $data['fst_gender']; ?></td>
+            <td><?php echo $data['fdt_birthdate']; ?></td>
+            <td><?php echo $data['fst_birthplace']; ?></td>
           </tr>
         <?php $no++; ?>
         <?php endforeach; ?>

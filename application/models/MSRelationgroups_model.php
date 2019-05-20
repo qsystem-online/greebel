@@ -35,4 +35,9 @@ class MSRelationgroups_model extends MY_Model {
 
         return $rules;
     }
+
+    public function get_RelationGroups(){
+        $query = $this->db->get('msrelationgroups');
+		return $query->result_array();
+    }
 }

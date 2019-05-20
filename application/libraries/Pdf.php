@@ -18,7 +18,7 @@ class Pdf extends Dompdf{
        // $this->set_option("isPhpEnabled", true);
        $this->set_option("isRemoteEnabled", true);
        
-
+        $this->filename = "users.pdf";
         $this->filename = "relations.pdf";
         $this->filename = "relationgroups.pdf";
         $this->filename = "custpricinggroups.pdf";

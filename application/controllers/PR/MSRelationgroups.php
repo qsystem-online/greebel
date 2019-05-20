@@ -223,4 +223,22 @@ class MSRelationgroups extends MY_Controller{
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
 	}
+
+	public function report_relationgroups(){
+        $this->load->library('pdf');
+        //$customPaper = array(0,0,381.89,595.28);
+        //$this->pdf->setPaper($customPaper, 'landscape');
+        $this->pdf->setPaper('A4', 'portrait');
+		//$this->pdf->setPaper('A4', 'landscape');
+		
+		$this->load->model("msrelationgroups_model");
+		$listRelationGroups = $this->msrelationgroups_model->get_RelationGroups();
+        $data = [
+			"datas" => $listRelationGroups
+		];
+			
+        $this->pdf->load_view('report/relationgroups_pdf', $data);
+        $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
+		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+    }
 }

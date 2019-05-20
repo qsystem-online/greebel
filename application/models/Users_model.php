@@ -105,6 +105,11 @@ class Users_model extends MY_Model {
         $qr = $this->db->query($ssql,[]);		
         $rs = $qr->result();		
 		return $rs;
-    }
+	}
+	
+	public function get_Users(){
+		$query = $this->db->get('users');
+		return $query->result_array();
+	}
 
 }
