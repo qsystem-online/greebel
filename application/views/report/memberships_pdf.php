@@ -36,8 +36,8 @@
     
     body{
         margin-top: 2cm;
-        margin-left: 1cm;
-        margin-right: 1cm;
+        margin-left: 2cm;
+        margin-right: 2cm;
         margin-bottom: 2cm;
     }
 
@@ -123,10 +123,10 @@
 	  			<th class="id">Rec ID</th>
 	  			<th class="memno">Member No</th>
 	  			<th class="normal">Relation Name</th>
-                <th class="normal">Member Group ID</th>
-                <th class="normal">Name On Card</th>
-                <th class="normal">Expiry Date</th>
-                <th class="normal">Member Discount</th>
+          <th class="normal">Member Group ID</th>
+          <th class="normal">Name On Card</th>
+          <th class="normal">Expiry Date</th>
+          <th class="normal">Member Discount</th>
 	  		</tr>
 	  	</thead>
 	  	<tbody>

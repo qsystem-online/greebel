@@ -68,7 +68,7 @@ class MSMemberShips_model extends MY_Model {
     }
 
     public function get_Memberships(){
-        $query = $this->db->get('msmemberships');
+        $query = $this->db->get("(select a.*,b.RelationName from msmemberships a inner join msrelations b on a.RelationId = b.RelationId) a");
 		return $query->result_array();
     }
 }

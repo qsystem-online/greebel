@@ -13,7 +13,7 @@ class MSMemberships extends MY_Controller{
 		$this->lizt();
 	}
 
-  public function lizt(){
+  	public function lizt(){
 		$this->load->library('menus');
 		$this->list['page_name'] = "Master Memberships";
 		$this->list['list_name'] = "Master Memberships List";
@@ -55,9 +55,9 @@ class MSMemberships extends MY_Controller{
 		$this->data['PAGE_CONTENT'] = $page_content;
 		$this->data['MAIN_FOOTER'] = $main_footer;
 		$this->parser->parse('template/main', $this->data);
-  }
+  	}
     
-  private function openForm($mode = "ADD", $RecId = 0){
+  	private function openForm($mode = "ADD", $RecId = 0){
 		$this->load->library("menus");
 
 		if ($this->input->post("submit") != "") {
@@ -81,114 +81,114 @@ class MSMemberships extends MY_Controller{
 		$this->data["MAIN_FOOTER"] = $main_footer;
 		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
 		$this->parser->parse('template/main', $this->data);
-  }
+  	}
     
-  public function add(){
+  	public function add(){
 		$this->openForm("ADD", 0);
 	}
 
 	public function Edit($RecId){
 		$this->openForm("EDIT", $RecId);
-  }
+  	}
     
-  public function ajx_add_save(){
-		$this->load->model('MSMemberShips_model');
-		$this->form_validation->set_rules($this->MSMemberShips_model->getRules("ADD", 0));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+	public function ajx_add_save(){
+			$this->load->model('MSMemberShips_model');
+			$this->form_validation->set_rules($this->MSMemberShips_model->getRules("ADD", 0));
+			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
-		if ($this->form_validation->run() == FALSE) {
-			//print_r($this->form_validation->error_array());
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Error Validation Forms";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
+			if ($this->form_validation->run() == FALSE) {
+				//print_r($this->form_validation->error_array());
+				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+				$this->ajxResp["message"] = "Error Validation Forms";
+				$this->ajxResp["data"] = $this->form_validation->error_array();
+				$this->json_output();
+				return;
+			}
+
+			$data = [
+				"MemberNo" => $this->input->post("MemberNo"),
+				"RelationId" => $this->input->post("RelationId"),
+				"MemberGroupId" => $this->input->post("MemberGroupId"),
+				"NameOnCard" =>$this->input->post("NameOnCard"),
+				"ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
+				"MemberDiscount" =>$this->input->post("MemberDiscount"),
+				"fst_active" => 'A'
+			];
+
+			$this->db->trans_start();
+			$insertId = $this->MSMemberShips_model->insert($data);
+			$dbError  = $this->db->error();
+			if ($dbError["code"] != 0) {
+				$this->ajxResp["status"] = "DB_FAILED";
+				$this->ajxResp["message"] = "Insert Failed";
+				$this->ajxResp["data"] = $this->db->error();
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
+
+			$this->db->trans_complete();
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $insertId;
 			$this->json_output();
-			return;
-		}
+	}
+		
+	public function ajx_edit_save(){
+			$this->load->model('MSMemberShips_model');
+			$RecId = $this->input->post("RecId");
+			$data = $this->MSMemberShips_model->getDataById($RecId);
+			$msmemberships = $data["ms_memberships"];
+			if (!$msmemberships) {
+				$this->ajxResp["status"] = "DATA_NOT_FOUND";
+				$this->ajxResp["message"] = "Data id $RecId Not Found ";
+				$this->ajxResp["data"] = [];
+				$this->json_output();
+				return;
+			}
 
-		$data = [
-			"MemberNo" => $this->input->post("MemberNo"),
-			"RelationId" => $this->input->post("RelationId"),
-			"MemberGroupId" => $this->input->post("MemberGroupId"),
-			"NameOnCard" =>$this->input->post("NameOnCard"),
-			"ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
-			"MemberDiscount" =>$this->input->post("MemberDiscount"),
-			"fst_active" => 'A'
-		];
+			$this->form_validation->set_rules($this->MSMemberShips_model->getRules("EDIT", $RecId));
+			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+			if ($this->form_validation->run() == FALSE) {
+				//print_r($this->form_validation->error_array());
+				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+				$this->ajxResp["message"] = "Error Validation Forms";
+				$this->ajxResp["data"] = $this->form_validation->error_array();
+				$this->json_output();
+				return;
+			}
 
-		$this->db->trans_start();
-		$insertId = $this->MSMemberShips_model->insert($data);
-		$dbError  = $this->db->error();
-		if ($dbError["code"] != 0) {
-			$this->ajxResp["status"] = "DB_FAILED";
-			$this->ajxResp["message"] = "Insert Failed";
-			$this->ajxResp["data"] = $this->db->error();
+			$data = [
+				"RecId" => $RecId,
+				"MemberNo" => $this->input->post("MemberNo"),
+				"RelationId" => $this->input->post("RelationId"),
+				"MemberGroupId" => $this->input->post("MemberGroupId"),
+				"NameOnCard" =>$this->input->post("NameOnCard"),
+				"ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
+				"MemberDiscount" =>$this->input->post("MemberDiscount"),
+				"fst_active" => 'A'
+			];
+
+			$this->db->trans_start();
+			$this->MSMemberShips_model->update($data);
+			$dbError  = $this->db->error();
+			if ($dbError["code"] != 0) {
+				$this->ajxResp["status"] = "DB_FAILED";
+				$this->ajxResp["message"] = "Insert Failed";
+				$this->ajxResp["data"] = $this->db->error();
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
+
+			$this->db->trans_complete();
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $RecId;
 			$this->json_output();
-			$this->db->trans_rollback();
-			return;
-		}
-
-		$this->db->trans_complete();
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $insertId;
-		$this->json_output();
-  }
+	}
     
-  public function ajx_edit_save(){
-		$this->load->model('MSMemberShips_model');
-		$RecId = $this->input->post("RecId");
-		$data = $this->MSMemberShips_model->getDataById($RecId);
-		$msmemberships = $data["ms_memberships"];
-		if (!$msmemberships) {
-			$this->ajxResp["status"] = "DATA_NOT_FOUND";
-			$this->ajxResp["message"] = "Data id $RecId Not Found ";
-			$this->ajxResp["data"] = [];
-			$this->json_output();
-			return;
-		}
-
-		$this->form_validation->set_rules($this->MSMemberShips_model->getRules("EDIT", $RecId));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		if ($this->form_validation->run() == FALSE) {
-			//print_r($this->form_validation->error_array());
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Error Validation Forms";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->json_output();
-			return;
-		}
-
-		$data = [
-			"RecId" => $RecId,
-			"MemberNo" => $this->input->post("MemberNo"),
-			"RelationId" => $this->input->post("RelationId"),
-			"MemberGroupId" => $this->input->post("MemberGroupId"),
-			"NameOnCard" =>$this->input->post("NameOnCard"),
-			"ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
-			"MemberDiscount" =>$this->input->post("MemberDiscount"),
-			"fst_active" => 'A'
-		];
-
-		$this->db->trans_start();
-		$this->MSMemberShips_model->update($data);
-		$dbError  = $this->db->error();
-		if ($dbError["code"] != 0) {
-			$this->ajxResp["status"] = "DB_FAILED";
-			$this->ajxResp["message"] = "Insert Failed";
-			$this->ajxResp["data"] = $this->db->error();
-			$this->json_output();
-			$this->db->trans_rollback();
-			return;
-		}
-
-		$this->db->trans_complete();
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $RecId;
-		$this->json_output();
-  }
-    
-  public function fetch_list_data(){
+  	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("(select a.*,b.RelationName from msmemberships a inner join msrelations b on a.RelationId = b.RelationId) a");
 
@@ -216,16 +216,16 @@ class MSMemberships extends MY_Controller{
 
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
-  }
+  	}
     
-  public function fetch_data($RecId){
+  	public function fetch_data($RecId){
 		$this->load->model("MSMemberShips_model");
 		$data = $this->MSMemberShips_model->getDataById($RecId);
 		
 		$this->json_output($data);
-  }
+  	}
     
-  public function get_relations(){
+  	public function get_relations(){
 		$term = $this->input->get("term");
 		$ssql = "select RelationId, RelationName from msmemberships where RelationName like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
