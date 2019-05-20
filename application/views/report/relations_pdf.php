@@ -36,8 +36,8 @@
     
     body{
         margin-top: 2cm;
-        margin-left: 1cm;
-        margin-right: 1cm;
+        margin-left: 2cm;
+        margin-right: 2cm;
         margin-bottom: 2cm;
     }
 
@@ -53,9 +53,13 @@
       table-layout: auto;
       border-radius: 10px;
     }
+
+    .id{
+      width: 80px;
+    }
  
     .short{
-      width: 35px;
+      width: 40px;
     }
  
     .normal{
@@ -116,7 +120,7 @@
 	  	<thead>
 	  		<tr>
 	  			<th class="short">#</th>
-	  			<th class="normal">Relation ID</th>
+	  			<th class="id">Relation ID</th>
 	  			<th class="normal">Relation Name</th>
 	  			<th class="normal">Relation Type</th>
 	  		</tr>
@@ -124,6 +128,56 @@
 	  	<tbody>
         <?php $no=0;$no<=100;$no++; ?>
         <?php foreach($datas as $data): ?>
+        <?php
+            switch ($data["RelationType"]) {
+              case '1';
+                $relationType = "Customer";
+                break;
+              case '2';
+                $relationType = "Supplier/Vendor";
+                break;
+              case '3';
+                $relationType = "Expedisi";
+                break;
+              case '1,2';
+                $relationType = "Customer, Supplier/Vendor";
+                break;
+              case '1,3';
+                $relationType = "Customer, Expedisi";
+                break;
+              case '2,1';
+                $relationType = "Supplier/Vendor, Customer";
+                break;
+              case '2,3';
+                $relationType = "Supplier/Vendor, Expedisi";
+                break;
+              case '3,1';
+                $relationType = "Expedisi, Customer";
+                break;
+              case '3,2';
+                $relationType = "Expedisi, Supplier/Vendor";
+                break;
+              case '1,2,3';
+                $relationType = "Customer, Supplier/Vendor, Expedisi";
+                break;
+              case '1,3,2';
+                $relationType = "Customer, Expedisi, Supplier/Vendor";
+                break;
+              case '2,1,3';
+                $relationType = "Supplier/Vendor, Customer, Expedisi";
+                break;
+              case '2,3,1';
+                $relationType = "Supplier/Vendor, Expedisi, Customer";
+                break;
+              case '3,1,2';
+                $relationType = "Expedisi, Customer, Supplier/Vendor";
+                break;
+              case '3,2,1';
+                $relationType = "Expedisi, Supplier/Vendor, Customer";
+                break;
+            }
+            $data['RelationType'] = $relationType;
+        ?>
           <tr>
             <td><?php echo $no; ?></td>
             <td><?php echo $data['RelationId']; ?></td>

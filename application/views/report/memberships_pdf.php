@@ -136,7 +136,7 @@
                 <td><?php echo $no; ?></td>
                 <td><?php echo $data['RecId']; ?></td>
                 <td><?php echo $data['MemberNo']; ?></td>
-                <td><?php echo $data['RelationId']; ?></td>
+                <td><?php echo $data['RelationName']; ?></td>
                 <td><?php echo $data['MemberGroupId']; ?></td>
                 <td><?php echo $data['NameOnCard']; ?></td>
                 <td><?php echo $data['ExpiryDate']; ?></td>
