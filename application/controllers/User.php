@@ -130,20 +130,6 @@ class User extends MY_Controller {
 			return;
 		}
 
-        //Save Group
-        $this->load->model("user_group_model");		
-		$arr_group_id = $this->input->post("fin_group_id");
-		if ($arr_group_id){
-			foreach ($arr_group_id as $group_id) {
-				$data = [
-					"fin_group_id"=> $group_id,
-					"fin_user_id"=> $insertId,
-					"fst_active"=> "A"
-				];
-				$this->user_group_model->insert($data);
-			}
-		}
-
         //Save File
 		if(!empty($_FILES['fst_avatar']['tmp_name'])) {
 			$config['upload_path']          = './assets/app/users/avatar';
@@ -229,21 +215,6 @@ class User extends MY_Controller {
 			$this->json_output();
 			$this->db->trans_rollback();
 			return;
-		}
-
-        //Save Group
-		$this->load->model("user_group_model");
-		$this->user_group_model->deleteByUserId($fin_user_id);
-		$arr_group_id = $this->input->post("fin_group_id");
-		if ($arr_group_id){
-			foreach ($arr_group_id as $group_id) {
-				$data = [
-					"fin_group_id"=> $group_id,
-					"fin_user_id"=> $fin_user_id,
-					"fst_active"=> "A"
-				];
-				$this->user_group_model->insert($data);
-			}
 		}
 
 		//Save File
@@ -397,8 +368,8 @@ class User extends MY_Controller {
         $this->load->library('pdf');
         //$customPaper = array(0,0,381.89,595.28);
         //$this->pdf->setPaper($customPaper, 'landscape');
-        $this->pdf->setPaper('A4', 'portrait');
-		//$this->pdf->setPaper('A4', 'landscape');
+        //$this->pdf->setPaper('A4', 'portrait');
+		$this->pdf->setPaper('A4', 'landscape');
 		
 		$this->load->model("users_model");
 		$listUser = $this->users_model->get_Users();

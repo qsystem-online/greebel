@@ -197,10 +197,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.alert({
 							title: 'Message',
 							content: resp.message,
-							onDestroy: function(){
-								//alert('the user clicked yes');
-								window.location.href = "<?= site_url() ?>user/lizt";
-								return;
+							buttons : {
+								OK : function(){
+									if(resp.status == "SUCCESS"){
+										window.location.href = "<?= site_url() ?>user/lizt";
+										return;
+									}
+								},
 							}
 						});
 					}

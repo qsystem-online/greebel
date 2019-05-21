@@ -119,8 +119,8 @@
 	  			<th class="normal">User ID</th>
 	  			<th class="normal">Full Name</th>
 	  			<th class="normal">Gender</th>
-                <th class="normal">Birthdate</th>
-                <th class="normal">Birthplace</th>
+          <th class="normal">Birthdate</th>
+          <th class="normal">Birthplace</th>
 	  		</tr>
 	  	</thead>
 	  	<tbody>
