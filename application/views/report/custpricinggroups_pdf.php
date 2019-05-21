@@ -116,10 +116,10 @@
 	  	<thead>
 	  		<tr>
 	  			<th class="short">#</th>
-	  			<th class="normal">Pricing Groups ID</th>
+	  			<th class="normal">Pricing Group ID</th>
 	  			<th class="normal">Pricing Group Name</th>
 	  			<th class="normal">Percent</th>
-                <th class="normal">Amount</th>
+          <th class="normal">Amount</th>
 	  		</tr>
 	  	</thead>
 	  	<tbody>

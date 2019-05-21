@@ -132,16 +132,16 @@
 	  	<tbody>
         <?php $no=0;$no<=100;$no++; ?>
         <?php foreach($datas as $data): ?>
-            <tr>
-                <td><?php echo $no; ?></td>
-                <td><?php echo $data['RecId']; ?></td>
-                <td><?php echo $data['MemberNo']; ?></td>
-                <td><?php echo $data['RelationName']; ?></td>
-                <td><?php echo $data['MemberGroupId']; ?></td>
-                <td><?php echo $data['NameOnCard']; ?></td>
-                <td><?php echo $data['ExpiryDate']; ?></td>
-                <td><?php echo $data['MemberDiscount']; ?></td>
-            </tr>
+          <tr>
+            <td><?php echo $no; ?></td>
+            <td><?php echo $data['RecId']; ?></td>
+            <td><?php echo $data['MemberNo']; ?></td>
+            <td><?php echo $data['RelationName']; ?></td>
+            <td><?php echo $data['MemberGroupId']; ?></td>
+            <td><?php echo $data['NameOnCard']; ?></td>
+            <td><?php echo $data['ExpiryDate']; ?></td>
+            <td><?php echo $data['MemberDiscount']; ?></td>
+          </tr>
         <?php $no++; ?>
         <?php endforeach; ?>
 	  	</tbody>
