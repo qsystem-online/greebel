@@ -227,7 +227,7 @@ class MSMemberships extends MY_Controller{
     
   	public function get_relations(){
 		$term = $this->input->get("term");
-		$ssql = "select RelationId, RelationName from msmemberships where RelationName like ?";
+		$ssql = "select RelationId, RelationName from msrelations where RelationName like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
