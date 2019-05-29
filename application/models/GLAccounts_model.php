@@ -1,55 +1,53 @@
 <?php
-if(!defined('BASEPATH')) exit('No direct script access allowed');
-class GLAccounts_model extends MY_Model {
+if (!defined('BASEPATH')) exit('No direct script access allowed');
+class GLAccounts_model extends MY_Model
+{
     public $tableName = "glaccounts";
     public $pkey = "GLAccountCode";
 
-    public function __construct(){
-        parent:: __construct();
+    public function __construct()
+    {
+        parent::__construct();
     }
 
-    public function getDataById($GLAccountCode ){
-        $ssql = "select * from " . $this->tableName ." where GLAccountCode = ? and fst_active = 'A'";
-		$qr = $this->db->query($ssql,[$GLAccountCode]);
+    public function getDataById($GLAccountCode)
+    {
+        $ssql = "select a.*,b.CurrName, c.GLAccountName as GLParentName, d.GLAccountMainGroupName , d.GLAccountMainPrefix from " . $this->tableName . " a 
+        left join mscurrencies b on a.CurrCode = b.CurrCode 
+        left join " . $this->tableName . " c on a.ParentGLAccountCode = c.GLAccountCode
+        left join glaccountmaingroups d on a.GLAccountMainGroupId = d.GLAccountMainGroupId
+        where a.GLAccountCode = ? and a.fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$GLAccountCode]);
         $rw = $qr->row();
-        
-		$data = [
-            "" => $rw
-		];
 
-		return $data;
-	}
+        $data = [
+            "glAccounts" => $rw
+        ];
 
-    public function getRules($mode="ADD",$id=0){
+        return $data;
+    }
+
+    public function getRules($mode = "ADD", $id = 0)
+    {
         $rules = [];
 
         $rules[] = [
             'field' => 'GLAccountCode',
             'label' => 'GL Account Code',
-            'rules' => 'required|min_length[5]',
+            'rules' => 'required|min_length[3]',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
+                'min_length' => 'Panjang %s paling sedikit 3 character'
             )
         ];
 
         $rules[] = [
             'field' => 'GLAccountName',
             'label' => 'GL Account Name',
-            'rules' => 'required|min_length[5]',
+            'rules' => 'required|min_length[3]',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
-            )
-        ];
-
-        $rules[] = [
-            'field' => 'ParentGLAccountCode',
-            'label' => 'Parent GL Account Code',
-            'rules' => 'required|min_length[5]',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
+                'min_length' => 'Panjang %s paling sedikit 3 character'
             )
         ];
 

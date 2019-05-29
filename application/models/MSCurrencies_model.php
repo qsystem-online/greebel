@@ -1,26 +1,30 @@
 <?php
-if(!defined('BASEPATH')) exit('No direct script access allowed');
-class MSCurrencies_model extends MY_Model {
+if (!defined('BASEPATH')) exit('No direct script access allowed');
+class MSCurrencies_model extends MY_Model
+{
     public $tableName = "mscurrencies";
     public $pkey = "CurrCode";
 
-    public function __construct(){
-        parent:: __construct();
+    public function __construct()
+    {
+        parent::__construct();
     }
 
-    public function getDataById($CurrCode ){
-        $ssql = "select * from " . $this->tableName ." where CurrCode = ? and fst_active = 'A'";
-		$qr = $this->db->query($ssql,[$CurrCode]);
+    public function getDataById($CurrCode)
+    {
+        $ssql = "select * from " . $this->tableName . " where CurrCode = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$CurrCode]);
         $rw = $qr->row();
-        
-		$data = [
+
+        $data = [
             "" => $rw
-		];
+        ];
 
-		return $data;
-	}
+        return $data;
+    }
 
-    public function getRules($mode="ADD",$id=0){
+    public function getRules($mode = "ADD", $id = 0)
+    {
         $rules = [];
 
         $rules[] = [
@@ -43,5 +47,15 @@ class MSCurrencies_model extends MY_Model {
         ];
 
         return $rules;
+    }
+
+    public function get_CurrCode()
+    {
+        $term = $this->input->get("term");
+        $ssql = "select * from " . $this->tableName . " where fst_active = 'A'";
+        $qr = $this->db->query($ssql, ['%' . $term . '%']);
+        $rs = $qr->result();
+
+        $this->json_output($rs);
     }
 }
