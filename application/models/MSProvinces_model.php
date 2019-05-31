@@ -1,5 +1,6 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
+
 class MSProvinces_model extends MY_Model {
     public $tableName = "msprovinces";
     public $pkey = "ProvinceId";
@@ -9,12 +10,12 @@ class MSProvinces_model extends MY_Model {
     }
 
     public function getDataById($ProvinceId ){
-        $ssql = "select * from " . $this->tableName ." where ProvinceId = ? and fst_active = 'A'";
+        $ssql = "select ProvinceId,ProvinceName from " . $this->tableName ." where ProvinceId = ? and fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$ProvinceId]);
-        $rw = $qr->row();
+        $rwMSProvinces = $qr->row();
         
 		$data = [
-            "" => $rw
+            "msprovinces" => $rwMSProvinces
 		];
 
 		return $data;

@@ -54,4 +54,9 @@ class MSCustpricinggroups_model extends MY_Model {
 
         return $rules;
     }
+
+    public function get_CustPricingGroups(){
+        $query = $this->db->get('mscustpricinggroups');
+		return $query->result_array();
+    }
 }

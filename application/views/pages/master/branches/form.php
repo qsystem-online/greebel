@@ -45,10 +45,45 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_address" class="col-sm-2 control-label"><?= lang("Address") ?> * </label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="fst_address" placeholder="<?= lang("Address") ?>" name="fst_address">
+                            <label for="fst_address" class="col-md-2 control-label"><?= lang("Address") ?></label>
+                            <div class="col-md-10">
+                                <textarea class="form-control" id="fst_address" placeholder="<?= lang("Address") ?>" name="fst_address"></textarea>
                                 <div id="fst_address_err" class="text-danger"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="select-countryname" class="col-md-2 control-label"><?= lang("Country Name") ?></label>
+                            <div class="col-md-4">
+                                <select id="select-countryname" class="form-control" name="fin_country_id">
+                                    <option value="0">-- <?= lang("select") ?> --</option>
+                                </select>
+                                <div id="fin_country_id_err" class="text-danger"></div>
+                            </div>
+
+                            <label for="select-provincename" class="col-md-2 control-label"><?= lang("Province Name") ?></label>
+                            <div class="col-md-4">
+                                <select id="select-provincename" class="form-control" name="fin_province_id">
+                                    <option value="0">-- <?= lang("select") ?> --</option>
+                                </select>
+                                <div id="fin_province_id_err" class="text-danger"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="select-districtname" class="col-md-2 control-label"><?= lang("District Name") ?></label>
+                            <div class="col-md-4">
+                                <select id="select-districtname" class="form-control" name="fin_district_id">
+                                    <option value="0">-- <?= lang("select") ?> --</option>
+                                </select>
+                                <div id="fin_district_id_err" class="text-danger"></div>
+                            </div>
+
+                            <label for="select-subdistrictname" class="col-md-2 control-label"><?= lang("Sub District Name") ?></label>
+                            <div class="col-md-4">
+                                <select id="select-subdistrictname" class="form-control" name="fin_subdistrict_id">
+                                    <option value="0">-- <?= lang("select") ?> --</option>
+                                </select>
+                                <div id="fin_subdistrict_id_err" class="text-danger"></div>
                             </div>
                         </div>
 
@@ -59,38 +94,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fst_postalcode_err" class="text-danger"></div>
                             </div>
 
-                            <label for="select-CountryId" class="col-md-2 control-label"><?= lang("Country ID") ?></label>
-                            <div class="col-md-4">
-                                <select id="select-CountryId" class="form-control select2" name="fin_country_id"></select>
-                                <div id="fin_country_id_err" class="text-danger"></div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="select-ProvinceId" class="col-md-2 control-label"><?= lang("Province ID") ?></label>
-                            <div class="col-md-4">
-                                <select id="select-ProvinceId" class="form-control select2 " name="fin_province_id"></select>
-                                <div id="fin_province_id_err" class="text-danger"></div>
-                            </div>
-
-                            <label for="select-DistrictId" class="col-md-2 control-label"><?= lang("District ID") ?></label>
-                            <div class="col-md-4">
-                                <select id="select-DistrictId" class="form-control select2 " name="fin_district_id"></select>
-                                <div id="fin_district_id_err" class="text-danger"></div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="select-SubDistrictId" class="col-md-2 control-label"><?= lang("Sub District ID") ?></label>
-                            <div class="col-md-4">
-                                <select id="select-SubDistrictId" class="form-control select2 " name="fin_subdistrict_id"></select>
-                                <div id="fin_subdistrict_id_err" class="text-danger"></div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
                             <label for="fst_branch_phone" class="col-sm-2 control-label"><?= lang("Phone") ?> * </label>
-                            <div class="col-sm-10">
+                            <div class="col-sm-4">
                                 <input type="text" class="form-control" id="fst_branch_phone" placeholder="<?= lang("Phone") ?>" name="fst_branch_phone">
                                 <div id="fst_branch_phone_err" class="text-danger"></div>
                             </div>
@@ -134,9 +139,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
-                url = "<?= site_url() ?>branch/ajx_add_save";
+                url = "<?= site_url() ?>master/msbranches/ajx_add_save";
             } else {
-                url = "<?= site_url() ?>branch/ajx_edit_save";
+                url = "<?= site_url() ?>master/msbranches/ajx_edit_save";
             }
 
             //var formData = new FormData($('form')[0])
@@ -158,7 +163,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
                                         //location.reload();
-                                        window.location.href = "<?= site_url() ?>branch/lizt";
+                                        window.location.href = "<?= site_url() ?>Master/msbranches";
                                         return;
                                     }
                                 },
@@ -192,93 +197,117 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         });
 
-        $("#select-CountryId").select2({
+        $("#select-countryname").select2({
             width: '100%',
+            minimumInputLength: 3,
+            tokenSeparators: [",", " "],
             ajax: {
-                url: '<?= site_url() ?>PR/MSRelations/get_data_CountryId',
+                url: '<?= site_url() ?>pr/msrelations/get_mscountries',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
-                    data2 = [];
+                    items = [];
+                    data = data.data;
                     $.each(data, function(index, value) {
-                        data2.push({
+                        items.push({
                             "id": value.CountryId,
                             "text": value.CountryName
                         });
                     });
-                    console.log(data2);
+                    console.log(items);
                     return {
-                        result: data2
+                        results: items
                     };
                 },
                 cache: true,
             }
         });
 
-        $("#select-ProvinceId").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>pr/msrelations/get_data_ProvinceId',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value) {
-                        data2.push({
-                            "id": value.ProvinceId
+        $("#select-countryname").change(function(event) {
+            event.preventDefault();
+            $('#select-provincename').val(null).trigger('change');
+            $("#select-provincename").select2({
+                width: '100%',
+                tokenSeparators: [",", " "],
+                ajax: {
+                    url: '<?= site_url() ?>pr/msrelations/get_msprovinces/' + $("#select-countryname").val(),
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        items = [];
+                        data = data.data;
+                        $.each(data, function(index, value) {
+                            items.push({
+                                "id": value.ProvinceId,
+                                "text": value.ProvinceName
+                            });
                         });
-                    });
-                    console.log(data2);
-                    return {
-                        result: data2
-                    };
-                },
-                cache: true,
-            }
+                        console.log(items);
+                        return {
+                            results: items
+                        };
+                    },
+                    cache: true,
+                }
+            });
         });
 
-        $("#select-DistrictId").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>pr/msrelations/get_data_DistrictId',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value) {
-                        data2.push({
-                            "id": value.DistrictId
+        $("#select-provincename").change(function(event) {
+            event.preventDefault();
+            $('#select-districtname').val(null).trigger('change');
+            $("#select-districtname").select2({
+                width: '100%',
+                tokenSeparators: [",", " "],
+                ajax: {
+                    url: '<?= site_url() ?>pr/msrelations/get_msdistricts/' + $("#select-provincename").val(),
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        items = [];
+                        data = data.data;
+                        $.each(data, function(index, value) {
+                            items.push({
+                                "id": value.DistrictId,
+                                "text": value.DistrictName
+                            });
                         });
-                    });
-                    console.log(data2);
-                    return {
-                        result: data2
-                    };
-                },
-                cache: true,
-            }
+                        console.log(items);
+                        return {
+                            results: items
+                        };
+                    },
+                    cache: true,
+                }
+            });
         });
 
-        $("#select-SubDistrictId").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>pr/msrelations/get_data_SubDistrictId',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value) {
-                        data2.push({
-                            "id": value.SubDistrictId
+        $("#select-districtname").change(function(event) {
+            event.preventDefault();
+            $('#select-subdistrictname').val(null).trigger('change');
+            $("#select-subdistrictname").select2({
+                width: '100%',
+                tokenSeparators: [",", " "],
+                ajax: {
+                    url: '<?= site_url() ?>pr/msrelations/get_mssubdistricts/' + $("#select-districtname").val(),
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        data2 = [];
+                        data = data.data;
+                        $.each(data, function(index, value) {
+                            data2.push({
+                                "id": value.SubDistrictId,
+                                "text": value.SubDistrictName
+                            });
                         });
-                    });
-                    console.log(data2);
-                    return {
-                        result: data2
-                    };
-                },
-                cache: true,
-            }
+                        console.log(data2);
+                        return {
+                            results: data2
+                        };
+                    },
+                    cache: true,
+                }
+            });
         });
 
 
@@ -286,7 +315,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
     function init_form(fin_branch_id) {
         //alert("Init Form");
-        var url = "<?= site_url() ?>branches/fetch_data/" + fin_branch_id;
+        var url = "<?= site_url() ?>master/msbranches/fetch_data/" + fin_branch_id;
         $.ajax({
             type: "GET",
             url: url,
@@ -308,6 +337,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
+
+                // menampilkan data di select2, menu edit/update
+                var newOption = new Option(resp.branches.CountryName, resp.branches.fin_country_id, true, true);
+                // Append it to the select
+                $('#select-countryname').append(newOption).trigger('change');
+
+                var newOption = new Option(resp.branches.ProvinceName, resp.branches.ProvinceId, true, true);
+                $('#select-provincename').append(newOption).trigger('change');
+
+                var newOption = new Option(resp.branches.DistrictName, resp.branches.DistrictId, true, true);
+                $('#select-districtname').append(newOption).trigger('change');
+
+                var newOption = new Option(resp.branches.SubDistrictName, resp.branches.SubDistrictId, true, true);
+                $('#select-subdistrictname').append(newOption).trigger('change');
             },
 
             error: function(e) {

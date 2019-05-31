@@ -43,8 +43,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                         <div class="form-group">
                             <label for="GLAccountCode" class="col-sm-2 control-label"><?= lang("GL Account Code") ?> * </label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control" id="GLAccountCode" placeholder="<?= lang("GL Account Code") ?>" name="GLAccountCode" value="<?= $GLAccountCode ?>">
+                            <div class="col-sm-10">
+                                <label id="PrefixAccountCode" style="text-align:left;padding-left: 0px;" class="col-sm-2 control-label"> 111- </label>
+                                <input type="text" class="form-control" id="GLAccountCode" style="width: unset" placeholder="<?= lang("GL Account Code") ?>" name="GLAccountCode" value="<?= $GLAccountCode ?>">
                                 <div id="GLAccountCode_err" class="text-danger"></div>
                             </div>
                         </div>

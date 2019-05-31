@@ -9,12 +9,12 @@ class MSSubdistricts_model extends MY_Model {
     }
 
     public function getDataById($SubDistrictId ){
-        $ssql = "select * from " . $this->tableName ." where SubDistrictId = ? and fst_active = 'A'";
+        $ssql = "select SubDistrictId,SubDistrictName from " . $this->tableName ." where SubDistrictId = ? and fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$SubDistrictId]);
-        $rw = $qr->row();
+        $rwMSSubdistricts = $qr->row();
         
 		$data = [
-            "" => $rw
+            "mssubdistricts" => $rwMSSubdistricts
 		];
 
 		return $data;

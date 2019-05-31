@@ -1,28 +1,25 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSBranches_model extends MY_Model
+class MSWarehouse_model extends MY_Model
 {
-    public $tableName = "msbranches";
-    public $pkey = "fin_branch_id";
+    public $tableName = "mswarehouse";
+    public $pkey = "fin_warehouse_id";
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function getDataById($fin_branch_id)
+    public function getDataById($fin_warehouse_id)
     {
         //$ssql = "select * from " . $this->tableName . " where fin_branch_id = ?";
-        $ssql = "select a.*,b.CountryName,c.ProvinceName,d.DistrictName,e.SubDistrictName from " . $this->tableName . " a 
-        left join mscountries b on a.fin_country_id = b.CountryId 
-        left join msprovinces c on a.fin_province_id = c.ProvinceId 
-        left join msdistricts d on a.fin_district_id = d.DistrictId 
-        left join mssubdistricts e on a.fin_subdistrict_id = e.SubDistrictId 
-        where fin_branch_id = ?";
-        $qr = $this->db->query($ssql, [$fin_branch_id]);
-        $rwBranch = $qr->row();
+        $ssql = "select a.*,b.fst_branch_name from " . $this->tableName . " a 
+        left join msbranches b on a.fin_branch_id = b.fin_branch_id 
+        where fin_warehouse_id = ?";
+        $qr = $this->db->query($ssql, [$fin_warehouse_id]);
+        $rwWarehouse = $qr->row();
         $data = [
-            "branches" => $rwBranch
+            "warehouse" => $rwWarehouse
         ];
         return $data;
     }
@@ -32,8 +29,8 @@ class MSBranches_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'fst_branch_name',
-            'label' => 'Branch Name',
+            'field' => 'fst_warehouse_name',
+            'label' => 'Warehouse Name',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
@@ -50,7 +47,7 @@ class MSBranches_model extends MY_Model
 
     public function getAllList()
     {
-        $ssql = "select fin_branch_id,fst_branch_name from " . $this->tableName . " where fst_active = 'A'";
+        $ssql = "select fin_warehouse_id,fin_warehouse_name from " . $this->tableName . " where fst_active = 'A'";
         $qr = $this->db->query($ssql, []);
         $rs = $qr->result();
         return $rs;
@@ -58,7 +55,7 @@ class MSBranches_model extends MY_Model
 
     public function get_Branch()
     {
-        $query = $this->db->get('branches');
+        $query = $this->db->get('msbranches');
         return $query->result_array();
     }
 }

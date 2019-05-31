@@ -1,12 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class MSCountries extends MY_Controller{
+class Sales_order extends MY_Controller{
 
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
-		$this->load->model('MSCountries_model');
+		$this->load->model('sales_order_model');
 	}
 
 	public function index(){
@@ -15,26 +15,28 @@ class MSCountries extends MY_Controller{
 
 	public function lizt(){
 		$this->load->library('menus');
-		$this->list['page_name'] = "Master Countries";
-		$this->list['list_name'] = "Master Countries List";
-		$this->list['addnew_ajax_url'] = site_url() . 'pr/mscountries/add';
+		$this->list['page_name'] = "Sales Order";
+		$this->list['list_name'] = "Sales Order List";
+		$this->list['addnew_ajax_url'] = site_url() . 'tr/sales_order/add';
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/mscountries/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'pr/mscountries/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'pr/mscountries/edit/';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales_order/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'tr/sales_order/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'tr/sales_order/edit/';
 		$this->list['arrSearch'] = [
-			'CountryId' => 'Country ID',
-			'RelationGroupName' => 'Groups Name'
+			'fin_salesorder_id' => 'Sales Order ID',
+			'fst_salesorder_no' => 'Sales Order No'
 		];
 
 		$this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-			['title' => 'Master Relation Groups', 'link' => '#', 'icon' => ''],
+			['title' => 'Sales Order', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Relation Groups ID', 'width' => '10%', 'data' => 'RelationGroupId'],
-			['title' => 'Relation Groups Name', 'width' => '25%', 'data' => 'RelationGroupName'],
+			['title' => 'Sales Order ID', 'width' => '20%', 'data' => 'fin_salesorder_id'],
+            ['title' => 'Sales Order No', 'width' => '20%', 'data' => 'fst_salesorder_no'],
+            ['title' => 'Sales Order Date', 'width' => '20%', 'data' => 'fdt_salesorder_date'],
+            ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_memo'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
@@ -50,7 +52,7 @@ class MSCountries extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 
-	private function openForm($mode = "ADD", $RelationGroupId = 0){
+	private function openForm($mode = "ADD", $fin_salesorder_id = 0){
 		$this->load->library("menus");
 
 		if ($this->input->post("submit") != "") {
@@ -61,10 +63,10 @@ class MSCountries extends MY_Controller{
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 
 		$data["mode"] = $mode;
-		$data["title"] = $mode == "ADD" ? "Add Master Relation Groups" : "Update Master Relation Groups";
-		$data["RelationGroupId"] = $RelationGroupId;
+		$data["title"] = $mode == "ADD" ? "Add Sales Order" : "Update Sales Order";
+		$data["fin_salesorder_id"] = $fin_salesorder_id;
 
-		$page_content = $this->parser->parse('pages/pr/mscountries/form', $data, true);
+		$page_content = $this->parser->parse('pages/tr/sales_order/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 
 		$control_sidebar = NULL;
@@ -80,13 +82,13 @@ class MSCountries extends MY_Controller{
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($RelationGroupId){
-		$this->openForm("EDIT", $RelationGroupId);
+	public function Edit($fin_salesorder_id){
+		$this->openForm("EDIT", $fin_salesorder_id);
 	}
 
 	public function ajx_add_save(){
-		$this->load->model('mscountries_model');
-		$this->form_validation->set_rules($this->mscountries_model->getRules("ADD", 0));
+		$this->load->model('sales_order_model');
+		$this->form_validation->set_rules($this->sales_order_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -99,12 +101,16 @@ class MSCountries extends MY_Controller{
 		}
 
 		$data = [
-			"RelationGroupName" => $this->input->post("RelationGroupName"),
+            "fst_salesorder_no" => $this->input->post("fst_salesorder_no"),
+            "fdt_salesorder_date" => $this->input->post("fdt_salesorder_date"),
+			"fst_memo" =>$this->input->post("fst_memo"),
+			"fbl_is_hold" => ($this->input->post("fbl_is_hold") == null) ? 0 : 1,
+			"fbl_is_vat_include" => ($this->input->post("fbl_is_vat_include") == null) ? 0 : 1,
 			"fst_active" => 'A'
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->mscountries_model->insert($data);
+		$insertId = $this->sales_order_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -123,19 +129,19 @@ class MSCountries extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('mscountries_model');
-		$RelationGroupId = $this->input->post("RelationGroupId");
-		$data = $this->mscountries_model->getDataById($RelationGroupId);
-		$mscountries = $data["mscountries"];
-		if (!$mscountries) {
+		$this->load->model('sales_order_model');
+		$fin_salesorder_id = $this->input->post("fin_salesorder_id");
+		$data = $this->sales_order_model->getDataById($fin_salesorder_id);
+		$sales_order = $data["sales_order"];
+		if (!$sales_order) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
-			$this->ajxResp["message"] = "Data id $RelationGroupId Not Found ";
+			$this->ajxResp["message"] = "Data id $fin_salesorder_id Not Found ";
 			$this->ajxResp["data"] = [];
 			$this->json_output();
 			return;
 		}
 
-		$this->form_validation->set_rules($this->mscountries_model->getRules("EDIT", $RelationGroupId));
+		$this->form_validation->set_rules($this->sales_order_model->getRules("EDIT", $fin_salesorder_id));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -147,13 +153,15 @@ class MSCountries extends MY_Controller{
 		}
 
 		$data = [
-			"RelationGroupId" => $RelationGroupId,
-			"RelationGroupName" => $this->input->post("RelationGroupName"),
+			"fin_salesorder_id" => $fin_salesorder_id,
+            "fst_salesorder_no" => $this->input->post("fst_salesorder_no"),
+            "fdt_salesorder_date" => $this->input->post("fdt_salesorder_date"),
+            "fst_memo" =>$this->input->post("fst_memo"),
 			"fst_active" => 'A'
 		];
 
 		$this->db->trans_start();
-		$this->mscountries_model->update($data);
+		$this->sales_order_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -167,19 +175,19 @@ class MSCountries extends MY_Controller{
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $RelationGroupId;
+		$this->ajxResp["data"]["insert_id"] = $fin_salesorder_id;
 		$this->json_output();
 	}
 
 	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("mscountries");
+		$this->datatables->setTableName("sales_order");
 
-		$selectFields = "RelationGroupId,RelationGroupName,'action' as action";
+		$selectFields = "fin_salesorder_id,fst_salesorder_no,fdt_salesorder_date,fst_memo,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
-		$searchFields[] = $this->input->get('optionSearch'); //["RelationGroupId","RelationGroupName"];
+		$searchFields[] = $this->input->get('optionSearch'); //["fin_salesorder_id","fst_salesorder_no"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "fst_active !='D'";
 
@@ -190,8 +198,8 @@ class MSCountries extends MY_Controller{
 		foreach ($arrData as $data) {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='" . $data["RelationGroupId"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["RelationGroupId"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["fin_salesorder_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -200,11 +208,10 @@ class MSCountries extends MY_Controller{
 		$this->json_output($datasources);
 	}
 
-	public function fetch_data($RelationGroupId){
-		$this->load->model("mscountries_model");
-		$data = $this->mscountries_model->getDataById($RelationGroupId);
-
-		//$this->load->library("datatables");		
+	public function fetch_data($fin_salesorder_id){
+		$this->load->model("sales_order_model");
+		$data = $this->sales_order_model->getDataById($fin_salesorder_id);
+		
 		$this->json_output($data);
 	}
 
@@ -216,11 +223,29 @@ class MSCountries extends MY_Controller{
 			return;
 		}
 
-		$this->load->model("mscountries_model");
+		$this->load->model("sales_order_model");
 
-		$this->mscountries_model->delete($id);
+		$this->sales_order_model->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
 	}
+
+	/*public function report_custpricingSales Order(){
+        $this->load->library('pdf');
+        //$customPaper = array(0,0,381.89,595.28);
+        //$this->pdf->setPaper($customPaper, 'landscape');
+        $this->pdf->setPaper('A4', 'portrait');
+		//$this->pdf->setPaper('A4', 'landscape');
+		
+		$this->load->model("sales_order_model");
+		$listCustPricingSales Order = $this->sales_order_model->get_CustPricingSales Order();
+        $data = [
+			"datas" => $listCustPricingSales Order
+		];
+			
+        $this->pdf->load_view('report/custpricingSales Order_pdf', $data);
+        $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
+		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+    }*/
 }
