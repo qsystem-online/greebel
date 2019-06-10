@@ -1,26 +1,30 @@
 <?php
-if(!defined('BASEPATH')) exit('No direct script access allowed');
-class MSItembomdetails_model extends MY_Model {
+if (!defined('BASEPATH')) exit('No direct script access allowed');
+class MSItembomdetails_model extends MY_Model
+{
     public $tableName = "msitembomdetails";
-    public $pkey = "recid";
+    public $pkey = "RecId";
 
-    public function __construct(){
-        parent:: __construct();
+    public function __construct()
+    {
+        parent::__construct();
     }
 
-    public function getDataById($recid ){
-        $ssql = "select * from " . $this->tableName ." where recid = ? and fst_active = 'A'";
-		$qr = $this->db->query($ssql,[$recid]);
+    public function getDataById($recid)
+    {
+        $ssql = "select * from " . $this->tableName . " where recid = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$recid]);
         $rw = $qr->row();
-        
-		$data = [
+
+        $data = [
             "" => $rw
-		];
+        ];
 
-		return $data;
-	}
+        return $data;
+    }
 
-    public function getRules($mode="ADD",$id=0){
+    public function getRules($mode = "ADD", $id = 0)
+    {
         $rules = [];
 
         $rules[] = [
@@ -54,5 +58,11 @@ class MSItembomdetails_model extends MY_Model {
         ];
 
         return $rules;
+    }
+
+    public function deleteByHeaderId($ItemId)
+    {
+        $ssql = "delete from " . $this->tableName . " where ItemCode = $ItemId";
+        $this->db->query($ssql);
     }
 }
