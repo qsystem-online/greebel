@@ -132,6 +132,7 @@ class MSRelations extends MY_Controller{
 			"DistrictId" => $this->input->post("DistrictId"),
 			"SubDistrictId" => $this->input->post("SubDistrictId"),
 			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
+			"NIK" => $this->input->post("NIK"),
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
 			"fst_active" => 'A'
@@ -198,6 +199,7 @@ class MSRelations extends MY_Controller{
 			"DistrictId" => $this->input->post("DistrictId"),
 			"SubDistrictId" => $this->input->post("SubDistrictId"),
 			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
+			"NIK" => $this->input->post("NIK"),
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
 			"fst_active" => 'A'

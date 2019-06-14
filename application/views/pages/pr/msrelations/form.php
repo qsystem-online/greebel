@@ -199,6 +199,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
+						<label for="NIK" class="col-md-2 control-label"><?=lang("NIK")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="NIK" placeholder="<?=lang("NIK")?>" name="NIK">
+							<div id="NIK_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
                     <label for="NPWP" class="col-md-2 control-label"><?=lang("NPWP")?></label>
 						<div class="col-md-10">
 							<input type="text" class="form-control" id="NPWP" placeholder="<?=lang("NPWP")?>" name="NPWP">
