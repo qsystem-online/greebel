@@ -134,6 +134,47 @@ class Sales_order extends MY_Controller{
 			return;
 		}
 
+		// Save SO Details
+		$this->load->model("sales_order_details_model");
+		
+		$this->form_validation->set_rules($this->sales_order_details_model->getRules("ADD",0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+
+		$details = $this->input->post("detail");
+		$details = json_decode($details);
+		foreach ($details as $item) {
+			$data = [
+				"fin_salesorder_id"=> $insertId,
+				"ItemId"=> $item->ItemId,
+				"fdc_qty"=> $item->fdc_qty,
+				"fdc_price"=> $item->fdc_price
+			];
+
+			// Validate SO Details
+			$this->form_validation->set_data($data);
+			if ($this->form_validation->run() == FALSE){
+				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+				$this->ajxResp["message"] = "Error Validation Forms";
+				$error = [
+					"detail"=> $this->form_validation->error_string(),
+				];
+				$this->ajxResp["data"] = $error;
+				$this->json_output();
+				return;	
+			}
+			
+			$this->sales_order_details_model->insert($data);
+			$dbError  = $this->db->error();
+			if ($dbError["code"] != 0){			
+				$this->ajxResp["status"] = "DB_FAILED";
+				$this->ajxResp["message"] = "Insert Failed";
+				$this->ajxResp["data"] = $this->db->error();
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
+		}
+
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
@@ -195,6 +236,50 @@ class Sales_order extends MY_Controller{
 			$this->db->trans_rollback();
 			return;
 		}
+
+		// Save Details
+		/*$this->load->model("sales_order_details_model");
+
+		$this->form_validation->set_rules($this->sales_order_details_model->getRules("ADD",0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+
+		$this->sales_order_details_model->deleteByDetail($fin_salesorder_id);
+
+		//$this->load->model("sales_order_details_model");		
+		$details = $this->input->post("detail");
+		$details = json_decode($details);
+		foreach ($details as $item) {
+			$data = [
+				"fin_salesorder_id"=> $fin_salesorder_id,
+				"ItemId"=> $item->$ItemId,
+				"fdc_qty"=> $item->fdc_qty,
+				"fdc_price"=> $item-> $fdc_price
+			];
+
+			// Validate Data Items
+			$this->form_validation->set_data($data);
+			if ($this->form_validation->run() == FALSE){
+				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+				$this->ajxResp["message"] = "Error Validation Forms";
+				$error = [
+					"detail"=> $this->form_validation->error_string(),
+				];
+				$this->ajxResp["data"] = $error;
+				$this->json_output();
+				return;	
+			}
+			
+			$this->sales_order_details_model->insert($data);
+			$dbError  = $this->db->error();
+			if ($dbError["code"] != 0){			
+				$this->ajxResp["status"] = "DB_FAILED";
+				$this->ajxResp["message"] = "Insert Failed";
+				$this->ajxResp["data"] = $this->db->error();
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
+		}*/
 
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
@@ -291,16 +376,30 @@ class Sales_order extends MY_Controller{
 
 	public function get_data_item(){
 		$term = $this->input->get("term");
-		$ssql = "select ItemId, ItemName from msitems where ItemName like ?";
+		$ssql = "select ItemId, ItemName from msitems where ItemName like ? order by ItemName";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["data"] = $rs;
-		$this->json_output();
+		$this->json_output($rs);
 	}
 
-	/*public function report_custpricingSales Order(){
+	public function get_data_disc(){
+		$term = $this->input->get("term");
+		$ssql = "select ItemDiscount from msitemdiscounts where ItemDiscount like ? order by ItemDiscount";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+
+		$this->json_output($rs);
+	}
+
+	public function getSoDetail($fin_salesorder_id){
+        $this->load->model("sales_order_details_model");
+        $result = $this->sales_order_details_model->getSoDetail($fin_salesorder_id);
+        $this->ajxResp["data"] = $result;
+        $this->json_output();
+	}
+
+	/*public function report_sales_order(){
         $this->load->library('pdf');
         //$customPaper = array(0,0,381.89,595.28);
         //$this->pdf->setPaper($customPaper, 'landscape');
@@ -308,12 +407,12 @@ class Sales_order extends MY_Controller{
 		//$this->pdf->setPaper('A4', 'landscape');
 		
 		$this->load->model("sales_order_model");
-		$listCustPricingSales Order = $this->sales_order_model->get_CustPricingSales Order();
+		$listSalesOrder = $this->sales_order_model->getSales_order();
         $data = [
-			"datas" => $listCustPricingSales Order
+			"datas" => $listSalesOrder
 		];
 			
-        $this->pdf->load_view('report/custpricingSales Order_pdf', $data);
+        $this->pdf->load_view('report/sales_order_pdf', $data);
         $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
 		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
     }*/

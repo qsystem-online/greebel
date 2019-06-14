@@ -23,6 +23,7 @@ class Pdf extends Dompdf{
         $this->filename = "relationgroups.pdf";
         $this->filename = "custpricinggroups.pdf";
         $this->filename = "memberships.pdf";
+        $this->filename = "sales_order.pdf";
     }
     /**
      * @access    protected
