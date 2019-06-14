@@ -52,7 +52,7 @@ class MSRelations_model extends MY_Model {
                 'min_length' => 'Panjang %s paling sedikit 5 character'
             )
         ];
-        
+
         $rules[] = [
             'field' => 'NPWP',
             'label' => 'NPWP',
