@@ -76,7 +76,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <!-- /.input group -->
                             </div>
 
-						<label for="select-sales" class="col-md-2 control-label"><?=lang("Sales ID")?> </label>
+						<label for="select-sales" class="col-md-2 control-label"><?=lang("Sales")?> </label>
                             <div class="col-md-4">
 								<select id="select-sales" class="form-control" name="fin_sales_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -86,7 +86,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-                        <label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse ID")?> </label>
+                        <label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?> </label>
                             <div class="col-md-4">
 								<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -94,7 +94,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <div id="fin_warehouse_id_err" class="text-danger"></div>
                             </div>
 
-						<label for="select-spv" class="col-md-2 control-label"><?=lang("Sales Spv ID")?> </label>
+						<label for="select-spv" class="col-md-2 control-label"><?=lang("Sales Spv")?> </label>
                             <div class="col-md-4">
 								<select id="select-spv" class="form-control" name="fin_sales_spv_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -112,7 +112,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <div id="fin_relation_id_err" class="text-danger"></div>
                             </div>
 
-                        <label for="select-mgr" class="col-md-2 control-label"><?=lang("Sales Mgr ID")?></label>
+                        <label for="select-mgr" class="col-md-2 control-label"><?=lang("Sales Mgr")?></label>
                             <div class="col-md-4">
 								<select id="select-mgr" class="form-control" name="fin_sales_mgr_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -153,32 +153,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 
-					<table id="tblSODetail" class="table table-bordered table-hover table-striped"></table>
+					<table id="tblSODetails" class="table table-bordered table-hover table-striped"></table>
 
 					<div class="form-group">
-                        <label for="fdc_vat_percent" class="col-md-2 control-label"><?= lang("PPN")?> (%)</label>
-                            <div class="col-md-4" style='text-align:right'>
-                                <input type="text" class="form-control text-right" id="fdc_vat_percent" name="fdc_vat_percent">
-                            </div>
-                            
-                        <label for="fdc_vat_amount" class="col-md-2 control-label"><?= lang("PPN Amount")?></label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control text-right money" id="fdc_vat_amount" name="fdc_vat_amount">
-                                <div id="fdc_vat_amount_err" class="text-danger"></div>
-                            </div>
+						<label for="sub-total" class="col-md-10 control-label"><?=lang("Sub total")?></label>
+						<div class="col-md-2" style='text-align:right'>
+							<input type="text" class="form-control text-right" id="sub-total" value="0" readonly>
+						</div>
 					</div>
 
-                    <div class="form-group">
-                        <label for="fdc_disc_percent" class="col-md-2 control-label"><?= lang("Disc")?> (%)</label>
-                            <div class="col-md-4" style='text-align:right'>
-                                <input type="text" class="form-control text-right" id="fdc_disc_percent" name="fdc_disc_percent">
-                            </div>
-                            
-                        <label for="fdc_disc_amount" class="col-md-2 control-label"><?= lang("Disc Amount")?> </label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control text-right money" id="fdc_disc_amount" name="fdc_disc_amount">
-                                <div id="fdc_disc_amount_err" class="text-danger"></div>
-                            </div>
+					<div class="form-group">
+						<label for="total" class="col-md-10 control-label"><?=lang("Total")?></label>
+						<div class="col-md-2" style='text-align:right'>
+							<input type="text" class="form-control text-right" id="total" value="0" readonly>
+						</div>
 					</div>
 
                 </div>
@@ -200,7 +188,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title"><?=lang("Add Sales Order Detail")?></h4>
+				<h4 class="modal-title"><?=lang("Add SO Detail")?></h4>
 			</div>
 
 			<div class="modal-body">
@@ -210,14 +198,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<label for="select-items" class="col-md-2 control-label"><?=lang("Items")?></label>
 						<div class="col-md-10">
 							<select id="select-items" class="form-control"></select>
-							<div id="fin_item_id_err" class="text-danger"></div>
+							<div id="ItemId_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
 						<label for="fdc_qty" class="col-md-2 control-label"><?=lang("Qty")?></label>
 						<div class="col-md-10">
-							<input type="text" class="form-control numeric" id="so-qty" value="1">
+							<input type="text" class="form-control text-right numeric" id="so-qty" value="1">
 							<div id="fdc_qty_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -227,6 +215,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="col-md-10">
 							<input type="text" class="form-control text-right money" id="so-price" value="0">
 							<div id="fdc_price_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="select-disc" class="col-md-2 control-label"><?=lang("Disc ++")?></label>
+						<div class="col-md-10">
+							<select id="select-disc" class="form-control"></select>
+							<div id="fst_disc_item_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -249,8 +245,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			init_form($("#fin_salesorder_id").val());
 		<?php } ?>
 
-		$("#fdt_salesorder_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
-
 		var edited_so_detail = null;
 		var mode_so_detail = "ADD";
 
@@ -259,7 +253,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			data = $("#frmSalesOrder").serializeArray();
 			//console.log(data);
 			detail = new Array();
-			t = $('#tblSODetail').DataTable();
+			t = $('#tblSODetails').DataTable();
 			datas = t.data();
 			$.each(datas,function(i,v){
 				detail.push(v);
@@ -282,9 +276,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				enctype: 'multipart/form-data',
 				url: url,
 				data: data,
-				processData: false,
-				contentType: false,
-				cache: false,
 				timeout: 600000,
 				success: function (resp) {	
 					if (resp.message != "")	{
@@ -331,7 +322,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$(".select2").select2();
+		$("#fdt_salesorder_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
 
 		$("#select-relations").select2({
 			width: '100%',
@@ -359,7 +350,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#select-warehouse").select2({
 			width: '100%',
-			tokenSeparators: [",", " "],
 			ajax: {
 				url: '<?=site_url()?>tr/sales_order/get_mswarehouse',
 				dataType: 'json',
@@ -477,14 +467,81 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
+		$("#select-disc").select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>tr/sales_order/get_data_disc',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data) {
+					data2 = [];
+					$.each(data,function(index,value){
+						data2.push({
+							"id" : value.ItemDiscount,
+							"text" : value.ItemDiscount
+						});
+					});
+					console.log(data2);
+					return {
+						result: data2
+					};
+				},
+				cache: true,
+			}
+		});
+
+		/*$("#fdc_disc_percent").inputmask({
+			alias: 'numeric', 
+			allowMinus: false,  
+			digits: 2, 
+			max: 100
+		});
+
+		$("#fdc_vat_percent").inputmask({
+			alias: 'numeric', 
+			allowMinus: false,  
+			digits: 2, 
+			max: 100
+		});
+
+		$(".numeric").inputmask({
+			alias: 'numeric', 
+			allowMinus: false,  
+			digits: 2
+		});
+
+		$(".money").inputmask({
+			alias: 'numeric', 
+			autoGroup: true,
+      		groupSeparator: ",",
+			allowMinus: false,  
+			digits: 2
+		});*/
+
+		var selected_items;
+		var selected_disc
+		var arrDetail;
+
+		$('#select-items').on('select2:select', function (e) {
+			var data = e.params.data;
+			selected_items = data;
+			$("#so-price").val(numeral(data.fdc_price).format("0,000"));
+		});
+
+		$('#select-disc').on('select2:select', function (e) {
+			var data = e.params.data;
+			selected_disc = data;
+		});
+
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
-			mode_so_detail = "ADD"; // 28/04/2019
+			mode_so_detail = "ADD";
 			$("#myModal").modal({
 				backdrop:"static",
 			});
 
 			$('#select-items').val(null).trigger('change');
+			$('#select-disc').val(null).trigger('change');
 			$("#fin-detail-id").val(0);
 			$("#so-qty").val(1);
 			$("#so-price").val(0);
@@ -493,22 +550,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btn-add-so-detail").click(function(event){
 			event.preventDefault();
 			selected_items = $("#select-items").select2('data')[0];
-
 			var qty = numeral($("#so-qty").val());
 			var price = numeral($("#so-price").val());
 			var total = qty.value() * price.value();
+			selected_disc = $("#select-disc").select2('data')[0];
 
-			t.row.add({
+			data = {
+				//rec_id:$("#rec_id").val(),
 				fin_salesorder_id:$("#fin-detail-id").val(),
-				ItemName:selected_item.text,
+				ItemId:selected_items.id,
+				ItemName:selected_items.text,
+				ItemDiscount:selected_disc.text,
 				fdc_qty: $("#so-qty").val(),
 				fdc_price: price.value(),
 				total: total,
 				action: action
-			}).draw(false);
+			}
 
-			t = $('#tblSODetail').DataTable();
-			if(mode_so_detail =="EDIT"){
+			t = $('#tblSODetails').DataTable();
+			if(mode_so_detail == "EDIT"){
 				edited_so_detail.data(data).draw(false);
 			}else{
 				t.row.add(data).draw(false);	
@@ -517,7 +577,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			calculateTotal();
 		});
 
-		// OnChange
+		/* OnChange
 		$("#fdc_vat_percent").change(function(){
 			//alert ("fdc_vat_percent");
 			$("#fdc_vat_amount").val(0);
@@ -528,13 +588,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//alert ("fdc_vat_percent");
 			$("#fdc_vat_percent").val(0);
 			$("#fdc_vat_percent").prop('readonly', true);
-		});
-
-		$("#fdc_vat_percent").inputmask({
-			alias : 'numeric',
-			allowMinus : false,
-			digits : 2,
-			max : 100
 		});
 
 		// OnChange
@@ -550,13 +603,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#fdc_disc_percent").prop('readonly', true);
 		});
 
-		$("#fdc_disc_percent").inputmask({
-			alias : 'numeric',
-			allowMinus : false,
-			digits : 2,
-			max : 100
-		});
-
 		$(".money").inputmask({
 			alias : 'numeric',
 			autoGroup : true,
@@ -564,6 +610,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			allowMinus : false,
 			digits : 2
 		})
+
+		$("#fdc_vat_amount").inputmask({
+			alias: 'numeric', 
+			allowMinus: false,  
+			digits: 2, 
+			max: 100
+		});
 
 		$("#fdc_disc_amount").inputmask({
 			alias: 'numeric', 
@@ -576,29 +629,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			alias: 'numeric', 
 			allowMinus: false,  
 			digits: 2
-		});
+		});*/
 
-		$('#tblSODetail').on('preXhr.dt', function ( e, settings, data ) {
+		$('#tblSODetails').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
 		}).DataTable({
 			columns:[
-				//{"title" : "ID","width": "0%",sortable:false,data:"fin_id",visible:false},
-				{"title" : "rec_id","width": "0%",sortable:false,data:"rec_id",visible:false},
+				//{"title" : "rec_id","width": "0%",sortable:false,data:"rec_id",visible:false},
 				{"title" : "fin_salesorder_id","width": "0%",sortable:false,data:"fin_salesorder_id",visible:false},
-				{"title" : "Items","width": "20%",sortable:false,data:"ItemName"},
-				{"title" : "Qty","width": "10%",data:"fdc_qty"},
-				{"title" : "price","width": "10%",
+				{"title" : "Items","width": "20%",sortable:false,data:"ItemName",className: 'dt-center'},
+				{"title" : "Qty","width": "10%",data:"fdc_qty",className:'dt-right'},
+				{"title" : "Price","width": "10%",
 					data:"fdc_price",
 					render: $.fn.dataTable.render.number( ',', '.', 2 ),
 					className:'dt-right'
 				},
+				{"title" : "Disc ++","width": "10%",
+					data:"ItemDiscount",
+					render: $.fn.dataTable.render.number( ',', '.', 2 ),
+					className:'dt-right'
+				},
+				{"title" : "Disc Amt","width": "10%",data:"fdc_disc_amount",className:'dt-right'},
 				{"title" : "Total","width": "10%",
 					data:"total",
 					render: $.fn.dataTable.render.number( ',', '.', 2 ),
 					className:'dt-right'
 				},
-				{"title" : "action","width": "10%",data:"action",sortable:false,className:'dt-body-center text-center'},
+				{"title" : "Action","width": "10%",data:"action",sortable:false,className:'dt-body-center text-center'},
 			],
 			processing: true,
 			serverSide: false,
@@ -614,7 +672,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});	
 
 			$(".btn-delete").click(function(event){
-				t = $('#tblSODetail').DataTable();
+				t = $('#tblSODetails').DataTable();
 				var trRow = $(this).parents('tr');
 
 				t.row(trRow).remove().draw();
@@ -626,18 +684,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#myModal").modal({
 					backdrop:"static",
 				});
-				t = $('#tblSODetail').DataTable();
+
+				t = $('#tblSODetails').DataTable();
 				var trRow = $(this).parents('tr');
 
 				mode_so_detail = "EDIT";
 				edited_so_detail = t.row(trRow);
 				row = edited_so_detail.data();	
 
-				//$("#fin_id").val(row.fin_id); // 28/04/2019
+				//$("#rec_id").val(row.rec_id);
+				$("#fin_salesorder_id").val(row.fin_salesorder_id);
 				$("#select-items").val(row.ItemId).change();
-				$("#fin-detail-id").val(row.rec_id);
 				$("#so-qty").val(row.fdc_qty);
 				$("#so-price").val(row.fdc_price);
+				$("#select-disc").val(row.ItemDiscount).change();
 			});
 		});
 
@@ -647,9 +707,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		})
 	});
 
+	function calculateTotal(){
+		t = $('#tblSODetails').DataTable();
+		datas = t.data();
+
+		subTotal = 0;
+		disc = parseFloat ($("#ItemDiscount").val());
+
+		/*$.each(datas,function(i.v){
+			subTotal = subTotal + (v.fdc_qty * v.fdc_price);
+		})*/
+
+		$("#sub-total").val(numeral(subTotal).format("0,000"));
+		disc_val = subTotal * (disc/100);
+
+		$("#disc-val").val(numeral(disc_val).format("0,000"));
+		total = subTotal - disc_val;
+		$("#total").val(numeral(total).format("0,000"));
+	}
 
 	function init_form(fin_salesorder_id){
-		alert("Init Form");
+		//alert("Init Form");
 		var url = "<?=site_url()?>tr/sales_order/fetch_data/" + fin_salesorder_id;
 		$.ajax({
 			type: "GET",
@@ -673,12 +751,39 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
+				SODetails = resp.so_details;
+				$.each(SODetails, function(idx, detail){
+					data = {
+						fin_salesorder_id:detail.fin_salesorder_id,
+						ItemId:detail.ItemId,
+						ItemName:detail.ItemName,
+						ItemDiscount:detail.ItemDiscount,
+						fdc_qty:detail.fdc_qty,
+						fdc_price:detail.fdc_price,
+						ItemDiscount:detail.ItemDiscount,
+						total:detail.fdc_qty * detail.fdc_price / detail.ItemDiscount,
+						action: action
+					}
+					t = $('#tblSODetails').DataTable();			
+					t.row.add(data).draw(false);
+
+					//set Data select2		
+					var newOption = new Option(detail.ItemName, detail.ItemId, false, false);
+					$('#select-items').append(newOption).trigger('change');
+
+					var newOption = new Option(detail.ItemDiscount, false);
+					$('#select-disc').append(newOption).trigger('change');
+				});
+
+				$('#select-items').trigger('change');
+					calculateTotal();
+
 				// OnChange
-				var fdt_salesorder_date = $salesDate;
+				//var fdt_salesorder_date = $soDate;
 				$("#fst_salesorder_no").change(function(){
 					//alert ("fst_salesorder_no");
-					$("#salesDate").val(0);
-					$("#salesDate").prop('readonly', true);
+					$("#soDate").val(0);
+					$("#soDate").prop('readonly', true);
 				});
 
 				$("#fdt_salesorder_date").datepicker('update', dateFormat(resp.sales_order.fdt_salesorder_date));
