@@ -13,7 +13,7 @@ class Menus {
 	public function build_menu($parent = 0){
 		$this->is_active(1);
 
-		$ssql = "select * from " . $this->tblMenus . " where fin_parent_id = ? and fbl_active = 1 order by fin_order " ;
+		$ssql = "select * from " . $this->tblMenus . " where fin_parent_id = ? and fbl_active = 1 order by fst_order " ;
 		$query = $this->CI->db->query($ssql,array($parent));
 
 		$rs = $query->result();		
