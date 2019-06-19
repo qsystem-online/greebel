@@ -10,8 +10,9 @@ class MSRelations_model extends MY_Model {
     }
 
     public function getDataById($RelationId){
-        $ssql = "select a.*,MID(a.AreaCode, 1, 2) AS province,MID(a.AreaCode, 1, 5) AS district,MID(a.AreaCode, 1, 8) AS subdistrict,MID(a.AreaCode, 1, 13) AS village,b.CountryName,c.nama as namaprovince,d.RelationGroupName,e.CustPricingGroupName,f.Notes,g.nama as namadistrict,h.nama as namasubdistrict,i.nama as namavillage from " . $this->tableName . " a left join 
-        mscountries b on a.CountryId = b.CountryId 
+        $ssql = "select a.*,MID(a.AreaCode, 1, 2) AS province,MID(a.AreaCode, 1, 5) AS district,MID(a.AreaCode, 1, 8) AS subdistrict,MID(a.AreaCode, 1, 13) AS village,b.CountryName,
+        c.nama as namaprovince,d.RelationGroupName,e.CustPricingGroupName,f.Notes,g.nama as namadistrict,h.nama as namasubdistrict,i.nama as namavillage from " . $this->tableName . " a 
+        left join mscountries b on a.CountryId = b.CountryId 
         left join msarea c on MID(a.AreaCode, 1, 2) = c.kode
         left join msrelationgroups d on a.RelationGroupId = d.RelationGroupId
         left join mscustpricinggroups e on a.CustPricingGroupId = e.CustPricingGroupId
