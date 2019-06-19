@@ -122,6 +122,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 
+					<div class="form-group personal-info">
+						<label for="NIK" class="col-md-2 control-label"><?=lang("NIK")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="NIK" placeholder="<?=lang("NIK")?>" name="NIK">
+							<div id="NIK_err" class="text-danger"></div>
+						</div>
+					</div>
+
 					<div class="form-group">
 					<label for="Address" class="col-md-2 control-label"><?=lang("Address")?></label>
 						<div class="col-md-10">
@@ -197,20 +205,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group relation-info">
-					<label for="select-custpricinggroupname" class="col-md-2 control-label"><?=lang("CustPricingGroup Name")?></label>
+					<label for="select-pricinggroupname" class="col-md-2 control-label"><?=lang("Pricing Group")?></label>
 						<div class="col-md-10">
-							<select id="select-custpricinggroupname" class="form-control" name="CustPricingGroupId">
+							<select id="select-pricinggroupname" class="form-control" name="CustPricingGroupId">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="CustPricingGroupId_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="NIK" class="col-md-2 control-label"><?=lang("NIK")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="NIK" placeholder="<?=lang("NIK")?>" name="NIK">
-							<div id="NIK_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -492,7 +492,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-custpricinggroupname").select2({
+		$("#select-pricinggroupname").select2({
 			width: '100%',
 			ajax: {
 				url: '<?=site_url()?>pr/msrelations/get_mscustpricinggroups',
@@ -611,17 +611,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				$("#BirthDate").datepicker('update', dateFormat(resp.ms_relations.BirthDate));
 
-				/* Split Area
-				var areaCode = resp.ms_relations.AreaCode;
-  				var province = areaCode.substring(0, 2);
-				var district = areaCode.substring(0, 5);
-				var subdistrict = areaCode.substring(0,8);
-				var village = areaCode.substring(0,12);
-				console.log(subdistrict);
-				$("#AreaCode").val(province).trigger('change');
-				$("#AreaCode").val(district).trigger('change');
-				$("#AreaCode").val(subdistrict).trigger('change');*/
-
 				// menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.ms_relations.RelationGroupName, resp.ms_relations.RelationGroupId, true, true);
 				// Append it to the select
@@ -644,7 +633,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$('#select-villagename').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.CustPricingGroupName, resp.ms_relations.CustPricingGroupId, true, true);
-				$('#select-custpricinggroupname').append(newOption).trigger('change');
+				$('#select-pricinggroupname').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.Notes, true);
 				$('#select-relationnotes').append(newOption).trigger('change');
