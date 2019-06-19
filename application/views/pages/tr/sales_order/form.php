@@ -221,8 +221,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="select-disc" class="col-md-2 control-label"><?=lang("Disc ++")?></label>
 						<div class="col-md-10">
-							<select id="select-disc" class="form-control"></select>
+							<select id="select-disc" class="form-control" name="fst_disc_item"></select>
 							<div id="fst_disc_item_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="fdc_disc_amount" class="col-md-2 control-label"><?=lang("Disc Amt")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control text-right" id="fdc_disc_amount">
+							<div id="fdc_disc_amount_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="fst_memo_item" class="col-md-2 control-label"><?=lang("Memo")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control text-right" id="fst_memo_item">
+							<div id="fst_memo_item_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -455,6 +471,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$.each(data,function(index,value){
 						data2.push({
 							"id" : value.ItemId,
+							"price" : value.SellingPrice,
 							"text" : value.ItemName
 						});	
 					});
@@ -545,6 +562,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#fin-detail-id").val(0);
 			$("#so-qty").val(1);
 			$("#so-price").val(0);
+			$("#fdc_disc_amount").val(0);
+			$("fst_memo_item").val(0);
 		})
 
 		$("#btn-add-so-detail").click(function(event){
@@ -560,7 +579,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				fin_salesorder_id:$("#fin-detail-id").val(),
 				ItemId:selected_items.id,
 				ItemName:selected_items.text,
-				ItemDiscount:selected_disc.text,
+				ItemDiscount:selected_disc.id,
+				//fdc_disc_amount:
 				fdc_qty: $("#so-qty").val(),
 				fdc_price: price.value(),
 				total: total,
@@ -651,12 +671,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					className:'dt-right'
 				},
 				{"title" : "Disc Amt","width": "10%",data:"fdc_disc_amount",className:'dt-right'},
+				{"title" : "Memo","width": "10%",data:"fst_memo_item",className:'dt-right'},
 				{"title" : "Total","width": "10%",
 					data:"total",
 					render: $.fn.dataTable.render.number( ',', '.', 2 ),
 					className:'dt-right'
 				},
-				{"title" : "Action","width": "10%",data:"action",sortable:false,className:'dt-body-center text-center'},
+				{"title" : "Action","width": "8%",data:"action",sortable:false,className:'dt-body-center text-center'},
 			],
 			processing: true,
 			serverSide: false,

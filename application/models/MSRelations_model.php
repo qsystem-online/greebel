@@ -10,25 +10,50 @@ class MSRelations_model extends MY_Model {
     }
 
     public function getDataById($RelationId){
-        //$ssql = "select * from " . $this->tableName ." where RelationId = ? and fst_active = 'A'";
-        $ssql = "select a.*,b.CountryName,c.ProvinceName,d.DistrictName,e.SubDistrictName,f.RelationGroupName,g.CustPricingGroupName,h.Notes from " . $this->tableName . " a 
+        $ssql = "select a.*,MID(a.AreaCode, 1, 2) AS province,MID(a.AreaCode, 1, 5) AS district,MID(a.AreaCode, 1, 8) AS subdistrict,MID(a.AreaCode, 1, 13) AS village,b.CountryName,
+        c.nama as namaprovince,d.nama as namadistrict,e.nama as namasubdistrict,f.nama as namavillage,g.RelationGroupName,h.CustPricingGroupName,i.Notes from " . $this->tableName . " a 
         left join mscountries b on a.CountryId = b.CountryId 
-        left join msprovinces c on a.ProvinceId = c.ProvinceId 
-        left join msdistricts d on a.DistrictId = d.DistrictId 
-        left join mssubdistricts e on a.SubDistrictId = e.SubDistrictId 
-        left join msrelationgroups f on a.RelationGroupId = f.RelationGroupId
-        left join mscustpricinggroups g on a.CustPricingGroupId = g.CustPricingGroupId
-        left join msrelationprintoutnotes h on a.RelationNotes = h.NoteId
+        left join msarea c on MID(a.AreaCode, 1, 2) = c.kode
+        left join msarea d on MID(a.AreaCode, 1, 5) = d.kode
+        left join msarea e on MID(a.AreaCode, 1, 8) = e.kode
+        left join msarea f on MID(a.AreaCode, 1, 13) = f.kode
+        left join msrelationgroups g on a.RelationGroupId = g.RelationGroupId
+        left join mscustpricinggroups h on a.CustPricingGroupId = h.CustPricingGroupId
+        left join msrelationprintoutnotes i on a.RelationNotes = i.NoteId
         where a.RelationId = ? order by RelationId ";
 		$qr = $this->db->query($ssql, [$RelationId]);
         $rwMSRelations = $qr->row();
+
+        $arrTmp = explode(".",$rwMSRelations->district);
+        if (sizeof($arrTmp) == 2 ){
+            $arrTmp = explode(".",$rwMSRelations->subdistrict);
+            if (sizeof($arrTmp) == 3){
+                $arrTmp = explode(".",$rwMSRelations->village);
+                if (sizeof($arrTmp) != 4){
+                    $rwMSRelations->village = null;
+                    $rwMSRelations->namavillage = null;
+                }
+            }else{
+                $rwMSRelations->subdistrict = null;
+                $rwMSRelations->namasubdistrict = null;
+                $rwMSRelations->village = null;
+                $rwMSRelations->namavillage = null;
+            }
+        }else{
+            $rwMSRelations->district = null;
+            $rwMSRelations->namadistrict = null;
+            $rwMSRelations->subdistrict = null;
+            $rwMSRelations->namasubdistrict = null;
+            $rwMSRelations->village = null;
+            $rwMSRelations->namavillage = null;
+        }
 
 		$data = [
             "ms_relations" => $rwMSRelations
 		];
 
 		return $data;
-	}
+    }
 
     public function getRules($mode="ADD",$id=0){
         $rules = [];

@@ -12,42 +12,13 @@ class Sales_order_model extends MY_Model {
     public function getRules($mode="ADD",$id=0){
         $rules = [];
 
-        $rules[] = [
-            'field' => 'fdc_vat_percent',
-            'label' => 'Vat Percent',
-            'rules' => 'numeric',
-			'errors' => array(
-				'numeric' => '%s harus berupa angka',
-			)
-        ];
-        
-        $rules[] = [
-            'field' => 'fdc_vat_amount',
-            'label' => 'Vat Amount',
-            'rules' => 'required|numeric',
-			'errors' => array(
+        $rule[] = [
+            'field' => 'fst_salesorder_no',
+            'label' => 'Sales Order No',
+            'rules' => 'required',
+            'errors' => array(
                 'required' => '%s tidak boleh kosong',
-                'numeric' => '%s harus berupa angka'
-			)
-        ];
-
-        $rules[] = [
-            'field' => 'fdc_disc_percent',
-            'label' => 'Disc Percent',
-            'rules' => 'numeric',
-			'errors' => array(
-				'numeric' => '%s harus berupa angka',
-			)
-        ];
-        
-        $rules[] = [
-            'field' => 'fdc_disc_amount',
-            'label' => 'Disc Amount',
-            'rules' => 'required|numeric',
-			'errors' => array(
-                'required' => '%s tidak boleh kosong',
-                'numeric' => '%s harus berupa angka'
-			)
+            )
         ];
 
         return $rules;
@@ -58,8 +29,9 @@ class Sales_order_model extends MY_Model {
         $qr = $this->db->query($ssql, [$fin_salesorder_id]);
         $rwSalesOrder = $qr->row();
 
-        $ssql = "select a.*,b.ItemName,c.ItemDiscount from trsalesorderdetails a left join msitems b on a.fin_item_id = b.ItemId
-        left join msitemdiscounts c on a.fst_disc_item = c.ItemDiscount 
+        $ssql = "select a.*,b.ItemName,c.SellingPrice,d.ItemDiscount from trsalesorderdetails a left join msitems b on a.fin_item_id = b.ItemId
+        left join msitemspecialpricinggroupdetails c on a.fdc_price = c.SellingPrice
+        left join msitemdiscounts d on a.fst_disc_item = d.ItemDiscount 
         where a.fin_salesorder_id = ? order by fin_salesorder_id";
 		$qr = $this->db->query($ssql,[$fin_salesorder_id]);
 		$rsSODetails = $qr->result();

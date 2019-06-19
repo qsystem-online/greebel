@@ -23,35 +23,18 @@ class Sales_order_details_model extends MY_Model {
             'rules' => 'numeric',
 			'errors' => array(
                 'required' => '%s tidak boleh kosong',
-                'numeric' => '%s harus berupa angka'
+                'numeric' => '%s harus berupa angka',
 			)
             ];
 
         $rules[] = [
             'field' => 'fdc_price',
             'label' => 'Price',
-            'rules' => 'numeric',
+            'rules' => 'required|numeric|greater_than[0]',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
-                'numeric' => '%s harus berupa angka'
-            )
-        ];
-
-        $rules[] = [
-            'field' => 'fst_disc_item',
-            'label' => 'Disc Item',
-            'rules' => 'numeric',
-            'errors' => array(
-                'numeric' => '%s harus berupa angka'
-            )
-        ];
-
-        $rules[] = [
-            'field' => 'fdc_disc_amount',
-            'label' => 'Disc Amount',
-            'rules' => 'numeric',
-            'errors' => array(
-                'numeric' => '%s harus berupa angka'
+                'numeric' => '%s harus berupa angka',
+                'greater_than' => '%s tidak boleh 0',
             )
         ];
 
