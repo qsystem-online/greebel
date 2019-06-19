@@ -147,7 +147,8 @@
 		<script src="<?=base_url()?>bower_components/jquery-confirm/dist/jquery-confirm.min.js"></script>
 		<script src="<?=base_url()?>bower_components/bootstrap-confirmation2/bootstrap-confirmation.min.js"></script>
 		<!-- Inputmask -->
-		<script src="<?=base_url()?>bower_components/inputmask/dist/min/jquery.inputmask.bundle.min.js"></script>
+		<script src="<?=base_url()?>bower_components/inputmask5/dist/jquery.inputmask.min.js"></script>
+		
 
 		<!-- Slimscroll -->
 		<script src="<?=base_url()?>bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
