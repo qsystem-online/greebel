@@ -126,7 +126,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         <?php if ($mode == "EDIT") { ?>
             init_form($("#GLAccountCode").val());
-            $(".maingroups").hide();
+            //$(".maingroups").hide();
         <?php } ?>
 
         $("#btnSubmitAjax").click(function(event) {
@@ -300,11 +300,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 // Append it to the select
                 $('#select-CurrCode').append(newOption).trigger('change');
 
-                var newOption = new Option(resp.glAccounts.GLParentName, resp.glAccounts.ParentGLAccountCode, true, true);
-                $('#select-ParentGL').append(newOption).trigger('change');
-
                 var newOption = new Option(resp.glAccounts.GLAccountMainGroupName, resp.glAccounts.GLAccountMainGroupId, true, true);
                 $('#select-MainGL').append(newOption).trigger('change');
+
+                var newOption = new Option(resp.glAccounts.GLParentName, resp.glAccounts.ParentGLAccountCode, true, true);
+                $('#select-ParentGL').append(newOption).trigger('change');
             },
 
             error: function(e) {
