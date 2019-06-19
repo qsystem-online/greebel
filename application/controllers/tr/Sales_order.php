@@ -34,10 +34,10 @@ class Sales_order extends MY_Controller{
 		];
 		$this->list['columns'] = [
 			['title' => 'Sales Order ID', 'width' => '20%', 'data' => 'fin_salesorder_id'],
-            ['title' => 'Sales Order No', 'width' => '20%', 'data' => 'fst_salesorder_no'],
-            ['title' => 'Sales Order Date', 'width' => '20%', 'data' => 'fdt_salesorder_date'],
+			['title' => 'Sales Order No', 'width' => '20%', 'data' => 'fst_salesorder_no'],
+			['title' => 'Sales Order Date', 'width' => '20%', 'data' => 'fdt_salesorder_date'],
             ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_memo'],
-			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
+			['title' => 'Action', 'width' => '15%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
@@ -54,6 +54,7 @@ class Sales_order extends MY_Controller{
 
 	private function openForm($mode = "ADD", $fin_salesorder_id = 0){
 		$this->load->library("menus");
+		$this->load->model('sales_order_model');
 
 		if ($this->input->post("submit") != "") {
 			$this->add_save();
@@ -65,6 +66,7 @@ class Sales_order extends MY_Controller{
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Sales Order" : "Update Sales Order";
 		$data["fin_salesorder_id"] = $fin_salesorder_id;
+		$data["fst_salesorder_no"] = $this->sales_order_model->GenerateSONo();
 
 		$page_content = $this->parser->parse('pages/tr/sales_order/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -100,12 +102,23 @@ class Sales_order extends MY_Controller{
 			return;
 		}
 
+		$fst_salesorder_no = $this->sales_order_model->GenerateSONo();
+
 		$data = [
-            "fst_salesorder_no" => $this->input->post("fst_salesorder_no"),
-            "fdt_salesorder_date" => $this->input->post("fdt_salesorder_date"),
+            "fst_salesorder_no" => $fst_salesorder_no,
+			"fdt_salesorder_date" => dBDateFormat($this->input->post("fdt_salesorder_date")),
+			"fin_relation_id" => $this->input->post("fin_relation_id"),
+			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
+			"fin_sales_id" => $this->input->post("fin_sales_id"),
+			"fin_sales_spv_id" => $this->input->post("fin_sales_spv_id"),
+			"fin_sales_mgr_id" => $this->input->post("fin_sales_mgr_id"),
 			"fst_memo" =>$this->input->post("fst_memo"),
-			"fbl_is_hold" => ($this->input->post("fbl_is_hold") == null) ? 0 : 1,
-			"fbl_is_vat_include" => ($this->input->post("fbl_is_vat_include") == null) ? 0 : 1,
+			"fbl_is_hold" => ($this->input->post("fbl_is_hold") == false) ? 0 : 1,
+			"fbl_is_vat_include" => ($this->input->post("fbl_is_vat_include") == false) ? 0 : 1,
+			"fdc_vat_percent" => $this->input->post("fdc_vat_percent"),
+			"fdc_vat_amount" => $this->input->post("fdc_vat_amount"),
+			"fdc_disc_percent" => $this->input->post("fdc_disc_percent"),
+			"fdc_disc_amount" => $this->input->post("fdc_disc_amount"),
 			"fst_active" => 'A'
 		];
 
@@ -121,6 +134,47 @@ class Sales_order extends MY_Controller{
 			return;
 		}
 
+		// Save SO Details
+		$this->load->model("sales_order_details_model");
+		
+		$this->form_validation->set_rules($this->sales_order_details_model->getRules("ADD",0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+
+		$details = $this->input->post("detail");
+		$details = json_decode($details);
+		foreach ($details as $item) {
+			$data = [
+				"fin_salesorder_id"=> $insertId,
+				"ItemId"=> $item->ItemId,
+				"fdc_qty"=> $item->fdc_qty,
+				"fdc_price"=> $item->fdc_price
+			];
+
+			// Validate SO Details
+			$this->form_validation->set_data($data);
+			if ($this->form_validation->run() == FALSE){
+				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+				$this->ajxResp["message"] = "Error Validation Forms";
+				$error = [
+					"detail"=> $this->form_validation->error_string(),
+				];
+				$this->ajxResp["data"] = $error;
+				$this->json_output();
+				return;	
+			}
+			
+			$this->sales_order_details_model->insert($data);
+			$dbError  = $this->db->error();
+			if ($dbError["code"] != 0){			
+				$this->ajxResp["status"] = "DB_FAILED";
+				$this->ajxResp["message"] = "Insert Failed";
+				$this->ajxResp["data"] = $this->db->error();
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
+		}
+
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
@@ -129,9 +183,9 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('sales_order_model');
+		$this->load->model('Sales_order_model');
 		$fin_salesorder_id = $this->input->post("fin_salesorder_id");
-		$data = $this->sales_order_model->getDataById($fin_salesorder_id);
+		$data = $this->Sales_order_model->getDataById($fin_salesorder_id);
 		$sales_order = $data["sales_order"];
 		if (!$sales_order) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
@@ -155,8 +209,19 @@ class Sales_order extends MY_Controller{
 		$data = [
 			"fin_salesorder_id" => $fin_salesorder_id,
             "fst_salesorder_no" => $this->input->post("fst_salesorder_no"),
-            "fdt_salesorder_date" => $this->input->post("fdt_salesorder_date"),
-            "fst_memo" =>$this->input->post("fst_memo"),
+			"fdt_salesorder_date" => dBDateFormat($this->input->post("fdt_salesorder_date")),
+			"fin_relation_id" => $this->input->post("fin_relation_id"),
+			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
+			"fin_sales_id" => $this->input->post("fin_sales_id"),
+			"fin_sales_spv_id" => $this->input->post("fin_sales_spv_id"),
+			"fin_sales_mgr_id" => $this->input->post("fin_sales_mgr_id"),
+			"fst_memo" => $this->input->post("fst_memo"),
+			"fbl_is_hold" => $this->input->post("fbl_is_hold"),
+			"fbl_is_vat_include" => $this->input->post("fbl_is_vat_include"),
+			"fdc_vat_percent" => $this->input->post("fdc_vat_percent"),
+			"fdc_vat_amount" => $this->input->post("fdc_vat_amount"),
+			"fdc_disc_percent" => $this->input->post("fdc_disc_percent"),
+			"fdc_disc_amount" => $this->input->post("fdc_disc_amount"),
 			"fst_active" => 'A'
 		];
 
@@ -172,6 +237,50 @@ class Sales_order extends MY_Controller{
 			return;
 		}
 
+		// Save Details
+		/*$this->load->model("sales_order_details_model");
+
+		$this->form_validation->set_rules($this->sales_order_details_model->getRules("ADD",0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+
+		$this->sales_order_details_model->deleteByDetail($fin_salesorder_id);
+
+		//$this->load->model("sales_order_details_model");		
+		$details = $this->input->post("detail");
+		$details = json_decode($details);
+		foreach ($details as $item) {
+			$data = [
+				"fin_salesorder_id"=> $fin_salesorder_id,
+				"ItemId"=> $item->$ItemId,
+				"fdc_qty"=> $item->fdc_qty,
+				"fdc_price"=> $item-> $fdc_price
+			];
+
+			// Validate Data Items
+			$this->form_validation->set_data($data);
+			if ($this->form_validation->run() == FALSE){
+				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+				$this->ajxResp["message"] = "Error Validation Forms";
+				$error = [
+					"detail"=> $this->form_validation->error_string(),
+				];
+				$this->ajxResp["data"] = $error;
+				$this->json_output();
+				return;	
+			}
+			
+			$this->sales_order_details_model->insert($data);
+			$dbError  = $this->db->error();
+			if ($dbError["code"] != 0){			
+				$this->ajxResp["status"] = "DB_FAILED";
+				$this->ajxResp["message"] = "Insert Failed";
+				$this->ajxResp["data"] = $this->db->error();
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
+		}*/
+
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
@@ -181,7 +290,7 @@ class Sales_order extends MY_Controller{
 
 	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("sales_order");
+		$this->datatables->setTableName("trsalesorder");
 
 		$selectFields = "fin_salesorder_id,fst_salesorder_no,fdt_salesorder_date,fst_memo,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
@@ -196,6 +305,8 @@ class Sales_order extends MY_Controller{
 		$arrData = $datasources["data"];
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
+			$insertDate = strtotime($data["fdt_salesorder_date"]);						
+			$data["fdt_salesorder_date"] = date("d-M-Y",$insertDate);
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-pencil'></i></a>
@@ -209,7 +320,7 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function fetch_data($fin_salesorder_id){
-		$this->load->model("sales_order_model");
+		$this->load->model("Sales_order_model");
 		$data = $this->sales_order_model->getDataById($fin_salesorder_id);
 		
 		$this->json_output($data);
@@ -224,14 +335,71 @@ class Sales_order extends MY_Controller{
 		}
 
 		$this->load->model("sales_order_model");
-
 		$this->sales_order_model->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
 	}
 
-	/*public function report_custpricingSales Order(){
+	public function get_msrelations(){
+		$term = $this->input->get("term");
+		$ssql = "select RelationId, RelationName from msrelations where RelationName like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_mswarehouse(){
+		$term = $this->input->get("term");
+		$ssql = "select fin_warehouse_id, fst_warehouse_name from mswarehouse where fst_warehouse_name like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_users(){
+		$term = $this->input->get("term");
+		$ssql = "select fin_user_id, fst_username from users where fst_username like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_data_item(){
+		$term = $this->input->get("term");
+		$ssql = "select ItemId, ItemName from msitems where ItemName like ? order by ItemName";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->json_output($rs);
+	}
+
+	public function get_data_disc(){
+		$term = $this->input->get("term");
+		$ssql = "select ItemDiscount from msitemdiscounts where ItemDiscount like ? order by ItemDiscount";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+
+		$this->json_output($rs);
+	}
+
+	public function getSoDetail($fin_salesorder_id){
+        $this->load->model("sales_order_details_model");
+        $result = $this->sales_order_details_model->getSoDetail($fin_salesorder_id);
+        $this->ajxResp["data"] = $result;
+        $this->json_output();
+	}
+
+	/*public function report_sales_order(){
         $this->load->library('pdf');
         //$customPaper = array(0,0,381.89,595.28);
         //$this->pdf->setPaper($customPaper, 'landscape');
@@ -239,12 +407,12 @@ class Sales_order extends MY_Controller{
 		//$this->pdf->setPaper('A4', 'landscape');
 		
 		$this->load->model("sales_order_model");
-		$listCustPricingSales Order = $this->sales_order_model->get_CustPricingSales Order();
+		$listSalesOrder = $this->sales_order_model->getSales_order();
         $data = [
-			"datas" => $listCustPricingSales Order
+			"datas" => $listSalesOrder
 		];
 			
-        $this->pdf->load_view('report/custpricingSales Order_pdf', $data);
+        $this->pdf->load_view('report/sales_order_pdf', $data);
         $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
 		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
     }*/

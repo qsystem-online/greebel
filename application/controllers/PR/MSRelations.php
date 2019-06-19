@@ -128,10 +128,9 @@ class MSRelations extends MY_Controller{
 			"Fax" => $this->input->post("Fax"),
 			"PostalCode" => $this->input->post("PostalCode"),
 			"CountryId" => $this->input->post("CountryId"),
-			"ProvinceId" => $this->input->post("ProvinceId"),
-			"DistrictId" => $this->input->post("DistrictId"),
-			"SubDistrictId" => $this->input->post("SubDistrictId"),
+			"AreaCode" => $this->input->post("kode"),
 			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
+			"NIK" => $this->input->post("NIK"),
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
 			"fst_active" => 'A'
@@ -194,10 +193,9 @@ class MSRelations extends MY_Controller{
 			"Fax" => $this->input->post("Fax"),
 			"PostalCode" => $this->input->post("PostalCode"),
 			"CountryId" => $this->input->post("CountryId"),
-			"ProvinceId" => $this->input->post("ProvinceId"),
-			"DistrictId" => $this->input->post("DistrictId"),
-			"SubDistrictId" => $this->input->post("SubDistrictId"),
+			"AreaCode" => $this->input->post("kode"),
 			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
+			"NIK" => $this->input->post("NIK"),
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
 			"fst_active" => 'A'
@@ -281,9 +279,9 @@ class MSRelations extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_msprovinces($countryId){
+	public function get_provinces($countryId){
 		$term = $this->input->get("term");
-		$ssql = "select ProvinceId, ProvinceName from msprovinces where ProvinceName like ? and CountryId = ? order by ProvinceName";
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(kode) - LENGTH(REPLACE(kode, '.', '')) = 0 ";
 		$qr = $this->db->query($ssql,['%'.$term.'%',$countryId]);
 		$rs = $qr->result();
 		
@@ -292,10 +290,9 @@ class MSRelations extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_msdistricts($provinceId){
-		$term = $this->input->get("term");
-		$ssql = "select DistrictId, DistrictName from msdistricts where DistrictName like ? and ProvinceId = ? order by DistrictName";
-		$qr = $this->db->query($ssql,['%'.$term.'%',$provinceId]);
+	public function get_districts($kode){
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(kode) - LENGTH(REPLACE(kode, '.', '')) = 1 and kode like ? ";
+		$qr = $this->db->query($ssql,[$kode .'%']);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
@@ -303,10 +300,19 @@ class MSRelations extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_mssubdistricts($districtId){
-		$term = $this->input->get("term");
-		$ssql = "select SubDistrictId, SubDistrictName from mssubdistricts where SubDistrictName like ? and DistrictId = ? order by SubDistrictName";
-		$qr = $this->db->query($ssql,['%'.$term.'%',$districtId]);
+	public function get_subdistricts($kode){
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(kode) - LENGTH(REPLACE(kode, '.', '')) = 2 and kode like ? ";
+		$qr = $this->db->query($ssql,[$kode .'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_village($kode){
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(kode) - LENGTH(REPLACE(kode, '.', '')) = 3 and kode like ? ";
+		$qr = $this->db->query($ssql,[$kode .'%']);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";

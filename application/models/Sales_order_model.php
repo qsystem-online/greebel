@@ -13,16 +13,6 @@ class Sales_order_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'fst_salesorder_no',
-            'label' => 'Sales Order No',
-            'rules' => 'required|min_length[5]',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
-            )
-        ];
-
-        $rules[] = [
             'field' => 'fdc_vat_percent',
             'label' => 'Vat Percent',
             'rules' => 'numeric',
@@ -68,10 +58,35 @@ class Sales_order_model extends MY_Model {
         $qr = $this->db->query($ssql, [$fin_salesorder_id]);
         $rwSalesOrder = $qr->row();
 
+        $ssql = "select a.*,b.ItemName,c.ItemDiscount from trsalesorderdetails a left join msitems b on a.fin_item_id = b.ItemId
+        left join msitemdiscounts c on a.fst_disc_item = c.ItemDiscount 
+        where a.fin_salesorder_id = ? order by fin_salesorder_id";
+		$qr = $this->db->query($ssql,[$fin_salesorder_id]);
+		$rsSODetails = $qr->result();
+
 		$data = [
-            "sales_order" => $rwSalesOrder
+            "sales_order" => $rwSalesOrder,
+            "so_details" => $rsSODetails
 		];
 
 		return $data;
     }
+
+    public function GenerateSONo($soDate = null) {
+        $soDate = ($soDate == null) ? date ("Y-m-d"): $soDate;
+        $tahun = date("ym", strtotime ($soDate));
+        $prefix = getDbConfig("salesorder_prefix");
+        $query = $this->db->query("SELECT MAX(fst_salesorder_no) as max_id FROM trsalesorder where fst_salesorder_no like '$tahun%'"); 
+        $row = $query->row_array();
+        $max_id = $row['max_id']; 
+        $max_id1 =(int) substr($max_id,8,5);
+        $fst_salesorder_no = $max_id1 +1;
+        $maxfst_salesorder_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_salesorder_no);
+        return $maxfst_salesorder_no;
+    }
+
+    /*public function getSales_order() {
+        $query = $this->db->get('trsalesorder');
+        return $query->result_array();
+    }*/
 }
