@@ -163,28 +163,36 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 					<label for="select-provincename" class="col-md-2 control-label"><?=lang("Province Name")?></label>
 						<div class="col-md-4">
-							<select id="select-provincename" class="form-control" name="ProvinceId">
+							<select id="select-provincename" class="form-control" name="kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="ProvinceName_err" class="text-danger"></div>
+							<div id="nama_err" class="text-danger"></div>
 						</div>
 
 					<label for="select-districtname" class="col-md-2 control-label"><?=lang("District Name")?></label>
 						<div class="col-md-4">
-							<select id="select-districtname" class="form-control" name="DistrictId">
+							<select id="select-districtname" class="form-control" name="kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="DistrictName_err" class="text-danger"></div>
+							<div id="nama_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
 					<label for="select-subdistrictname" class="col-md-2 control-label"><?=lang("Sub District Name")?></label>
 						<div class="col-md-4">
-							<select id="select-subdistrictname" class="form-control" name="SubDistrictId">
+							<select id="select-subdistrictname" class="form-control" name="kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="SubDistrictName_err" class="text-danger"></div>
+							<div id="nama_err" class="text-danger"></div>
+						</div>
+
+					<label for="select-village" class="col-md-2 control-label"><?=lang("Village Name")?></label>
+						<div class="col-md-4">
+							<select id="select-villagename" class="form-control" name="kode">
+								<option value="0">-- <?=lang("select")?> --</option>
+								<div id="nama_err" class="text-danger"></div>
+							</select>
 						</div>
 					</div>
 
@@ -350,8 +358,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#select-countryname").select2({
 			width: '100%',
-			minimumInputLength: 3,
-			tokenSeparators: [",", " "],
 			ajax: {
 				url: '<?=site_url()?>pr/msrelations/get_mscountries',
 				dataType: 'json',
@@ -379,9 +385,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$('#select-provincename').val(null).trigger('change');
 			$("#select-provincename").select2({
 				width: '100%',
-				tokenSeparators: [",", " "],
 				ajax: {
-					url: '<?=site_url()?>pr/msrelations/get_msprovinces/'+$("#select-countryname").val(),
+					url: '<?=site_url()?>pr/msrelations/get_provinces/'+$("#select-countryname").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -389,8 +394,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						data = data.data;
 						$.each(data,function(index,value){
 							items.push({
-								"id" : value.ProvinceId,
-								"text" : value.ProvinceName
+								"id" : value.kode,
+								"text" : value.nama
 							});
 						});
 						console.log(items);
@@ -408,9 +413,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$('#select-districtname').val(null).trigger('change');
 			$("#select-districtname").select2({
 				width: '100%',
-				tokenSeparators: [",", " "],
 				ajax: {
-					url: '<?=site_url()?>pr/msrelations/get_msdistricts/'+$("#select-provincename").val(),
+					url: '<?=site_url()?>pr/msrelations/get_districts/'+$("#select-provincename").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -418,8 +422,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						data = data.data;
 						$.each(data,function(index,value){
 							items.push({
-								"id" : value.DistrictId,
-								"text" : value.DistrictName
+								"id" : value.kode,
+								"text" : value.nama
 							});
 						});
 						console.log(items);
@@ -437,23 +441,50 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$('#select-subdistrictname').val(null).trigger('change');
 			$("#select-subdistrictname").select2({
 				width: '100%',
-				tokenSeparators: [",", " "],
 				ajax: {
-					url: '<?=site_url()?>pr/msrelations/get_mssubdistricts/'+$("#select-districtname").val(),
+					url: '<?=site_url()?>pr/msrelations/get_subdistricts/'+$("#select-districtname").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
-						data2 = [];
+						items = [];
 						data = data.data;
 						$.each(data,function(index,value){
-							data2.push({
-								"id" : value.SubDistrictId,
-								"text" : value.SubDistrictName
+							items.push({
+								"id" : value.kode,
+								"text" : value.nama
 							});
 						});
-						console.log(data2);
+						console.log(items);
 						return {
-							results: data2
+							results: items
+						};
+					},
+					cache: true,
+				}
+			});
+		});
+
+		$("#select-subdistrictname").change(function(event){
+			event.preventDefault();
+			$('#select-villagename').val(null).trigger('change');
+			$("#select-villagename").select2({
+				width: '100%',
+				ajax: {
+					url: '<?=site_url()?>pr/msrelations/get_village/'+$("#select-subdistrictname").val(),
+					dataType: 'json',
+					delay: 250,
+					processResults: function (data){
+						items = [];
+						data = data.data;
+						$.each(data,function(index,value){
+							items.push({
+								"id" : value.kode,
+								"text" : value.nama
+							});
+						});
+						console.log(items);
+						return {
+							results: items
 						};
 					},
 					cache: true,
@@ -580,6 +611,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				$("#BirthDate").datepicker('update', dateFormat(resp.ms_relations.BirthDate));
 
+				/* Split Area
+				var areaCode = resp.ms_relations.AreaCode;
+  				var province = areaCode.substring(0, 2);
+				var district = areaCode.substring(0, 5);
+				var subdistrict = areaCode.substring(0,8);
+				var village = areaCode.substring(0,12);
+				console.log(subdistrict);
+				$("#AreaCode").val(province).trigger('change');
+				$("#AreaCode").val(district).trigger('change');
+				$("#AreaCode").val(subdistrict).trigger('change');*/
+
 				// menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.ms_relations.RelationGroupName, resp.ms_relations.RelationGroupId, true, true);
 				// Append it to the select
@@ -587,17 +629,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				// menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.ms_relations.CountryName, resp.ms_relations.CountryId, true, true);
-				// Append it to the select
     			$('#select-countryname').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.ProvinceName, resp.ms_relations.ProvinceId, true, true);
+				var newOption = new Option(resp.ms_relations.namaprovince, resp.ms_relations.province, true, true);
 				$('#select-provincename').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.DistrictName, resp.ms_relations.DistrictId, true, true);
+				var newOption = new Option(resp.ms_relations.namadistrict, resp.ms_relations.district, true, true);
 				$('#select-districtname').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.SubDistrictName, resp.ms_relations.SubDistrictId, true, true);
+				var newOption = new Option(resp.ms_relations.namasubdistrict, resp.ms_relations.subdistrict, true, true);
 				$('#select-subdistrictname').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.ms_relations.namavillage, resp.ms_relations.village, true, true);
+				$('#select-villagename').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.CustPricingGroupName, resp.ms_relations.CustPricingGroupId, true, true);
 				$('#select-custpricinggroupname').append(newOption).trigger('change');

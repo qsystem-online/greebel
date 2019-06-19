@@ -10,15 +10,15 @@ class MSRelations_model extends MY_Model {
     }
 
     public function getDataById($RelationId){
-        //$ssql = "select * from " . $this->tableName ." where RelationId = ? and fst_active = 'A'";
-        $ssql = "select a.*,b.CountryName,c.ProvinceName,d.DistrictName,e.SubDistrictName,f.RelationGroupName,g.CustPricingGroupName,h.Notes from " . $this->tableName . " a 
-        left join mscountries b on a.CountryId = b.CountryId 
-        left join msprovinces c on a.ProvinceId = c.ProvinceId 
-        left join msdistricts d on a.DistrictId = d.DistrictId 
-        left join mssubdistricts e on a.SubDistrictId = e.SubDistrictId 
-        left join msrelationgroups f on a.RelationGroupId = f.RelationGroupId
-        left join mscustpricinggroups g on a.CustPricingGroupId = g.CustPricingGroupId
-        left join msrelationprintoutnotes h on a.RelationNotes = h.NoteId
+        $ssql = "select a.*,MID(a.AreaCode, 1, 2) AS province,MID(a.AreaCode, 1, 5) AS district,MID(a.AreaCode, 1, 8) AS subdistrict,MID(a.AreaCode, 1, 13) AS village,b.CountryName,c.nama as namaprovince,d.RelationGroupName,e.CustPricingGroupName,f.Notes,g.nama as namadistrict,h.nama as namasubdistrict,i.nama as namavillage from " . $this->tableName . " a left join 
+        mscountries b on a.CountryId = b.CountryId 
+        left join msarea c on MID(a.AreaCode, 1, 2) = c.kode
+        left join msrelationgroups d on a.RelationGroupId = d.RelationGroupId
+        left join mscustpricinggroups e on a.CustPricingGroupId = e.CustPricingGroupId
+        left join msrelationprintoutnotes f on a.RelationNotes = f.NoteId
+        left join msarea g on MID(a.AreaCode, 1, 5) = g.kode
+        left join msarea h on MID(a.AreaCode, 1, 8) = h.kode
+        left join msarea i on MID(a.AreaCode, 1, 13) = i.kode
         where a.RelationId = ? order by RelationId ";
 		$qr = $this->db->query($ssql, [$RelationId]);
         $rwMSRelations = $qr->row();
