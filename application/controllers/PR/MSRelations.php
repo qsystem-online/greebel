@@ -118,6 +118,7 @@ class MSRelations extends MY_Controller{
 		$data = [
 			"RelationGroupId" => $this->input->post("RelationGroupId"),
 			"RelationType" => implode(",",$this->input->post("RelationType")),
+			"fin_parent_id" => $this->input->post("fin_parent_id"),
 			"BusinessType" => $this->input->post("BusinessType"),
 			"RelationName" => $this->input->post("RelationName"),
 			"Gender" => $this->input->post("Gender"),
@@ -130,9 +131,14 @@ class MSRelations extends MY_Controller{
 			"PostalCode" => $this->input->post("PostalCode"),
 			"CountryId" => $this->input->post("CountryId"),
 			"AreaCode" => $this->input->post("kode"),
-			"CustPricingGroupid" => $this->input->post("CustPricingGroupId"),
+			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
+			"fin_sales_id" => $this->input->post("fin_sales_id"),
+			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
+			"fin_terms_payment" => $this->input->post("fin_terms_payment"),
+			"fin_top_komisi" => $this->input->post("fin_top_komisi"),
+			"fin_top_plus_komisi" => $this->input->post("fin_top_plus_komisi"),
 			"fst_active" => 'A'
 		];
 
@@ -183,6 +189,7 @@ class MSRelations extends MY_Controller{
 			"RelationId" => $RelationId,
 			"RelationGroupId" => $this->input->post("RelationGroupId"),
 			"RelationType" => implode(",",$this->input->post("RelationType")),
+			"fin_parent_id" => $this->input->post("fin_parent_id"),
 			"BusinessType" => $this->input->post("BusinessType"),
 			"RelationName" => $this->input->post("RelationName"),
 			"Gender" => $this->input->post("Gender"),
@@ -195,9 +202,13 @@ class MSRelations extends MY_Controller{
 			"PostalCode" => $this->input->post("PostalCode"),
 			"CountryId" => $this->input->post("CountryId"),
 			"AreaCode" => $this->input->post("kode"),
-			"CustPricingGroupid" => $this->input->post("CustPricingGroupId"),
+			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
+			"fin_sales_id" => $this->input->post("fin_sales_id"),
+			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
+			"fin_terms_payment" => $this->input->post("fin_terms_payment"),
+			"fin_top_plus_komisi" => $this->input->post("fin_top_plus_komisi"),
 			"fst_active" => 'A'
 		];
 
@@ -224,8 +235,8 @@ class MSRelations extends MY_Controller{
 		$this->load->library("datatables");
 		$this->datatables->setTableName("msrelations");
 
-		$selectFields = "RelationId,RelationGroupId,RelationType,RelationName,'action' as action";
-		$this->datatables->setSelectFields($selectFields);
+		$SELECTFields = "RelationId,RelationGroupId,RelationType,RelationName,'action' as action";
+		$this->datatables->setSELECTFields($SELECTFields);
 
 		$searchFields =[];
 		$searchFields[] = $this->input->get('optionSearch'); //["RelationId","RelationName"];
@@ -257,9 +268,20 @@ class MSRelations extends MY_Controller{
 		$this->json_output($data);
 	}
 
+	public function get_parentId(){
+		$term = $this->input->get("term");
+		$ssql = "SELECT RelationId, RelationName FROM msrelations WHERE RelationType = 1" ;
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
 	public function get_msrelationgroups(){
 		$term = $this->input->get("term");
-		$ssql = "select RelationGroupId, RelationGroupName from msrelationgroups where RelationGroupName like ?";
+		$ssql = "SELECT RelationGroupId, RelationGroupName from msrelationgroups where RelationGroupName like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -270,7 +292,7 @@ class MSRelations extends MY_Controller{
 
 	public function get_mscountries(){
 		$term = $this->input->get("term");
-		$ssql = "select CountryId, CountryName from mscountries where CountryName like ?";
+		$ssql = "SELECT CountryId, CountryName from mscountries where CountryName like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -322,7 +344,7 @@ class MSRelations extends MY_Controller{
 
 	public function get_mscustpricinggroups(){
 		$term = $this->input->get("term");
-		$ssql = "select CustPricingGroupId, CustPricingGroupName from mscustpricinggroups where CustPricingGroupName like ?";
+		$ssql = "SELECT CustPricingGroupid, CustPricingGroupName from mscustpricinggroups where CustPricingGroupName like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -333,7 +355,29 @@ class MSRelations extends MY_Controller{
 
 	public function get_msrelationprintoutnotes(){
 		$term = $this->input->get("term");
-		$ssql = "select NoteId, Notes from msrelationprintoutnotes where Notes like ?";
+		$ssql = "SELECT NoteId, Notes from msrelationprintoutnotes where Notes like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_salesId(){
+		$term = $this->input->get("term");
+		$ssql = "SELECT fin_user_id, fst_username from users where fin_department_id = 1 ";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_warehouseId(){
+		$term = $this->input->get("term");
+		$ssql = "SELECT fin_warehouse_id, fst_warehouse_name from mswarehouse where fst_warehouse_name like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
