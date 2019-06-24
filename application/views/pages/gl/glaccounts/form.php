@@ -218,16 +218,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#select-MainGL").change(function(event) {
             event.preventDefault();
-
-            
             mainGL = $("#select-MainGL").select2("data")[0];
             console.log(mainGL);
             $("#GLAccountCode").inputmask({
-                mask: mainGL.prefix + ".999",
+                mask: mainGL.prefix.replace(/9/g,"\\9") + "<?= $mainGLSeparator ?>" + "[9][9][9][9][9][9]",
+                greedy:true,
             });
             $("#GLAccountCode").attr("placeholder",mainGL.prefix);
 
-            $('#select-ParentGL').val(null).trigger('change');
+            //$('#select-ParentGL').val(null).trigger('change');
             $("#select-ParentGL").select2({
                 width: '100%',
                 ajax: {
@@ -252,6 +251,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         })
 
+
+        $("#select-ParentGL").change(function(event) {
+            event.preventDefault();
+            parentGL = $("#select-ParentGL").select2("data")[0];
+            console.log(parentGL);
+            //alert(parentGL.id.replace(/9/g,'\\9'));
+            $("#GLAccountCode").inputmask({
+                mask: parentGL.id.replace(/9/g,"\\9") + "<?= $parentGLSeparator ?>" + "[9][9][9][9][9][9]",
+                greedy:true,
+            });
+            $("#GLAccountCode").attr("placeholder",parentGL.id);
+            
+        });
 
         $("#select-CurrCode").select2({
             width: '100%',

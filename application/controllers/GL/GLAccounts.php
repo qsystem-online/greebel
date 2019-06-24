@@ -70,6 +70,9 @@ class GLAccounts extends MY_Controller
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add GL Account" : "Update GL Account";
         $data["GLAccountCode"] = $GLAccountCode;
+        $data["mainGLSeparator"] = getDbConfig("main_glaccount_separator");
+        $data["parentGLSeparator"] = getDbConfig("parent_glaccount_separator");
+        
 
         $page_content = $this->parser->parse('pages/gl/glaccounts/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
