@@ -11,17 +11,17 @@ class MSCurrencies_model extends MY_Model{
     }
 
     public function getDataById($CurrCode){
-        $ssql = "SELECT CurrCode,CurrName FROM mscurrencies Where CurrCode = ? and fst_active = 'A' ";
-        $qr = $this->db->query($ssql,[$CurrCode]);
+        $ssql = "SELECT * FROM mscurrencies WHERE CurrCode = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$CurrCode]);
         $rwCurrencies = $qr->row();
 
-        $ssql = "SELECT a.*,b.CurrCode FROM mscurrencies a LEFT JOIN mscurrenciesratedetails b ON a.CurrCode = b.CurrCode WHERE a.CurrCode = ? and fst_active = 'A'";
+        $ssql = "SELECT a.*,b.CurrCode FROM mscurrencies a LEFT JOIN mscurrenciesratedetails b ON a.CurrCode = b.CurrCode WHERE a.CurrCode = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$CurrCode]);
-        $rsCurrencies = $qr->result();
+        $rwCurrenciesD = $qr->row();
 
         $data = [
-            "ms_Currencies" => $rwCurrencies,
-            "ms_CurrenciesD" => $rsCurrencies
+            "msCurrencies" => $rwCurrencies,
+            "ms_CurrenciesD" => $rwCurrenciesD
         ];
 
         return $data;
@@ -30,6 +30,15 @@ class MSCurrencies_model extends MY_Model{
     public function getRules($mode = "ADD", $id = 0)
     {
         $rules = [];
+
+        $rules[] = [
+            'field' => 'CurrCode',
+            'label' => 'Currencies Code',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong'
+            )
+        ];
 
         $rules[] = [
             'field' => 'CurrName',
