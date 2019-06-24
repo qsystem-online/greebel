@@ -11,15 +11,18 @@ class MSRelations_model extends MY_Model {
 
     public function getDataById($RelationId){
         $ssql = "select a.*,MID(a.AreaCode, 1, 2) AS province,MID(a.AreaCode, 1, 5) AS district,MID(a.AreaCode, 1, 8) AS subdistrict,MID(a.AreaCode, 1, 13) AS village,b.CountryName,
-        c.nama as namaprovince,d.nama as namadistrict,e.nama as namasubdistrict,f.nama as namavillage,g.RelationGroupName,h.CustPricingGroupName,i.Notes from " . $this->tableName . " a 
+        c.nama as namaprovince,d.nama as namadistrict,e.nama as namasubdistrict,f.nama as namavillage,g.RelationGroupName,h.CustPricingGroupName,i.Notes,j.fst_username,
+        k.fst_warehouse_name from " . $this->tableName . " a 
         left join mscountries b on a.CountryId = b.CountryId 
         left join msarea c on MID(a.AreaCode, 1, 2) = c.kode
         left join msarea d on MID(a.AreaCode, 1, 5) = d.kode
         left join msarea e on MID(a.AreaCode, 1, 8) = e.kode
         left join msarea f on MID(a.AreaCode, 1, 13) = f.kode
         left join msrelationgroups g on a.RelationGroupId = g.RelationGroupId
-        left join mscustpricinggroups h on a.CustPricingGroupId = h.CustPricingGroupId
+        left join mscustpricinggroups h on a.CustPricingGroupid = h.CustPricingGroupid
         left join msrelationprintoutnotes i on a.RelationNotes = i.NoteId
+        left join users j on a.fin_sales_id = j.fin_user_id
+        left join mswarehouse k on a.fin_warehouse_id = k.fin_warehouse_id
         where a.RelationId = ? order by RelationId ";
 		$qr = $this->db->query($ssql, [$RelationId]);
         $rwMSRelations = $qr->row();
