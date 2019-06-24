@@ -1,7 +1,7 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSCurrencies_model extends MY_Model
-{
+
+class MSCurrencies_model extends MY_Model{
     public $tableName = "mscurrencies";
     public $pkey = "CurrCode";
 
@@ -10,14 +10,18 @@ class MSCurrencies_model extends MY_Model
         parent::__construct();
     }
 
-    public function getDataById($CurrCode)
-    {
-        $ssql = "select * from " . $this->tableName . " where CurrCode = ? and fst_active = 'A'";
+    public function getDataById($CurrCode){
+        $ssql = "SELECT CurrCode,CurrName FROM mscurrencies Where CurrCode = ? and fst_active = 'A' ";
+        $qr = $this->db->query($ssql,[$CurrCode]);
+        $rwCurrencies = $qr->row();
+
+        $ssql = "SELECT a.*,b.CurrCode FROM mscurrencies a LEFT JOIN mscurrenciesratedetails b ON a.CurrCode = b.CurrCode WHERE a.CurrCode = ? and fst_active = 'A'";
         $qr = $this->db->query($ssql, [$CurrCode]);
-        $rw = $qr->row();
+        $rsCurrencies = $qr->result();
 
         $data = [
-            "" => $rw
+            "ms_Currencies" => $rwCurrencies,
+            "ms_CurrenciesD" => $rsCurrencies
         ];
 
         return $data;
@@ -28,34 +32,14 @@ class MSCurrencies_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'CurrCode',
-            'label' => 'Currencies Code',
+            'field' => 'CurrName',
+            'label' => 'Currencies Name',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
             )
         ];
 
-        $rules[] = [
-            'field' => 'CurrName',
-            'label' => 'Currencies Name',
-            'rules' => 'required|min_length[5]',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
-            )
-        ];
-
         return $rules;
-    }
-
-    public function get_CurrCode()
-    {
-        $term = $this->input->get("term");
-        $ssql = "select * from " . $this->tableName . " where fst_active = 'A'";
-        $qr = $this->db->query($ssql, ['%' . $term . '%']);
-        $rs = $qr->result();
-
-        $this->json_output($rs);
     }
 }

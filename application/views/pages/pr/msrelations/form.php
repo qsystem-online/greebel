@@ -272,14 +272,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">
 					<label for="fin_terms_payment" class="col-md-2 control-label"><?=lang("Terms Payment")?></label>
-						<div class="col-md-1">
+						<div class="col-md-4">
 							<input type="text" class="form-control" id="fin_terms_payment" placeholder="<?=lang("Terms Payment")?>" name="fin_terms_payment">
 							<div id="fin_terms_payment_err" class="text-danger"></div>
 						</div>
-					<label for="fin_terms_payment" class="col-sm-1 control-label"><?=lang("Hari")?></label>
+					<label for="fin_terms_payment" class="col-sm-0 control-label"><?=lang("Hari")?></label>
+					</div>
 
-					<label for="fin_top_komisi" class="col-md-4 control-label"><?=lang("Top Commission")?></label>
-						<div class="col-md-4">
+					<div class="form-group">
+					<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("Top Commission")?></label>
+						<div class="col-md-10">
 							<input type="text" class="form-control" id="fin_top_komisi" placeholder="<?=lang("Top Commission")?>" name="fin_top_komisi">
 							<div id="fin_top_komisi_err" class="text-danger"></div>
 						</div>
@@ -287,7 +289,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">
 					<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("Top Plus Commission")?></label>
-						<div class="col-md-4">
+						<div class="col-md-10">
 							<input type="text" class="form-control" id="fin_top_plus_komisi" placeholder="<?=lang("Top Plus Commission")?>" name="fin_top_plus_komisi">
 							<div id="fin_top_plus_komisi_err" class="text-danger"></div>
 						</div>

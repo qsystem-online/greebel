@@ -235,8 +235,8 @@ class MSRelations extends MY_Controller{
 		$this->load->library("datatables");
 		$this->datatables->setTableName("msrelations");
 
-		$SELECTFields = "RelationId,RelationGroupId,RelationType,RelationName,'action' as action";
-		$this->datatables->setSELECTFields($SELECTFields);
+		$selectFields = "RelationId,RelationGroupId,RelationType,RelationName,'action' as action";
+		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
 		$searchFields[] = $this->input->get('optionSearch'); //["RelationId","RelationName"];
