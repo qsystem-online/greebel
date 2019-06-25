@@ -195,8 +195,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="soModal" class="modal fade" role="dialog" >
-	<div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">
+<div id="myModal" class="modal fade" role="dialog" >
+	<div class="modal-dialog" style="display:table">
 		<!-- modal content -->
 		<div class="modal-content">
 			<div class="modal-header">
@@ -208,8 +208,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<form  class="form-horizontal">
 				<input type='hidden' id='fin-detail-id'/>
 					<div class="form-group">
-						<label for="select-items" class="col-md-4 control-label"><?=lang("Items")?></label>
-						<div class="col-md-8">
+						<label for="select-items" class="col-md-2 control-label"><?=lang("Items")?></label>
+						<div class="col-md-10">
 							<select id="select-items" class="form-control"></select>
 							<div id="ItemId_err" class="text-danger"></div>
 						</div>
@@ -232,32 +232,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-						<label for="fdc_price" class="col-md-4 control-label"><?=lang("Price")?></label>
-						<div class="col-md-8">
+						<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?></label>
+						<div class="col-md-10">
 							<input type="text" class="form-control text-right money" id="so-price" value="0">
 							<div id="fdc_price_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="select-disc" class="col-md-4 control-label"><?=lang("Disc ++")?></label>
-						<div class="col-md-8">
+						<label for="select-disc" class="col-md-2 control-label"><?=lang("Disc ++")?></label>
+						<div class="col-md-10">
 							<select id="select-disc" class="form-control" name="fst_disc_item"></select>
 							<div id="fst_disc_item_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="fdc_disc_amount" class="col-md-4 control-label"><?=lang("Disc Amt")?></label>
-						<div class="col-md-8">
+						<label for="fdc_disc_amount" class="col-md-2 control-label"><?=lang("Disc Amt")?></label>
+						<div class="col-md-10">
 							<input type="text" class="form-control text-right" id="fdc_disc_amount" readonly>
 							<div id="fdc_disc_amount_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="fst_memo_item" class="col-md-4 control-label"><?=lang("Memo")?></label>
-						<div class="col-md-8">
+						<label for="fst_memo_item" class="col-md-2 control-label"><?=lang("Memo")?></label>
+						<div class="col-md-10">
 							<input type="text" class="form-control" id="fst_memo_item">
 							<div id="fst_memo_item_err" class="text-danger"></div>
 						</div>
@@ -606,7 +606,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				return;
 			}
 			mode_so_detail = "ADD";
-			$("#soModal").modal({
+			$("#myModal").modal({
 				backdrop:"static",
 			});
 			$('#select-items').val(null).trigger('change');
@@ -724,7 +724,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			$(".btn-edit").click(function(event){
 				event.preventDefault();
-				$("#soModal").modal({
+				$("#myModal").modal({
 					backdrop:"static",
 				});
 
