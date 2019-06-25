@@ -102,7 +102,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group hide">
 						<label for="CurrCode" class="col-md-4 control-label"><?=lang("Currencies Code")?></label>
 						<div class="col-md-8">
-							<input type="text" class="form-control text-right">
+							<input type="text" class="form-control text-right" id="CurrCode" name="CurrCode">
 							<div id="CurrCode_err" class="text-danger"></div>
 						</div>
 					</div>
