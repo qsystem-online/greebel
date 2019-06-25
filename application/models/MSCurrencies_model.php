@@ -11,17 +11,17 @@ class MSCurrencies_model extends MY_Model{
     }
 
     public function getDataById($CurrCode){
-        $ssql = "SELECT * FROM mscurrencies WHERE CurrCode = ? and fst_active = 'A'";
+        $ssql = "SELECT CurrCode,CurrName FROM mscurrencies where CurrCode = ? and fst_active = 'A'";
         $qr = $this->db->query($ssql, [$CurrCode]);
-        $rwCurrencies = $qr->row();
+        $rwCurrency = $qr->row();
 
-        $ssql = "SELECT a.*,b.CurrCode FROM mscurrencies a LEFT JOIN mscurrenciesratedetails b ON a.CurrCode = b.CurrCode WHERE a.CurrCode = ? and a.fst_active = 'A'";
+        $ssql = "SELECT a.*,b.CurrCode,Date,ExchangeRate2IDR FROM mscurrencies a LEFT JOIN mscurrenciesratedetails b ON a.CurrCode = b.CurrCode WHERE a.CurrCode = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$CurrCode]);
-        $rwCurrenciesD = $qr->row();
+        $rsCurrDetails = $qr->result();
 
         $data = [
-            "msCurrencies" => $rwCurrencies,
-            "ms_CurrenciesD" => $rwCurrenciesD
+            "msCurrency" => $rwCurrency,
+            "msCurrDetails" => $rsCurrDetails
         ];
 
         return $data;

@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
+<link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 
 <style type="text/css">
@@ -41,7 +42,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmCurrency" class="form-horizontal" action="<?=site_url()?>Master/currency/add" method="POST" enctype="multipart/form-data">			
+            <form id="frmCurrency" class="form-horizontal" action="<?=site_url()?>master/currency/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
@@ -49,7 +50,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
                         <label for="CurrCode" class="col-md-2 control-label"><?=lang("Currencies Code")?> #</label>
                             <div class="col-md-10">
-                                <input type="text" class="form-control" id="CurrCode" placeholder="<?=lang("Currencies Code")?>" name="CurrCode">
+                                <input type="text" class="form-control" id="CurrCode" placeholder="<?=lang("Currencies Code")?>" name="CurrCode" value="<?=$CurrCode?>">
                                 <div id="CurrCode_err" class="text-danger"></div>
                             </div>
 					</div>
@@ -86,7 +87,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="myModal" class="modal fade" role="dialog" >
+<div id="CurrDetailModal" class="modal fade" role="dialog" >
 	<div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">
 		<!-- modal content -->
 		<div class="modal-content">
@@ -98,10 +99,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<div class="modal-body">
 				<form  class="form-horizontal">
 				
-					<div class="form-group">
+					<div class="form-group hide">
 						<label for="CurrCode" class="col-md-4 control-label"><?=lang("Currencies Code")?></label>
 						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="CurrCode" placeholder="<?=lang("Currencies Code")?>" name="CurrCode">
+							<input type="text" class="form-control text-right">
 							<div id="CurrCode_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -149,6 +150,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		var edited_curr_detail = null;
 		var mode_curr_detail = "ADD";
 
+		$(".money").inputmask({
+			//alias: 'numeric', 
+			autoGroup: true,
+      		groupSeparator: ",",
+			allowMinus: false,  
+			digits: 5
+		});
+
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			data = $("#frmCurrency").serializeArray();
@@ -170,15 +179,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
-				url =  "<?= site_url() ?>Master/currency/ajx_add_save";
+				url =  "<?= site_url() ?>master/currency/ajx_add_save";
 			}else{
-				url =  "<?= site_url() ?>Master/currency/ajx_edit_save";
+				url =  "<?= site_url() ?>master/currency/ajx_edit_save";
 			}
 
 			//var formData = new FormData($('form')[0])
 			$.ajax({
 				type: 'POST',
-				//enctype: 'multipart/form-data',
+				enctype: 'multipart/form-data',
 				url: url,
 				data: data,
 				timeout: 600000,
@@ -190,7 +199,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>Master/currency";
+										window.location.href = "<?= site_url() ?>master/currency";
 										return;
 									}
 								},
@@ -228,14 +237,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
 			mode_curr_detail = "ADD";
-			$("#myModal").modal({
+			$("#CurrDetailModal").modal({
 				backdrop:"static",
 			});
 		})
 
 		$("#btn-add-currDetails").click(function(event){
 			event.preventDefault();
-			$("#myModal").modal('show');
+			$("#CurrDetailModal").modal('show');
 
 			data = {
 				//recid:$("#recid").val(),
@@ -259,8 +268,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).DataTable({
 			columns:[
 				//{"title" : "recid","width": "0%",sortable:false,data:"recid",visible:false},
-				{"title" : "CurrCode","width": "0%",sortable:false,data:"CurrCode",visible:true},
-				{"title" : "Date","width": "20%",sortable:false,data:"Date",className: 'dt-left'},
+				{"title" : "CurrCode","width": "20%",sortable:false,data:"CurrCode",visible:true},
+				{"title" : "Date","width": "20%",sortable:false,data:"Date",className: 'dt-right'},
 				{"title" : "Exchange Rate To IDR","width": "20%",data:"ExchangeRate2IDR",render: $.fn.dataTable.render.number( ',', '.', 2 ),className:'dt-right'},
 				{"title" : "Action","width": "15%",data:"action",sortable:false,className:'dt-body-center text-center'},
 			],
@@ -285,7 +294,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			$(".btn-edit").click(function(event){
 				event.preventDefault();
-				$("#myModal").modal({
+				$("#CurrDetailModal").modal({
 					backdrop:"static",
 				});
 
@@ -296,7 +305,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				edited_curr_detail = t.row(trRow);
 				row = edited_curr_detail.data();	
 
-				//$("#rec_id").val(row.rec_id);
+				//$("#recid").val(row.recid);
 				$("#CurrCode").val(row.CurrCode);
 				$("#Date").val(row.Date);
 				$("#ExchangeRate2IDR").val(row.ExchangeRate2IDR);
@@ -306,19 +315,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	function init_form(CurrCode){
 		//alert("Init Form");
-		var url = "<?=site_url()?>Master/currency/fetch_data/" + CurrCode;
+		var url = "<?=site_url()?>master/currency/fetch_data/" + CurrCode;
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.msCurrencies);
+				console.log(resp.msCurrency);
 
-				$.each(resp.msCurrencies, function(name, val){
+				$.each(resp.msCurrency, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 						type = $el.attr('type');
 					switch(type){
 						case 'checkbox':
-                            $el.filter('[value="' + val + '"]').attr('checked', 'checked');
+							$el.filter('[value="' + val + '"]').attr('checked', 'checked');
                             break;
 						case 'radio':
 							$el.filter('[value="' + val + '"]').attr('checked', 'checked');
@@ -329,11 +338,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
-				$("#Date").datepicker('update', dateFormat(resp.ms_CurrenciesD.Date));
+				$("#Date").datepicker('update', dateFormat(resp.msCurrDetails.Date));
 		
-				CurrRateDetails = resp.ms_CurrenciesD;
-				$.each(CurrRateDetails, function(idx, detail){
+				CurrenciesRateDetails = resp.msCurrDetails;
+				$.each(CurrenciesRateDetails, function(idx, detail){
 					data = {
+						//recid:detail.recid,
 						CurrCode:detail.CurrCode,
 						Date:detail.Date,
 						ExchangeRate2IDR:detail.ExchangeRate2IDR,
@@ -351,6 +361,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	}
 </script>
 
+<!-- Select2 -->
+<script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/dataTables.min.js"></script>
 <script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
