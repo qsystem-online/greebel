@@ -29,6 +29,8 @@ class Sales_order_model extends MY_Model {
         $qr = $this->db->query($ssql, [$fin_salesorder_id]);
         $rwSalesOrder = $qr->row();
 
+        $ssql = "select a.*b."
+
         $ssql = "select a.*,b.ItemName,c.SellingPrice,d.ItemDiscount from trsalesorderdetails a left join msitems b on a.fin_item_id = b.ItemId
         left join msitemspecialpricinggroupdetails c on a.fdc_price = c.SellingPrice
         left join msitemdiscounts d on a.fst_disc_item = d.ItemDiscount 
