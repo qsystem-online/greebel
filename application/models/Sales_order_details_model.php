@@ -20,7 +20,7 @@ class Sales_order_details_model extends MY_Model {
         $rules[] = [
             'field' => 'fdc_qty',
             'label' => 'Qty',
-            'rules' => 'numeric',
+            'rules' => 'required|numeric',
 			'errors' => array(
                 'required' => '%s tidak boleh kosong',
                 'numeric' => '%s harus berupa angka',
@@ -42,7 +42,7 @@ class Sales_order_details_model extends MY_Model {
     }
 
     public function getSoDetail($fin_salesorder_id){
-        $ssql = "select a.*,b.ItemName,c.ItemDiscount from ". $this->tableName .  " a inner join msitems b on a.fin_item_id = b.ItemId 
+        $ssql = "select a.*,b.ItemName,c.ItemDiscount from ". $this->tableName .  " a left join msitems b on a.fin_item_id = b.ItemId 
         left join msitemdiscounts c on a.fst_disc_item = c.ItemDiscount 
         where a.fin_salesorder_id = ? and a.fst_active = 'A'";        
         $qr = $this->db->query($ssql,[$fin_salesorder_id]);

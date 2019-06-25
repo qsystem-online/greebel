@@ -366,7 +366,7 @@ class Sales_order extends MY_Controller{
 
 	public function get_users(){
 		$term = $this->input->get("term");
-		$ssql = "select fin_user_id, fst_username from users where fst_username like ?";
+		$ssql = "select fin_user_id, fst_username from users where fst_username like ? order by fst_username";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		

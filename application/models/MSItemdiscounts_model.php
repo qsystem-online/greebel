@@ -11,10 +11,10 @@ class MSItemdiscounts_model extends MY_Model {
     public function getDataById($RecId ){
         $ssql = "select * from " . $this->tableName ." where RecId = ? and fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$RecId]);
-        $rw = $qr->row();
+        $rwDiscounts = $qr->row();
         
 		$data = [
-            "" => $rw
+            "msDiscounts" => $rwDiscounts
 		];
 
 		return $data;
@@ -26,10 +26,9 @@ class MSItemdiscounts_model extends MY_Model {
         $rules[] = [
             'field' => 'ItemDiscount',
             'label' => 'Item Discount',
-            'rules' => 'required|min_length[5]',
+            'rules' => 'required',
             'errors' => array(
-                'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
+                'required' => '%s tidak boleh kosong'
             )
         ];
 
