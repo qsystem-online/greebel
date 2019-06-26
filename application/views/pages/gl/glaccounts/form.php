@@ -106,7 +106,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
                         <div class="form-group">
                             <label for="isAllowInCashBankModule" class="col-sm-2 control-label"><?= lang("Allow") ?> :</label>
-                            <div class="checkbox">
+                            <div class="checkbox col-sm-2">
                                 <label><input id="isAllowInCashBankModule" type="checkbox" name="isAllowInCashBankModule" value="1"><?= lang("Allow In CashBank Module") ?></label><br>
                             </div>
                         </div>
