@@ -377,7 +377,7 @@ class Sales_order extends MY_Controller{
 
 	public function get_data_item(){
 		$term = $this->input->get("term");
-		$ssql = "select ItemId, CONCAT(ItemCode,' - ' ,ItemName) as ItemName from msitems where CONCAT(ItemCode,' - ' ,ItemName) like ? order by ItemName";
+		$ssql = "select ItemId, CONCAT(ItemCode,' - ' ,ItemName) as ItemName,MaxItemDiscount from msitems where CONCAT(ItemCode,' - ' ,ItemName) like ? order by ItemName";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		

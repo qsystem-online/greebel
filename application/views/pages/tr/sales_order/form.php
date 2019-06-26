@@ -147,7 +147,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div class="form-group">
 								<label for="fst_memo" class="col-sm-2 control-label"><?= lang("Memo") ?> </label>
 								<div class="col-sm-10">
-									<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" row="5"></textarea>
+									<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="5"></textarea>
 									<div id="fst_memo_err" class="text-danger"></div>
 								</div>
 							</div>
@@ -242,7 +242,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="select-disc" class="col-md-2 control-label"><?=lang("Disc ++")?></label>
 						<div class="col-md-10">
-							<select id="select-disc" class="form-control" name="fst_disc_item"></select>
+							<select id="select-disc" class="form-control text-right" name="fst_disc_item">
+								<option value="0">0</option>							
+							</select>
 							<div id="fst_disc_item_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -277,14 +279,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			
 <script type="text/javascript">
 	var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+	var edited_so_detail = null;
+	var mode_so_detail = "ADD";
+	var arrDetail;
+
 	$(function(){
 		<?php if($mode == "EDIT"){?>
 			init_form($("#fin_salesorder_id").val());
 		<?php } ?>
 
-		var edited_so_detail = null;
-		var mode_so_detail = "ADD";
-
+		
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			data = $("#frmSalesOrder").serializeArray();
@@ -355,7 +359,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					console.log("ERROR : ", e);
 					$("#btnSubmit").prop("disabled", false);
 				}
-
 			});
 		});
 
@@ -493,6 +496,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						data2.push({
 							"id" : value.ItemId,
 							"text" : value.ItemName
+							"maxItemDiscount" : value.MaxItemDiscount
 						});	
 					});
 					console.log(data2);
@@ -505,6 +509,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$("#select-disc").select2({
+			dir: 'rtl',
 			width: '100%',
 			ajax: {
 				url: '<?=site_url()?>tr/sales_order/get_data_disc',
@@ -537,9 +542,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			$("#fdc_disc_amount").val( money_format(calculateDisc(amount,disc)) ); 
 		});
-
-
-		var arrDetail;
 
 		$('#select-items').on('select2:select', function (e) {
 			//var data = e.params.data;
@@ -597,10 +599,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 		
 		
-
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
-			console.log($("#select-relations").val());
+			//console.log($("#select-relations").val());
 			if ($("#select-relations").val() == "0"){
 				alert("invalid cust");
 				return;
@@ -609,13 +610,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#myModal").modal({
 				backdrop:"static",
 			});
-			$('#select-items').val(null).trigger('change');
-			$('#select-disc').val(null).trigger('change');
-			$("#fin-detail-id").val(0);
-			$("#so-qty").val(1);
-			$("#so-price").val(0);
-			$("#fdc_disc_amount").val(0);
-			$("fst_memo_item").val(0);
+			clearDetailForm();			
+			
 		})
 
 		$(document).bind('keydown', 'alt+d', function(){
@@ -635,8 +631,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			disc = money_parse($("#fdc_disc_amount").val());
 
 			data = {
-				//rec_id:$("#rec_id").val(),
-				fin_salesorder_id:$("#fin-detail-id").val(),
+				rec_id:$("#fin-detail-id").val(),
 				fin_item_id:selected_items.id,
 				ItemName:selected_items.text,
 				fdc_qty: $("#so-qty").val(),
@@ -652,11 +647,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			t = $('#tblSODetails').DataTable();
 			if(mode_so_detail == "EDIT"){
 				edited_so_detail.data(data).draw(false);
+				edited_so_detail = null;
 			}else{
 				t.row.add(data).draw(false);	
 			}
 
 			calculateTotal();
+			clearDetailForm();
 		});
 
 		$("#fdc_vat_percent").change(function(e){
@@ -669,7 +666,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 	data.sessionId = "TEST SESSION ID";
 		}).DataTable({
 			columns:[
-				{"title" : "fin_salesorder_id","width": "0%",sortable:false,data:"fin_salesorder_id",visible:false},
+				{"title" : "id","width": "5%",sortable:false,data:"rec_id",visible:true},
 				{"title" : "Items","width": "15%",sortable:false,data:"fin_item_id",
 					render: function(data,type,row){
 						console.log(row);
@@ -735,16 +732,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				edited_so_detail = t.row(trRow);
 				row = edited_so_detail.data();	
 
-				//$("#rec_id").val(row.rec_id);
-				$("#fin_salesorder_id").val(row.fin_salesorder_id);
-				$("#select-items").val(row.ItemId).change();
+				$('#select-items').val(row.fin_item_id).trigger('change');
+				$('#select-disc').val(row.fst_disc_item).trigger('change');
+				$('#select-unit').val(row.fst_unit).trigger('change');
+				$("#fin-detail-id").val(row.rec_id).trigger('change');
 				$("#so-qty").val(row.fdc_qty);
-				$("#so-price").val(row.fdc_price);
-				$("#select-disc").val(row.ItemDiscount).change();
+				$("#so-price").val(money_format(row.fdc_price));
+				$("#fdc_disc_amount").val(money_format(row.fdc_disc_amount));
+				$("#fst_memo_item").val(row.fst_memo_item);
+
 			});
 		});
 
 	});
+
+	function clearDetailForm(){
+		$('#select-items').val(null).trigger('change');
+		$('#select-disc').val("0").trigger('change');
+		$('#select-unit').val(null).trigger('change');
+		$("#fin-detail-id").val(0);
+		$("#so-qty").val(1);
+		$("#so-price").val(0);
+		$("#fdc_disc_amount").val(0);
+		$("#fst_memo_item").val("");
+	}
+
 
 	function calculateDisc(amount, disc){
 		var strArray = disc.split("+");
@@ -888,6 +900,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 	}
+
+
 </script>
 
 <!-- Select2 -->

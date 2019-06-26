@@ -293,6 +293,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
     function init_form(GLAccountCode) {
         //alert("Init Form");
+        alert(GLAccountCode);
         var url = "<?= site_url() ?>GL/GLAccounts/fetch_data/" + GLAccountCode;
         $.ajax({
             type: "GET",
