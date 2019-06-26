@@ -495,7 +495,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$.each(data,function(index,value){
 						data2.push({
 							"id" : value.ItemId,
-							"text" : value.ItemName
+							"text" : value.ItemName,
 							"maxItemDiscount" : value.MaxItemDiscount
 						});	
 					});

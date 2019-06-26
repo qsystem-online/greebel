@@ -16,6 +16,19 @@ $(function(){
 			radioClass   : 'iradio_minimal-blue'
 		})
 	}
+	
+	if (typeof $('.money').inputmask =="function"){
+		$(".money").inputmask({
+			alias: 'numeric',
+			autoGroup: true,
+			groupSeparator: ",",
+			radixPoint: ".",
+			allowMinus: false,
+			autoUnmask: true,
+			digits: 2
+		});
+	}
+
 
 	/*
 	if (typeof $('.money').inputmask =="function"){
@@ -44,6 +57,7 @@ $(function(){
 		});
    }
    */
+  /*
 	$(".money").focusout(function(){
 		value = $(this).val();
 		//var patern = ',';
@@ -63,16 +77,7 @@ $(function(){
 	$(".money").focusin(function(){
 		
 		value = $(this).val();
-		/*
-		var patern = ',';
-		if (DIGIT_GROUP == "."){
-			patern ='\\.';  			
-		}
-		var re = new RegExp(patern,"g");
-		value = value.replace(re,'');
-		$(this).val(value);
-		//alert(value);
-		*/
+		
 		$(this).val(money_parse(value));
 		$(this).select();
 	});
@@ -80,6 +85,7 @@ $(function(){
 	$(".money").focus(function(){
 		
 	});
+	*/
 
 });
 
