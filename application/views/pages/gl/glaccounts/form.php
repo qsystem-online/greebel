@@ -48,14 +48,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="GLAccountCode_err" class="text-danger"></div>
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="GLAccountName" class="col-sm-2 control-label"><?= lang("GL Account Name") ?> * </label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control" id="GLAccountName" placeholder="<?= lang("GL Account Name") ?>" name="GLAccountName">
-                                <div id="GLAccountName_err" class="text-danger"></div>
-                            </div>
-                        </div>
                         <div class="form-group">
                             <label for="GLAccountLevel" class="col-sm-2 control-label"><?= lang("Level") ?></label>
                             <div class="col-sm-4">
@@ -66,6 +58,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 </select>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="GLAccountName" class="col-sm-2 control-label"><?= lang("GL Account Name") ?> * </label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="GLAccountName" placeholder="<?= lang("GL Account Name") ?>" name="GLAccountName">
+                                <div id="GLAccountName_err" class="text-danger"></div>
+                            </div>
+                        </div>
+                        
                         <div class="form-group">
                             <label for="DefaultPost" class="col-sm-2 control-label"><?= lang("Default Post") ?></label>
                             <div class="col-sm-4">
@@ -121,6 +121,29 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </section>
 
 <script type="text/javascript">
+
+        var ajaxManiGL =  {
+                url: '<?= site_url() ?>GL/GLAccounts/get_MainGL',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value) {
+                        data2.push({
+                            "id": value.GLAccountMainGroupId,
+                            "text": value.GLAccountMainGroupName,
+                            "prefix" : value.GLAccountMainPrefix
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+
+
     $(function() {
 
         <?php if ($mode == "EDIT") { ?>
@@ -194,26 +217,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#select-MainGL").select2({
             width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>GL/GLAccounts/get_MainGL',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value) {
-                        data2.push({
-                            "id": value.GLAccountMainGroupId,
-                            "text": value.GLAccountMainGroupName,
-                            "prefix" : value.GLAccountMainPrefix
-                        });
-                    });
-                    console.log(data2);
-                    return {
-                        results: data2
-                    };
-                },
-                cache: true,
-            }
+            ajax: ajaxManiGL,
         });
 
         $("#select-MainGL").change(function(event) {
@@ -221,7 +225,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             mainGL = $("#select-MainGL").select2("data")[0];
             console.log(mainGL);
             $("#GLAccountCode").inputmask({
-               mask: mainGL.prefix.replace(/9/g,"\\9") + "<?= $mainGLSeparator ?>" + "[9][9][9][9][9][9]",
+                mask: mainGL.prefix.replace(/9/g,"\\9") + "<?= $mainGLSeparator ?>" + "[9][9][9][9][9][9]",
                 greedy:true,
             });
             $("#GLAccountCode").attr("placeholder",mainGL.prefix);
@@ -293,7 +297,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
     function init_form(GLAccountCode) {
         //alert("Init Form");
-        alert(GLAccountCode);
+        //alert(GLAccountCode);
         var url = "<?= site_url() ?>GL/GLAccounts/fetch_data/" + GLAccountCode;
         $.ajax({
             type: "GET",
@@ -330,13 +334,40 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     text:"Aset",
                     prefix: "1"
                 }];
+                /*
+                var option = new Option("Asset", 1, true, true);
+                $('#select-MainGL').append(option);
+                $('#select-MainGL').trigger({
+                    type: 'select2:select',
+                    params: {
+                        data: data
+                    }
+                });
+                */
+                $('#select-MainGL').select2({
+                    data:[{
+                        id:1,
+                        text:"Aset",
+                        prefix: "1"
+                    }],
+                    ajax: ajaxManiGL,
+                });
+                $('#select-MainGL').val(1).trigger('change');
+                var newOption = new Option(resp.glAccounts.GLParentName, resp.glAccounts.ParentGLAccountCode, true, true);
+                $('#select-ParentGL').append(newOption);
 
+                $("#select-ParentGL").val(resp.glAccounts.ParentGLAccountCode).trigger('change');
+
+                $("#GLAccountCode").inputmask("setvalue", resp.glAccounts.GLAccountCode);
+
+                /*
                 $('#select-MainGL').select2({
                     data:data,
                 }).trigger('change');
+                */
 
-                var newOption = new Option(resp.glAccounts.GLParentName, resp.glAccounts.ParentGLAccountCode, true, true);
-                $('#select-ParentGL').append(newOption);
+
+                
             },
 
             error: function(e) {
