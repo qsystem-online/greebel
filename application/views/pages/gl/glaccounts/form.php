@@ -22,7 +22,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 <!-- end box header -->
 
                 <!-- form start -->
-                <form id="frmGLAccounts" class="form-horizontal" action="<?= site_url() ?>GLAccountCode" method="POST" enctype="multipart/form-data">
+                <form id="frmGLAccounts" class="form-horizontal" action="<?= site_url() ?>GL/GLAccountCode" method="POST" enctype="multipart/form-data">
                     <div class="box-body">
                         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
@@ -44,7 +44,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <div class="form-group">
                             <label for="GLAccountCode" class="col-sm-2 control-label"><?= lang("GL Account Code") ?> * </label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="GLAccountCode" style="width: unset" placeholder="<?= lang("GL Account Code") ?>" name="GLAccountCode">
+                                <input type="text" class="form-control" id="GLAccountCode" style="width: unset" placeholder="<?= lang("GL Account Code") ?>" name="GLAccountCode" value="<?=$GLAccountCode?>">
                                 <div id="GLAccountCode_err" class="text-danger"></div>
                             </div>
                         </div>
@@ -105,7 +105,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
                         <div class="form-group">
                             <label for="isAllowInCashBankModule" class="col-sm-2 control-label"><?= lang("Allow") ?> :</label>
-                            <div class="checkbox">
+                            <div class="checkbox col-sm-2">
                                 <label><input id="isAllowInCashBankModule" type="checkbox" name="isAllowInCashBankModule" value="1"><?= lang("Allow In CashBank Module") ?></label><br>
                             </div>
                         </div>
@@ -221,7 +221,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             mainGL = $("#select-MainGL").select2("data")[0];
             console.log(mainGL);
             $("#GLAccountCode").inputmask({
-                mask: mainGL.prefix.replace(/9/g,"\\9") + "<?= $mainGLSeparator ?>" + "[9][9][9][9][9][9]",
+               mask: mainGL.prefix.replace(/9/g,"\\9") + "<?= $mainGLSeparator ?>" + "[9][9][9][9][9][9]",
                 greedy:true,
             });
             $("#GLAccountCode").attr("placeholder",mainGL.prefix);
@@ -323,10 +323,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $('#select-CurrCode').append(newOption).trigger('change');
 
                 var newOption = new Option(resp.glAccounts.GLAccountMainGroupName, resp.glAccounts.GLAccountMainGroupId, true, true);
-                $('#select-MainGL').append(newOption).trigger('change');
+                
+                //$('#select-MainGL').val(resp.glAccounts.GLAccountMainGroupId).trigger('change');
+                var data = [{
+                    id:1,
+                    text:"Aset",
+                    prefix: "1"
+                }];
+
+                $('#select-MainGL').select2({
+                    data:data,
+                }).trigger('change');
 
                 var newOption = new Option(resp.glAccounts.GLParentName, resp.glAccounts.ParentGLAccountCode, true, true);
-                $('#select-ParentGL').append(newOption).trigger('change');
+                $('#select-ParentGL').append(newOption);
             },
 
             error: function(e) {
@@ -339,3 +349,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 <!-- Select2 -->
 <script src="<?= base_url() ?>bower_components/select2/dist/js/select2.full.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $(".select2-container").addClass("form-control"); 
+        $(".select2-selection--single , .select2-selection--multiple").css({
+            "border":"0px solid #000",
+            "padding":"0px 0px 0px 0px"
+        });         
+        $(".select2-selection--multiple").css({
+            "margin-top" : "-5px",
+            "background-color":"unset"
+        });
+    });
+</script>

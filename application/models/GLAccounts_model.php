@@ -18,10 +18,10 @@ class GLAccounts_model extends MY_Model
         left join glaccountmaingroups d on a.GLAccountMainGroupId = d.GLAccountMainGroupId
         where a.GLAccountCode = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$GLAccountCode]);
-        $rw = $qr->row();
+        $rwGLAccounts = $qr->row();
 
         $data = [
-            "glAccounts" => $rw
+            "glAccounts" => $rwGLAccounts
         ];
 
         return $data;
@@ -34,11 +34,14 @@ class GLAccounts_model extends MY_Model
         $rules[] = [
             'field' => 'GLAccountCode',
             'label' => 'GL Account Code',
-            'rules' => 'required|min_length[3]',
-            'errors' => array(
+            'rules' => array(
+                'required',
+				'is_unique[glaccounts.GLAccountCode.GLAccountCode.' . $id . ']'
+			),
+			'errors' => array(
                 'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 3 character'
-            )
+				'is_unique' => '%s harus unik'
+			),
         ];
 
         $rules[] = [

@@ -120,6 +120,7 @@ class GLAccounts extends MY_Controller
             "DefaultPost" => $this->input->post("DefaultPost"),
             "MinUserLevelAccess" => $this->input->post("MinUserLevelAccess"),
             "CurrCode" => $this->input->post("CurrCode"),
+            "fin_seq_no" => $this->input->post("fin_seq_no"),
             "isAllowInCashBankModule" => ($this->input->post("isAllowInCashBankModule") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
@@ -178,6 +179,7 @@ class GLAccounts extends MY_Controller
             "DefaultPost" => $this->input->post("DefaultPost"),
             "MinUserLevelAccess" => $this->input->post("MinUserLevelAccess"),
             "CurrCode" => $this->input->post("CurrCode"),
+            "fin_seq_no"=> $this->input->post("fin_seq_no"),
             "isAllowInCashBankModule" => $this->input->post("isAllowInCashBankModule"),
             "fst_active" => 'A'
         ];
