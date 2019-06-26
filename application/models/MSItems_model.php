@@ -87,4 +87,52 @@ class MSItems_model extends MY_Model
         $rs = $qr->result();
         return $rs;
     }
+
+    public function getSellingPrice($itemId,$unit,$custId) {
+        //$this->load->model("MSRelations_model");
+        //$this->MSRelations_model->
+        $ssql ="select * from msrelations where RelationId = ?";
+        $qr = $this->db->query($ssql,[$custId]);
+        $rw = $qr->row();
+        if($rw){
+            
+
+            $priceGroupId = $rw->CustPricingGroupid;
+            // cek Special item
+            $ssql = "select * from msitemspecialpricinggroupdetails where ItemId = ? and Unit = ? and PricingGroupId = ? and fst_active = 'A'";
+            $qr = $this->db->query($ssql,[$itemId,$unit,$priceGroupId]);
+            $rwPrice = $qr->row();
+            if($rwPrice){
+                return $rwPrice->SellingPrice;
+            }else{
+                //item unit details
+                $ssql = "select * from msitemunitdetails where ItemId = ? and Unit = ? and fst_active = 'A'";
+                $qr = $this->db->query($ssql,[$itemId,$unit]);
+                $rwPrice = $qr->row();
+                if($rwPrice){
+                    $sellingPrice = $rwPrice->PriceList;
+                    //Cek Group Price List
+                    $ssql = "select * from mscustpricinggroups where CustPricingGroupId = ?";
+                    $qr = $this->db->query($ssql,[$priceGroupId]);
+                    $rwGroupPrice = $qr->row();
+                    if($rwGroupPrice){
+                        if ($rwGroupPrice->PercentOfPriceList == 100){
+                            return $sellingPrice - $rwGroupPrice->DifferenceInAmount;
+                        }else{
+                            return $sellingPrice * ($rwGroupPrice->PercentOfPriceList /100);
+                        }
+                    }else{
+                        return $sellingPrice;
+                    }
+                }else{
+                    return 0;
+                }
+            }
+
+        }else{
+            return 0 ;
+        }
+
+        return 0;
+    }
 }

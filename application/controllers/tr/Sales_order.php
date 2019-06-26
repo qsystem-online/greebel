@@ -67,6 +67,7 @@ class Sales_order extends MY_Controller{
 		$data["title"] = $mode == "ADD" ? "Add Sales Order" : "Update Sales Order";
 		$data["fin_salesorder_id"] = $fin_salesorder_id;
 		$data["fst_salesorder_no"] = $this->sales_order_model->GenerateSONo();
+		$data["percent_ppn"] = (int) getDbConfig("percent_ppn");
 
 		$page_content = $this->parser->parse('pages/tr/sales_order/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -376,7 +377,7 @@ class Sales_order extends MY_Controller{
 
 	public function get_data_item(){
 		$term = $this->input->get("term");
-		$ssql = "select ItemId, ItemName from msitems where ItemName like ? order by ItemName";
+		$ssql = "select ItemId, CONCAT(ItemCode,' - ' ,ItemName) as ItemName from msitems where CONCAT(ItemCode,' - ' ,ItemName) like ? order by ItemName";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		

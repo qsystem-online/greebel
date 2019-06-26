@@ -1,0 +1,10 @@
+Rule Penentuan Harga Jual
+=======================================================
+Customer:CustPricingGroupid -> mscustpricinggroups:CustPricinggroups
+penentuan harga jual di tentukan dari daftar item->msitemunitdetails:priceList
+berdasarkan mscustpricinggroup:percentOfPriceList atau mscustpricinggroup:DifferenceInAmount
+contoh : 
+mscustpricinggroup:percentOfPriceList:80 , harga di item->msitemunitdetails:priceList: 100000, maka menjadi 100000 * 80% = 80000
+mscustpricinggroup:DifferenceInAmount:50000, harga di item->msitemunitdetails:priceList: 100000, maka menjadi 100000 - 50000 = 50000
+bila item dan pricegroup terdaftar di msitemspecialpricinggroupdetails, maka harga akan mengacu ke tabel ini dan mengabaikan rule diatas
+

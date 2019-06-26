@@ -90,4 +90,12 @@ class MSItemunitdetails_model extends MY_Model
         $ssql = "delete from " . $this->tableName . " where ItemCode = $ItemId";
         $this->db->query($ssql);
     }
+
+
+    public function getSellingListUnit($itemId){
+        $ssql ="select * from " . $this->tableName . " where ItemId = ? and isSelling = 1 and fst_active = 'A' order by RecId ";
+        $qr = $this->db->query($ssql,[$itemId]);
+        $rw = $qr->result();
+        return $rw;
+    }
 }

@@ -122,23 +122,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
                     <div class="form-group">
-                            <label for="fst_memo" class="col-sm-2 control-label"><?= lang("Memo") ?> </label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo">
-                                <div id="fst_memo_err" class="text-danger"></div>
-                            </div>
-                    </div>
-
-                    <div class="form-group">
-                            <label for="fbl_is_hold" class="col-sm-2 control-label"><?= lang("Hold") ?> </label>
+                            <label for="fbl_is_hold" class="col-sm-2 control-label"> </label>
                             <div class="checkbox col-sm-2">
-                                <label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold") ?></label><br>
+                                <label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label><br>
                             </div>
-                    </div>
-
-					<div class="form-group">
-                            <label for="fbl_is_vat_include" class="col-sm-2 control-label"><?= lang("Include PPN") ?> </label>
-                            <div class="checkbox col-sm-2">
+							<div class="checkbox col-sm-2">
 								<?php $checked = ($mode == "ADD") ? "checked" : "" ?>
                                 <label><input <?= $checked ?> id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("Include PPN") ?></label><br>
                             </div>
@@ -154,20 +142,45 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<table id="tblSODetails" class="table table-bordered table-hover table-striped"></table>
-
 					<div class="form-group">
-						<label for="sub-total" class="col-md-10 control-label"><?=lang("Sub total")?></label>
-						<div class="col-md-2" style='text-align:right'>
-							<input type="text" class="form-control text-right" id="sub-total" value="0" readonly>
+						<div class="col-sm-6">	
+							<div class="form-group">
+								<label for="fst_memo" class="col-sm-2 control-label"><?= lang("Memo") ?> </label>
+								<div class="col-sm-10">
+									<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" row="5"></textarea>
+									<div id="fst_memo_err" class="text-danger"></div>
+								</div>
+							</div>
+	
 						</div>
-					</div>
+						<div class="col-sm-6">	
+							<div class="form-group">
+								<label for="sub-total" class="col-md-8 control-label"><?=lang("Sub total")?></label>
+								<div class="col-md-4" style='text-align:right'>
+									<input type="text" class="form-control text-right" id="sub-total" value="0" readonly>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="sub-total" class="col-md-6 control-label">%<?=lang("PPn")?></label>
+								<div class="col-md-2" style='text-align:right'>
+									<input type="text" class="form-control text-right" id="fdc_vat_percent" name="fdc_vat_percent" value="<?=$percent_ppn?>" >
+								</div>
+								<div class="col-md-4" style='text-align:right'>
+									<input type="text" class="form-control text-right" id="fdc_vat_amount" name="fdc_vat_amount" value="0" readonly>	
+								</div>
+							</div>
 
-					<div class="form-group">
-						<label for="total" class="col-md-10 control-label"><?=lang("Total")?></label>
-						<div class="col-md-2" style='text-align:right'>
-							<input type="text" class="form-control text-right" id="total" value="0" readonly>
+							<div class="form-group">
+								<label for="total" class="col-md-8 control-label"><?=lang("Total")?></label>
+								<div class="col-md-4" style='text-align:right'>
+									<input type="text" class="form-control text-right" id="total" value="0" readonly>
+								</div>
+							</div>
 						</div>
+						
 					</div>
+					
+					
 
                 </div>
 				<!-- end box body -->
@@ -182,8 +195,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="soModal" class="modal fade" role="dialog" >
-	<div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">
+<div id="myModal" class="modal fade" role="dialog" >
+	<div class="modal-dialog" style="display:table">
 		<!-- modal content -->
 		<div class="modal-content">
 			<div class="modal-header">
@@ -195,49 +208,57 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<form  class="form-horizontal">
 				<input type='hidden' id='fin-detail-id'/>
 					<div class="form-group">
-						<label for="select-items" class="col-md-4 control-label"><?=lang("Items")?></label>
-						<div class="col-md-8">
+						<label for="select-items" class="col-md-2 control-label"><?=lang("Items")?></label>
+						<div class="col-md-10">
 							<select id="select-items" class="form-control"></select>
 							<div id="ItemId_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="fdc_qty" class="col-md-4 control-label"><?=lang("Qty")?></label>
-						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="so-qty" value="1">
+						<label for="select-unit" class="col-md-2 control-label"><?=lang("Unit")?></label>
+						<div class="col-md-10">
+							<select id="select-unit" name="fst_unit" class="form-control"></select>
+							<div id="fst_unit_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="fdc_qty" class="col-md-2 control-label"><?=lang("Qty")?></label>
+						<div class="col-md-10">
+							<input type="number" class="form-control text-right numeric" id="so-qty" value="1">
 							<div id="fdc_qty_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="fdc_price" class="col-md-4 control-label"><?=lang("Price")?></label>
-						<div class="col-md-8">
+						<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?></label>
+						<div class="col-md-10">
 							<input type="text" class="form-control text-right money" id="so-price" value="0">
 							<div id="fdc_price_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="select-disc" class="col-md-4 control-label"><?=lang("Disc ++")?></label>
-						<div class="col-md-8">
+						<label for="select-disc" class="col-md-2 control-label"><?=lang("Disc ++")?></label>
+						<div class="col-md-10">
 							<select id="select-disc" class="form-control" name="fst_disc_item"></select>
 							<div id="fst_disc_item_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="fdc_disc_amount" class="col-md-4 control-label"><?=lang("Disc Amt")?></label>
-						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="fdc_disc_amount">
+						<label for="fdc_disc_amount" class="col-md-2 control-label"><?=lang("Disc Amt")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control text-right" id="fdc_disc_amount" readonly>
 							<div id="fdc_disc_amount_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="fst_memo_item" class="col-md-4 control-label"><?=lang("Memo")?></label>
-						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="fst_memo_item">
+						<label for="fst_memo_item" class="col-md-2 control-label"><?=lang("Memo")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="fst_memo_item">
 							<div id="fst_memo_item_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -471,7 +492,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$.each(data,function(index,value){
 						data2.push({
 							"id" : value.ItemId,
-							"price" : value.SellingPrice,
 							"text" : value.ItemName
 						});	
 					});
@@ -500,63 +520,95 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					});
 					console.log(data2);
 					return {
-						result: data2
+						results: data2
 					};
 				},
 				cache: true,
 			}
 		});
+		
+		$("#select-disc").on('select2:select',function(e){
+			var data = $('#select-disc').select2("data")[0];
+			disc = data.id;
+			qty = $("#so-qty").val();
 
-		/*$("#fdc_disc_percent").inputmask({
-			alias: 'numeric', 
-			allowMinus: false,  
-			digits: 2, 
-			max: 100
+			amount = money_parse($("#so-price").val());
+			amount = amount * qty;
+
+			$("#fdc_disc_amount").val( money_format(calculateDisc(amount,disc)) ); 
 		});
 
-		$("#fdc_vat_percent").inputmask({
-			alias: 'numeric', 
-			allowMinus: false,  
-			digits: 2, 
-			max: 100
-		});
 
-		$(".numeric").inputmask({
-			alias: 'numeric', 
-			allowMinus: false,  
-			digits: 2
-		});
-
-		$(".money").inputmask({
-			alias: 'numeric', 
-			autoGroup: true,
-      		groupSeparator: ",",
-			allowMinus: false,  
-			digits: 2
-		});*/
-
-		var selected_items;
-		var selected_disc
 		var arrDetail;
 
 		$('#select-items').on('select2:select', function (e) {
-			var data = e.params.data;
-			selected_items = data;
-			$("#so-price").val(numeral(data.fdc_price).format("0,000"));
+			//var data = e.params.data;
+			//selected_items = data;
+			var data = $('#select-items').select2("data")[0];
+			//$("#so-price").val(numeral(data.fdc_price).format("0,000"));
+			console.log(data);
+			//Fill Unit
+			$('#select-unit').val(null).trigger('change');
+			$("#select-unit").select2({
+				width: '100%',
+				ajax:{
+					url: '<?=site_url()?>master/msitems/getSellingUnit/' + data.id,
+					dataType: 'json',
+					delay: 250,
+					processResults: function (data) {
+						data2 = [];
+						$.each(data,function(index,value){
+							data2.push({
+								"id" : value.Unit,
+								"text" : value.Unit,
+								"price" :value.PriceList
+							});
+						});
+						console.log(data2);
+						return {
+							results: data2
+						};
+					},
+				},
+				cache: true,
+			});
+			//$('#select-unit').trigger('change');
 		});
 
-		$('#select-disc').on('select2:select', function (e) {
-			var data = e.params.data;
-			selected_disc = data;
+		$('#select-unit').on('select2:select', function (e) {
+			
+			
+			dataCust = $("#select-relations").select2("data")[0];
+			dataUnit = $('#select-unit').select2("data")[0];
+			dataItem = $('#select-items').select2("data")[0];
+			
+			$.ajax({
+				url:"<?=site_url()?>master/msitems/getSellingPrice/" + dataItem.id + "/" + dataUnit.id + "/" + dataCust.id,
+				method:"GET",
+				success:function(resp){
+					console.log(resp);
+					//$("#so-price").val(numeral(resp.sellingPrice).format("0,000"));
+					//$("#so-price").inputmask("setvalue",resp.sellingPrice);
+					$("#so-price").val(money_format(resp.sellingPrice));
+				}
+			});
+			
+			
 		});
+		
+		
 
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
+			console.log($("#select-relations").val());
+			if ($("#select-relations").val() == "0"){
+				alert("invalid cust");
+				return;
+			}
 			mode_so_detail = "ADD";
-			$("#soModal").modal({
+			$("#myModal").modal({
 				backdrop:"static",
 			});
-
 			$('#select-items').val(null).trigger('change');
 			$('#select-disc').val(null).trigger('change');
 			$("#fin-detail-id").val(0);
@@ -566,24 +618,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("fst_memo_item").val(0);
 		})
 
+		$(document).bind('keydown', 'alt+d', function(){
+			//alert("TEST COPY");
+			$("#btn-add-detail").trigger("click");
+		});
+
+
 		$("#btn-add-so-detail").click(function(event){
 			event.preventDefault();
 			selected_items = $("#select-items").select2('data')[0];
-			var qty = numeral($("#so-qty").val());
-			var price = numeral($("#so-price").val());
-			var total = qty.value() * price.value();
 			selected_disc = $("#select-disc").select2('data')[0];
+			selectedUnits = $("#select-unit").select2('data')[0];
+
+			qty = $("#so-qty").val();
+			price = money_parse($("#so-price").val());
+			disc = money_parse($("#fdc_disc_amount").val());
 
 			data = {
 				//rec_id:$("#rec_id").val(),
 				fin_salesorder_id:$("#fin-detail-id").val(),
-				ItemId:selected_items.id,
+				fin_item_id:selected_items.id,
 				ItemName:selected_items.text,
-				ItemDiscount:selected_disc.id,
-				//fdc_disc_amount:
 				fdc_qty: $("#so-qty").val(),
-				fdc_price: price.value(),
-				total: total,
+				fst_unit: selectedUnits.id,
+				fdc_price : price,
+				fst_disc_item : selected_disc.id,
+				fdc_disc_amount: disc,
+				fst_memo_item: $("#fst_memo_item").val(),
+				total: (qty * price)  - disc,
 				action: action
 			}
 
@@ -597,85 +659,45 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			calculateTotal();
 		});
 
-		/* OnChange
-		$("#fdc_vat_percent").change(function(){
-			//alert ("fdc_vat_percent");
-			$("#fdc_vat_amount").val(0);
-			$("#fdc_vat_amount").prop('readonly', true);
+		$("#fdc_vat_percent").change(function(e){
+			e.preventDefault();
+			calculateTotal();
 		});
-
-		$("#fdc_vat_amount").change(function(){
-			//alert ("fdc_vat_percent");
-			$("#fdc_vat_percent").val(0);
-			$("#fdc_vat_percent").prop('readonly', true);
-		});
-
-		// OnChange
-		$("#fdc_disc_percent").change(function(){
-			//alert ("fdc_disc_percent");
-			$("#fdc_disc_amount").val(0);
-			$("#fdc_disc_amount").prop('readonly', true);
-		});
-
-		$("#fdc_disc_amount").change(function(){
-			//alert ("fdc_disc_percent");
-			$("#fdc_disc_percent").val(0);
-			$("#fdc_disc_percent").prop('readonly', true);
-		});
-
-		$(".money").inputmask({
-			alias : 'numeric',
-			autoGroup : true,
-			groupSeparator : ",",
-			allowMinus : false,
-			digits : 2
-		})
-
-		$("#fdc_vat_amount").inputmask({
-			alias: 'numeric', 
-			allowMinus: false,  
-			digits: 2, 
-			max: 100
-		});
-
-		$("#fdc_disc_amount").inputmask({
-			alias: 'numeric', 
-			allowMinus: false,  
-			digits: 2, 
-			max: 100
-		});
-
-		$(".numeric").inputmask({
-			alias: 'numeric', 
-			allowMinus: false,  
-			digits: 2
-		});*/
 
 		$('#tblSODetails').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
 		}).DataTable({
 			columns:[
-				//{"title" : "rec_id","width": "0%",sortable:false,data:"rec_id",visible:false},
 				{"title" : "fin_salesorder_id","width": "0%",sortable:false,data:"fin_salesorder_id",visible:false},
-				{"title" : "Items","width": "20%",sortable:false,data:"ItemName",className: 'dt-left'},
-				{"title" : "Qty","width": "10%",data:"fdc_qty",className:'dt-right'},
+				{"title" : "Items","width": "15%",sortable:false,data:"fin_item_id",
+					render: function(data,type,row){
+						console.log(row);
+						return row.ItemName;
+					}
+				},
+				{"title" : "Qty","width": "10%",data:"fdc_qty",className:'text-right'},
+				{"title" : "Unit","width": "10%",data:"fst_unit"},
 				{"title" : "Price","width": "10%",
 					data:"fdc_price",
-					render: $.fn.dataTable.render.number( ',', '.', 2 ),
-					className:'dt-right'
+					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
+					className:'text-right'
 				},
 				{"title" : "Disc ++","width": "10%",
-					data:"ItemDiscount",
-					render: $.fn.dataTable.render.number( ',', '.', 2 ),
-					className:'dt-right'
+					data:"fst_disc_item",
+					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
+					className:'text-right'
 				},
-				{"title" : "Disc Amt","width": "10%",data:"fdc_disc_amount",className:'dt-right'},
-				{"title" : "Memo","width": "10%",data:"fst_memo_item",className:'dt-right'},
+				{"title" : "Disc Amt","width": "10%",
+					data:"fdc_disc_amount",
+					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
+					className:'text-right'
+				},
+				{"title" : "Memo","width": "15%",data:"fst_memo_item"},
 				{"title" : "Total","width": "10%",
 					data:"total",
-					render: $.fn.dataTable.render.number( ',', '.', 2 ),
-					className:'dt-right'
+					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
+					className:'text-right'
 				},
 				{"title" : "Action","width": "8%",data:"action",sortable:false,className:'dt-body-center text-center'},
 			],
@@ -702,7 +724,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			$(".btn-edit").click(function(event){
 				event.preventDefault();
-				$("#soModal").modal({
+				$("#myModal").modal({
 					backdrop:"static",
 				});
 
@@ -722,30 +744,63 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#fdc_disc_percent").change(function(event){
-			event.preventDefault();
-			calculateTotal();
-		})
 	});
+
+	function calculateDisc(amount, disc){
+		var strArray = disc.split("+");
+		console.log(amount);
+		console.log(disc);
+		
+
+		totalDisc = 0;
+		$.each(strArray,function(i,v){
+			disc = amount * (v / 100);
+			totalDisc += disc;
+			amount = amount - disc;
+		});
+		return totalDisc;
+	}
 
 	function calculateTotal(){
 		t = $('#tblSODetails').DataTable();
 		datas = t.data();
-
+		totalDetail =0;
 		subTotal = 0;
+
 		disc = parseFloat ($("#ItemDiscount").val());
+		$.each(datas,function(i,v){
+			totalDetail += v.total;
+		})
 
-		/*$.each(datas,function(i.v){
-			subTotal = subTotal + (v.fdc_qty * v.fdc_price);
-		})*/
+		if ($("#fbl_is_vat_include").prop('checked')){
+			total = totalDetail;
+			vat = $("#fdc_vat_percent").val() * 1;
+			subTotal = total / (( vat  + 100) /100);
 
+			vat =  ($("#fdc_vat_percent").val() /100) * subTotal;			
+			$("#sub-total").val(money_format(subTotal));	
+			$("#fdc_vat_amount").val(money_format(vat));
+			$("#total").val(money_format(total));
+
+		}else{
+			subTotal=totalDetail;
+			vat = ($("#fdc_vat_percent").val() /100) * subTotal;
+			$("#sub-total").val(money_format(subTotal));	
+			$("#fdc_vat_amount").val(money_format(vat));
+			total =subTotal + vat;
+			$("#total").val(money_format(total));
+		}
+		
+		/*
 		$("#sub-total").val(numeral(subTotal).format("0,000"));
 		disc_val = subTotal * (disc/100);
 
 		$("#disc-val").val(numeral(disc_val).format("0,000"));
 		total = subTotal - disc_val;
 		$("#total").val(numeral(total).format("0,000"));
+		*/
 	}
+
 
 	function init_form(fin_salesorder_id){
 		//alert("Init Form");

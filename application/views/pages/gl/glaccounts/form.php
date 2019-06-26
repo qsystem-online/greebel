@@ -44,8 +44,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <div class="form-group">
                             <label for="GLAccountCode" class="col-sm-2 control-label"><?= lang("GL Account Code") ?> * </label>
                             <div class="col-sm-10">
-                                <label id="PrefixAccountCode" style="text-align:left;padding-left: 0px;" class="col-sm-2 control-label"> 111- </label>
-                                <input type="text" class="form-control" id="GLAccountCode" style="width: unset" placeholder="<?= lang("GL Account Code") ?>" name="GLAccountCode" value="<?= $GLAccountCode ?>">
+                                <input type="text" class="form-control" id="GLAccountCode" style="width: unset" placeholder="<?= lang("GL Account Code") ?>" name="GLAccountCode">
                                 <div id="GLAccountCode_err" class="text-danger"></div>
                             </div>
                         </div>
@@ -204,7 +203,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     $.each(data, function(index, value) {
                         data2.push({
                             "id": value.GLAccountMainGroupId,
-                            "text": value.GLAccountMainGroupName
+                            "text": value.GLAccountMainGroupName,
+                            "prefix" : value.GLAccountMainPrefix
                         });
                     });
                     console.log(data2);
@@ -218,7 +218,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#select-MainGL").change(function(event) {
             event.preventDefault();
-            $('#select-ParentGL').val(null).trigger('change');
+            mainGL = $("#select-MainGL").select2("data")[0];
+            console.log(mainGL);
+            $("#GLAccountCode").inputmask({
+                mask: mainGL.prefix.replace(/9/g,"\\9") + "<?= $mainGLSeparator ?>" + "[9][9][9][9][9][9]",
+                greedy:true,
+            });
+            $("#GLAccountCode").attr("placeholder",mainGL.prefix);
+
+            //$('#select-ParentGL').val(null).trigger('change');
             $("#select-ParentGL").select2({
                 width: '100%',
                 ajax: {
@@ -243,6 +251,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         })
 
+
+        $("#select-ParentGL").change(function(event) {
+            event.preventDefault();
+            parentGL = $("#select-ParentGL").select2("data")[0];
+            console.log(parentGL);
+            //alert(parentGL.id.replace(/9/g,'\\9'));
+            $("#GLAccountCode").inputmask({
+                mask: parentGL.id.replace(/9/g,"\\9") + "<?= $parentGLSeparator ?>" + "[9][9][9][9][9][9]",
+                greedy:true,
+            });
+            $("#GLAccountCode").attr("placeholder",parentGL.id);
+            
+        });
 
         $("#select-CurrCode").select2({
             width: '100%',

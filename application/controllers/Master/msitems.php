@@ -456,4 +456,21 @@ class MSItems extends MY_Controller
 
         $this->json_output($rs);
     }
+
+    public function getSellingUnit($itemId){
+        $this->load->model("MSItemunitdetails_model");
+        $units = $this->MSItemunitdetails_model->getSellingListUnit($itemId);
+        $this->json_output($units);
+    }
+
+    public function getSellingPrice($itemId,$unit,$custId){
+        $sellingPrice = $this->MSItems_model->getSellingPrice($itemId,$unit,$custId);
+        $resp = [
+            "sellingPrice" => $sellingPrice,
+            "itemId"=> $itemId,
+            "unit" =>$unit,
+            "custId" => $custId
+        ];
+        $this->json_output($resp);
+    }
 }
