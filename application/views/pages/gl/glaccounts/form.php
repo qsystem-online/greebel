@@ -325,8 +325,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 // menampilkan data di select2, menu edit/update
                 var newOption = new Option(resp.glAccounts.CurrName, resp.glAccounts.CurrCode, true, true);
                 $('#select-CurrCode').append(newOption).trigger('change');
-
-
+                
                 var newOption = new Option(resp.glAccounts.GLAccountMainGroupName, resp.glAccounts.GLAccountMainGroupId, true, true);
                 
                 //$('#select-MainGL').val(resp.glAccounts.GLAccountMainGroupId).trigger('change');
@@ -358,19 +357,18 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                 var newOption = new Option(resp.glAccounts.GLParentName, resp.glAccounts.ParentGLAccountCode, true, true);
                 $('#select-ParentGL').append(newOption);
-                $('#select-ParentGL').prop('readonly', true);
                 $("#select-ParentGL").val(resp.glAccounts.ParentGLAccountCode).trigger('change');
 
                 $("#GLAccountCode").inputmask("setvalue", resp.glAccounts.GLAccountCode);
                 $('#GLAccountCode').prop('readonly', true);
+                
                 /*
                 $('#select-MainGL').select2({
                     data:data,
                 }).trigger('change');
                 */
 
-
-                
+            
             },
 
             error: function(e) {

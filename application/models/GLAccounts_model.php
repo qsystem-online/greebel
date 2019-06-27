@@ -36,11 +36,11 @@ class GLAccounts_model extends MY_Model
             'label' => 'GL Account Code',
             'rules' => array(
                 'required',
-				'is_unique[glaccounts.GLAccountCode.GLAccountCode.' . $id . ']'
+				//'is_unique[glaccounts.GLAccountCode.GLAccountCode.' . $id . ']'
 			),
 			'errors' => array(
                 'required' => '%s tidak boleh kosong',
-				'is_unique' => '%s harus unik'
+				//'is_unique' => '%s harus unik'
 			),
         ];
 
