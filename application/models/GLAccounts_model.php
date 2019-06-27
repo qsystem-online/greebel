@@ -12,7 +12,7 @@ class GLAccounts_model extends MY_Model
 
     public function getDataById($GLAccountCode)
     {
-        $ssql = "select a.*,b.CurrName, c.GLAccountName as GLParentName, d.GLAccountMainGroupName , d.GLAccountMainPrefix from " . $this->tableName . " a 
+        $ssql = "select a.*,b.CurrName, c.GLAccountName as GLParentName, d.GLAccountMainGroupName, d.GLAccountMainPrefix from " . $this->tableName . " a 
         left join mscurrencies b on a.CurrCode = b.CurrCode 
         left join " . $this->tableName . " c on a.ParentGLAccountCode = c.GLAccountCode
         left join glaccountmaingroups d on a.GLAccountMainGroupId = d.GLAccountMainGroupId
@@ -64,5 +64,13 @@ class GLAccounts_model extends MY_Model
         ];
 
         return $rules;
+    }
+
+    public function getAllList()
+    {
+        $ssql = "select GLAccountCode,GLAccountName,GLAccountMainGroupId,ParentGLAccountCode from " . $this->tableName . " where fst_active = 'A'";
+        $qr = $this->db->query($ssql, []);
+        $rs = $qr->result();
+        return $rs;
     }
 }
