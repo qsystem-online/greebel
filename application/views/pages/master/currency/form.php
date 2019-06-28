@@ -124,7 +124,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="ExchangeRate2IDR" class="col-md-4 control-label"><?=lang("Exc Rate To IDR")?></label>
 						<div class="col-md-8">
-							<input type="text" class="form-control text-right money" id="ExchangeRate2IDR" value=0>
+							<input type="text" class="form-control text-right money" id="ExchangeRate2IDR" placeholder="<?= lang("Exchange Rate To IDR") ?>" value="0" name="ExchangeRate2IDR">
 							<div id="ExchangeRate2IDR_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -256,15 +256,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
+		$(".money").inputmask({
+                alias: 'numeric',
+                autoGroup: true,
+                groupSeparator: ",",
+                allowMinus: false,
+                autoUnmask: true,
+                digits: 2
+        });
+
 		$('#tblCurrDetails').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
 		}).DataTable({
 			columns:[
 				//{"title" : "recid","width": "0%",sortable:false,data:"recid",visible:false},
-				{"title" : "CurrCode","width": "20%",sortable:false,data:"CurrCode",visible:true},
-				{"title" : "Date","width": "20%",sortable:false,data:"Date",className: 'dt-right'},
-				{"title" : "Exchange Rate To IDR","width": "20%",
+				{"title" : "<?= lang("CurrCode")?>","width": "20%",sortable:false,data:"CurrCode",visible:true},
+				{"title" : "<?= lang("Date")?>","width": "20%",sortable:false,data:"Date",className: 'dt-right'},
+				{"title" : "<?= lang("Exchange Rate To IDR") ?>","width": "20%",
 					data:"ExchangeRate2IDR",
 					render: $.fn.dataTable.render.number( ',', '.', 2 ),
 					className:'text-right'
