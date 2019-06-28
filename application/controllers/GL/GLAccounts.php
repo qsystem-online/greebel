@@ -26,8 +26,8 @@ class GLAccounts extends MY_Controller
         $this->list['delete_ajax_url'] = site_url() . 'GL/GLAccounts/delete/';
         $this->list['edit_ajax_url'] = site_url() . 'GL/GLAccounts/edit/';
         $this->list['arrSearch'] = [
-            'GLAccountCode' => 'GL Account Code',
-            'GLAccountName' => 'GL Account Name'
+            'a.GLAccountCode' => 'GL Account Code',
+            'a.GLAccountName' => 'GL Account Name'
         ];
 
         $this->list['breadcrumbs'] = [
@@ -38,8 +38,8 @@ class GLAccounts extends MY_Controller
         $this->list['columns'] = [
             ['title' => 'GL Account Code', 'width' => '10%', 'data' => 'GLAccountCode'],
             ['title' => 'GL Account Name', 'width' => '12%', 'data' => 'GLAccountName'],
-            ['title' => 'GL Main Group Name', 'width' => '12%', 'data' => 'GLAccountMainGroupId'],
-            ['title' => 'Parent', 'width' => '10%', 'data' => 'ParentGLAccountCode'],
+            ['title' => 'GL Main Group Name', 'width' => '12%', 'data' => 'GLAccountMainGroupName'],
+            ['title' => 'Parent', 'width' => '10%', 'data' => 'ParentGLAccountName'],
             ['title' => 'Default Post', 'width' => '7%', 'data' => 'DefaultPost'],
             ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
         ];
@@ -201,16 +201,16 @@ class GLAccounts extends MY_Controller
 
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
-        $this->ajxResp["data"]["insert_id"] = $GLAccountCode; //INI
+        $this->ajxResp["data"]["insert_id"] = $GLAccountCode;
         $this->json_output();
     }
 
     public function fetch_list_data()
     {
         $this->load->library("datatables");
-        $this->datatables->setTableName("glaccounts");
+        $this->datatables->setTableName("(select a.*,b.GLAccountMainGroupName,c.GLAccountName as ParentGLAccountName from glaccounts a inner join glaccountmaingroups b on a.GLAccountMainGroupId = b.GLAccountMainGroupId left join glaccounts c ON a.GLAccountCode = c.ParentGLAccountCode) a");
 
-        $selectFields = "GLAccountCode,GLAccountName,GLAccountMainGroupId,ParentGLAccountCode,DefaultPost,'action' as action";
+        $selectFields = "a.GLAccountCode,a.GLAccountName,a.GLAccountMainGroupName,a.ParentGLAccountName,a.DefaultPost,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
         $searchFields =[];
@@ -266,7 +266,7 @@ class GLAccounts extends MY_Controller
     public function get_MainGL()
     {
         $term = $this->input->get("term");
-        $ssql = "SELECT GLAccountMainGroupId,GLAccountMainGroupName from glaccountmaingroups where GLAccountMainGroupName like ?";
+        $ssql = "SELECT GLAccountMainGroupId, GLAccountMainGroupName from glaccountmaingroups where GLAccountMainGroupName like ?";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
 

@@ -51,7 +51,7 @@ class GLAccounts_model extends MY_Model
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
                 'min_length' => 'Panjang %s paling sedikit 3 character'
-            )
+            ),
         ];
 
         $rules[] = [
@@ -60,17 +60,9 @@ class GLAccounts_model extends MY_Model
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
-            )
+            ),
         ];
 
         return $rules;
-    }
-
-    public function getAllList()
-    {
-        $ssql = "select GLAccountCode,GLAccountName,GLAccountMainGroupId,ParentGLAccountCode from " . $this->tableName . " where fst_active = 'A'";
-        $qr = $this->db->query($ssql, []);
-        $rs = $qr->result();
-        return $rs;
     }
 }

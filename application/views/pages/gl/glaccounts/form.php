@@ -204,7 +204,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                         // Change to Edit mode
                         $("#frm-mode").val("EDIT"); //ADD|EDIT
-                        $('#GLAccountName').prop('readonly', true);
 
                     }
                 },
@@ -226,7 +225,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             mainGL = $("#select-MainGL").select2("data")[0];
             console.log(mainGL);
             $("#GLAccountCode").inputmask({
-                //mask: mainGL.prefix.replace(/9/g,"\\9") + "<?= $mainGLSeparator ?>" + "[9][9][9][9][9][9]",
+                mask: mainGL.prefix,//replace(/9/g,"\\9") + "<?= $mainGLSeparator ?>" + "[9][9][9][9][9][9]",
                 greedy:true,
             });
             $("#GLAccountCode").attr("placeholder",mainGL.prefix);
@@ -331,7 +330,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 //$('#select-MainGL').val(resp.glAccounts.GLAccountMainGroupId).trigger('change');
                 var data = [{
                     id:1,
-                    text:" ",
+                    text:"Assets",
                     prefix: "1"
                 }];
                 /*
@@ -377,20 +376,4 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         });
     }
-</script>
-
-<!-- Select2 -->
-<script src="<?= base_url() ?>bower_components/select2/dist/js/select2.full.js"></script>
-<script type="text/javascript">
-    $(function(){
-        $(".select2-container").addClass("form-control"); 
-        $(".select2-selection--single , .select2-selection--multiple").css({
-            "border":"0px solid #000",
-            "padding":"0px 0px 0px 0px"
-        });         
-        $(".select2-selection--multiple").css({
-            "margin-top" : "-5px",
-            "background-color":"unset"
-        });
-    });
 </script>
