@@ -55,16 +55,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="select-relationgroupid" class="col-md-2 control-label"><?=lang("Relation Group Name")?></label>
-						<div class="col-md-10">
-							<select id="select-relationgroupid" class="form-control" name="RelationGroupId">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="RelationGroupId_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
 					<label for="RelationType" class="col-md-2 control-label"><?=lang("Relation Type")?> *</label>
 						<div class="col-md-10">
 							<select class="form-control select2" id="RelationType" name="RelationType[]"  multiple="multiple">
@@ -72,6 +62,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<option value="2"><?=lang("Supplier/Vendor")?></option>
 								<option value="3"><?=lang("Expedisi")?></option>
 							</select>
+						</div>
+					</div>
+
+					<div class="form-group relation-info">
+					<label for="select-parentId" class="col-md-2 control-label"><?=lang("Customer Induk")?></label>
+						<div class="col-md-10">
+							<select id="select-parentId" class="form-control" name="fin_parent_id">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fin_parent_id_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+					<label for="select-relationgroupid" class="col-md-2 control-label"><?=lang("Relation Group Name")?></label>
+						<div class="col-md-10">
+							<select id="select-relationgroupid" class="form-control" name="RelationGroupId">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="RelationGroupId_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -119,6 +129,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="col-md-4">
 							<input type="text" class="form-control" id="BirthPlace" placeholder="<?=lang("Birth Place")?>" name="BirthPlace">
 							<div id="BirthPlace_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group personal-info">
+						<label for="NIK" class="col-md-2 control-label"><?=lang("NIK")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="NIK" placeholder="<?=lang("NIK")?>" name="NIK">
+							<div id="NIK_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -197,20 +215,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group relation-info">
-					<label for="select-custpricinggroupname" class="col-md-2 control-label"><?=lang("CustPricingGroup Name")?></label>
+					<label for="select-pricinggroupname" class="col-md-2 control-label"><?=lang("Pricing Group")?></label>
 						<div class="col-md-10">
-							<select id="select-custpricinggroupname" class="form-control" name="CustPricingGroupId">
+							<select id="select-pricinggroupname" class="form-control" name="CustPricingGroupid">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="CustPricingGroupId_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="NIK" class="col-md-2 control-label"><?=lang("NIK")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="NIK" placeholder="<?=lang("NIK")?>" name="NIK">
-							<div id="NIK_err" class="text-danger"></div>
+							<div id="CustPricingGroupid_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -223,17 +233,67 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-						<label for="RelationNotes" class="col-md-2 control-label"><?=lang("Relation Notes")?></label>
-							<div class="col-md-7">
-								<select id="select-relationnotes" class="form-control" name="RelationNotes">
-									<option value="0">-- <?=lang("select")?> --</option>
-								</select>
-								<textarea class="form-control" id="RelationNotes" name="RelationNotes"></textarea>
-								<div id="RelationNotes_err" class="text-danger"></div>
-							</div>
+					<label for="RelationNotes" class="col-md-2 control-label"><?=lang("Relation Notes")?></label>
+						<div class="col-md-7">
+							<select id="select-relationnotes" class="form-control" name="RelationNotes">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<textarea class="form-control" id="RelationNotes" name="RelationNotes"></textarea>
+							<div id="RelationNotes_err" class="text-danger"></div>
+						</div>
 						<button id="btn-add-RelationNotes" type="button" class="btn btn-add" ><?=lang("Add")?></button>
 					</div>
 
+					<div class="form-group">
+					<label for="fin_credit_limit" class="col-md-2 control-label"><?=lang("Credit Limit")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="fin_credit_limit" placeholder="<?=lang("Credit Limit")?>" name="fin_credit_limit">
+							<div id="fin_credit_limit_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+					<label for="select-salesId" class="col-md-2 control-label"><?=lang("Sales Name")?></label>
+						<div class="col-md-4">
+							<select id="select-salesId" class="form-control" name="fin_sales_id">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fin_sales_id_err" class="text-danger"></div>
+						</div>
+
+					<label for="select-warehouseId" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
+						<div class="col-md-4">
+							<select id="select-warehouseId" class="form-control" name="fin_warehouse_id">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fin_warehouse_id_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+					<label for="fin_terms_payment" class="col-md-2 control-label"><?=lang("Terms Payment")?></label>
+						<div class="col-md-4">
+							<input type="text" class="form-control" id="fin_terms_payment" placeholder="<?=lang("Terms Payment")?>" name="fin_terms_payment">
+							<div id="fin_terms_payment_err" class="text-danger"></div>
+						</div>
+					<label for="fin_terms_payment" class="col-sm-0 control-label"><?=lang("Hari")?></label>
+					</div>
+
+					<div class="form-group">
+					<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("Top Commission")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="fin_top_komisi" placeholder="<?=lang("Top Commission")?>" name="fin_top_komisi">
+							<div id="fin_top_komisi_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+					<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("Top Plus Commission")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="fin_top_plus_komisi" placeholder="<?=lang("Top Plus Commission")?>" name="fin_top_plus_komisi">
+							<div id="fin_top_plus_komisi_err" class="text-danger"></div>
+						</div>
+					</div>
                 </div>
 				<!-- end box body -->
 
@@ -319,6 +379,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$(".select2").select2();
+
+		$("#select-parentId").select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>pr/msrelations/get_parentId',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					items = [];
+					data = data.data;
+					$.each(data,function(index,value){
+						items.push({
+							"id" : value.RelationId,
+							"text" : value.RelationName
+						});
+					});
+					console.log(items);
+					return {
+						results: items
+					};
+				},
+				cache: true,
+			}
+		});
 
 		$("#select-relationgroupid").select2({
 			width: '100%',
@@ -492,7 +576,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-custpricinggroupname").select2({
+		$("#select-pricinggroupname").select2({
 			width: '100%',
 			ajax: {
 				url: '<?=site_url()?>pr/msrelations/get_mscustpricinggroups',
@@ -503,7 +587,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data = data.data;
 					$.each(data,function(index,value){
 						items.push({
-							"id" : value.CustPricingGroupId,
+							"id" : value.CustPricingGroupid,
 							"text" : value.CustPricingGroupName
 						});
 					});
@@ -541,6 +625,65 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						items.push({
 							"id" : value.NoteId,
 							"text" : value.Notes
+						});
+					});
+					console.log(items);
+					return {
+						results: items
+					};
+				},
+				cache: true,
+			}
+		});
+
+		$("#select-salesId").select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>pr/msrelations/get_salesId',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					items = [];
+					data = data.data;
+					$.each(data,function(index,value){
+						items.push({
+							"id" : value.fin_user_id,
+							"text" : value.fst_username
+						});
+					});
+					console.log(items);
+					return {
+						results: items
+					};
+				},
+				cache: true,
+			}
+		});
+
+		$("#select-salesId").change(function(event){
+			event.preventDefault();
+			$(".relation-info").show();
+
+			$("#RelationType").each(function(index){				
+				if ($(this).val() >= "2"){
+					$(".relation-info").hide();
+				}
+			});
+		});
+
+		$("#select-warehouseId").select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>pr/msrelations/get_warehouseId',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					items = [];
+					data = data.data;
+					$.each(data,function(index,value){
+						items.push({
+							"id" : value.fin_warehouse_id,
+							"text" : value.fst_warehouse_name
 						});
 					});
 					console.log(items);
@@ -603,7 +746,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					} 
 				});
 
-				$("#RelationType").each(function(index){				
+				$("#RelationType").each(function(index){			
 					if ($(this).val() == "1"){
 						$(".relation-info").show();
 					} 
@@ -611,16 +754,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				$("#BirthDate").datepicker('update', dateFormat(resp.ms_relations.BirthDate));
 
-				/* Split Area
-				var areaCode = resp.ms_relations.AreaCode;
-  				var province = areaCode.substring(0, 2);
-				var district = areaCode.substring(0, 5);
-				var subdistrict = areaCode.substring(0,8);
-				var village = areaCode.substring(0,12);
-				console.log(subdistrict);
-				$("#AreaCode").val(province).trigger('change');
-				$("#AreaCode").val(district).trigger('change');
-				$("#AreaCode").val(subdistrict).trigger('change');*/
+				var newOption = new Option(resp.ms_relations.RelationName, resp.ms_relations.RelationId, true, true);
+				$('#select-parentId').append(newOption).trigger('change');
 
 				// menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.ms_relations.RelationGroupName, resp.ms_relations.RelationGroupId, true, true);
@@ -643,11 +778,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var newOption = new Option(resp.ms_relations.namavillage, resp.ms_relations.village, true, true);
 				$('#select-villagename').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.CustPricingGroupName, resp.ms_relations.CustPricingGroupId, true, true);
-				$('#select-custpricinggroupname').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.CustPricingGroupName, resp.ms_relations.CustPricingGroupid, true, true);
+				$('#select-pricinggroupname').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.Notes, true);
 				$('#select-relationnotes').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.ms_relations.fst_username, resp.ms_relations.fin_user_id, true, true);
+				$('#select-salesId').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.ms_relations.fst_warehouse_name, resp.ms_relations.fin_warehouse_id, true, true);
+				$('#select-warehouseId').append(newOption).trigger('change');
 
 			},
 

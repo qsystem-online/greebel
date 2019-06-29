@@ -1,2 +1,5 @@
 const DATEPICKER_FORMAT = "dd-mm-yyyy";
 const DATEPICKER_FORMAT_MOMENT = "DD-MM-YYYY";
+const DECIMAL_SEPARATOR = '.';
+const DECIMAL_DIGIT = 2;
+const DIGIT_GROUP = ',';

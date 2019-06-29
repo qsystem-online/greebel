@@ -26,8 +26,8 @@ class GLAccounts extends MY_Controller
         $this->list['delete_ajax_url'] = site_url() . 'GL/GLAccounts/delete/';
         $this->list['edit_ajax_url'] = site_url() . 'GL/GLAccounts/edit/';
         $this->list['arrSearch'] = [
-            'GLAccountCode' => 'GL Account Code',
-            'GLAccountName' => 'GL Account Name'
+            'a.GLAccountCode' => 'GL Account Code',
+            'a.GLAccountName' => 'GL Account Name'
         ];
 
         $this->list['breadcrumbs'] = [
@@ -36,10 +36,10 @@ class GLAccounts extends MY_Controller
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'GL Account Code', 'width' => '7%', 'data' => 'GLAccountCode'],
-            ['title' => 'GL Account Name', 'width' => '15%', 'data' => 'GLAccountName'],
-            ['title' => 'GL Main Group', 'width' => '10%', 'data' => 'GLAccountMainGroupId'],
-            ['title' => 'Parent', 'width' => '10%', 'data' => 'ParentGLAccountCode'],
+            ['title' => 'GL Account Code', 'width' => '10%', 'data' => 'GLAccountCode'],
+            ['title' => 'GL Account Name', 'width' => '12%', 'data' => 'GLAccountName'],
+            ['title' => 'GL Main Group Name', 'width' => '12%', 'data' => 'GLAccountMainGroupName'],
+            ['title' => 'Parent', 'width' => '10%', 'data' => 'ParentGLAccountName'],
             ['title' => 'Default Post', 'width' => '7%', 'data' => 'DefaultPost'],
             ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
         ];
@@ -70,6 +70,9 @@ class GLAccounts extends MY_Controller
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add GL Account" : "Update GL Account";
         $data["GLAccountCode"] = $GLAccountCode;
+        $data["mainGLSeparator"] = getDbConfig("main_glaccount_separator");
+        $data["parentGLSeparator"] = getDbConfig("parent_glaccount_separator");
+        
 
         $page_content = $this->parser->parse('pages/gl/glaccounts/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -117,6 +120,7 @@ class GLAccounts extends MY_Controller
             "DefaultPost" => $this->input->post("DefaultPost"),
             "MinUserLevelAccess" => $this->input->post("MinUserLevelAccess"),
             "CurrCode" => $this->input->post("CurrCode"),
+            "fin_seq_no" => $this->input->post("fin_seq_no"),
             "isAllowInCashBankModule" => ($this->input->post("isAllowInCashBankModule") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
@@ -175,6 +179,7 @@ class GLAccounts extends MY_Controller
             "DefaultPost" => $this->input->post("DefaultPost"),
             "MinUserLevelAccess" => $this->input->post("MinUserLevelAccess"),
             "CurrCode" => $this->input->post("CurrCode"),
+            "fin_seq_no"=> $this->input->post("fin_seq_no"),
             "isAllowInCashBankModule" => $this->input->post("isAllowInCashBankModule"),
             "fst_active" => 'A'
         ];
@@ -203,48 +208,21 @@ class GLAccounts extends MY_Controller
     public function fetch_list_data()
     {
         $this->load->library("datatables");
-        $this->datatables->setTableName("glaccounts");
+        $this->datatables->setTableName("(select a.*,b.GLAccountMainGroupName,c.GLAccountName as ParentGLAccountName from glaccounts a inner join glaccountmaingroups b on a.GLAccountMainGroupId = b.GLAccountMainGroupId left join glaccounts c ON a.GLAccountCode = c.ParentGLAccountCode) a");
 
-        $selectFields = "GLAccountCode,GLAccountName,GLAccountMainGroupId,ParentGLAccountCode,DefaultPost,'action' as action";
+        $selectFields = "a.GLAccountCode,a.GLAccountName,a.GLAccountMainGroupName,a.ParentGLAccountName,a.DefaultPost,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
-        $Fields = $this->input->get('optionSearch');
-        $searchFields = [$Fields];
-        $this->datatables->setSearchFields($searchFields);
+        $searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch');
+		$this->datatables->setSearchFields($searchFields);
+        $this->datatables->activeCondition = "fst_active !='D'";
+        
         // Format Data
         $datasources = $this->datatables->getData();
         $arrData = $datasources["data"];
         $arrDataFormated = [];
         foreach ($arrData as $data) {
-
-            switch ($data["GLAccountMainGroupId"]) {
-                case 1:
-                    $GLAccountMainGroupId = "Assets";
-                    break;
-                case 2:
-                    $GLAccountMainGroupId = "Liabilities";
-                    break;
-                case 3:
-                    $GLAccountMainGroupId = "Equity";
-                    break;
-                case 4:
-                    $GLAccountMainGroupId = "Income";
-                    break;
-                case 5:
-                    $GLAccountMainGroupId = "Cost Of Sales";
-                    break;
-                case 6:
-                    $GLAccountMainGroupId = "Expenses";
-                    break;
-                case 7:
-                    $GLAccountMainGroupId = "Other Income";
-                    break;
-                case 8:
-                    $GLAccountMainGroupId = "Other Expense";
-                    break;
-            }
-            $data["GLAccountMainGroupId"] = $GLAccountMainGroupId;
-
             switch ($data["DefaultPost"]) {
                 case 'D':
                     $DefaultPost = "Debit";
@@ -278,7 +256,7 @@ class GLAccounts extends MY_Controller
     public function get_ParentGL($maingroupid)
     {
         $term = $this->input->get("term");
-        $ssql = "select *  from glaccounts where GLAccountName like ? and GLAccountMainGroupId = ? and GLAccountLevel = 'HD'";
+        $ssql = "SELECT * from glaccounts where GLAccountName like ? and GLAccountMainGroupId = ? and GLAccountLevel = 'HD'";
         $qr = $this->db->query($ssql, ['%' . $term . '%', $maingroupid]);
         $rs = $qr->result();
 
@@ -288,7 +266,7 @@ class GLAccounts extends MY_Controller
     public function get_MainGL()
     {
         $term = $this->input->get("term");
-        $ssql = "select * from glaccountmaingroups where fst_active ='A'";
+        $ssql = "SELECT GLAccountMainGroupId, GLAccountMainGroupName from glaccountmaingroups where GLAccountMainGroupName like ?";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
 
@@ -298,7 +276,7 @@ class GLAccounts extends MY_Controller
     public function get_CurrCode()
     {
         $term = $this->input->get("term");
-        $ssql = "select CurrCode, CurrName from mscurrencies";
+        $ssql = "SELECT CurrCode, CurrName from mscurrencies";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
 

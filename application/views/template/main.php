@@ -52,6 +52,7 @@
 
 		<!-- iCheck for checkboxes and radio inputs -->
 		<link rel="stylesheet" href="<?=base_url()?>plugins/iCheck/all.css">
+
 		
 	</head>
 	<?php
@@ -101,14 +102,19 @@
 				//if session expired redirect to login page
 				$(document).ajaxError(function(event, jqxhr, settings, thrownError){
 					var resp = jqxhr.responseJSON;
-					if(resp.status == "SESSION_EXPIRED"){
-						$.dialog({
-							title: 'Error',
-							content: 'Session is timeout!',
-							onClose: function(){
-								window.location.replace("<?= site_url() ?>signout/expired");	
-							},
-						});						
+
+					if(resp.hasOwnProperty("status")){
+						
+						if(resp.status == "SESSION_EXPIRED"){
+							$.dialog({
+								title: 'Error',
+								content: 'Session is timeout!',
+								onClose: function(){
+									window.location.replace("<?= site_url() ?>signout/expired");	
+								},
+							});						
+						}
+
 					}
 				});
 			});
@@ -147,8 +153,7 @@
 		<script src="<?=base_url()?>bower_components/jquery-confirm/dist/jquery-confirm.min.js"></script>
 		<script src="<?=base_url()?>bower_components/bootstrap-confirmation2/bootstrap-confirmation.min.js"></script>
 		<!-- Inputmask -->
-		<script src="<?=base_url()?>bower_components/inputmask/dist/min/jquery.inputmask.bundle.min.js"></script>
-
+		<script src="<?=base_url()?>bower_components/inputmask/dist/jquery.inputmask.bundle.js"></script>		
 		<!-- Slimscroll -->
 		<script src="<?=base_url()?>bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 		<!-- FastClick -->
@@ -159,7 +164,12 @@
 		<script src="<?=base_url()?>bower_components/numeral/numeral.min.js"></script>
 		<!-- iCheck 1.0.1 -->
 		<script src="<?=base_url()?>plugins/iCheck/icheck.min.js"></script>
+		<!-- maskmoney -->
+		<script src="<?=base_url()?>bower_components/maskmoney/dist/jquery.maskMoney.min.js"></script>
 		<!-- Deafult App -->
 		<script src="<?=base_url()?>dist/js/app.js"></script>	
+		<!-- jquery.hotkeys -->
+		<script src="<?=base_url()?>bower_components/jquery.hotkeys/jquery.hotkeys.js"></script>
+		
 	</body>
 </html>

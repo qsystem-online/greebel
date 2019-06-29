@@ -1,7 +1,7 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSCurrencies_model extends MY_Model
-{
+
+class MSCurrencies_model extends MY_Model{
     public $tableName = "mscurrencies";
     public $pkey = "CurrCode";
 
@@ -10,14 +10,18 @@ class MSCurrencies_model extends MY_Model
         parent::__construct();
     }
 
-    public function getDataById($CurrCode)
-    {
-        $ssql = "select * from " . $this->tableName . " where CurrCode = ? and fst_active = 'A'";
+    public function getDataById($CurrCode){
+        $ssql = "SELECT CurrCode,CurrName FROM mscurrencies where CurrCode = ? and fst_active = 'A'";
         $qr = $this->db->query($ssql, [$CurrCode]);
-        $rw = $qr->row();
+        $rwCurrency = $qr->row();
+
+        $ssql = "SELECT a.*,b.CurrCode,Date,ExchangeRate2IDR FROM mscurrencies a LEFT JOIN mscurrenciesratedetails b ON a.CurrCode = b.CurrCode WHERE a.CurrCode = ? and a.fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$CurrCode]);
+        $rsCurrDetails = $qr->result();
 
         $data = [
-            "" => $rw
+            "msCurrency" => $rwCurrency,
+            "msCurrDetails" => $rsCurrDetails
         ];
 
         return $data;
@@ -39,23 +43,12 @@ class MSCurrencies_model extends MY_Model
         $rules[] = [
             'field' => 'CurrName',
             'label' => 'Currencies Name',
-            'rules' => 'required|min_length[5]',
+            'rules' => 'required',
             'errors' => array(
-                'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
+                'required' => '%s tidak boleh kosong'
             )
         ];
 
         return $rules;
-    }
-
-    public function get_CurrCode()
-    {
-        $term = $this->input->get("term");
-        $ssql = "select * from " . $this->tableName . " where fst_active = 'A'";
-        $qr = $this->db->query($ssql, ['%' . $term . '%']);
-        $rs = $qr->result();
-
-        $this->json_output($rs);
     }
 }

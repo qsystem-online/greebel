@@ -13,6 +13,7 @@ class GLAccountMainGroups_model extends MY_Model
     public function getDataById($GLAccountMainGroupId)
     {
         $ssql = "select * from " . $this->tableName . " where GLAccountMainGroupId = ? and fst_active = 'A'";
+        //$ssql = "SELECT GLAccountMainGroupName, GLAccountMainGroupId from " . $this->tableName . " where GLAccountMainGroupName = ? and fst_active = 'A'";
         $qr = $this->db->query($ssql, [$GLAccountMainGroupId]);
         $rw = $qr->row();
 
