@@ -1,19 +1,19 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSItemspecialpricinggroupdetails_model extends MY_Model
+class MSPromoitems_model extends MY_Model
 {
-    public $tableName = "msitemspecialpricinggroupdetails";
-    public $pkey = "RecId";
+    public $tableName = "mspromoitems";
+    public $pkey = "fin_id";
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function getDataById($RecId)
+    public function getDataById($fin_id)
     {
-        $ssql = "select * from " . $this->tableName . " where RecId = ? and fst_active = 'A'";
-        $qr = $this->db->query($ssql, [$RecId]);
+        $ssql = "select * from " . $this->tableName . " where fin_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$fin_id]);
         $rw = $qr->row();
 
         $data = [
@@ -47,30 +47,11 @@ class MSItemspecialpricinggroupdetails_model extends MY_Model
             )
         ];
 
-        $rules[] = [
-            'field' => 'SellingPrice',
-            'label' => 'Selling Price',
-            'rules' => 'numeric',
-            'errors' => array(
-                'numeric' => '%s harus berupa angka'
-            )
-        ];
-
-        $rules[] = [
-            'field' => 'MinBasicUnitAvgCost',
-            'label' => 'Min Basic Unit Avg Cost',
-            'rules' => 'numeric',
-            'errors' => array(
-                'numeric' => '%s harus berupa angka'
-            )
-        ];
-
         return $rules;
     }
-
-    public function deleteByHeaderId($ItemId)
+    public function deleteByHeaderId($fin_promo_id)
     {
-        $ssql = "delete from " . $this->tableName . " where ItemId = $ItemId";
+        $ssql = "delete from " . $this->tableName . " where fin_promo_id = $fin_promo_id";
         $this->db->query($ssql);
     }
 }

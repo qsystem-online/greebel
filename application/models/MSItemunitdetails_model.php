@@ -28,8 +28,8 @@ class MSItemunitdetails_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'ItemCode',
-            'label' => 'Item Code',
+            'field' => 'ItemId',
+            'label' => 'Item ID',
             'rules' => 'required|min_length[5]',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
@@ -87,7 +87,7 @@ class MSItemunitdetails_model extends MY_Model
     }
     public function deleteByHeaderId($ItemId)
     {
-        $ssql = "delete from " . $this->tableName . " where ItemCode = $ItemId";
+        $ssql = "delete from " . $this->tableName . " where ItemId = $ItemId";
         $this->db->query($ssql);
     }
 }
