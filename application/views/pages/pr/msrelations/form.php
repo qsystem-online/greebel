@@ -247,7 +247,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 					<label for="fin_credit_limit" class="col-md-2 control-label"><?=lang("Credit Limit")?></label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="fin_credit_limit" placeholder="<?=lang("Credit Limit")?>" name="fin_credit_limit">
+							<input type="text" class="form-control text-right money" id="fin_credit_limit" placeholder="<?=lang("Credit Limit")?>" name="fin_credit_limit">
 							<div id="fin_credit_limit_err" class="text-danger"></div>
 						</div>
 					</div>
