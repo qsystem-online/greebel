@@ -33,25 +33,6 @@ class MSCustpricinggroups_model extends MY_Model {
             )
         ];
 
-        $rules[] =[
-			'field' => 'PercentOfPriceList',
-			'label' => 'Percent',
-			'rules' => 'numeric',
-			'errors' => array(
-				'numeric' => '%s harus berupa angka',
-			)
-        ];
-        
-        $rules[] =[
-			'field' => 'DifferenceInAmount',
-			'label' => 'Amount',
-			'rules' => 'required|numeric',
-			'errors' => array(
-                'required' => '%s tidak boleh kosong',
-                'numeric' => '%s harus berupa angka'
-			)
-		];
-
         return $rules;
     }
 

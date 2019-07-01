@@ -238,13 +238,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			event.preventDefault();
 			$("#CurrDetailModal").modal('show');
 
-			//ExchangeRateToIDR = money_parse($("#ExchangeRate2IDR").val());
+			ExchangeRateToIDR = money_parse($("#ExchangeRate2IDR").val()); // INI
 
 			data = {
 				//recid:$("#recid").val(),
 				CurrCode:$("#CurrCode").val(),
 				Date:$("#Date").val(),
-				ExchangeRate2IDR: $("#ExchangeRate2IDR").val(),
+				ExchangeRate2IDR: $("#ExchangeRate2IDR").val(), // INI
 				action: action
 			}
 
@@ -256,15 +256,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
-		$(".money").inputmask({
-                alias: 'numeric',
-                autoGroup: true,
-                groupSeparator: ",",
-                allowMinus: false,
-                autoUnmask: true,
-                digits: 2
-        });
-
 		$('#tblCurrDetails').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
@@ -275,7 +266,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "<?= lang("Date")?>","width": "20%",sortable:false,data:"Date",className: 'dt-right'},
 				{"title" : "<?= lang("Exchange Rate To IDR") ?>","width": "20%",
 					data:"ExchangeRate2IDR",
-					render: $.fn.dataTable.render.number( ',', '.', 2 ),
+					render: $.fn.dataTable.render.number(DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT), // MASALAH DISINI, TABEL TIDAK MUNCUL JIKA INI DIAKTIFKAN
 					className:'text-right'
 				},
 				{"title" : "Action","width": "15%",data:"action",sortable:false,className:'dt-body-center text-center'},
@@ -315,7 +306,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				//$("#recid").val(row.recid);
 				$("#CurrCode").val(row.CurrCode);
 				$("#Date").val(row.Date);
-				$("#ExchangeRate2IDR").val(money_format(row.ExchangeRate2IDR));
+				$("#ExchangeRate2IDR").val(money_format(row.ExchangeRate2IDR)); // INI
 			});
 		});
 	});

@@ -433,15 +433,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 selected_unit = data;
             });
 
-            $(".money").inputmask({
-                alias: 'numeric',
-                autoGroup: true,
-                groupSeparator: ",",
-                allowMinus: false,
-                autoUnmask: true,
-                digits: 2
-            });
-
             $("#btn-add-unit").click(function(event) {
                 event.preventDefault();
 

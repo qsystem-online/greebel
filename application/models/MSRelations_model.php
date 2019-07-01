@@ -90,6 +90,26 @@ class MSRelations_model extends MY_Model {
             )
         ];
 
+        $rules[] = [
+            'field' => 'fin_top_komisi',
+            'label' => 'Top Commission',
+            'rules' => 'required|numeric',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong',
+                'numeric' => '%s harus berupa angka'
+            )
+        ];
+
+        $rules[] = [
+            'field' => 'fin_top_plus_komisi',
+            'label' => 'Top Plus Commission',
+            'rules' => 'required|numeric',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong',
+                'numeric' => '%s harus berupa angka'
+            )
+        ];
+
         return $rules;
     }
 

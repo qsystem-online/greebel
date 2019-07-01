@@ -280,17 +280,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("Top Commission")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fin_top_komisi" placeholder="<?=lang("Top Commission")?>" name="fin_top_komisi">
+						<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("Top Commission")?></label>
+						<div class="col-md-4">
+							<input type="text" class="form-control text-right money" id="fin_top_komisi" name="fin_top_komisi" value="0">
 							<div id="fin_top_komisi_err" class="text-danger"></div>
 						</div>
-					</div>
 
-					<div class="form-group">
-					<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("Top Plus Commission")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fin_top_plus_komisi" placeholder="<?=lang("Top Plus Commission")?>" name="fin_top_plus_komisi">
+						<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("Top Plus Commission")?></label>
+						<div class="col-md-4">
+							<input type="text" class="form-control text-right money" id="fin_top_plus_komisi" name="fin_top_plus_komisi" value="0">
 							<div id="fin_top_plus_komisi_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -694,6 +692,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				cache: true,
 			}
 		});
+
+		$("#fin_top_plus_komisi").val(money_format(resp.ms_relations));
+		fin_top_plus_komisi = money_parse($("#fin_top_plus_komisi").val());
+		
+		$("#fin_top_komisi").val(money_format(resp.ms_relations));
+		fin_top_komisi = money_parse($("#fin_top_komisi").val());
 		
 		var newline = "\r\n";
 		var data = "";
