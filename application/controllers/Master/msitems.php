@@ -149,7 +149,7 @@ class MSItems extends MY_Controller
         $details = json_decode($details);
         foreach ($details as $item) {
             $data = [
-                "ItemCode" => $insertId,
+                "ItemId" => $insertId,
                 "Unit" => $item->Unit,
                 "isBasicUnit" => $item->isBasicUnit,
                 "Conv2BasicUnit" => $item->Conv2BasicUnit,
@@ -245,7 +245,7 @@ class MSItems extends MY_Controller
         $details = json_decode($details);
         foreach ($details as $item) {
             $data = [
-                "ItemCode" => $ItemId,
+                "ItemId" => $ItemId,
                 "Unit" => $item->Unit,
                 "isBasicUnit" => $item->isBasicUnit,
                 "Conv2BasicUnit" => $item->Conv2BasicUnit,
@@ -275,8 +275,8 @@ class MSItems extends MY_Controller
         $details = json_decode($details);
         foreach ($details as $item) {
             $data = [
-                "ItemCode" => $ItemId,
-                "ItemCodeBOM" => $item->ItemCodeBOM,
+                "ItemId" => $ItemId,
+                "ItemIdBOM" => $item->ItemIdBOM,
                 "unit" => $item->unit
             ];
             $this->MSItembomdetails_model->insert($data);
@@ -299,7 +299,7 @@ class MSItems extends MY_Controller
         $details = json_decode($details);
         foreach ($details as $item) {
             $data = [
-                "ItemCode" => $ItemId,
+                "ItemId" => $ItemId,
                 "Unit" => $item->Unit,
                 "PricingGroupId" => $item->PricingGroupId,
                 "SellingPrice" => $item->SellingPrice
@@ -437,11 +437,11 @@ class MSItems extends MY_Controller
         $this->json_output($rs);
     }
 
-    public function get_data_unitbom($ItemCode)
+    public function get_data_unitbom($ItemId)
     {
         $term = $this->input->get("term");
-        $ssql = "select * from msitemunitdetails where Unit like ? and ItemCode = ? order by Unit";
-        $qr = $this->db->query($ssql, ['%' . $term . '%', $ItemCode]);
+        $ssql = "select * from msitemunitdetails where Unit like ? and ItemId = ? order by Unit";
+        $qr = $this->db->query($ssql, ['%' . $term . '%', $ItemId]);
         $rs = $qr->result();
 
         $this->json_output($rs);

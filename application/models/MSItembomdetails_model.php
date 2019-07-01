@@ -28,7 +28,7 @@ class MSItembomdetails_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'ItemCode',
+            'field' => 'ItemId',
             'label' => 'Item Code',
             'rules' => 'required|min_length[5]',
             'errors' => array(
@@ -38,8 +38,8 @@ class MSItembomdetails_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'ItemCodeBOM',
-            'label' => 'Item Code BOM',
+            'field' => 'ItemIdBOM',
+            'label' => 'Item Id BOM',
             'rules' => 'required|min_length[5]',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
@@ -62,7 +62,7 @@ class MSItembomdetails_model extends MY_Model
 
     public function deleteByHeaderId($ItemId)
     {
-        $ssql = "delete from " . $this->tableName . " where ItemCode = $ItemId";
+        $ssql = "delete from " . $this->tableName . " where ItemId = $ItemId";
         $this->db->query($ssql);
     }
 }

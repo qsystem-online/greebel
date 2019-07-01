@@ -304,6 +304,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
 </section>
 
+
 <script type="text/javascript">
 	$(function(){
 
@@ -758,8 +759,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				$("#BirthDate").datepicker('update', dateFormat(resp.ms_relations.BirthDate));
 
-				var newOption = new Option(resp.ms_relations.RelationName, resp.ms_relations.RelationId, true, true);
-				$('#select-parentId').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.ParentName, resp.ms_relations.fin_parent_id, true, true);
+				$('#select-parentId').append(newOption);
+				$("#select-parentId").val(resp.ms_relations.fin_parent_id).trigger('change');
 
 				// menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.ms_relations.RelationGroupName, resp.ms_relations.RelationGroupId, true, true);
@@ -788,7 +790,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var newOption = new Option(resp.ms_relations.Notes, true);
 				$('#select-relationnotes').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.fst_username, resp.ms_relations.fin_user_id, true, true);
+				var newOption = new Option(resp.ms_relations.SalesName, resp.ms_relations.fin_sales_id, true, true);
 				$('#select-salesId').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.fst_warehouse_name, resp.ms_relations.fin_warehouse_id, true, true);
