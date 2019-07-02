@@ -21,15 +21,15 @@ class MSItems_model extends MY_Model
         $qr = $this->db->query($ssql, [$ItemId]);
         $rw = $qr->row();
 
-        $ssql = "select * from msitemunitdetails where ItemCode = ?";
+        $ssql = "select * from msitemunitdetails where ItemId = ?";
         $qr = $this->db->query($ssql, [$ItemId]);
         $rsUnitDetail = $qr->result();
 
-        $ssql = "select a.*,b.ItemName from msitembomdetails a left join " . $this->tableName . " b on a.ItemCodeBom = b.ItemId  where a.ItemCode = ?";
+        $ssql = "select a.*,b.ItemName from msitembomdetails a left join " . $this->tableName . " b on a.ItemIdBom = b.ItemId  where a.ItemId = ?";
         $qr = $this->db->query($ssql, [$ItemId]);
         $rsBomDetail = $qr->result();
 
-        $ssql = "select a.*,b.CustPricingGroupName from msitemspecialpricinggroupdetails a left join mscustpricinggroups b on a.PricingGroupId = b.CustPricingGroupId  where a.ItemCode = ?";
+        $ssql = "select a.*,b.CustPricingGroupName from msitemspecialpricinggroupdetails a left join mscustpricinggroups b on a.PricingGroupId = b.CustPricingGroupId  where a.ItemId = ?";
         $qr = $this->db->query($ssql, [$ItemId]);
         $rsSpecialPricing = $qr->result();
 

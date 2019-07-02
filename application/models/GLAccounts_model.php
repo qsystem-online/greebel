@@ -12,7 +12,7 @@ class GLAccounts_model extends MY_Model
 
     public function getDataById($GLAccountCode)
     {
-        $ssql = "select a.*,b.CurrName, c.GLAccountName as GLParentName, d.GLAccountMainGroupName , d.GLAccountMainPrefix from " . $this->tableName . " a 
+        $ssql = "select a.*,b.CurrName, c.GLAccountName as GLParentName, d.GLAccountMainGroupName, d.GLAccountMainPrefix from " . $this->tableName . " a 
         left join mscurrencies b on a.CurrCode = b.CurrCode 
         left join " . $this->tableName . " c on a.ParentGLAccountCode = c.GLAccountCode
         left join glaccountmaingroups d on a.GLAccountMainGroupId = d.GLAccountMainGroupId
@@ -36,11 +36,11 @@ class GLAccounts_model extends MY_Model
             'label' => 'GL Account Code',
             'rules' => array(
                 'required',
-				'is_unique[glaccounts.GLAccountCode.GLAccountCode.' . $id . ']'
+				//'is_unique[glaccounts.GLAccountCode.GLAccountCode.' . $id . ']'
 			),
 			'errors' => array(
                 'required' => '%s tidak boleh kosong',
-				'is_unique' => '%s harus unik'
+				//'is_unique' => '%s harus unik'
 			),
         ];
 
@@ -51,7 +51,7 @@ class GLAccounts_model extends MY_Model
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
                 'min_length' => 'Panjang %s paling sedikit 3 character'
-            )
+            ),
         ];
 
         $rules[] = [
@@ -60,7 +60,7 @@ class GLAccounts_model extends MY_Model
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
-            )
+            ),
         ];
 
         return $rules;

@@ -247,7 +247,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 					<label for="fin_credit_limit" class="col-md-2 control-label"><?=lang("Credit Limit")?></label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="fin_credit_limit" placeholder="<?=lang("Credit Limit")?>" name="fin_credit_limit">
+							<input type="text" class="form-control text-right money" id="fin_credit_limit" placeholder="<?=lang("Credit Limit")?>" name="fin_credit_limit">
 							<div id="fin_credit_limit_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -280,17 +280,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("Top Commission")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fin_top_komisi" placeholder="<?=lang("Top Commission")?>" name="fin_top_komisi">
+						<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("Top Commission")?></label>
+						<div class="col-md-4">
+							<input type="text" class="form-control text-right money" id="fin_top_komisi" name="fin_top_komisi" value="0">
 							<div id="fin_top_komisi_err" class="text-danger"></div>
 						</div>
-					</div>
 
-					<div class="form-group">
-					<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("Top Plus Commission")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fin_top_plus_komisi" placeholder="<?=lang("Top Plus Commission")?>" name="fin_top_plus_komisi">
+						<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("Top Plus Commission")?></label>
+						<div class="col-md-4">
+							<input type="text" class="form-control text-right money" id="fin_top_plus_komisi" name="fin_top_plus_komisi" value="0">
 							<div id="fin_top_plus_komisi_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -305,6 +303,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
     </div>
 </section>
+
 
 <script type="text/javascript">
 	$(function(){
@@ -694,6 +693,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				cache: true,
 			}
 		});
+
+		$("#fin_top_plus_komisi").val(money_format(resp.ms_relations));
+		fin_top_plus_komisi = money_parse($("#fin_top_plus_komisi").val());
+		
+		$("#fin_top_komisi").val(money_format(resp.ms_relations));
+		fin_top_komisi = money_parse($("#fin_top_komisi").val());
 		
 		var newline = "\r\n";
 		var data = "";
@@ -754,8 +759,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				$("#BirthDate").datepicker('update', dateFormat(resp.ms_relations.BirthDate));
 
-				var newOption = new Option(resp.ms_relations.RelationName, resp.ms_relations.RelationId, true, true);
-				$('#select-parentId').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.ParentName, resp.ms_relations.fin_parent_id, true, true);
+				$('#select-parentId').append(newOption);
+				$("#select-parentId").val(resp.ms_relations.fin_parent_id).trigger('change');
 
 				// menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.ms_relations.RelationGroupName, resp.ms_relations.RelationGroupId, true, true);
@@ -784,7 +790,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var newOption = new Option(resp.ms_relations.Notes, true);
 				$('#select-relationnotes').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.fst_username, resp.ms_relations.fin_user_id, true, true);
+				var newOption = new Option(resp.ms_relations.SalesName, resp.ms_relations.fin_sales_id, true, true);
 				$('#select-salesId').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.fst_warehouse_name, resp.ms_relations.fin_warehouse_id, true, true);

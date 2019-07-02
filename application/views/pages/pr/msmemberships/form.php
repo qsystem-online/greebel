@@ -101,7 +101,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     <label for="MemberDiscount" class="col-md-2 control-label"><?=lang("Member Discount")?> (%) </label>
 						<div class="col-md-4">
-							<input type="text" class="form-control" id="MemberDiscount" placeholder="<?=lang("Member Discount")?>" name="MemberDiscount">
+							<input type="text" class="form-control text-right" id="MemberDiscount" placeholder="<?=lang("Member Discount")?>" name="MemberDiscount">
 							<div id="MemberDiscount_err" class="text-danger"></div>
 						</div>
                     </div>

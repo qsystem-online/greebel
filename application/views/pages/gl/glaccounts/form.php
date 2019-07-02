@@ -127,17 +127,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
-                    data2 = [];
+                    items = [];
                     $.each(data, function(index, value) {
-                        data2.push({
+                        items.push({
                             "id": value.GLAccountMainGroupId,
                             "text": value.GLAccountMainGroupName,
                             "prefix" : value.GLAccountMainPrefix
                         });
                     });
-                    console.log(data2);
+                    console.log(items);
                     return {
-                        results: data2
+                        results: items
                     };
                 },
                 cache: true,
@@ -225,7 +225,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             mainGL = $("#select-MainGL").select2("data")[0];
             console.log(mainGL);
             $("#GLAccountCode").inputmask({
-                mask: mainGL.prefix.replace(/9/g,"\\9") + "<?= $mainGLSeparator ?>" + "[9][9][9][9][9][9]",
+                mask: mainGL.prefix,//replace(/9/g,"\\9") + "<?= $mainGLSeparator ?>" + "[9][9][9][9][9][9]",
                 greedy:true,
             });
             $("#GLAccountCode").attr("placeholder",mainGL.prefix);
@@ -238,16 +238,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     dataType: 'json',
                     delay: 250,
                     processResults: function(data) {
-                        data2 = [];
+                        items = [];
                         $.each(data, function(index, value) {
-                            data2.push({
+                            items.push({
                                 "id": value.GLAccountCode,
                                 "text": value.GLAccountName
                             });
                         });
-                        console.log(data2);
+                        console.log(items);
                         return {
-                            results: data2
+                            results: items
                         };
                     },
                     cache: true,
@@ -276,16 +276,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
-                    data2 = [];
+                    items = [];
                     $.each(data, function(index, value) {
-                        data2.push({
+                        items.push({
                             "id": value.CurrCode,
                             "text": value.CurrName
                         });
                     });
-                    console.log(data2);
+                    console.log(items);
                     return {
-                        results: data2
+                        results: items
                     };
                 },
                 cache: true,
@@ -323,15 +323,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                 // menampilkan data di select2, menu edit/update
                 var newOption = new Option(resp.glAccounts.CurrName, resp.glAccounts.CurrCode, true, true);
-                // Append it to the select
                 $('#select-CurrCode').append(newOption).trigger('change');
-
+                
                 var newOption = new Option(resp.glAccounts.GLAccountMainGroupName, resp.glAccounts.GLAccountMainGroupId, true, true);
                 
                 //$('#select-MainGL').val(resp.glAccounts.GLAccountMainGroupId).trigger('change');
                 var data = [{
                     id:1,
-                    text:"Aset",
+                    text:"Assets",
                     prefix: "1"
                 }];
                 /*
@@ -347,27 +346,28 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $('#select-MainGL').select2({
                     data:[{
                         id:1,
-                        text:"Aset",
+                        text:"Assets",
                         prefix: "1"
                     }],
                     ajax: ajaxManiGL,
                 });
-                $('#select-MainGL').val(1).trigger('change');
+                //$('#select-MainGL').val(1).trigger('change');
+                $('#select-MainGL').append(newOption).trigger('change');
+
                 var newOption = new Option(resp.glAccounts.GLParentName, resp.glAccounts.ParentGLAccountCode, true, true);
                 $('#select-ParentGL').append(newOption);
-
                 $("#select-ParentGL").val(resp.glAccounts.ParentGLAccountCode).trigger('change');
 
                 $("#GLAccountCode").inputmask("setvalue", resp.glAccounts.GLAccountCode);
-
+                $('#GLAccountCode').prop('readonly', true);
+                
                 /*
                 $('#select-MainGL').select2({
                     data:data,
                 }).trigger('change');
                 */
 
-
-                
+            
             },
 
             error: function(e) {
@@ -376,20 +376,4 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         });
     }
-</script>
-
-<!-- Select2 -->
-<script src="<?= base_url() ?>bower_components/select2/dist/js/select2.full.js"></script>
-<script type="text/javascript">
-    $(function(){
-        $(".select2-container").addClass("form-control"); 
-        $(".select2-selection--single , .select2-selection--multiple").css({
-            "border":"0px solid #000",
-            "padding":"0px 0px 0px 0px"
-        });         
-        $(".select2-selection--multiple").css({
-            "margin-top" : "-5px",
-            "background-color":"unset"
-        });
-    });
 </script>

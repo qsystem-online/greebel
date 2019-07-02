@@ -124,7 +124,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="ExchangeRate2IDR" class="col-md-4 control-label"><?=lang("Exc Rate To IDR")?></label>
 						<div class="col-md-8">
-							<input type="text" class="form-control text-right money" id="ExchangeRate2IDR" value=0>
+							<input type="text" class="form-control text-right money" id="ExchangeRate2IDR" placeholder="<?= lang("Exchange Rate To IDR") ?>" value="0" name="ExchangeRate2IDR">
 							<div id="ExchangeRate2IDR_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -149,14 +149,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		var edited_curr_detail = null;
 		var mode_curr_detail = "ADD";
-
-		$(".money").inputmask({
-			//alias: 'numeric', 
-			autoGroup: true,
-      		groupSeparator: ",",
-			allowMinus: false,  
-			digits: 5
-		});
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
@@ -246,11 +238,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			event.preventDefault();
 			$("#CurrDetailModal").modal('show');
 
+			ExchangeRateToIDR = money_parse($("#ExchangeRate2IDR").val()); // INI
+
 			data = {
 				//recid:$("#recid").val(),
 				CurrCode:$("#CurrCode").val(),
 				Date:$("#Date").val(),
-				ExchangeRate2IDR:$("#ExchangeRate2IDR").val(),
+				ExchangeRate2IDR: $("#ExchangeRate2IDR").val(), // INI
 				action: action
 			}
 
@@ -268,9 +262,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).DataTable({
 			columns:[
 				//{"title" : "recid","width": "0%",sortable:false,data:"recid",visible:false},
-				{"title" : "CurrCode","width": "20%",sortable:false,data:"CurrCode",visible:true},
-				{"title" : "Date","width": "20%",sortable:false,data:"Date",className: 'dt-right'},
-				{"title" : "Exchange Rate To IDR","width": "20%",data:"ExchangeRate2IDR",render: $.fn.dataTable.render.number( ',', '.', 2 ),className:'dt-right'},
+				{"title" : "<?= lang("CurrCode")?>","width": "20%",sortable:false,data:"CurrCode",visible:true},
+				{"title" : "<?= lang("Date")?>","width": "20%",sortable:false,data:"Date",className: 'dt-right'},
+				{"title" : "<?= lang("Exchange Rate To IDR") ?>","width": "20%",
+					data:"ExchangeRate2IDR",
+					render: $.fn.dataTable.render.number(DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT), // MASALAH DISINI, TABEL TIDAK MUNCUL JIKA INI DIAKTIFKAN
+					className:'text-right'
+				},
 				{"title" : "Action","width": "15%",data:"action",sortable:false,className:'dt-body-center text-center'},
 			],
 			processing: true,
@@ -308,7 +306,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				//$("#recid").val(row.recid);
 				$("#CurrCode").val(row.CurrCode);
 				$("#Date").val(row.Date);
-				$("#ExchangeRate2IDR").val(row.ExchangeRate2IDR);
+				$("#ExchangeRate2IDR").val(money_format(row.ExchangeRate2IDR)); // INI
 			});
 		});
 	});

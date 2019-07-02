@@ -289,7 +289,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     {
                         "title": "<?= lang("Item Name") ?>",
                         "width": "20%",
-                        data: "ItemCode",
+                        data: "ItemId",
                         visible: false,
                     },
                     {
@@ -437,6 +437,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 alias: 'numeric',
                 autoGroup: true,
                 groupSeparator: ",",
+                radixPoint: ".",
                 allowMinus: false,
                 autoUnmask: true,
                 digits: 2
@@ -529,7 +530,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 if (addRow) {
                     t.row.add({
                         RecId: 0,
-                        ItemCode: 0,
+                        ItemId: 0,
                         Unit: selected_unit.text,
                         isBasicUnit: $("#isBasicUnit").prop("checked"),
                         Conv2BasicUnit: $("#Conv2BasicUnit").val(),
@@ -558,10 +559,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <div class="modal-body">
                 <form class="form-horizontal ">
                     <div class="form-group">
-                        <label for="ItemCodeBOM" class="col-md-3 control-label"><?= lang("Item BOM") ?></label>
+                        <label for="ItemIdBOM" class="col-md-3 control-label"><?= lang("Item BOM") ?></label>
                         <div class="col-md-9">
-                            <select class="select2 form-control" id="ItemCodeBOM" style="width:100%"></select>
-                            <span id="ItemCodeBOM_error" class="text-danger"></span>
+                            <select class="select2 form-control" id="ItemIdBOM" style="width:100%"></select>
+                            <span id="ItemIdBOM_error" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -600,13 +601,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     {
                         "title": "<?= lang("Item Name") ?>",
                         "width": "10%",
-                        data: "ItemCode",
+                        data: "ItemId",
                         visible: false,
                     },
                     {
                         "title": "<?= lang("") ?>",
                         "width": "10%",
-                        data: "ItemCodeBOM",
+                        data: "ItemIdBOM",
                         visible: false,
                     },
                     {
@@ -643,7 +644,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 t.row(trRow).remove().draw();
             });
 
-            $("#ItemCodeBOM").select2({
+            $("#ItemIdBOM").select2({
                 width: '100%',
                 ajax: {
                     url: '<?= site_url() ?>Master/msitems/get_data_ItemBom',
@@ -667,27 +668,27 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
             var selected_bom;
 
-            $('#ItemCodeBOM').on('select2:select', function(e) {
+            $('#ItemIdBOM').on('select2:select', function(e) {
                 console.log(selected_bom);
                 var data = e.params.data;
                 selected_bom = data;
 
             });
 
-            $("#ItemCodeBOM").change(function(event) {
+            $("#ItemIdBOM").change(function(event) {
                 event.preventDefault();
                 $('#unit-bom').val(null).trigger('change');
                 $("#unit-bom").select2({
                     width: '100%',
                     ajax: {
-                        url: '<?= site_url() ?>Master/msitems/get_data_unitbom/' + $("#ItemCodeBOM").val(),
+                        url: '<?= site_url() ?>Master/msitems/get_data_unitbom/' + $("#ItemIdBOM").val(),
                         dataType: 'json',
                         delay: 250,
                         processResults: function(data) {
                             data2 = [];
                             $.each(data, function(index, value) {
                                 data2.push({
-                                    "id": value.ItemCode,
+                                    "id": value.ItemId,
                                     "text": value.Unit
                                 });
                             });
@@ -712,17 +713,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
             $("#btn-add-bom-details").click(function(event) {
                 event.preventDefault();
 
-                var itemBom = $("#ItemCodeBOM").val();
+                var itemBom = $("#ItemIdBOM").val();
                 if (itemBom == null || itemBom == "") {
-                    $("#ItemCodeBOM_error").html("Please select Item BOM");
-                    $("#ItemCodeBOM_error").show();
+                    $("#ItemIdBOM_error").html("Please select Item");
+                    $("#ItemIdBOM_error").show();
                 } else {
-                    $("#ItemCodeBOM_error").hide();
+                    $("#ItemIdBOM_error").hide();
                 }
 
                 var unitBom = $("#unit-bom").val();
                 if (unitBom == null || unitBom == "") {
-                    $("#unit-bom_error").html("Please select Unit BOM");
+                    $("#unit-bom_error").html("Please select Unit");
                     $("#unit-bom_error").show();
                 } else {
                     $("#unit-bom_error").hide();
@@ -731,8 +732,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                 t.row.add({
                     recid: 0,
-                    ItemCode: 0,
-                    ItemCodeBOM: selected_bom.id,
+                    ItemId: 0,
+                    ItemIdBOM: selected_bom.id,
                     BomName: selected_bom.text,
                     unit: selected_unitbom.text,
                     action: action
@@ -757,12 +758,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <label for="PricingGroupId" class="col-md-3 control-label"><?= lang("Pricing group") ?></label>
                         <div class="col-md-9">
                             <select class="select2 form-control" id="PricingGroupId" style="width:100%"></select>
+                            <span id="PricingGroupId_error" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="Unit" class="col-md-3 control-label"><?= lang("Unit") ?></label>
                         <div class="col-md-9">
                             <select class="select2 form-control" id="unit_pricing" style="width:100%"></select>
+                            <span id="unit_pricing_error" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -799,7 +802,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     {
                         "title": "<?= lang("Item Name") ?>",
                         "width": "5%",
-                        data: "ItemCode",
+                        data: "ItemId",
                         visible: false,
                     },
                     {
@@ -917,12 +920,29 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
             $("#btn-add-special-pricing").click(function(event) {
                 event.preventDefault();
+
+                var pricingGroup = $("#PricingGroupId").val();
+                if (pricingGroup == null || pricingGroup == "") {
+                    $("#PricingGroupId_error").html("Please select Pricing Group");
+                    $("#PricingGroupId_error").show();
+                } else {
+                    $("#PricingGroupId_error").hide();
+                }
+
+                var unitPricing = $("#unit_pricing").val();
+                if (unitPricing == null || unitPricing == "") {
+                    $("#unit_pricing_error").html("Please select Unit");
+                    $("#unit_pricing_error").show();
+                } else {
+                    $("#unit_pricing_error").hide();
+                }
+
                 t = $('#tbl_special_pricing').DataTable();
                 var sellingPrice = numeral($("#SellingPrice").val());
 
                 t.row.add({
                     RecId: 0,
-                    ItemCode: 0,
+                    ItemId: 0,
                     Unit: selected_unitpricing.id,
                     PricingGroupId: selected_pricinggroup.id,
                     PricingGroupName: selected_pricinggroup.text,
@@ -1168,7 +1188,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                     t.row.add({
                         RecId: val.RecId,
-                        ItemCode: val.ItemCode,
+                        ItemId: val.ItemId,
                         Unit: val.Unit,
                         isBasicUnit: val.isBasicUnit,
                         Conv2BasicUnit: val.Conv2BasicUnit,
@@ -1189,8 +1209,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                     t.row.add({
                         recid: val.recid,
-                        ItemCode: val.ItemCode,
-                        ItemCodeBOM: val.ItemCodeBOM,
+                        ItemId: val.ItemId,
+                        ItemIdBOM: val.ItemIdBOM,
                         BomName: val.ItemName,
                         unit: val.unit,
                         action: action
@@ -1205,7 +1225,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                     t.row.add({
                         RecId: val.RecId,
-                        ItemCode: val.ItemCode,
+                        ItemId: val.ItemId,
                         PricingGroupId: val.PricingGroupId,
                         PricingGroupName: val.CustPricingGroupName,
                         Unit: val.Unit,
