@@ -351,14 +351,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 selected_unitdetail = data;
             });
 
-            $(".money").inputmask({
+           /* $(".money").inputmask({
                 alias: 'numeric',
                 autoGroup: true,
                 groupSeparator: ",",
                 allowMinus: false,
                 autoUnmask: true,
                 digits: 2
-            });
+            });*/
 
             $("#btn-add-item").click(function(event) {
                 event.preventDefault();
