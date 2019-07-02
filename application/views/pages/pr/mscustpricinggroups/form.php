@@ -43,7 +43,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmMSCustpricinggroups" class="form-horizontal" action="<?=site_url()?>pages/pr/mscustpricinggroups/add" method="POST" enctype="multipart/form-data">			
+            <form id="frmMSCustpricinggroups" class="form-horizontal" action="<?=site_url()?>pr/mscustpricinggroups/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
@@ -96,7 +96,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			data = new FormData($("#frmMSCustpricinggroups")[0]);
+			data = $("#frmMSCustpricinggroups").serializeArray();
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
@@ -108,12 +108,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//var formData = new FormData($('form')[0])
 			$.ajax({
 				type: "POST",
-				enctype: 'multipart/form-data',
+				//enctype: 'multipart/form-data',
 				url: url,
 				data: data,
-				processData: false,
-				contentType: false,
-				cache: false,
+				//processData: false,
+				//contentType: false,
+				//cache: false,
 				timeout: 600000,
 				success: function (resp) {	
 					if (resp.message != "")	{
@@ -170,20 +170,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#PercentOfPriceList").prop('readonly', true);
 		});
 
-		$("#PercentOfPriceList").inputmask({
-			alias : 'numeric',
-			allowMinus : false,
-			digits : 2,
-			max : 100
-		});
-
-		$(".money").inputmask({
-			alias : 'numeric',
-			autoGroup : true,
-			groupSeparator : ",",
-			allowMinus : false,
-			digits : 2
-		})
+		//DifferenceInAmount = money_parse($("#DifferenceInAmount").val());
+		//$("#DifferenceInAmount").val(money_format(DifferenceInAmount));
 
 	});
 
