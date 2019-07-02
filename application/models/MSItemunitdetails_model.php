@@ -98,4 +98,26 @@ class MSItemunitdetails_model extends MY_Model
         $rw = $qr->result();
         return $rw;
     }
+
+
+    public function getConversionUnit($fin_item_id,$qty , $unitFrom,$unitTo){
+        $ssql = "Select * from msitemunitdetails where ItemId = ? and Unit = ? and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$fin_item_id,$unitFrom]);
+        $rwFrom = $qr->row();
+        if($rwFrom){
+            $qtyBasicUnit = $qty * $rwFrom->Conv2BasicUnit;
+            $qr = $this->db->query($ssql,[$fin_item_id,$unitTo]);
+            $rwTo = $qr->row();
+            if($rwTo){
+                return $qtyBasicUnit / $rwTo->Conv2BasicUnit;
+            }else{
+                return 0;
+            }
+        }else{
+            return 0;
+        }
+
+
+
+    }
 }

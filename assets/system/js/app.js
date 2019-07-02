@@ -21,8 +21,8 @@ $(function(){
 		$(".money").inputmask({
 			alias: 'numeric',
 			autoGroup: true,
-			groupSeparator: ",",
-			radixPoint: ".",
+			groupSeparator: DIGIT_GROUP,
+			radixPoint: DECIMAL_SEPARATOR,
 			allowMinus: false,
 			autoUnmask: true,
 			digits: 2
