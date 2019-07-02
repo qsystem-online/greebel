@@ -21,6 +21,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         border-bottom-color: #3c8dbc;        
         border-bottom-style:fixed;
     }
+	.is-promo{
+		color:#ff0000;
+		background-color:#ed8fa9 !important;
+	}
 </style>
 
 <section class="content-header">
@@ -205,7 +209,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-body">
-				<form  class="form-horizontal">
+				<form id="form-detail" class="form-horizontal">
 				<input type='hidden' id='fin-detail-id'/>
 					<div class="form-group">
 						<label for="select-items" class="col-md-2 control-label"><?=lang("Items")?></label>
@@ -291,75 +295,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			data = $("#frmSalesOrder").serializeArray();
-			//console.log(data);
-			detail = new Array();
-			t = $('#tblSODetails').DataTable();
-			datas = t.data();
-			$.each(datas,function(i,v){
-				detail.push(v);
-			});
-			data.push({
-				name:"detail",
-				value: JSON.stringify(detail)
-			});
-
-			mode = $("#frm-mode").val();
-			if (mode == "ADD"){
-				url =  "<?= site_url() ?>tr/sales_order/ajx_add_save";
-			}else{
-				url =  "<?= site_url() ?>tr/sales_order/ajx_edit_save";
-			}
-
-			//var formData = new FormData($('form')[0])
-			$.ajax({
-				type: "POST",
-				enctype: 'multipart/form-data',
-				url: url,
-				data: data,
-				timeout: 600000,
-				success: function (resp) {	
-					if (resp.message != "")	{
-						$.alert({
-							title: 'Message',
-							content: resp.message,
-							buttons : {
-								OK : function(){
-									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
-										return;
-									}
-								},
-							}
-						});
-					}
-
-					if(resp.status == "VALIDATION_FORM_FAILED" ){
-						//Show Error
-						errors = resp.data;
-						for (key in errors) {
-							$("#"+key+"_err").html(errors[key]);
-						}
-					}else if(resp.status == "SUCCESS") {
-						data = resp.data;
-						$("#fin_salesorder_id").val(data.insert_id);
-
-						//Clear all previous error
-						$(".text-danger").html("");
-
-						// Change to Edit mode
-						$("#frm-mode").val("EDIT");  //ADD|EDIT
-						$('#fst_salesorder_no').prop('readonly', true);
-						$("#tabs-so-detail").show();
-						console.log(data.data_image);
-					}
-				},
-				error: function (e) {
-					$("#result").text(e.responseText);
-					console.log("ERROR : ", e);
-					$("#btnSubmit").prop("disabled", false);
-				}
-			});
+			var cekPromo =1;
+			saveAjax(cekPromo);
 		});
 
 		$("#fdt_salesorder_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
@@ -621,7 +558,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 		$("#btn-add-so-detail").click(function(event){
-			event.preventDefault();
+			event.preventDefault();		
+			
+			var formData = new FormData($('#form-detail')[0])
+			console.log(formData);
+			$.ajax({
+				url:"TEST",
+				method:"POST",
+				data:formData,
+			});
+			return;
+
+
+			price = money_parse($("#so-price").val());			
 			selected_items = $("#select-items").select2('data')[0];
 			selected_disc = $("#select-disc").select2('data')[0];
 			selectedUnits = $("#select-unit").select2('data')[0];
@@ -630,8 +579,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			price = money_parse($("#so-price").val());
 			disc = money_parse($("#fdc_disc_amount").val());
 
+			
+			amount = price * qty;
+			maxDisc = calculateDisc(amount,selected_items.maxItemDiscount);
+
+			if (maxDisc < disc){
+				alert("<?= lang('Total discount more than max disc allowed !') ?>" + " (maxDisc:" +  selected_items.maxItemDiscount + ")");
+				return;
+			}
 			data = {
 				rec_id:$("#fin-detail-id").val(),
+				fin_promo_id:0,
 				fin_item_id:selected_items.id,
 				ItemName:selected_items.text,
 				fdc_qty: $("#so-qty").val(),
@@ -651,7 +609,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}else{
 				t.row.add(data).draw(false);	
 			}
-
 			calculateTotal();
 			clearDetailForm();
 		});
@@ -667,6 +624,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).DataTable({
 			columns:[
 				{"title" : "id","width": "5%",sortable:false,data:"rec_id",visible:true},
+				{"title" : "promo","width": "5%",sortable:false,data:"fin_promo_id",visible:true},				
 				{"title" : "Items","width": "15%",sortable:false,data:"fin_item_id",
 					render: function(data,type,row){
 						console.log(row);
@@ -704,6 +662,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			lengthChange: false,
 			paging: false,
 			info:false,
+			fnRowCallback: function( nRow, aData, iDisplayIndex ) {
+
+				if (aData.fin_promo_id > 0){
+					$(nRow).removeClass("odd");
+					$(nRow).removeClass("even");					
+					$(nRow).addClass("is-promo");
+				}
+			},
 		}).on('draw',function(){
 			$('.btn-delete').confirmation({
 				//rootSelector: '[data-toggle=confirmation]',
@@ -899,6 +865,123 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				console.log("ERROR : ", e);
 			}
 		});
+	}
+
+	function saveAjax(cekPromo){
+		data = $("#frmSalesOrder").serializeArray();
+		detail = new Array();		
+		t = $('#tblSODetails').DataTable();
+
+
+		t.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+			var tmpData = this.data();
+			//tmpData = t.row(rowIdx).data();
+			//console.log(tmpData);
+			if(tmpData.fin_promo_id > 0){
+				t.row(rowIdx).remove().draw();
+			}
+		});
+
+		 
+		datas = t.data();
+	
+		$.each(datas,function(i,v){
+			detail.push(v);
+		});
+
+		data.push({
+			name:"detail",
+			value: JSON.stringify(detail)
+		});
+
+		mode = $("#frm-mode").val();
+		if (mode == "ADD"){
+			url =  "<?= site_url() ?>tr/sales_order/ajx_add_save/" + cekPromo;
+		}else{
+			url =  "<?= site_url() ?>tr/sales_order/ajx_edit_save/" + cekPromo;
+		}
+
+		//var formData = new FormData($('form')[0])
+
+		$.ajax({
+			type: "POST",
+			enctype: 'multipart/form-data',
+			url: url,
+			data: data,
+			timeout: 600000,
+			success: function (resp) {	
+				if (resp.message != "")	{
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons : {
+							OK : function(){
+								if(resp.status == "SUCCESS"){
+									window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
+									return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "VALIDATION_FORM_FAILED" ){
+					//Show Error
+					errors = resp.data;
+					for (key in errors) {
+						$("#"+key+"_err").html(errors[key]);
+					}
+				}else if (resp.status == "INFOPROMO"){
+					if (confirm(resp.confirm_message)){
+						var actionDelete = '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+						$.each(resp.data,function(i,v){
+							event.preventDefault();							
+							data = {
+								rec_id:0,
+								fin_promo_id:v.fin_promo_id,
+								fin_item_id:v.fin_item_id,
+								ItemName:v.fst_item_name,
+								fdc_qty: v.fdc_qty,
+								fst_unit: v.fst_unit,
+								fdc_price : 0,
+								fst_disc_item : 0,
+								fdc_disc_amount: 0,
+								fst_memo_item: "",
+								total: 0,
+								action: ""//actionDelete
+
+							}
+							//console.log(data);
+							t = $('#tblSODetails').DataTable();							
+							t.row.add(data).draw(false);								
+							//calculateTotal();
+							//clearDetailForm();
+						});
+					}else{
+						saveAjax(0);
+					}
+									
+				}else if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fin_salesorder_id").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_salesorder_no').prop('readonly', true);
+					$("#tabs-so-detail").show();
+					console.log(data.data_image);
+				}
+			},
+			error: function (e) {
+				$("#result").text(e.responseText);
+				console.log("ERROR : ", e);
+				$("#btnSubmit").prop("disabled", false);
+			}
+		});
+
 	}
 
 

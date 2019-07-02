@@ -30,11 +30,10 @@ class Sales_order_details_model extends MY_Model {
         $rules[] = [
             'field' => 'fdc_price',
             'label' => 'Price',
-            'rules' => 'required|numeric|greater_than[0]',
+            'rules' => 'required|numeric',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
                 'numeric' => '%s harus berupa angka',
-                'greater_than' => '%s tidak boleh 0',
             )
         ];
 
