@@ -134,6 +134,7 @@ class MSRelations extends MY_Controller{
 			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
+			"fin_credit_limit" => $this->input->post("fin_credit_limit"),
 			"fin_sales_id" => $this->input->post("fin_sales_id"),
 			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
 			"fin_terms_payment" => $this->input->post("fin_terms_payment"),
@@ -205,9 +206,11 @@ class MSRelations extends MY_Controller{
 			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
+			"fin_credit_limit" => $this->input->post("fin_credit_limit"),
 			"fin_sales_id" => $this->input->post("fin_sales_id"),
 			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
 			"fin_terms_payment" => $this->input->post("fin_terms_payment"),
+			"fin_top_komisi" => $this->input->post("fin_top_komisi"),
 			"fin_top_plus_komisi" => $this->input->post("fin_top_plus_komisi"),
 			"fst_active" => 'A'
 		];
