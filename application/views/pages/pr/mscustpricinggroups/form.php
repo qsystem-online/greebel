@@ -157,6 +157,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
+		$("#DifferenceInAmount").val(money_format(DifferenceInAmount));
+		DifferenceInAmount = money_parse($("#DifferenceInAmount").val());
+
 		// OnChange
 		$("#PercentOfPriceList").change(function(){
 			//alert ("PercentOfPriceList");
@@ -169,10 +172,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#PercentOfPriceList").val(0);
 			$("#PercentOfPriceList").prop('readonly', true);
 		});
-
-		//DifferenceInAmount = money_parse($("#DifferenceInAmount").val());
-		//$("#DifferenceInAmount").val(money_format(DifferenceInAmount));
-
 	});
 
 	function init_form(CustPricingGroupId){
