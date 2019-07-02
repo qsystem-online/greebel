@@ -157,9 +157,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#DifferenceInAmount").val(money_format(DifferenceInAmount));
-		DifferenceInAmount = money_parse($("#DifferenceInAmount").val());
-
 		// OnChange
 		$("#PercentOfPriceList").change(function(){
 			//alert ("PercentOfPriceList");
