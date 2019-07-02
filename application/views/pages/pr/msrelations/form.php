@@ -246,8 +246,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">
 					<label for="fin_credit_limit" class="col-md-2 control-label"><?=lang("Credit Limit")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control text-right money" id="fin_credit_limit" placeholder="<?=lang("Credit Limit")?>" name="fin_credit_limit">
+						<div class="col-md-4">
+							<input type="text" class="form-control text-right money" id="fin_credit_limit" name="fin_credit_limit">
 							<div id="fin_credit_limit_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -273,24 +273,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 					<label for="fin_terms_payment" class="col-md-2 control-label"><?=lang("Terms Payment")?></label>
 						<div class="col-md-4">
-							<input type="text" class="form-control" id="fin_terms_payment" placeholder="<?=lang("Terms Payment")?>" name="fin_terms_payment">
+							<input type="text" class="form-control text-right" id="fin_terms_payment" placeholder="<?=lang("Terms Payment")?>" name="fin_terms_payment">
 							<div id="fin_terms_payment_err" class="text-danger"></div>
 						</div>
 					<label for="fin_terms_payment" class="col-sm-0 control-label"><?=lang("Hari")?></label>
 					</div>
 
 					<div class="form-group">
-						<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("Top Commission")?></label>
+						<label for="fin_top_komisi" class="col-md-2 control-label"><i>*<?=lang("Terms Of Payment")?></i></label>
+					</div>
+
+					<div class="form-group">
+						<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("TOP Commission")?></label>
 						<div class="col-md-4">
-							<input type="text" class="form-control text-right money" id="fin_top_komisi" name="fin_top_komisi" value="0">
+							<input type="text" class="form-control text-right" id="fin_top_komisi" name="fin_top_komisi" value="0">
 							<div id="fin_top_komisi_err" class="text-danger"></div>
 						</div>
-
-						<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("Top Plus Commission")?></label>
+					<label for="fin_top_komisi" class="col-sm-0 control-label"><?=lang("Hari")?></label>
+					</div>
+						
+					<div class="form-group">
+						<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("TOP Plus Commission")?></label>
 						<div class="col-md-4">
-							<input type="text" class="form-control text-right money" id="fin_top_plus_komisi" name="fin_top_plus_komisi" value="0">
+							<input type="text" class="form-control text-right" id="fin_top_plus_komisi" name="fin_top_plus_komisi" value="0">
 							<div id="fin_top_plus_komisi_err" class="text-danger"></div>
 						</div>
+					<label for="fin_top_plus_komisi" class="col-sm-0 control-label"><?=lang("Hari")?></label>
 					</div>
                 </div>
 				<!-- end box body -->
@@ -314,7 +322,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			data = new FormData($("#frmMSRelations")[0]);
+			data = $("#frmMSRelations").serializeArray();
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
@@ -326,12 +334,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//var formData = new FormData($('form')[0])
 			$.ajax({
 				type: "POST",
-				enctype: 'multipart/form-data',
+				//enctype: 'multipart/form-data',
 				url: url,
 				data: data,
-				processData: false,
-				contentType: false,
-				cache: false,
+				//processData: false,
+				//contentType: false,
+				//cache: false,
 				timeout: 600000,
 				success: function (resp) {	
 					if (resp.message != "")	{
@@ -694,12 +702,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
-		$("#fin_top_plus_komisi").val(money_format(resp.ms_relations));
-		fin_top_plus_komisi = money_parse($("#fin_top_plus_komisi").val());
-		
-		$("#fin_top_komisi").val(money_format(resp.ms_relations));
-		fin_top_komisi = money_parse($("#fin_top_komisi").val());
-		
 		var newline = "\r\n";
 		var data = "";
 		
@@ -709,12 +711,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$("#btn-add-RelationNotes").click(function(event){
+			//alert("RelationNotes");
 			event.preventDefault();
-			var sstr = $("#RelationNotes").val();alert (sstr);
+			var sstr = $("#RelationNotes").val();
+			//alert (sstr);
 			$("#RelationNotes").val(sstr + data.text + "\r\n");
 			//console.log(selected_relationnotes);
 		});
 	});
+
 
 	function init_form(RelationId){
 		//alert("Init Form");
