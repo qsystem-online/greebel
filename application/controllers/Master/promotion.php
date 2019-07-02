@@ -399,4 +399,15 @@ class promotion extends MY_Controller
 
         $this->json_output($rs);
     }
+
+    
+    public function get_data_unitTerms($ItemId)
+    {
+        $term = $this->input->get("term");
+        $ssql = "select * from msitemunitdetails where Unit like ? and ItemId = ?  order by Unit";
+        $qr = $this->db->query($ssql, ['%' . $term . '%', $ItemId]);
+        $rs = $qr->result();
+
+        $this->json_output($rs);
+    }
 }
