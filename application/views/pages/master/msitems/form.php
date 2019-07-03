@@ -164,11 +164,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
                         </div>
                         <!-- end box body -->
+                        <?php $displaytabs = ($mode == "ADD") ? "none" : "" ?>
                         <div class="nav-tabs-custom" style="display:unset">
                             <ul class="nav nav-tabs">
                                 <li class="active"><a href="#unit_details" data-toggle="tab" aria-expanded="true"><?= lang("Unit Details") ?></a></li>
                                 <li class="bom_details" id="tab-doc"><a href="#bom_details" data-toggle="tab" aria-expanded="false"><?= lang("BOM Details") ?></a></li>
-                                <li class="special_pricing"><a href="#special_pricing" data-toggle="tab" aria-expanded="false"><?= lang("Special Pricing") ?></a></li>
+                                <li class="special_pricing" style="display:<?= $displaytabs ?>;"><a href="#special_pricing" data-toggle="tab" aria-expanded="false"><?= lang("Special Pricing") ?></a></li>
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="unit_details">
@@ -183,7 +184,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         <table id="tbl_bom_details" class="table table-bordered table-hover" style="width:100%;"></table>
                                     </div>
                                 </div>
-                                <div class="tab-pane" id="special_pricing">
+                                <div <?= $displaytabs ?> class="tab-pane" id="special_pricing">
                                     <button id="btn-add-special_pricing" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Special Pricing") ?></button>
                                     <div>
                                         <table id="tbl_special_pricing" class="table table-bordered table-hover" style="width:100%;"></table>
@@ -433,15 +434,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 selected_unit = data;
             });
 
-            $(".money").inputmask({
-                alias: 'numeric',
-                autoGroup: true,
-                groupSeparator: ",",
-                radixPoint: ".",
-                allowMinus: false,
-                autoUnmask: true,
-                digits: 2
-            });
 
             $("#btn-add-unit").click(function(event) {
                 event.preventDefault();
@@ -1167,7 +1159,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
-
 
                 // menampilkan data di select2
                 var newOption = new Option(resp.msitems.ItemMainGroupName, resp.msitems.ItemMainGroupId, true, true);

@@ -210,7 +210,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $(function() {
             $("#btn-add-item-details").click(function(event) {
                 event.preventDefault();
-                //$("#mdlItemDetails").modal('show');
 
                 var unitCombined = $("#fst_satuan_gabungan").val();
                 if (unitCombined == null || unitCombined == "") {
@@ -363,10 +362,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
             $("#btn-add-item").click(function(event) {
                 event.preventDefault();
 
+                t = $('#tbl_item_details').DataTable();
+                addRow = true;
+
                 var itemTerms = $("#fin_item_id").val();
                 if (itemTerms == null || itemTerms == "") {
                     $("#fin_item_id_err").html("Please select item");
                     $("#fin_item_id_err").show();
+                    addRow = false;
+                    return;
                 } else {
                     $("#fin_item_id_err").hide();
                 }
@@ -375,12 +379,23 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 if (unitTerms == null || unitTerms == "") {
                     $("#fst_unit_err").html("Please select unit");
                     $("#fst_unit_err").show();
+                    addRow = false;
+                    return;
                 } else {
                     $("#fst_unit_err").hide();
                 }
 
-                t = $('#tbl_item_details').DataTable();
-                addRow = true;
+                var unitCombined = $("#fst_satuan_gabungan").val();
+                if (unitCombined != selected_unitdetail.text ) {
+                    alert(selected_unitdetail.text);
+                    $("#fst_unit_err").html("Not match with unit terms");
+                    $("#fst_unit_err").show();
+                    addRow = false;
+                    return;
+                } else {
+                    $("#fst_unit_err").hide();
+                }             
+
 
                 t.row.add({
                     fin_id: 0,
@@ -646,14 +661,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 cache: true,
             }
         });
-        var selected_promoitem;
-
-        $('#select-promo_item').on('select2:select', function(e) {
-            console.log(selected_promoitem);
-            var data = e.params.data;
-            selected_promoitem = data;
-
-        });
 
         $("#select-promo_item").change(function(event) {
             event.preventDefault();
@@ -681,7 +688,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 }
             });
         })
-
 
     });
 

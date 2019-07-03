@@ -117,7 +117,7 @@ class promotion extends MY_Controller
             "fin_promo_unit" => $this->input->post("fin_promo_unit"),
             "fin_cashback" => $this->input->post("fin_cashback"),
             "fst_other_prize" => $this->input->post("fst_other_prize"),
-            "fbl_qty_gabungan" => $this->input->post("fbl_qty_gabungan"),
+            "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
             "fin_qty_gabungan" => $this->input->post("fin_qty_gabungan"),
             "fst_satuan_gabungan" => $this->input->post("fst_satuan_gabungan"),
             "fst_active" => 'A'
@@ -223,7 +223,7 @@ class promotion extends MY_Controller
             "fin_promo_unit" => $this->input->post("fin_promo_unit"),
             "fin_cashback" => $this->input->post("fin_cashback"),
             "fst_other_prize" => $this->input->post("fst_other_prize"),
-            "fbl_qty_gabungan" => $this->input->post("fbl_qty_gabungan"),
+            "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
             "fin_qty_gabungan" => $this->input->post("fin_qty_gabungan"),
             "fst_satuan_gabungan" => $this->input->post("fst_satuan_gabungan"),
             "fst_active" => 'A'
