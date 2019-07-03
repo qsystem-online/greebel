@@ -40,7 +40,7 @@ class GLAccounts_model extends MY_Model
 			),
 			'errors' => array(
                 'required' => '%s tidak boleh kosong',
-				//'is_unique' => '%s harus unik'
+				//'is_unique' => '%s unik'
 			),
         ];
 

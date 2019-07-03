@@ -89,20 +89,22 @@ class Sales_order extends MY_Controller{
 		$this->openForm("EDIT", $fin_salesorder_id);
 	}
 
-	public function ajx_add_save(){
+	public function ajx_add_save($cekPromo){
 		$this->load->model('sales_order_model');
+		$this->load->model("sales_order_details_model");
+
 		$this->form_validation->set_rules($this->sales_order_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
 			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Error Validation Forms";
+			$this->ajxResp["message"] = "Error Validation Forms 1";
 			$this->ajxResp["data"] = $this->form_validation->error_array();
+			$this->ajxResp["request_data"] = $_POST;
 			$this->json_output();
 			return;
 		}
-
 		$fst_salesorder_no = $this->sales_order_model->GenerateSONo();
 
 		$data = [
@@ -123,6 +125,52 @@ class Sales_order extends MY_Controller{
 			"fst_active" => 'A'
 		];
 
+
+		$this->form_validation->set_rules($this->sales_order_details_model->getRules("ADD",0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+		$details = $this->input->post("detail");
+		$details = json_decode($details);
+		//print_r($details);
+
+		foreach ($details as $item) {
+			$dataDetails = [
+				"ItemId"=> $item->fin_item_id,
+				"fdc_qty"=> $item->fdc_qty,
+				"fdc_price"=> $item->fdc_price
+			];
+			// Validate SO Details
+			$this->form_validation->set_data($dataDetails);
+			if ($this->form_validation->run() == FALSE){
+				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+				$this->ajxResp["message"] = "Error Validation Forms 2";
+				$this->ajxResp["request_data"] = $data;
+				$error = [
+					"detail"=> $this->form_validation->error_string(),
+				];
+				$this->ajxResp["data"] = $error;
+				
+				$this->json_output();
+				return;	
+			}
+		}
+
+		$rsPromoItem = $this->sales_order_model->getDataPromo($this->input->post("fin_relation_id"),$details);
+		if ( $rsPromoItem != null){
+			if ($cekPromo == 1){
+				//return ajax data promo
+				$this->ajxResp["status"] = "INFOPROMO";
+				$this->ajxResp["confirm_message"] = lang("You got promo item, check it ?");
+				$this->ajxResp["message"] = "";
+				$this->ajxResp["data"] = $rsPromoItem;
+				$this->json_output();
+				return;
+			}
+			//Add Detail Promo to detail item
+		}
+
+		echo "save Data !!";
+		die();
+
 		$this->db->trans_start();
 		$insertId = $this->sales_order_model->insert($data);
 		$dbError  = $this->db->error();
@@ -134,15 +182,7 @@ class Sales_order extends MY_Controller{
 			$this->db->trans_rollback();
 			return;
 		}
-
-		// Save SO Details
-		$this->load->model("sales_order_details_model");
 		
-		$this->form_validation->set_rules($this->sales_order_details_model->getRules("ADD",0));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-
-		$details = $this->input->post("detail");
-		$details = json_decode($details);
 		foreach ($details as $item) {
 			$data = [
 				"fin_salesorder_id"=> $insertId,
@@ -150,20 +190,6 @@ class Sales_order extends MY_Controller{
 				"fdc_qty"=> $item->fdc_qty,
 				"fdc_price"=> $item->fdc_price
 			];
-
-			// Validate SO Details
-			$this->form_validation->set_data($data);
-			if ($this->form_validation->run() == FALSE){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = "Error Validation Forms";
-				$error = [
-					"detail"=> $this->form_validation->error_string(),
-				];
-				$this->ajxResp["data"] = $error;
-				$this->json_output();
-				return;	
-			}
-			
 			$this->sales_order_details_model->insert($data);
 			$dbError  = $this->db->error();
 			if ($dbError["code"] != 0){			
@@ -416,5 +442,29 @@ class Sales_order extends MY_Controller{
         $this->pdf->load_view('report/sales_order_pdf', $data);
         $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
 		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
-    }*/
+	}*/
+	
+	public function testPromo(){
+		$this->load->model("sales_order_model");
+		$fin_customer_id =9;
+		/*
+			$dataDetails = [
+				"ItemId"=> $item->ItemId,
+				"fdc_qty"=> $item->fdc_qty,
+				"fdc_price"=> $item->fdc_price
+			];
+		*/
+
+		$arrItem = [
+			["fin_item_id"=>"2","fdc_qty"=>22,"fst_unit"=>"pack","fdc_price"=>10000,"fst_disc_item"=>0,"fdc_disc_amount"=>0],
+			["fin_item_id"=>"1","fdc_qty"=>9,"fst_unit"=>"pack","fdc_price"=>20000,"fst_disc_item"=>0,"fdc_disc_amount"=>0]
+		];
+		$details = json_encode($arrItem);
+		$details = json_decode($details);
+
+
+		$promo = $this->sales_order_model->getDataPromo($fin_customer_id,$details);
+		echo "<br><br><br><br><br>Promo Item :  :<br>";
+		var_dump($promo);
+	}
 }
