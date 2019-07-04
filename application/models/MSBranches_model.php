@@ -61,4 +61,5 @@ class MSBranches_model extends MY_Model
         $query = $this->db->get('branches');
         return $query->result_array();
     }
+
 }
