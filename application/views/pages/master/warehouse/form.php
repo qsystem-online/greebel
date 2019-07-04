@@ -2,6 +2,8 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 ?>
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/select2/dist/css/select2.min.css">
+<link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/datatables.min.css">
+<link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.css">
 
 <section class="content-header">
     <h1><?= lang("Menus") ?><small><?= lang("form") ?></small></h1>
@@ -46,7 +48,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <label for="select-Branch" class="col-md-2 control-label"><?= lang("Branch") ?> :</label>
                             <div class="col-md-4">
                                 <select id="select-Branch" class="form-control" name="fin_branch_id"></select>
-                                <!--<div id="CurrCode_err" class="text-danger"></div>-->
+                                <div id="fin_branch_id_err" class="text-danger"></div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -61,7 +63,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <label><input id="fbl_is_main" type="checkbox" name="fbl_is_main" value="1"><?= lang("Main Warehouse") ?></label><br>
                             </div>
                         </div>
-
                         <!-- end box body -->
 
                         <div class="box-footer text-right">
@@ -82,7 +83,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#btnSubmitAjax").click(function(event) {
             event.preventDefault();
-            data = new FormData($("#frmWarehouse")[0]);
+            //data = new FormData($("#frmWarehouse")[0]);
+            data = $("#frmWarehouse").serializeArray();
 
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
@@ -90,16 +92,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
             } else {
                 url = "<?= site_url() ?>Master/mswarehouse/ajx_edit_save";
             }
+            console.log(data);
 
-            //var formData = new FormData($('form')[0])
             $.ajax({
                 type: "POST",
-                enctype: 'multipart/form-data',
+                //enctype: 'multipart/form-data',
                 url: url,
                 data: data,
-                processData: false,
-                contentType: false,
-                cache: false,
+                //processData: false,
+                //contentType: false,
+                //cache: false,
                 timeout: 600000,
                 success: function(resp) {
                     if (resp.message != "") {
@@ -211,3 +213,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 <!-- Select2 -->
 <script src="<?= base_url() ?>bower_components/select2/dist/js/select2.full.js"></script>
+<!-- DataTables -->
+<script src="<?= base_url() ?>bower_components/datatables.net/datatables.min.js"></script>
+<script src="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.min.js"></script>

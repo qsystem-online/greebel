@@ -12,15 +12,30 @@ class MSBranches_model extends MY_Model
 
     public function getDataById($fin_branch_id)
     {
-        //$ssql = "select * from " . $this->tableName . " where fin_branch_id = ?";
-        $ssql = "select a.*,b.CountryName,c.ProvinceName,d.DistrictName,e.SubDistrictName from " . $this->tableName . " a 
-        left join mscountries b on a.fin_country_id = b.CountryId 
-        left join msprovinces c on a.fin_province_id = c.ProvinceId 
-        left join msdistricts d on a.fin_district_id = d.DistrictId 
-        left join mssubdistricts e on a.fin_subdistrict_id = e.SubDistrictId 
+        $ssql = "select a.*,MID(a.AreaCode, 1, 2) AS province,MID(a.AreaCode, 1, 5) AS district,MID(a.AreaCode, 1, 8) AS subdistrict,b.CountryName,
+        c.nama AS ProvinceName,d.nama AS DistrictName,e.nama AS SubDistrictName from " . $this->tableName . " a 
+        left join mscountries b on a.CountryId = b.CountryId 
+        left join msarea c on MID(a.AreaCode, 1, 2) = c.kode
+        left join msarea d on MID(a.AreaCode, 1, 5) = d.kode
+        left join msarea e on MID(a.AreaCode, 1, 8) = e.kode
         where fin_branch_id = ?";
         $qr = $this->db->query($ssql, [$fin_branch_id]);
         $rwBranch = $qr->row();
+
+        $arrTmp = explode(".",$rwBranch->district);
+        if (sizeof($arrTmp) == 2 ){
+            $arrTmp = explode(".",$rwBranch->subdistrict);
+            if (sizeof($arrTmp) != 3){
+                $rwBranch->subdistrict = null;
+                $rwBranch->namasubdistrict = null;
+            }
+        }else{
+            $rwBranch->district = null;
+            $rwBranch->namadistrict = null;
+            $rwBranch->subdistrict = null;
+            $rwBranch->namasubdistrict = null;
+        }
+
         $data = [
             "branches" => $rwBranch
         ];
@@ -39,6 +54,16 @@ class MSBranches_model extends MY_Model
                 'required' => '%s tidak boleh kosong'
             )
         ];
+
+        $rules[] = [
+            'field' => 'fbl_is_hq',
+            'label' => 'HQ',
+            'rules' => 'is_unique[msbranches.fin_branch_id.fbl_is_hq.' . $id . ']',
+            'errors' => array(
+                'is_unique' => '%s is more one'
+            )
+        ];
+
 
         return $rules;
     }
@@ -61,4 +86,5 @@ class MSBranches_model extends MY_Model
         $query = $this->db->get('branches');
         return $query->result_array();
     }
+
 }
