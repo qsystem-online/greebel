@@ -36,7 +36,9 @@ class MSCustpricinggroups extends MY_Controller{
 			['title' => 'Pricing Group Id', 'width' => '20%', 'data' => 'CustPricingGroupId'],
             ['title' => 'Pricing Group Name', 'width' => '30%', 'data' => 'CustPricingGroupName'],
             ['title' => 'Percent (%)', 'width' => '10%', 'data' => 'PercentOfPriceList'],
-            ['title' => 'Amount', 'width' => '15%', 'data' => 'DifferenceInAmount'],
+			['title' => 'Amount', 'width' => '15%', 'data' => 'DifferenceInAmount',
+				'render' => '$.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT)'
+			],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);

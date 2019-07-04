@@ -134,13 +134,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <div class="checkbox" style="width:900px">
                                         <label><input id="fbl_qty_gabungan" type="checkbox" name="fbl_qty_gabungan" value="1"><?= lang("Combined") ?></label><br>
                                     </div>
-                                    <label for="fin_qty_gabungan" class="col-md-2 control-label"><?= lang("Qty Terms") ?> :</label>
+                                    <label for="fin_qty_gabungan" class="col-md-4 control-label"><?= lang("Qty Terms") ?> :</label>
                                     <div class="col-md-2">
                                         <input type="text" class="form-control" id="fin_qty_gabungan" placeholder="<?= lang("0") ?>" name="fin_qty_gabungan">
                                         <div id="fin_qty_gabungan_err" class="text-danger"></div>
                                     </div>
 
-                                    <label for="fst_satuan_gabungan" class="col-md-1 control-label"><?= lang("Unit") ?> :</label>
+                                    <label for="fst_satuan_gabungan" class="col-md-2 control-label"><?= lang("Unit terms") ?> :</label>
                                     <div class="col-md-2">
                                         <select class="select2 form-control" id="fst_satuan_gabungan" name="fst_satuan_gabungan" style="width:100%"></select>
                                         <div id="fst_satuan_gabungan_err" class="text-danger"></div>
@@ -184,7 +184,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <label for="fin_item_id" class="col-md-3 control-label"><?= lang("Item") ?></label>
                         <div class="col-md-9">
                             <select class="select2 form-control" id="fin_item_id" style="width:100%"></select>
-                            <span id="fin_item_id_error" class="text-danger"></span>
+                            <span id="fin_item_id_err" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -192,7 +192,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <label for="fst_unit" class="col-md-3 control-label"><?= lang("Unit") ?></label>
                         <div class="col-md-4">
                             <select class="select2 form-control" id="fst_unit" style="width:100%"></select>
-                            <span id="fst_unit_error" class="text-danger"></span>
+                            <span id="fst_unit_err" class="text-danger"></span>
                         </div>
                     </div>
 
@@ -210,7 +210,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $(function() {
             $("#btn-add-item-details").click(function(event) {
                 event.preventDefault();
-                $("#mdlItemDetails").modal('show');
+
+                var unitCombined = $("#fst_satuan_gabungan").val();
+                if (unitCombined == null || unitCombined == "") {
+                    $("#fst_satuan_gabungan_err").html("Please select Unit terms before add item");
+                    $("#fst_satuan_gabungan_err").show();
+                } else {
+                    $("#fst_satuan_gabungan_err").hide();
+                    $("#mdlItemDetails").modal('show');
+                }
             });
             $("#tbl_item_details").DataTable({
                 searching: false,
@@ -230,7 +238,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     },
                     {
                         "title": "<?= lang("Item Name ") ?>",
-                        "width": "20%",
+                        "width": "25%",
                         data: "ItemName",
                         visible: true,
                     },
@@ -243,7 +251,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     },
                     {
                         "title": "<?= lang("Action ") ?>",
-                        "width": "7%",
+                        "width": "5%",
                         render: function(data, type, row) {
                             action = "<a class='btn-delete-item-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
                             return action;
@@ -322,7 +330,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $("#fst_unit").select2({
                     width: '100%',
                     ajax: {
-                        url: '<?= site_url() ?>Master/promotion/get_data_unitPromo/' + $("#fin_item_id").val(),
+                        url: '<?= site_url() ?>Master/promotion/get_data_unitTerms/' + $("#fin_item_id").val(),
                         dataType: 'json',
                         delay: 250,
                         processResults: function(data) {
@@ -351,36 +359,43 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 selected_unitdetail = data;
             });
 
-           /* $(".money").inputmask({
-                alias: 'numeric',
-                autoGroup: true,
-                groupSeparator: ",",
-                allowMinus: false,
-                autoUnmask: true,
-                digits: 2
-            });*/
-
             $("#btn-add-item").click(function(event) {
                 event.preventDefault();
 
-                var itemTerms = $("#fin_item_id").val();
-                if (itemTerms == null || itemTerms == "") {
-                    $("#fin_item_id_error").html("Please select item");
-                    $("#fin_item_id_error").show();
-                } else {
-                    $("#fin_item_id_error").hide();
-                }
-
-                var unitTerms = $("#fst_unit").val();
-                if (unitTerms == null || unitTerms == "") {
-                    $("#fst_unit_error").html("Please select Unit");
-                    $("#fst_unit_error").show();
-                } else {
-                    $("#fst_unit_error").hide();
-                }
-
                 t = $('#tbl_item_details').DataTable();
                 addRow = true;
+
+                var itemTerms = $("#fin_item_id").val();
+                if (itemTerms == null || itemTerms == "") {
+                    $("#fin_item_id_err").html("Please select item");
+                    $("#fin_item_id_err").show();
+                    addRow = false;
+                    return;
+                } else {
+                    $("#fin_item_id_err").hide();
+                }
+
+                var unitTerms = $("#fst_unit").val();              
+                if (unitTerms == null || unitTerms == "") {
+                    $("#fst_unit_err").html("Please select unit");
+                    $("#fst_unit_err").show();
+                    addRow = false;
+                    return;
+                } else {
+                    $("#fst_unit_err").hide();
+                }
+
+                var unitCombined = $("#fst_satuan_gabungan").val();
+                if (unitCombined != selected_unitdetail.text ) {
+                    alert(selected_unitdetail.text);
+                    $("#fst_unit_err").html("Not match with unit terms");
+                    $("#fst_unit_err").show();
+                    addRow = false;
+                    return;
+                } else {
+                    $("#fst_unit_err").hide();
+                }             
+
 
                 t.row.add({
                     fin_id: 0,
@@ -410,7 +425,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <label for="fin_customer_id" class="col-md-3 control-label"><?= lang("Customer") ?></label>
                         <div class="col-md-9">
                             <select class="select2 form-control" id="fin_customer_id" style="width:100%"></select>
-                            <span id="fin_customer_id_error" class="text-danger"></span>
+                            <span id="fin_customer_id_err" class="text-danger"></span>
                         </div>
                     </div>
                 </form>
@@ -646,14 +661,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 cache: true,
             }
         });
-        var selected_promoitem;
-
-        $('#select-promo_item').on('select2:select', function(e) {
-            console.log(selected_promoitem);
-            var data = e.params.data;
-            selected_promoitem = data;
-
-        });
 
         $("#select-promo_item").change(function(event) {
             event.preventDefault();
@@ -682,7 +689,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         })
 
-
     });
 
     function init_form(fin_promo_id) {
@@ -710,6 +716,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
 
+                $("#fdt_start").datepicker('update', dateFormat(resp.mspromo.fdt_start));
+                $("#fdt_end").datepicker('update', dateFormat(resp.mspromo.fdt_end));
 
                 // menampilkan data di select2
                 var newOption = new Option(resp.mspromo.ItemName, resp.mspromo.fin_promo_item_id, true, true);

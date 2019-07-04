@@ -117,7 +117,7 @@ class promotion extends MY_Controller
             "fin_promo_unit" => $this->input->post("fin_promo_unit"),
             "fin_cashback" => $this->input->post("fin_cashback"),
             "fst_other_prize" => $this->input->post("fst_other_prize"),
-            "fbl_qty_gabungan" => $this->input->post("fbl_qty_gabungan"),
+            "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
             "fin_qty_gabungan" => $this->input->post("fin_qty_gabungan"),
             "fst_satuan_gabungan" => $this->input->post("fst_satuan_gabungan"),
             "fst_active" => 'A'
@@ -223,7 +223,7 @@ class promotion extends MY_Controller
             "fin_promo_unit" => $this->input->post("fin_promo_unit"),
             "fin_cashback" => $this->input->post("fin_cashback"),
             "fst_other_prize" => $this->input->post("fst_other_prize"),
-            "fbl_qty_gabungan" => $this->input->post("fbl_qty_gabungan"),
+            "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
             "fin_qty_gabungan" => $this->input->post("fin_qty_gabungan"),
             "fst_satuan_gabungan" => $this->input->post("fst_satuan_gabungan"),
             "fst_active" => 'A'
@@ -394,6 +394,17 @@ class promotion extends MY_Controller
     {
         $term = $this->input->get("term");
         $ssql = "select * from msitemunitdetails where Unit like ? and ItemId = ? and isBasicUnit=1  order by Unit";
+        $qr = $this->db->query($ssql, ['%' . $term . '%', $ItemId]);
+        $rs = $qr->result();
+
+        $this->json_output($rs);
+    }
+
+    
+    public function get_data_unitTerms($ItemId)
+    {
+        $term = $this->input->get("term");
+        $ssql = "select * from msitemunitdetails where Unit like ? and ItemId = ?  order by Unit";
         $qr = $this->db->query($ssql, ['%' . $term . '%', $ItemId]);
         $rs = $qr->result();
 

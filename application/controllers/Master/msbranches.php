@@ -112,10 +112,8 @@ class msbranches extends MY_Controller
             "fst_branch_name" => $this->input->post("fst_branch_name"),
             "fst_address" => $this->input->post("fst_address"),
             "fst_postalcode" => $this->input->post("fst_postalcode"),
-            "fin_country_id" => $this->input->post("fin_country_id"),
-            "fin_province_id" => $this->input->post("fin_province_id"),
-            "fin_district_id" => $this->input->post("fin_district_id"),
-            "fin_subdistrict_id" => $this->input->post("fin_subdistrict_id"),
+			"CountryId" => $this->input->post("CountryId"),
+			"AreaCode" => $this->input->post("kode"),
             "fst_branch_phone" => $this->input->post("fst_branch_phone"),
             "fst_notes" => $this->input->post("fst_notes"),
             "fbl_is_hq" => ($this->input->post("fbl_is_hq") == null) ? 0 : 1,
@@ -172,14 +170,12 @@ class msbranches extends MY_Controller
             "fst_branch_name" => $this->input->post("fst_branch_name"),
             "fst_address" => $this->input->post("fst_address"),
             "fst_postalcode" => $this->input->post("fst_postalcode"),
-            "fin_country_id" => $this->input->post("fin_country_id"),
-            "fin_province_id" => $this->input->post("fin_province_id"),
-            "fin_district_id" => $this->input->post("fin_district_id"),
-            "fin_subdistrict_id" => $this->input->post("fin_subdistrict_id"),
+			"CountryId" => $this->input->post("CountryId"),
+			"AreaCode" => $this->input->post("kode"),
             "fst_branch_phone" => $this->input->post("fst_branch_phone"),
             "fst_notes" => $this->input->post("fst_notes"),
-            "fst_active" => 'A',
-            "fbl_is_hq" => $this->input->post("fbl_is_hq")
+            "fbl_is_hq" => ($this->input->post("fbl_is_hq") == null) ? 0 : 1,
+            "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
