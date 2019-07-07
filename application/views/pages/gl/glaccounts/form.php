@@ -38,7 +38,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                             <label for="select-ParentGL" class="col-md-2 control-label"><?= lang("Parent") ?> :</label>
                             <div class="col-md-4">
-                                <select id="select-ParentGL" class="form-control" name="ParentGLAccountCode"></select>
+                                <select id="select-ParentGL" class="form-control" name="ParentGLAccountCode">
+                                    <option value="0">-- <?=lang("select")?> --</option>
+                                </select>
                                 <div id="ParentGLAccountCode_err" class="text-danger"></div>
                             </div>
                         </div>
@@ -54,6 +56,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <label for="GLAccountLevel" class="col-sm-2 control-label"><?= lang("Level") ?></label>
                             <div class="col-sm-4">
                                 <select class="form-control" id="GLAccountLevel" name="GLAccountLevel">
+                                    <option value="0">-- <?=lang("select")?> --</option>
                                     <option value='HD'><?= lang("Header") ?></option>
                                     <option value='DT'><?= lang("Detail") ?></option>
                                     <option value='DK'><?= lang("Detail KasBank") ?></option>
@@ -156,7 +159,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#btnSubmitAjax").click(function(event) {
             event.preventDefault();
-            data = new FormData($("#frmGLAccounts")[0]);
+            //data = new FormData($("#frmGLAccounts")[0]);
+            data = $("#frmGLAccounts").serializeArray();
 
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
@@ -168,12 +172,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
             //var formData = new FormData($('form')[0])
             $.ajax({
                 type: "POST",
-                enctype: 'multipart/form-data',
+                //enctype: 'multipart/form-data',
                 url: url,
                 data: data,
-                processData: false,
-                contentType: false,
-                cache: false,
+                //processData: false,
+                //contentType: false,
+                //cache: false,
                 timeout: 600000,
                 success: function(resp) {
                     if (resp.message != "") {
@@ -262,8 +266,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $("#select-ParentGL").change(function(event) {
             event.preventDefault();
             parentGL = $("#select-ParentGL").select2("data")[0];
+            if(typeof parentGL === 'undefined'){
+                return;
+            }
             console.log(parentGL);
-            alert(parentGL.id.replace(/9/g,'\\9'));
+            //alert(parentGL.id.replace(/9/g,'\\9'));
             $("#GLAccountCode").inputmask({
                 mask: parentGL.id.replace(/9/g,"\\9") + "<?= $parentGLSeparator ?>" + "[9][9][9][9][9][9]",
                 greedy:true,
@@ -295,19 +302,33 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         });
 
+        
+		$("#GLAccountLevel").change(function(event){
+            //alert("GLAccountLevel");
+			event.preventDefault();
+			$("#select-ParentGL").show();
 
+			$("#GLAccountLevel").each(function(index){				
+				if ($(this).val() == "HD"){
+                    $("#select-ParentGL").attr('disabled', 'disabled');
+				}else{
+                    $("#select-ParentGL").attr('disabled', false);
+                }
+			});
+        });
+        
     });
 
     function init_form(GLAccountCode) {
         //alert("Init Form");
-        alert(GLAccountCode);
+        //alert(GLAccountCode);
         var url = "<?= site_url() ?>GL/GLAccounts/fetch_data/" + GLAccountCode;
         $.ajax({
             type: "GET",
             url: url,
             success: function(resp) {
                 console.log(resp.glAccounts);
-
+                
                 $.each(resp.glAccounts, function(name, val) {
                     var $el = $('[name="' + name + '"]'),
                         type = $el.attr('type');
@@ -323,9 +344,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
 
-                    $('#GLAccountCode').prop('readonly', true);
+                    $("#GLAccountCode").attr('readonly', 'readonly');
                 });
 
+                $("#GLAccountLevel").select2();
+                
                 // menampilkan data di select2, menu edit/update
                 var newOption = new Option(resp.glAccounts.CurrName, resp.glAccounts.CurrCode, true, true);
                 $('#select-CurrCode').append(newOption).trigger('change');
@@ -358,25 +381,26 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 });
                 //$('#select-MainGL').val(1).trigger('change');
                 $('#select-MainGL').append(newOption).trigger('change');
+                
                 $("#select-MainGL").select2();
-                $("#select-MainGL_disable").click(function() { $("#select-MainGL").select2("enable", false); });
+                $("#select-ParentGL").select2();
+                $("#select-MainGL,#select-ParentGL,#GLAccountLevel").select2("enable", false);
 
                 var newOption = new Option(resp.glAccounts.GLParentName, resp.glAccounts.ParentGLAccountCode, true, true);
                 $('#select-ParentGL').append(newOption);
                 $("#select-ParentGL").val(resp.glAccounts.ParentGLAccountCode).trigger('change');
-                $("#select-ParentGL").select2();
-                $("#select-ParentGL_readonly").click(function() { $("#select-ParentGL").select2("readonly", true); });
 
                 $("#GLAccountCode").inputmask("setvalue", resp.glAccounts.GLAccountCode);
-                
-                
-                /*
-                $('#select-MainGL').select2({
-                    data:data,
-                }).trigger('change');
-                */
+                $("#GLAccountLevel").val(resp.glAccounts.GLAccountLevel);
 
-            
+                console.log(resp.parents);
+                
+                if (resp.parents == null && resp.isUsed == false){
+                    $("#GLAccountLevel").select2("enable");
+                }else{
+                    $("#GLAccountLevel").select2("enable", false);
+                }
+               
             },
 
             error: function(e) {
