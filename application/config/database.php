@@ -69,15 +69,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | The $query_builder variables lets you determine whether or not to load
 | the query builder class.
 */
-$active_group = 'default';
+$active_group = 'default_qsystem';
 $query_builder = TRUE;
 
-$db['default'] = array(
+$db['default_qsystem'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost', //'qsystem-online.com',
-	'username' => 'root', //'u5538790_edoc',
-	'password' => '', //'passedoc',
-	'database' => 'db_greebel', //'u5538790_edoc',
+	'hostname' => 'qsystem-online.com', //'qsystem-online.com',
+	'username' => 'u5538790_greebel', //'u5538790_edoc',
+	'password' => 'p455greebel', //'passedoc',
+	'database' => 'u5538790_greebel', //'u5538790_edoc',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
@@ -88,8 +88,53 @@ $db['default'] = array(
 	'dbcollat' => 'utf8_general_ci',
 	'swap_pre' => '',
 	'encrypt' => FALSE,
-	'compress' => FALSE,
+	'compress' => TRUE,
 	'stricton' => FALSE,
 	'failover' => array(),
-	'save_queries' => TRUE
+	'save_queries' => TRUE,
+	'options'=> array(PDO::ATTR_TIMEOUT => 5)
+);
+$db['default_local'] = array(
+	'dsn'	=> '',
+	'hostname' => 'localhost',
+	'username' => 'root',
+	'password' => '',
+	'database' => 'db_greebel', //'u5538790_edoc',
+	'dbdriver' => 'mysqli',
+	'dbprefix' => '',
+	'pconnect' => TRUE,
+	'db_debug' => FALSE, //(ENVIRONMENT !== 'production'),
+	'cache_on' => FALSE,
+	'cachedir' => '',
+	'char_set' => 'utf8',
+	'dbcollat' => 'utf8_general_ci',
+	'swap_pre' => '',
+	'encrypt' => FALSE,
+	'compress' => TRUE,
+	'stricton' => FALSE,
+	'failover' => array(),
+	'save_queries' => TRUE,
+	'options'=> array(PDO::ATTR_TIMEOUT => 5)
+);
+$db['default'] = array(
+	'dsn'	=> '',
+	'hostname' => 'bastian.site', //'qsystem-online.com',
+	'username' => 'devibong_root', //'u5538790_edoc',
+	'password' => 'p455root', //'passedoc',
+	'database' => 'devibong_greebel', //'u5538790_edoc',
+	'dbdriver' => 'mysqli',
+	'dbprefix' => '',
+	'pconnect' => FALSE,
+	'db_debug' => False, //(ENVIRONMENT !== 'production'),
+	'cache_on' => FALSE,
+	'cachedir' => '',
+	'char_set' => 'utf8',
+	'dbcollat' => 'utf8_general_ci',
+	'swap_pre' => '',
+	'encrypt' => FALSE,
+	'compress' => TRUE,
+	'stricton' => FALSE,
+	'failover' => array(),
+	'save_queries' => TRUE,
+	'options'=> array(PDO::ATTR_TIMEOUT => 5)
 );

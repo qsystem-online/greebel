@@ -208,7 +208,7 @@ class GLAccounts extends MY_Controller
     public function fetch_list_data()
     {
         $this->load->library("datatables");
-        $this->datatables->setTableName("(SELECT a.*,b.GLAccountMainGroupName,c.GLAccountName AS ParentGLAccountName FROM glaccounts a LEFT JOIN glaccountmaingroups b ON a.GLAccountMainGroupId = b.GLAccountMainGroupId LEFT JOIN glaccounts c ON a.ParentGLAccountCode = c.GLAccountCode) a");
+        $this->datatables->setTableName("(select a.*,b.GLAccountMainGroupName,c.GLAccountName as ParentGLAccountName from glaccounts a inner join glaccountmaingroups b on a.GLAccountMainGroupId = b.GLAccountMainGroupId left join glaccounts c ON a.GLAccountCode = c.ParentGLAccountCode) a");
 
         $selectFields = "a.GLAccountCode,a.GLAccountName,a.GLAccountMainGroupName,a.ParentGLAccountName,a.DefaultPost,'action' as action";
         $this->datatables->setSelectFields($selectFields);
@@ -296,6 +296,7 @@ class GLAccounts extends MY_Controller
         $this->load->model("GLAccounts_model");
 
         $this->GLAccounts_model->delete($id);
+        
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "File deleted successfully";
         $this->json_output();

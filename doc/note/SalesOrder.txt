@@ -1,0 +1,80 @@
+Sales Order
+1.Cek Stock Pada saat item di pilih
+2.Pada saat save cek Plafon/Credit Limit
+  * credit limit di cek berdasarkan, total nilai faktur yang outstanding + SO saat ini tidak boleh melebihi credit limitnya,
+    bila melebihi membutuhkan autorisasi untuk dapat melanjutkan proses
+  * Informasi nilai sisa credit limit, list faktur yang masih outstanding ditampilkan ke user
+  * Informasikan bila ada faktur jatuh tempo yang belum di bayar, butuh autorisasi
+
+3.Penambahan Promo item
+
+
+4. SO yang sudah ada surat jalan tidak boleh di edit nilai qty lebih kecil dr sj
+untuk sales area(kota, gabungan beberapa kot), region(prov , gab prov),national
+popup bila list surat jalan yang sudah ada
+
+so detail tambahin item name
+
+connect to to edoc
+
+bila ada DP lakukan Jurnal
+Piutang dangang pada Uang muka
+pada saat pembayaran bank pada uang muka
+
+
+penawaran harga -> SO
+=>monitoring status out,hold
+	Info stock, qty di kartu stock 
+	Info stock marketing : qty di (kartu stock - qty di so outstanding ) + qty di po
+
+
+
+=> surat jalan
+so kalau uang muka belum dibayar tidak boleh di proses
+
+
+
+Kartu Stock, tgl, type transaksi, no transaksi, 
+3	finInventoryID	int	4	0	
+0	fstBranchCode	nvarchar	3	1	
+0	fdtTrxDate	datetime	8	1	
+0	fstTrxCode	nvarchar	2	1	
+0	fstTrxRefNo	nvarchar	25	1	
+0	fstReferensi	nvarchar	100	1	
+0	fstPSCode	nvarchar	20	1	
+0	fsmQtyOpening	float	8	1	
+0	fsmQtyIn	float	8	1	
+0	fsmQtyOut	float	8	1	
+0	fstBasicMeasurement	nvarchar	10	1	
+0	fmnSellingNetto	money	8	1	
+0	fmnValueIn	money	8	1	
+0	fmnAvarageCost	money	8	1	
+0	fstLocationCode	nvarchar	3	1	
+
+
+
+
+
+
+buku besar / 
+
+
+promo Item
+cashback:dibayar kemudia hari, berupa voucer cashback
+disc per item
+hadiah barang lain:
+nilai dari hadiah barang lain item id 0 rp.1 disc 100%, tentukan valuenya
+participan, relation, relation group, member group
+
+
+
+
+
+
+unit detail item
+tabah field retail harus cuma satu
+
+log action untu mencatat perubahan data
+
+
+ 

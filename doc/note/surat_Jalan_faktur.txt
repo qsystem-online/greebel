@@ -1,0 +1,63 @@
+*Master relasi tambah field alamat kirim
+
+SJ Surat jalan
+begitu pilih SO ambil alamat kirim berdasarkan customer
+data bisa dari SO ataupun Retur Tukar Guling
+strict cek stock item 
+
+update stock
+memo sj copy memo so
+
+
+Monitoring Surat jalan
+input tgl surat jalan kembali, nomor resi
+edit supir
+
+
+Faktur
+DPP Dasar pengenaan pajak
+GlLedger
+3	finRecID	bigint	8	0	
+0	fstCompanyCode	nvarchar	3	1	
+0	fstAccountCode	nvarchar	15	1	
+0	fdtTrxDate	datetime	8	1	
+0	fstTrxSourceCode	nvarchar	3	1	
+0	fstTrxNo	nvarchar	50	1	
+0	fstReference	nvarchar	2000	1	
+0	fmnDebit	money	8	1	
+0	fmnCredit	money	8	1	
+0	fstOrgiCurrCode	nvarchar	3	1	
+0	fmnOrgiAmount	money	8	1	
+0	fmnOrgiRate	money	8	1	
+0	fstNoRefBank	nvarchar	20	1	
+0	fstRowCreated	nvarchar	20	1	
+0	fstLocationCode	nvarchar	3	1	
+0	fstProfitCostCenterCode	nvarchar	3	1	
+0	fstReversedUserCode	nvarchar	10	1	
+0	fdtReversedDate	datetime	8	1	
+0	fstReversedReason	nvarchar	0	1	
+0	fstCBKontraUMPenjualanNo	nvarchar	25	1	
+add     relation ID, untuk jurnal piutang dagang
+Jurnal Faktur
+Piutang dagang
+Disc
+DP
+	pada Penjualan
+	     PPN
+
+
+
+
+Faktur Bisa Terjadi Retur
+*return faktur sudah ada pembayaran & belum bayar
+kalau belum ada pembayaran langsung mengurangi faktur
+Jurnal Return
+Retur Penjualan 
+PPN
+	Piutang
+	Disc
+
+proses penerimaan barang retur
+memproses stock masuk gudang
+
+

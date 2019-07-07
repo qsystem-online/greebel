@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Test extends CI_Controller {
+class Test extends MY_Controller {
 
 	
 	public function test1($var){
@@ -67,6 +67,22 @@ class Test extends CI_Controller {
 		//die();		
 		//force_download($fileLoc, NULL,true);
 		//echo file_get_contents('http://some.secret.location.com/secretfolder/the_file.tar.gz');
+	}
+
+	public function testdb(){
+		/*
+		echo "Test DB";
+		for($i = 0;$i < 50;$i++){
+			$qr = $this->db->query("select * from users",[]);
+		}
+
+		
+		print_r($qr->result());
+		*/
+		$this->load->library("menus");
+		$sstr = $this->menus->build_menu();
+		var_dump($sstr);
+
 	}
 
 }
