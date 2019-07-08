@@ -7,7 +7,7 @@ class Menus {
 	public $arrMenu = [];
 	public $CI;
 	private $currentParent;
-	private $currentMenu;
+	private $currentMenu = null;
 
 	public function __construct() {
 		$this->CI = & get_instance();		
@@ -25,6 +25,7 @@ class Menus {
 					//echo "'/'" .str_replace('/','\\/',$rw->fst_link) . "'/'" . " notmacth with " . $currLink ."<br>";
 				}
 			}
+			$this->currentMenu = null;
 		}
 		//print_r($this->arrMenu);
 		//echo "<br>";
@@ -146,6 +147,9 @@ class Menus {
 	private function is_active_parent($fst_order){
 		//$currLink = uri_string();
 		//Get Current menu
+		if ($this->currentMenu == null){
+			return false;
+		}
 		$result = preg_match('/^'. $fst_order .'/i',$this->currentMenu->fst_order);
 		if ($result){
 			return true;
