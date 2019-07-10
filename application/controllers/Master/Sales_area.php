@@ -28,8 +28,8 @@ class Sales_area extends MY_Controller{
         $this->list['delete_ajax_url'] = site_url() . 'master/sales_area/delete_area/';
         $this->list['edit_ajax_url'] = site_url() . 'master/sales_area/edit_area/';
         $this->list['arrSearch'] = [
-            'fin_sales_area_id' => 'Sales Area ID',
-            'fst_name' => 'Name'
+            'a.fin_sales_area_id' => 'Sales Area ID',
+            'a.fst_name' => 'Name'
         ];
 
         $this->list['breadcrumbs'] = [
@@ -41,8 +41,8 @@ class Sales_area extends MY_Controller{
         $this->list['columns'] = [
             ['title' => 'Sales Area ID', 'width' => '8%', 'data' => 'fin_sales_area_id'],
             ['title' => 'Name', 'width' => '15%', 'data' => 'fst_name'],
-            ['title' => 'Sales Regional Name', 'width' => '15%', 'data' => 'fin_sales_regional_id'],
-            ['title' => 'Sales Name', 'width' => '12%', 'data' => 'fin_sales_id'],
+            ['title' => 'Sales Regional Name', 'width' => '15%', 'data' => 'RegionalName'],
+            ['title' => 'Sales Name', 'width' => '12%', 'data' => 'SalesName'],
             ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
@@ -185,9 +185,10 @@ class Sales_area extends MY_Controller{
 
     public function fetch_list_data() {
         $this->load->library("datatables");
-        $this->datatables->setTableName("mssalesarea");
+        $this->datatables->setTableName("(select a.*,b.fst_name as RegionalName,c.fst_username as SalesName from mssalesarea a 
+        left join mssalesregional b on a.fin_sales_regional_id = b.fin_sales_regional_id left join users c on a.fin_sales_id = c.fin_user_id) a");
 
-        $selectFields = "fin_sales_area_id,fst_name,fin_sales_regional_id,fin_sales_id,'action' as action";
+        $selectFields = "a.fin_sales_area_id,a.fst_name,a.RegionalName,a.SalesName,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
         $searchFields =[];
@@ -197,6 +198,7 @@ class Sales_area extends MY_Controller{
         
         // Format Data
         $datasources = $this->datatables->getData();
+        //print_r ($datasources);
         $arrData = $datasources["data"];		
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
@@ -218,6 +220,7 @@ class Sales_area extends MY_Controller{
 	
 		$this->json_output($data);
     }
+
 
 //== SALES AREA REGIONAL ================================================================================================================================================
 
@@ -274,8 +277,8 @@ class Sales_area extends MY_Controller{
         $this->list['columns'] = [
             ['title' => 'Sales Regional ID', 'width' => '8%', 'data' => 'fin_sales_regional_id'],
             ['title' => 'Name', 'width' => '15%', 'data' => 'fst_name'],
-            ['title' => 'Sales National Name', 'width' => '15%', 'data' => 'fin_sales_national_id'],
-            ['title' => 'Sales Name', 'width' => '12%', 'data' => 'fin_sales_id'],
+            ['title' => 'Sales National Name', 'width' => '15%', 'data' => 'NationalName'],
+            ['title' => 'Sales Name', 'width' => '12%', 'data' => 'SalesName'],
             ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
@@ -392,9 +395,10 @@ class Sales_area extends MY_Controller{
 
     public function regional_list_data() {
         $this->load->library("datatables");
-        $this->datatables->setTableName("mssalesregional");
+        $this->datatables->setTableName("(select a.*,b.fst_name as NationalName,c.fst_username as SalesName from mssalesregional a 
+        left join mssalesnational b on a.fin_sales_national_id = b.fin_sales_national_id left join users c on a.fin_sales_id = c.fin_user_id) a");
 
-        $selectFields = "fin_sales_regional_id,fst_name,fin_sales_national_id,fin_sales_id,'action' as action";
+        $selectFields = "a.fin_sales_regional_id,a.fst_name,a.NationalName,a.SalesName,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
         $searchFields =[];
@@ -425,6 +429,7 @@ class Sales_area extends MY_Controller{
 
         $this->json_output($data);
     }
+
 
 //== SALES AREA NATIONAL ================================================================================================================================================
 
@@ -481,7 +486,7 @@ class Sales_area extends MY_Controller{
         $this->list['columns'] = [
             ['title' => 'Sales National ID', 'width' => '10%', 'data' => 'fin_sales_national_id'],
             ['title' => 'Name', 'width' => '15%', 'data' => 'fst_name'],
-            ['title' => 'Sales Name', 'width' => '15%', 'data' => 'fin_sales_id'],
+            ['title' => 'Sales Name', 'width' => '15%', 'data' => 'SalesName'],
             ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
@@ -596,9 +601,9 @@ class Sales_area extends MY_Controller{
 
     public function national_list_data() {
         $this->load->library("datatables");
-        $this->datatables->setTableName("mssalesnational");
+        $this->datatables->setTableName("(select a.*,b.fst_username as SalesName from mssalesnational a left join users b on a.fin_sales_id = b.fin_user_id) a");
 
-        $selectFields = "fin_sales_national_id,fst_name,fin_sales_id,'action' as action";
+        $selectFields = "a.fin_sales_national_id,a.fst_name,a.SalesName,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
         $searchFields =[];
@@ -662,9 +667,9 @@ class Sales_area extends MY_Controller{
 		$this->json_output();
     }
     
-    public function get_salRegional(){
+    public function get_Regional(){
 		$term = $this->input->get("term");
-		$ssql = "SELECT fst_name, fin_sales_regional_id FROM mssalesregional WHERE fst_name LIKE ? ORDER BY fst_name";
+		$ssql = "SELECT fin_sales_regional_id, fst_name FROM mssalesregional WHERE fst_name LIKE ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -673,9 +678,9 @@ class Sales_area extends MY_Controller{
 		$this->json_output();
     }
 
-    public function get_salNational(){
+    public function get_National(){
         $term = $this->input->get("term");
-        $ssql = "SELECT fst_name, fin_sales_national_id FROM mssalesnational WHERE fst_name LIKE ? ORDER BY fst_name";
+        $ssql = "SELECT fin_sales_national_id, fst_name FROM mssalesnational WHERE fst_name LIKE ?";
         $qr = $this->db->query($ssql,['%'.$term.'%']);
         $rs = $qr->result();
 

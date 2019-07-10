@@ -64,9 +64,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-salRegional" class="col-md-2 control-label"><?=lang("Sales Regional Name")?> :</label>
+                            <label for="select-Regional" class="col-md-2 control-label"><?=lang("Sales Regional Name")?> :</label>
                             <div class="col-md-4">
-                                <select id="select-salRegional" class="form-control" name="fin_sales_regional_id">
+                                <select id="select-Regional" class="form-control" name="fin_sales_regional_id">
                                     <option value="0">-- <?=lang("select")?> --</option>
                                 </select>
                                 <div id="fin_sales_regional_id_err" class="text-danger"></div>
@@ -188,10 +188,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
-        $("#select-salRegional").select2({
+        $("#select-Regional").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>master/sales_area/get_salRegional',
+				url: '<?=site_url()?>master/sales_area/get_Regional',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -242,7 +242,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$('#select-salesId').append(newOption).trigger('change');
 
                 var newOption = new Option(resp.sales_area_area.RegionalName, resp.sales_area_area.fin_sales_regional_id, true, true);
-                $('#select-salRegional').append(newOption).trigger('change');
+                $('#select-Regional').append(newOption).trigger('change');
             },
 
             error: function(e) {

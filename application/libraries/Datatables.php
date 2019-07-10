@@ -19,7 +19,8 @@ class Datatables
 	public function __construct()
 	{
 		$this->CI = &get_instance();
-		$this->db = $this->CI->load->database('default', TRUE);
+		//$this->db = $this->CI->load->database('default', TRUE);
+		$this->db = $this->CI->db;
 	}
 
 
@@ -128,12 +129,8 @@ class Datatables
 		$ssql = "select " . $this->selectFields . " from " . $this->tableName . " " . $strWhere . " " . $strGroupBy . " " . $strOrder . " limit ? offset ?";
 
 		$qr = $this->db->query($ssql, $params);
-		//echo $this->db->last_query();
-		//die();
-
+		
 		$rs = $qr->result_array();
-
-
 		//print_r($this->CI->input->get_post("draw"));
 		$datasource = [
 			"draw" =>  $this->CI->input->get_post("draw"),
@@ -142,5 +139,6 @@ class Datatables
 			"data" => array_values($rs),
 		];
 		return $datasource;
+
 	}
 }
