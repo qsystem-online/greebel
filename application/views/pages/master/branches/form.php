@@ -367,10 +367,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 var newOption = new Option(resp.branches.ProvinceName, resp.branches.province, true, true);
                 $('#select-provincename').append(newOption).trigger('change');
 
-                var newOption = new Option(resp.branches.namasubdistrict, resp.branches.district, true, true);
+                var newOption = new Option(resp.branches.DistrictName, resp.branches.district, true, true);
                 $('#select-districtname').append(newOption).trigger('change');
 
-                var newOption = new Option(resp.branches.namasubdistrict, resp.branches.subdistrict, true, true);
+                var newOption = new Option(resp.branches.SubDistrictName, resp.branches.subdistrict, true, true);
                 $('#select-subdistrictname').append(newOption).trigger('change');
             },
 

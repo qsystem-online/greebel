@@ -27,13 +27,13 @@ class MSBranches_model extends MY_Model
             $arrTmp = explode(".",$rwBranch->subdistrict);
             if (sizeof($arrTmp) != 3){
                 $rwBranch->subdistrict = null;
-                $rwBranch->namasubdistrict = null;
+                $rwBranch->SubDistrictName = null;
             }
         }else{
             $rwBranch->district = null;
-            $rwBranch->namadistrict = null;
+            $rwBranch->DistrictName = null;
             $rwBranch->subdistrict = null;
-            $rwBranch->namasubdistrict = null;
+            $rwBranch->SubDistrictName = null;
         }
 
         $data = [

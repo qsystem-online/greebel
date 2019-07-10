@@ -12,7 +12,6 @@ class MSWarehouse_model extends MY_Model
 
     public function getDataById($fin_warehouse_id)
     {
-        //$ssql = "select * from " . $this->tableName . " where fin_branch_id = ?";
         $ssql = "select a.*,b.fst_branch_name from " . $this->tableName . " a 
         left join msbranches b on a.fin_branch_id = b.fin_branch_id 
         where fin_warehouse_id = ?";
@@ -34,6 +33,15 @@ class MSWarehouse_model extends MY_Model
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
+            )
+        ];
+
+        $rules[] = [
+            'field' => 'fbl_is_main',
+            'label' => 'Main warehouse',
+            'rules' => 'is_unique[mswarehouse.fin_warehouse_id.fbl_is_main.' . $id . ']',
+            'errors' => array(
+                'is_unique' => '%s is more one'
             )
         ];
 
