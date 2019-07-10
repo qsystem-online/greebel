@@ -117,9 +117,13 @@ class promotion extends MY_Controller
             "fin_promo_unit" => $this->input->post("fin_promo_unit"),
             "fin_cashback" => $this->input->post("fin_cashback"),
             "fst_other_prize" => $this->input->post("fst_other_prize"),
+            "fdc_other_prize_in_value" => $this->input->post("fdc_other_prize_in_value"),
+            "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
             "fin_qty_gabungan" => $this->input->post("fin_qty_gabungan"),
             "fst_satuan_gabungan" => $this->input->post("fst_satuan_gabungan"),
+            "fdc_min_total_purchase" => $this->input->post("fdc_min_total_purchase"),
+            "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fst_active" => 'A'
         ];
 
@@ -143,7 +147,9 @@ class promotion extends MY_Controller
         foreach ($details as $promoitem) {
             $data = [
                 "fin_promo_id" => $insertId,
+                "fst_item_type" => $promoitem->fst_item_type,
                 "fin_item_id" => $promoitem->fin_item_id,
+                "fin_qty" => $promoitem->fin_qty,
                 "fst_unit" => $promoitem->fst_unit,
                 "fst_active" => 'A'
             ];
@@ -167,6 +173,7 @@ class promotion extends MY_Controller
         foreach ($details as $promoparticipants) {
             $data = [
                 "fin_promo_id" => $insertId,
+                "fst_participant_type" => $promoparticipants->fst_participant_type,
                 "fin_customer_id" => $promoparticipants->fin_customer_id
             ];
             $this->MSPromoitemscustomer_model->insert($data);
@@ -223,9 +230,13 @@ class promotion extends MY_Controller
             "fin_promo_unit" => $this->input->post("fin_promo_unit"),
             "fin_cashback" => $this->input->post("fin_cashback"),
             "fst_other_prize" => $this->input->post("fst_other_prize"),
+            "fdc_other_prize_in_value" => $this->input->post("fdc_other_prize_in_value"),
+            "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
             "fin_qty_gabungan" => $this->input->post("fin_qty_gabungan"),
             "fst_satuan_gabungan" => $this->input->post("fst_satuan_gabungan"),
+            "fdc_min_total_purchase" => $this->input->post("fdc_min_total_purchase"),
+            "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fst_active" => 'A'
         ];
 
@@ -250,7 +261,9 @@ class promotion extends MY_Controller
         foreach ($details as $promoitem) {
             $data = [
                 "fin_promo_id" => $fin_promo_id,
+                "fst_item_type" => $promoitem->fst_item_type,
                 "fin_item_id" => $promoitem->fin_item_id,
+                "fin_qty" => $promoitem->fin_qty,
                 "fst_unit" => $promoitem->fst_unit,
                 "fst_active" => 'A'
             ];
@@ -275,6 +288,7 @@ class promotion extends MY_Controller
         foreach ($details as $promoparticipants) {
             $data = [
                 "fin_promo_id" => $fin_promo_id,
+                "fst_participant_type" => $promoparticipants->fst_participant_type,
                 "fin_customer_id" => $promoparticipants->fin_customer_id,
             ];
             $this->MSPromoitemscustomer_model->insert($data);
@@ -370,6 +384,16 @@ class promotion extends MY_Controller
         $this->json_output($rs);
     }
 
+    public function get_item_SubgroupPromo()
+    {
+        $term = $this->input->get("term");
+        $ssql = "select * from mssubgroupitems where ItemSubGroupName like ? order by ItemSubGroupName";
+        $qr = $this->db->query($ssql, ['%' . $term . '%']);
+        $rs = $qr->result();
+
+        $this->json_output($rs);
+    }
+
     public function get_data_unit()
     {
         $term = $this->input->get("term");
@@ -380,10 +404,30 @@ class promotion extends MY_Controller
         $this->json_output($rs);
     }
 
-    public function get_participants()
+    public function get_relationpromo()
     {
 		$term = $this->input->get("term");
 		$ssql = "select * from msrelations where RelationName like ? order by RelationName";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->json_output($rs);
+    }
+    
+    public function get_relationgrouppromo()
+    {
+		$term = $this->input->get("term");
+		$ssql = "select * from msrelationgroups where RelationGroupName like ? order by RelationGroupName";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->json_output($rs);
+    }
+    
+    public function get_membergrouppromo()
+    {
+		$term = $this->input->get("term");
+		$ssql = "select * from msmembergroups where fst_member_group_name like ? order by fst_member_group_name";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -394,9 +438,9 @@ class promotion extends MY_Controller
     {
         $term = $this->input->get("term");
         $ssql = "select * from msitemunitdetails where Unit like ? and ItemId = ? and isBasicUnit=1  order by Unit";
-        $qr = $this->db->query($ssql, ['%' . $term . '%', $ItemId]);
+        $qr = $this->db->query($ssql, ['%' . $term .'%',$ItemId]);
         $rs = $qr->result();
-
+        	
         $this->json_output($rs);
     }
 
@@ -404,10 +448,14 @@ class promotion extends MY_Controller
     public function get_data_unitTerms($ItemId)
     {
         $term = $this->input->get("term");
-        $ssql = "select * from msitemunitdetails where Unit like ? and ItemId = ?  order by Unit";
-        $qr = $this->db->query($ssql, ['%' . $term . '%', $ItemId]);
+        $ssql = "select * from msitemunitdetails where Unit like ? and ItemId = ?";
+        $qr = $this->db->query($ssql,['%'. $term .'%',$ItemId]);
         $rs = $qr->result();
 
-        $this->json_output($rs);
+        $this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+
+        //$this->json_output($rs);
     }
 }

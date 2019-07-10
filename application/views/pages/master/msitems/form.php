@@ -82,6 +82,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
+                            <label for="fst_name_on_pos" class="col-md-2 control-label"><?= lang("Item Name on POS") ?> *</label>
+                            <div class="col-md-5">
+                                <input type="text" class="form-control" id="fst_name_on_pos" placeholder="<?= lang("Item Name on POS") ?>" name="fst_name_on_pos">
+                                <div id="fst_name_on_pos_err" class="text-danger"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label for="select-maingroupitem" class="col-md-2 control-label"><?= lang("Main Group") ?> :</label>
                             <div class="col-md-4">
                                 <select id="select-maingroupitem" class="form-control" name="ItemMainGroupId"></select>
@@ -113,40 +121,45 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="isBatchNumber" class="col-sm-2 control-label"><?= lang("Batch Number") ?> :</label>
-                            <div class="checkbox">
-                                <label><input id="isBatchNumber" type="checkbox" name="isBatchNumber" value="1"><?= lang("Batch Number") ?></label><br>
-                            </div>
-
-                            <label for="isSerialNumber" class="col-sm-2 control-label"><?= lang("Serial Number") ?> :</label>
-                            <div class="checkbox">
-                                <label><input id="isSerialNumber" type="checkbox" name="isSerialNumber" value="1"><?= lang("Serial Number") ?></label><br>
-                            </div>
-                        </div>
-
-                        <div class='form-group'>
-                            <label for="ScaleForBOM" class="col-md-2 control-label"><?= lang("Scale For BOM") ?>:</label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" id="ScaleForBOM" placeholder="<?= lang(" 1 : ") ?>" name="ScaleForBOM">
-                                <div id="ScaleForBOM_err" class="text-danger"></div>
-                            </div>
-                            <label for="StorageRackInfo" class="col-md-2 control-label"><?= lang("Storage Rack Info") ?>:</label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" id="StorageRackInfo" placeholder="<?= lang("Storage Rack Info") ?>" name="StorageRackInfo">
-                                <div id="StorageRackInfo_err" class="text-danger"></div>
+                            <div class="col-md-10" style="left: 20px;">				
+                                <label for="ScaleForBOM" class="col-md-2 control-label"><?= lang("Scale For BOM") ?>:</label>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" id="ScaleForBOM" placeholder="<?= lang(" 1 : ") ?>" name="ScaleForBOM">
+                                    <div id="ScaleForBOM_err" class="text-danger"></div>
+                                </div>
+                            </div>				
+                            <div class="col-md-2">
+                                <div>
+                                    <input type="checkbox" class="minimal form-control icheck" id="isBatchNumber" name="isBatchNumber" value="1"> &nbsp;
+                                    <label for="isBatchNumber" class=""> <?= lang("Batch Number")?> </label>
+                                </div>
                             </div>
                         </div>
-
                         <div class="form-group">
-                            <label for="fst_memo" class="col-md-2 control-label"><?= lang("Memo") ?>:</label>
-                            <div class="col-md-10">
-                                <textarea rows="4" style="width:100%" class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo"></textarea>
+                            <div class="col-md-10" style="left: 20px;">				
+                                <label for="StorageRackInfo" class="col-md-2 control-label"><?= lang("Storage Rack Info") ?>:</label>
+                                <div class="col-md-5">
+                                    <input type="text" class="form-control" id="StorageRackInfo" placeholder="<?= lang("Storage Rack Info") ?>" name="StorageRackInfo">
+                                    <div id="StorageRackInfo_err" class="text-danger"></div>
+                                </div>
+                            </div>				
+                            <div class="col-md-2">
+                                <div>
+                                    <input type="checkbox" class="minimal form-control icheck" id="isSerialNumber" name="isSerialNumber" value="1"> &nbsp;
+                                    <label for="isSerialNumber" class=""> <?= lang("Serial Number")?> </label>
+                                </div>
                             </div>
                         </div>
+
                         <div class='form-group'>
+                            <label for="fst_sni_no" class="col-md-2 control-label"><?= lang("SNI No") ?>:</label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="fst_sni_no" placeholder="<?= lang("SNI Number") ?>" name="fst_sni_no">
+                                <div id="fst_sni_no_err" class="text-danger"></div>
+                            </div>
                             <label for="MaxItemDiscount" class="col-md-2 control-label"><?= lang("Max Item Discount") ?>:</label>
-                            <div class="col-md-10">
-                                <input type="text" class="form-control" id="MaxItemDiscount" placeholder="<?= lang("Max Item Discount") ?>" name="MaxItemDiscount">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="MaxItemDiscount" placeholder="<?= lang("0+0+0") ?>" name="MaxItemDiscount">
                                 <div id="MaxItemDiscount_err" class="text-danger"></div>
                             </div>
                         </div>
@@ -161,6 +174,23 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <div class="col-md-4">
                                 <input type="text" class="form-control text-left money" id="MaxBasicUnitAvgCost" placeholder="<?= lang("Maximal BasicUnitAvgCost") ?>" value="0" name="MaxBasicUnitAvgCost">
                                 <div id="MaxBasicUnitAvgCost_err" class="text-danger"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fst_memo" class="col-md-2 control-label"><?= lang("Memo") ?>:</label>
+                            <div class="col-md-10">
+                                <textarea rows="4" style="width:100%" class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fst_image" class="col-sm-2 control-label"><?= lang("Image") ?> :</label>
+                            <div class="col-sm-4">
+                                <input type="file" class="form-control" id="fst_image" name="fst_image">
+                            </div>
+
+                            <label for="imgItem" class="col-sm-1 control-label"></label>
+                            <div class="col-sm-5">
+                                <img id="imgItem" style="border:1px solid #999;width:128px;" align="right" src="<?= site_url() ?>assets/app/items/image/default.jpg" />
                             </div>
                         </div>
                         <!-- end box body -->
@@ -955,8 +985,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $("#btnSubmitAjax").click(function(event) {
             event.preventDefault();
 
-            data = $("#frmMSItems").serializeArray();
-            //data = new FormData($("#frmMSItems")[0]);
+            //data = $("#frmMSItems").serializeArray();
+            data = new FormData($("#frmMSItems")[0]);
             detail = new Array();
 
             t = $('#tbl_unit_details').DataTable();
@@ -965,10 +995,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 detail.push(v);
             });
 
-            data.push({
+            /*data.push({
                 name: "detail",
                 value: JSON.stringify(detail)
-            });
+            });*/
+            data.append("detail",JSON.stringify(detail));
 
             // save BOM
             detailBOM = new Array();
@@ -979,10 +1010,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 detailBOM.push(v);
             });
 
-            data.push({
+            /*data.push({
                 name: "detailBOM",
                 value: JSON.stringify(detailBOM)
-            });
+            });*/
+            data.append("detailBOM",JSON.stringify(detailBOM));
 
 
             // save Special pricing
@@ -994,10 +1026,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 specialprice.push(v);
             });
 
-            data.push({
+            /*data.push({
                 name: "specialprice",
                 value: JSON.stringify(specialprice)
-            });
+            });*/
+            data.append("specialprice",JSON.stringify(specialprice));
 
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
@@ -1010,12 +1043,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
             //var formData = new FormData($('form')[0])
             $.ajax({
                 type: "POST",
-                //enctype: 'multipart/form-data',
+                enctype: 'multipart/form-data',
                 url: url,
                 data: data,
-                //processData: false,
-                //contentType: false,
-                //cache: false,
+                processData: false,
+                contentType: false,
+                cache: false,
                 timeout: 600000,
                 success: function(resp) {
                     if (resp.message != "") {
@@ -1058,6 +1091,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 }
             });
         });
+
+        $("#fst_image").change(function(event) {
+			event.preventDefault();
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				$("#imgItem").attr('src', e.target.result);
+			}
+			reader.readAsDataURL(this.files[0]);
+		});
 
         $("#select-maingroupitem").select2({
             width: '100%',
@@ -1149,7 +1191,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         type = $el.attr('type');
                     switch (type) {
                         case 'checkbox':
-                            $el.filter('[value="' + val + '"]').attr('checked', 'checked');
+                            $el.attr('checked', 'checked');
                             break;
                         case 'radio':
                             $el.filter('[value="' + val + '"]').attr('checked', 'checked');
@@ -1159,6 +1201,26 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
+
+                if (resp.msitems.isBatchNumber == 1){
+					//alert("check");
+					$('#isBatchNumber').iCheck('check');
+					$('#isBatchNumber').iCheck('update');
+					
+				}else{
+					//alert("uncheck");
+					$('#isBatchNumber').iCheck('uncheck');
+				}
+
+                if (resp.msitems.isSerialNumber == 1){
+					//alert("check");
+					$('#isSerialNumber').iCheck('check');
+					$('#isSerialNumber').iCheck('update');
+					
+				}else{
+					//alert("uncheck");
+					$('#isSerialNumber').iCheck('uncheck');
+				}
 
                 // menampilkan data di select2
                 var newOption = new Option(resp.msitems.ItemMainGroupName, resp.msitems.ItemMainGroupId, true, true);
@@ -1170,6 +1232,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 var newOption = new Option(resp.msitems.ItemSubGroupName, resp.msitems.ItemSubGroupId, true, true);
                 // Append it to the select
                 $('#select-SubGroupItemId').append(newOption).trigger('change');
+
+                //Image Load 
+				$('#imgItem').attr("src", resp.msitems.imageURL);
 
                 //populate Unit Detail
                 $.each(resp.unitDetail, function(name, val) {
