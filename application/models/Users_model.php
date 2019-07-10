@@ -16,7 +16,7 @@ class Users_model extends MY_Model
 		//$ssql = "select * from " . $this->tableName ." where fin_user_id = ?";
 		$ssql = "select a.*,b.fst_department_name,c.fst_group_name,c.fin_level,d.fst_branch_name,d.fbl_is_hq from " . $this->tableName . " a 
 			left join departments b on a.fin_department_id = b.fin_department_id 
-			left join master_groups c on a.fin_group_id = c.fin_group_id 
+			left join usersgroup c on a.fin_group_id = c.fin_group_id 
 			left join msbranches d on a.fin_branch_id = d.fin_branch_id 
 			where a.fin_user_id = ?";
 

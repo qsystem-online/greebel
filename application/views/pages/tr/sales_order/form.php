@@ -559,17 +559,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btn-add-so-detail").click(function(event){
 			event.preventDefault();		
-			
-			var formData = new FormData($('#form-detail')[0])
-			console.log(formData);
-			$.ajax({
-				url:"TEST",
-				method:"POST",
-				data:formData,
-			});
-			return;
-
-
 			price = money_parse($("#so-price").val());			
 			selected_items = $("#select-items").select2('data')[0];
 			selected_disc = $("#select-disc").select2('data')[0];

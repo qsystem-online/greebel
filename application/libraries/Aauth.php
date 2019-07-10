@@ -52,9 +52,6 @@ class Aauth {
 		}
 	}
 	
-
-
-
 	public function is_permit($permission_name,$notRecordDefault = true,$user = null){		
 		if ($permission_name == "dashboard_v2"){
 			return false;	

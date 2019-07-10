@@ -20,8 +20,14 @@ class GLAccounts_model extends MY_Model
         $qr = $this->db->query($ssql, [$GLAccountCode]);
         $rwGLAccounts = $qr->row();
 
+        $ssql = "select * from glaccounts where ParentGLAccountCode = ?";
+        $qr = $this->db->query($ssql, [$GLAccountCode]);
+        $rwParent = $qr->row();
+
         $data = [
-            "glAccounts" => $rwGLAccounts
+            "glAccounts" => $rwGLAccounts,
+            "parents" => $rwParent,
+            "isUsed" => $this->isUsed($GLAccountCode)
         ];
 
         return $data;
@@ -64,5 +70,9 @@ class GLAccounts_model extends MY_Model
         ];
 
         return $rules;
+    }
+
+    public function isUsed($GLAccountCode){
+        return true;
     }
 }

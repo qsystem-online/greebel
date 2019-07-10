@@ -92,100 +92,100 @@ class MSMemberships extends MY_Controller{
   	}
     
 	public function ajx_add_save(){
-			$this->load->model('MSMemberShips_model');
-			$this->form_validation->set_rules($this->MSMemberShips_model->getRules("ADD", 0));
-			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+		$this->load->model('MSMemberShips_model');
+		$this->form_validation->set_rules($this->MSMemberShips_model->getRules("ADD", 0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
-			if ($this->form_validation->run() == FALSE) {
-				//print_r($this->form_validation->error_array());
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = "Error Validation Forms";
-				$this->ajxResp["data"] = $this->form_validation->error_array();
-				$this->json_output();
-				return;
-			}
-
-			$data = [
-				"MemberNo" => $this->input->post("MemberNo"),
-				"RelationId" => $this->input->post("RelationId"),
-				"MemberGroupId" => $this->input->post("MemberGroupId"),
-				"NameOnCard" =>$this->input->post("NameOnCard"),
-				"ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
-				"MemberDiscount" =>$this->input->post("MemberDiscount"),
-				"fst_active" => 'A'
-			];
-
-			$this->db->trans_start();
-			$insertId = $this->MSMemberShips_model->insert($data);
-			$dbError  = $this->db->error();
-			if ($dbError["code"] != 0) {
-				$this->ajxResp["status"] = "DB_FAILED";
-				$this->ajxResp["message"] = "Insert Failed";
-				$this->ajxResp["data"] = $this->db->error();
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}
-
-			$this->db->trans_complete();
-			$this->ajxResp["status"] = "SUCCESS";
-			$this->ajxResp["message"] = "Data Saved !";
-			$this->ajxResp["data"]["insert_id"] = $insertId;
+		if ($this->form_validation->run() == FALSE) {
+			//print_r($this->form_validation->error_array());
+			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+			$this->ajxResp["message"] = "Error Validation Forms";
+			$this->ajxResp["data"] = $this->form_validation->error_array();
 			$this->json_output();
+			return;
+		}
+
+		$data = [
+			"MemberNo" => $this->input->post("MemberNo"),
+			"RelationId" => $this->input->post("RelationId"),
+			"MemberGroupId" => $this->input->post("MemberGroupId"),
+			"NameOnCard" =>$this->input->post("NameOnCard"),
+			"ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
+			"MemberDiscount" =>$this->input->post("MemberDiscount"),
+			"fst_active" => 'A'
+		];
+
+		$this->db->trans_start();
+		$insertId = $this->MSMemberShips_model->insert($data);
+		$dbError  = $this->db->error();
+		if ($dbError["code"] != 0) {
+			$this->ajxResp["status"] = "DB_FAILED";
+			$this->ajxResp["message"] = "Insert Failed";
+			$this->ajxResp["data"] = $this->db->error();
+			$this->json_output();
+			$this->db->trans_rollback();
+			return;
+		}
+
+		$this->db->trans_complete();
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = "Data Saved !";
+		$this->ajxResp["data"]["insert_id"] = $insertId;
+		$this->json_output();
 	}
 		
 	public function ajx_edit_save(){
-			$this->load->model('MSMemberShips_model');
-			$RecId = $this->input->post("RecId");
-			$data = $this->MSMemberShips_model->getDataById($RecId);
-			$msmemberships = $data["ms_memberships"];
-			if (!$msmemberships) {
-				$this->ajxResp["status"] = "DATA_NOT_FOUND";
-				$this->ajxResp["message"] = "Data id $RecId Not Found ";
-				$this->ajxResp["data"] = [];
-				$this->json_output();
-				return;
-			}
-
-			$this->form_validation->set_rules($this->MSMemberShips_model->getRules("EDIT", $RecId));
-			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-			if ($this->form_validation->run() == FALSE) {
-				//print_r($this->form_validation->error_array());
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = "Error Validation Forms";
-				$this->ajxResp["data"] = $this->form_validation->error_array();
-				$this->json_output();
-				return;
-			}
-
-			$data = [
-				"RecId" => $RecId,
-				"MemberNo" => $this->input->post("MemberNo"),
-				"RelationId" => $this->input->post("RelationId"),
-				"MemberGroupId" => $this->input->post("MemberGroupId"),
-				"NameOnCard" =>$this->input->post("NameOnCard"),
-				"ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
-				"MemberDiscount" =>$this->input->post("MemberDiscount"),
-				"fst_active" => 'A'
-			];
-
-			$this->db->trans_start();
-			$this->MSMemberShips_model->update($data);
-			$dbError  = $this->db->error();
-			if ($dbError["code"] != 0) {
-				$this->ajxResp["status"] = "DB_FAILED";
-				$this->ajxResp["message"] = "Insert Failed";
-				$this->ajxResp["data"] = $this->db->error();
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}
-
-			$this->db->trans_complete();
-			$this->ajxResp["status"] = "SUCCESS";
-			$this->ajxResp["message"] = "Data Saved !";
-			$this->ajxResp["data"]["insert_id"] = $RecId;
+		$this->load->model('MSMemberShips_model');
+		$RecId = $this->input->post("RecId");
+		$data = $this->MSMemberShips_model->getDataById($RecId);
+		$msmemberships = $data["ms_memberships"];
+		if (!$msmemberships) {
+			$this->ajxResp["status"] = "DATA_NOT_FOUND";
+			$this->ajxResp["message"] = "Data id $RecId Not Found ";
+			$this->ajxResp["data"] = [];
 			$this->json_output();
+			return;
+		}
+
+		$this->form_validation->set_rules($this->MSMemberShips_model->getRules("EDIT", $RecId));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+		if ($this->form_validation->run() == FALSE) {
+			//print_r($this->form_validation->error_array());
+			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+			$this->ajxResp["message"] = "Error Validation Forms";
+			$this->ajxResp["data"] = $this->form_validation->error_array();
+			$this->json_output();
+			return;
+		}
+
+		$data = [
+			"RecId" => $RecId,
+			"MemberNo" => $this->input->post("MemberNo"),
+			"RelationId" => $this->input->post("RelationId"),
+			"MemberGroupId" => $this->input->post("MemberGroupId"),
+			"NameOnCard" =>$this->input->post("NameOnCard"),
+			"ExpiryDate" =>dBDateFormat($this->input->post("ExpiryDate")),
+			"MemberDiscount" =>$this->input->post("MemberDiscount"),
+			"fst_active" => 'A'
+		];
+
+		$this->db->trans_start();
+		$this->MSMemberShips_model->update($data);
+		$dbError  = $this->db->error();
+		if ($dbError["code"] != 0) {
+			$this->ajxResp["status"] = "DB_FAILED";
+			$this->ajxResp["message"] = "Insert Failed";
+			$this->ajxResp["data"] = $this->db->error();
+			$this->json_output();
+			$this->db->trans_rollback();
+			return;
+		}
+
+		$this->db->trans_complete();
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = "Data Saved !";
+		$this->ajxResp["data"]["insert_id"] = $RecId;
+		$this->json_output();
 	}
     
   	public function fetch_list_data(){

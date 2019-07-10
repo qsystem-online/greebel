@@ -36,10 +36,10 @@ class GLAccounts extends MY_Controller
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'GL Account Code', 'width' => '10%', 'data' => 'GLAccountCode'],
-            ['title' => 'GL Account Name', 'width' => '12%', 'data' => 'GLAccountName'],
-            ['title' => 'GL Main Group Name', 'width' => '12%', 'data' => 'GLAccountMainGroupName'],
-            ['title' => 'Parent', 'width' => '10%', 'data' => 'ParentGLAccountName'],
+            ['title' => 'GL Account Code', 'width' => '8%', 'data' => 'GLAccountCode'],
+            ['title' => 'GL Account Name', 'width' => '15%', 'data' => 'GLAccountName'],
+            ['title' => 'GL Main Group Name', 'width' => '10%', 'data' => 'GLAccountMainGroupName'],
+            ['title' => 'Parent', 'width' => '12%', 'data' => 'ParentGLAccountName'],
             ['title' => 'Default Post', 'width' => '7%', 'data' => 'DefaultPost'],
             ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
         ];
@@ -173,9 +173,9 @@ class GLAccounts extends MY_Controller
         $data = [
             "GLAccountCode" => $GLAccountCode,
             "GLAccountName" => $this->input->post("GLAccountName"),
-            "GLAccountMainGroupId" => $this->input->post("GLAccountMainGroupId"),
-            "GLAccountLevel" => $this->input->post("GLAccountLevel"),
-            "ParentGLAccountCode" => $this->input->post("ParentGLAccountCode"),
+            //"GLAccountMainGroupId" => $this->input->post("GLAccountMainGroupId"),
+            //"GLAccountLevel" => $this->input->post("GLAccountLevel"),
+            //"ParentGLAccountCode" => $this->input->post("ParentGLAccountCode"),
             "DefaultPost" => $this->input->post("DefaultPost"),
             "MinUserLevelAccess" => $this->input->post("MinUserLevelAccess"),
             "CurrCode" => $this->input->post("CurrCode"),
@@ -183,6 +183,11 @@ class GLAccounts extends MY_Controller
             "isAllowInCashBankModule" => $this->input->post("isAllowInCashBankModule"),
             "fst_active" => 'A'
         ];
+
+        if ($this->input->post("GLAccountLevel") !=  null){
+            $data["GLAccountLevel"] = $this->input->post("GLAccountLevel");
+        }
+
 
         $this->db->trans_start();
 
@@ -208,7 +213,7 @@ class GLAccounts extends MY_Controller
     public function fetch_list_data()
     {
         $this->load->library("datatables");
-        $this->datatables->setTableName("(SELECT a.*,b.GLAccountMainGroupName,c.GLAccountName AS ParentGLAccountName FROM glaccounts a LEFT JOIN glaccountmaingroups b ON a.GLAccountMainGroupId = b.GLAccountMainGroupId LEFT JOIN glaccounts c ON a.ParentGLAccountCode = c.GLAccountCode) a");
+        $this->datatables->setTableName("(select a.*,b.GLAccountMainGroupName,c.GLAccountName as ParentGLAccountName from glaccounts a inner join glaccountmaingroups b on a.GLAccountMainGroupId = b.GLAccountMainGroupId left join glaccounts c ON a.GLAccountCode = c.ParentGLAccountCode) a");
 
         $selectFields = "a.GLAccountCode,a.GLAccountName,a.GLAccountMainGroupName,a.ParentGLAccountName,a.DefaultPost,'action' as action";
         $this->datatables->setSelectFields($selectFields);
@@ -296,6 +301,7 @@ class GLAccounts extends MY_Controller
         $this->load->model("GLAccounts_model");
 
         $this->GLAccounts_model->delete($id);
+        
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "File deleted successfully";
         $this->json_output();
