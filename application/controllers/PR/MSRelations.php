@@ -126,6 +126,7 @@ class MSRelations extends MY_Controller{
 			"BirthPlace" => $this->input->post("BirthPlace"),
 			"NIK" => $this->input->post("NIK"),
 			"Address" => $this->input->post("Address"),
+			"fst_shipping_address" => $this->input->post("fst_shipping_address"),
 			"Phone" => $this->input->post("Phone"),
 			"Fax" => $this->input->post("Fax"),
 			"PostalCode" => $this->input->post("PostalCode"),
@@ -135,6 +136,7 @@ class MSRelations extends MY_Controller{
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
 			"fin_credit_limit" => $this->input->post("fin_credit_limit"),
+			"fin_sales_area_id" => $this->input->post("fin_sales_area_id"),
 			"fin_sales_id" => $this->input->post("fin_sales_id"),
 			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
 			"fin_terms_payment" => $this->input->post("fin_terms_payment"),
@@ -198,6 +200,7 @@ class MSRelations extends MY_Controller{
 			"BirthPlace" => $this->input->post("BirthPlace"),
 			"NIK" => $this->input->post("NIK"),
 			"Address" => $this->input->post("Address"),
+			"fst_shipping_address" => $this->input->post("fst_shipping_address"),
 			"Phone" => $this->input->post("Phone"),
 			"Fax" => $this->input->post("Fax"),
 			"PostalCode" => $this->input->post("PostalCode"),
@@ -207,6 +210,7 @@ class MSRelations extends MY_Controller{
 			"NPWP" => $this->input->post("NPWP"),
 			"RelationNotes" => $this->input->post("RelationNotes"),
 			"fin_credit_limit" => $this->input->post("fin_credit_limit"),
+			"fin_sales_area_id" => $this->input->post("fin_sales_area_id"),
 			"fin_sales_id" => $this->input->post("fin_sales_id"),
 			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
 			"fin_terms_payment" => $this->input->post("fin_terms_payment"),
@@ -359,6 +363,17 @@ class MSRelations extends MY_Controller{
 	public function get_msrelationprintoutnotes(){
 		$term = $this->input->get("term");
 		$ssql = "SELECT NoteId, Notes from msrelationprintoutnotes where Notes like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_salesArea(){
+		$term = $this->input->get("term");
+		$ssql = "SELECT fin_sales_area_id, fst_name from mssalesarea where fst_name like?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		

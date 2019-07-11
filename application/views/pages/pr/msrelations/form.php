@@ -149,6 +149,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
+					<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Shipping Address")?> :</label>
+						<div class="col-md-10">
+							<textarea class="form-control" id="fst_shipping_address" placeholder="<?=lang("Shipping Address")?>" nama="fst_shipping_address"></textarea>
+							<div id="fst_shipping_address_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
 					<label for="Phone" class="col-md-2 control-label"><?=lang("Phone")?> :</label>
 						<div class="col-md-4">
 							<input type="text" class="form-control" id="Phone" placeholder="<?=lang("Phone")?>" name="Phone">
@@ -249,6 +257,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="col-md-4">
 							<input type="text" class="form-control text-right money" id="fin_credit_limit" name="fin_credit_limit">
 							<div id="fin_credit_limit_err" class="text-danger"></div>
+						</div>
+
+					<label for="fin_sales_area_id" class="col-md-2 control-label"><?=lang("Sales Area Name")?> :</label>
+						<div class="col-md-4">
+							<select id="select-salesArea" class="form-control" name="fin_sales_area_id">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fin_sales_area_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -373,7 +389,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 						$('#RelationName').prop('readonly', true);
-						//$("#tabs-relation-detail").show();
 					}
 				},
 				error: function (e) {
@@ -643,6 +658,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
+		$("#select-salesArea").select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>pr/msrelations/get_salesArea',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					items = [];
+					data = data.data;
+					$.each(data,function(index,value){
+						items.push({
+							"id" : value.fin_sales_area_id,
+							"text" : value.fst_name
+						});
+					});
+					console.log(items);
+					return {
+						results: items
+					};
+				},
+				cache: true,
+			}
+		});
+
 		$("#select-salesId").select2({
 			width: '100%',
 			ajax: {
@@ -794,6 +833,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				var newOption = new Option(resp.ms_relations.Notes, true);
 				$('#select-relationnotes').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.ms_relations.fst_name, resp.ms_relations.fin_sales_area_id, true, true);
+				$('#select-salesArea').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.SalesName, resp.ms_relations.fin_sales_id, true, true);
 				$('#select-salesId').append(newOption).trigger('change');
