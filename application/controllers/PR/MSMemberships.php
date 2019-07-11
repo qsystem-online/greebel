@@ -92,8 +92,8 @@ class MSMemberships extends MY_Controller{
   	}
     
 	public function ajx_add_save(){
-		$this->load->model('MSMemberShips_model');
-		$this->form_validation->set_rules($this->MSMemberShips_model->getRules("ADD", 0));
+		$this->load->model('MSMemberships');
+		$this->form_validation->set_rules($this->MSMemberships->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -116,7 +116,7 @@ class MSMemberships extends MY_Controller{
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->MSMemberShips_model->insert($data);
+		$insertId = $this->MSMemberships->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -135,9 +135,9 @@ class MSMemberships extends MY_Controller{
 	}
 		
 	public function ajx_edit_save(){
-		$this->load->model('MSMemberShips_model');
+		$this->load->model('MSMemberships_model');
 		$RecId = $this->input->post("RecId");
-		$data = $this->MSMemberShips_model->getDataById($RecId);
+		$data = $this->MSMemberships_model->getDataById($RecId);
 		$msmemberships = $data["ms_memberships"];
 		if (!$msmemberships) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
@@ -147,7 +147,7 @@ class MSMemberships extends MY_Controller{
 			return;
 		}
 
-		$this->form_validation->set_rules($this->MSMemberShips_model->getRules("EDIT", $RecId));
+		$this->form_validation->set_rules($this->MSMemberships_model->getRules("EDIT", $RecId));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -170,7 +170,7 @@ class MSMemberships extends MY_Controller{
 		];
 
 		$this->db->trans_start();
-		$this->MSMemberShips_model->update($data);
+		$this->MSMemberships_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -220,8 +220,8 @@ class MSMemberships extends MY_Controller{
   	}
     
   	public function fetch_data($RecId){
-		$this->load->model("MSMemberShips_model");
-		$data = $this->MSMemberShips_model->getDataById($RecId);
+		$this->load->model("MSMemberships_model");
+		$data = $this->MSMemberships_model->getDataById($RecId);
 		
 		$this->json_output($data);
   	}
@@ -252,9 +252,9 @@ class MSMemberships extends MY_Controller{
 			return;
 		}
 
-		$this->load->model("MSMemberShips_model");
+		$this->load->model("MSMemberships");
 
-		$this->MSMemberShips_model->delete($id);
+		$this->MSMemberships->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();

@@ -279,7 +279,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				// Append it to the select
     			$('#select-relationId').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_memberships.MemberGroupName, resp.ms_memberships.fst_member_group_name, true, true);
+				var newOption = new Option(resp.ms_memberships.MemberGroupName, resp.ms_memberships.MemberGroupId, true, true);
 				$('#select-MemberGroup').append(newOption).trigger('change');
 
 			},
