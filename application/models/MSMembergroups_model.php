@@ -27,10 +27,10 @@ class MSMembergroups_model extends MY_Model {
         $rules[] = [
             'field' => 'fst_member_group_name',
             'label' => 'Member Group Name',
-            'rules' => 'required|min_length[5]',
+            'rules' => 'required|min_length[3]',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
+                'min_length' => 'Panjang %s paling sedikit 3 character'
             )
         ];
 

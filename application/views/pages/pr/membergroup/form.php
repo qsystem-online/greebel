@@ -154,9 +154,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.pr/membergroups);
+				console.log(resp.ms_membergroups);
 
-				$.each(resp.pr/membergroups, function(name, val){
+				$.each(resp.ms_membergroups, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){

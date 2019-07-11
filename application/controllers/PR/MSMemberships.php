@@ -37,10 +37,10 @@ class MSMemberships extends MY_Controller{
 			['title' => 'Rec ID', 'width' => '8%', 'data' => 'RecId'],
 			['title' => 'Member No', 'width' => '12%', 'data' => 'MemberNo'],
 			['title' => 'Relation Name', 'width' => '15%', 'data' => 'RelationName'],
-			['title' => 'Member Group ID', 'width' => '15%', 'data' => 'MemberGroupId'],
+			['title' => 'Member Group Name', 'width' => '18%', 'data' => 'MemberGroupName'],
 			['title' => 'Name On Card', 'width' => '20%', 'data' => 'NameOnCard'],
 			['title' => 'Expiry Date', 'width' => '12%', 'data' => 'ExpiryDate'],
-			['title' => 'Member Discount (%)', 'width' => '17%', 'data' => 'MemberDiscount'],
+			['title' => 'Member Disc (%)', 'width' => '19%', 'data' => 'MemberDiscount'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 
@@ -190,9 +190,10 @@ class MSMemberships extends MY_Controller{
     
   	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("(select a.*,b.RelationName from msmemberships a inner join msrelations b on a.RelationId = b.RelationId) a");
+		$this->datatables->setTableName("(select a.*,b.RelationName,c.fst_member_group_name as MemberGroupName from msmemberships a inner join msrelations b on a.RelationId = b.RelationId
+		left join msmembergroups c on a.MemberGroupId = c.fin_member_group_id) a");
 
-		$selectFields = "a.RecId,a.MemberNo,a.RelationName,a.MemberGroupId,a.NameOnCard,a.ExpiryDate,a.MemberDiscount,'action' as action";
+		$selectFields = "a.RecId,a.MemberNo,a.RelationName,a.MemberGroupName,a.NameOnCard,a.ExpiryDate,a.MemberDiscount,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
@@ -228,6 +229,15 @@ class MSMemberships extends MY_Controller{
   	public function get_relations(){
 		$term = $this->input->get("term");
 		$ssql = "select RelationId, RelationName from msrelations where RelationName like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->json_output($rs);
+	}
+
+	public function get_MemberGroup(){
+		$term = $this->input->get("term");
+		$ssql = "select fin_member_group_id, fst_member_group_name from msmembergroups where fst_member_group_name like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		

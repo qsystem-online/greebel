@@ -9,8 +9,8 @@ class MSMemberShips_model extends MY_Model {
     }
 
     public function getDataById($RecId ){
-        //$ssql = "select * from " . $this->tableName ." where RecId = ? and fst_active = 'A'";
-        $ssql = "select a.*,b.RelationName from msmemberships a left join msrelations b on a.RelationId = b.RelationId where a.RecId = ?";
+        $ssql = "select a.*,b.RelationName,c.fst_member_group_name as MemberGroupName from msmemberships a left join msrelations b on a.RelationId = b.RelationId
+        left join msmembergroups c on a.MemberGroupId = c.fin_member_group_id where a.RecId = ?";
 		$qr = $this->db->query($ssql,[$RecId]);
         $rwMSMemberships = $qr->row();
         

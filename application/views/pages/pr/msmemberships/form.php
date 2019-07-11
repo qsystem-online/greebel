@@ -71,11 +71,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="RelationId_err" class="text-danger"></div>
                         </div>
 
-                    <label for="MemberGroupId" class="col-md-2 control-label"><?=lang("Member Group ID")?> </label>
-                        <div class="col-md-4">
-                        <input type="text" class="form-control" id="MemberGroupId" placeholder="<?=lang("Member Group ID")?>" name="MemberGroupId">
-							<div id="MemberGroupId_err" class="text-danger"></div>
-                        </div>
+					<label for="select-MemberGroup" class="col-md-2 control-label"><?=lang("Member Group Name")?> :</label>
+						<div class="col-md-4">
+							<select id="select-MemberGroup" class="form-control" name="fin_member_group_id">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="nama_err" class="text-danger"></div>
+						</div>
                     </div>
 
                     <div class="form-group">
@@ -189,6 +191,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
+		$("#select-MemberGroup").select2({
+			width: '100%',
+			//minimumInputLength: 2,
+			ajax: {
+				url: '<?=site_url()?>pr/msmemberships/get_MemberGroup',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data) {
+					data2 = [];
+					$.each(data,function(index,value){
+						data2.push({
+							"id" : value.fin_member_group_id,
+							"text" : value.fst_member_group_name
+						});	
+					});
+					console.log(data2);
+					return {
+						results: data2
+					};
+				},
+				cache: true,
+			}
+		});
+
         $("#select-relationId").select2({
 			width: '100%',
 			//minimumInputLength: 2,
@@ -252,6 +278,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var newOption = new Option(resp.ms_memberships.RelationName, resp.ms_memberships.RelationId, true, true);
 				// Append it to the select
     			$('#select-relationId').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.ms_memberships.MemberGroupName, resp.ms_memberships.fst_member_group_name, true, true);
+				$('#select-MemberGroup').append(newOption).trigger('change');
 
 			},
 
