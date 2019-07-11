@@ -65,19 +65,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 
-					<div class="form-group relation-info">
+					<div class="form-group">
 					<label for="select-parentId" class="col-md-2 control-label"><?=lang("Customer Induk")?> :</label>
-						<div class="col-md-10">
-							<select id="select-parentId" class="form-control" name="fin_parent_id">
+						<div class="col-md-4">
+							<select id="select-parentId" class="form-control relation-info" name="fin_parent_id">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="fin_parent_id_err" class="text-danger"></div>
 						</div>
-					</div>
-
-					<div class="form-group">
+					
 					<label for="select-relationgroupid" class="col-md-2 control-label"><?=lang("Relation Group Name")?> :</label>
-						<div class="col-md-10">
+						<div class="col-md-4">
 							<select id="select-relationgroupid" class="form-control" name="RelationGroupId">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
@@ -134,7 +132,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group personal-info">
 						<label for="NIK" class="col-md-2 control-label"><?=lang("NIK")?> :</label>
-						<div class="col-md-10">
+						<div class="col-md-4">
 							<input type="text" class="form-control" id="NIK" placeholder="<?=lang("NIK")?>" name="NIK">
 							<div id="NIK_err" class="text-danger"></div>
 						</div>
