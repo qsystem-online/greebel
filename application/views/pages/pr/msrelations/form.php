@@ -151,7 +151,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 					<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Shipping Address")?> :</label>
 						<div class="col-md-10">
-							<textarea class="form-control" id="fst_shipping_address" placeholder="<?=lang("Shipping Address")?>" nama="fst_shipping_address"></textarea>
+							<textarea class="form-control" id="fst_shipping_address" placeholder="<?=lang("Shipping Address")?>" name="fst_shipping_address"></textarea>
 							<div id="fst_shipping_address_err" class="text-danger"></div>
 						</div>
 					</div>

@@ -40,7 +40,7 @@ class MSMemberships extends MY_Controller{
 			['title' => 'Member Group Name', 'width' => '18%', 'data' => 'MemberGroupName'],
 			['title' => 'Name On Card', 'width' => '20%', 'data' => 'NameOnCard'],
 			['title' => 'Expiry Date', 'width' => '12%', 'data' => 'ExpiryDate'],
-			['title' => 'Member Disc (%)', 'width' => '19%', 'data' => 'MemberDiscount'],
+			['title' => 'Member Disc (%)', 'width' => '10%', 'data' => 'MemberDiscount'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 
