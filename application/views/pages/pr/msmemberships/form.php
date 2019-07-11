@@ -73,7 +73,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<label for="select-MemberGroup" class="col-md-2 control-label"><?=lang("Member Group Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-MemberGroup" class="form-control" name="fin_member_group_id">
+							<select id="select-MemberGroup" class="form-control" name="MemberGroupId">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="nama_err" class="text-danger"></div>
