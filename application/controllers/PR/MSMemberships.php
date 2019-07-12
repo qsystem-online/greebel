@@ -37,10 +37,10 @@ class MSMemberships extends MY_Controller{
 			['title' => 'Rec ID', 'width' => '8%', 'data' => 'RecId'],
 			['title' => 'Member No', 'width' => '12%', 'data' => 'MemberNo'],
 			['title' => 'Relation Name', 'width' => '15%', 'data' => 'RelationName'],
-			['title' => 'Member Group ID', 'width' => '15%', 'data' => 'MemberGroupId'],
+			['title' => 'Member Group Name', 'width' => '18%', 'data' => 'MemberGroupName'],
 			['title' => 'Name On Card', 'width' => '20%', 'data' => 'NameOnCard'],
 			['title' => 'Expiry Date', 'width' => '12%', 'data' => 'ExpiryDate'],
-			['title' => 'Member Discount (%)', 'width' => '17%', 'data' => 'MemberDiscount'],
+			['title' => 'Member Disc (%)', 'width' => '10%', 'data' => 'MemberDiscount'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 
@@ -92,8 +92,8 @@ class MSMemberships extends MY_Controller{
   	}
     
 	public function ajx_add_save(){
-		$this->load->model('MSMemberShips_model');
-		$this->form_validation->set_rules($this->MSMemberShips_model->getRules("ADD", 0));
+		$this->load->model('MSMemberships');
+		$this->form_validation->set_rules($this->MSMemberships->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -116,7 +116,7 @@ class MSMemberships extends MY_Controller{
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->MSMemberShips_model->insert($data);
+		$insertId = $this->MSMemberships->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -135,9 +135,9 @@ class MSMemberships extends MY_Controller{
 	}
 		
 	public function ajx_edit_save(){
-		$this->load->model('MSMemberShips_model');
+		$this->load->model('MSMemberships_model');
 		$RecId = $this->input->post("RecId");
-		$data = $this->MSMemberShips_model->getDataById($RecId);
+		$data = $this->MSMemberships_model->getDataById($RecId);
 		$msmemberships = $data["ms_memberships"];
 		if (!$msmemberships) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
@@ -147,7 +147,7 @@ class MSMemberships extends MY_Controller{
 			return;
 		}
 
-		$this->form_validation->set_rules($this->MSMemberShips_model->getRules("EDIT", $RecId));
+		$this->form_validation->set_rules($this->MSMemberships_model->getRules("EDIT", $RecId));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -170,7 +170,7 @@ class MSMemberships extends MY_Controller{
 		];
 
 		$this->db->trans_start();
-		$this->MSMemberShips_model->update($data);
+		$this->MSMemberships_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -190,9 +190,10 @@ class MSMemberships extends MY_Controller{
     
   	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("(select a.*,b.RelationName from msmemberships a inner join msrelations b on a.RelationId = b.RelationId) a");
+		$this->datatables->setTableName("(select a.*,b.RelationName,c.fst_member_group_name as MemberGroupName from msmemberships a inner join msrelations b on a.RelationId = b.RelationId
+		left join msmembergroups c on a.MemberGroupId = c.fin_member_group_id) a");
 
-		$selectFields = "a.RecId,a.MemberNo,a.RelationName,a.MemberGroupId,a.NameOnCard,a.ExpiryDate,a.MemberDiscount,'action' as action";
+		$selectFields = "a.RecId,a.MemberNo,a.RelationName,a.MemberGroupName,a.NameOnCard,a.ExpiryDate,a.MemberDiscount,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
@@ -219,8 +220,8 @@ class MSMemberships extends MY_Controller{
   	}
     
   	public function fetch_data($RecId){
-		$this->load->model("MSMemberShips_model");
-		$data = $this->MSMemberShips_model->getDataById($RecId);
+		$this->load->model("MSMemberships_model");
+		$data = $this->MSMemberships_model->getDataById($RecId);
 		
 		$this->json_output($data);
   	}
@@ -228,6 +229,15 @@ class MSMemberships extends MY_Controller{
   	public function get_relations(){
 		$term = $this->input->get("term");
 		$ssql = "select RelationId, RelationName from msrelations where RelationName like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->json_output($rs);
+	}
+
+	public function get_MemberGroup(){
+		$term = $this->input->get("term");
+		$ssql = "select fin_member_group_id, fst_member_group_name from msmembergroups where fst_member_group_name like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -242,9 +252,9 @@ class MSMemberships extends MY_Controller{
 			return;
 		}
 
-		$this->load->model("MSMemberShips_model");
+		$this->load->model("MSMemberships");
 
-		$this->MSMemberShips_model->delete($id);
+		$this->MSMemberships->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
