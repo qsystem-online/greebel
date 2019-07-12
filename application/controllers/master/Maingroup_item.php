@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class msmaingroupitems extends MY_Controller
+class Maingroup_item extends MY_Controller
 {
 
     public function __construct()

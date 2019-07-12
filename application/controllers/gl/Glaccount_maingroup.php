@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class GLAccountMainGroups extends MY_Controller
+class Glaccount_maingroup extends MY_Controller
 {
 
     public function __construct()

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class mswarehouse extends MY_Controller
+class Warehouse extends MY_Controller
 {
 
     public function __construct()

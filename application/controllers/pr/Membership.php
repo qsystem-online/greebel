@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class MSMemberships extends MY_Controller{
+class Membership extends MY_Controller{
 
 	public function __construct(){
 		parent::__construct();

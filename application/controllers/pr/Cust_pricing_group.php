@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class MSCustpricinggroups extends MY_Controller{
+class Cust_pricing_group extends MY_Controller{
 
 	public function __construct(){
 		parent::__construct();

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class MSItems extends MY_Controller
+class Item extends MY_Controller
 {
 
     public function __construct()
