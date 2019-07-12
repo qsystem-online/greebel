@@ -90,6 +90,57 @@ class Sales_order extends MY_Controller{
 	public function Edit($fin_salesorder_id){
 		$this->openForm("EDIT", $fin_salesorder_id);
 	}
+	
+	/*public function unhold_so(){
+		$this->load->library('menus');
+		$this->list['page_name'] = "Sales Order";
+		$this->list['list_name'] = "Unhold Sales Order List";
+		$this->list['pKey'] = "id";
+		$this->list['fetch_list_data_ajax_url'] = site_url().'tr/sales_order/unhold';
+		$this->list['arrSearch'] = [
+			'fin_salesorder_id' => 'Sales Order ID',
+			'fst_salesorder_no' => 'Sales Order No'
+		];
+
+		$this->list['breadcrumbs'] = [
+			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
+			['title' => 'Unhold Sales Order', 'link' => '#', 'icon' => ''],
+			['title' => 'List', 'link' => NULL, 'icon' => ''],
+		];
+
+		$this->list['columns'] = [
+			['title' => 'Sales Order ID', 'width' => '20%', 'data' => 'fin_salesorder_id'],
+			['title' => 'Sales Order No', 'width' => '20%', 'data' => 'fst_salesorder_no'],
+			['title' => 'Sales Order Date', 'width' => '20%', 'data' => 'fdt_salesorder_date'],
+            ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_memo'],
+			['title' => 'Action', 'width' => '15%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
+		];
+		$this->list['script'] = $this->parser->parse('inc/script_approval_list',[],true);
+
+        $main_header = $this->parser->parse('inc/main_header',[],true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+        $page_content = $this->parser->parse('pages/flow_schema/approval_history_list',$this->list,true);
+        $main_footer = $this->parser->parse('inc/main_footer',[],true);
+        $control_sidebar=null;
+        $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR']= $main_sidebar;
+        $this->data['PAGE_CONTENT']= $page_content;
+        $this->data['MAIN_FOOTER']= $main_footer;        
+		$this->parser->parse('template/main',$this->data);
+	}
+
+	public function unhold_so_data(){
+		$this->load->library("datatables");
+
+		$activeUserId = $this->aauth->get_user_id();
+		
+		$ssql = "
+			(
+				select
+			)
+		";
+	}*/
 
 	public function ajx_add_save(){
 		$this->load->model('sales_order_model');

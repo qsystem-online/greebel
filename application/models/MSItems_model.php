@@ -21,6 +21,16 @@ class MSItems_model extends MY_Model
         $qr = $this->db->query($ssql, [$ItemId]);
         $rw = $qr->row();
 
+		if ($rw) {
+			if (file_exists(FCPATH . 'assets/app/items/image/'.$rw->ItemCode . '.jpg')) {
+				$imageURL = site_url() . 'assets/app/items/image/' . $rw->ItemCode . '.jpg';
+			} else {
+
+				$imageURL = site_url() . 'assets/app/items/image/default.jpg';
+			}
+			$rw->imageURL = $imageURL;
+		}
+
         $ssql = "select * from msitemunitdetails where ItemId = ?";
         $qr = $this->db->query($ssql, [$ItemId]);
         $rsUnitDetail = $qr->result();

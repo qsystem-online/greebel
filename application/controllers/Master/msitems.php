@@ -34,7 +34,7 @@ class MSItems extends MY_Controller
 
         $this->list['breadcrumbs'] = [
             ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-            ['title' => 'Master Relations', 'link' => '#', 'icon' => ''],
+            ['title' => 'Master Items', 'link' => '#', 'icon' => ''],
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
@@ -113,20 +113,22 @@ class MSItems extends MY_Controller
             "ItemCode" => $this->input->post("ItemCode"),
             "ItemName" => $this->input->post("ItemName"),
             "VendorItemName" => $this->input->post("VendorItemName"),
+            "fst_name_on_pos" => $this->input->post("fst_name_on_pos"),
             "ItemMainGroupId" => $this->input->post("ItemMainGroupId"),
             "ItemGroupId" => $this->input->post("ItemGroupId"),
             "ItemSubGroupId" => $this->input->post("ItemSubGroupId"),
             "ItemTypeId" => $this->input->post("ItemTypeId"),
             "StandardVendorId" => $this->input->post("StandardVendorId"),
             "OptionalVendorId" => $this->input->post("OptionalVendorId"),
-            "isBatchNumber" => $this->input->post("isBatchNumber"),
-            "isSerialNumber" => $this->input->post("isSerialNumber"),
+            "isBatchNumber" => ($this->input->post("isBatchNumber") == null) ? 0 : 1,
+            "isSerialNumber" => ($this->input->post("isSerialNumber") == null) ? 0 : 1,
             "ScaleForBOM" => $this->input->post("ScaleForBOM"),
             "StorageRackInfo" => $this->input->post("StorageRackInfo"),
             "Memo" => $this->input->post("Memo"),
+            "fst_sni_no" => $this->input->post("fst_sni_no"),
             "MaxItemDiscount" => $this->input->post("MaxItemDiscount"),
-            "MinBasicUnitAvgCost" => $this->input->post("MinBasicUnitAvgCost"),
-            "MaxBasicUnitAvgCost" => $this->input->post("MaxBasicUnitAvgCost"),
+            "MinBasicUnitAvgCost" => parseNumber($this->input->post("MinBasicUnitAvgCost")),
+            "MaxBasicUnitAvgCost" => parseNumber($this->input->post("MaxBasicUnitAvgCost")),
             "fst_active" => 'A'
         ];
 
@@ -141,6 +143,32 @@ class MSItems extends MY_Controller
             $this->db->trans_rollback();
             return;
         }
+
+        //Save Image
+		if (!empty($_FILES['fst_image']['tmp_name'])) {
+			$config['upload_path']          = './assets/app/items/image';
+			$config['file_name']			= $data["ItemCode"]. '.jpg';
+			$config['overwrite']			= TRUE;
+			$config['file_ext_tolower']		= TRUE;
+			$config['allowed_types']        = 'gif|jpg|png';
+			$config['max_size']             = 0; //kilobyte
+			$config['max_width']            = 0; //1024; //pixel
+			$config['max_height']           = 0; //768; //pixel
+
+			$this->load->library('upload', $config);
+
+			if (!$this->upload->do_upload('fst_image')) {
+				$this->ajxResp["status"] = "IMAGES_FAILED";
+				$this->ajxResp["message"] = "Failed to upload images, " . $this->upload->display_errors();
+				$this->ajxResp["data"] = $this->upload->display_errors();
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			} else {
+				//$data = array('upload_data' => $this->upload->data());			
+			}
+			$this->ajxResp["data"]["data_image"] = $this->upload->data();
+		}
 
         //Save Unit Detail
 
@@ -208,20 +236,22 @@ class MSItems extends MY_Controller
             "ItemCode" => $this->input->post("ItemCode"),
             "ItemName" => $this->input->post("ItemName"),
             "VendorItemName" => $this->input->post("VendorItemName"),
+            "fst_name_on_pos" => $this->input->post("fst_name_on_pos"),
             "ItemMainGroupId" => $this->input->post("ItemMainGroupId"),
             "ItemGroupId" => $this->input->post("ItemGroupId"),
             "ItemSubGroupId" => $this->input->post("ItemSubGroupId"),
             "ItemTypeId" => $this->input->post("ItemTypeId"),
             "StandardVendorId" => $this->input->post("StandardVendorId"),
             "OptionalVendorId" => $this->input->post("OptionalVendorId"),
-            "isBatchNumber" => $this->input->post("isBatchNumber"),
-            "isSerialNumber" => $this->input->post("isSerialNumber"),
+            "isBatchNumber" => ($this->input->post("isBatchNumber") == null) ? 0 : 1,
+            "isSerialNumber" => ($this->input->post("isSerialNumber") == null) ? 0 : 1,
             "ScaleForBOM" => $this->input->post("ScaleForBOM"),
             "StorageRackInfo" => $this->input->post("StorageRackInfo"),
             "Memo" => $this->input->post("Memo"),
+            "fst_sni_no" => $this->input->post("fst_sni_no"),
             "MaxItemDiscount" => $this->input->post("MaxItemDiscount"),
-            "MinBasicUnitAvgCost" => $this->input->post("MinBasicUnitAvgCost"),
-            "MaxBasicUnitAvgCost" => $this->input->post("MaxBasicUnitAvgCost"),
+            "MinBasicUnitAvgCost" => parseNumber($this->input->post("MinBasicUnitAvgCost")),
+            "MaxBasicUnitAvgCost" => parseNumber($this->input->post("MaxBasicUnitAvgCost")),
             "fst_active" => 'A'
         ];
 
@@ -236,6 +266,32 @@ class MSItems extends MY_Controller
             $this->db->trans_rollback();
             return;
         }
+
+        //Save Image
+		if (!empty($_FILES['fst_image']['tmp_name'])) {
+			$config['upload_path']          = './assets/app/items/image';
+			$config['file_name']			= $data["ItemCode"]. '.jpg';
+			$config['overwrite']			= TRUE;
+			$config['file_ext_tolower']		= TRUE;
+			$config['allowed_types']        = 'gif|jpg|png';
+			$config['max_size']             = 0; //kilobyte
+			$config['max_width']            = 0; //1024; //pixel
+			$config['max_height']           = 0; //768; //pixel
+
+			$this->load->library('upload', $config);
+
+			if (!$this->upload->do_upload('fst_image')) {
+				$this->ajxResp["status"] = "IMAGES_FAILED";
+				$this->ajxResp["message"] = "Failed to upload images, " . $this->upload->display_errors();
+				$this->ajxResp["data"] = $this->upload->display_errors();
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			} else {
+				//$data = array('upload_data' => $this->upload->data());			
+			}
+			$this->ajxResp["data"]["data_image"] = $this->upload->data();
+		}
 
         //Save Unit Detail
 
@@ -332,7 +388,7 @@ class MSItems extends MY_Controller
         $this->datatables->setSelectFields($selectFields);
 
         $searchFields = [];
-        $searchFields[] = $this->input->get('optionSearch'); //["RelationId","RelationName"];
+        $searchFields[] = $this->input->get('optionSearch');
         $this->datatables->setSearchFields($searchFields);
         $this->datatables->activeCondition = "fst_active !='D'";
 
