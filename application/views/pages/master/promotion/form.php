@@ -689,12 +689,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
             $("#fst_participant_type").change(function(event){
                 event.preventDefault();
-                $('#fin_customer_id').val(null).trigger('change');
+                //$('#fin_customer_id').val(null).trigger('change');
+                $('#fin_customer_id').empty();
                 type = $("#fst_participant_type").val();
                 if (type =="RELATION"){
                     select_relation();
-                }else{
+                }else if (type =="RELATION GROUP"){
                     select_relationgroup();
+                }else {
+                    select_membergroup();
                 }
             });
 
@@ -1021,7 +1024,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         fin_promo_id: val.fin_promo_id,
                         fst_participant_type: val.fst_participant_type,
                         fin_customer_id: val.fin_customer_id,
-                        customer_name: val.RelationName,
+                        customer_name: val.ParticipantName,
                         action: action
                     }).draw(false);
                 })

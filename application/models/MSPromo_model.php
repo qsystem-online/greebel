@@ -16,11 +16,18 @@ class MSPromo_model extends MY_Model
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rw = $qr->row();
 
-        $ssql = "select a.*,b.ItemName as ItemTerms from mspromoitems a left join msitems b on a.fin_item_id = b.ItemId  where a.fin_promo_id = ?";
+        $ssql = "SELECT a.*,IF (a.fst_item_type ='ITEM',b.ItemName,c.ItemSubGroupName) AS ItemTerms FROM mspromoitems a 
+        LEFT JOIN msitems b ON a.fin_item_id = b.ItemId
+        LEFT JOIN mssubgroupitems c ON a.fin_item_id = c.ItemSubGroupId  
+        WHERE a.fin_promo_id = ?";
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rsPromoTerms = $qr->result();
 
-        $ssql = "select a.*,b.RelationName from mspromoitemscustomer a left join msrelations b on a.fin_customer_id = b.RelationId  where a.fin_promo_id = ?";
+        $ssql = "SELECT a.*, IF (a.fst_participant_type ='RELATION',b.RelationName, IF(a.fst_participant_type ='RELATION GROUP',c.RelationGroupName,d.fst_member_group_name)) AS ParticipantName FROM mspromoitemscustomer a 
+        LEFT JOIN msrelations b ON a.fin_customer_id = b.RelationId
+        LEFT JOIN msrelationgroups c ON a.fin_customer_id = c.RelationGroupId
+        LEFT JOIN msmembergroups d ON a.fin_customer_id = d.fin_member_group_id  
+        WHERE a.fin_promo_id = ?";
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rsPromoParticipants = $qr->result();
 

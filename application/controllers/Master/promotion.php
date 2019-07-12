@@ -290,6 +290,7 @@ class promotion extends MY_Controller
                 "fin_promo_id" => $fin_promo_id,
                 "fst_participant_type" => $promoparticipants->fst_participant_type,
                 "fin_customer_id" => $promoparticipants->fin_customer_id,
+                "fst_active" => 'A'
             ];
             $this->MSPromoitemscustomer_model->insert($data);
             $dbError  = $this->db->error();
