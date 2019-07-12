@@ -6,7 +6,7 @@ class Membership extends MY_Controller{
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
-		$this->load->model('Msmemberships_model');
+		$this->load->model('msmemberships_model');
 	}
 
 	public function index(){
@@ -92,8 +92,8 @@ class Membership extends MY_Controller{
   	}
     
 	public function ajx_add_save(){
-		$this->load->model('Msmemberships_model');
-		$this->form_validation->set_rules($this->Msmemberships_model->getRules("ADD", 0));
+		$this->load->model('msmemberships_model');
+		$this->form_validation->set_rules($this->msmemberships_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -116,7 +116,7 @@ class Membership extends MY_Controller{
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->Msmemberships_model->insert($data);
+		$insertId = $this->msmemberships_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -135,9 +135,9 @@ class Membership extends MY_Controller{
 	}
 		
 	public function ajx_edit_save(){
-		$this->load->model('Msmemberships_model');
+		$this->load->model('msmemberships_model');
 		$fin_rec_id = $this->input->post("fin_rec_id");
-		$data = $this->Msmemberships_model->getDataById($fin_rec_id);
+		$data = $this->msmemberships_model->getDataById($fin_rec_id);
 		$msmemberships = $data["ms_memberships"];
 		if (!$msmemberships) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
@@ -147,7 +147,7 @@ class Membership extends MY_Controller{
 			return;
 		}
 
-		$this->form_validation->set_rules($this->Msmemberships_model->getRules("EDIT", $fin_rec_id));
+		$this->form_validation->set_rules($this->msmemberships_model->getRules("EDIT", $fin_rec_id));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -170,7 +170,7 @@ class Membership extends MY_Controller{
 		];
 
 		$this->db->trans_start();
-		$this->Msmemberships_model->update($data);
+		$this->msmemberships_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -220,8 +220,8 @@ class Membership extends MY_Controller{
   	}
     
   	public function fetch_data($fin_rec_id){
-		$this->load->model("Msmemberships_model");
-		$data = $this->Msmemberships_model->getDataById($fin_rec_id);
+		$this->load->model("msmemberships_model");
+		$data = $this->msmemberships_model->getDataById($fin_rec_id);
 		
 		$this->json_output($data);
   	}
@@ -267,8 +267,8 @@ class Membership extends MY_Controller{
         //$this->pdf->setPaper('A4', 'portrait');
 		$this->pdf->setPaper('A4', 'landscape');
 		
-		$this->load->model("Msmemberships_model");
-		$listMemberships = $this->Msmemberships_model->get_Memberships();
+		$this->load->model("msmemberships_model");
+		$listMemberships = $this->msmemberships_model->get_Memberships();
         $data = [
 			"datas" => $listMemberships
 		];

@@ -14,7 +14,7 @@ class Mscustpricinggroups_model extends MY_Model {
         $rwMSCustpricinggroups = $qr->row();
         
 		$data = [
-            "mscustpricinggroups" => $rwMSCustpricinggroups
+            "ms_custpricinggroups" => $rwMSCustpricinggroups
 		];
 
 		return $data;
