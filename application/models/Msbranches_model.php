@@ -13,7 +13,7 @@ class Msbranches_model extends MY_Model
     public function getDataById($fin_branch_id)
     {
         $ssql = "select a.*,MID(a.fin_area_code, 1, 2) AS province,MID(a.fin_area_code, 1, 5) AS district,MID(a.fin_area_code, 1, 8) AS subdistrict,b.fst_country_name,
-        c.nama AS fst_province_name,d.nama AS fst_district_name,e.nama AS fst_subdistrict_name from " . $this->tableName . " a 
+        c.nama AS namaprovince,d.nama AS namadistrict,e.nama AS namasubdistrict from " . $this->tableName . " a 
         left join mscountries b on a.fin_country_id = b.fin_country_id 
         left join msarea c on MID(a.fin_area_code, 1, 2) = c.kode
         left join msarea d on MID(a.fin_area_code, 1, 5) = d.kode
