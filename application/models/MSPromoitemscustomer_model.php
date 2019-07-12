@@ -1,6 +1,6 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSPromoitemscustomer_model extends MY_Model
+class Mspromoitemscustomer_model extends MY_Model
 {
     public $tableName = "mspromoitemscustomer";
     public $pkey = "fin_id";
@@ -28,7 +28,7 @@ class MSPromoitemscustomer_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'ItemId',
+            'field' => 'fin_item_id',
             'label' => 'Item ID',
             'rules' => 'required|min_length[5]',
             'errors' => array(

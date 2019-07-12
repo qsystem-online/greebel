@@ -1,7 +1,7 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
 
-class MSMembergroups_model extends MY_Model {
+class Msmembergroups_model extends MY_Model {
     public $tableName = "msmembergroups";
     public $pkey = "fin_member_group_id";
 

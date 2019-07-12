@@ -1,29 +1,29 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSItems_model extends MY_Model
+class Msitems_model extends MY_Model
 {
     public $tableName = "msitems";
-    public $pkey = "ItemId";
+    public $pkey = "fin_item_id";
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function getDataById($ItemId)
+    public function getDataById($fin_item_id)
     {
-        //$ssql = "select * from " . $this->tableName . " where ItemId = ? and fst_active = 'A'";
-        $ssql = "select a.*,b.ItemMainGroupName,c.ItemGroupName,d.ItemSubGroupName from " . $this->tableName . " a 
-        left join msmaingroupitems b on a.ItemMainGroupId = b.ItemMainGroupId 
-        left join msgroupitems c on a.ItemGroupId = c.ItemGroupId  
-        left join mssubgroupitems d on a.ItemSubGroupId = d.ItemSubGroupId 
-        where a.ItemId = ? and a.fst_active = 'A'";
-        $qr = $this->db->query($ssql, [$ItemId]);
+        //$ssql = "select * from " . $this->tableName . " where fin_item_id = ? and fst_active = 'A'";
+        $ssql = "select a.*,b.fst_item_maingroup_name,c.fst_item_group_name,d.fst_item_subgroup_name from " . $this->tableName . " a 
+        left join msmaingroupitems b on a.fin_item_maingroup_id = b.fin_item_maingroup_id 
+        left join msgroupitems c on a.fin_item_group_id = c.fin_item_group_id  
+        left join mssubgroupitems d on a.fin_item_subgroup_id = d.fin_item_subgroup_id 
+        where a.fin_item_id = ? and a.fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$fin_item_id]);
         $rw = $qr->row();
 
 		if ($rw) {
-			if (file_exists(FCPATH . 'assets/app/items/image/'.$rw->ItemCode . '.jpg')) {
-				$imageURL = site_url() . 'assets/app/items/image/' . $rw->ItemCode . '.jpg';
+			if (file_exists(FCPATH . 'assets/app/items/image/'.$rw->fin_item_code . '.jpg')) {
+				$imageURL = site_url() . 'assets/app/items/image/' . $rw->fin_item_code . '.jpg';
 			} else {
 
 				$imageURL = site_url() . 'assets/app/items/image/default.jpg';
@@ -31,21 +31,21 @@ class MSItems_model extends MY_Model
 			$rw->imageURL = $imageURL;
 		}
 
-        $ssql = "select * from msitemunitdetails where ItemId = ?";
-        $qr = $this->db->query($ssql, [$ItemId]);
+        $ssql = "select * from msitemfst_unitdetails where fin_item_id = ?";
+        $qr = $this->db->query($ssql, [$fin_item_id]);
         $rsUnitDetail = $qr->result();
 
-        $ssql = "select a.*,b.ItemName from msitembomdetails a left join " . $this->tableName . " b on a.ItemIdBom = b.ItemId  where a.ItemId = ?";
-        $qr = $this->db->query($ssql, [$ItemId]);
+        $ssql = "select a.*,b.fst_item_name from msitembomdetails a left join " . $this->tableName . " b on a.fin_item_id_bom = b.fin_item_id  where a.fin_item_id = ?";
+        $qr = $this->db->query($ssql, [$fin_item_id]);
         $rsBomDetail = $qr->result();
 
-        $ssql = "select a.*,b.CustPricingGroupName from msitemspecialpricinggroupdetails a left join mscustpricinggroups b on a.PricingGroupId = b.CustPricingGroupId  where a.ItemId = ?";
-        $qr = $this->db->query($ssql, [$ItemId]);
+        $ssql = "select a.*,b.fst_cust_pricing_group_name from msitemspecialpricinggroupdetails a left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id  where a.fin_item_id = ?";
+        $qr = $this->db->query($ssql, [$fin_item_id]);
         $rsSpecialPricing = $qr->result();
 
         $data = [
             "msitems" => $rw,
-            "unitDetail" => $rsUnitDetail,
+            "fst_unitDetail" => $rsUnitDetail,
             "bomDetail" => $rsBomDetail,
             "specialpricing" => $rsSpecialPricing,
         ];
@@ -58,7 +58,7 @@ class MSItems_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'ItemCode',
+            'field' => 'fin_item_code',
             'label' => 'Item Code',
             'rules' => 'required|min_length[5]',
             'errors' => array(
@@ -68,7 +68,7 @@ class MSItems_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'ItemName',
+            'field' => 'fst_item_name',
             'label' => 'Item Name',
             'rules' => 'required|min_length[5]',
             'errors' => array(
@@ -78,7 +78,7 @@ class MSItems_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'VendorItemName',
+            'field' => 'fst_vendor_item_name',
             'label' => 'Vendor Item Name',
             'rules' => 'required|min_length[5]',
             'errors' => array(
@@ -92,13 +92,13 @@ class MSItems_model extends MY_Model
 
     public function getAllList()
     {
-        $ssql = "select ItemId,ItemName from " . $this->tableName . " where fst_active = 'A' order by ItemName";
+        $ssql = "select fin_item_id,fst_item_name from " . $this->tableName . " where fst_active = 'A' order by fst_item_name";
         $qr = $this->db->query($ssql, []);
         $rs = $qr->result();
         return $rs;
     }
 
-    public function getSellingPrice($itemId,$unit,$custId) {
+    public function getSellingPrice($fin_item_id,$fst_unit,$custId) {
         //$this->load->model("MSRelations_model");
         //$this->MSRelations_model->
         $ssql ="select * from msrelations where RelationId = ?";
@@ -107,29 +107,29 @@ class MSItems_model extends MY_Model
         if($rw){
             
 
-            $priceGroupId = $rw->CustPricingGroupid;
+            $priceGroupId = $rw->fin_cust_pricing_group_id;
             // cek Special item
-            $ssql = "select * from msitemspecialpricinggroupdetails where ItemId = ? and Unit = ? and PricingGroupId = ? and fst_active = 'A'";
-            $qr = $this->db->query($ssql,[$itemId,$unit,$priceGroupId]);
+            $ssql = "select * from msitemspecialpricinggroupdetails where fin_item_id = ? and Unit = ? and fin_cust_pricing_group_id = ? and fst_active = 'A'";
+            $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit,$priceGroupId]);
             $rwPrice = $qr->row();
             if($rwPrice){
                 return $rwPrice->SellingPrice;
             }else{
-                //item unit details
-                $ssql = "select * from msitemunitdetails where ItemId = ? and Unit = ? and fst_active = 'A'";
-                $qr = $this->db->query($ssql,[$itemId,$unit]);
+                //item fst_unit details
+                $ssql = "select * from msitemfst_unitdetails where fin_item_id = ? and Unit = ? and fst_active = 'A'";
+                $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit]);
                 $rwPrice = $qr->row();
                 if($rwPrice){
                     $sellingPrice = $rwPrice->PriceList;
                     //Cek Group Price List
-                    $ssql = "select * from mscustpricinggroups where CustPricingGroupId = ?";
+                    $ssql = "select * from mscustpricinggroups where fin_cust_pricing_group_id = ?";
                     $qr = $this->db->query($ssql,[$priceGroupId]);
                     $rwGroupPrice = $qr->row();
                     if($rwGroupPrice){
-                        if ($rwGroupPrice->PercentOfPriceList == 100){
-                            return $sellingPrice - $rwGroupPrice->DifferenceInAmount;
+                        if ($rwGroupPrice->fdc_percent_of_price_list == 100){
+                            return $sellingPrice - $rwGroupPrice->fdc_difference_in_amount;
                         }else{
-                            return $sellingPrice * ($rwGroupPrice->PercentOfPriceList /100);
+                            return $sellingPrice * ($rwGroupPrice->fdc_percent_of_price_list /100);
                         }
                     }else{
                         return $sellingPrice;
@@ -146,13 +146,13 @@ class MSItems_model extends MY_Model
         return 0;
     }
 
-    public function getDetailbyArray($arrItemId){
-        $ssql = "select * from msitems where ItemId in ?";
-        $qr = $this->db->query($ssql,$arrItemId);
+    public function getDetailbyArray($fin_item_id){
+        $ssql = "select * from msitems where fin_item_id in ?";
+        $qr = $this->db->query($ssql,$fin_item_id);
         $rs = $qr->result();
         $result = [];
         foreach($rs as $w){
-            $result[$rw->ItemId] = $rw;
+            $result[$rw->fin_item_id] = $rw;
         }
         return $result;
 

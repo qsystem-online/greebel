@@ -1,6 +1,6 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSBranches_model extends MY_Model
+class Msbranches_model extends MY_Model
 {
     public $tableName = "msbranches";
     public $pkey = "fin_branch_id";
@@ -12,12 +12,12 @@ class MSBranches_model extends MY_Model
 
     public function getDataById($fin_branch_id)
     {
-        $ssql = "select a.*,MID(a.AreaCode, 1, 2) AS province,MID(a.AreaCode, 1, 5) AS district,MID(a.AreaCode, 1, 8) AS subdistrict,b.CountryName,
-        c.nama AS ProvinceName,d.nama AS DistrictName,e.nama AS SubDistrictName from " . $this->tableName . " a 
-        left join mscountries b on a.CountryId = b.CountryId 
-        left join msarea c on MID(a.AreaCode, 1, 2) = c.kode
-        left join msarea d on MID(a.AreaCode, 1, 5) = d.kode
-        left join msarea e on MID(a.AreaCode, 1, 8) = e.kode
+        $ssql = "select a.*,MID(a.fin_area_code, 1, 2) AS province,MID(a.fin_area_code, 1, 5) AS district,MID(a.fin_area_code, 1, 8) AS subdistrict,b.fst_country_name,
+        c.nama AS fst_province_name,d.nama AS fst_district_name,e.nama AS fst_subdistrict_name from " . $this->tableName . " a 
+        left join mscountries b on a.fin_country_id = b.fin_country_id 
+        left join msarea c on MID(a.fin_area_code, 1, 2) = c.kode
+        left join msarea d on MID(a.fin_area_code, 1, 5) = d.kode
+        left join msarea e on MID(a.fin_area_code, 1, 8) = e.kode
         where fin_branch_id = ?";
         $qr = $this->db->query($ssql, [$fin_branch_id]);
         $rwBranch = $qr->row();
@@ -27,13 +27,13 @@ class MSBranches_model extends MY_Model
             $arrTmp = explode(".",$rwBranch->subdistrict);
             if (sizeof($arrTmp) != 3){
                 $rwBranch->subdistrict = null;
-                $rwBranch->SubDistrictName = null;
+                $rwBranch->fst_subdistrict_name = null;
             }
         }else{
             $rwBranch->district = null;
-            $rwBranch->DistrictName = null;
+            $rwBranch->fst_district_name = null;
             $rwBranch->subdistrict = null;
-            $rwBranch->SubDistrictName = null;
+            $rwBranch->fst_subdistrict_name = null;
         }
 
         $data = [

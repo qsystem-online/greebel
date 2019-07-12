@@ -1,22 +1,22 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class MSCurrencies_model extends MY_Model{
+class Mscurrencies_model extends MY_Model{
     public $tableName = "mscurrencies";
-    public $pkey = "CurrCode";
+    public $pkey = "fst_curr_code";
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function getDataById($CurrCode){
-        $ssql = "SELECT CurrCode,CurrName FROM mscurrencies where CurrCode = ? and fst_active = 'A'";
-        $qr = $this->db->query($ssql, [$CurrCode]);
+    public function getDataById($fst_curr_code){
+        $ssql = "SELECT fst_curr_code,fst_curr_name FROM mscurrencies where fst_curr_code = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$fst_curr_code]);
         $rwCurrency = $qr->row();
 
-        $ssql = "SELECT a.*,b.CurrCode,Date,ExchangeRate2IDR FROM mscurrencies a LEFT JOIN mscurrenciesratedetails b ON a.CurrCode = b.CurrCode WHERE a.CurrCode = ? and a.fst_active = 'A'";
-        $qr = $this->db->query($ssql, [$CurrCode]);
+        $ssql = "SELECT a.*,b.fst_curr_code,fdt_date,fdc_exchange_rate_to_idr FROM mscurrencies a LEFT JOIN mscurrenciesratedetails b ON a.fst_curr_code = b.fst_curr_code WHERE a.fst_curr_code = ? and a.fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$fst_curr_code]);
         $rsCurrDetails = $qr->result();
 
         $data = [
@@ -32,7 +32,7 @@ class MSCurrencies_model extends MY_Model{
         $rules = [];
 
         $rules[] = [
-            'field' => 'CurrCode',
+            'field' => 'fst_curr_code',
             'label' => 'Currencies Code',
             'rules' => 'required',
             'errors' => array(
@@ -41,7 +41,7 @@ class MSCurrencies_model extends MY_Model{
         ];
 
         $rules[] = [
-            'field' => 'CurrName',
+            'field' => 'fst_curr_name',
             'label' => 'Currencies Name',
             'rules' => 'required',
             'errors' => array(

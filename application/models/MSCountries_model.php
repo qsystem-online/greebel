@@ -1,17 +1,17 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
 
-class MSCountries_model extends MY_Model {
+class Mscountries_model extends MY_Model {
     public $tableName = "mscountries";
-    public $pkey = "CountryId";
+    public $pkey = "fin_country_id";
 
     public function __construct(){
         parent:: __construct();
     }
 
-    public function getDataById($CountryId ){
-        $ssql = "select CountryId, CountryName from " . $this->tableName ." where CountryId = ? and fst_active = 'A'";
-		$qr = $this->db->query($ssql,[$CountryId]);
+    public function getDataById($fin_country_id ){
+        $ssql = "select fin_country_id, fst_country_name from " . $this->tableName ." where fin_country_id = ? and fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$fin_country_id]);
         $rwMSCountries = $qr->row();
         
 		$data = [
@@ -25,7 +25,7 @@ class MSCountries_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'CountryName',
+            'field' => 'fst_country_name',
             'label' => 'Country Name',
             'rules' => 'required|min_length[5]',
             'errors' => array(

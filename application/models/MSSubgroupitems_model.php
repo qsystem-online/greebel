@@ -1,20 +1,20 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSSubgroupitems_model extends MY_Model
+class Mssubgroupitems_model extends MY_Model
 {
     public $tableName = "mssubgroupitems";
-    public $pkey = "ItemSubGroupId";
+    public $pkey = "fin_item_subgroup_id";
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function getDataById($ItemSubGroupId)
+    public function getDataById($fin_item_subgroup_id)
     {
-        $ssql = "select a. *,b.ItemGroupName from " . $this->tableName . " a left join msgroupitems b on a.ItemGroupId = b.ItemGroupId  where a.ItemSubGroupId = ? and a.fst_active = 'A'";
+        $ssql = "select a. *,b.fst_item_group_name from " . $this->tableName . " a left join msgroupitems b on a.fin_item_group_id = b.fin_item_group_id  where a.fin_item_subgroup_id = ? and a.fst_active = 'A'";
 
-        $qr = $this->db->query($ssql, [$ItemSubGroupId]);
+        $qr = $this->db->query($ssql, [$fin_item_subgroup_id]);
         $rw = $qr->row();
 
         $data = [
@@ -29,7 +29,7 @@ class MSSubgroupitems_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'ItemSubGroupName',
+            'field' => 'fin_item_subgroup_name',
             'label' => 'Subgroup Name',
             'rules' => 'required|min_length[2]',
             'errors' => array(

@@ -1,16 +1,16 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
-class MSRelationprintoutnotes_model extends MY_Model {
+class Msrelationprintoutnotes_model extends MY_Model {
     public $tableName = "msrelationprintoutnotes";
-    public $pkey = "RelationNoteId";
+    public $pkey = "fin_note_id";
 
     public function __construct(){
         parent:: __construct();
     }
 
-    public function getDataById($RelationNoteId ){
-        $ssql = "select * from " . $this->tableName ." where RelationNoteId = ? and fst_active = 'A'";
-		$qr = $this->db->query($ssql,[$RelationNoteId]);
+    public function getDataById($fin_note_id ){
+        $ssql = "select * from " . $this->tableName ." where fin_note_id = ? and fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$fin_note_id]);
         $rw = $qr->row();
         
 		$data = [
@@ -24,7 +24,7 @@ class MSRelationprintoutnotes_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'PrintOut',
+            'field' => 'fst_print_out',
             'label' => 'Print Out',
             'rules' => 'required|min_length[5]',
             'errors' => array(
