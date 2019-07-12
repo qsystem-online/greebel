@@ -118,4 +118,15 @@ class MSRelations_model extends MY_Model {
         $query = $this->db->get('msrelations');
 		return $query->result_array();
     }
+
+    public function getCreditLimit($relationId){
+        $ssql = "select fin_credit_limit from msrelations where RelationId = ?";
+        $qr = $this->query($ssql,[$relationId]);
+        $rw = $qr->row();
+        if(!$rw){
+            return 0;
+        }else{
+            return (float) $rw->fin_credit_limit;
+        }
+    }
 }

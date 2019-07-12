@@ -135,4 +135,16 @@ class MSItems_model extends MY_Model
 
         return 0;
     }
+
+    public function getDetailbyArray($arrItemId){
+        $ssql = "select * from msitems where ItemId in ?";
+        $qr = $this->db->query($ssql,$arrItemId);
+        $rs = $qr->result();
+        $result = [];
+        foreach($rs as $w){
+            $result[$rw->ItemId] = $rw;
+        }
+        return $result;
+
+    }
 }

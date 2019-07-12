@@ -98,13 +98,20 @@
 		
 		
 		<script type="text/javascript">
-			$(function(){				
+			$(function(){	
+				/*
+				$(document).ajaxStart(function() {
+					$.blockUI({ message: '<h1><=lang("Please wait....")?></h1>'});
+				});
+				$(document).ajaxStop(function() {
+					$.unblockUI();
+				});
+				*/
+
 				//if session expired redirect to login page
 				$(document).ajaxError(function(event, jqxhr, settings, thrownError){
 					var resp = jqxhr.responseJSON;
-
-					if(resp.hasOwnProperty("status")){
-						
+					if(resp.hasOwnProperty("status")){						
 						if(resp.status == "SESSION_EXPIRED"){
 							$.dialog({
 								title: 'Error',
@@ -170,6 +177,7 @@
 		<script src="<?=base_url()?>dist/js/app.js"></script>	
 		<!-- jquery.hotkeys -->
 		<script src="<?=base_url()?>bower_components/jquery.hotkeys/jquery.hotkeys.js"></script>
-		
+		<!-- BlockUI -->
+		<script src="<?=base_url()?>bower_components/jquery.blockUI.js"></script>		
 	</body>
 </html>

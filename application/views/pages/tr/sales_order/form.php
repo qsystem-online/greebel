@@ -22,8 +22,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         border-bottom-style:fixed;
     }
 	.is-promo{
-		color:#ff0000;
-		background-color:#ed8fa9 !important;
+		color:#ffffff;
+		background-color:#63598c !important;
+	}
+	.form-group{
+		margin-bottom: 5px;
+	}
+	.checkbox label, .radio label {
+		font-weight:700;
 	}
 </style>
 
@@ -53,94 +59,105 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group hidden">
                         <label for="fin_salesorder_id" class="col-md-2 control-label"><?=lang("Sales Order ID")?> #</label>
-                            <div class="col-md-10">
-                                <input type="text" class="form-control" id="fin_salesorder_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_salesorder_id" value="<?=$fin_salesorder_id?>" readonly>
-                                <div id="fin_salesorder_id_err" class="text-danger"></div>
-                            </div>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="fin_salesorder_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_salesorder_id" value="<?=$fin_salesorder_id?>" readonly>
+							<div id="fin_salesorder_id_err" class="text-danger"></div>
+						</div>
 					</div>
 
 					<div class="form-group">
-                        <label for="fst_salesorder_no" class="col-md-2 control-label"><?=lang("Sales Order No")?> #</label>
-                            <div class="col-md-10">
-                                <input type="text" class="form-control" id="fst_salesorder_no" placeholder="<?=lang("Sales Order No")?>" name="fst_salesorder_no" value="<?=$fst_salesorder_no?>" readonly>
-                                <div id="fst_salesorder_no_err" class="text-danger"></div>
-                            </div>
+						<label for="fst_salesorder_no" class="col-md-2 control-label"><?=lang("Sales Order No")?> #</label>
+						<div class="col-md-4">
+							<input type="text" class="form-control" id="fst_salesorder_no" placeholder="<?=lang("Sales Order No")?>" name="fst_salesorder_no" value="<?=$fst_salesorder_no?>" readonly>
+							<div id="fst_salesorder_no_err" class="text-danger"></div>
+						</div>
+						
+						<label for="fdt_salesorder_date" class="col-md-2 control-label"><?=lang("Sales Order Date")?> *</label>
+						<div class="col-md-4">
+							<div class="input-group date">
+								<div class="input-group-addon">
+									<i class="fa fa-calendar"></i>
+								</div>
+								<input type="text" class="form-control pull-right datepicker" id="fdt_salesorder_date" name="fdt_salesorder_date"/>								
+							</div>
+							<div id="fdt_salesorder_date_err" class="text-danger"></div>
+							<!-- /.input group -->
+						</div>						
                     </div>
 
-                    <div class="form-group">
-                        <label for="fdt_salesorder_date" class="col-md-2 control-label"><?=lang("Sales Order Date")?> *</label>
-                            <div class="col-md-4">
-                                <div class="input-group date">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-calendar"></i>
-                                    </div>
-                                    <input type="text" class="form-control pull-right datepicker" id="fdt_salesorder_date" name="fdt_salesorder_date"/>								
-                                </div>
-                                <div id="fdt_salesorder_date_err" class="text-danger"></div>
-                                <!-- /.input group -->
-                            </div>
+					<div class="form-group">						
+						<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> </label>
+						<div class="col-md-4">
+							<select id="fst_curr_code" class="form-control" name="fst_curr_code">
+								<option value="<?=$default_currency['CurrCode']?>"><?=$default_currency['CurrName']?></option>
+							</select>
+							<div id="fin_relation_id_err" class="text-danger"></div>
+						</div>
+					
+						<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> </label>
+						<div class="col-md-1">
+							<input type="text" class="form-control" id="fdc_exchange_rate_idr" name="fdc_exchange_rate_idr" style="width:50px" value="1" readonly/>							
+						</div>
+						<label class="col-md-2 control-label" style="text-align:left;padding-left:0px"><?=lang("Rupiah")?> </label>
+					</div>
 
+
+					<div class="form-group">						
+						<label for="select-relations" class="col-md-2 control-label"><?=lang("Customer")?> </label>
+						<div class="col-md-4">
+							<select id="select-relations" class="form-control" name="fin_relation_id">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fin_relation_id_err" class="text-danger"></div>
+						</div>
+					
+						<label for="select-relations" class="col-md-2 control-label"><?=lang("Term")?> </label>
+						<div class="col-md-1">
+							<input type="text" class="form-control" id="fin_terms_payment" name="fin_terms_payment" style="width:50px"/>							
+						</div>
+						<label class="col-md-2 control-label" style="text-align:left;padding-left:0px"><?=lang("Hari")?> </label>
+					</div>
+
+
+                    <div class="form-group">
+						
 						<label for="select-sales" class="col-md-2 control-label"><?=lang("Sales")?> </label>
-                            <div class="col-md-4">
-								<select id="select-sales" class="form-control" name="fin_sales_id">
-									<option value="0">-- <?=lang("select")?> --</option>
-								</select>
-                                <div id="fin_sales_id_err" class="text-danger"></div>
-                            </div>
+						<div class="col-md-4">
+							<select id="select-sales" class="form-control" name="fin_sales_id">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fin_sales_id_err" class="text-danger"></div>
+						</div>
 					</div>
 
 					<div class="form-group">
                         <label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?> </label>
-                            <div class="col-md-4">
-								<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
-									<option value="0">-- <?=lang("select")?> --</option>
-								</select>
-                                <div id="fin_warehouse_id_err" class="text-danger"></div>
-                            </div>
-
-						<label for="select-spv" class="col-md-2 control-label"><?=lang("Sales Spv")?> </label>
-                            <div class="col-md-4">
-								<select id="select-spv" class="form-control" name="fin_sales_spv_id">
-									<option value="0">-- <?=lang("select")?> --</option>
-								</select>
-                                <div id="fin_sales_spv_id_err" class="text-danger"></div>
-                            </div>
+						<div class="col-md-4">
+							<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fin_warehouse_id_err" class="text-danger"></div>
+						</div>
+						<div class="checkbox col-sm-3">
+							<label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label>
+							<label style="margin-left:20px"><input id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("Include PPN") ?></label>
+						</div>
+						
 					</div>
 
 					<div class="form-group">
-						<label for="select-relations" class="col-md-2 control-label"><?=lang("Customer")?> </label>
-                            <div class="col-md-4">
-								<select id="select-relations" class="form-control" name="fin_relation_id">
-									<option value="0">-- <?=lang("select")?> --</option>
-								</select>
-                                <div id="fin_relation_id_err" class="text-danger"></div>
-                            </div>
-
-                        <label for="select-mgr" class="col-md-2 control-label"><?=lang("Sales Mgr")?></label>
-                            <div class="col-md-4">
-								<select id="select-mgr" class="form-control" name="fin_sales_mgr_id">
-									<option value="0">-- <?=lang("select")?> --</option>
-								</select>
-                                    <div id="fin_sales_mgr_id_err" class="text-danger"></div>
-                            </div>
+                        <label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?> </label>
+						<div class="col-md-10">
+							<textarea class="form-control" name="fst_shipping_address" id="fst_shipping_address" style="width:100%" rows="5"></textarea>
+							<div id="fst_shipping_address_err" class="text-danger"></div>
+						</div>									
 					</div>
-
-                    <div class="form-group">
-                            <label for="fbl_is_hold" class="col-sm-2 control-label"> </label>
-                            <div class="checkbox col-sm-2">
-                                <label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label><br>
-                            </div>
-							<div class="checkbox col-sm-2">
-								<?php $checked = ($mode == "ADD") ? "checked" : "" ?>
-                                <label><input <?= $checked ?> id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("Include PPN") ?></label><br>
-                            </div>
-                    </div>
 
 					<div class="form-group">
 						<div class="col-md-12" style='text-align:right'>
 							<button id="btn-add-detail" class="btn btn-default btn-sm">
 								<i class="fa fa-plus" aria-hidden="true"></i>
-								<?=lang("Add Detail")?>
+								<?=lang("Tambah Item")?>
 							</button>
 						</div>
 					</div>
@@ -149,8 +166,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<div class="col-sm-6">	
 							<div class="form-group">
-								<label for="fst_memo" class="col-sm-2 control-label"><?= lang("Memo") ?> </label>
-								<div class="col-sm-10">
+								
+								<div class="col-sm-12">
 									<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="5"></textarea>
 									<div id="fst_memo_err" class="text-danger"></div>
 								</div>
@@ -200,7 +217,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <!-- modal atau popup "ADD" -->
 <div id="myModal" class="modal fade" role="dialog" >
-	<div class="modal-dialog" style="display:table">
+	<div class="modal-dialog" style="display:table;width:800px">
 		<!-- modal content -->
 		<div class="modal-content">
 			<div class="modal-header">
@@ -209,6 +226,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-body">
+				
 				<form id="form-detail" class="form-horizontal">
 				<input type='hidden' id='fin-detail-id'/>
 					<div class="form-group">
@@ -218,30 +236,37 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="ItemId_err" class="text-danger"></div>
 						</div>
 					</div>
+					<div class="form-group">
+						<label for="fst_custom_item_name" class="col-md-2 control-label"><?=lang("Custom Name")?></label>
+						<div class="col-md-10">
+							<input id="fst_custom_item_name" class="form-control"></select>
+							<div id="fst_custom_item_name_err" class="text-danger"></div>
+						</div>
+					</div>
 
 					<div class="form-group">
 						<label for="select-unit" class="col-md-2 control-label"><?=lang("Unit")?></label>
 						<div class="col-md-10">
-							<select id="select-unit" name="fst_unit" class="form-control"></select>
+							<select id="select-unit" name="fst_unit" class="form-control" style="width:100%"></select>
 							<div id="fst_unit_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
 						<label for="fdc_qty" class="col-md-2 control-label"><?=lang("Qty")?></label>
-						<div class="col-md-10">
+						<div class="col-md-2">
 							<input type="number" class="form-control text-right numeric" id="so-qty" value="1">
 							<div id="fdc_qty_err" class="text-danger"></div>
 						</div>
-					</div>
 
-					<div class="form-group">
 						<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?></label>
-						<div class="col-md-10">
+						<div class="col-md-6">
 							<input type="text" class="form-control text-right money" id="so-price" value="0">
 							<div id="fdc_price_err" class="text-danger"></div>
 						</div>
 					</div>
+
+					
 
 					<div class="form-group">
 						<label for="select-disc" class="col-md-2 control-label"><?=lang("Disc ++")?></label>
@@ -264,12 +289,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="fst_memo_item" class="col-md-2 control-label"><?=lang("Memo")?></label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_memo_item">
+							<textarea type="text" class="form-control" id="fst_memo_item" rows="3"></textarea>
 							<div id="fst_memo_item_err" class="text-danger"></div>
 						</div>
 					</div>
 
 				</form>
+				<div id="dialog-info" class="alert alert-info">
+					<a href="#" class="close" onclick="$('#dialog-info').hide()" aria-label="close">&times;</a>
+					<div class="info-message">
+						<strong>Info!</strong> Indicates a neutral informative change or action.
+					</div>
+				</div>
 			</div>
 
 			<div class="modal-footer">
@@ -285,18 +316,41 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
 	var edited_so_detail = null;
 	var mode_so_detail = "ADD";
-	var arrDetail;
+	var arrDetail;	
+	var sel2Sales = [];
+	var sel2Warehouse =[];
+	var sel2Currencies =[];
 
 	$(function(){
 		<?php if($mode == "EDIT"){?>
 			init_form($("#fin_salesorder_id").val());
 		<?php } ?>
 
-		
+		loadSelect2Data();
+
+		$("#fin_terms_payment").click(function(e){
+			e.preventDefault();
+			//$.blockUI({ message: '<h1>Just a moment...</h1>' });
+			message ="";
+			for(i = 0 ; i < 100 ;i++){
+				message +="Test message askjdansd asd asd asd" + i + "<br>";
+			}
+			$.alert({
+						title: 'Message',
+						content: message,
+						useBootstrap:false,
+						//columnClass: 'col-md-12'
+						 boxWidth:"500px"
+					});
+			
+		});
+
+
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			var cekPromo =1;
-			saveAjax(cekPromo);
+			var cekPromo = 0;
+			var confirmAuthorize = 0;
+			saveAjax(cekPromo,confirmAuthorize);
 		});
 
 		$("#fdt_salesorder_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
@@ -313,7 +367,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$.each(data,function(index,value){
 						items.push({
 							"id" : value.RelationId,
-							"text" : value.RelationName
+							"text" : value.RelationName,
+							"fin_sales_id" : value.fin_sales_id,
+							"fst_shipping_address":value.fst_shipping_address,
+							"fin_warehouse_id":value.fin_warehouse_id,
+							"fin_terms_payment":value.fin_terms_payment							
 						});
 					});
 					console.log(items);
@@ -323,102 +381,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				},
 				cache: true,
 			}
+		}).on('select2:select',function(e){
+			var data = $('#select-relations').select2("data")[0];
+
+			$("#fin_terms_payment").val(data.fin_terms_payment);
+			$("#fst_shipping_address").val(data.fst_shipping_address);
+			$("#select-sales").val(data.fin_sales_id).trigger("change");
+			$("#select-warehouse").val(data.fin_warehouse_id).trigger("change");
+
+			console.log(data);
 		});
 
-		$("#select-warehouse").select2({
-			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>tr/sales_order/get_mswarehouse',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data){
-					items = [];
-					data = data.data;
-					$.each(data,function(index,value){
-						items.push({
-							"id" : value.fin_warehouse_id,
-							"text" : value.fst_warehouse_name
-						});
-					});
-					console.log(items);
-					return {
-						results: items
-					};
-				},
-				cache: true,
-			}
-		});
-
-		$("#select-sales").select2({
-			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>tr/sales_order/get_users',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data){
-					items = [];
-					data = data.data;
-					$.each(data,function(index,value){
-						items.push({
-							"id" : value.fin_user_id,
-							"text" : value.fst_username
-						});
-					});
-					console.log(items);
-					return {
-						results: items
-					};
-				},
-				cache: true,
-			}
-		});
-
-		$("#select-spv").select2({
-			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>tr/sales_order/get_users',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data){
-					items = [];
-					data = data.data;
-					$.each(data,function(index,value){
-						items.push({
-							"id" : value.fin_user_id,
-							"text" : value.fst_username
-						});
-					});
-					console.log(items);
-					return {
-						results: items
-					};
-				},
-				cache: true,
-			}
-		});
-
-		$("#select-mgr").select2({
-			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>tr/sales_order/get_users',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data){
-					items = [];
-					data = data.data;
-					$.each(data,function(index,value){
-						items.push({
-							"id" : value.fin_user_id,
-							"text" : value.fst_username
-						});
-					});
-					console.log(items);
-					return {
-						results: items
-					};
-				},
-				cache: true,
-			}
+		$("#select-sales").select2();
+		$("#select-warehouse").select2();
+		$("#fbl_is_vat_include").change(function(e){
+			calculateTotal();
 		});
 
 		$("#select-items").select2({
@@ -432,7 +409,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$.each(data,function(index,value){
 						data2.push({
 							"id" : value.ItemId,
-							"text" : value.ItemName,
+							"text" : value.ItemCodeName,
+							"itemName" : value.ItemName,
+							"itemCode" : value.ItemCode,
 							"maxItemDiscount" : value.MaxItemDiscount
 						});	
 					});
@@ -443,7 +422,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				},
 				cache: true,
 			}
+		}).on('select2:select', function (e) {			
+			var data = $('#select-items').select2("data")[0];
+			$("#fst_custom_item_name").val(data.itemName);
+
+			$('#select-unit').empty();
+			//$('#select-unit').val(null).trigger('change');
+
+			$.ajax({
+				url: '<?=site_url()?>master/msitems/getSellingUnit/' + data.id,
+				success:function(data){
+					data2 = [];
+					$.each(data,function(index,value){
+						data2.push({
+							"id" : value.Unit,
+							"text" : value.Unit,
+							"price" :value.PriceList
+						});
+					});
+					$("#select-unit").select2({data:data2});
+					$("#select-unit").trigger("select2:select");					
+					showInfoStock();
+				}
+			});
 		});
+
+		$("#select-unit").select2();
+
 
 		$("#select-disc").select2({
 			dir: 'rtl',
@@ -473,50 +478,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			var data = $('#select-disc').select2("data")[0];
 			disc = data.id;
 			qty = $("#so-qty").val();
-
 			amount = money_parse($("#so-price").val());
 			amount = amount * qty;
-
 			$("#fdc_disc_amount").val( money_format(calculateDisc(amount,disc)) ); 
 		});
 
-		$('#select-items').on('select2:select', function (e) {
-			//var data = e.params.data;
-			//selected_items = data;
-			var data = $('#select-items').select2("data")[0];
-			//$("#so-price").val(numeral(data.fdc_price).format("0,000"));
-			console.log(data);
-			//Fill Unit
-			$('#select-unit').val(null).trigger('change');
-			$("#select-unit").select2({
-				width: '100%',
-				ajax:{
-					url: '<?=site_url()?>master/msitems/getSellingUnit/' + data.id,
-					dataType: 'json',
-					delay: 250,
-					processResults: function (data) {
-						data2 = [];
-						$.each(data,function(index,value){
-							data2.push({
-								"id" : value.Unit,
-								"text" : value.Unit,
-								"price" :value.PriceList
-							});
-						});
-						console.log(data2);
-						return {
-							results: data2
-						};
-					},
-				},
-				cache: true,
-			});
-			//$('#select-unit').trigger('change');
-		});
-
-		$('#select-unit').on('select2:select', function (e) {
-			
-			
+		$('#select-unit').on('select2:select', function (e) {						
 			dataCust = $("#select-relations").select2("data")[0];
 			dataUnit = $('#select-unit').select2("data")[0];
 			dataItem = $('#select-items').select2("data")[0];
@@ -525,12 +492,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				url:"<?=site_url()?>master/msitems/getSellingPrice/" + dataItem.id + "/" + dataUnit.id + "/" + dataCust.id,
 				method:"GET",
 				success:function(resp){
-					console.log(resp);
+					//console.log(resp);
 					//$("#so-price").val(numeral(resp.sellingPrice).format("0,000"));
 					//$("#so-price").inputmask("setvalue",resp.sellingPrice);
 					$("#so-price").val(money_format(resp.sellingPrice));
 				}
 			});
+
+			showInfoStock();
 			
 			
 		});
@@ -547,7 +516,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#myModal").modal({
 				backdrop:"static",
 			});
-			clearDetailForm();			
+			clearDetailForm();
+			$("#dialog-info").hide();		
 			
 		})
 
@@ -581,6 +551,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				fin_promo_id:0,
 				fin_item_id:selected_items.id,
 				ItemName:selected_items.text,
+				ItemCode:selected_items.itemCode,
+				fst_custom_item_name:$("#fst_custom_item_name").val(),
 				fdc_qty: $("#so-qty").val(),
 				fst_unit: selectedUnits.id,
 				fdc_price : price,
@@ -617,9 +589,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "Items","width": "15%",sortable:false,data:"fin_item_id",
 					render: function(data,type,row){
 						console.log(row);
-						return row.ItemName;
+						//return row.ItemName;
+						return row.ItemCode + "-" + row.fst_custom_item_name;
 					}
 				},
+				{"title" : "Custom Name","width": "15%",sortable:false,data:"fst_custom_item_name",visible:false},
 				{"title" : "Qty","width": "10%",data:"fdc_qty",className:'text-right'},
 				{"title" : "Unit","width": "10%",data:"fst_unit"},
 				{"title" : "Price","width": "10%",
@@ -715,8 +689,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	function calculateDisc(amount, disc){
 		var strArray = disc.split("+");
-		console.log(amount);
-		console.log(disc);
+		//console.log(amount);
+		//console.log(disc);
 		
 
 		totalDisc = 0;
@@ -856,24 +830,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 	}
 
-	function saveAjax(cekPromo){
+	function saveAjax(cekPromo,confirmAuthorize){
 		data = $("#frmSalesOrder").serializeArray();
 		detail = new Array();		
+
 		t = $('#tblSODetails').DataTable();
 
+		t.rows(function(idx,data,node){
+			return data.fin_promo_id != 0 ;
+		}).remove().draw();
 
-		t.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
-			var tmpData = this.data();
-			//tmpData = t.row(rowIdx).data();
-			//console.log(tmpData);
-			if(tmpData.fin_promo_id > 0){
-				t.row(rowIdx).remove().draw();
-			}
-		});
-
-		 
 		datas = t.data();
-	
 		$.each(datas,function(i,v){
 			detail.push(v);
 		});
@@ -882,23 +849,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			name:"detail",
 			value: JSON.stringify(detail)
 		});
+		data.push({
+			name:"cekPromo",
+			value: cekPromo
+		});
+		data.push({
+			name:"confirmAuthorize",
+			value: confirmAuthorize
+		});
+
 
 		mode = $("#frm-mode").val();
 		if (mode == "ADD"){
-			url =  "<?= site_url() ?>tr/sales_order/ajx_add_save/" + cekPromo;
+			url =  "<?= site_url() ?>tr/sales_order/ajx_add_save/";
 		}else{
-			url =  "<?= site_url() ?>tr/sales_order/ajx_edit_save/" + cekPromo;
+			url =  "<?= site_url() ?>tr/sales_order/ajx_edit_save/";
 		}
 
 		//var formData = new FormData($('form')[0])
-
+		
 		$.ajax({
 			type: "POST",
-			enctype: 'multipart/form-data',
+			//enctype: 'multipart/form-data',
 			url: url,
 			data: data,
 			timeout: 600000,
-			success: function (resp) {	
+			success: function (resp) {				
 				if (resp.message != "")	{
 					$.alert({
 						title: 'Message',
@@ -920,7 +896,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					for (key in errors) {
 						$("#"+key+"_err").html(errors[key]);
 					}
-				}else if (resp.status == "INFOPROMO"){
+				}else if (resp.status == "INFOPROMO"){					
 					if (confirm(resp.confirm_message)){
 						var actionDelete = '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
 						$.each(resp.data,function(i,v){
@@ -930,11 +906,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								fin_promo_id:v.fin_promo_id,
 								fin_item_id:v.fin_item_id,
 								ItemName:v.fst_item_name,
+								ItemCode:v.fst_item_code,								
+								fst_custom_item_name: v.fst_custom_item_name,
 								fdc_qty: v.fdc_qty,
 								fst_unit: v.fst_unit,
-								fdc_price : 0,
-								fst_disc_item : 0,
-								fdc_disc_amount: 0,
+								fdc_price : 1,
+								fst_disc_item : 100,
+								fdc_disc_amount: 1,
 								fst_memo_item: "",
 								total: 0,
 								action: ""//actionDelete
@@ -947,9 +925,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							//clearDetailForm();
 						});
 					}else{
-						saveAjax(0);
-					}
-									
+						saveAjax(1,0);
+					}		
+				}else if( resp.status == "CONFIRM_AUTHORIZE"){
+					saveAjax(1,1);
 				}else if(resp.status == "SUCCESS") {
 					data = resp.data;
 					$("#fin_salesorder_id").val(data.insert_id);
@@ -968,11 +947,97 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#result").text(e.responseText);
 				console.log("ERROR : ", e);
 				$("#btnSubmit").prop("disabled", false);
-			}
+			},
+		}).always(function(){
+			
 		});
 
 	}
 
+	function loadSelect2Data(){
+		$.ajax({
+			url: '<?=site_url()?>tr/sales_order/getSelect2_sales_warehouse_currency',
+			//async:false,
+			success:function(values){
+				arrSales = values.data.sales;
+				$.each(arrSales,function(i,v){
+					sel2Sales.push({
+						id:v.fin_user_id,
+						text:v.fst_username
+					});
+				});
+				
+				$("#select-sales").select2({
+					data: sel2Sales
+				});
+
+				arrWarehouse = values.data.warehouse;
+				$.each(arrWarehouse,function(i,v){
+					sel2Warehouse.push({
+						id:v.fin_warehouse_id,
+						text:v.fst_warehouse_name
+					});
+				});
+				$("#select-warehouse").select2({
+					data: sel2Warehouse
+				});
+
+				arrCurrencies = values.data.currencies;
+				$.each(arrCurrencies,function(i,v){
+					sel2Currencies.push({
+						id:v.CurrCode,
+						text:v.CurrName
+					});
+				});
+				$("#fst_curr_code").select2({
+					data: sel2Currencies
+				});
+
+				//console.log(sel2Warehouse);
+			}
+		});
+
+
+	}
+
+	function showInfoStock(){
+		
+		dataUnit = $('#select-unit').select2("data")[0];
+		dataItem = $('#select-items').select2("data")[0];
+
+		//console.log(dataUnit);
+		//console.log(dataItem);
+		if(typeof dataUnit === "undefined"){ // no errors
+			return;
+		}
+
+		if(typeof dataItem === "undefined"){ // no errors
+			return;
+		}
+
+
+		$.ajax({
+			url:"<?=site_url()?>API/getItemStock/" + $("#select-warehouse").val() + "/" + dataItem.id + "/" + dataUnit.id,
+			success:function(resp){
+				if (resp.status == "SUCCESS"){
+					qtyStock = resp.data;
+					$.ajax({
+						url:"<?=site_url()?>API/getItemMarketingStock/" + $("#select-warehouse").val() + "/" + dataItem.id + "/" + dataUnit.id,
+						success:function(resp){
+							if (resp.status == "SUCCESS"){
+								qtyMarketingStock = resp.data;
+								$("#dialog-info .info-message").html("Qty Stock : " + qtyStock + " | " + " Qty Marketing Stock : " + qtyMarketingStock);
+								$("#dialog-info").show();
+							}
+						}
+					});
+
+					
+					
+				}
+			}
+		});
+	}
 
 </script>
 
@@ -981,6 +1046,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/dataTables.min.js"></script>
 <script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
 
 <script type="text/javascript">
     $(function(){

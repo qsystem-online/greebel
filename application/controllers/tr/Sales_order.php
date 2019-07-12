@@ -68,6 +68,8 @@ class Sales_order extends MY_Controller{
 		$data["fin_salesorder_id"] = $fin_salesorder_id;
 		$data["fst_salesorder_no"] = $this->sales_order_model->GenerateSONo();
 		$data["percent_ppn"] = (int) getDbConfig("percent_ppn");
+		$data["default_currency"] = getDefaultCurrency();
+
 
 		$page_content = $this->parser->parse('pages/tr/sales_order/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -89,9 +91,15 @@ class Sales_order extends MY_Controller{
 		$this->openForm("EDIT", $fin_salesorder_id);
 	}
 
-	public function ajx_add_save($cekPromo){
+	public function ajx_add_save(){
 		$this->load->model('sales_order_model');
 		$this->load->model("sales_order_details_model");
+		$this->load->model("trinventory_model");
+		$this->load->model("msitems_model");
+		$this->load->model("msrelation_model");
+
+		$cekPromo = $this->input->post("cekPromo");
+		$confirmAuthorize = $this->input->post("confirmAuthorize");
 
 		$this->form_validation->set_rules($this->sales_order_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -107,7 +115,7 @@ class Sales_order extends MY_Controller{
 		}
 		$fst_salesorder_no = $this->sales_order_model->GenerateSONo();
 
-		$data = [
+		$dataH = [
             "fst_salesorder_no" => $fst_salesorder_no,
 			"fdt_salesorder_date" => dBDateFormat($this->input->post("fdt_salesorder_date")),
 			"fin_relation_id" => $this->input->post("fin_relation_id"),
@@ -121,7 +129,7 @@ class Sales_order extends MY_Controller{
 			"fdc_vat_percent" => $this->input->post("fdc_vat_percent"),
 			"fdc_vat_amount" => $this->input->post("fdc_vat_amount"),
 			"fdc_disc_percent" => $this->input->post("fdc_disc_percent"),
-			"fdc_disc_amount" => $this->input->post("fdc_disc_amount"),
+			"fdc_disc_amount" => parseNumber($this->input->post("fdc_disc_amount")),
 			"fst_active" => 'A'
 		];
 
@@ -130,8 +138,25 @@ class Sales_order extends MY_Controller{
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		$details = $this->input->post("detail");
 		$details = json_decode($details);
-		//print_r($details);
-
+		/*sample data details
+		Array ( [0] => stdClass Object ( 
+			[rec_id] => 0 
+			[fin_promo_id] => 0 
+			[fin_item_id] => 2 
+			[ItemName] => AB2250 - Silver Queen 
+			[ItemCode] => AB2250 
+			[fst_custom_item_name] => Silver Queen 
+			[fdc_qty] => 20 
+			[fst_unit] => PACK 
+			[fdc_price] => 6300.00 
+			[fst_disc_item] => 0 
+			[fdc_disc_amount] => 0.00 
+			[fst_memo_item] => 
+			[total] => 126000 
+			[action] =>   
+		))
+		*/
+		$arrItem = getDetailbyArray(array_column($details, 'first_name'));
 		foreach ($details as $item) {
 			$dataDetails = [
 				"ItemId"=> $item->fin_item_id,
@@ -153,9 +178,11 @@ class Sales_order extends MY_Controller{
 				return;	
 			}
 		}
+		
 
+		//Get Promo Item
 		$rsPromoItem = $this->sales_order_model->getDataPromo($this->input->post("fin_relation_id"),$details);
-		if ( $rsPromoItem != null){
+		if ( $rsPromoItem != false){
 			if ($cekPromo == 1){
 				//return ajax data promo
 				$this->ajxResp["status"] = "INFOPROMO";
@@ -167,6 +194,66 @@ class Sales_order extends MY_Controller{
 			}
 			//Add Detail Promo to detail item
 		}
+
+		//** Cek if this transaction need authorization */
+		//Cek Qty is Available, need authorization if qty not available
+		$arrOutofStock =[];
+		$authorizeOutofStock = false;
+		foreach ($details as $item){
+			$stock = $this->trinventory_model->getStock($item->fin_item_id,$item->fst_unit,$dataH["fin_warehouse_id"]);
+			if($item->fdc_qty > $stock){
+				$authorizeOutofStock = true;
+				$arrOutofStock[] = [
+					"fin_item_id"=>$fin_item_id,
+					"fst_item_name"=>$item->fst_custom_item_name,
+					"fst_unit"=>$fst_unit,
+					"fdc_qty"=>$item->fdc_qty,
+					"stock"=>$stock
+				];
+			}
+		}
+		
+		//Cek Credit Limit, need authorization if credit limit is over
+		$grandTotal = 0;
+		foreach ($details as $item){
+			$price = $this->msitems_model->getSellingPrice($item->fin_item_id,$item->fst_unit,$dataH["fin_relation_id"]);
+			$total = ($item->fdc_qty * $price);
+
+			//cek max disc
+			$maxDiscPersen = $arrItem[$item->fin_item_id]->MaxItemDiscount;
+			$maxDiscValue = calculateDisc($maxDiscPersen,$total);
+			//get disc
+			$itemDiscValue = calculateDisc($item->fst_disc_item,$total);
+			if ($maxDiscValue < $itemDiscValue){
+				//Invalid Data
+			}
+			$grandTotal += $total;			
+		}
+		$maxCreditLimit = $this->msrelations_model->getCreditLimit($dataH["fin_relation_id"]);		
+		$arrOutstanding = $this->sales_order_model->getDataOutstanding($dataH["fin_relation_id"]);
+		$totalOutstanding = $arrOutstanding["totalOutstanding"];
+
+		$authorizeCreditLimit = false;
+		if ($totalOutstanding + $grandTotal > $maxCreditLimit){
+			$arrOutstanding["maxCreditLimit"] = $maxCreditLimit;
+			$authorizeCreditLimit = true;
+		}
+
+		if ($authorizeOutofStock == true || $authorizeCreditLimit == true){
+			if ($confirmAuthorize == 0){				
+				
+				$this->ajxResp["status"] = "CONFIRM_AUTHORIZE";
+				$this->ajxResp["confirm_message"] = lang("You got promo item, check it ?");
+				$this->ajxResp["message"] = "";
+				$this->ajxResp["data"] = [
+					"arrOutofStock"=>$arrOutofStock,
+					"arrOutstanding" => $arrOutstanding,
+				];				
+				$this->json_output();
+				return;
+			}
+		}
+
 
 		echo "save Data !!";
 		die();
@@ -370,7 +457,7 @@ class Sales_order extends MY_Controller{
 
 	public function get_msrelations(){
 		$term = $this->input->get("term");
-		$ssql = "select RelationId, RelationName from msrelations where RelationName like ?";
+		$ssql = "select RelationId, RelationName,fin_sales_id,fst_shipping_address,fin_warehouse_id,fin_terms_payment from msrelations where RelationName like ? and 1 in (relationType)";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -390,9 +477,37 @@ class Sales_order extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_users(){
+	public function getSelect2_sales_warehouse_currency(){
+		$salesDeptId = getDbConfig("sales_department_id");
+		$ssql = "select fin_user_id, fst_username from users where  fin_department_id = $salesDeptId order by fst_username";
+		$qr = $this->db->query($ssql,[]);
+		
+		$rsSales = $qr->result();
+		
+		$ssql = "select fin_warehouse_id, fst_warehouse_name from mswarehouse";
+		$qr = $this->db->query($ssql,[]);
+		$rsWarehouse = $qr->result();
+	
+		//$ssql = "select CurrCode, CurrName from mscurrencies";
+		//$qr = $this->db->query($ssql,[]);
+		//$rscurrencies = $qr->result();
+		$rscurrencies = [];
+		$rscurrencies[] = getDefaultCurrency();
+
+		$data = [
+			"sales" => $rsSales,
+			"warehouse" => $rsWarehouse,
+			"currencies" => $rscurrencies
+		];
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $data;
+		$this->json_output();
+	}
+	public function get_sales(){
 		$term = $this->input->get("term");
-		$ssql = "select fin_user_id, fst_username from users where fst_username like ? order by fst_username";
+		$salesDeptId = getDbConfig("sales_department_id");
+
+		$ssql = "select fin_user_id, fst_username from users where fst_username like ? and fin_department_id = $salesDeptId order by fst_username";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -403,10 +518,9 @@ class Sales_order extends MY_Controller{
 
 	public function get_data_item(){
 		$term = $this->input->get("term");
-		$ssql = "select ItemId, CONCAT(ItemCode,' - ' ,ItemName) as ItemName,MaxItemDiscount from msitems where CONCAT(ItemCode,' - ' ,ItemName) like ? order by ItemName";
+		$ssql = "select ItemId, CONCAT(ItemCode,' - ' ,ItemName) as ItemCodeName,ItemCode,ItemName,MaxItemDiscount from msitems where CONCAT(ItemCode,' - ' ,ItemName) like ? order by ItemName";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
-		
 		$this->json_output($rs);
 	}
 

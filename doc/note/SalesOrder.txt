@@ -66,7 +66,8 @@ hadiah barang lain:
 nilai dari hadiah barang lain item id 0 rp.1 disc 100%, tentukan valuenya
 participan, relation, relation group, member group
 
-
+bila participan tidak di isi berarti semua ok
+bila item tidak diisi berarti semua item ok
 
 
 

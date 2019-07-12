@@ -129,25 +129,25 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <script type="text/javascript">
 
         var ajaxManiGL =  {
-                url: '<?= site_url() ?>GL/GLAccounts/get_MainGL',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    items = [];
-                    $.each(data, function(index, value) {
-                        items.push({
-                            "id": value.GLAccountMainGroupId,
-                            "text": value.GLAccountMainGroupName,
-                            "prefix" : value.GLAccountMainPrefix
-                        });
+            url: '<?= site_url() ?>GL/GLAccounts/get_MainGL',
+            dataType: 'json',
+            delay: 250,
+            processResults: function(data) {
+                items = [];
+                $.each(data, function(index, value) {
+                    items.push({
+                        "id": value.GLAccountMainGroupId,
+                        "text": value.GLAccountMainGroupName,
+                        "prefix" : value.GLAccountMainPrefix
                     });
-                    console.log(items);
-                    return {
-                        results: items
-                    };
-                },
-                cache: true,
-            }
+                });
+                console.log(items);
+                return {
+                    results: items
+                };
+            },
+            cache: true,
+        }
 
 
     $(function() {

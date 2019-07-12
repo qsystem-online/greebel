@@ -28,65 +28,6 @@ $(function(){
 			digits: 2
 		});
 	}
-
-
-	/*
-	if (typeof $('.money').inputmask =="function"){
-		alert("money");
-		$('.money').inputmask({
-			//mask:999999999,
-			alias:"numeric",
-			//groupSeparator: ".",
-		   // radixPoint :",",
-			//prefix:"",
-			//digits:2,
-			//clearIncomplete: true
-		});
-	}
-	*/
-	
-   /*
-   //https://plentz.github.io/jquery-maskmoney/
-   if (typeof $('.money').maskMoney =="function"){
-		$('.money').maskMoney({
-			thousands:",",
-			decimal:".",
-			precision:2,
-			allowZero:true,
-			allowNegative:true,
-		});
-   }
-   */
-  /*
-	$(".money").focusout(function(){
-		value = $(this).val();
-		//var patern = ',';
-		//if (DIGIT_GROUP == "."){
-		//	patern ='\\.';  			
-		//}
-		//var re = new RegExp(patern,"g");
-		//value = value.replace(re,'');
-		
-		if ($.isNumeric(value)){
-			$(this).val( money_format(value) );
-		}else{
-			$(this).focus();
-			$(this).select();
-		}
-	})
-	$(".money").focusin(function(){
-		
-		value = $(this).val();
-		
-		$(this).val(money_parse(value));
-		$(this).select();
-	});
-
-	$(".money").focus(function(){
-		
-	});
-	*/
-
 });
 
 //Format data dari ajax ke format datepicker, setting di config.js
@@ -128,4 +69,8 @@ function money_parse(money){
 	return value;
 
 	
+}
+
+function consoleLog(obj){
+	console.log(obj);	
 }

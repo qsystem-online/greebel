@@ -49,7 +49,7 @@
         function formatNumber($number,$digitComma = 0,$commaSeparators=''){
             $commaSeparators = ($commaSeparators == '') ? DECIMAL_SIGN : $commaSeparators;
             $thousandsSeparators =  ($commaSeparators == ".") ? "," : ".";            
-            echo number_format($number,$digitComma,$commaSeparators,$thousandsSeparators);
+            return number_format($number,$digitComma,$commaSeparators,$thousandsSeparators);
         }
     }
     if (!function_exists('getDbConfig')){
@@ -64,4 +64,35 @@
             return null;
         }
     }
-    
+
+    if (!function_exists('getDefaultCurrency')){
+        function getDefaultCurrency(){
+            return [
+                "CurrCode"=>"IDR",
+                "CurrName"=>"Rupiah"
+            ];
+        }
+    }
+
+    if (!function_exists('calculateDisc')){
+        function calculateDisc($strDisc,$amount){
+            $arrDisc = explode("+",$strDisc);            
+            $totalDisc = 0;
+            foreach($arrDisc as $disc){
+                $discAmount = $amount * ($disc/100);
+                $totalDisc +=  $discAmount;
+                $amount = $amount - $discAmount;
+            }
+            return $totalDisc;
+        }
+    }
+
+    if (!function_exists('lastQuery')){
+        function lastQuery(){
+            $CI = &get_instance();
+            echo $CI->db->last_query();
+            die();
+        }
+    }
+
+
