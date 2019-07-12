@@ -1,33 +1,33 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class GLAccounts_model extends MY_Model
+class Glaccounts_model extends MY_Model
 {
     public $tableName = "glaccounts";
-    public $pkey = "GLAccountCode";
+    public $pkey = "fst_glaccount_code";
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function getDataById($GLAccountCode)
+    public function getDataById($fst_glaccount_code)
     {
-        $ssql = "select a.*,b.CurrName, c.GLAccountName as GLParentName, d.GLAccountMainGroupName, d.GLAccountMainPrefix from " . $this->tableName . " a 
-        left join mscurrencies b on a.CurrCode = b.CurrCode 
-        left join " . $this->tableName . " c on a.ParentGLAccountCode = c.GLAccountCode
-        left join glaccountmaingroups d on a.GLAccountMainGroupId = d.GLAccountMainGroupId
-        where a.GLAccountCode = ? and a.fst_active = 'A'";
-        $qr = $this->db->query($ssql, [$GLAccountCode]);
+        $ssql = "select a.*,b.fst_curr_name, c.fst_glaccount_name as GLParentName, d.fst_glaccount_maingroup_name, d.fst_glaccount_main_prefix from " . $this->tableName . " a 
+        left join mscurrencies b on a.fst_curr_code = b.fst_curr_code 
+        left join " . $this->tableName . " c on a.fst_parent_glaccount_code = c.fst_glaccount_code
+        left join glaccountmaingroups d on a.fin_glaccount_maingroup_id = d.fin_glaccount_maingroup_id
+        where a.fst_glaccount_code = ? and a.fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$fst_glaccount_code]);
         $rwGLAccounts = $qr->row();
 
-        $ssql = "select * from glaccounts where ParentGLAccountCode = ?";
-        $qr = $this->db->query($ssql, [$GLAccountCode]);
+        $ssql = "select * from glaccounts where fst_parent_glaccount_code = ?";
+        $qr = $this->db->query($ssql, [$fst_glaccount_code]);
         $rwParent = $qr->row();
 
         $data = [
             "glAccounts" => $rwGLAccounts,
             "parents" => $rwParent,
-            "isUsed" => $this->isUsed($GLAccountCode)
+            "isUsed" => $this->isUsed($fst_glaccount_code)
         ];
 
         return $data;
@@ -38,11 +38,11 @@ class GLAccounts_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'GLAccountCode',
+            'field' => 'fst_glaccount_code',
             'label' => 'GL Account Code',
             'rules' => array(
                 'required',
-				//'is_unique[glaccounts.GLAccountCode.GLAccountCode.' . $id . ']'
+				//'is_unique[glaccounts.fst_glaccount_code.fst_glaccount_code.' . $id . ']'
 			),
 			'errors' => array(
                 'required' => '%s tidak boleh kosong',
@@ -51,7 +51,7 @@ class GLAccounts_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'GLAccountName',
+            'field' => 'fst_glaccount_name',
             'label' => 'GL Account Name',
             'rules' => 'required|min_length[3]',
             'errors' => array(
@@ -61,7 +61,7 @@ class GLAccounts_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'CurrCode',
+            'field' => 'fst_curr_code',
             'label' => 'Current Code',
             'rules' => 'required',
             'errors' => array(
@@ -72,7 +72,7 @@ class GLAccounts_model extends MY_Model
         return $rules;
     }
 
-    public function isUsed($GLAccountCode){
+    public function isUsed($fst_glaccount_code){
         return true;
     }
 }

@@ -1,9 +1,9 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Sales_order_details_model extends MY_Model {
+class Trsalesorderdetails_model extends MY_Model {
     public $tableName = "trsalesorderdetails";
-    public $pkey = "rec_id";
+    public $pkey = "fin_rec_id";
 
     public function __construct(){
         parent:: __construct();
@@ -41,8 +41,8 @@ class Sales_order_details_model extends MY_Model {
     }
 
     public function getSoDetail($fin_salesorder_id){
-        $ssql = "select a.*,b.ItemName,c.ItemDiscount from ". $this->tableName .  " a left join msitems b on a.fin_item_id = b.ItemId 
-        left join msitemdiscounts c on a.fst_disc_item = c.ItemDiscount 
+        $ssql = "select a.*,b.fst_item_name,c.fst_item_discount from ". $this->tableName .  " a left join msitems b on a.fin_item_id = b.fin_item_id 
+        left join msitemdiscounts c on a.fst_disc_item = c.fst_item_discount 
         where a.fin_salesorder_id = ? and a.fst_active = 'A'";        
         $qr = $this->db->query($ssql,[$fin_salesorder_id]);
         return $qr->result();

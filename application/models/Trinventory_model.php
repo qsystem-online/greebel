@@ -10,7 +10,7 @@ class Trinventory_model extends MY_Model
         parent::__construct();
     }
 
-    public function getDataById($GLAccountCode)
+    public function getDataById($fst_glaccount_code)
     {
        
     }

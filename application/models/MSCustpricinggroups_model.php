@@ -1,16 +1,16 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
-class MSCustpricinggroups_model extends MY_Model {
+class Mscustpricinggroups_model extends MY_Model {
     public $tableName = "mscustpricinggroups";
-    public $pkey = "CustPricingGroupId";
+    public $pkey = "fin_cust_pricing_group_id";
 
     public function __construct(){
         parent:: __construct();
     }
 
-    public function getDataById($CustPricingGroupId ){
-        $ssql = "select CustPricingGroupId,CustPricingGroupName,PercentOfPriceList,DifferenceInAmount from " . $this->tableName ." where CustPricingGroupId = ? and fst_active = 'A'";
-		$qr = $this->db->query($ssql,[$CustPricingGroupId]);
+    public function getDataById($fin_cust_pricing_group_id ){
+        $ssql = "select fin_cust_pricing_group_id,fst_cust_pricing_group_name,fdc_percent_of_price_list,fdc_difference_in_amount from " . $this->tableName ." where fin_cust_pricing_group_id = ? and fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$fin_cust_pricing_group_id]);
         $rwMSCustpricinggroups = $qr->row();
         
 		$data = [
@@ -24,7 +24,7 @@ class MSCustpricinggroups_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'CustPricingGroupName',
+            'field' => 'fst_cust_pricing_group_name',
             'label' => 'Cust Pricing Group Name',
             'rules' => 'required|min_length[5]',
             'errors' => array(

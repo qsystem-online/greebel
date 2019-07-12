@@ -1,19 +1,19 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSItemunitdetails_model extends MY_Model
+class Msitemunitdetails_model extends MY_Model
 {
     public $tableName = "msitemunitdetails";
-    public $pkey = "RecId";
+    public $pkey = "fin_rec_id";
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function getDataById($RecId)
+    public function getDataById($fin_rec_id)
     {
-        $ssql = "select * from " . $this->tableName . " where RecId = ? and fst_active = 'A'";
-        $qr = $this->db->query($ssql, [$RecId]);
+        $ssql = "select * from " . $this->tableName . " where fin_rec_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$fin_rec_id]);
         $rw = $qr->row();
 
         $data = [
@@ -28,7 +28,7 @@ class MSItemunitdetails_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'ItemId',
+            'field' => 'fin_item_id',
             'label' => 'Item ID',
             'rules' => 'required|min_length[5]',
             'errors' => array(
@@ -38,7 +38,7 @@ class MSItemunitdetails_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'Unit',
+            'field' => 'fst_unit',
             'label' => 'Unit',
             'rules' => 'required|min_length[5]',
             'errors' => array(
@@ -48,7 +48,7 @@ class MSItemunitdetails_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'Conv2BasicUnit',
+            'field' => 'fdc_conv_to_basic_unit',
             'label' => 'Conv2 Basic Unit',
             'rules' => 'numeric',
             'errors' => array(
@@ -57,7 +57,7 @@ class MSItemunitdetails_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'PriceList',
+            'field' => 'fdc_price_list',
             'label' => 'Price List',
             'rules' => 'numeric',
             'errors' => array(
@@ -74,26 +74,17 @@ class MSItemunitdetails_model extends MY_Model
             )
         ];
 
-        $rules[] = [
-            'field' => 'LastBuyingPrice',
-            'label' => 'Last Buying Price',
-            'rules' => 'numeric',
-            'errors' => array(
-                'numeric' => '%s harus berupa angka'
-            )
-        ];
-
         return $rules;
     }
-    public function deleteByHeaderId($ItemId)
+    public function deleteByHeaderId($fin_item_id)
     {
-        $ssql = "delete from " . $this->tableName . " where ItemId = $ItemId";
+        $ssql = "delete from " . $this->tableName . " where fin_item_id = $fin_item_id";
         $this->db->query($ssql);
     }
 
 
     public function getSellingListUnit($itemId){
-        $ssql ="select * from " . $this->tableName . " where ItemId = ? and isSelling = 1 and fst_active = 'A' order by RecId ";
+        $ssql ="select * from " . $this->tableName . " where fin_item_id = ? and isSelling = 1 and fst_active = 'A' order by fin_rec_id ";
         $qr = $this->db->query($ssql,[$itemId]);
         $rw = $qr->result();
         return $rw;
@@ -101,7 +92,7 @@ class MSItemunitdetails_model extends MY_Model
 
 
     public function getConversionUnit($fin_item_id,$qty , $unitFrom,$unitTo){
-        $ssql = "Select * from msitemunitdetails where ItemId = ? and Unit = ? and fst_active ='A'";
+        $ssql = "Select * from msitemunitdetails where fin_item_id = ? and Unit = ? and fst_active ='A'";
         $qr = $this->db->query($ssql,[$fin_item_id,$unitFrom]);
         $rwFrom = $qr->row();
         if($rwFrom){

@@ -1,19 +1,19 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSMaingroupitems_model extends MY_Model
+class Msmaingroupitems_model extends MY_Model
 {
     public $tableName = "msmaingroupitems";
-    public $pkey = "ItemMainGroupId";
+    public $pkey = "fin_item_maingroup_id";
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function getDataById($ItemMainGroupId)
+    public function getDataById($fin_item_maingroup_id)
     {
-        $ssql = "select * from " . $this->tableName . " where ItemMainGroupId = ? and fst_active = 'A'";
-        $qr = $this->db->query($ssql, [$ItemMainGroupId]);
+        $ssql = "select * from " . $this->tableName . " where fin_item_maingroup_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$fin_item_maingroup_id]);
         $rw = $qr->row();
 
         $data = [
@@ -28,7 +28,7 @@ class MSMaingroupitems_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'ItemMainGroupName',
+            'field' => 'fst_item_maingroup_name',
             'label' => 'Main Group Name',
             'rules' => 'required|min_length[2]',
             'errors' => array(

@@ -1,7 +1,7 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class MSSalesarea_model extends MY_Model {
+class Mssalesarea_model extends MY_Model {
     public $tableName = "mssalesarea";
     public $pkey = "fin_sales_area_id";
 

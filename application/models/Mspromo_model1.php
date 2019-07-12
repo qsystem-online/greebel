@@ -1,6 +1,6 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSPromo_model extends MY_Model
+class Mspromo_model extends MY_Model
 {
     public $tableName = "mspromo";
     public $pkey = "fin_promo_id";
@@ -12,20 +12,20 @@ class MSPromo_model extends MY_Model
 
     public function getDataById($fin_promo_id)
     {
-        $ssql = "select a.*,b.ItemName from " . $this->tableName . " a left join msitems b on a.fin_promo_item_id = b.ItemId where a.fin_promo_id = ? and a.fst_active = 'A'";
+        $ssql = "select a.*,b.fst_item_name from " . $this->tableName . " a left join msitems b on a.fin_promo_item_id = b.fin_item_id where a.fin_promo_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rw = $qr->row();
 
-        $ssql = "SELECT a.*,IF (a.fst_item_type ='ITEM',b.ItemName,c.ItemSubGroupName) AS ItemTerms FROM mspromoitems a 
-        LEFT JOIN msitems b ON a.fin_item_id = b.ItemId
-        LEFT JOIN mssubgroupitems c ON a.fin_item_id = c.ItemSubGroupId  
+        $ssql = "SELECT a.*,IF (a.fst_item_type ='ITEM',b.fst_item_name,c.fst_item_subgroup_name) AS ItemTerms FROM mspromoitems a 
+        LEFT JOIN msitems b ON a.fin_item_id = b.fin_item_id
+        LEFT JOIN mssubgroupitems c ON a.fin_item_id = c.fin_item_subgroup_id  
         WHERE a.fin_promo_id = ?";
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rsPromoTerms = $qr->result();
 
-        $ssql = "SELECT a.*, IF (a.fst_participant_type ='RELATION',b.RelationName, IF(a.fst_participant_type ='RELATION GROUP',c.RelationGroupName,d.fst_member_group_name)) AS ParticipantName FROM mspromoitemscustomer a 
-        LEFT JOIN msrelations b ON a.fin_customer_id = b.RelationId
-        LEFT JOIN msrelationgroups c ON a.fin_customer_id = c.RelationGroupId
+        $ssql = "SELECT a.*, IF (a.fst_participant_type ='RELATION',b.fst_relation_name, IF(a.fst_participant_type ='RELATION GROUP',c.fst_relation_group_name,d.fst_member_group_name)) AS ParticipantName FROM mspromoitemscustomer a 
+        LEFT JOIN msrelations b ON a.fin_customer_id = b.fin_relation_id
+        LEFT JOIN msrelationgroups c ON a.fin_customer_id = c.fin_relation_group_id
         LEFT JOIN msmembergroups d ON a.fin_customer_id = d.fin_member_group_id  
         WHERE a.fin_promo_id = ?";
         $qr = $this->db->query($ssql, [$fin_promo_id]);

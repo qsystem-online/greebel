@@ -1,17 +1,17 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
-class MSMemberships_model extends MY_Model {
+class Msmemberships_model extends MY_Model {
     public $tableName = "msmemberships";
-    public $pkey = "RecId";
+    public $pkey = "fin_rec_id";
 
     public function __construct(){
         parent:: __construct();
     }
 
-    public function getDataById($RecId ){
-        $ssql = "select a.*,b.RelationName,c.fst_member_group_name as MemberGroupName from msmemberships a left join msrelations b on a.RelationId = b.RelationId
-        left join msmembergroups c on a.MemberGroupId = c.fin_member_group_id where a.RecId = ?";
-		$qr = $this->db->query($ssql,[$RecId]);
+    public function getDataById($fin_rec_id ){
+        $ssql = "select a.*,b.fst_relation_name,c.fst_member_group_name as fst_member_group_name from msmemberships a left join msrelations b on a.fin_relation_id = b.fin_relation_id
+        left join msmembergroups c on a.fin_member_group_id = c.fin_member_group_id where a.fin_rec_id = ?";
+		$qr = $this->db->query($ssql,[$fin_rec_id]);
         $rwMSMemberships = $qr->row();
         
 		$data = [
@@ -25,7 +25,7 @@ class MSMemberships_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'MemberNo',
+            'field' => 'fst_member_no',
             'label' => 'Member No',
             'rules' => 'required|min_length[5]',
             'errors' => array(
@@ -35,7 +35,7 @@ class MSMemberships_model extends MY_Model {
         ];
 
         $rules[] = [
-            'field' => 'NameOnCard',
+            'field' => 'fst_name_on_card',
             'label' => 'Name On Card',
             'rules' => 'required|min_length[5]',
             'errors' => array(
@@ -45,7 +45,7 @@ class MSMemberships_model extends MY_Model {
         ];
 
         $rules[] = [
-            'field' => 'ExpiryDate',
+            'field' => 'fdt_expiry_date',
             'label' => 'Expiry Date',
             'rules' => array(
 				'required'				
@@ -56,7 +56,7 @@ class MSMemberships_model extends MY_Model {
         ];
         
         $rules[] =[
-			'field' => 'MemberDiscount',
+			'field' => 'fdc_member_discount_percent',
 			'label' => 'Member Discount',
 			'rules' => 'numeric',
 			'errors' => array(
@@ -68,8 +68,8 @@ class MSMemberships_model extends MY_Model {
     }
 
     public function get_Memberships(){
-        $query = $this->db->get("(select a.*,b.RelationName,c.fst_member_group_name as MemberGroupName from msmemberships a inner join msrelations b on a.RelationId = b.RelationId
-        left join msmembergroups c on a.MemberGroupId = c.fin_member_group_id) a");
+        $query = $this->db->get("(select a.*,b.fst_relation_name,c.fst_member_group_name as fst_member_group_name from msmemberships a inner join msrelations b on a.fin_relation_id = b.fin_relation_id
+        left join msmembergroups c on a.fin_member_group_id = c.fin_member_group_id) a");
 		return $query->result_array();
     }
 }

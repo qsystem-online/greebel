@@ -1,16 +1,16 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
-class MSItemdiscounts_model extends MY_Model {
+class Msitemdiscounts_model extends MY_Model {
     public $tableName = "msitemdiscounts";
-    public $pkey = "RecId";
+    public $pkey = "fin_rec_id";
 
     public function __construct(){
         parent:: __construct();
     }
 
-    public function getDataById($RecId ){
-        $ssql = "select * from " . $this->tableName ." where RecId = ? and fst_active = 'A'";
-		$qr = $this->db->query($ssql,[$RecId]);
+    public function getDataById($fin_rec_id ){
+        $ssql = "select * from " . $this->tableName ." where fin_rec_id = ? and fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$fin_rec_id]);
         $rwDiscounts = $qr->row();
         
 		$data = [
@@ -24,7 +24,7 @@ class MSItemdiscounts_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'ItemDiscount',
+            'field' => 'fst_item_discount',
             'label' => 'Item Discount',
             'rules' => 'required',
             'errors' => array(

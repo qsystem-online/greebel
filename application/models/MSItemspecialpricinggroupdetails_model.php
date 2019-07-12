@@ -1,19 +1,19 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
-class MSItemspecialpricinggroupdetails_model extends MY_Model
+class Msitemspecialpricinggroupdetails_model extends MY_Model
 {
     public $tableName = "msitemspecialpricinggroupdetails";
-    public $pkey = "RecId";
+    public $pkey = "fin_rec_id";
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function getDataById($RecId)
+    public function getDataById($fin_rec_id)
     {
-        $ssql = "select * from " . $this->tableName . " where RecId = ? and fst_active = 'A'";
-        $qr = $this->db->query($ssql, [$RecId]);
+        $ssql = "select * from " . $this->tableName . " where fin_rec_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$fin_rec_id]);
         $rw = $qr->row();
 
         $data = [
@@ -28,7 +28,7 @@ class MSItemspecialpricinggroupdetails_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'ItemId',
+            'field' => 'fin_item_id',
             'label' => 'Item ID',
             'rules' => 'required|min_length[5]',
             'errors' => array(
@@ -38,7 +38,7 @@ class MSItemspecialpricinggroupdetails_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'Unit',
+            'field' => 'fst_unit',
             'label' => 'Unit',
             'rules' => 'required|min_length[5]',
             'errors' => array(
@@ -48,17 +48,8 @@ class MSItemspecialpricinggroupdetails_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'SellingPrice',
+            'field' => 'fdc_selling_price',
             'label' => 'Selling Price',
-            'rules' => 'numeric',
-            'errors' => array(
-                'numeric' => '%s harus berupa angka'
-            )
-        ];
-
-        $rules[] = [
-            'field' => 'MinBasicUnitAvgCost',
-            'label' => 'Min Basic Unit Avg Cost',
             'rules' => 'numeric',
             'errors' => array(
                 'numeric' => '%s harus berupa angka'
@@ -68,9 +59,9 @@ class MSItemspecialpricinggroupdetails_model extends MY_Model
         return $rules;
     }
 
-    public function deleteByHeaderId($ItemId)
+    public function deleteByHeaderId($fin_item_id)
     {
-        $ssql = "delete from " . $this->tableName . " where ItemId = $ItemId";
+        $ssql = "delete from " . $this->tableName . " where fin_item_id = $fin_item_id";
         $this->db->query($ssql);
     }
 }

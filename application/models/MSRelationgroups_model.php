@@ -1,16 +1,16 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
-class MSRelationgroups_model extends MY_Model {
+class Msrelationgroups_model extends MY_Model {
     public $tableName = "msrelationgroups";
-    public $pkey = "RelationGroupId";
+    public $pkey = "fin_relation_group_id";
 
     public function __construct(){
         parent:: __construct();
     }
 
-    public function getDataById($RelationGroupId ){
-        $ssql = "select RelationGroupId,RelationGroupName from " . $this->tableName ." where RelationGroupId = ? and fst_active = 'A'";
-		$qr = $this->db->query($ssql,[$RelationGroupId]);
+    public function getDataById($fin_relation_group_id ){
+        $ssql = "select fin_relation_group_id,fst_relation_group_name from " . $this->tableName ." where fin_relation_group_id = ? and fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$fin_relation_group_id]);
         $rwMSRelationgroups = $qr->row();
         
 		$data = [
@@ -24,7 +24,7 @@ class MSRelationgroups_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'RelationGroupName',
+            'field' => 'fst_relation_group_name',
             'label' => 'Relation Group Name',
             'rules' => 'required|min_length[5]',
             'errors' => array(
