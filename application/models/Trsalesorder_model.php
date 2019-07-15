@@ -54,8 +54,8 @@ class Trsalesorder_model extends MY_Model {
         $max_id = $row['max_id']; 
         $max_id1 =(int) substr($max_id,8,5);
         $fst_salesorder_no = $max_id1 +1;
-        $maxfst_salesorder_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_salesorder_no);
-        return $maxfst_salesorder_no;
+        $max_salesorder_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_salesorder_no);
+        return $max_salesorder_no;
     }
 
     public function getDataPromo($fin_customer_id,$details,$trxDate=null){
