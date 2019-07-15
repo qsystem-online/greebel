@@ -17,14 +17,14 @@ class Discount extends MY_Controller{
 		$this->load->library('menus');
 		$this->list['page_name'] = "Discounts";
 		$this->list['list_name'] = "Discounts List";
-		$this->list['addnew_ajax_url'] = site_url() . 'master/discounts/add';
+		$this->list['addnew_ajax_url'] = site_url() . 'master/discount/add';
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'master/discounts/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'master/discounts/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'master/discounts/edit/';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'master/discount/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'master/discount/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'master/discount/edit/';
 		$this->list['arrSearch'] = [
-			'RecId' => 'Rec ID',
-			'ItemDiscount' => 'Discounts'
+			'fin_rec_id' => 'Rec ID',
+			'fst_item_discount' => 'Discounts'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -33,8 +33,8 @@ class Discount extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Rec ID', 'width' => '10%', 'data' => 'RecId'],
-			['title' => 'Discounts', 'width' => '25%', 'data' => 'ItemDiscount'],
+			['title' => 'Rec ID', 'width' => '10%', 'data' => 'fin_rec_id'],
+			['title' => 'Discounts', 'width' => '25%', 'data' => 'fst_item_discount'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
@@ -50,7 +50,7 @@ class Discount extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 
-	private function openForm($mode = "ADD", $RecId = 0){
+	private function openForm($mode = "ADD", $fin_rec_id = 0){
 		$this->load->library("menus");
 
 		if ($this->input->post("submit") != "") {
@@ -62,7 +62,7 @@ class Discount extends MY_Controller{
 
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Discounts" : "Update Discounts";
-		$data["RecId"] = $RecId;
+		$data["fin_rec_id"] = $fin_rec_id;
 
 		$page_content = $this->parser->parse('pages/master/discounts/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -80,8 +80,8 @@ class Discount extends MY_Controller{
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($RecId){
-		$this->openForm("EDIT", $RecId);
+	public function Edit($fin_rec_id){
+		$this->openForm("EDIT", $fin_rec_id);
 	}
 
 	public function ajx_add_save(){
@@ -99,7 +99,7 @@ class Discount extends MY_Controller{
 		}
 
 		$data = [
-			"ItemDiscount" => $this->input->post("ItemDiscount"),
+			"fst_item_discount" => $this->input->post("fst_item_discount"),
 			"fst_active" => 'A'
 		];
 
@@ -126,18 +126,18 @@ class Discount extends MY_Controller{
 	public function ajx_edit_save()
 	{
 		$this->load->model('msitemdiscounts_model');
-		$RecId = $this->input->post("RecId");
-		$data = $this->msitemdiscounts_model->getDataById($RecId);
-		$Discountss = $data["Discountss"];
-		if (!$Discountss) {
+		$fin_rec_id = $this->input->post("fin_rec_id");
+		$data = $this->msitemdiscounts_model->getDataById($fin_rec_id);
+		$msitemdiscounts = $data["ms_Discounts"];
+		if (!$msitemdiscounts) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
-			$this->ajxResp["message"] = "Data id $RecId Not Found ";
+			$this->ajxResp["message"] = "Data id $fin_rec_id Not Found ";
 			$this->ajxResp["data"] = [];
 			$this->json_output();
 			return;
 		}
 
-		$this->form_validation->set_rules($this->msitemdiscounts_model->getRules("EDIT", $RecId));
+		$this->form_validation->set_rules($this->msitemdiscounts_model->getRules("EDIT", $fin_rec_id));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -149,8 +149,8 @@ class Discount extends MY_Controller{
 		}
 
 		$data = [
-			"RecId" => $RecId,
-			"ItemDiscount" => $this->input->post("ItemDiscount"),
+			"fin_rec_id" => $fin_rec_id,
+			"fst_item_discount" => $this->input->post("fst_item_discount"),
 			"fst_active" => 'A'
 		];
 
@@ -171,7 +171,7 @@ class Discount extends MY_Controller{
 
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $RecId;
+		$this->ajxResp["data"]["insert_id"] = $fin_rec_id;
 		$this->json_output();
 	}
 
@@ -179,11 +179,11 @@ class Discount extends MY_Controller{
 		$this->load->library("datatables");
 		$this->datatables->setTableName("msitemdiscounts");
 		
-		$selectFields = "RecId,ItemDiscount,'action' as action";
+		$selectFields = "fin_rec_id,fst_item_discount,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 		
 		$searchFields =[];
-		$searchFields[] = $this->input->get('optionSearch'); //["RecId","ItemDiscount"];
+		$searchFields[] = $this->input->get('optionSearch'); //["fin_rec_id","fst_item_discount"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "fst_active !='D'";
 		
@@ -194,8 +194,8 @@ class Discount extends MY_Controller{
 		foreach ($arrData as $data) {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='" . $data["RecId"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["RecId"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_rec_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["fin_rec_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 			$arrDataFormated[] = $data;
 		}
@@ -204,9 +204,9 @@ class Discount extends MY_Controller{
 	}
 
 
-	public function fetch_data($RecId){
+	public function fetch_data($fin_rec_id){
 		$this->load->model("msitemdiscounts_model");
-		$data = $this->msitemdiscounts_model->getDataById($RecId);
+		$data = $this->msitemdiscounts_model->getDataById($fin_rec_id);
 
 		$this->json_output($data);
 	}

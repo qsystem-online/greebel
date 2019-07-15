@@ -14,7 +14,7 @@ class Msitemdiscounts_model extends MY_Model {
         $rwDiscounts = $qr->row();
         
 		$data = [
-            "msDiscounts" => $rwDiscounts
+            "ms_Discounts" => $rwDiscounts
 		];
 
 		return $data;
