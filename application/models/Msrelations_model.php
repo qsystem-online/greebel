@@ -11,7 +11,7 @@ class Msrelations_model extends MY_Model {
 
     public function getDataById($fin_relation_id){
         $ssql = "select a.*,MID(a.fst_area_code, 1, 2) AS province,MID(a.fst_area_code, 1, 5) AS district,MID(a.fst_area_code, 1, 8) AS subdistrict,MID(a.fst_area_code, 1, 13) AS village,b.fst_country_name,
-        c.fst_nama as fst_nama_province,d.fst_nama as fst_nama_district,e.fst_nama as fst_nama_subdistrict,f.fst_nama as fst_nama_village,g.fst_relation_group_name,h.fst_cust_pricing_group_name,i.fst_notes,j.fst_username as SalesName,
+        c.fst_nama as fst_province_name,d.fst_nama as fst_district_name,e.fst_nama as fst_subdistrict_name,f.fst_nama as fst_village_name,g.fst_relation_group_name,h.fst_cust_pricing_group_name,i.fst_notes,j.fst_username as SalesName,
         k.fst_warehouse_name,l.fst_name,m.fst_relation_name as ParentName from " . $this->tableName . " a 
         left join mscountries b on a.fin_country_id = b.fin_country_id 
         left join msarea c on MID(a.fst_area_code, 1, 2) = c.fst_kode
@@ -36,21 +36,21 @@ class Msrelations_model extends MY_Model {
                 $arrTmp = explode(".",$rwRelation->village);
                 if (sizeof($arrTmp) != 4){
                     $rwRelation->village = null;
-                    $rwRelation->fst_nama_village = null;
+                    $rwRelation->fst_village_name = null;
                 }
             }else{
                 $rwRelation->subdistrict = null;
-                $rwRelation->fst_nama_subdistrict = null;
+                $rwRelation->fst_subdistrict_name = null;
                 $rwRelation->village = null;
-                $rwRelation->fst_nama_village = null;
+                $rwRelation->fst_village_name = null;
             }
         }else{
             $rwRelation->district = null;
-            $rwRelation->fst_nama_district = null;
+            $rwRelation->fst_district_name = null;
             $rwRelation->subdistrict = null;
-            $rwRelation->fst_nama_subdistrict = null;
+            $rwRelation->fst_subdistrict_name = null;
             $rwRelation->village = null;
-            $rwRelation->fst_nama_village = null;
+            $rwRelation->fst_village_name = null;
         }
 
 		$data = [

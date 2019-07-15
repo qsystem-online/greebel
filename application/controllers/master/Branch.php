@@ -8,7 +8,7 @@ class Branch extends MY_Controller
     {
         parent::__construct();
         $this->load->library('form_validation');
-        $this->load->model('MSBranches_model');
+        $this->load->model('msbranches_model');
     }
 
     public function index()
@@ -21,11 +21,11 @@ class Branch extends MY_Controller
         $this->load->library('menus');
         $this->list['page_name'] = "Branch";
         $this->list['list_name'] = "Branch List";
-        $this->list['addnew_ajax_url'] = site_url() . 'Master/msbranches/add';
+        $this->list['addnew_ajax_url'] = site_url() . 'master/branch/add';
         $this->list['pKey'] = "id";
-        $this->list['fetch_list_data_ajax_url'] = site_url() . 'Master/msbranches/fetch_list_data';
-        $this->list['delete_ajax_url'] = site_url() . 'Master/msbranches/delete/';
-        $this->list['edit_ajax_url'] = site_url() . 'Master/msbranches/edit/';
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/branch/fetch_list_data';
+        $this->list['delete_ajax_url'] = site_url() . 'master/branch/delete/';
+        $this->list['edit_ajax_url'] = site_url() . 'master/branch/edit/';
         $this->list['arrSearch'] = [
             'fin_branch_id' => 'Branch ID',
             'fst_branch_name' => 'Branch Name'
@@ -95,8 +95,8 @@ class Branch extends MY_Controller
 
     public function ajx_add_save()
     {
-        $this->load->model('MSBranches_model');
-        $this->form_validation->set_rules($this->MSBranches_model->getRules("ADD", 0));
+        $this->load->model('msbranches_model');
+        $this->form_validation->set_rules($this->msbranches_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
         if ($this->form_validation->run() == FALSE) {
@@ -112,8 +112,8 @@ class Branch extends MY_Controller
             "fst_branch_name" => $this->input->post("fst_branch_name"),
             "fst_address" => $this->input->post("fst_address"),
             "fst_postalcode" => $this->input->post("fst_postalcode"),
-			"CountryId" => $this->input->post("CountryId"),
-			"AreaCode" => $this->input->post("kode"),
+			"fin_country_id" => $this->input->post("fin_country_id"),
+			"fin_area_code" => $this->input->post("fst_kode"),
             "fst_branch_phone" => $this->input->post("fst_branch_phone"),
             "fst_notes" => $this->input->post("fst_notes"),
             "fbl_is_hq" => ($this->input->post("fbl_is_hq") == null) ? 0 : 1,
@@ -121,7 +121,7 @@ class Branch extends MY_Controller
         ];
 
         $this->db->trans_start();
-        $insertId = $this->MSBranches_model->insert($data);
+        $insertId = $this->msbranches_model->insert($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -142,9 +142,9 @@ class Branch extends MY_Controller
 
     public function ajx_edit_save()
     {
-        $this->load->model('MSBranches_model');
+        $this->load->model('msbranches_model');
         $fin_branch_id = $this->input->post("fin_branch_id");
-        $data = $this->MSBranches_model->getDataById($fin_branch_id);
+        $data = $this->msbranches_model->getDataById($fin_branch_id);
         $branch = $data["branches"];
         if (!$branch) {
             $this->ajxResp["status"] = "DATA_NOT_FOUND";
@@ -154,7 +154,7 @@ class Branch extends MY_Controller
             return;
         }
 
-        $this->form_validation->set_rules($this->MSBranches_model->getRules("EDIT", $fin_branch_id));
+        $this->form_validation->set_rules($this->msbranches_model->getRules("EDIT", $fin_branch_id));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
         if ($this->form_validation->run() == FALSE) {
             //print_r($this->form_validation->error_array());
@@ -170,8 +170,8 @@ class Branch extends MY_Controller
             "fst_branch_name" => $this->input->post("fst_branch_name"),
             "fst_address" => $this->input->post("fst_address"),
             "fst_postalcode" => $this->input->post("fst_postalcode"),
-			"CountryId" => $this->input->post("CountryId"),
-			"AreaCode" => $this->input->post("kode"),
+			"fin_country_id" => $this->input->post("fin_country_id"),
+			"fin_area_code" => $this->input->post("fst_kode"),
             "fst_branch_phone" => $this->input->post("fst_branch_phone"),
             "fst_notes" => $this->input->post("fst_notes"),
             "fbl_is_hq" => ($this->input->post("fbl_is_hq") == null) ? 0 : 1,
@@ -180,7 +180,7 @@ class Branch extends MY_Controller
 
         $this->db->trans_start();
 
-        $this->MSBranches_model->update($data);
+        $this->msbranches_model->update($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -229,8 +229,8 @@ class Branch extends MY_Controller
 
     public function fetch_data($fin_branch_id)
     {
-        $this->load->model("MSBranches_model");
-        $data = $this->MSBranches_model->getDataById($fin_branch_id);
+        $this->load->model("msbranches_model");
+        $data = $this->msbranches_model->getDataById($fin_branch_id);
 
         //$this->load->library("datatables");		
         $this->json_output($data);
@@ -245,7 +245,7 @@ class Branch extends MY_Controller
             return;
         }
 
-        $this->load->model("MSBranches_model");
+        $this->load->model("msbranches_model");
 
         $this->departments_model->delete($id);
         $this->ajxResp["status"] = "DELETED";
@@ -255,7 +255,7 @@ class Branch extends MY_Controller
 
     public function getAllList()
     {
-        $result = $this->MSBranches_model->getAllList();
+        $result = $this->msbranches_model->getAllList();
         $this->ajxResp["data"] = $result;
         $this->json_output();
     }
@@ -268,8 +268,8 @@ class Branch extends MY_Controller
         $this->pdf->setPaper('A4', 'portrait');
         //$this->pdf->setPaper('A4', 'landscape');
 
-        $this->load->model("MSBranches_model");
-        $listBranch = $this->MSBranches_model->get_Branch();
+        $this->load->model("msbranches_model");
+        $listBranch = $this->msbranches_model->get_Branch();
         $data = [
             "datas" => $listBranch
         ];

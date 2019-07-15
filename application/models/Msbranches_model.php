@@ -13,11 +13,11 @@ class Msbranches_model extends MY_Model
     public function getDataById($fin_branch_id)
     {
         $ssql = "select a.*,MID(a.fin_area_code, 1, 2) AS province,MID(a.fin_area_code, 1, 5) AS district,MID(a.fin_area_code, 1, 8) AS subdistrict,b.fst_country_name,
-        c.nama AS namaprovince,d.nama AS namadistrict,e.nama AS namasubdistrict from " . $this->tableName . " a 
+        c.fst_nama AS fst_province_name,d.fst_nama AS fst_district_name,e.fst_nama AS fst_subdistrict_name from " . $this->tableName . " a 
         left join mscountries b on a.fin_country_id = b.fin_country_id 
-        left join msarea c on MID(a.fin_area_code, 1, 2) = c.kode
-        left join msarea d on MID(a.fin_area_code, 1, 5) = d.kode
-        left join msarea e on MID(a.fin_area_code, 1, 8) = e.kode
+        left join msarea c on MID(a.fin_area_code, 1, 2) = c.fst_kode
+        left join msarea d on MID(a.fin_area_code, 1, 5) = d.fst_kode
+        left join msarea e on MID(a.fin_area_code, 1, 8) = e.fst_kode
         where fin_branch_id = ?";
         $qr = $this->db->query($ssql, [$fin_branch_id]);
         $rwBranch = $qr->row();

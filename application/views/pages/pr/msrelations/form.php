@@ -133,7 +133,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group personal-info">
 						<label for="fst_nik" class="col-md-2 control-label"><?=lang("NIK")?> :</label>
 						<div class="col-md-4">
-							<input type="text" class="form-control" id="fst_nik" placeholder="<?=lang("fst_nik")?>" name="fst_nik">
+							<input type="text" class="form-control" id="fst_nik" placeholder="<?=lang("NIK")?>" name="fst_nik">
 							<div id="fst_nik_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -185,17 +185,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="select-provincename" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
+					<label for="select-provinces" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-provincename" class="form-control" name="fst_kode">
+							<select id="select-provinces" class="form-control" name="fst_kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="fst_nama__err" class="text-danger"></div>
 						</div>
 
-					<label for="select-districtname" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
+					<label for="select-district" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-districtname" class="form-control" name="fst_kode">
+							<select id="select-district" class="form-control" name="fst_kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="fst_nama__err" class="text-danger"></div>
@@ -203,9 +203,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="select-subdistrictname" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
+					<label for="select-subdistrict" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-subdistrictname" class="form-control" name="fst_kode">
+							<select id="select-subdistrict" class="form-control" name="fst_kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="fst_nama__err" class="text-danger"></div>
@@ -213,7 +213,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<label for="select-village" class="col-md-2 control-label"><?=lang("Village Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-villagename" class="form-control" name="fst_kode">
+							<select id="select-village" class="form-control" name="fst_kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 								<div id="fst_nama__err" class="text-danger"></div>
 							</select>
@@ -233,7 +233,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
                     <label for="fst_npwp" class="col-md-2 control-label"><?=lang("NPWP")?> :</label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_npwp" placeholder="<?=lang("fst_npwp")?>" name="fst_npwp">
+							<input type="text" class="form-control" id="fst_npwp" placeholder="<?=lang("NPWP")?>" name="fst_npwp">
 							<div id="fst_npwp_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -486,8 +486,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#select-country").change(function(event){
 			event.preventDefault();
-			$('#select-provincename').val(null).trigger('change');
-			$("#select-provincename").select2({
+			$('#select-provinces').val(null).trigger('change');
+			$("#select-provinces").select2({
 				width: '100%',
 				ajax: {
 					url: '<?=site_url()?>pr/relation/get_provinces/'+$("#select-country").val(),
@@ -499,7 +499,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.each(data,function(index,value){
 							items.push({
 								"id" : value.fst_kode,
-								"text" : value.fst_nama_
+								"text" : value.fst_nama
 							});
 						});
 						console.log(items);
@@ -512,13 +512,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-provincename").change(function(event){
+		$("#select-provinces").change(function(event){
 			event.preventDefault();
-			$('#select-districtname').val(null).trigger('change');
-			$("#select-districtname").select2({
+			$('#select-district').val(null).trigger('change');
+			$("#select-district").select2({
 				width: '100%',
 				ajax: {
-					url: '<?=site_url()?>pr/relation/get_districts/'+$("#select-provincename").val(),
+					url: '<?=site_url()?>pr/relation/get_districts/'+$("#select-provinces").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -527,7 +527,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.each(data,function(index,value){
 							items.push({
 								"id" : value.fst_kode,
-								"text" : value.fst_nama_
+								"text" : value.fst_nama
 							});
 						});
 						console.log(items);
@@ -540,13 +540,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-districtname").change(function(event){
+		$("#select-district").change(function(event){
 			event.preventDefault();
-			$('#select-subdistrictname').val(null).trigger('change');
-			$("#select-subdistrictname").select2({
+			$('#select-subdistrict').val(null).trigger('change');
+			$("#select-subdistrict").select2({
 				width: '100%',
 				ajax: {
-					url: '<?=site_url()?>pr/relation/get_subdistricts/'+$("#select-districtname").val(),
+					url: '<?=site_url()?>pr/relation/get_subdistricts/'+$("#select-district").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -555,7 +555,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.each(data,function(index,value){
 							items.push({
 								"id" : value.fst_kode,
-								"text" : value.fst_nama_
+								"text" : value.fst_nama
 							});
 						});
 						console.log(items);
@@ -568,13 +568,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-subdistrictname").change(function(event){
+		$("#select-subdistrict").change(function(event){
 			event.preventDefault();
-			$('#select-villagename').val(null).trigger('change');
-			$("#select-villagename").select2({
+			$('#select-village').val(null).trigger('change');
+			$("#select-village").select2({
 				width: '100%',
 				ajax: {
-					url: '<?=site_url()?>pr/relation/get_village/'+$("#select-subdistrictname").val(),
+					url: '<?=site_url()?>pr/relation/get_village/'+$("#select-subdistrict").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -583,7 +583,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.each(data,function(index,value){
 							items.push({
 								"id" : value.fst_kode,
-								"text" : value.fst_nama_
+								"text" : value.fst_nama
 							});
 						});
 						console.log(items);
@@ -814,17 +814,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var newOption = new Option(resp.ms_relations.fst_country_name, resp.ms_relations.fin_country_id, true, true);
     			$('#select-country').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.fst_nama_province, resp.ms_relations.province, true, true);
-				$('#select-provincename').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.fst_province_name, resp.ms_relations.province, true, true);
+				$('#select-provinces').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.fst_nama_district, resp.ms_relations.district, true, true);
-				$('#select-districtname').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.fst_district_name, resp.ms_relations.district, true, true);
+				$('#select-district').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.fst_nama_subdistrict, resp.ms_relations.subdistrict, true, true);
-				$('#select-subdistrictname').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.fst_subdistrict_name, resp.ms_relations.subdistrict, true, true);
+				$('#select-subdistrict').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.fst_nama_village, resp.ms_relations.village, true, true);
-				$('#select-villagename').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.fst_village_name, resp.ms_relations.village, true, true);
+				$('#select-village').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.fst_cust_pricing_group_name, resp.ms_relations.fin_cust_pricing_group_id, true, true);
 				$('#select-custpricing').append(newOption).trigger('change');
