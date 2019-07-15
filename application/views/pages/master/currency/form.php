@@ -48,18 +48,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class="form-group">
-                        <label for="CurrCode" class="col-md-2 control-label"><?=lang("Currencies Code")?> #</label>
+                        <label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Currencies Code")?> #</label>
                             <div class="col-md-10">
-                                <input type="text" class="form-control" id="CurrCode" placeholder="<?=lang("Currencies Code")?>" name="CurrCode" value="<?=$CurrCode?>">
-                                <div id="CurrCode_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fst_curr_code" placeholder="<?=lang("Currencies Code")?>" name="fst_curr_code" value="<?=$fst_curr_code?>">
+                                <div id="fst_curr_code_err" class="text-danger"></div>
                             </div>
 					</div>
 
 					<div class="form-group">
-					<label for="CurrName" class="col-md-2 control-label"><?=lang("Currencies Name")?> *</label>
+					<label for="fst_curr_name" class="col-md-2 control-label"><?=lang("Currencies Name")?> *</label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="CurrName" placeholder="<?=lang("Currencies Name")?>" name="CurrName">
-                            <div id="CurrName_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_curr_name" placeholder="<?=lang("Currencies Name")?>" name="fst_curr_name">
+                            <div id="fst_curr_name_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -100,32 +100,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<form  class="form-horizontal">
 				
 					<div class="form-group hide">
-						<label for="CurrCode" class="col-md-4 control-label"><?=lang("Currencies Code")?></label>
+						<label for="fst_curr_code" class="col-md-4 control-label"><?=lang("Currencies Code")?></label>
 						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="CurrCode" name="CurrCode">
-							<div id="CurrCode_err" class="text-danger"></div>
+							<input type="text" class="form-control text-right" id="fst_curr_code" name="fst_curr_code">
+							<div id="fst_curr_code_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-					    <label for="Date" class="col-md-4 control-label"><?=lang("Date")?></label>
+					    <label for="fdt_date" class="col-md-4 control-label"><?=lang("Date")?></label>
 						<div class="col-md-8">
                             <div class="input-group date">
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
-                                <input type="text" class="form-control pull-right datepicker" id="Date" name="Date"/>								
+                                <input type="text" class="form-control pull-right datepicker" id="fdt_date" name="fdt_date"/>								
                             </div>
-                            <div id="Date_err" class="text-danger"></div>
+                            <div id="fdt_date_err" class="text-danger"></div>
                             <!-- /.input group -->
                         </div>
 					</div>
 
 					<div class="form-group">
-						<label for="ExchangeRate2IDR" class="col-md-4 control-label"><?=lang("Exc Rate To IDR")?></label>
+						<label for="fdc_exchange_rate_to_idr" class="col-md-4 control-label"><?=lang("Exc Rate To IDR")?></label>
 						<div class="col-md-8">
-							<input type="text" class="form-control text-right money" id="ExchangeRate2IDR" placeholder="<?= lang("Exchange Rate To IDR") ?>" value="0" name="ExchangeRate2IDR">
-							<div id="ExchangeRate2IDR_err" class="text-danger"></div>
+							<input type="text" class="form-control text-right money" id="fdc_exchange_rate_to_idr" placeholder="<?= lang("Exchange Rate To IDR") ?>" value="0" name="fdc_exchange_rate_to_idr">
+							<div id="fdc_exchange_rate_to_idr_err" class="text-danger"></div>
 						</div>
 					</div>
 				</form>
@@ -144,7 +144,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
 	$(function(){
 		<?php if($mode == "EDIT"){?>
-			init_form($("#CurrCode").val());
+			init_form($("#fst_curr_code").val());
 		<?php } ?>
 
 		var edited_curr_detail = null;
@@ -206,12 +206,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					}else if(resp.status == "SUCCESS") {
 						data = resp.data;
-						$("#CurrCode").val(data.insert_id);
+						$("#fst_curr_code").val(data.insert_id);
 						//Clear all previous error
 						$(".text-danger").html("");
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
-						$('#CurrName').prop('readonly', true);
+						$('#fst_curr_name').prop('readonly', true);
 					}
 				},
 				error: function (e) {
@@ -224,7 +224,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		var arrDetail;
 
-		$("#Date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
+		$("#fdt_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
 
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
@@ -238,13 +238,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			event.preventDefault();
 			$("#CurrDetailModal").modal('show');
 
-			ExchangeRateToIDR = money_parse($("#ExchangeRate2IDR").val());
+			ExchangeRateToIDR = money_parse($("#fdc_exchange_rate_to_idr").val());
 
 			data = {
 				//recid:$("#recid").val(),
-				CurrCode:$("#CurrCode").val(),
-				Date:$("#Date").val(),
-				ExchangeRate2IDR: $("#ExchangeRate2IDR").val(),
+				fst_curr_code:$("#fst_curr_code").val(),
+				fdt_date:$("#fdt_date").val(),
+				fdc_exchange_rate_to_idr: $("#fdc_exchange_rate_to_idr").val(),
 				action: action
 			}
 
@@ -262,10 +262,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).DataTable({
 			columns:[
 				//{"title" : "recid","width": "0%",sortable:false,data:"recid",visible:false},
-				{"title" : "<?= lang("CurrCode")?>","width": "20%",sortable:false,data:"CurrCode",visible:true},
-				{"title" : "<?= lang("Date")?>","width": "20%",sortable:false,data:"Date",className: 'dt-right'},
+				{"title" : "<?= lang("Currencies Code")?>","width": "20%",sortable:false,data:"fst_curr_code",visible:true},
+				{"title" : "<?= lang("Date")?>","width": "20%",sortable:false,data:"fdt_date",className: 'dt-right'},
 				{"title" : "<?= lang("Exchange Rate To IDR") ?>","width": "20%",
-					data:"ExchangeRate2IDR",
+					data:"fdc_exchange_rate_to_idr",
 					render: $.fn.dataTable.render.number(DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
 				},
@@ -304,23 +304,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				row = edited_curr_detail.data();	
 
 				//$("#recid").val(row.recid);
-				$("#CurrCode").val(row.CurrCode);
-				$("#Date").val(row.Date);
-				$("#ExchangeRate2IDR").val(money_format(row.ExchangeRate2IDR));
+				$("#fst_curr_code").val(row.fst_curr_code);
+				$("#fdt_date").val(row.fdt_date);
+				$("#fdc_exchange_rate_to_idr").val(money_format(row.fdc_exchange_rate_to_idr));
 			});
 		});
 	});
 
-	function init_form(CurrCode){
+	function init_form(fst_curr_code){
 		//alert("Init Form");
-		var url = "<?=site_url()?>master/currency/fetch_data/" + CurrCode;
+		var url = "<?=site_url()?>master/currency/fetch_data/" + fst_curr_code;
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.msCurrency);
+				console.log(resp.ms_Currency);
 
-				$.each(resp.msCurrency, function(name, val){
+				$.each(resp.ms_Currency, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 						type = $el.attr('type');
 					switch(type){
@@ -336,15 +336,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
-				$("#Date").datepicker('update', dateFormat(resp.msCurrDetails.Date));
+				$("#fdt_date").datepicker('update', dateFormat(resp.msCurrDetails.Date));
 		
 				CurrenciesRateDetails = resp.msCurrDetails;
 				$.each(CurrenciesRateDetails, function(idx, detail){
 					data = {
 						//recid:detail.recid,
-						CurrCode:detail.CurrCode,
-						Date:detail.Date,
-						ExchangeRate2IDR:detail.ExchangeRate2IDR,
+						fst_curr_code:detail.fst_curr_code,
+						fdt_date:detail.fdt_date,
+						fdc_exchange_rate_to_idr:detail.fdc_exchange_rate_to_idr,
 						action: action
 					}
 					t = $('#tblCurrDetails').DataTable();			
