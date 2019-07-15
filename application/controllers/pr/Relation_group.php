@@ -6,7 +6,7 @@ class Relation_group extends MY_Controller{
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
-		$this->load->model('MSRelationgroups_model');
+		$this->load->model('msrelationgroups_model');
 	}
 
 	public function index(){
@@ -17,14 +17,14 @@ class Relation_group extends MY_Controller{
 		$this->load->library('menus');
 		$this->list['page_name'] = "Master Relation Groups";
 		$this->list['list_name'] = "Master Relation Groups List";
-		$this->list['addnew_ajax_url'] = site_url() . 'pr/msrelationgroups/add';
+		$this->list['addnew_ajax_url'] = site_url() . 'pr/relation_group/add';
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/msrelationgroups/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'pr/msrelationgroups/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'pr/msrelationgroups/edit/';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/relation_group/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'pr/relation_group/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'pr/relation_group/edit/';
 		$this->list['arrSearch'] = [
-			'RelationGroupId' => 'Groups ID',
-			'RelationGroupName' => 'Groups Name'
+			'fin_relation_group_id' => 'Groups ID',
+			'fst_relation_group_name' => 'Groups Name'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -33,8 +33,8 @@ class Relation_group extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Relation Groups ID', 'width' => '10%', 'data' => 'RelationGroupId'],
-			['title' => 'Relation Groups Name', 'width' => '25%', 'data' => 'RelationGroupName'],
+			['title' => 'Relation Groups ID', 'width' => '10%', 'data' => 'fin_relation_group_id'],
+			['title' => 'Relation Groups Name', 'width' => '25%', 'data' => 'fst_relation_group_name'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
@@ -50,7 +50,7 @@ class Relation_group extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 
-	private function openForm($mode = "ADD", $RelationGroupId = 0){
+	private function openForm($mode = "ADD", $fin_relation_group_id = 0){
 		$this->load->library("menus");
 
 		if ($this->input->post("submit") != "") {
@@ -62,7 +62,7 @@ class Relation_group extends MY_Controller{
 
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Master Relation Groups" : "Update Master Relation Groups";
-		$data["RelationGroupId"] = $RelationGroupId;
+		$data["fin_relation_group_id"] = $fin_relation_group_id;
 
 		$page_content = $this->parser->parse('pages/pr/msrelationgroups/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -80,13 +80,13 @@ class Relation_group extends MY_Controller{
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($RelationGroupId){
-		$this->openForm("EDIT", $RelationGroupId);
+	public function Edit($fin_relation_group_id){
+		$this->openForm("EDIT", $fin_relation_group_id);
 	}
 
 	public function ajx_add_save(){
-		$this->load->model('MSRelationgroups_model');
-		$this->form_validation->set_rules($this->MSRelationgroups_model->getRules("ADD", 0));
+		$this->load->model('msrelationgroups_model');
+		$this->form_validation->set_rules($this->msrelationgroups_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -99,12 +99,12 @@ class Relation_group extends MY_Controller{
 		}
 
 		$data = [
-			"RelationGroupName" => $this->input->post("RelationGroupName"),
+			"fst_relation_group_name" => $this->input->post("fst_relation_group_name"),
 			"fst_active" => 'A'
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->MSRelationgroups_model->insert($data);
+		$insertId = $this->msrelationgroups_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -123,19 +123,19 @@ class Relation_group extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('MSRelationgroups_model');
-		$RelationGroupId = $this->input->post("RelationGroupId");
-		$data = $this->MSRelationgroups_model->getDataById($RelationGroupId);
-		$msrelationgroups = $data["msrelationgroups"];
+		$this->load->model('msrelationgroups_model');
+		$fin_relation_group_id = $this->input->post("fin_relation_group_id");
+		$data = $this->msrelationgroups_model->getDataById($fin_relation_group_id);
+		$msrelationgroups = $data["ms_relationgroups"];
 		if (!$msrelationgroups) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
-			$this->ajxResp["message"] = "Data id $RelationGroupId Not Found ";
+			$this->ajxResp["message"] = "Data id $fin_relation_group_id Not Found ";
 			$this->ajxResp["data"] = [];
 			$this->json_output();
 			return;
 		}
 
-		$this->form_validation->set_rules($this->MSRelationgroups_model->getRules("EDIT", $RelationGroupId));
+		$this->form_validation->set_rules($this->msrelationgroups_model->getRules("EDIT", $fin_relation_group_id));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -147,13 +147,13 @@ class Relation_group extends MY_Controller{
 		}
 
 		$data = [
-			"RelationGroupId" => $RelationGroupId,
-			"RelationGroupName" => $this->input->post("RelationGroupName"),
+			"fin_relation_group_id" => $fin_relation_group_id,
+			"fst_relation_group_name" => $this->input->post("fst_relation_group_name"),
 			"fst_active" => 'A'
 		];
 
 		$this->db->trans_start();
-		$this->MSRelationgroups_model->update($data);
+		$this->msrelationgroups_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -167,7 +167,7 @@ class Relation_group extends MY_Controller{
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $RelationGroupId;
+		$this->ajxResp["data"]["insert_id"] = $fin_relation_group_id;
 		$this->json_output();
 	}
 
@@ -175,11 +175,11 @@ class Relation_group extends MY_Controller{
 		$this->load->library("datatables");
 		$this->datatables->setTableName("msrelationgroups");
 
-		$selectFields = "RelationGroupId,RelationGroupName,'action' as action";
+		$selectFields = "fin_relation_group_id,fst_relation_group_name,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
-		$searchFields[] = $this->input->get('optionSearch'); //["RelationGroupId","RelationGroupName"];
+		$searchFields[] = $this->input->get('optionSearch'); //["fin_relation_group_id","fst_relation_group_name"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "fst_active !='D'";
 
@@ -190,8 +190,8 @@ class Relation_group extends MY_Controller{
 		foreach ($arrData as $data) {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='" . $data["RelationGroupId"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["RelationGroupId"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_relation_group_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["fin_relation_group_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -200,9 +200,9 @@ class Relation_group extends MY_Controller{
 		$this->json_output($datasources);
 	}
 
-	public function fetch_data($RelationGroupId){
-		$this->load->model("MSRelationgroups_model");
-		$data = $this->MSRelationgroups_model->getDataById($RelationGroupId);
+	public function fetch_data($fin_relation_group_id){
+		$this->load->model("msrelationgroups_model");
+		$data = $this->msrelationgroups_model->getDataById($fin_relation_group_id);
 
 		//$this->load->library("datatables");		
 		$this->json_output($data);
@@ -216,9 +216,9 @@ class Relation_group extends MY_Controller{
 			return;
 		}
 
-		$this->load->model("MSRelationgroups_model");
+		$this->load->model("msrelationgroups_model");
 
-		$this->MSRelationgroups_model->delete($id);
+		$this->msrelationgroups_model->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
