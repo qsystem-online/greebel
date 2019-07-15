@@ -6,7 +6,7 @@ class Sales_order extends MY_Controller{
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
-		$this->load->model('sales_order_model');
+		$this->load->model('trsalesorder_model');
 	}
 
 	public function index(){
@@ -54,7 +54,7 @@ class Sales_order extends MY_Controller{
 
 	private function openForm($mode = "ADD", $fin_salesorder_id = 0){
 		$this->load->library("menus");
-		$this->load->model('sales_order_model');
+		$this->load->model('trsalesorder_model');
 
 		if ($this->input->post("submit") != "") {
 			$this->add_save();
@@ -66,7 +66,7 @@ class Sales_order extends MY_Controller{
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Sales Order" : "Update Sales Order";
 		$data["fin_salesorder_id"] = $fin_salesorder_id;
-		$data["fst_salesorder_no"] = $this->sales_order_model->GenerateSONo();
+		$data["fst_salesorder_no"] = $this->trsalesorder_model->GenerateSONo();
 		$data["percent_ppn"] = (int) getDbConfig("percent_ppn");
 		$data["default_currency"] = getDefaultCurrency();
 
@@ -143,16 +143,16 @@ class Sales_order extends MY_Controller{
 	}*/
 
 	public function ajx_add_save(){
-		$this->load->model('sales_order_model');
-		$this->load->model("sales_order_details_model");
+		$this->load->model('trsalesorder_model');
+		$this->load->model("trsalesorderdetails_model");
 		$this->load->model("trinventory_model");
 		$this->load->model("msitems_model");
-		$this->load->model("msrelation_model");
+		$this->load->model("msrelations_model");
 
 		$cekPromo = $this->input->post("cekPromo");
 		$confirmAuthorize = $this->input->post("confirmAuthorize");
 
-		$this->form_validation->set_rules($this->sales_order_model->getRules("ADD", 0));
+		$this->form_validation->set_rules($this->trsalesorder_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -164,7 +164,7 @@ class Sales_order extends MY_Controller{
 			$this->json_output();
 			return;
 		}
-		$fst_salesorder_no = $this->sales_order_model->GenerateSONo();
+		$fst_salesorder_no = $this->trsalesorder_model->GenerateSONo();
 
 		$dataH = [
             "fst_salesorder_no" => $fst_salesorder_no,
@@ -185,7 +185,7 @@ class Sales_order extends MY_Controller{
 		];
 
 
-		$this->form_validation->set_rules($this->sales_order_details_model->getRules("ADD",0));
+		$this->form_validation->set_rules($this->trsalesorderdetails_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		$details = $this->input->post("detail");
 		$details = json_decode($details);
@@ -194,7 +194,7 @@ class Sales_order extends MY_Controller{
 			[rec_id] => 0 
 			[fin_promo_id] => 0 
 			[fin_item_id] => 2 
-			[ItemName] => AB2250 - Silver Queen 
+			[fst_item_name] => AB2250 - Silver Queen 
 			[ItemCode] => AB2250 
 			[fst_custom_item_name] => Silver Queen 
 			[fdc_qty] => 20 
@@ -210,7 +210,7 @@ class Sales_order extends MY_Controller{
 		$arrItem = getDetailbyArray(array_column($details, 'first_name'));
 		foreach ($details as $item) {
 			$dataDetails = [
-				"ItemId"=> $item->fin_item_id,
+				"fin_item_id"=> $item->fin_item_id,
 				"fdc_qty"=> $item->fdc_qty,
 				"fdc_price"=> $item->fdc_price
 			];
@@ -232,7 +232,7 @@ class Sales_order extends MY_Controller{
 		
 
 		//Get Promo Item
-		$rsPromoItem = $this->sales_order_model->getDataPromo($this->input->post("fin_relation_id"),$details);
+		$rsPromoItem = $this->trsalesorder_model->getDataPromo($this->input->post("fin_relation_id"),$details);
 		if ( $rsPromoItem != false){
 			if ($cekPromo == 1){
 				//return ajax data promo
@@ -271,7 +271,7 @@ class Sales_order extends MY_Controller{
 			$total = ($item->fdc_qty * $price);
 
 			//cek max disc
-			$maxDiscPersen = $arrItem[$item->fin_item_id]->MaxItemDiscount;
+			$maxDiscPersen = $arrItem[$item->fin_item_id]->fst_max_item_discount;
 			$maxDiscValue = calculateDisc($maxDiscPersen,$total);
 			//get disc
 			$itemDiscValue = calculateDisc($item->fst_disc_item,$total);
@@ -281,7 +281,7 @@ class Sales_order extends MY_Controller{
 			$grandTotal += $total;			
 		}
 		$maxCreditLimit = $this->msrelations_model->getCreditLimit($dataH["fin_relation_id"]);		
-		$arrOutstanding = $this->sales_order_model->getDataOutstanding($dataH["fin_relation_id"]);
+		$arrOutstanding = $this->trsalesorder_model->getDataOutstanding($dataH["fin_relation_id"]);
 		$totalOutstanding = $arrOutstanding["totalOutstanding"];
 
 		$authorizeCreditLimit = false;
@@ -310,7 +310,7 @@ class Sales_order extends MY_Controller{
 		die();
 
 		$this->db->trans_start();
-		$insertId = $this->sales_order_model->insert($data);
+		$insertId = $this->trsalesorder_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -324,11 +324,11 @@ class Sales_order extends MY_Controller{
 		foreach ($details as $item) {
 			$data = [
 				"fin_salesorder_id"=> $insertId,
-				"ItemId"=> $item->ItemId,
+				"fin_item_id"=> $item->fin_item_id,
 				"fdc_qty"=> $item->fdc_qty,
 				"fdc_price"=> $item->fdc_price
 			];
-			$this->sales_order_details_model->insert($data);
+			$this->trsalesorderdetails_model->insert($data);
 			$dbError  = $this->db->error();
 			if ($dbError["code"] != 0){			
 				$this->ajxResp["status"] = "DB_FAILED";
@@ -348,9 +348,9 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('Sales_order_model');
+		$this->load->model('trsalesorder_model');
 		$fin_salesorder_id = $this->input->post("fin_salesorder_id");
-		$data = $this->Sales_order_model->getDataById($fin_salesorder_id);
+		$data = $this->trsalesorder_model->getDataById($fin_salesorder_id);
 		$sales_order = $data["sales_order"];
 		if (!$sales_order) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
@@ -360,7 +360,7 @@ class Sales_order extends MY_Controller{
 			return;
 		}
 
-		$this->form_validation->set_rules($this->sales_order_model->getRules("EDIT", $fin_salesorder_id));
+		$this->form_validation->set_rules($this->trsalesorder_model->getRules("EDIT", $fin_salesorder_id));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -391,7 +391,7 @@ class Sales_order extends MY_Controller{
 		];
 
 		$this->db->trans_start();
-		$this->sales_order_model->update($data);
+		$this->trsalesorder_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -403,20 +403,20 @@ class Sales_order extends MY_Controller{
 		}
 
 		// Save Details
-		/*$this->load->model("sales_order_details_model");
+		/*$this->load->model("trsalesorderdetails_model");
 
-		$this->form_validation->set_rules($this->sales_order_details_model->getRules("ADD",0));
+		$this->form_validation->set_rules($this->trsalesorderdetails_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
-		$this->sales_order_details_model->deleteByDetail($fin_salesorder_id);
+		$this->trsalesorderdetails_model->deleteByDetail($fin_salesorder_id);
 
-		//$this->load->model("sales_order_details_model");		
+		//$this->load->model("trsalesorderdetails_model");		
 		$details = $this->input->post("detail");
 		$details = json_decode($details);
 		foreach ($details as $item) {
 			$data = [
 				"fin_salesorder_id"=> $fin_salesorder_id,
-				"ItemId"=> $item->$ItemId,
+				"fin_item_id"=> $item->$fin_item_id,
 				"fdc_qty"=> $item->fdc_qty,
 				"fdc_price"=> $item-> $fdc_price
 			];
@@ -434,7 +434,7 @@ class Sales_order extends MY_Controller{
 				return;	
 			}
 			
-			$this->sales_order_details_model->insert($data);
+			$this->trsalesorderdetails_model->insert($data);
 			$dbError  = $this->db->error();
 			if ($dbError["code"] != 0){			
 				$this->ajxResp["status"] = "DB_FAILED";
@@ -485,8 +485,8 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function fetch_data($fin_salesorder_id){
-		$this->load->model("Sales_order_model");
-		$data = $this->sales_order_model->getDataById($fin_salesorder_id);
+		$this->load->model("trsalesorder_model");
+		$data = $this->trsalesorder_model->getDataById($fin_salesorder_id);
 		
 		$this->json_output($data);
 	}
@@ -499,8 +499,8 @@ class Sales_order extends MY_Controller{
 			return;
 		}
 
-		$this->load->model("sales_order_model");
-		$this->sales_order_model->delete($id);
+		$this->load->model("trsalesorder_model");
+		$this->trsalesorder_model->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
@@ -508,7 +508,7 @@ class Sales_order extends MY_Controller{
 
 	public function get_msrelations(){
 		$term = $this->input->get("term");
-		$ssql = "select RelationId, RelationName,fin_sales_id,fst_shipping_address,fin_warehouse_id,fin_terms_payment from msrelations where RelationName like ? and 1 in (relationType)";
+		$ssql = "select fin_relation_id, fst_relation_name,fin_sales_id,fst_shipping_address,fin_warehouse_id,fin_terms_payment from msrelations where fst_relation_name like ? and 1 in (fst_relation_type)";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -569,7 +569,7 @@ class Sales_order extends MY_Controller{
 
 	public function get_data_item(){
 		$term = $this->input->get("term");
-		$ssql = "select ItemId, CONCAT(ItemCode,' - ' ,ItemName) as ItemCodeName,ItemCode,ItemName,MaxItemDiscount from msitems where CONCAT(ItemCode,' - ' ,ItemName) like ? order by ItemName";
+		$ssql = "select fin_item_id, CONCAT(fst_item_code,' - ' ,fst_item_name) as ItemCodeName,fst_item_code,fst_item_name,fst_max_item_discount from msitems where CONCAT(fst_item_code,' - ' ,fst_item_name) like ? order by fst_item_name";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		$this->json_output($rs);
@@ -577,7 +577,7 @@ class Sales_order extends MY_Controller{
 
 	public function get_data_disc(){
 		$term = $this->input->get("term");
-		$ssql = "select ItemDiscount from msitemdiscounts where ItemDiscount like ? order by ItemDiscount";
+		$ssql = "select fst_item_discount from msitemdiscounts where fst_item_discount like ? order by fst_item_discount";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 
@@ -585,8 +585,8 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function getSoDetail($fin_salesorder_id){
-        $this->load->model("sales_order_details_model");
-        $result = $this->sales_order_details_model->getSoDetail($fin_salesorder_id);
+        $this->load->model("trsalesorderdetails_model");
+        $result = $this->trsalesorderdetails_model->getSoDetail($fin_salesorder_id);
         $this->ajxResp["data"] = $result;
         $this->json_output();
 	}
@@ -598,8 +598,8 @@ class Sales_order extends MY_Controller{
         $this->pdf->setPaper('A4', 'portrait');
 		//$this->pdf->setPaper('A4', 'landscape');
 		
-		$this->load->model("sales_order_model");
-		$listSalesOrder = $this->sales_order_model->getSales_order();
+		$this->load->model("trsalesorder_model");
+		$listSalesOrder = $this->trsalesorder_model->getSales_order();
         $data = [
 			"datas" => $listSalesOrder
 		];
@@ -610,11 +610,11 @@ class Sales_order extends MY_Controller{
 	}*/
 	
 	public function testPromo(){
-		$this->load->model("sales_order_model");
+		$this->load->model("trsalesorder_model");
 		$fin_customer_id =9;
 		/*
 			$dataDetails = [
-				"ItemId"=> $item->ItemId,
+				"fin_item_id"=> $item->fin_item_id,
 				"fdc_qty"=> $item->fdc_qty,
 				"fdc_price"=> $item->fdc_price
 			];
@@ -628,7 +628,7 @@ class Sales_order extends MY_Controller{
 		$details = json_decode($details);
 
 
-		$promo = $this->sales_order_model->getDataPromo($fin_customer_id,$details);
+		$promo = $this->trsalesorder_model->getDataPromo($fin_customer_id,$details);
 		echo "<br><br><br><br><br>Promo Item :  :<br>";
 		var_dump($promo);
 	}

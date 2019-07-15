@@ -60,7 +60,7 @@ class Trsalesorder_model extends MY_Model {
 
     public function getDataPromo($fin_customer_id,$details,$trxDate=null){
 
-        $this->load->model("MSItemunitdetails_model");
+        $this->load->model("msitemunitdetails_model");
         $trxDate = ($trxDate == null) ? date("Y-m-d") : $trxDate;
         $arrPromo = [];
 
@@ -85,9 +85,9 @@ class Trsalesorder_model extends MY_Model {
 
         //** No participant - ALL CUSTOMER IS PARTICIPANT */
         for($i = 0 ; $i < sizeof($rs); $i++){  
-            $promoId = $rs[$i]->fin_promo_id;  
+            $fin_promo_id = $rs[$i]->fin_promo_id;  
             $ssql = "select count(*) as ttlParticipant from mspromoitemscustomer where fin_promo_id = ?";
-            $qr = $this->db->query($ssql,[$promoId]);
+            $qr = $this->db->query($ssql,[$fin_promo_id]);
             $rwParticipant = $qr->row();
             if($rwParticipant->ttlParticipant == 0){
                 $rs[$i]->isParticipant = true;
@@ -103,12 +103,12 @@ class Trsalesorder_model extends MY_Model {
             if ($rs[$i]->isParticipant == true){
                 continue;
             }
-            $promoId = $rs[$i]->fin_promo_id;  
+            $fin_promo_id = $rs[$i]->fin_promo_id;  
             $ssql = "select count(*) as ttlParticipant from mspromoitemscustomer 
                 where fin_promo_id = ? 
                 and fst_participant_type ='RELATION GROUP' 
                 and fin_customer_id = ?";                
-            $qr = $this->db->query($ssql,[$promoId,$fin_relation_group_id]);            
+            $qr = $this->db->query($ssql,[$fin_promo_id,$fin_relation_group_id]);            
             $rwParticipant = $qr->row();
             if($rwParticipant->ttlParticipant > 0){
                 $rs[$i]->isParticipant = true;
@@ -121,12 +121,12 @@ class Trsalesorder_model extends MY_Model {
                 if ($rs[$i]->isParticipant == true){
                     continue;
                 }
-                $promoId = $rs[$i]->fin_promo_id;  
+                $fin_promo_id = $rs[$i]->fin_promo_id;  
                 $ssql = "select count(*) as ttlParticipant from mspromoitemscustomer 
                     where fin_promo_id = ? 
                     and fst_participant_type ='MEMBER GROUP' 
                     and fin_customer_id = ?";                
-                $qr = $this->db->query($ssql,[$promoId,$fin_member_group_id]);
+                $qr = $this->db->query($ssql,[$fin_promo_id,$fin_member_group_id]);
                 $rwParticipant = $qr->row();
                 if($rwParticipant->ttlParticipant > 0){
                     $rs[$i]->isParticipant = true;
@@ -140,12 +140,12 @@ class Trsalesorder_model extends MY_Model {
             if ($rs[$i]->isParticipant == true){
                 continue;
             }
-            $promoId = $rs[$i]->fin_promo_id;  
+            $fin_promo_id = $rs[$i]->fin_promo_id;  
             $ssql = "select count(*) as ttlParticipant from mspromoitemscustomer 
                 where fin_promo_id = ? 
                 and fst_participant_type ='RELATION' 
                 and fin_customer_id = ?";                
-            $qr = $this->db->query($ssql,[$promoId,$fin_customer_id]);
+            $qr = $this->db->query($ssql,[$fin_promo_id,$fin_customer_id]);
             $rwParticipant = $qr->row();
             if($rwParticipant->ttlParticipant > 0){
                 $rs[$i]->isParticipant = true;
@@ -189,7 +189,7 @@ class Trsalesorder_model extends MY_Model {
                 //Get Item SubGroup ID
                 
                 for($y=0;$y<sizeof($details);$y++){
-                    $ssql = "select * from msitems where ItemId = ?";
+                    $ssql = "select * from msitems where fin_item_id = ?";
                     $qr = $this->db->query($ssql,[$details[$y]->fin_item_id]);
                     $rwItem = $qr->row();
                     if(!$rwItem){
@@ -211,7 +211,7 @@ class Trsalesorder_model extends MY_Model {
                             $isOnRules = $this->isOnPromoItemRules($itemRules,$item->fin_item_id,$item->fin_item_subgroup_id);
                         }
                         if($isOnRules){    
-                            $qtyUnit = $this->MSItemunitdetails_model->getConversionUnit($item->fin_item_id,$item->fdc_qty, $item->fst_unit, $satuanGabungan);
+                            $qtyUnit = $this->msitemunitdetails_model->getConversionUnit($item->fin_item_id,$item->fdc_qty, $item->fst_unit, $satuanGabungan);
                             $totalQtyGabungan += $qtyUnit;
                         }
                     }
@@ -257,16 +257,16 @@ class Trsalesorder_model extends MY_Model {
         }
 
         //** Filter promo gabungan */
-        $arrPromoId =[];
+        $arrfin_promo_id =[];
         foreach($rs as $promo){
-            $arrPromoId[] = $promo->fin_promo_id;
+            $arrfin_promo_id[] = $promo->fin_promo_id;
         }
 
 
         $ssql = "select *,b.fst_item_name as fst_item_name,b.fst_item_code as fst_item_code from mspromo a 
             left join msitems b on a.fin_promo_item_id = b.fin_item_id 
             where a.fin_promo_id in ? order by a.fdt_start desc ,a.fdt_end desc,a.fin_promo_id desc";
-        $qr = $this->db->query($ssql,[$arrPromoId]);        
+        $qr = $this->db->query($ssql,[$arrfin_promo_id]);        
         $rs = $qr->result();
 
         $arrPromo =[];
@@ -341,7 +341,7 @@ class Trsalesorder_model extends MY_Model {
         return [
             "dataOutstanding"=>[],
             "totalOutstanding"=>0
-        ]
+        ];
     }
 
     private function isOnPromoItemRules($rules,$fin_item_id,$fin_item_subgroup_id){

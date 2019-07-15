@@ -366,8 +366,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data = data.data;
 					$.each(data,function(index,value){
 						items.push({
-							"id" : value.RelationId,
-							"text" : value.RelationName,
+							"id" : value.fin_relation_id,
+							"text" : value.fst_relation_name,
 							"fin_sales_id" : value.fin_sales_id,
 							"fst_shipping_address":value.fst_shipping_address,
 							"fin_warehouse_id":value.fin_warehouse_id,
@@ -408,11 +408,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data2 = [];
 					$.each(data,function(index,value){
 						data2.push({
-							"id" : value.ItemId,
+							"id" : value.fin_item_id,
 							"text" : value.ItemCodeName,
-							"itemName" : value.ItemName,
-							"itemCode" : value.ItemCode,
-							"maxItemDiscount" : value.MaxItemDiscount
+							"fst_item_name" : value.fst_item_name,
+							"fst_item_code" : value.fst_item_code,
+							"fst_max_item_discount" : value.fst_max_item_discount
 						});	
 					});
 					console.log(data2);
@@ -424,20 +424,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		}).on('select2:select', function (e) {			
 			var data = $('#select-items').select2("data")[0];
-			$("#fst_custom_item_name").val(data.itemName);
+			$("#fst_custom_item_name").val(data.fst_item_name);
 
 			$('#select-unit').empty();
 			//$('#select-unit').val(null).trigger('change');
 
 			$.ajax({
-				url: '<?=site_url()?>master/msitems/getSellingUnit/' + data.id,
+				url: '<?=site_url()?>master/item/getSellingUnit/' + data.id,
 				success:function(data){
 					data2 = [];
 					$.each(data,function(index,value){
 						data2.push({
-							"id" : value.Unit,
-							"text" : value.Unit,
-							"price" :value.PriceList
+							"id" : value.fst_unit,
+							"text" : value.fst_unit,
+							"price" :value.fdc_price_list
 						});
 					});
 					$("#select-unit").select2({data:data2});
@@ -461,8 +461,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data2 = [];
 					$.each(data,function(index,value){
 						data2.push({
-							"id" : value.ItemDiscount,
-							"text" : value.ItemDiscount
+							"id" : value.fst_item_discount,
+							"text" : value.fst_item_discount
 						});
 					});
 					console.log(data2);
@@ -489,7 +489,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			dataItem = $('#select-items').select2("data")[0];
 			
 			$.ajax({
-				url:"<?=site_url()?>master/msitems/getSellingPrice/" + dataItem.id + "/" + dataUnit.id + "/" + dataCust.id,
+				url:"<?=site_url()?>master/item/getSellingPrice/" + dataItem.id + "/" + dataUnit.id + "/" + dataCust.id,
 				method:"GET",
 				success:function(resp){
 					//console.log(resp);
@@ -540,18 +540,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			
 			amount = price * qty;
-			maxDisc = calculateDisc(amount,selected_items.maxItemDiscount);
+			maxDisc = calculateDisc(amount,selected_items.fst_max_item_discount);
 
 			if (maxDisc < disc){
-				alert("<?= lang('Total discount more than max disc allowed !') ?>" + " (maxDisc:" +  selected_items.maxItemDiscount + ")");
+				alert("<?= lang('Total discount more than max disc allowed !') ?>" + " (maxDisc:" +  selected_items.fst_max_item_discount + ")");
 				return;
 			}
 			data = {
-				rec_id:$("#fin-detail-id").val(),
+				fin_rec_id:$("#fin-detail-id").val(),
 				fin_promo_id:0,
 				fin_item_id:selected_items.id,
-				ItemName:selected_items.text,
-				ItemCode:selected_items.itemCode,
+				fst_item_name:selected_items.text,
+				fst_item_code:selected_items.fst_item_code,
 				fst_custom_item_name:$("#fst_custom_item_name").val(),
 				fdc_qty: $("#so-qty").val(),
 				fst_unit: selectedUnits.id,
@@ -584,13 +584,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 	data.sessionId = "TEST SESSION ID";
 		}).DataTable({
 			columns:[
-				{"title" : "id","width": "5%",sortable:false,data:"rec_id",visible:true},
+				{"title" : "id","width": "5%",sortable:false,data:"fin_rec_id",visible:true},
 				{"title" : "promo","width": "5%",sortable:false,data:"fin_promo_id",visible:true},				
 				{"title" : "Items","width": "15%",sortable:false,data:"fin_item_id",
 					render: function(data,type,row){
 						console.log(row);
-						//return row.ItemName;
-						return row.ItemCode + "-" + row.fst_custom_item_name;
+						//return row.fst_item_name;
+						return row.fst_item_code + "-" + row.fst_custom_item_name;
 					}
 				},
 				{"title" : "Custom Name","width": "15%",sortable:false,data:"fst_custom_item_name",visible:false},
@@ -772,23 +772,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$.each(SODetails, function(idx, detail){
 					data = {
 						fin_salesorder_id:detail.fin_salesorder_id,
-						ItemId:detail.ItemId,
-						ItemName:detail.ItemName,
-						ItemDiscount:detail.ItemDiscount,
+						fin_item_id:detail.fin_item_id,
+						fst_item_name:detail.fst_item_name,
+						fst_item_discount:detail.fst_item_discount,
 						fdc_qty:detail.fdc_qty,
 						fdc_price:detail.fdc_price,
-						ItemDiscount:detail.ItemDiscount,
-						total:detail.fdc_qty * detail.fdc_price / detail.ItemDiscount,
+						fst_item_discount:detail.fst_item_discount,
+						total:detail.fdc_qty * detail.fdc_price / detail.fst_item_discount,
 						action: action
 					}
 					t = $('#tblSODetails').DataTable();			
 					t.row.add(data).draw(false);
 
 					//set Data select2		
-					var newOption = new Option(detail.ItemName, detail.ItemId, false, false);
+					var newOption = new Option(detail.fst_item_name, detail.fin_item_id, false, false);
 					$('#select-items').append(newOption).trigger('change');
 
-					var newOption = new Option(detail.ItemDiscount, false);
+					var newOption = new Option(detail.fst_item_discount, false);
 					$('#select-disc').append(newOption).trigger('change');
 				});
 
@@ -806,7 +806,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#fdt_salesorder_date").datepicker('update', dateFormat(resp.sales_order.fdt_salesorder_date));
 
 				// menampilkan data di select2, menu edit/update
-				var newOption = new Option(resp.sales_order.RelationName, resp.sales_order.RelationId, true, true);
+				var newOption = new Option(resp.sales_order.fst_relation_name, resp.sales_order.fin_relation_id, true, true);
 				// Append it to the select
     			$('#select-relations').append(newOption).trigger('change');
 
@@ -902,11 +902,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.each(resp.data,function(i,v){
 							event.preventDefault();							
 							data = {
-								rec_id:0,
+								fin_rec_id:0,
 								fin_promo_id:v.fin_promo_id,
 								fin_item_id:v.fin_item_id,
-								ItemName:v.fst_item_name,
-								ItemCode:v.fst_item_code,								
+								fst_item_name:v.fst_item_name,
+								fst_item_code:v.fst_item_code,								
 								fst_custom_item_name: v.fst_custom_item_name,
 								fdc_qty: v.fdc_qty,
 								fst_unit: v.fst_unit,
@@ -985,8 +985,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				arrCurrencies = values.data.currencies;
 				$.each(arrCurrencies,function(i,v){
 					sel2Currencies.push({
-						id:v.CurrCode,
-						text:v.CurrName
+						id:v.fst_curr_code,
+						text:v.fst_curr_name
 					});
 				});
 				$("#fst_curr_code").select2({
