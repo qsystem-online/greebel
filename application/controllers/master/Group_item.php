@@ -20,14 +20,14 @@ class Group_item extends MY_Controller
         $this->load->library('menus');
         $this->list['page_name'] = "Master Groups";
         $this->list['list_name'] = "Group List";
-        $this->list['addnew_ajax_url'] = site_url() . 'Master/msgroupitems/add';
+        $this->list['addnew_ajax_url'] = site_url() . 'master/group_item/add';
         $this->list['pKey'] = "id";
-        $this->list['fetch_list_data_ajax_url'] = site_url() . 'Master/msgroupitems/fetch_list_data';
-        $this->list['delete_ajax_url'] = site_url() . 'Master/msgroupitems/delete/';
-        $this->list['edit_ajax_url'] = site_url() . 'Master/msgroupitems/edit/';
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/group_item/fetch_list_data';
+        $this->list['delete_ajax_url'] = site_url() . 'master/group_item/delete/';
+        $this->list['edit_ajax_url'] = site_url() . 'master/group_item/edit/';
         $this->list['arrSearch'] = [
-            'ItemGroupId' => 'Group ID',
-            'ItemGroupName' => 'Group Name'
+            'fin_item_group_id' => 'Group ID',
+            'fst_item_group_name' => 'Group Name'
         ];
 
         $this->list['breadcrumbs'] = [
@@ -36,8 +36,8 @@ class Group_item extends MY_Controller
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'Group ID', 'width' => '10%', 'data' => 'ItemGroupId'],
-            ['title' => 'Group Name', 'width' => '25%', 'data' => 'ItemGroupName'],
+            ['title' => 'Group ID', 'width' => '10%', 'data' => 'fin_item_group_id'],
+            ['title' => 'Group Name', 'width' => '25%', 'data' => 'fst_item_group_name'],
             ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
@@ -53,7 +53,7 @@ class Group_item extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
-    private function openForm($mode = "ADD", $ItemGroupId = 0)
+    private function openForm($mode = "ADD", $fin_item_group_id = 0)
     {
         $this->load->library("menus");
 
@@ -66,7 +66,7 @@ class Group_item extends MY_Controller
 
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Group" : "Update Group";
-        $data["ItemGroupId"] = $ItemGroupId;
+        $data["fin_item_group_id"] = $fin_item_group_id;
 
         $page_content = $this->parser->parse('pages/master/groupitems/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -85,15 +85,15 @@ class Group_item extends MY_Controller
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($ItemGroupId)
+    public function Edit($fin_item_group_id)
     {
-        $this->openForm("EDIT", $ItemGroupId);
+        $this->openForm("EDIT", $fin_item_group_id);
     }
 
     public function ajx_add_save()
     {
-        $this->load->model('MSGroupitems_model');
-        $this->form_validation->set_rules($this->MSGroupitems_model->getRules("ADD", 0));
+        $this->load->model('msgroupitems_model');
+        $this->form_validation->set_rules($this->msgroupitems_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
         if ($this->form_validation->run() == FALSE) {
@@ -106,12 +106,12 @@ class Group_item extends MY_Controller
         }
 
         $data = [
-            "ItemGroupName" => $this->input->post("ItemGroupName"),
+            "fst_item_group_name" => $this->input->post("fst_item_group_name"),
             "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
-        $insertId = $this->MSGroupitems_model->insert($data);
+        $insertId = $this->msgroupitems_model->insert($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -132,19 +132,19 @@ class Group_item extends MY_Controller
 
     public function ajx_edit_save()
     {
-        $this->load->model('MSGroupitems_model');
-        $ItemGroupId = $this->input->post("ItemGroupId");
-        $data = $this->MSGroupitems_model->getDataById($ItemGroupId);
+        $this->load->model('msgroupitems_model');
+        $fin_item_group_id = $this->input->post("fin_item_group_id");
+        $data = $this->msgroupitems_model->getDataById($fin_item_group_id);
         $master_groups = $data["groupitems"];
         if (!$master_groups) {
             $this->ajxResp["status"] = "DATA_NOT_FOUND";
-            $this->ajxResp["message"] = "Data id $ItemGroupId Not Found ";
+            $this->ajxResp["message"] = "Data id $fin_item_group_id Not Found ";
             $this->ajxResp["data"] = [];
             $this->json_output();
             return;
         }
 
-        $this->form_validation->set_rules($this->MSGroupitems_model->getRules("EDIT", $ItemGroupId));
+        $this->form_validation->set_rules($this->msgroupitems_model->getRules("EDIT", $fin_item_group_id));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
         if ($this->form_validation->run() == FALSE) {
             //print_r($this->form_validation->error_array());
@@ -156,14 +156,14 @@ class Group_item extends MY_Controller
         }
 
         $data = [
-            "ItemGroupId" => $ItemGroupId,
-            "ItemGroupName" => $this->input->post("ItemGroupName"),
+            "fin_item_group_id" => $fin_item_group_id,
+            "fst_item_group_name" => $this->input->post("fst_item_group_name"),
             "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
 
-        $this->MSGroupitems_model->update($data);
+        $this->msgroupitems_model->update($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -178,7 +178,7 @@ class Group_item extends MY_Controller
 
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
-        $this->ajxResp["data"]["insert_id"] = $ItemGroupId;
+        $this->ajxResp["data"]["insert_id"] = $fin_item_group_id;
         $this->json_output();
     }
 
@@ -187,7 +187,7 @@ class Group_item extends MY_Controller
         $this->load->library("datatables");
         $this->datatables->setTableName("msgroupitems");
 
-        $selectFields = "ItemGroupId,ItemGroupName,'action' as action";
+        $selectFields = "fin_item_group_id,fst_item_group_name,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');
@@ -200,8 +200,8 @@ class Group_item extends MY_Controller
         foreach ($arrData as $data) {
             //action
             $data["action"]    = "<div style='font-size:16px'>
-                        <a class='btn-edit' href='#' data-id='" . $data["ItemGroupId"] . "'><i class='fa fa-pencil'></i></a>
-                        <a class='btn-delete' href='#' data-id='" . $data["ItemGroupId"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+                        <a class='btn-edit' href='#' data-id='" . $data["fin_item_group_id"] . "'><i class='fa fa-pencil'></i></a>
+                        <a class='btn-delete' href='#' data-id='" . $data["fin_item_group_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
                     </div>";
 
             $arrDataFormated[] = $data;
@@ -210,10 +210,10 @@ class Group_item extends MY_Controller
         $this->json_output($datasources);
     }
 
-    public function fetch_data($ItemGroupId)
+    public function fetch_data($fin_item_group_id)
     {
-        $this->load->model("MSGroupitems_model");
-        $data = $this->MSGroupitems_model->getDataById($ItemGroupId);
+        $this->load->model("msgroupitems_model");
+        $data = $this->msgroupitems_model->getDataById($fin_item_group_id);
 
         //$this->load->library("datatables");		
         $this->json_output($data);
@@ -229,9 +229,9 @@ class Group_item extends MY_Controller
         }
         //echo $id;
         //die ();
-        $this->load->model("MSGroupitems_model");
+        $this->load->model("msgroupitems_model");
 
-        $this->MSGroupitems_model->delete($id);
+        $this->msgroupitems_model->delete($id);
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "File deleted successfully";
         $this->json_output();

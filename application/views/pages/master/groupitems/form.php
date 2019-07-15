@@ -22,25 +22,25 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 <!-- end box header -->
 
                 <!-- form start -->
-                <form id="frmGroup" class="form-horizontal" action="<?= site_url() ?>ItemGroupId" method="POST" enctype="multipart/form-data">
+                <form id="frmGroup" class="form-horizontal" action="<?= site_url() ?>master/group_item/add" method="POST" enctype="multipart/form-data">
                     <div class="box-body">
                         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="ItemGroupId" class="col-sm-2 control-label"><?= lang("Group ID") ?></label>
+                            <label for="fin_item_group_id" class="col-sm-2 control-label"><?= lang("Group ID") ?></label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="ItemGroupId" placeholder="<?= lang("(Autonumber)") ?>" name="ItemGroupId" value="<?= $ItemGroupId ?>" readonly>
-                                <div id="ItemGroupId_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fin_item_group_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_item_group_id" value="<?= $fin_item_group_id ?>" readonly>
+                                <div id="fin_item_group_id_err" class="text-danger"></div>
 
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="ItemGroupName" class="col-sm-2 control-label"><?= lang("Group Name") ?> * </label>
+                            <label for="fst_item_group_name" class="col-sm-2 control-label"><?= lang("Group Name") ?> * </label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="ItemGroupName" placeholder="<?= lang("Group Name") ?>" name="ItemGroupName">
-                                <div id="ItemGroupName_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fst_item_group_name" placeholder="<?= lang("Group Name") ?>" name="fst_item_group_name">
+                                <div id="fst_item_group_name_err" class="text-danger"></div>
                             </div>
                         </div>
                         <!-- end box body -->
@@ -58,7 +58,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     $(function() {
 
         <?php if ($mode == "EDIT") { ?>
-            init_form($("#ItemGroupId").val());
+            init_form($("#fin_item_group_id").val());
         <?php } ?>
 
         $("#btnSubmitAjax").click(function(event) {
@@ -67,9 +67,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
-                url = "<?= site_url() ?>Master/msgroupitems/ajx_add_save";
+                url = "<?= site_url() ?>master/group_item/ajx_add_save";
             } else {
-                url = "<?= site_url() ?>Master/msgroupitems/ajx_edit_save";
+                url = "<?= site_url() ?>master/group_item/ajx_edit_save";
             }
 
             //var formData = new FormData($('form')[0])
@@ -91,7 +91,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
                                         //location.reload();
-                                        window.location.href = "<?= site_url() ?>Master/msgroupitems";
+                                        window.location.href = "<?= site_url() ?>master/group_item/lizt";
                                         return;
                                     }
                                 },
@@ -107,7 +107,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         }
                     } else if (resp.status == "SUCCESS") {
                         data = resp.data;
-                        $("#ItemGroupId").val(data.insert_id);
+                        $("#fin_item_group_id").val(data.insert_id);
 
                         //Clear all previous error
                         $(".text-danger").html("");
@@ -127,9 +127,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
     });
 
-    function init_form(ItemGroupId) {
+    function init_form(fin_item_group_id) {
         //alert("Init Form");
-        var url = "<?= site_url() ?>Master/msgroupitems/fetch_data/" + ItemGroupId;
+        var url = "<?= site_url() ?>master/group_item/fetch_data/" + fin_item_group_id;
         $.ajax({
             type: "GET",
             url: url,
