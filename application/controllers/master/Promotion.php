@@ -8,7 +8,7 @@ class Promotion extends MY_Controller
     {
         parent::__construct();
         $this->load->library('form_validation');
-        $this->load->model('MSPromo_model');
+        $this->load->model('mspromo_model');
     }
 
     public function index()
@@ -21,11 +21,11 @@ class Promotion extends MY_Controller
         $this->load->library('menus');
         $this->list['page_name'] = "Sales Promotion";
         $this->list['list_name'] = "Sales Promotion List";
-        $this->list['addnew_ajax_url'] = site_url() . 'Master/promotion/add';
+        $this->list['addnew_ajax_url'] = site_url() . 'master/promotion/add';
         $this->list['pKey'] = "id";
-        $this->list['fetch_list_data_ajax_url'] = site_url() . 'Master/promotion/fetch_list_data';
-        $this->list['delete_ajax_url'] = site_url() . 'Master/promotion/delete/';
-        $this->list['edit_ajax_url'] = site_url() . 'Master/promotion/edit/';
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/promotion/fetch_list_data';
+        $this->list['delete_ajax_url'] = site_url() . 'master/promotion/delete/';
+        $this->list['edit_ajax_url'] = site_url() . 'master/promotion/edit/';
         $this->list['arrSearch'] = [
             'fin_promo_id' => 'Promo ID',
             'fst_promo_name' => 'Promo Name'
@@ -95,8 +95,8 @@ class Promotion extends MY_Controller
 
     public function ajx_add_save()
     {
-        $this->load->model('MSPromo_model');
-        $this->form_validation->set_rules($this->MSPromo_model->getRules("ADD", 0));
+        $this->load->model('mspromo_model');
+        $this->form_validation->set_rules($this->mspromo_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
         if ($this->form_validation->run() == FALSE) {
@@ -113,22 +113,22 @@ class Promotion extends MY_Controller
             "fdt_start" => dBDateFormat($this->input->post("fdt_start")),
             "fdt_end" => dBDateFormat($this->input->post("fdt_end")),
             "fin_promo_item_id" => $this->input->post("fin_promo_item_id"),
-            "fin_promo_qty" => $this->input->post("fin_promo_qty"),
-            "fin_promo_unit" => $this->input->post("fin_promo_unit"),
-            "fin_cashback" => $this->input->post("fin_cashback"),
+            "fdb_promo_qty" => $this->input->post("fdb_promo_qty"),
+            "fst_promo_unit" => $this->input->post("fst_promo_unit"),
+            "fdc_cashback" => $this->input->post("fdc_cashback"),
             "fst_other_prize" => $this->input->post("fst_other_prize"),
             "fdc_other_prize_in_value" => $this->input->post("fdc_other_prize_in_value"),
             "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
-            "fin_qty_gabungan" => $this->input->post("fin_qty_gabungan"),
-            "fst_satuan_gabungan" => $this->input->post("fst_satuan_gabungan"),
+            "fdb_qty_gabungan" => $this->input->post("fdb_qty_gabungan"),
+            "fst_unit_gabungan" => $this->input->post("fst_unit_gabungan"),
             "fdc_min_total_purchase" => $this->input->post("fdc_min_total_purchase"),
-            "fst_promo_type" => $this->input->post("fst_promo_type"),
+            //"fst_promo_type" => $this->input->post("fst_promo_type"),
             "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
-        $insertId = $this->MSPromo_model->insert($data);
+        $insertId = $this->mspromo_model->insert($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -141,7 +141,7 @@ class Promotion extends MY_Controller
 
         //Save Promo Terms
 
-        $this->load->model("MSPromoitems_model");
+        $this->load->model("mspromoitems_model");
         $details = $this->input->post("detail");
         $details = json_decode($details);
         foreach ($details as $promoitem) {
@@ -149,11 +149,11 @@ class Promotion extends MY_Controller
                 "fin_promo_id" => $insertId,
                 "fst_item_type" => $promoitem->fst_item_type,
                 "fin_item_id" => $promoitem->fin_item_id,
-                "fin_qty" => $promoitem->fin_qty,
+                "fdb_qty" => $promoitem->fdb_qty,
                 "fst_unit" => $promoitem->fst_unit,
                 "fst_active" => 'A'
             ];
-            $this->MSPromoitems_model->insert($data);
+            $this->mspromoitems_model->insert($data);
             $dbError  = $this->db->error();
             if ($dbError["code"] != 0) {
                 $this->ajxResp["status"] = "DB_FAILED";
@@ -167,7 +167,7 @@ class Promotion extends MY_Controller
 
         //Save Promo Participants
 
-        $this->load->model("MSPromoitemscustomer_model");
+        $this->load->model("mspromoitemscustomer_model");
         $details = $this->input->post("detailParticipants");
         $details = json_decode($details);
         foreach ($details as $promoparticipants) {
@@ -176,7 +176,7 @@ class Promotion extends MY_Controller
                 "fst_participant_type" => $promoparticipants->fst_participant_type,
                 "fin_customer_id" => $promoparticipants->fin_customer_id
             ];
-            $this->MSPromoitemscustomer_model->insert($data);
+            $this->mspromoitemscustomer_model->insert($data);
             $dbError  = $this->db->error();
             if ($dbError["code"] != 0) {
                 $this->ajxResp["status"] = "DB_FAILED";
@@ -197,9 +197,9 @@ class Promotion extends MY_Controller
 
     public function ajx_edit_save()
     {
-        $this->load->model('MSPromo_model');
+        $this->load->model('mspromo_model');
         $fin_promo_id = $this->input->post("fin_promo_id");
-        $data = $this->MSPromo_model->getDataById($fin_promo_id);
+        $data = $this->mspromo_model->getDataById($fin_promo_id);
         $msitems = $data["mspromo"];
         if (!$msitems) {
             $this->ajxResp["status"] = "DATA_NOT_FOUND";
@@ -209,7 +209,7 @@ class Promotion extends MY_Controller
             return;
         }
 
-        $this->form_validation->set_rules($this->MSPromo_model->getRules("EDIT", $fin_promo_id));
+        $this->form_validation->set_rules($this->mspromo_model->getRules("EDIT", $fin_promo_id));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
         if ($this->form_validation->run() == FALSE) {
             //print_r($this->form_validation->error_array());
@@ -226,22 +226,22 @@ class Promotion extends MY_Controller
             "fdt_start" => dBDateFormat($this->input->post("fdt_start")),
             "fdt_end" => dBDateFormat($this->input->post("fdt_end")),
             "fin_promo_item_id" => $this->input->post("fin_promo_item_id"),
-            "fin_promo_qty" => $this->input->post("fin_promo_qty"),
-            "fin_promo_unit" => $this->input->post("fin_promo_unit"),
-            "fin_cashback" => $this->input->post("fin_cashback"),
+            "fdb_promo_qty" => $this->input->post("fdb_promo_qty"),
+            "fst_promo_unit" => $this->input->post("fst_promo_unit"),
+            "fdc_cashback" => $this->input->post("fdc_cashback"),
             "fst_other_prize" => $this->input->post("fst_other_prize"),
             "fdc_other_prize_in_value" => $this->input->post("fdc_other_prize_in_value"),
             "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
-            "fin_qty_gabungan" => $this->input->post("fin_qty_gabungan"),
-            "fst_satuan_gabungan" => $this->input->post("fst_satuan_gabungan"),
+            "fdb_qty_gabungan" => $this->input->post("fdb_qty_gabungan"),
+            "fst_unit_gabungan" => $this->input->post("fst_unit_gabungan"),
             "fdc_min_total_purchase" => $this->input->post("fdc_min_total_purchase"),
             "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
-        $this->MSPromo_model->update($data);
+        $this->mspromo_model->update($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -254,8 +254,8 @@ class Promotion extends MY_Controller
 
         //Save Promo Terms
 
-        $this->load->model("MSPromoitems_model");
-        $this->MSPromoitems_model->deleteByHeaderId($fin_promo_id);
+        $this->load->model("mspromoitems_model");
+        $this->mspromoitems_model->deleteByHeaderId($fin_promo_id);
         $details = $this->input->post("detail");
         $details = json_decode($details);
         foreach ($details as $promoitem) {
@@ -267,7 +267,7 @@ class Promotion extends MY_Controller
                 "fst_unit" => $promoitem->fst_unit,
                 "fst_active" => 'A'
             ];
-            $this->MSPromoitems_model->insert($data);
+            $this->mspromoitems_model->insert($data);
             $dbError  = $this->db->error();
             if ($dbError["code"] != 0) {
                 $this->ajxResp["status"] = "DB_FAILED";
@@ -281,8 +281,8 @@ class Promotion extends MY_Controller
 
         //Save Promo Participants
 
-        $this->load->model("MSPromoitemscustomer_model");
-        $this->MSPromoitemscustomer_model->deleteByHeaderId($fin_promo_id);
+        $this->load->model("mspromoitemscustomer_model");
+        $this->mspromoitemscustomer_model->deleteByHeaderId($fin_promo_id);
         $details = $this->input->post("detailParticipants");
         $details = json_decode($details);
         foreach ($details as $promoparticipants) {
@@ -292,7 +292,7 @@ class Promotion extends MY_Controller
                 "fin_customer_id" => $promoparticipants->fin_customer_id,
                 "fst_active" => 'A'
             ];
-            $this->MSPromoitemscustomer_model->insert($data);
+            $this->mspromoitemscustomer_model->insert($data);
             $dbError  = $this->db->error();
             if ($dbError["code"] != 0) {
                 $this->ajxResp["status"] = "DB_FAILED";
@@ -343,8 +343,8 @@ class Promotion extends MY_Controller
 
     public function fetch_data($fin_promo_id)
     {
-        $this->load->model("MSPromo_model");
-        $data = $this->MSPromo_model->getDataById($fin_promo_id);
+        $this->load->model("mspromo_model");
+        $data = $this->mspromo_model->getDataById($fin_promo_id);
 
         //$this->load->library("datatables");		
         $this->json_output($data);
@@ -369,8 +369,8 @@ class Promotion extends MY_Controller
 
     public function getAllList()
     {
-        $this->load->model('MSPromo_model');
-        $result = $this->MSPromo_model->getAllList();
+        $this->load->model('mspromo_model');
+        $result = $this->mspromo_model->getAllList();
         $this->ajxResp["data"] = $result;
         $this->json_output();
     }
@@ -378,7 +378,7 @@ class Promotion extends MY_Controller
     public function get_data_ItemPromo()
     {
         $term = $this->input->get("term");
-        $ssql = "select * from msitems where ItemName like ? order by ItemName";
+        $ssql = "select * from msitems where fst_item_name like ? order by fst_item_name";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
 
@@ -388,7 +388,7 @@ class Promotion extends MY_Controller
     public function get_item_SubgroupPromo()
     {
         $term = $this->input->get("term");
-        $ssql = "select * from mssubgroupitems where ItemSubGroupName like ? order by ItemSubGroupName";
+        $ssql = "select * from mssubgroupitems where fst_item_subgroup_name like ? order by fst_item_subgroup_name";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
 
@@ -398,7 +398,7 @@ class Promotion extends MY_Controller
     public function get_data_unit()
     {
         $term = $this->input->get("term");
-        $ssql = "select * from msunits where Unit like ? order by Unit";
+        $ssql = "select * from msunits where fst_unit like ? order by fst_unit";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
 
@@ -408,7 +408,7 @@ class Promotion extends MY_Controller
     public function get_relationpromo()
     {
 		$term = $this->input->get("term");
-		$ssql = "select * from msrelations where RelationName like ? order by RelationName";
+		$ssql = "select * from msrelations where fst_relation_name like ? order by fst_relation_name";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -418,7 +418,7 @@ class Promotion extends MY_Controller
     public function get_relationgrouppromo()
     {
 		$term = $this->input->get("term");
-		$ssql = "select * from msrelationgroups where RelationGroupName like ? order by RelationGroupName";
+		$ssql = "select * from msrelationgroups where fst_relation_group_name like ? order by fst_relation_group_name";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -435,22 +435,22 @@ class Promotion extends MY_Controller
 		$this->json_output($rs);
 	}
 
-    public function get_data_unitPromo($ItemId)
+    public function get_data_unitPromo($fin_item_id)
     {
         $term = $this->input->get("term");
-        $ssql = "select * from msitemunitdetails where Unit like ? and ItemId = ? and isBasicUnit=1  order by Unit";
-        $qr = $this->db->query($ssql, ['%' . $term .'%',$ItemId]);
+        $ssql = "select * from msitemunitdetails where fst_unit like ? and fin_item_id = ? and fbl_is_basic_unit=1  order by fst_unit";
+        $qr = $this->db->query($ssql, ['%' . $term .'%',$fin_item_id]);
         $rs = $qr->result();
         	
         $this->json_output($rs);
     }
 
     
-    public function get_data_unitTerms($ItemId)
+    public function get_data_unitTerms($fin_item_id)
     {
         $term = $this->input->get("term");
-        $ssql = "select * from msitemunitdetails where Unit like ? and ItemId = ?";
-        $qr = $this->db->query($ssql,['%'. $term .'%',$ItemId]);
+        $ssql = "select * from msitemunitdetails where fst_unit like ? and fin_item_id = ?";
+        $qr = $this->db->query($ssql,['%'. $term .'%',$fin_item_id]);
         $rs = $qr->result();
 
         $this->ajxResp["status"] = "SUCCESS";

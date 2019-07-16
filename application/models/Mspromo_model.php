@@ -14,7 +14,7 @@ class Mspromo_model extends MY_Model
     {
         $ssql = "select a.*,b.fst_item_name from " . $this->tableName . " a left join msitems b on a.fin_promo_item_id = b.fin_item_id where a.fin_promo_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$fin_promo_id]);
-        $rw = $qr->row();
+        $rwPromo = $qr->row();
 
         $ssql = "SELECT a.*,IF (a.fst_item_type ='ITEM',b.fst_item_name,c.fst_item_subgroup_name) AS ItemTerms FROM mspromoitems a 
         LEFT JOIN msitems b ON a.fin_item_id = b.fin_item_id
@@ -32,7 +32,7 @@ class Mspromo_model extends MY_Model
         $rsPromoParticipants = $qr->result();
 
         $data = [
-            "mspromo" => $rw,
+            "mspromo" => $rwPromo,
             "promoTerms" => $rsPromoTerms,
             "promoParticipants" => $rsPromoParticipants,
         ];
