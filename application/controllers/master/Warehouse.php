@@ -8,7 +8,7 @@ class Warehouse extends MY_Controller
     {
         parent::__construct();
         $this->load->library('form_validation');
-        $this->load->model('MSWarehouse_model');
+        $this->load->model('mswarehouse_model');
     }
 
     public function index()
@@ -21,11 +21,11 @@ class Warehouse extends MY_Controller
         $this->load->library('menus');
         $this->list['page_name'] = "Warehouse";
         $this->list['list_name'] = "Warehouse List";
-        $this->list['addnew_ajax_url'] = site_url() . 'Master/mswarehouse/add';
+        $this->list['addnew_ajax_url'] = site_url() . 'master/warehouse/add';
         $this->list['pKey'] = "id";
-        $this->list['fetch_list_data_ajax_url'] = site_url() . 'Master/mswarehouse/fetch_list_data';
-        $this->list['delete_ajax_url'] = site_url() . 'Master/mswarehouse/delete/';
-        $this->list['edit_ajax_url'] = site_url() . 'Master/mswarehouse/edit/';
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/warehouse/fetch_list_data';
+        $this->list['delete_ajax_url'] = site_url() . 'master/warehouse/delete/';
+        $this->list['edit_ajax_url'] = site_url() . 'master/warehouse/edit/';
         $this->list['arrSearch'] = [
             'fin_warehouse_id' => 'Warehouse ID',
             'fst_warehouse_name' => 'Warehouse Name'
@@ -94,8 +94,8 @@ class Warehouse extends MY_Controller
 
     public function ajx_add_save()
     {
-        $this->load->model('MSWarehouse_model');
-        $this->form_validation->set_rules($this->MSWarehouse_model->getRules("ADD", 0));
+        $this->load->model('mswarehouse_model');
+        $this->form_validation->set_rules($this->mswarehouse_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
         if ($this->form_validation->run() == FALSE) {
@@ -116,7 +116,7 @@ class Warehouse extends MY_Controller
         ];
 
         $this->db->trans_start();
-        $insertId = $this->MSWarehouse_model->insert($data);
+        $insertId = $this->mswarehouse_model->insert($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -137,9 +137,9 @@ class Warehouse extends MY_Controller
 
     public function ajx_edit_save()
     {
-        $this->load->model('MSWarehouse_model');
+        $this->load->model('mswarehouse_model');
         $fin_warehouse_id = $this->input->post("fin_warehouse_id");
-        $data = $this->MSWarehouse_model->getDataById($fin_warehouse_id);
+        $data = $this->mswarehouse_model->getDataById($fin_warehouse_id);
         $warehouse = $data["warehouse"];
         if (!$warehouse) {
             $this->ajxResp["status"] = "DATA_NOT_FOUND";
@@ -149,7 +149,7 @@ class Warehouse extends MY_Controller
             return;
         }
 
-        $this->form_validation->set_rules($this->MSWarehouse_model->getRules("EDIT", $fin_warehouse_id));
+        $this->form_validation->set_rules($this->mswarehouse_model->getRules("EDIT", $fin_warehouse_id));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
         if ($this->form_validation->run() == FALSE) {
             //print_r($this->form_validation->error_array());
@@ -171,7 +171,7 @@ class Warehouse extends MY_Controller
 
         $this->db->trans_start();
 
-        $this->MSWarehouse_model->update($data);
+        $this->mswarehouse_model->update($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -220,8 +220,8 @@ class Warehouse extends MY_Controller
 
     public function fetch_data($fin_warehouse_id)
     {
-        $this->load->model("MSWarehouse_model");
-        $data = $this->MSWarehouse_model->getDataById($fin_warehouse_id);
+        $this->load->model("mswarehouse_model");
+        $data = $this->mswarehouse_model->getDataById($fin_warehouse_id);
 
         //$this->load->library("datatables");		
         $this->json_output($data);
@@ -236,7 +236,7 @@ class Warehouse extends MY_Controller
             return;
         }
 
-        $this->load->model("MSWarehouse_model");
+        $this->load->model("mswarehouse_model");
 
         $this->departments_model->delete($id);
         $this->ajxResp["status"] = "DELETED";
@@ -256,7 +256,7 @@ class Warehouse extends MY_Controller
 
     public function getAllList()
     {
-        $result = $this->MSWarehouse_model->getAllList();
+        $result = $this->mswarehouse_model->getAllList();
         $this->ajxResp["data"] = $result;
         $this->json_output();
     }
@@ -269,8 +269,8 @@ class Warehouse extends MY_Controller
         $this->pdf->setPaper('A4', 'portrait');
         //$this->pdf->setPaper('A4', 'landscape');
 
-        $this->load->model("MSWarehouse_model");
-        $listBranch = $this->MSWarehouse_model->get_Branch();
+        $this->load->model("mswarehouse_model");
+        $listBranch = $this->mswarehouse_model->get_Branch();
         $data = [
             "datas" => $listBranch
         ];
