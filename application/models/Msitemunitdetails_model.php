@@ -17,7 +17,7 @@ class Msitemunitdetails_model extends MY_Model
         $rw = $qr->row();
 
         $data = [
-            "" => $rw
+            "unitDetail" => $rw
         ];
 
         return $data;
@@ -66,7 +66,7 @@ class Msitemunitdetails_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'HET',
+            'field' => 'fdc_het',
             'label' => 'HET',
             'rules' => 'numeric',
             'errors' => array(

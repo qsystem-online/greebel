@@ -17,7 +17,7 @@ class Msitemspecialpricinggroupdetails_model extends MY_Model
         $rw = $qr->row();
 
         $data = [
-            "" => $rw
+            "specialPricing" => $rw
         ];
 
         return $data;

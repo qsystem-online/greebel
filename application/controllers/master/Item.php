@@ -1,37 +1,32 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-
 class Item extends MY_Controller
 {
-
     public function __construct()
     {
         parent::__construct();
         $this->load->library('form_validation');
         $this->load->model('msitems_model');
     }
-
     public function index()
     {
         $this->lizt();
     }
-
     public function lizt()
     {
         $this->load->library('menus');
         $this->list['page_name'] = "Master Items";
         $this->list['list_name'] = "Master Items List";
-        $this->list['addnew_ajax_url'] = site_url() . 'Master/item/add';
+        $this->list['addnew_ajax_url'] = site_url() . 'master/item/add';
         $this->list['pKey'] = "id";
-        $this->list['fetch_list_data_ajax_url'] = site_url() . 'Master/item/fetch_list_data';
-        $this->list['delete_ajax_url'] = site_url() . 'Master/item/delete/';
-        $this->list['edit_ajax_url'] = site_url() . 'Master/item/edit/';
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/item/fetch_list_data';
+        $this->list['delete_ajax_url'] = site_url() . 'master/item/delete/';
+        $this->list['edit_ajax_url'] = site_url() . 'master/item/edit/';
         $this->list['arrSearch'] = [
             'fin_item_id' => 'Item ID',
             'fst_item_code' => 'Item Code',
             'fst_item_name' => 'Item Name'
         ];
-
         $this->list['breadcrumbs'] = [
             ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
             ['title' => 'Master Items', 'link' => '#', 'icon' => ''],
@@ -56,25 +51,19 @@ class Item extends MY_Controller
         $this->data['MAIN_FOOTER'] = $main_footer;
         $this->parser->parse('template/main', $this->data);
     }
-
     private function openForm($mode = "ADD", $fin_item_id = 0)
     {
         $this->load->library("menus");
-
         if ($this->input->post("submit") != "") {
             $this->add_save();
         }
-
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
-
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Master Items" : "Update Master Items";
         $data["fin_item_id"] = $fin_item_id;
-
         $page_content = $this->parser->parse('pages/master/msitems/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
-
         $control_sidebar = NULL;
         $this->data["MAIN_HEADER"] = $main_header;
         $this->data["MAIN_SIDEBAR"] = $main_sidebar;
@@ -83,23 +72,19 @@ class Item extends MY_Controller
         $this->data["CONTROL_SIDEBAR"] = $control_sidebar;
         $this->parser->parse('template/main', $this->data);
     }
-
     public function add()
     {
         $this->openForm("ADD", 0);
     }
-
     public function Edit($fin_item_id)
     {
         $this->openForm("EDIT", $fin_item_id);
     }
-
     public function ajx_add_save()
     {
         $this->load->model('msitems_model');
         $this->form_validation->set_rules($this->msitems_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-
         if ($this->form_validation->run() == FALSE) {
             //print_r($this->form_validation->error_array());
             $this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
@@ -108,7 +93,6 @@ class Item extends MY_Controller
             $this->json_output();
             return;
         }
-
         $data = [
             "fst_item_code" => $this->input->post("fst_item_code"),
             "fst_item_name" => $this->input->post("fst_item_name"),
@@ -131,7 +115,6 @@ class Item extends MY_Controller
             "fdc_max_basic_unit_avg_cost" => parseNumber($this->input->post("fdc_max_basic_unit_avg_cost")),
             "fst_active" => 'A'
         ];
-
         $this->db->trans_start();
         $insertId = $this->msitems_model->insert($data);
         $dbError  = $this->db->error();
@@ -143,7 +126,6 @@ class Item extends MY_Controller
             $this->db->trans_rollback();
             return;
         }
-
         //Save Image
 		if (!empty($_FILES['fst_image']['tmp_name'])) {
 			$config['upload_path']          = './assets/app/items/image';
@@ -154,9 +136,7 @@ class Item extends MY_Controller
 			$config['max_size']             = 0; //kilobyte
 			$config['max_width']            = 0; //1024; //pixel
 			$config['max_height']           = 0; //768; //pixel
-
 			$this->load->library('upload', $config);
-
 			if (!$this->upload->do_upload('fst_image')) {
 				$this->ajxResp["status"] = "IMAGES_FAILED";
 				$this->ajxResp["message"] = "Failed to upload images, " . $this->upload->display_errors();
@@ -169,9 +149,7 @@ class Item extends MY_Controller
 			}
 			$this->ajxResp["data"]["data_image"] = $this->upload->data();
 		}
-
         //Save Unit Detail
-
         $this->load->model("msitemunitdetails_model");
         $details = $this->input->post("detail");
         $details = json_decode($details);
@@ -198,20 +176,18 @@ class Item extends MY_Controller
                 return;
             }
         }
-
         $this->db->trans_complete();
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
         $this->ajxResp["data"]["insert_id"] = $insertId;
         $this->json_output();
     }
-
     public function ajx_edit_save()
     {
         $this->load->model('msitems_model');
         $fin_item_id = $this->input->post("fin_item_id");
         $data = $this->msitems_model->getDataById($fin_item_id);
-        $msitems = $data["msitems"];
+        $msitems = $data["ms_items"];
         if (!$msitems) {
             $this->ajxResp["status"] = "DATA_NOT_FOUND";
             $this->ajxResp["message"] = "Data id $fin_item_id Not Found ";
@@ -219,7 +195,6 @@ class Item extends MY_Controller
             $this->json_output();
             return;
         }
-
         $this->form_validation->set_rules($this->msitems_model->getRules("EDIT", $fin_item_id));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
         if ($this->form_validation->run() == FALSE) {
@@ -230,7 +205,6 @@ class Item extends MY_Controller
             $this->json_output();
             return;
         }
-
         $data = [
             "fin_item_id" => $fin_item_id,
             "fst_item_code" => $this->input->post("fst_item_code"),
@@ -254,7 +228,6 @@ class Item extends MY_Controller
             "fdc_max_basic_unit_avg_cost" => parseNumber($this->input->post("fdc_max_basic_unit_avg_cost")),
             "fst_active" => 'A'
         ];
-
         $this->db->trans_start();
         $this->msitems_model->update($data);
         $dbError  = $this->db->error();
@@ -266,7 +239,6 @@ class Item extends MY_Controller
             $this->db->trans_rollback();
             return;
         }
-
         //Save Image
 		if (!empty($_FILES['fst_image']['tmp_name'])) {
 			$config['upload_path']          = './assets/app/items/image';
@@ -277,9 +249,7 @@ class Item extends MY_Controller
 			$config['max_size']             = 0; //kilobyte
 			$config['max_width']            = 0; //1024; //pixel
 			$config['max_height']           = 0; //768; //pixel
-
 			$this->load->library('upload', $config);
-
 			if (!$this->upload->do_upload('fst_image')) {
 				$this->ajxResp["status"] = "IMAGES_FAILED";
 				$this->ajxResp["message"] = "Failed to upload images, " . $this->upload->display_errors();
@@ -292,9 +262,7 @@ class Item extends MY_Controller
 			}
 			$this->ajxResp["data"]["data_image"] = $this->upload->data();
 		}
-
         //Save Unit Detail
-
         $this->load->model("msitemunitdetails_model");
         $this->msitemunitdetails_model->deleteByHeaderId($fin_item_id);
         $details = $this->input->post("detail");
@@ -322,9 +290,7 @@ class Item extends MY_Controller
                 return;
             }
         }
-
         //Save Bom Detail
-
         $this->load->model("msitembomdetails_model");
         $this->msitembomdetails_model->deleteByHeaderId($fin_item_id);
         $details = $this->input->post("detailBOM");
@@ -332,7 +298,7 @@ class Item extends MY_Controller
         foreach ($details as $item) {
             $data = [
                 "fin_item_id" => $fin_item_id,
-                "fin_item_idBOM" => $item->fin_item_idBOM,
+                "fin_item_id_bom" => $item->fin_item_id_bom,
                 "fst_unit" => $item->fst_unit
             ];
             $this->msitembomdetails_model->insert($data);
@@ -346,9 +312,7 @@ class Item extends MY_Controller
                 return;
             }
         }
-
         //Save Special pricing
-
         $this->load->model("msitemspecialpricinggroupdetails_model");
         $this->msitemspecialpricinggroupdetails_model->deleteByHeaderId($fin_item_id);
         $details = $this->input->post("specialprice");
@@ -371,27 +335,22 @@ class Item extends MY_Controller
                 return;
             }
         }
-
         $this->db->trans_complete();
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
         $this->ajxResp["data"]["insert_id"] = $fin_item_id;
         $this->json_output();
     }
-
     public function fetch_list_data()
     {
         $this->load->library("datatables");
         $this->datatables->setTableName("msitems");
-
         $selectFields = "fin_item_id,fst_item_code,fst_item_name,fst_vendor_item_name,'action' as action";
         $this->datatables->setSelectFields($selectFields);
-
         $searchFields = [];
         $searchFields[] = $this->input->get('optionSearch');
         $this->datatables->setSearchFields($searchFields);
         $this->datatables->activeCondition = "fst_active !='D'";
-
         // Format Data
         $datasources = $this->datatables->getData();
         $arrData = $datasources["data"];
@@ -402,22 +361,18 @@ class Item extends MY_Controller
 					<a class='btn-edit' href='#' data-id='" . $data["fin_item_id"] . "'><i class='fa fa-pencil'></i></a>
 					<a class='btn-delete' href='#' data-id='" . $data["fin_item_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
-
             $arrDataFormated[] = $data;
         }
         $datasources["data"] = $arrDataFormated;
         $this->json_output($datasources);
     }
-
     public function fetch_data($fin_item_id)
     {
         $this->load->model("msitems_model");
         $data = $this->msitems_model->getDataById($fin_item_id);
-
         //$this->load->library("datatables");		
         $this->json_output($data);
     }
-
     public function delete($id)
     {
         if (!$this->aauth->is_permit("")) {
@@ -426,45 +381,36 @@ class Item extends MY_Controller
             $this->json_output();
             return;
         }
-
         $this->load->model("msitems_model");
-
         $this->msitems_model->delete($id);
         $this->ajxResp["status"] = "DELETED";
         $this->ajxResp["message"] = "File deleted successfully";
         $this->json_output();
     }
-
-    public function get_data_fin_item_maingroup_id()
+    public function get_data_ItemMainGroupId()
     {
         $term = $this->input->get("term");
         $ssql = "select * from msmaingroupitems where fst_item_maingroup_name like ? order by fst_item_maingroup_name";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
-
         $this->json_output($rs);
     }
-
-    public function get_data_fin_item_group_id()
+    public function get_data_ItemGroupId()
     {
         $term = $this->input->get("term");
         $ssql = "select * from msgroupitems where fst_item_group_name like ? order by fst_item_group_name";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
-
         $this->json_output($rs);
     }
-
-    public function get_data_fin_item_subgroup_id($fin_item_group_id)
+    public function get_data_ItemSubGroupId($fin_item_group_id)
     {
         $term = $this->input->get("term");
-        $ssql = "select * from mssubgroupitems where fin_item_subgroup_name like ? and fin_item_group_id = ?";
+        $ssql = "select * from mssubgroupitems where fst_item_subgroup_name like ? and fin_item_group_id = ?";
         $qr = $this->db->query($ssql, ['%' . $term . '%', $fin_item_group_id]);
         $rs = $qr->result();
-
         $this->json_output($rs);
     }
-
     public function getAllList()
     {
         $this->load->model('msitems_model');
@@ -472,53 +418,43 @@ class Item extends MY_Controller
         $this->ajxResp["data"] = $result;
         $this->json_output();
     }
-
     public function get_data_ItemBom()
     {
         $term = $this->input->get("term");
         $ssql = "select * from msitems where fst_item_name like ? order by fst_item_name";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
-
         $this->json_output($rs);
     }
-
     public function get_data_unit()
     {
         $term = $this->input->get("term");
         $ssql = "select * from msunits where fst_unit like ? order by fst_unit";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
-
         $this->json_output($rs);
     }
-
     public function get_data_unitbom($fin_item_id)
     {
         $term = $this->input->get("term");
-        $ssql = "select * from msitemunitdetails where fst_unit like ? and fin_item_id = ? order by Unit";
+        $ssql = "select * from msitemunitdetails where fst_unit like ? and fin_item_id = ? order by fst_unit";
         $qr = $this->db->query($ssql, ['%' . $term . '%', $fin_item_id]);
         $rs = $qr->result();
-
         $this->json_output($rs);
     }
-
     public function get_data_pricinggroup()
     {
         $term = $this->input->get("term");
         $ssql = "select * from mscustpricinggroups where fst_cust_pricing_group_name like ? order by fin_cust_pricing_group_id";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
-
         $this->json_output($rs);
     }
-
     public function getSellingUnit($fin_item_id){
         $this->load->model("msitemunitdetails_model");
         $fst_unit = $this->msitemunitdetails_model->getSellingListUnit($fin_item_id);
         $this->json_output($fst_unit);
     }
-
     public function getSellingPrice($fin_item_id,$fst_unit,$fin_customer_id){
         $sellingPrice = $this->msitems_model->getSellingPrice($fin_item_id,$fst_unit,$fin_customer_id);
         $resp = [

@@ -47,49 +47,49 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 <!-- end box header -->
 
                 <!-- form start -->
-                <form id="frmMSItems" class="form-horizontal" action="<?= site_url() ?>master/msitems/add" method="POST" enctype="multipart/form-data">
+                <form id="frmItem" class="form-horizontal" action="<?= site_url() ?>master/item/add" method="POST" enctype="multipart/form-data">
                     <div class="box-body">
                         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="ItemId" class="col-md-2 control-label"><?= lang("Item ID") ?> #</label>
+                            <label for="fin_item_id" class="col-md-2 control-label"><?= lang("Item ID") ?> #</label>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" id="ItemId" placeholder="<?= lang("(Autonumber)") ?>" name="ItemId" value="<?= $ItemId ?>" readonly>
-                                <div id="ItemId_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fin_item_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_item_id" value="<?= $fin_item_id ?>" readonly>
+                                <div id="fin_item_id_err" class="text-danger"></div>
                             </div>
-                            <label for="ItemCode" class="col-md-2 control-label"><?= lang("Item Code") ?> #</label>
+                            <label for="fst_item_code" class="col-md-2 control-label"><?= lang("Item Code") ?> #</label>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" id="ItemCode" placeholder="<?= lang("Item Code") ?>" name="ItemCode">
-                                <div id="ItemCode_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fst_item_code" placeholder="<?= lang("Item Code") ?>" name="fst_item_code">
+                                <div id="fst_item_code_err" class="text-danger"></div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="ItemName" class="col-md-2 control-label"><?= lang("Item Name") ?> *</label>
+                            <label for="fst_item_name" class="col-md-2 control-label"><?= lang("Item Name") ?> *</label>
                             <div class="col-md-10">
-                                <input type="text" class="form-control" id="ItemName" placeholder="<?= lang("Item Name") ?>" name="ItemName">
-                                <div id="ItemName_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fst_item_name" placeholder="<?= lang("Item Name") ?>" name="fst_item_name">
+                                <div id="fst_item_name_err" class="text-danger"></div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="VendorItemName" class="col-md-2 control-label"><?= lang("Vendor Item Name") ?> *</label>
+                            <label for="fst_vendor_item_name" class="col-md-2 control-label"><?= lang("Vendor Item Name") ?> *</label>
                             <div class="col-md-10">
-                                <input type="text" class="form-control" id="VendorItemName" placeholder="<?= lang("Vendor Item Name") ?>" name="VendorItemName">
-                                <div id="VendorItemName_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fst_vendor_item_name" placeholder="<?= lang("Vendor Item Name") ?>" name="fst_vendor_item_name">
+                                <div id="fst_vendor_item_name_err" class="text-danger"></div>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="select-maingroupitem" class="col-md-2 control-label"><?= lang("Main Group") ?> :</label>
                             <div class="col-md-4">
-                                <select id="select-maingroupitem" class="form-control" name="ItemMainGroupId"></select>
+                                <select id="select-maingroupitem" class="form-control" name="fin_item_maingroup_id"></select>
                             </div>
 
-                            <label for="ItemTypeId" class="col-md-2 control-label"><?= lang("Item Type") ?> *</label>
+                            <label for="fin_item_type_id" class="col-md-2 control-label"><?= lang("Item Type") ?> *</label>
                             <div class="col-md-4">
-                                <select class="form-control" id="ItemTypeId" name="ItemTypeId">
+                                <select class="form-control" id="fin_item_type_id" name="fin_item_type_id">
                                     <option value='1'><?= lang("Raw Material") ?></option>
                                     <option value='2'><?= lang("Semi Finished Material") ?></option>
                                     <option value='3'><?= lang("Supporting Material") ?></option>
@@ -100,40 +100,40 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-GroupItemId" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
+                            <label for="select-GroupItem" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
                             <div class="col-md-4">
-                                <select id="select-GroupItemId" class="form-control" name="ItemGroupId"></select>
+                                <select id="select-GroupItem" class="form-control" name="fin_item_group_id"></select>
                             </div>
 
-                            <label for="select-SubGroupItemId" class="col-md-2 control-label"><?= lang("Sub Group") ?> :</label>
+                            <label for="select-SubGroupItem" class="col-md-2 control-label"><?= lang("Sub Group") ?> :</label>
                             <div class="col-md-4">
-                                <select id="select-SubGroupItemId" class="form-control" name="ItemSubGroupId"></select>
-                                <div id="ItemSubGroupId_err" class="text-danger"></div>
+                                <select id="select-SubGroupItem" class="form-control" name="fin_item_subgroup_id"></select>
+                                <div id="fin_item_subgroup_id_err" class="text-danger"></div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="isBatchNumber" class="col-sm-2 control-label"><?= lang("Batch Number") ?> :</label>
+                            <label for="fbl_is_batch_number" class="col-sm-2 control-label"><?= lang("Batch Number") ?> :</label>
                             <div class="checkbox">
-                                <label><input id="isBatchNumber" type="checkbox" name="isBatchNumber" value="1"><?= lang("Batch Number") ?></label><br>
+                                <label><input id="fbl_is_batch_number" type="checkbox" name="fbl_is_batch_number" value="1"><?= lang("Batch Number") ?></label><br>
                             </div>
 
-                            <label for="isSerialNumber" class="col-sm-2 control-label"><?= lang("Serial Number") ?> :</label>
+                            <label for="fbl_is_serial_number" class="col-sm-2 control-label"><?= lang("Serial Number") ?> :</label>
                             <div class="checkbox">
-                                <label><input id="isSerialNumber" type="checkbox" name="isSerialNumber" value="1"><?= lang("Serial Number") ?></label><br>
+                                <label><input id="fbl_is_serial_number" type="checkbox" name="fbl_is_serial_number" value="1"><?= lang("Serial Number") ?></label><br>
                             </div>
                         </div>
 
                         <div class='form-group'>
-                            <label for="ScaleForBOM" class="col-md-2 control-label"><?= lang("Scale For BOM") ?>:</label>
+                            <label for="fdc_scale_for_bom" class="col-md-2 control-label"><?= lang("Scale For BOM") ?>:</label>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" id="ScaleForBOM" placeholder="<?= lang(" 1 : ") ?>" name="ScaleForBOM">
-                                <div id="ScaleForBOM_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fdc_scale_for_bom" placeholder="<?= lang(" 1 : ") ?>" name="fdc_scale_for_bom">
+                                <div id="fdc_scale_for_bom_err" class="text-danger"></div>
                             </div>
-                            <label for="StorageRackInfo" class="col-md-2 control-label"><?= lang("Storage Rack Info") ?>:</label>
+                            <label for="fst_storage_rack_info" class="col-md-2 control-label"><?= lang("Storage Rack Info") ?>:</label>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" id="StorageRackInfo" placeholder="<?= lang("Storage Rack Info") ?>" name="StorageRackInfo">
-                                <div id="StorageRackInfo_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fst_storage_rack_info" placeholder="<?= lang("Storage Rack Info") ?>" name="fst_storage_rack_info">
+                                <div id="fst_storage_rack_info_err" class="text-danger"></div>
                             </div>
                         </div>
 
@@ -144,23 +144,23 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
                         </div>
                         <div class='form-group'>
-                            <label for="MaxItemDiscount" class="col-md-2 control-label"><?= lang("Max Item Discount") ?>:</label>
+                            <label for="fst_max_item_discount" class="col-md-2 control-label"><?= lang("Max Item Discount") ?>:</label>
                             <div class="col-md-10">
-                                <input type="text" class="form-control" id="MaxItemDiscount" placeholder="<?= lang("Max Item Discount") ?>" name="MaxItemDiscount">
-                                <div id="MaxItemDiscount_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fst_max_item_discount" placeholder="<?= lang("Max Item Discount") ?>" name="fst_max_item_discount">
+                                <div id="fst_max_item_discount_err" class="text-danger"></div>
                             </div>
                         </div>
                         <div class='form-group'>
-                            <label for="MinBasicUnitAvgCost" class="col-md-2 control-label"><?= lang("Min AvgCost") ?>:</label>
+                            <label for="fdc_min_basic_unit_avg_cost" class="col-md-2 control-label"><?= lang("Min AvgCost") ?>:</label>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" id="MinBasicUnitAvgCost" placeholder="<?= lang("Minimal BasicUnitAvgCost") ?>" value="0" name="MinBasicUnitAvgCost">
-                                <div id="MinBasicUnitAvgCost_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fdc_min_basic_unit_avg_cost" placeholder="<?= lang("Minimal BasicUnitAvgCost") ?>" value="0" name="fdc_min_basic_unit_avg_cost">
+                                <div id="fdc_min_basic_unit_avg_cost_err" class="text-danger"></div>
                             </div>
 
-                            <label for="MaxBasicUnitAvgCost" class="col-md-2 control-label"><?= lang("Max AvgCost") ?>:</label>
+                            <label for="fdc_max_basic_unit_avg_cost" class="col-md-2 control-label"><?= lang("Max AvgCost") ?>:</label>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" id="MaxBasicUnitAvgCost" placeholder="<?= lang("Maximal BasicUnitAvgCost") ?>" value="0" name="MaxBasicUnitAvgCost">
-                                <div id="MaxBasicUnitAvgCost_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fdc_max_basic_unit_avg_cost" placeholder="<?= lang("Maximal BasicUnitAvgCost") ?>" value="0" name="fdc_max_basic_unit_avg_cost">
+                                <div id="fdc_max_basic_unit_avg_cost_err" class="text-danger"></div>
                             </div>
                         </div>
 
@@ -177,21 +177,21 @@ defined('BASEPATH') or exit('No direct script access allowed');
     $(function() {
 
         <?php if ($mode == "EDIT") { ?>
-            init_form($("#ItemId").val());
+            init_form($("#fin_item_id").val());
         <?php } ?>
 
         $("#select-maingroupitem").select2({
             width: '100%',
             ajax: {
-                url: '<?= site_url() ?>Master/msitems/get_data_ItemMainGroupId',
+                url: '<?= site_url() ?>master/item/get_data_ItemMainGroupId',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
                     data2 = [];
                     $.each(data, function(index, value) {
                         data2.push({
-                            "id": value.ItemMainGroupId,
-                            "text": value.ItemMainGroupName
+                            "id": value.fin_item_maingroup_id,
+                            "text": value.fst_item_maingroup_name
                         });
                     });
                     console.log(data2);
@@ -203,18 +203,18 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         });
 
-        $("#select-GroupItemId").select2({
+        $("#select-GroupItem").select2({
             width: '100%',
             ajax: {
-                url: '<?= site_url() ?>Master/msitems/get_data_ItemGroupId',
+                url: '<?= site_url() ?>master/item/get_data_ItemGroupId',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
                     data2 = [];
                     $.each(data, function(index, value) {
                         data2.push({
-                            "id": value.ItemGroupId,
-                            "text": value.ItemGroupName
+                            "id": value.fin_item_group_id,
+                            "text": value.fst_item_group_name
                         });
                     });
                     console.log(data2);
@@ -226,21 +226,21 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         });
 
-        $("#select-GroupItemId").change(function(event) {
+        $("#select-GroupItem").change(function(event) {
             event.preventDefault();
-            $('#select-SubGroupItemId').val(null).trigger('change');
-            $("#select-SubGroupItemId").select2({
+            $('#select-SubGroupItem').val(null).trigger('change');
+            $("#select-SubGroupItem").select2({
                 width: '100%',
                 ajax: {
-                    url: '<?= site_url() ?>Master/msitems/get_data_ItemSubGroupId/' + $("#select-GroupItemId").val(),
+                    url: '<?= site_url() ?>master/item/get_data_ItemSubGroupId/' + $("#select-GroupItem").val(),
                     dataType: 'json',
                     delay: 250,
                     processResults: function(data) {
                         data2 = [];
                         $.each(data, function(index, value) {
                             data2.push({
-                                "id": value.ItemSubGroupId,
-                                "text": value.ItemSubGroupName
+                                "id": value.fin_item_subgroup_id,
+                                "text": value.fst_item_subgroup_name
                             });
                         });
                         console.log(data2);
@@ -257,14 +257,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
             event.preventDefault();
             $(".text-danger").html("");
 
-            data = new FormData($("#frmMSItems")[0]);
+            data = new FormData($("#frmItem")[0]);
             //data = $("#frmSalesOrder").serializeArray();
 
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
-                url = "<?= site_url() ?>Master/msitems/ajx_add_save";
+                url = "<?= site_url() ?>master/item/ajx_add_save";
             } else {
-                url = "<?= site_url() ?>Master/msitems/ajx_edit_save";
+                url = "<?= site_url() ?>master/item/ajx_edit_save";
             }
 
             //var formData = new FormData($('form')[0])
@@ -285,7 +285,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        window.location.href = "<?= site_url() ?>Master/msitems";
+                                        window.location.href = "<?= site_url() ?>master/item/lizt";
                                         return;
                                     }
                                 },
@@ -301,14 +301,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         }
                     } else if (resp.status == "SUCCESS") {
                         data = resp.data;
-                        $("#ItemId").val(data.insert_id);
+                        $("#fin_item_id").val(data.insert_id);
 
                         //Clear all previous error
                         $(".text-danger").html("");
 
                         // Change to Edit mode
                         $("#frm-mode").val("EDIT"); //ADD|EDIT
-                        $('#ItemName').prop('readonly', true);
+                        $('#fst_item_name').prop('readonly', true);
                     }
                 },
                 error: function(e) {
@@ -326,16 +326,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
     });
 
-    function init_form(ItemId) {
+    function init_form(fin_item_id) {
         //alert("Init Form");
-        var url = "<?= site_url() ?>Master/msitems/fetch_data/" + ItemId;
+        var url = "<?= site_url() ?>master/item/fetch_data/" + fin_item_id;
         $.ajax({
             type: "GET",
             url: url,
             success: function(resp) {
-                console.log(resp.msitems);
+                console.log(resp.ms_items);
 
-                $.each(resp.msitems, function(name, val) {
+                $.each(resp.ms_items, function(name, val) {
                     var $el = $('[name="' + name + '"]'),
                         type = $el.attr('type');
                     switch (type) {
@@ -353,15 +353,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 
                 // menampilkan data di select2
-                var newOption = new Option(resp.msitems.ItemMainGroupName, resp.msitems.ItemMainGroupId, true, true);
+                var newOption = new Option(resp.ms_items.fst_item_maingroup_name, resp.ms_items.fin_item_maingroup_id, true, true);
                 // Append it to the select
                 $('#select-maingroupitem').append(newOption).trigger('change');
-                var newOption = new Option(resp.msitems.ItemGroupName, resp.msitems.ItemGroupId, true, true);
+                var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
                 // Append it to the select
-                $('#select-GroupItemId').append(newOption).trigger('change');
-                var newOption = new Option(resp.msitems.ItemSubGroupName, resp.msitems.ItemSubGroupId, true, true);
+                $('#select-GroupItem').append(newOption).trigger('change');
+                var newOption = new Option(resp.ms_items.fst_item_subgroup_name, resp.msitems.fin_item_subgroup_id, true, true);
                 // Append it to the select
-                $('#select-SubGroupItemId').append(newOption).trigger('change');
+                $('#select-SubGroupItem').append(newOption).trigger('change');
 
             },
 
