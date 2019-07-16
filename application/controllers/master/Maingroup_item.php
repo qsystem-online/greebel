@@ -20,14 +20,14 @@ class Maingroup_item extends MY_Controller
         $this->load->library('menus');
         $this->list['page_name'] = "Master Main Groups";
         $this->list['list_name'] = "Main Group List";
-        $this->list['addnew_ajax_url'] = site_url() . 'Master/msmaingroupitems/add';
+        $this->list['addnew_ajax_url'] = site_url() . 'master/maingroup_item/add';
         $this->list['pKey'] = "id";
-        $this->list['fetch_list_data_ajax_url'] = site_url() . 'Master/msmaingroupitems/fetch_list_data';
-        $this->list['delete_ajax_url'] = site_url() . 'Master/msmaingroupitems/delete/';
-        $this->list['edit_ajax_url'] = site_url() . 'Master/msmaingroupitems/edit/';
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/maingroup_item/fetch_list_data';
+        $this->list['delete_ajax_url'] = site_url() . 'master/maingroup_item/delete/';
+        $this->list['edit_ajax_url'] = site_url() . 'master/maingroup_item/edit/';
         $this->list['arrSearch'] = [
-            'ItemMainGroupId' => 'Main Group ID',
-            'ItemMainGroupName' => 'Main Group Name'
+            'fin_item_maingroup_id' => 'Main Group ID',
+            'fst_item_maingroup_name' => 'Main Group Name'
         ];
 
         $this->list['breadcrumbs'] = [
@@ -36,8 +36,8 @@ class Maingroup_item extends MY_Controller
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'Main Group ID', 'width' => '10%', 'data' => 'ItemMainGroupId'],
-            ['title' => 'Main Group Name', 'width' => '25%', 'data' => 'ItemMainGroupName'],
+            ['title' => 'Main Group ID', 'width' => '10%', 'data' => 'fin_item_maingroup_id'],
+            ['title' => 'Main Group Name', 'width' => '25%', 'data' => 'fst_item_maingroup_name'],
             ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
@@ -53,7 +53,7 @@ class Maingroup_item extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
-    private function openForm($mode = "ADD", $ItemMainGroupId = 0)
+    private function openForm($mode = "ADD", $fin_item_maingroup_id = 0)
     {
         $this->load->library("menus");
 
@@ -66,7 +66,7 @@ class Maingroup_item extends MY_Controller
 
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Main Group" : "Update Main Group";
-        $data["ItemMainGroupId"] = $ItemMainGroupId;
+        $data["fin_item_maingroup_id"] = $fin_item_maingroup_id;
 
         $page_content = $this->parser->parse('pages/master/maingroupitems/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -85,15 +85,15 @@ class Maingroup_item extends MY_Controller
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($ItemMainGroupId)
+    public function Edit($fin_item_maingroup_id)
     {
-        $this->openForm("EDIT", $ItemMainGroupId);
+        $this->openForm("EDIT", $fin_item_maingroup_id);
     }
 
     public function ajx_add_save()
     {
-        $this->load->model('MSMaingroupitems_model');
-        $this->form_validation->set_rules($this->MSMaingroupitems_model->getRules("ADD", 0));
+        $this->load->model('msmaingroupitems_model');
+        $this->form_validation->set_rules($this->msmaingroupitems_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
         if ($this->form_validation->run() == FALSE) {
@@ -106,12 +106,12 @@ class Maingroup_item extends MY_Controller
         }
 
         $data = [
-            "ItemMainGroupName" => $this->input->post("ItemMainGroupName"),
+            "fst_item_maingroup_name" => $this->input->post("fst_item_maingroup_name"),
             "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
-        $insertId = $this->MSMaingroupitems_model->insert($data);
+        $insertId = $this->msmaingroupitems_model->insert($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -132,19 +132,19 @@ class Maingroup_item extends MY_Controller
 
     public function ajx_edit_save()
     {
-        $this->load->model('MSMaingroupitems_model');
-        $ItemMainGroupId = $this->input->post("ItemMainGroupId");
-        $data = $this->MSMaingroupitems_model->getDataById($ItemMainGroupId);
-        $master_maingroups = $data["maingroupitems"];
+        $this->load->model('msmaingroupitems_model');
+        $fin_item_maingroup_id = $this->input->post("fin_item_maingroup_id");
+        $data = $this->msmaingroupitems_model->getDataById($fin_item_maingroup_id);
+        $master_maingroups = $data["maingroup_items"];
         if (!$master_maingroups) {
             $this->ajxResp["status"] = "DATA_NOT_FOUND";
-            $this->ajxResp["message"] = "Data id $ItemMainGroupId Not Found ";
+            $this->ajxResp["message"] = "Data id $fin_item_maingroup_id Not Found ";
             $this->ajxResp["data"] = [];
             $this->json_output();
             return;
         }
 
-        $this->form_validation->set_rules($this->MSMaingroupitems_model->getRules("EDIT", $ItemMainGroupId));
+        $this->form_validation->set_rules($this->msmaingroupitems_model->getRules("EDIT", $fin_item_maingroup_id));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
         if ($this->form_validation->run() == FALSE) {
             //print_r($this->form_validation->error_array());
@@ -156,14 +156,14 @@ class Maingroup_item extends MY_Controller
         }
 
         $data = [
-            "ItemMainGroupId" => $ItemMainGroupId,
-            "ItemMainGroupName" => $this->input->post("ItemMainGroupName"),
+            "fin_item_maingroup_id" => $fin_item_maingroup_id,
+            "fst_item_maingroup_name" => $this->input->post("fst_item_maingroup_name"),
             "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
 
-        $this->MSMaingroupitems_model->update($data);
+        $this->msmaingroupitems_model->update($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -178,7 +178,7 @@ class Maingroup_item extends MY_Controller
 
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
-        $this->ajxResp["data"]["insert_id"] = $ItemMainGroupId;
+        $this->ajxResp["data"]["insert_id"] = $fin_item_maingroup_id;
         $this->json_output();
     }
 
@@ -187,7 +187,7 @@ class Maingroup_item extends MY_Controller
         $this->load->library("datatables");
         $this->datatables->setTableName("msmaingroupitems");
 
-        $selectFields = "ItemMainGroupId,ItemMainGroupName,'action' as action";
+        $selectFields = "fin_item_maingroup_id,fst_item_maingroup_name,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');
@@ -200,8 +200,8 @@ class Maingroup_item extends MY_Controller
         foreach ($arrData as $data) {
             //action
             $data["action"]    = "<div style='font-size:16px'>
-                        <a class='btn-edit' href='#' data-id='" . $data["ItemMainGroupId"] . "'><i class='fa fa-pencil'></i></a>
-                        <a class='btn-delete' href='#' data-id='" . $data["ItemMainGroupId"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+                        <a class='btn-edit' href='#' data-id='" . $data["fin_item_maingroup_id"] . "'><i class='fa fa-pencil'></i></a>
+                        <a class='btn-delete' href='#' data-id='" . $data["fin_item_maingroup_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
                     </div>";
 
             $arrDataFormated[] = $data;
@@ -210,10 +210,10 @@ class Maingroup_item extends MY_Controller
         $this->json_output($datasources);
     }
 
-    public function fetch_data($ItemMainGroupId)
+    public function fetch_data($fin_item_maingroup_id)
     {
-        $this->load->model("MSMaingroupitems_model");
-        $data = $this->MSMaingroupitems_model->getDataById($ItemMainGroupId);
+        $this->load->model("msmaingroupitems_model");
+        $data = $this->msmaingroupitems_model->getDataById($fin_item_maingroup_id);
 
         //$this->load->library("datatables");		
         $this->json_output($data);
@@ -229,9 +229,9 @@ class Maingroup_item extends MY_Controller
         }
         //echo $id;
         //die ();
-        $this->load->model("MSMaingroupitems_model");
+        $this->load->model("msmaingroupitems_model");
 
-        $this->MSMaingroupitems_model->delete($id);
+        $this->msmaingroupitems_model->delete($id);
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "File deleted successfully";
         $this->json_output();
