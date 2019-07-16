@@ -22,32 +22,32 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 <!-- end box header -->
 
                 <!-- form start -->
-                <form id="frmSubgroup" class="form-horizontal" action="<?= site_url() ?>ItemSubGroupId" method="POST" enctype="multipart/form-data">
+                <form id="frmSubgroup" class="form-horizontal" action="<?= site_url() ?>master/subgroup_item/add" method="POST" enctype="multipart/form-data">
                     <div class="box-body">
                         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="ItemSubGroupId" class="col-sm-2 control-label"><?= lang("Subgroup ID") ?></label>
+                            <label for="fin_item_subgroup_id" class="col-sm-2 control-label"><?= lang("Subgroup ID") ?></label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="ItemSubGroupId" placeholder="<?= lang("(Autonumber)") ?>" name="ItemSubGroupId" value="<?= $ItemSubGroupId ?>" readonly>
-                                <div id="ItemSubGroupId_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fin_item_subgroup_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_item_subgroup_id" value="<?= $fin_item_subgroup_id ?>" readonly>
+                                <div id="fin_item_subgroup_id_err" class="text-danger"></div>
 
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="ItemSubGroupName" class="col-sm-2 control-label"><?= lang("Subgroup Name") ?> * </label>
+                            <label for="fst_item_subgroup_name" class="col-sm-2 control-label"><?= lang("Subgroup Name") ?> * </label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="ItemSubGroupName" placeholder="<?= lang("Subgroup Name") ?>" name="ItemSubGroupName">
-                                <div id="ItemSubGroupName_err" class="text-danger"></div>
+                                <input type="text" class="form-control" id="fst_item_subgroup_name" placeholder="<?= lang("Subgroup Name") ?>" name="fst_item_subgroup_name">
+                                <div id="fst_item_subgroup_name_err" class="text-danger"></div>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="select-GroupItem" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
                             <div class="col-md-4">
-                                <select id="select-GroupItem" class="form-control" name="ItemGroupId"></select>
+                                <select id="select-GroupItem" class="form-control" name="fin_item_group_id"></select>
                             </div>
                         </div>
                         <!-- end box body -->
@@ -65,7 +65,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     $(function() {
 
         <?php if ($mode == "EDIT") { ?>
-            init_form($("#ItemSubGroupId").val());
+            init_form($("#fin_item_subgroup_id").val());
         <?php } ?>
 
         $("#btnSubmitAjax").click(function(event) {
@@ -74,9 +74,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
-                url = "<?= site_url() ?>Master/mssubgroupitems/ajx_add_save";
+                url = "<?= site_url() ?>master/subgroup_item/ajx_add_save";
             } else {
-                url = "<?= site_url() ?>Master/mssubgroupitems/ajx_edit_save";
+                url = "<?= site_url() ?>master/subgroup_item/ajx_edit_save";
             }
 
             //var formData = new FormData($('form')[0])
@@ -98,7 +98,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
                                         //location.reload();
-                                        window.location.href = "<?= site_url() ?>Master/mssubgroupitems";
+                                        window.location.href = "<?= site_url() ?>master/subgroup_item/lizt";
                                         return;
                                     }
                                 },
@@ -114,7 +114,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         }
                     } else if (resp.status == "SUCCESS") {
                         data = resp.data;
-                        $("#ItemGroupId").val(data.insert_id);
+                        $("#fin_item_group_id").val(data.insert_id);
 
                         //Clear all previous error
                         $(".text-danger").html("");
@@ -136,15 +136,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $("#select-GroupItem").select2({
             width: '100%',
             ajax: {
-                url: '<?= site_url() ?>Master/mssubgroupitems/get_data_ItemGroup',
+                url: '<?= site_url() ?>master/subgroup_item/get_data_ItemGroup',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
                     data2 = [];
                     $.each(data, function(index, value) {
                         data2.push({
-                            "id": value.ItemGroupId,
-                            "text": value.ItemGroupName
+                            "id": value.fin_item_group_id,
+                            "text": value.fst_item_group_name
                         });
                     });
                     console.log(data2);
@@ -158,9 +158,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
     });
 
-    function init_form(ItemSubGroupId) {
+    function init_form(fin_item_subgroup_id) {
         //alert("Init Form");
-        var url = "<?= site_url() ?>Master/mssubgroupitems/fetch_data/" + ItemSubGroupId;
+        var url = "<?= site_url() ?>master/subgroup_item/fetch_data/" + fin_item_subgroup_id;
         $.ajax({
             type: "GET",
             url: url,
@@ -183,7 +183,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
                 // menampilkan data di select2
-                var newOption = new Option(resp.subgroupitems.ItemGroupName, resp.subgroupitems.ItemGroupId, true, true);
+                var newOption = new Option(resp.subgroupitems.fst_item_group_name, resp.subgroupitems.fin_item_group_id, true, true);
                 // Append it to the select
                 $('#select-GroupItem').append(newOption).trigger('change');
             },
