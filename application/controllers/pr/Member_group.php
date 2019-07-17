@@ -17,11 +17,11 @@ class Member_group extends MY_Controller{
 		$this->load->library('menus');
 		$this->list['page_name'] = "Master Member Groups";
 		$this->list['list_name'] = "Master Member Groups List";
-		$this->list['addnew_ajax_url'] = site_url() . 'pr/membergroup/add';
+		$this->list['addnew_ajax_url'] = site_url() . 'pr/member_group/add';
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/membergroup/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'pr/membergroup/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'pr/membergroup/edit/';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/member_group/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'pr/member_group/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'pr/member_group/edit/';
 		$this->list['arrSearch'] = [
 			'fin_member_group_id' => 'Member Groups ID',
 			'fst_member_group_name' => 'Member Groups Name'

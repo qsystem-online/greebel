@@ -41,23 +41,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmMSRelations" class="form-horizontal" action="<?=site_url()?>pr/msrelations/add" method="POST" enctype="multipart/form-data">			
+            <form id="frmMSRelations" class="form-horizontal" action="<?=site_url()?>pr/relation/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class="form-group">
-                    <label for="RelationId" class="col-md-2 control-label"><?=lang("Relation ID")?> :</label>
+                    <label for="fin_relation_id" class="col-md-2 control-label"><?=lang("Relation ID")?> :</label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="RelationId" placeholder="<?=lang("(Autonumber)")?>" name="RelationId" value="<?=$RelationId?>" readonly>
-							<div id="RelationId_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fin_relation_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_relation_id" value="<?=$fin_relation_id?>" readonly>
+							<div id="fin_relation_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-					<label for="RelationType" class="col-md-2 control-label"><?=lang("Relation Type")?> :</label>
+					<label for="fst_relation_type" class="col-md-2 control-label"><?=lang("Relation Type")?> :</label>
 						<div class="col-md-10">
-							<select class="form-control select2" id="RelationType" name="RelationType[]"  multiple="multiple">
+							<select class="form-control select2" id="fst_relation_type" name="fst_relation_type[]"  multiple="multiple">
 								<option value="1"><?=lang("Customer")?></option>
 								<option value="2"><?=lang("Supplier/Vendor")?></option>
 								<option value="3"><?=lang("Expedisi")?></option>
@@ -74,35 +74,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fin_parent_id_err" class="text-danger"></div>
 						</div>
 					
-					<label for="select-relationgroupid" class="col-md-2 control-label"><?=lang("Relation Group Name")?> :</label>
+					<label for="select-groupId" class="col-md-2 control-label"><?=lang("Relation Group Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-relationgroupid" class="form-control" name="RelationGroupId">
+							<select id="select-groupId" class="form-control" name="fin_relation_group_id">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="RelationGroupId_err" class="text-danger"></div>
+							<div id="fin_relation_group_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-                    <label for="RelationName" class="col-md-2 control-label"><?=lang("Relation Name")?> :</label>
+                    <label for="fst_relation_name" class="col-md-2 control-label"><?=lang("Relation Name")?> :</label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="RelationName" placeholder="<?=lang("Relation Name")?>" name="RelationName">
-							<div id="RelationName_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_relation_name" placeholder="<?=lang("Relation Name")?>" name="fst_relation_name">
+							<div id="fst_relation_name_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-					<label for="BusinessType" class="col-md-2 control-label"><?=lang("Business Type")?> :</label>
+					<label for="fst_business_type" class="col-md-2 control-label"><?=lang("Business Type")?> :</label>
 						<div class="col-md-4">
-							<select class="form-control" id="BusinessType" name="BusinessType">
+							<select class="form-control" id="fst_business_type" name="fst_business_type">
 								<option value='P'><?=lang("Personal")?></option>
 								<option value='C'><?=lang("Corporate")?></option>
 							</select>
 						</div>
 
-					<label for="Gender" class="col-md-2 control-label personal-info"><?=lang("Gender")?> :</label>
+					<label for="fst_gender" class="col-md-2 control-label personal-info"><?=lang("Gender")?> :</label>
 						<div class="col-md-4 personal-info">
-							<select class="form-control" id="Gender" name="Gender">
+							<select class="form-control" id="fst_gender" name="fst_gender">
 								<option value="0">-- <?=lang("select")?> --</option>
 								<option value="M"><?=lang("Male")?></option>
 								<option value="F"><?=lang("Female")?></option>
@@ -111,38 +111,38 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group personal-info">
-					<label for="BirthDate" class="col-md-2 control-label"><?=lang("Birth Date")?> :</label>
+					<label for="fdt_birth_date" class="col-md-2 control-label"><?=lang("Birth Date")?> :</label>
 						<div class="col-md-4">
 							<div class="input-group date">
 								<div class="input-group-addon">
 									<i class="fa fa-calendar"></i>
 								</div>
-								<input type="text" class="form-control pull-right datepicker" id="BirthDate" name="BirthDate"/>								
+								<input type="text" class="form-control pull-right datepicker" id="fdt_birth_date" name="fdt_birth_date"/>								
 							</div>
-							<div id="BirthDate_err" class="text-danger"></div>
+							<div id="fdt_birth_date_err" class="text-danger"></div>
 							<!-- /.input group -->
 						</div>
 
-					<label for="BirthPlace" class="col-md-2 control-label"><?=lang("Birth Place")?> :</label>
+					<label for="fst_birth_place" class="col-md-2 control-label"><?=lang("Birth Place")?> :</label>
 						<div class="col-md-4">
-							<input type="text" class="form-control" id="BirthPlace" placeholder="<?=lang("Birth Place")?>" name="BirthPlace">
-							<div id="BirthPlace_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_birth_place" placeholder="<?=lang("Birth Place")?>" name="fst_birth_place">
+							<div id="fst_birth_place_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group personal-info">
-						<label for="NIK" class="col-md-2 control-label"><?=lang("NIK")?> :</label>
+						<label for="fst_nik" class="col-md-2 control-label"><?=lang("NIK")?> :</label>
 						<div class="col-md-4">
-							<input type="text" class="form-control" id="NIK" placeholder="<?=lang("NIK")?>" name="NIK">
-							<div id="NIK_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_nik" placeholder="<?=lang("NIK")?>" name="fst_nik">
+							<div id="fst_nik_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-					<label for="Address" class="col-md-2 control-label"><?=lang("Address")?> :</label>
+					<label for="fst_address" class="col-md-2 control-label"><?=lang("Address")?> :</label>
 						<div class="col-md-10">
-							<textarea class="form-control" id="Address" placeholder="<?=lang("Address")?>" name="Address"></textarea>
-							<div id="Address_err" class="text-danger"></div>
+							<textarea class="form-control" id="fst_address" placeholder="<?=lang("Address")?>" name="fst_address"></textarea>
+							<div id="fst_address_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -155,106 +155,106 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="Phone" class="col-md-2 control-label"><?=lang("Phone")?> :</label>
+					<label for="fst_phone" class="col-md-2 control-label"><?=lang("Phone")?> :</label>
 						<div class="col-md-4">
-							<input type="text" class="form-control" id="Phone" placeholder="<?=lang("Phone")?>" name="Phone">
-							<div id="Phone_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_phone" placeholder="<?=lang("Phone")?>" name="fst_phone">
+							<div id="fst_phone_err" class="text-danger"></div>
 						</div>
 
-					<label for="Fax" class="col-md-2 control-label"><?=lang("Fax")?> :</label>
+					<label for="fst_fax" class="col-md-2 control-label"><?=lang("Fax")?> :</label>
 						<div class="col-md-4">
-							<input type="text" class="form-control" id="Fax" placeholder="<?=lang("Fax")?>" name="Fax">
-							<div id="Fax_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="PostalCode" class="col-md-2 control-label"><?=lang("Postal Code")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control" id="PostalCode" placeholder="<?=lang("Postal Code")?>" name="PostalCode">
-							<div id="PostalCode_err" class="text-danger"></div>
-						</div>
-
-					<label for="select-countryname" class="col-md-2 control-label"><?=lang("Country Name")?> :</label>
-						<div class="col-md-4">
-							<select id="select-countryname" class="form-control" name="CountryId">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="CountryName_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_fax" placeholder="<?=lang("Fax")?>" name="fst_fax">
+							<div id="fst_fax_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-					<label for="select-provincename" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
+					<label for="fst_postal_code" class="col-md-2 control-label"><?=lang("Postal Code")?> :</label>
 						<div class="col-md-4">
-							<select id="select-provincename" class="form-control" name="kode">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="nama_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_postal_code" placeholder="<?=lang("Postal Code")?>" name="fst_postal_code">
+							<div id="fst_postal_code_err" class="text-danger"></div>
 						</div>
 
-					<label for="select-districtname" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
+					<label for="select-country" class="col-md-2 control-label"><?=lang("Country Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-districtname" class="form-control" name="kode">
+							<select id="select-country" class="form-control" name="fin_country_id">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="nama_err" class="text-danger"></div>
+							<div id="fst_country_name_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-					<label for="select-subdistrictname" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
+					<label for="select-provinces" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-subdistrictname" class="form-control" name="kode">
+							<select id="select-provinces" class="form-control" name="fst_kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="nama_err" class="text-danger"></div>
+							<div id="fst_nama__err" class="text-danger"></div>
+						</div>
+
+					<label for="select-district" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
+						<div class="col-md-4">
+							<select id="select-district" class="form-control" name="fst_kode">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fst_nama__err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+					<label for="select-subdistrict" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
+						<div class="col-md-4">
+							<select id="select-subdistrict" class="form-control" name="fst_kode">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fst_nama__err" class="text-danger"></div>
 						</div>
 
 					<label for="select-village" class="col-md-2 control-label"><?=lang("Village Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-villagename" class="form-control" name="kode">
+							<select id="select-village" class="form-control" name="fst_kode">
 								<option value="0">-- <?=lang("select")?> --</option>
-								<div id="nama_err" class="text-danger"></div>
+								<div id="fst_nama__err" class="text-danger"></div>
 							</select>
 						</div>
 					</div>
 
 					<div class="form-group relation-info">
-					<label for="select-pricinggroupname" class="col-md-2 control-label"><?=lang("Pricing Group")?> :</label>
+					<label for="select-custpricing" class="col-md-2 control-label"><?=lang("Pricing Group")?> :</label>
 						<div class="col-md-10">
-							<select id="select-pricinggroupname" class="form-control" name="CustPricingGroupid">
+							<select id="select-custpricing" class="form-control" name="fin_cust_pricing_group_id">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="CustPricingGroupid_err" class="text-danger"></div>
+							<div id="fin_cust_pricing_group_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-                    <label for="NPWP" class="col-md-2 control-label"><?=lang("NPWP")?> :</label>
+                    <label for="fst_npwp" class="col-md-2 control-label"><?=lang("NPWP")?> :</label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="NPWP" placeholder="<?=lang("NPWP")?>" name="NPWP">
-							<div id="NPWP_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_npwp" placeholder="<?=lang("NPWP")?>" name="fst_npwp">
+							<div id="fst_npwp_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-					<label for="RelationNotes" class="col-md-2 control-label"><?=lang("Relation Notes")?> :</label>
+					<label for="fst_relation_notes" class="col-md-2 control-label"><?=lang("Relation fst_notes")?> :</label>
 						<div class="col-md-7">
-							<select id="select-relationnotes" class="form-control" name="RelationNotes">
+							<select id="select-notes" class="form-control" name="fst_relation_notes">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<textarea class="form-control" id="RelationNotes" name="RelationNotes"></textarea>
-							<div id="RelationNotes_err" class="text-danger"></div>
+							<textarea class="form-control" id="fst_relation_notes" name="fst_relation_notes"></textarea>
+							<div id="fst_relation_notes_err" class="text-danger"></div>
 						</div>
-						<button id="btn-add-RelationNotes" type="button" class="btn btn-add" ><?=lang("Add")?></button>
+						<button id="btn-add-fst_relation_notes" type="button" class="btn btn-add" ><?=lang("Add")?></button>
 					</div>
 
 					<div class="form-group">
-					<label for="fin_credit_limit" class="col-md-2 control-label"><?=lang("Credit Limit")?> :</label>
+					<label for="fdc_credit_limit" class="col-md-2 control-label"><?=lang("Credit Limit")?> :</label>
 						<div class="col-md-4">
-							<input type="text" class="form-control text-right money" id="fin_credit_limit" name="fin_credit_limit">
-							<div id="fin_credit_limit_err" class="text-danger"></div>
+							<input type="text" class="form-control text-right money" id="fdc_credit_limit" name="fdc_credit_limit">
+							<div id="fdc_credit_limit_err" class="text-danger"></div>
 						</div>
 
 					<label for="fin_sales_area_id" class="col-md-2 control-label"><?=lang("Sales Area Name")?> :</label>
@@ -275,9 +275,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fin_sales_id_err" class="text-danger"></div>
 						</div>
 
-					<label for="select-warehouseId" class="col-md-2 control-label"><?=lang("Warehouse")?> :</label>
+					<label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?> :</label>
 						<div class="col-md-4">
-							<select id="select-warehouseId" class="form-control" name="fin_warehouse_id">
+							<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="fin_warehouse_id_err" class="text-danger"></div>
@@ -331,7 +331,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 
 		<?php if($mode == "EDIT"){?>
-			init_form($("#RelationId").val());
+			init_form($("#fin_relation_id").val());
 		<?php } ?>
 
 		$("#btnSubmitAjax").click(function(event){
@@ -340,9 +340,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
-				url =  "<?= site_url() ?>pr/msrelations/ajx_add_save";
+				url =  "<?= site_url() ?>pr/relation/ajx_add_save";
 			}else{
-				url =  "<?= site_url() ?>pr/msrelations/ajx_edit_save";
+				url =  "<?= site_url() ?>pr/relation/ajx_edit_save";
 			}
 
 			//var formData = new FormData($('form')[0])
@@ -363,7 +363,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>pr/msrelations/lizt";
+										window.location.href = "<?= site_url() ?>pr/relation/lizt";
 										return;
 									}
 								},
@@ -379,14 +379,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					}else if(resp.status == "SUCCESS") {
 						data = resp.data;
-						$("#RelationId").val(data.insert_id);
+						$("#fin_relation_id").val(data.insert_id);
 
 						//Clear all previous error
 						$(".text-danger").html("");
 
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
-						$('#RelationName').prop('readonly', true);
+						$('#fst_relation_name').prop('readonly', true);
 					}
 				},
 				error: function (e) {
@@ -403,7 +403,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#select-parentId").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_parentId',
+				url: '<?=site_url()?>pr/relation/get_parent_id',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -411,8 +411,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data = data.data;
 					$.each(data,function(index,value){
 						items.push({
-							"id" : value.RelationId,
-							"text" : value.RelationName
+							"id" : value.fin_relation_id,
+							"text" : value.fst_relation_name
 						});
 					});
 					console.log(items);
@@ -424,11 +424,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
-		$("#select-relationgroupid").select2({
+		$("#select-groupId").select2({
 			width: '100%',
 			tokenSeparators: [",", " "],
 			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_msrelationgroups',
+				url: '<?=site_url()?>pr/relation/get_relation_group',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -436,8 +436,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data = data.data;
 					$.each(data,function(index,value){
 						items.push({
-							"id" : value.RelationGroupId,
-							"text" : value.RelationGroupName
+							"id" : value.fin_relation_group_id,
+							"text" : value.fst_relation_group_name
 						});
 					});
 					console.log(items);
@@ -449,21 +449,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
-		$("#BusinessType").change(function(event){
+		$("#fst_business_type").change(function(event){
 			event.preventDefault();
 			$(".personal-info").hide();
 
-			$("#BusinessType").each(function(index){				
+			$("#fst_business_type").each(function(index){				
 				if ($(this).val() == "P"){
 					$(".personal-info").show();
 				} 
 			});
 		});
 
-		$("#select-countryname").select2({
+		$("#select-country").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_mscountries',
+				url: '<?=site_url()?>pr/relation/get_countries',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -471,8 +471,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data = data.data;
 					$.each(data,function(index,value){
 						items.push({
-							"id" : value.CountryId,
-							"text" : value.CountryName
+							"id" : value.fin_country_id,
+							"text" : value.fst_country_name
 						});
 					});
 					console.log(items);
@@ -484,13 +484,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
-		$("#select-countryname").change(function(event){
+		$("#select-country").change(function(event){
 			event.preventDefault();
-			$('#select-provincename').val(null).trigger('change');
-			$("#select-provincename").select2({
+			$('#select-provinces').val(null).trigger('change');
+			$("#select-provinces").select2({
 				width: '100%',
 				ajax: {
-					url: '<?=site_url()?>pr/msrelations/get_provinces/'+$("#select-countryname").val(),
+					url: '<?=site_url()?>pr/relation/get_provinces/'+$("#select-country").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -498,8 +498,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						data = data.data;
 						$.each(data,function(index,value){
 							items.push({
-								"id" : value.kode,
-								"text" : value.nama
+								"id" : value.fst_kode,
+								"text" : value.fst_nama
 							});
 						});
 						console.log(items);
@@ -512,13 +512,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-provincename").change(function(event){
+		$("#select-provinces").change(function(event){
 			event.preventDefault();
-			$('#select-districtname').val(null).trigger('change');
-			$("#select-districtname").select2({
+			$('#select-district').val(null).trigger('change');
+			$("#select-district").select2({
 				width: '100%',
 				ajax: {
-					url: '<?=site_url()?>pr/msrelations/get_districts/'+$("#select-provincename").val(),
+					url: '<?=site_url()?>pr/relation/get_districts/'+$("#select-provinces").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -526,8 +526,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						data = data.data;
 						$.each(data,function(index,value){
 							items.push({
-								"id" : value.kode,
-								"text" : value.nama
+								"id" : value.fst_kode,
+								"text" : value.fst_nama
 							});
 						});
 						console.log(items);
@@ -540,13 +540,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-districtname").change(function(event){
+		$("#select-district").change(function(event){
 			event.preventDefault();
-			$('#select-subdistrictname').val(null).trigger('change');
-			$("#select-subdistrictname").select2({
+			$('#select-subdistrict').val(null).trigger('change');
+			$("#select-subdistrict").select2({
 				width: '100%',
 				ajax: {
-					url: '<?=site_url()?>pr/msrelations/get_subdistricts/'+$("#select-districtname").val(),
+					url: '<?=site_url()?>pr/relation/get_subdistricts/'+$("#select-district").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -554,8 +554,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						data = data.data;
 						$.each(data,function(index,value){
 							items.push({
-								"id" : value.kode,
-								"text" : value.nama
+								"id" : value.fst_kode,
+								"text" : value.fst_nama
 							});
 						});
 						console.log(items);
@@ -568,13 +568,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-subdistrictname").change(function(event){
+		$("#select-subdistrict").change(function(event){
 			event.preventDefault();
-			$('#select-villagename').val(null).trigger('change');
-			$("#select-villagename").select2({
+			$('#select-village').val(null).trigger('change');
+			$("#select-village").select2({
 				width: '100%',
 				ajax: {
-					url: '<?=site_url()?>pr/msrelations/get_village/'+$("#select-subdistrictname").val(),
+					url: '<?=site_url()?>pr/relation/get_village/'+$("#select-subdistrict").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -582,8 +582,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						data = data.data;
 						$.each(data,function(index,value){
 							items.push({
-								"id" : value.kode,
-								"text" : value.nama
+								"id" : value.fst_kode,
+								"text" : value.fst_nama
 							});
 						});
 						console.log(items);
@@ -596,10 +596,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-pricinggroupname").select2({
+		$("#select-custpricing").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_mscustpricinggroups',
+				url: '<?=site_url()?>pr/relation/get_cust_pricing_group',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -607,8 +607,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data = data.data;
 					$.each(data,function(index,value){
 						items.push({
-							"id" : value.CustPricingGroupid,
-							"text" : value.CustPricingGroupName
+							"id" : value.fin_cust_pricing_group_id,
+							"text" : value.fst_cust_pricing_group_name
 						});
 					});
 					console.log(items);
@@ -620,22 +620,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
-		$("#RelationType").change(function(event){
+		$("#fst_relation_type").change(function(event){
 			event.preventDefault();
 			$(".relation-info").show();
 
-			$("#RelationType").each(function(index){				
+			$("#fst_relation_type").each(function(index){				
 				if ($(this).val() >= "2"){
 					$(".relation-info").hide();
 				}
 			});
 		});
 
-		$("#select-relationnotes").select2({
+		$("#select-notes").select2({
 			width: '100%',
 			tokenSeparators: [",", " "],
 			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_msrelationprintoutnotes',
+				url: '<?=site_url()?>pr/relation/get_relation_print_out_note',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -643,8 +643,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data = data.data;
 					$.each(data,function(index,value){
 						items.push({
-							"id" : value.NoteId,
-							"text" : value.Notes
+							"id" : value.fin_note_id,
+							"text" : value.fst_notes
 						});
 					});
 					console.log(items);
@@ -659,7 +659,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#select-salesArea").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_salesArea',
+				url: '<?=site_url()?>pr/relation/get_sales_area',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -683,7 +683,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#select-salesId").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_salesId',
+				url: '<?=site_url()?>pr/relation/get_sales_id',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -708,17 +708,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			event.preventDefault();
 			$(".relation-info").show();
 
-			$("#RelationType").each(function(index){				
+			$("#fst_relation_type").each(function(index){				
 				if ($(this).val() >= "2"){
 					$(".relation-info").hide();
 				}
 			});
 		});
 
-		$("#select-warehouseId").select2({
+		$("#select-warehouse").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>pr/msrelations/get_warehouseId',
+				url: '<?=site_url()?>pr/relation/get_warehouse',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -742,25 +742,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		var newline = "\r\n";
 		var data = "";
 		
-		$('#select-relationnotes').on('select2:select', function (e) {
+		$('#select-notes').on('select2:select', function (e) {
 			data = e.params.data;
-			//var selected_relationnotes = data;
+			//var selected_fst_relation_notes = data;
 		});
 
-		$("#btn-add-RelationNotes").click(function(event){
-			//alert("RelationNotes");
+		$("#btn-add-fst_relation_notes").click(function(event){
+			//alert("fst_relation_notes");
 			event.preventDefault();
-			var sstr = $("#RelationNotes").val();
+			var sstr = $("#fst_relation_notes").val();
 			//alert (sstr);
-			$("#RelationNotes").val(sstr + data.text + "\r\n");
-			//console.log(selected_relationnotes);
+			$("#fst_relation_notes").val(sstr + data.text + "\r\n");
+			//console.log(selected_fst_relation_notes);
 		});
 	});
 
 
-	function init_form(RelationId){
+	function init_form(fin_relation_id){
 		//alert("Init Form");
-		var url = "<?=site_url()?>pr/msrelations/fetch_data/" + RelationId;
+		var url = "<?=site_url()?>pr/relation/fetch_data/" + fin_relation_id;
 		$.ajax({
 			type: "GET",
 			url: url,
@@ -783,54 +783,54 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
-				var relationType = resp.ms_relations.RelationType.split(",");
-				console.log(relationType);
-				$("#RelationType").val(relationType).trigger('change');
+				var fst_relation_type = resp.ms_relations.fst_relation_type.split(",");
+				console.log(fst_relation_type);
+				$("#fst_relation_type").val(fst_relation_type).trigger('change');
 
-				$("#BusinessType").each(function(index){				
+				$("#fst_business_type").each(function(index){				
 					if ($(this).val() == "C"){
 						$(".personal-info").hide();
 					} 
 				});
 
-				$("#RelationType").each(function(index){			
+				$("#fst_relation_type").each(function(index){			
 					if ($(this).val() == "1"){
 						$(".relation-info").show();
 					} 
 				});
 
-				$("#BirthDate").datepicker('update', dateFormat(resp.ms_relations.BirthDate));
+				$("#fdt_birth_date").datepicker('update', dateFormat(resp.ms_relations.fdt_birth_date));
 
 				var newOption = new Option(resp.ms_relations.ParentName, resp.ms_relations.fin_parent_id, true, true);
 				$('#select-parentId').append(newOption);
 				$("#select-parentId").val(resp.ms_relations.fin_parent_id).trigger('change');
 
 				// menampilkan data di select2, menu edit/update
-				var newOption = new Option(resp.ms_relations.RelationGroupName, resp.ms_relations.RelationGroupId, true, true);
+				var newOption = new Option(resp.ms_relations.fst_relation_group_name, resp.ms_relations.fin_relation_group_id, true, true);
 				// Append it to the select
-    			$('#select-relationgroupid').append(newOption).trigger('change');
+    			$('#select-groupId').append(newOption).trigger('change');
 
 				// menampilkan data di select2, menu edit/update
-				var newOption = new Option(resp.ms_relations.CountryName, resp.ms_relations.CountryId, true, true);
-    			$('#select-countryname').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.fst_country_name, resp.ms_relations.fin_country_id, true, true);
+    			$('#select-country').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.namaprovince, resp.ms_relations.province, true, true);
-				$('#select-provincename').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.fst_province_name, resp.ms_relations.province, true, true);
+				$('#select-provinces').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.namadistrict, resp.ms_relations.district, true, true);
-				$('#select-districtname').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.fst_district_name, resp.ms_relations.district, true, true);
+				$('#select-district').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.namasubdistrict, resp.ms_relations.subdistrict, true, true);
-				$('#select-subdistrictname').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.fst_subdistrict_name, resp.ms_relations.subdistrict, true, true);
+				$('#select-subdistrict').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.namavillage, resp.ms_relations.village, true, true);
-				$('#select-villagename').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.fst_village_name, resp.ms_relations.village, true, true);
+				$('#select-village').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.CustPricingGroupName, resp.ms_relations.CustPricingGroupid, true, true);
-				$('#select-pricinggroupname').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.fst_cust_pricing_group_name, resp.ms_relations.fin_cust_pricing_group_id, true, true);
+				$('#select-custpricing').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.Notes, true);
-				$('#select-relationnotes').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_relations.fst_notes, true);
+				$('#select-notes').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.fst_name, resp.ms_relations.fin_sales_area_id, true, true);
 				$('#select-salesArea').append(newOption).trigger('change');
@@ -839,7 +839,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$('#select-salesId').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.fst_warehouse_name, resp.ms_relations.fin_warehouse_id, true, true);
-				$('#select-warehouseId').append(newOption).trigger('change');
+				$('#select-warehouse').append(newOption).trigger('change');
 
 			},
 

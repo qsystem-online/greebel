@@ -43,7 +43,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmMemberGroup" class="form-horizontal" action="<?=site_url()?>pr/membergroup/add" method="POST" enctype="multipart/form-data">			
+            <form id="frmMemberGroup" class="form-horizontal" action="<?=site_url()?>pr/member_group/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
@@ -87,9 +87,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
-				url =  "<?= site_url() ?>pr/membergroup/ajx_add_save";
+				url =  "<?= site_url() ?>pr/member_group/ajx_add_save";
 			}else{
-				url =  "<?= site_url() ?>pr/membergroup/ajx_edit_save";
+				url =  "<?= site_url() ?>pr/member_group/ajx_edit_save";
 			}
 
 			//var formData = new FormData($('form')[0])
@@ -110,7 +110,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>pr/membergroup/lizt";
+										window.location.href = "<?= site_url() ?>pr/member_group/lizt";
 										return;
 									}
 								},
@@ -149,7 +149,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	function init_form(fin_member_group_id){
 		//alert("Init Form");
-		var url = "<?=site_url()?>pr/membergroup/fetch_data/" + fin_member_group_id;
+		var url = "<?=site_url()?>pr/member_group/fetch_data/" + fin_member_group_id;
 		$.ajax({
 			type: "GET",
 			url: url,

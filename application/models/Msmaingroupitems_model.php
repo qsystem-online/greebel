@@ -17,7 +17,7 @@ class Msmaingroupitems_model extends MY_Model
         $rw = $qr->row();
 
         $data = [
-            "maingroupitems" => $rw
+            "maingroup_items" => $rw
         ];
 
         return $data;

@@ -24,7 +24,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 <!-- end box header -->
 
                 <!-- form start -->
-                <form id="frmWarehouse" class="form-horizontal" action="<?= site_url() ?>Master/mswarehouse/add" method="POST" enctype="multipart/form-data">
+                <form id="frmWarehouse" class="form-horizontal" action="<?= site_url() ?>master/warehouse/add" method="POST" enctype="multipart/form-data">
                     <div class="box-body">
                         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
@@ -53,13 +53,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
                         <div class="form-group">
                             <label for="fbl_is_external" class="col-sm-2 control-label"><?= lang("External") ?> :</label>
-                            <div class="checkbox">
+                            <div class="checkbox col-sm-2">
                                 <label><input id="fbl_is_external" type="checkbox" name="fbl_is_external" value="1"><?= lang("External") ?></label><br>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="fbl_is_main" class="col-sm-2 control-label"><?= lang("Main") ?> :</label>
-                            <div class="checkbox">
+                            <div class="checkbox col-sm-2">
                                 <label><input id="fbl_is_main" type="checkbox" name="fbl_is_main" value="1"><?= lang("Main Warehouse") ?></label><br>
                                 <div id="fbl_is_main_err" class="text-danger" style="padding-left:200px"></div>
                             </div>
@@ -89,9 +89,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
-                url = "<?= site_url() ?>Master/mswarehouse/ajx_add_save";
+                url = "<?= site_url() ?>master/warehouse/ajx_add_save";
             } else {
-                url = "<?= site_url() ?>Master/mswarehouse/ajx_edit_save";
+                url = "<?= site_url() ?>master/warehouse/ajx_edit_save";
             }
             console.log(data);
 
@@ -113,7 +113,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
                                         //location.reload();
-                                        window.location.href = "<?= site_url() ?>Master/mswarehouse";
+                                        window.location.href = "<?= site_url() ?>master/warehouse/lizt";
                                         return;
                                     }
                                 },
@@ -151,7 +151,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $("#select-Branch").select2({
             width: '100%',
             ajax: {
-                url: '<?= site_url() ?>Master/mswarehouse/get_Branch',
+                url: '<?= site_url() ?>master/warehouse/get_Branch',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
@@ -175,7 +175,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
     function init_form(fin_warehouse_id) {
         //alert("Init Form");
-        var url = "<?= site_url() ?>Master/mswarehouse/fetch_data/" + fin_warehouse_id;
+        var url = "<?= site_url() ?>master/warehouse/fetch_data/" + fin_warehouse_id;
         $.ajax({
             type: "GET",
             url: url,

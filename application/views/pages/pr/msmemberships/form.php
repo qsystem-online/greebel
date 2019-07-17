@@ -41,39 +41,39 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmMSMemberShips" class="form-horizontal" action="<?=site_url()?>pr/msmemberships/add" method="POST" enctype="multipart/form-data">			
+            <form id="frmMSMemberShips" class="form-horizontal" action="<?=site_url()?>pr/membership/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
                     <div class="form-group">
-                    <label for="RecId" class="col-md-2 control-label"><?=lang("Rec ID")?> #</label>
+                    <label for="fin_rec_id" class="col-md-2 control-label"><?=lang("Rec ID")?> #</label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="RecId" placeholder="<?=lang("(Autonumber)")?>" name="RecId" value="<?=$RecId?>" readonly>
-							<div id="RecId_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fin_rec_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_rec_id" value="<?=$fin_rec_id?>" readonly>
+							<div id="fin_rec_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
                     <div class="form-group">
-                    <label for="MemberNo" class="col-md-2 control-label"><?=lang("Member No")?> *</label>
+                    <label for="fst_member_no" class="col-md-2 control-label"><?=lang("Member No")?> *</label>
                         <div class="col-md-10">
-                        <input type="text" class="form-control" id="MemberNo" placeholder="<?=lang("Member No")?>" name="MemberNo">
-							<div id="MemberNo_err" class="text-danger"></div>
+                        <input type="text" class="form-control" id="fst_member_no" placeholder="<?=lang("Member No")?>" name="fst_member_no">
+							<div id="fst_member_no_err" class="text-danger"></div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                    <label for="RelationId" class="col-md-2 control-label"><?=lang("Relation Name")?> *</label>
+                    <label for="fin_relation_id" class="col-md-2 control-label"><?=lang("Relation Name")?> *</label>
                         <div class="col-md-4">
-                            <select id="select-relationId" class="form-control" name="RelationId">
+                            <select id="select-fin_relation_id" class="form-control" name="fin_relation_id">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="RelationId_err" class="text-danger"></div>
+							<div id="fin_relation_id_err" class="text-danger"></div>
                         </div>
 
 					<label for="select-MemberGroup" class="col-md-2 control-label"><?=lang("Member Group Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-MemberGroup" class="form-control" name="MemberGroupId">
+							<select id="select-MemberGroup" class="form-control" name="fin_member_group_id">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="nama_err" class="text-danger"></div>
@@ -81,30 +81,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-                    <label for="NameOnCard" class="col-md-2 control-label"><?=lang("Name On Card")?> </label>
+                    <label for="fst_name_on_card" class="col-md-2 control-label"><?=lang("Name On Card")?> </label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="NameOnCard" placeholder="<?=lang("Name On Card")?>" name="NameOnCard">
-							<div id="NameOnCard_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_name_on_card" placeholder="<?=lang("Name On Card")?>" name="fst_name_on_card">
+							<div id="fst_name_on_card_err" class="text-danger"></div>
 						</div>
                     </div>
 
                     <div class="form-group">
-					<label for="ExpiryDate" class="col-md-2 control-label"><?=lang("Expiry Date")?> </label>
+					<label for="fdt_expiry_date" class="col-md-2 control-label"><?=lang("Expiry Date")?> </label>
 						<div class="col-md-4">
 							<div class="input-group date">
 								<div class="input-group-addon">
 									<i class="fa fa-calendar"></i>
 								</div>
-								<input type="text" class="form-control pull-right datepicker" id="ExpiryDate" name="ExpiryDate"/>								
+								<input type="text" class="form-control pull-right datepicker" id="fdt_expiry_date" name="fdt_expiry_date"/>								
 							</div>
-							<div id="ExpiryDate_err" class="text-danger"></div>
+							<div id="fdt_expiry_date_err" class="text-danger"></div>
 							<!-- /.input group -->
 						</div>
 
-                    <label for="MemberDiscount" class="col-md-2 control-label"><?=lang("Member Discount")?> (%) </label>
+                    <label for="fdc_member_discount_percent" class="col-md-2 control-label"><?=lang("Member Discount")?> (%) </label>
 						<div class="col-md-4">
-							<input type="text" class="form-control text-right" id="MemberDiscount" placeholder="<?=lang("Member Discount")?>" name="MemberDiscount">
-							<div id="MemberDiscount_err" class="text-danger"></div>
+							<input type="text" class="form-control text-right" id="fdc_member_discount_percent" placeholder="<?=lang("Member Discount")?>" name="fdc_member_discount_percent">
+							<div id="fdc_member_discount_percent_err" class="text-danger"></div>
 						</div>
                     </div>
                 </div>
@@ -123,7 +123,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     $(function(){
 
         <?php if($mode == "EDIT"){?>
-			init_form($("#RecId").val());
+			init_form($("#fin_rec_id").val());
 		<?php } ?>
 
         $("#btnSubmitAjax").click(function(event){
@@ -132,9 +132,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
-				url =  "<?= site_url() ?>pr/msmemberships/ajx_add_save";
+				url =  "<?= site_url() ?>pr/membership/ajx_add_save";
 			}else{
-				url =  "<?= site_url() ?>pr/msmemberships/ajx_edit_save";
+				url =  "<?= site_url() ?>pr/membership/ajx_edit_save";
 			}
 
 			//var formData = new FormData($('form')[0])
@@ -155,7 +155,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>pr/msmemberships/lizt";
+										window.location.href = "<?= site_url() ?>pr/membership/lizt";
 										return;
 									}
 								},
@@ -171,15 +171,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					}else if(resp.status == "SUCCESS") {
 						data = resp.data;
-						$("#RecId").val(data.insert_id);
+						$("#fin_rec_id").val(data.insert_id);
 
 						//Clear all previous error
 						$(".text-danger").html("");
 
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
-						$('#RelationName').prop('readonly', true);
-						//$("#tabs-relation-detail").show();
+						$('#fst_relation_name').prop('readonly', true);
 					}
 				},
 				error: function (e) {
@@ -195,7 +194,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			width: '100%',
 			//minimumInputLength: 2,
 			ajax: {
-				url: '<?=site_url()?>pr/msmemberships/get_MemberGroup',
+				url: '<?=site_url()?>pr/membership/get_MemberGroup',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data) {
@@ -215,19 +214,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
-        $("#select-relationId").select2({
+        $("#select-fin_relation_id").select2({
 			width: '100%',
 			//minimumInputLength: 2,
 			ajax: {
-				url: '<?=site_url()?>pr/msmemberships/get_relations',
+				url: '<?=site_url()?>pr/membership/get_relations',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data) {
 					data2 = [];
 					$.each(data,function(index,value){
 						data2.push({
-							"id" : value.RelationId,
-							"text" : value.RelationName
+							"id" : value.fin_relation_id,
+							"text" : value.fst_relation_name
 						});	
 					});
 					console.log(data2);
@@ -239,7 +238,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
-        $("#MemberDiscount").inputmask({
+        $("#fdc_member_discount_percent").inputmask({
 			alias : 'numeric',
 			allowMinus : false,
 			digits : 2,
@@ -247,9 +246,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
     })
 
-    function init_form(RecId){
+    function init_form(fin_rec_id){
 		//alert("Init Form");
-		var url = "<?=site_url()?>pr/msmemberships/fetch_data/" + RecId;
+		var url = "<?=site_url()?>pr/membership/fetch_data/" + fin_rec_id;
 		$.ajax({
 			type: "GET",
 			url: url,
@@ -272,14 +271,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
-				$("#ExpiryDate").datepicker('update', dateFormat(resp.ms_memberships.ExpiryDate));
+				$("#fdt_expiry_date").datepicker('update', dateFormat(resp.ms_memberships.fdt_expiry_date));
 
                 // menampilkan data di select2, menu edit/update
-				var newOption = new Option(resp.ms_memberships.RelationName, resp.ms_memberships.RelationId, true, true);
+				var newOption = new Option(resp.ms_memberships.fst_relation_name, resp.ms_memberships.fin_relation_id, true, true);
 				// Append it to the select
-    			$('#select-relationId').append(newOption).trigger('change');
+    			$('#select-fin_relation_id').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_memberships.MemberGroupName, resp.ms_memberships.MemberGroupId, true, true);
+				var newOption = new Option(resp.ms_memberships.fst_relation_group_name, resp.ms_memberships.fin_member_group_id, true, true);
 				$('#select-MemberGroup').append(newOption).trigger('change');
 
 			},

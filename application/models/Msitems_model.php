@@ -19,19 +19,19 @@ class Msitems_model extends MY_Model
         left join mssubgroupitems d on a.fin_item_subgroup_id = d.fin_item_subgroup_id 
         where a.fin_item_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$fin_item_id]);
-        $rw = $qr->row();
+        $rwItem = $qr->row();
 
-		if ($rw) {
-			if (file_exists(FCPATH . 'assets/app/items/image/'.$rw->fin_item_code . '.jpg')) {
-				$imageURL = site_url() . 'assets/app/items/image/' . $rw->fin_item_code . '.jpg';
+		if ($rwItem) {
+			if (file_exists(FCPATH . 'assets/app/items/image/'.$rwItem->fst_item_code . '.jpg')) {
+				$imageURL = site_url() . 'assets/app/items/image/' . $rwItem->fst_item_code . '.jpg';
 			} else {
 
 				$imageURL = site_url() . 'assets/app/items/image/default.jpg';
 			}
-			$rw->imageURL = $imageURL;
+			$rwItem->imageURL = $imageURL;
 		}
 
-        $ssql = "select * from msitemfst_unitdetails where fin_item_id = ?";
+        $ssql = "select * from msitemunitdetails where fin_item_id = ?";
         $qr = $this->db->query($ssql, [$fin_item_id]);
         $rsUnitDetail = $qr->result();
 
@@ -44,10 +44,10 @@ class Msitems_model extends MY_Model
         $rsSpecialPricing = $qr->result();
 
         $data = [
-            "msitems" => $rw,
-            "fst_unitDetail" => $rsUnitDetail,
-            "bomDetail" => $rsBomDetail,
-            "specialpricing" => $rsSpecialPricing,
+            "ms_items" => $rwItem,
+            "unit_Detail" => $rsUnitDetail,
+            "bom_Detail" => $rsBomDetail,
+            "special_Pricing" => $rsSpecialPricing,
         ];
 
         return $data;
@@ -58,7 +58,7 @@ class Msitems_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'fin_item_code',
+            'field' => 'fst_item_code',
             'label' => 'Item Code',
             'rules' => 'required|min_length[5]',
             'errors' => array(
@@ -98,19 +98,19 @@ class Msitems_model extends MY_Model
         return $rs;
     }
 
-    public function getSellingPrice($fin_item_id,$fst_unit,$custId) {
+    public function getSellingPrice($fin_item_id,$fst_unit,$fin_customer_id) {
         //$this->load->model("MSRelations_model");
         //$this->MSRelations_model->
         $ssql ="select * from msrelations where fin_relation_id = ?";
-        $qr = $this->db->query($ssql,[$custId]);
+        $qr = $this->db->query($ssql,[$fin_customer_id]);
         $rw = $qr->row();
         if($rw){
             
 
-            $priceGroupId = $rw->fin_cust_pricing_group_id;
+            $fin_cust_pricing_group_id = $rw->fin_cust_pricing_group_id;
             // cek Special item
             $ssql = "select * from msitemspecialpricinggroupdetails where fin_item_id = ? and fst_unit = ? and fin_cust_pricing_group_id = ? and fst_active = 'A'";
-            $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit,$priceGroupId]);
+            $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit,$fin_cust_pricing_group_id]);
             $rwPrice = $qr->row();
             if($rwPrice){
                 return $rwPrice->fdc_selling_price;
@@ -123,7 +123,7 @@ class Msitems_model extends MY_Model
                     $sellingPrice = $rwPrice->fdc_price_list;
                     //Cek Group Price List
                     $ssql = "select * from mscustpricinggroups where fin_cust_pricing_group_id = ?";
-                    $qr = $this->db->query($ssql,[$priceGroupId]);
+                    $qr = $this->db->query($ssql,[$fin_cust_pricing_group_id]);
                     $rwGroupPrice = $qr->row();
                     if($rwGroupPrice){
                         if ($rwGroupPrice->fdc_percent_of_price_list == 100){

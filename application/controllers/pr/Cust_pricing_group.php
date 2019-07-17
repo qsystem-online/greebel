@@ -6,7 +6,7 @@ class Cust_pricing_group extends MY_Controller{
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
-		$this->load->model('MSCustpricinggroups_model');
+		$this->load->model('mscustpricinggroups_model');
 	}
 
 	public function index(){
@@ -17,14 +17,14 @@ class Cust_pricing_group extends MY_Controller{
 		$this->load->library('menus');
 		$this->list['page_name'] = "Master Cust Pricing Groups";
 		$this->list['list_name'] = "Master Cust Pricing Groups List";
-		$this->list['addnew_ajax_url'] = site_url() . 'pr/mscustpricinggroups/add';
+		$this->list['addnew_ajax_url'] = site_url() . 'pr/cust_pricing_group/add';
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/mscustpricinggroups/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'pr/mscustpricinggroups/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'pr/mscustpricinggroups/edit/';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/cust_pricing_group/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'pr/cust_pricing_group/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'pr/cust_pricing_group/edit/';
 		$this->list['arrSearch'] = [
-			'CustPricingGroupId' => 'Groups ID',
-			'CustPricingGroupName' => 'Group Name'
+			'fin_cust_pricing_group_id' => 'Groups ID',
+			'fst_cust_pricing_group_name' => 'Group Name'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -33,10 +33,10 @@ class Cust_pricing_group extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Pricing Group Id', 'width' => '20%', 'data' => 'CustPricingGroupId'],
-            ['title' => 'Pricing Group Name', 'width' => '30%', 'data' => 'CustPricingGroupName'],
-            ['title' => 'Percent (%)', 'width' => '10%', 'data' => 'PercentOfPriceList'],
-			['title' => 'Amount', 'width' => '15%', 'data' => 'DifferenceInAmount',
+			['title' => 'Pricing Group Id', 'width' => '20%', 'data' => 'fin_cust_pricing_group_id'],
+            ['title' => 'Pricing Group Name', 'width' => '30%', 'data' => 'fst_cust_pricing_group_name'],
+            ['title' => 'Percent (%)', 'width' => '10%', 'data' => 'fdc_percent_of_price_list'],
+			['title' => 'Amount', 'width' => '15%', 'data' => 'fdc_difference_in_amount',
 				'render' => '$.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT)'
 			],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
@@ -54,7 +54,7 @@ class Cust_pricing_group extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 
-	private function openForm($mode = "ADD", $CustPricingGroupId = 0){
+	private function openForm($mode = "ADD", $fin_cust_pricing_group_id = 0){
 		$this->load->library("menus");
 
 		if ($this->input->post("submit") != "") {
@@ -66,7 +66,7 @@ class Cust_pricing_group extends MY_Controller{
 
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Master Cust Pricing Groups" : "Update Master Cust Pricing Groups";
-		$data["CustPricingGroupId"] = $CustPricingGroupId;
+		$data["fin_cust_pricing_group_id"] = $fin_cust_pricing_group_id;
 
 		$page_content = $this->parser->parse('pages/pr/mscustpricinggroups/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -84,13 +84,13 @@ class Cust_pricing_group extends MY_Controller{
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($CustPricingGroupId){
-		$this->openForm("EDIT", $CustPricingGroupId);
+	public function Edit($fin_cust_pricing_group_id){
+		$this->openForm("EDIT", $fin_cust_pricing_group_id);
 	}
 
 	public function ajx_add_save(){
-		$this->load->model('MSCustpricinggroups_model');
-		$this->form_validation->set_rules($this->MSCustpricinggroups_model->getRules("ADD", 0));
+		$this->load->model('mscustpricinggroups_model');
+		$this->form_validation->set_rules($this->mscustpricinggroups_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -103,14 +103,14 @@ class Cust_pricing_group extends MY_Controller{
 		}
 
 		$data = [
-            "CustPricingGroupName" => $this->input->post("CustPricingGroupName"),
-            "PercentOfPriceList" => $this->input->post("PercentOfPriceList"),
-            "DifferenceInAmount" =>$this->input->post("DifferenceInAmount"),
+            "fst_cust_pricing_group_name" => $this->input->post("fst_cust_pricing_group_name"),
+            "fdc_percent_of_price_list" => $this->input->post("fdc_percent_of_price_list"),
+            "fdc_difference_in_amount" =>$this->input->post("fdc_difference_in_amount"),
 			"fst_active" => 'A'
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->MSCustpricinggroups_model->insert($data);
+		$insertId = $this->mscustpricinggroups_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -129,19 +129,19 @@ class Cust_pricing_group extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('MSCustpricinggroups_model');
-		$CustPricingGroupId = $this->input->post("CustPricingGroupId");
-		$data = $this->MSCustpricinggroups_model->getDataById($CustPricingGroupId);
-		$mscustpricinggroups = $data["mscustpricinggroups"];
+		$this->load->model('mscustpricinggroups_model');
+		$fin_cust_pricing_group_id = $this->input->post("fin_cust_pricing_group_id");
+		$data = $this->mscustpricinggroups_model->getDataById($fin_cust_pricing_group_id);
+		$mscustpricinggroups = $data["ms_custpricinggroups"];
 		if (!$mscustpricinggroups) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
-			$this->ajxResp["message"] = "Data id $CustPricingGroupId Not Found ";
+			$this->ajxResp["message"] = "Data id $fin_cust_pricing_group_id Not Found ";
 			$this->ajxResp["data"] = [];
 			$this->json_output();
 			return;
 		}
 
-		$this->form_validation->set_rules($this->MSCustpricinggroups_model->getRules("EDIT", $CustPricingGroupId));
+		$this->form_validation->set_rules($this->mscustpricinggroups_model->getRules("EDIT", $fin_cust_pricing_group_id));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -153,15 +153,15 @@ class Cust_pricing_group extends MY_Controller{
 		}
 
 		$data = [
-			"CustPricingGroupId" => $CustPricingGroupId,
-            "CustPricingGroupName" => $this->input->post("CustPricingGroupName"),
-            "PercentOfPriceList" => $this->input->post("PercentOfPriceList"),
-            "DifferenceInAmount" =>$this->input->post("DifferenceInAmount"),
+			"fin_cust_pricing_group_id" => $fin_cust_pricing_group_id,
+            "fst_cust_pricing_group_name" => $this->input->post("fst_cust_pricing_group_name"),
+            "fdc_percent_of_price_list" => $this->input->post("fdc_percent_of_price_list"),
+            "fdc_difference_in_amount" =>$this->input->post("fdc_difference_in_amount"),
 			"fst_active" => 'A'
 		];
 
 		$this->db->trans_start();
-		$this->MSCustpricinggroups_model->update($data);
+		$this->mscustpricinggroups_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -175,7 +175,7 @@ class Cust_pricing_group extends MY_Controller{
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $CustPricingGroupId;
+		$this->ajxResp["data"]["insert_id"] = $fin_cust_pricing_group_id;
 		$this->json_output();
 	}
 
@@ -183,11 +183,11 @@ class Cust_pricing_group extends MY_Controller{
 		$this->load->library("datatables");
 		$this->datatables->setTableName("mscustpricinggroups");
 
-		$selectFields = "CustPricingGroupId,CustPricingGroupName,PercentOfPriceList,DifferenceInAmount,'action' as action";
+		$selectFields = "fin_cust_pricing_group_id,fst_cust_pricing_group_name,fdc_percent_of_price_list,fdc_difference_in_amount,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
-		$searchFields[] = $this->input->get('optionSearch'); //["CustPricingGroupId","CustPricingGroupName"];
+		$searchFields[] = $this->input->get('optionSearch'); //["fin_cust_pricing_group_id","fst_cust_pricing_group_name"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "fst_active !='D'";
 
@@ -198,8 +198,8 @@ class Cust_pricing_group extends MY_Controller{
 		foreach ($arrData as $data) {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='" . $data["CustPricingGroupId"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["CustPricingGroupId"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_cust_pricing_group_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["fin_cust_pricing_group_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -208,9 +208,9 @@ class Cust_pricing_group extends MY_Controller{
 		$this->json_output($datasources);
 	}
 
-	public function fetch_data($CustPricingGroupId){
-		$this->load->model("MSCustpricinggroups_model");
-		$data = $this->MSCustpricinggroups_model->getDataById($CustPricingGroupId);
+	public function fetch_data($fin_cust_pricing_group_id){
+		$this->load->model("mscustpricinggroups_model");
+		$data = $this->mscustpricinggroups_model->getDataById($fin_cust_pricing_group_id);
 		
 		$this->json_output($data);
 	}
@@ -223,9 +223,9 @@ class Cust_pricing_group extends MY_Controller{
 			return;
 		}
 
-		$this->load->model("MSCustpricinggroups_model");
+		$this->load->model("mscustpricinggroups_model");
 
-		$this->MSCustpricinggroups_model->delete($id);
+		$this->mscustpricinggroups_model->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();

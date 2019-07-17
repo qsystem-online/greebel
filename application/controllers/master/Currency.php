@@ -21,8 +21,8 @@ class Currency extends MY_Controller {
         $this->list['delete_ajax_url']=site_url().'master/currency/delete/';
         $this->list['edit_ajax_url']=site_url().'master/currency/edit/';
         $this->list['arrSearch']=[
-            'a.CurrCode ' => 'Currencies Code',
-            'a.CurrName' => 'Name'
+            'a.fst_curr_code ' => 'Currencies Code',
+            'a.fst_curr_name' => 'Name'
 		];
 		$this->list['breadcrumbs']=[
 			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
@@ -30,8 +30,8 @@ class Currency extends MY_Controller {
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
 		$this->list['columns']=[
-			['title' => 'Currencies Code', 'width'=>'20%', 'data'=>'CurrCode'],
-            ['title' => 'Currencies Name', 'width'=>'20%', 'data'=>'CurrName'],
+			['title' => 'Currencies Code', 'width'=>'20%', 'data'=>'fst_curr_code'],
+            ['title' => 'Currencies Name', 'width'=>'20%', 'data'=>'fst_curr_name'],
 			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-body-center text-center']
 		];
         $main_header = $this->parser->parse('inc/main_header',[],true);
@@ -47,7 +47,7 @@ class Currency extends MY_Controller {
         $this->parser->parse('template/main',$this->data);
     }
 
-    private function openForm($mode="ADD",$CurrCode=0){
+    private function openForm($mode="ADD",$fst_curr_code=0){
 		$this->load->library("menus");
 
 		if($this->input->post("submit") != "" ){
@@ -59,7 +59,7 @@ class Currency extends MY_Controller {
 
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Master Currencies" : "Update Master Currencies";
-		$data["CurrCode"] = $CurrCode;
+		$data["fst_curr_code"] = $fst_curr_code;
 
 		$page_content = $this->parser->parse('pages/master/currency/form',$data,true);
 		$main_footer = $this->parser->parse('inc/main_footer',[],true);
@@ -77,13 +77,13 @@ class Currency extends MY_Controller {
         $this->openForm("ADD",0);
     }
 
-    public function Edit($CurrCode){
-        $this->openForm("EDIT", $CurrCode);
+    public function Edit($fst_curr_code){
+        $this->openForm("EDIT", $fst_curr_code);
     }
 
     public function ajx_add_save(){
-		$this->load->model('MSCurrencies_model');
-		$this->form_validation->set_rules($this->MSCurrencies_model->getRules("ADD",0));
+		$this->load->model('mscurrencies_model');
+		$this->form_validation->set_rules($this->mscurrencies_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE){
@@ -96,13 +96,13 @@ class Currency extends MY_Controller {
 		}
 
 		$data = [
-			"CurrCode" =>$this->input->post("CurrCode"),
-			"CurrName"=>$this->input->post("CurrName"),
+			"fst_curr_code" =>$this->input->post("fst_curr_code"),
+			"fst_curr_name"=>$this->input->post("fst_curr_name"),
 			"fst_active"=>'A'
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->MSCurrencies_model->insert($data);
+		$insertId = $this->mscurrencies_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0){	
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -114,18 +114,18 @@ class Currency extends MY_Controller {
 		}
 
         // Save Curr Details
-		$this->load->model("MSCurrenciesratedetails_model");
-		$this->form_validation->set_rules($this->MSCurrenciesratedetails_model->getRules("ADD",0));
+		$this->load->model("mscurrenciesratedetails_model");
+		$this->form_validation->set_rules($this->mscurrenciesratedetails_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		$details = $this->input->post("detail");
 		$details = json_decode($details);
 		foreach ($details as $item) {
 			$data = [
-				"CurrCode"=>$item->CurrCode,
-				//"CurrCode" => $insertId,
-				"Date"=> dBDateFormat($item->Date),
-				"ExchangeRate2IDR"=> $item->ExchangeRate2IDR
+				"fst_curr_code"=>$item->fst_curr_code,
+				//"fst_curr_code" => $insertId,
+				"fdt_date"=> dBDateFormat($item->fdt_date),
+				"fdc_exchange_rate_to_idr"=> $item->fdc_exchange_rate_to_idr
 			];
 
 			// Validate Data Items
@@ -141,7 +141,7 @@ class Currency extends MY_Controller {
 				return;	
 			}
 			
-			$this->MSCurrenciesratedetails_model->insert($data);
+			$this->mscurrenciesratedetails_model->insert($data);
 			$dbError  = $this->db->error();
 			if ($dbError["code"] != 0){			
 				$this->ajxResp["status"] = "DB_FAILED";
@@ -161,19 +161,19 @@ class Currency extends MY_Controller {
     }
 
     public function ajx_edit_save(){
-        $this->load->model('MSCurrencies_model');		
-		$CurrCode = $this->input->post("CurrCode");
-		$data = $this->MSCurrencies_model->getDataById($CurrCode);
-		$mscurrencies = $data["msCurrency"];
+        $this->load->model('mscurrencies_model');		
+		$fst_curr_code = $this->input->post("fst_curr_code");
+		$data = $this->mscurrencies_model->getDataById($fst_curr_code);
+		$mscurrencies = $data["ms_Currency"];
 		if (!$mscurrencies){
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
-			$this->ajxResp["message"] = "Data id $CurrCode Not Found ";
+			$this->ajxResp["message"] = "Data id $fst_curr_code Not Found ";
 			$this->ajxResp["data"] = [];
 			$this->json_output();
 			return;
 		}
 
-		$this->form_validation->set_rules($this->MSCurrencies_model->getRules("EDIT",$CurrCode));
+		$this->form_validation->set_rules($this->mscurrencies_model->getRules("EDIT",$fst_curr_code));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE){
 			//print_r($this->form_validation->error_array());
@@ -185,13 +185,13 @@ class Currency extends MY_Controller {
 		}
 
 		$data = [
-			"CurrCode"=>$CurrCode,
-            "CurrName"=>$this->input->post("CurrName"),
+			"fst_curr_code"=>$fst_curr_code,
+            "fst_curr_name"=>$this->input->post("fst_curr_name"),
 			"fst_active"=>'A'
 		];
 
 		$this->db->trans_start();
-		$this->MSCurrencies_model->update($data);
+		$this->mscurrencies_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0){			
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -203,19 +203,19 @@ class Currency extends MY_Controller {
 		}
 
 		// Save Details
-		$this->load->model("MSCurrenciesratedetails_model");
-		$this->form_validation->set_rules($this->MSCurrenciesratedetails_model->getRules("ADD",0));
+		$this->load->model("mscurrenciesratedetails_model");
+		$this->form_validation->set_rules($this->mscurrenciesratedetails_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
-		$this->MSCurrenciesratedetails_model->deleteByDetail($CurrCode);
+		$this->mscurrenciesratedetails_model->deleteByDetail($fst_curr_code);
 		
 		$details = $this->input->post("detail");
 		$details = json_decode($details);
 		foreach ($details as $item) {
 			$data = [
-				"CurrCode"=> $CurrCode,
-				"Date"=> dBDateFormat($item->Date),
-				"ExchangeRate2IDR"=> $item->ExchangeRate2IDR
+				"fst_curr_code"=> $fst_curr_code,
+				"fdt_date"=> dBDateFormat($item->fdt_date),
+				"fdc_exchange_rate_to_idr"=> $item->fdc_exchange_rate_to_idr
 			];
 
 			// Validate Data Items
@@ -231,7 +231,7 @@ class Currency extends MY_Controller {
 				return;	
 			}
 			
-			$this->MSCurrenciesratedetails_model->insert($data);
+			$this->mscurrenciesratedetails_model->insert($data);
 			$dbError  = $this->db->error();
 			if ($dbError["code"] != 0){			
 				$this->ajxResp["status"] = "DB_FAILED";
@@ -247,7 +247,7 @@ class Currency extends MY_Controller {
 
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $CurrCode;
+		$this->ajxResp["data"]["insert_id"] = $fst_curr_code;
 		$this->json_output();
 	}
 	
@@ -255,11 +255,11 @@ class Currency extends MY_Controller {
 		$this->load->library("datatables");
 		$this->datatables->setTableName("mscurrencies");
 
-		$selectFields = "CurrCode,CurrName,'action' as action";
+		$selectFields = "fst_curr_code,fst_curr_name,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
-		$searchFields[] = $this->input->get('optionSearch'); //["CurrCode","CurrName"];
+		$searchFields[] = $this->input->get('optionSearch'); //["fst_curr_code","fst_curr_name"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "fst_active !='D'";
 
@@ -270,8 +270,8 @@ class Currency extends MY_Controller {
 		foreach ($arrData as $data) {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='".$data["CurrCode"]."'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='".$data["CurrCode"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='".$data["fst_curr_code"]."'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='".$data["fst_curr_code"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -280,9 +280,9 @@ class Currency extends MY_Controller {
 		$this->json_output($datasources);
     }
 
-    public function fetch_data($CurrCode){
-		$this->load->model("MSCurrencies_model");
-		$data = $this->MSCurrencies_model->getDataById($CurrCode);
+    public function fetch_data($fst_curr_code){
+		$this->load->model("mscurrencies_model");
+		$data = $this->mscurrencies_model->getDataById($fst_curr_code);
 	
 		$this->json_output($data);
 	}
@@ -295,8 +295,8 @@ class Currency extends MY_Controller {
 			return;
 		}
 		
-		$this->load->model("MSCurrencies_model");
-		$this->MSCurrencies_model->delete($id);
+		$this->load->model("mscurrencies_model");
+		$this->mscurrencies_model->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();

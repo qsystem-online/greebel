@@ -20,14 +20,14 @@ class Subgroup_item extends MY_Controller
         $this->load->library('menus');
         $this->list['page_name'] = "Master Subgroups";
         $this->list['list_name'] = "Subgroup List";
-        $this->list['addnew_ajax_url'] = site_url() . 'Master/mssubgroupitems/add';
+        $this->list['addnew_ajax_url'] = site_url() . 'master/subgroup_item/add';
         $this->list['pKey'] = "id";
-        $this->list['fetch_list_data_ajax_url'] = site_url() . 'Master/mssubgroupitems/fetch_list_data';
-        $this->list['delete_ajax_url'] = site_url() . 'Master/mssubgroupitems/delete/';
-        $this->list['edit_ajax_url'] = site_url() . 'Master/mssubgroupitems/edit/';
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/subgroup_item/fetch_list_data';
+        $this->list['delete_ajax_url'] = site_url() . 'master/subgroup_item/delete/';
+        $this->list['edit_ajax_url'] = site_url() . 'master/subgroup_item/edit/';
         $this->list['arrSearch'] = [
-            'a.ItemSubGroupId' => 'Subgroup ID',
-            'a.ItemSubGroupName' => 'Subgroup Name'
+            'a.fin_item_subgroup_id' => 'Subgroup ID',
+            'a.fst_item_subgroup_name' => 'Subgroup Name'
         ];
 
         $this->list['breadcrumbs'] = [
@@ -36,9 +36,9 @@ class Subgroup_item extends MY_Controller
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'Subgroup ID', 'width' => '10%', 'data' => 'ItemSubGroupId'],
-            ['title' => 'Subgroup Name', 'width' => '25%', 'data' => 'ItemSubGroupName'],
-            ['title' => 'Group Name', 'width' => '25%', 'data' => 'ItemGroupName'],
+            ['title' => 'Subgroup ID', 'width' => '10%', 'data' => 'fin_item_subgroup_id'],
+            ['title' => 'Subgroup Name', 'width' => '25%', 'data' => 'fst_item_subgroup_name'],
+            ['title' => 'Group Name', 'width' => '25%', 'data' => 'fst_item_group_name'],
             ['title' => 'Action', 'width' => '7%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
@@ -54,7 +54,7 @@ class Subgroup_item extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
-    private function openForm($mode = "ADD", $ItemSubGroupId = 0)
+    private function openForm($mode = "ADD", $fin_item_subgroup_id = 0)
     {
         $this->load->library("menus");
 
@@ -67,7 +67,7 @@ class Subgroup_item extends MY_Controller
 
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Subgroup" : "Update Subgroup";
-        $data["ItemSubGroupId"] = $ItemSubGroupId;
+        $data["fin_item_subgroup_id"] = $fin_item_subgroup_id;
 
         $page_content = $this->parser->parse('pages/master/subgroupitems/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -86,15 +86,15 @@ class Subgroup_item extends MY_Controller
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($ItemSubGroupId)
+    public function Edit($fin_item_subgroup_id)
     {
-        $this->openForm("EDIT", $ItemSubGroupId);
+        $this->openForm("EDIT", $fin_item_subgroup_id);
     }
 
     public function ajx_add_save()
     {
-        $this->load->model('MSSubgroupitems_model');
-        $this->form_validation->set_rules($this->MSSubgroupitems_model->getRules("ADD", 0));
+        $this->load->model('mssubgroupitems_model');
+        $this->form_validation->set_rules($this->mssubgroupitems_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
         if ($this->form_validation->run() == FALSE) {
@@ -107,13 +107,13 @@ class Subgroup_item extends MY_Controller
         }
 
         $data = [
-            "ItemSubGroupName" => $this->input->post("ItemSubGroupName"),
-            "ItemGroupId" => $this->input->post("ItemGroupId"),
+            "fst_item_subgroup_name" => $this->input->post("fst_item_subgroup_name"),
+            "fin_item_group_id" => $this->input->post("fin_item_group_id"),
             "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
-        $insertId = $this->MSSubgroupitems_model->insert($data);
+        $insertId = $this->mssubgroupitems_model->insert($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -134,19 +134,19 @@ class Subgroup_item extends MY_Controller
 
     public function ajx_edit_save()
     {
-        $this->load->model('MSSubgroupitems_model');
-        $ItemSubGroupId = $this->input->post("ItemSubGroupId");
-        $data = $this->MSSubgroupitems_model->getDataById($ItemSubGroupId);
+        $this->load->model('mssubgroupitems_model');
+        $fin_item_subgroup_id = $this->input->post("fin_item_subgroup_id");
+        $data = $this->mssubgroupitems_model->getDataById($fin_item_subgroup_id);
         $master_subgroups = $data["subgroupitems"];
         if (!$master_subgroups) {
             $this->ajxResp["status"] = "DATA_NOT_FOUND";
-            $this->ajxResp["message"] = "Data id $ItemSubGroupId Not Found ";
+            $this->ajxResp["message"] = "Data id $fin_item_subgroup_id Not Found ";
             $this->ajxResp["data"] = [];
             $this->json_output();
             return;
         }
 
-        $this->form_validation->set_rules($this->MSSubgroupitems_model->getRules("EDIT", $ItemSubGroupId));
+        $this->form_validation->set_rules($this->mssubgroupitems_model->getRules("EDIT", $fin_item_subgroup_id));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
         if ($this->form_validation->run() == FALSE) {
             //print_r($this->form_validation->error_array());
@@ -158,15 +158,15 @@ class Subgroup_item extends MY_Controller
         }
 
         $data = [
-            "ItemSubGroupId" => $ItemSubGroupId,
-            "ItemSubGroupName" => $this->input->post("ItemSubGroupName"),
-            "ItemGroupId" => $this->input->post("ItemGroupId"),
+            "fin_item_subgroup_id" => $fin_item_subgroup_id,
+            "fst_item_subgroup_name" => $this->input->post("fst_item_subgroup_name"),
+            "fin_item_group_id" => $this->input->post("fin_item_group_id"),
             "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
 
-        $this->MSSubgroupitems_model->update($data);
+        $this->mssubgroupitems_model->update($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -181,7 +181,7 @@ class Subgroup_item extends MY_Controller
 
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
-        $this->ajxResp["data"]["insert_id"] = $ItemSubGroupId;
+        $this->ajxResp["data"]["insert_id"] = $fin_item_subgroup_id;
         $this->json_output();
     }
 
@@ -190,11 +190,11 @@ class Subgroup_item extends MY_Controller
         $this->load->library("datatables");
         $this->datatables->setTableName("
         (
-            select a.*,b.ItemGroupName from mssubgroupitems a
-            left join msgroupitems b on a.ItemGroupId = b.ItemGroupId
+            select a.*,b.fst_item_group_name from mssubgroupitems a
+            left join msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
         ) a 
         ");
-        $selectFields = "a.ItemSubGroupId,a.ItemSubGroupName,a.ItemGroupName,'action' as action";
+        $selectFields = "a.fin_item_subgroup_id,a.fst_item_subgroup_name,a.fst_item_group_name,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');
@@ -207,8 +207,8 @@ class Subgroup_item extends MY_Controller
         foreach ($arrData as $data) {
             //action
             $data["action"]    = "<div style='font-size:16px'>
-                        <a class='btn-edit' href='#' data-id='" . $data["ItemSubGroupId"] . "'><i class='fa fa-pencil'></i></a>
-                        <a class='btn-delete' href='#' data-id='" . $data["ItemSubGroupId"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+                        <a class='btn-edit' href='#' data-id='" . $data["fin_item_subgroup_id"] . "'><i class='fa fa-pencil'></i></a>
+                        <a class='btn-delete' href='#' data-id='" . $data["fin_item_subgroup_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
                     </div>";
 
             $arrDataFormated[] = $data;
@@ -217,10 +217,10 @@ class Subgroup_item extends MY_Controller
         $this->json_output($datasources);
     }
 
-    public function fetch_data($ItemSubGroupId)
+    public function fetch_data($fin_item_subgroup_id)
     {
-        $this->load->model("MSSubgroupitems_model");
-        $data = $this->MSSubgroupitems_model->getDataById($ItemSubGroupId);
+        $this->load->model("mssubgroupitems_model");
+        $data = $this->mssubgroupitems_model->getDataById($fin_item_subgroup_id);
 
         //$this->load->library("datatables");		
         $this->json_output($data);
@@ -236,9 +236,9 @@ class Subgroup_item extends MY_Controller
         }
         //echo $id;
         //die ();
-        $this->load->model("MSSubgroupitems_model");
+        $this->load->model("mssubgroupitems_model");
 
-        $this->MSSubgroupitems_model->delete($id);
+        $this->mssubgroupitems_model->delete($id);
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "File deleted successfully";
         $this->json_output();
@@ -247,7 +247,7 @@ class Subgroup_item extends MY_Controller
     public function get_data_ItemGroup()
     {
         $term = $this->input->get("term");
-        $ssql = "select * from msgroupitems where ItemGroupName like ? order by ItemGroupName";
+        $ssql = "select * from msgroupitems where fst_item_group_name like ? order by fst_item_group_name";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
 

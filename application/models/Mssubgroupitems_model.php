@@ -29,7 +29,7 @@ class Mssubgroupitems_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'fin_item_subgroup_name',
+            'field' => 'fst_item_subgroup_name',
             'label' => 'Subgroup Name',
             'rules' => 'required|min_length[2]',
             'errors' => array(

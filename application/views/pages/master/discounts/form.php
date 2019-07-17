@@ -42,24 +42,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmDiscounts" class="form-horizontal" action="<?=site_url()?>master/discounts/add" method="POST" enctype="multipart/form-data">			
+            <form id="frmDiscounts" class="form-horizontal" action="<?=site_url()?>master/discount/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class='form-group'>
-                    <label for="RecId" class="col-sm-2 control-label"><?=lang("Rec ID")?> #</label>
+                    <label for="fin_rec_id" class="col-sm-2 control-label"><?=lang("Rec ID")?> #</label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="RecId" placeholder="<?=lang("(Autonumber)")?>" name="RecId" value="<?=$RecId?>" readonly>
-							<div id="RecId_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fin_rec_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_rec_id" value="<?=$fin_rec_id?>" readonly>
+							<div id="fin_rec_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-                    <label for="ItemDiscount" class="col-sm-2 control-label"><?=lang("Item Discounts")?></label>
+                    <label for="fst_item_discount" class="col-sm-2 control-label"><?=lang("Item Discounts")?></label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="ItemDiscount" placeholder="<?=lang("Item Discount")?>" name="ItemDiscount">
-							<div id="ItemDiscount_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_item_discount" placeholder="<?=lang("Item Discount")?>" name="fst_item_discount">
+							<div id="fst_item_discount_err" class="text-danger"></div>
 						</div>
 					</div>
                 </div>
@@ -77,7 +77,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript">
 	$(function(){
 		<?php if($mode == "EDIT"){?>
-			init_form($("#RecId").val());
+			init_form($("#fin_rec_id").val());
 		<?php } ?>
 
 		$("#btnSubmitAjax").click(function(event){
@@ -86,9 +86,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
-				url =  "<?= site_url() ?>master/discounts/ajx_add_save";
+				url =  "<?= site_url() ?>master/discount/ajx_add_save";
 			}else{
-				url =  "<?= site_url() ?>master/discounts/ajx_edit_save";
+				url =  "<?= site_url() ?>master/discount/ajx_edit_save";
 			}
 
 			//var formData = new FormData($('form')[0])
@@ -109,7 +109,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>master/discounts/lizt";
+										window.location.href = "<?= site_url() ?>master/discount/lizt";
 										return;
 									}
 								},
@@ -125,14 +125,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					}else if(resp.status == "SUCCESS") {
 						data = resp.data;
-						$("#RecId").val(data.insert_id);
+						$("#fin_rec_id").val(data.insert_id);
 
 						//Clear all previous error
 						$(".text-danger").html("");
 
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
-						$('#ItemDiscounts').prop('readonly', true);
+						$('#fst_item_discounts').prop('readonly', true);
 					}
 				},
 				error: function (e) {
@@ -145,16 +145,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 	});
 
-	function init_form(RecId){
+	function init_form(fin_rec_id){
 		//alert("Init Form");
-		var url = "<?=site_url()?>master/discounts/fetch_data/" + RecId;
+		var url = "<?=site_url()?>master/discount/fetch_data/" + fin_rec_id;
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.msDiscounts);
+				console.log(resp.ms_Discounts);
 
-				$.each(resp.msDiscounts, function(name, val){
+				$.each(resp.ms_Discounts, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){

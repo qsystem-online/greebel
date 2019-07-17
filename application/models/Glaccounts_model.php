@@ -25,7 +25,7 @@ class Glaccounts_model extends MY_Model
         $rwParent = $qr->row();
 
         $data = [
-            "glAccounts" => $rwGLAccounts,
+            "gl_Account" => $rwGLAccounts,
             "parents" => $rwParent,
             "isUsed" => $this->isUsed($fst_glaccount_code)
         ];

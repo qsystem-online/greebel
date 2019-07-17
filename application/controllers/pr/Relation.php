@@ -17,14 +17,14 @@ class Relation extends MY_Controller{
 		$this->load->library('menus');
 		$this->list['page_name'] = "Master Relations";
 		$this->list['list_name'] = "Master Relations List";
-		$this->list['addnew_ajax_url'] = site_url() . 'pr/msrelations/add';
+		$this->list['addnew_ajax_url'] = site_url() . 'pr/relation/add';
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/msrelations/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'pr/msrelations/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'pr/msrelations/edit/';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/relation/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'pr/relation/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'pr/relation/edit/';
 		$this->list['arrSearch'] = [
-			'RelationId' => 'Relations ID',
-			'RelationName' => 'Relations Name'
+			'fin_relation_id' => 'Relations ID',
+			'fst_relation_name' => 'Relations Name'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -34,13 +34,13 @@ class Relation extends MY_Controller{
 		];
 
 		$this->list['columns'] = [
-			['title' => 'Relation ID', 'width' => '15%', 'data' => 'RelationId'],
-			['title' => 'Relation Name', 'width' => '20%', 'data' => 'RelationName'],
-			['title' => 'Relation Type', 'width' => '15%', 'data' => 'RelationType',
+			['title' => 'Relation ID', 'width' => '15%', 'data' => 'fin_relation_id'],
+			['title' => 'Relation Name', 'width' => '20%', 'data' => 'fst_relation_name'],
+			['title' => 'Relation Type', 'width' => '15%', 'data' => 'fst_relation_type',
 				'render' => "function (data,type,row){
-					var relationType = data.split(\",\");
+					var fst_relation_type = data.split(\",\");
 					var nama = \"\";
-					relationType.forEach(function(value, index, array){ 				
+					fst_relation_type.forEach(function(value, index, array){ 				
 						if(value == 1){					
 							nama = nama + \",\" + \"Customer\";				
 						}else if(value == 2){					
@@ -67,7 +67,7 @@ class Relation extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 
-	private function openForm($mode = "ADD", $RelationId = 0){
+	private function openForm($mode = "ADD", $fin_relation_id = 0){
 		$this->load->library("menus");
 
 		if ($this->input->post("submit") != "") {
@@ -79,7 +79,7 @@ class Relation extends MY_Controller{
 
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Master Relations" : "Update Master Relations";
-		$data["RelationId"] = $RelationId;
+		$data["fin_relation_id"] = $fin_relation_id;
 
 		$page_content = $this->parser->parse('pages/pr/msrelations/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -97,8 +97,8 @@ class Relation extends MY_Controller{
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($RelationId){
-		$this->openForm("EDIT", $RelationId);
+	public function edit($fin_relation_id){
+		$this->openForm("EDIT", $fin_relation_id);
 	}
 
 	public function ajx_add_save(){
@@ -116,26 +116,26 @@ class Relation extends MY_Controller{
 		}
 
 		$data = [
-			"RelationGroupId" => $this->input->post("RelationGroupId"),
-			"RelationType" => implode(",",$this->input->post("RelationType")),
+			"fin_relation_group_id" => $this->input->post("fin_relation_group_id"),
+			"fst_relation_type" => implode(",",$this->input->post("fst_relation_type")),
 			"fin_parent_id" => $this->input->post("fin_parent_id"),
-			"BusinessType" => $this->input->post("BusinessType"),
-			"RelationName" => $this->input->post("RelationName"),
-			"Gender" => $this->input->post("Gender"),
-			"BirthDate" => dBDateFormat($this->input->post("BirthDate")),
-			"BirthPlace" => $this->input->post("BirthPlace"),
-			"NIK" => $this->input->post("NIK"),
-			"Address" => $this->input->post("Address"),
+			"fst_business_type" => $this->input->post("fst_business_type"),
+			"fst_relation_name" => $this->input->post("fst_relation_name"),
+			"fst_gender" => $this->input->post("fst_gender"),
+			"fdt_birth_date" => dBDateFormat($this->input->post("fdt_birth_date")),
+			"fst_birth_place" => $this->input->post("fst_birth_place"),
+			"fst_nik" => $this->input->post("fst_nik"),
+			"fst_address" => $this->input->post("fst_address"),
 			"fst_shipping_address" => $this->input->post("fst_shipping_address"),
-			"Phone" => $this->input->post("Phone"),
-			"Fax" => $this->input->post("Fax"),
-			"PostalCode" => $this->input->post("PostalCode"),
-			"CountryId" => $this->input->post("CountryId"),
-			"AreaCode" => $this->input->post("kode"),
-			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
-			"NPWP" => $this->input->post("NPWP"),
-			"RelationNotes" => $this->input->post("RelationNotes"),
-			"fin_credit_limit" => $this->input->post("fin_credit_limit"),
+			"fst_phone" => $this->input->post("fst_phone"),
+			"fst_fax" => $this->input->post("fst_fax"),
+			"fst_postal_code" => $this->input->post("fst_postal_code"),
+			"fin_country_id" => $this->input->post("fin_country_id"),
+			"fst_area_code" => $this->input->post("fst_kode"),
+			"fin_cust_pricing_group_id" => $this->input->post("fin_cust_pricing_group_id"),
+			"fst_npwp" => $this->input->post("fst_npwp"),
+			"fst_relation_notes" => $this->input->post("fst_relation_notes"),
+			"fdc_credit_limit" => $this->input->post("fdc_credit_limit"),
 			"fin_sales_area_id" => $this->input->post("fin_sales_area_id"),
 			"fin_sales_id" => $this->input->post("fin_sales_id"),
 			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
@@ -166,18 +166,18 @@ class Relation extends MY_Controller{
 
 	public function ajx_edit_save(){
 		$this->load->model('msrelations_model');
-		$RelationId = $this->input->post("RelationId");
-		$data = $this->msrelations_model->getDataById($RelationId);
+		$fin_relation_id = $this->input->post("fin_relation_id");
+		$data = $this->msrelations_model->getDataById($fin_relation_id);
 		$msrelations = $data["ms_relations"];
 		if (!$msrelations) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
-			$this->ajxResp["message"] = "Data id $RelationId Not Found ";
+			$this->ajxResp["message"] = "Data id $fin_relation_id Not Found ";
 			$this->ajxResp["data"] = [];
 			$this->json_output();
 			return;
 		}
 
-		$this->form_validation->set_rules($this->msrelations_model->getRules("EDIT", $RelationId));
+		$this->form_validation->set_rules($this->msrelations_model->getRules("EDIT", $fin_relation_id));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -189,27 +189,27 @@ class Relation extends MY_Controller{
 		}
 
 		$data = [
-			"RelationId" => $RelationId,
-			"RelationGroupId" => $this->input->post("RelationGroupId"),
-			"RelationType" => implode(",",$this->input->post("RelationType")),
+			"fin_relation_id" => $fin_relation_id,
+			"fin_relation_group_id" => $this->input->post("fin_relation_group_id"),
+			"fst_relation_type" => implode(",",$this->input->post("fst_relation_type")),
 			"fin_parent_id" => $this->input->post("fin_parent_id"),
-			"BusinessType" => $this->input->post("BusinessType"),
-			"RelationName" => $this->input->post("RelationName"),
-			"Gender" => $this->input->post("Gender"),
-			"BirthDate" => dBDateFormat($this->input->post("BirthDate")),
-			"BirthPlace" => $this->input->post("BirthPlace"),
-			"NIK" => $this->input->post("NIK"),
-			"Address" => $this->input->post("Address"),
+			"fst_business_type" => $this->input->post("fst_business_type"),
+			"fst_relation_name" => $this->input->post("fst_relation_name"),
+			"fst_gender" => $this->input->post("fst_gender"),
+			"fdt_birth_date" => dBDateFormat($this->input->post("fdt_birth_date")),
+			"fst_birth_place" => $this->input->post("fst_birth_place"),
+			"fst_nik" => $this->input->post("fst_nik"),
+			"fst_address" => $this->input->post("fst_address"),
 			"fst_shipping_address" => $this->input->post("fst_shipping_address"),
-			"Phone" => $this->input->post("Phone"),
-			"Fax" => $this->input->post("Fax"),
-			"PostalCode" => $this->input->post("PostalCode"),
-			"CountryId" => $this->input->post("CountryId"),
-			"AreaCode" => $this->input->post("kode"),
-			"CustPricingGroupid" => $this->input->post("CustPricingGroupid"),
-			"NPWP" => $this->input->post("NPWP"),
-			"RelationNotes" => $this->input->post("RelationNotes"),
-			"fin_credit_limit" => $this->input->post("fin_credit_limit"),
+			"fst_phone" => $this->input->post("fst_phone"),
+			"fst_fax" => $this->input->post("fst_fax"),
+			"fst_postal_code" => $this->input->post("fst_postal_code"),
+			"fin_country_id" => $this->input->post("fin_country_id"),
+			"fst_area_code" => $this->input->post("fst_kode"),
+			"fin_cust_pricing_group_id" => $this->input->post("fin_cust_pricing_group_id"),
+			"fst_npwp" => $this->input->post("fst_npwp"),
+			"fst_relation_notes" => $this->input->post("fst_relation_notes"),
+			"fdc_credit_limit" => $this->input->post("fdc_credit_limit"),
 			"fin_sales_area_id" => $this->input->post("fin_sales_area_id"),
 			"fin_sales_id" => $this->input->post("fin_sales_id"),
 			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
@@ -234,7 +234,7 @@ class Relation extends MY_Controller{
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $RelationId;
+		$this->ajxResp["data"]["insert_id"] = $fin_relation_id;
 		$this->json_output();
 	}
 
@@ -242,11 +242,11 @@ class Relation extends MY_Controller{
 		$this->load->library("datatables");
 		$this->datatables->setTableName("msrelations");
 
-		$selectFields = "RelationId,RelationGroupId,RelationType,RelationName,'action' as action";
+		$selectFields = "fin_relation_id,fin_relation_group_id,fst_relation_type,fst_relation_name,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
-		$searchFields[] = $this->input->get('optionSearch'); //["RelationId","RelationName"];
+		$searchFields[] = $this->input->get('optionSearch'); //["fin_relation_id","fst_relation_name"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "fst_active !='D'";
 
@@ -258,8 +258,8 @@ class Relation extends MY_Controller{
 		foreach ($arrData as $data) {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='" . $data["RelationId"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["RelationId"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_relation_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["fin_relation_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -268,16 +268,16 @@ class Relation extends MY_Controller{
 		$this->json_output($datasources);
 	}
 
-	public function fetch_data($RelationId){
+	public function fetch_data($fin_relation_id){
 		$this->load->model("msrelations_model");
-		$data = $this->msrelations_model->getDataById($RelationId);
+		$data = $this->msrelations_model->getDataById($fin_relation_id);
 	
 		$this->json_output($data);
 	}
 
-	public function get_parentId(){
+	public function get_parent_id(){
 		$term = $this->input->get("term");
-		$ssql = "SELECT RelationId, RelationName FROM msrelations WHERE RelationType = 1" ;
+		$ssql = "SELECT fin_relation_id, fst_relation_name FROM msrelations WHERE fst_relation_type = 1" ;
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 
@@ -286,9 +286,9 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_msrelationgroups(){
+	public function get_relation_group(){
 		$term = $this->input->get("term");
-		$ssql = "SELECT RelationGroupId, RelationGroupName from msrelationgroups where RelationGroupName like ?";
+		$ssql = "SELECT fin_relation_group_id, fst_relation_group_name from msrelationgroups where fst_relation_group_name like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -297,9 +297,9 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_mscountries(){
+	public function get_countries(){
 		$term = $this->input->get("term");
-		$ssql = "SELECT CountryId, CountryName from mscountries where CountryName like ?";
+		$ssql = "SELECT fin_country_id, fst_country_name from mscountries where fst_country_name like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -308,10 +308,10 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_provinces($countryId){
+	public function get_provinces($fin_country_id){
 		$term = $this->input->get("term");
-		$ssql = "SELECT * FROM msarea WHERE LENGTH(kode) - LENGTH(REPLACE(kode, '.', '')) = 0 ";
-		$qr = $this->db->query($ssql,['%'.$term.'%',$countryId]);
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 0 ";
+		$qr = $this->db->query($ssql,['%'.$term.'%',$fin_country_id]);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
@@ -319,9 +319,9 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_districts($kode){
-		$ssql = "SELECT * FROM msarea WHERE LENGTH(kode) - LENGTH(REPLACE(kode, '.', '')) = 1 and kode like ? ";
-		$qr = $this->db->query($ssql,[$kode .'%']);
+	public function get_districts($fst_kode){
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 1 and fst_kode like ? ";
+		$qr = $this->db->query($ssql,[$fst_kode .'%']);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
@@ -329,9 +329,9 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_subdistricts($kode){
-		$ssql = "SELECT * FROM msarea WHERE LENGTH(kode) - LENGTH(REPLACE(kode, '.', '')) = 2 and kode like ? ";
-		$qr = $this->db->query($ssql,[$kode .'%']);
+	public function get_subdistricts($fst_kode){
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 2 and fst_kode like ? ";
+		$qr = $this->db->query($ssql,[$fst_kode .'%']);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
@@ -339,9 +339,9 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_village($kode){
-		$ssql = "SELECT * FROM msarea WHERE LENGTH(kode) - LENGTH(REPLACE(kode, '.', '')) = 3 and kode like ? ";
-		$qr = $this->db->query($ssql,[$kode .'%']);
+	public function get_village($fst_kode){
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 3 and fst_kode like ? ";
+		$qr = $this->db->query($ssql,[$fst_kode .'%']);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
@@ -349,9 +349,9 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_mscustpricinggroups(){
+	public function get_cust_pricing_group(){
 		$term = $this->input->get("term");
-		$ssql = "SELECT CustPricingGroupid, CustPricingGroupName from mscustpricinggroups where CustPricingGroupName like ?";
+		$ssql = "SELECT fin_cust_pricing_group_id, fst_cust_pricing_group_name from mscustpricinggroups where fst_cust_pricing_group_name like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -360,9 +360,9 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_msrelationprintoutnotes(){
+	public function get_relation_print_out_note(){
 		$term = $this->input->get("term");
-		$ssql = "SELECT NoteId, Notes from msrelationprintoutnotes where Notes like ?";
+		$ssql = "SELECT fin_note_id, fst_notes from msrelationprintoutnotes where fst_notes like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -371,7 +371,7 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_salesArea(){
+	public function get_sales_area(){
 		$term = $this->input->get("term");
 		$ssql = "SELECT fin_sales_area_id, fst_name from mssalesarea where fst_name like?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
@@ -382,7 +382,7 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_salesId(){
+	public function get_sales_id(){
 		$term = $this->input->get("term");
 		$ssql = "SELECT fin_user_id, fst_username from users where fin_department_id = 1 ";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
@@ -393,7 +393,7 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_warehouseId(){
+	public function get_warehouse(){
 		$term = $this->input->get("term");
 		$ssql = "SELECT fin_warehouse_id, fst_warehouse_name from mswarehouse where fst_warehouse_name like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);

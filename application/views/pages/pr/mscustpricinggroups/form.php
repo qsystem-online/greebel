@@ -43,37 +43,37 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmMSCustpricinggroups" class="form-horizontal" action="<?=site_url()?>pr/mscustpricinggroups/add" method="POST" enctype="multipart/form-data">			
+            <form id="frmMSCustpricinggroups" class="form-horizontal" action="<?=site_url()?>pr/cust_pricing_group/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class='form-group'>
-                    <label for="CustPricingGroupId" class="col-md-3 control-label"><?=lang("Cust Pricing Group ID")?> #</label>
+                    <label for="fin_cust_pricing_group_id" class="col-md-3 control-label"><?=lang("Cust Pricing Group ID")?> #</label>
 						<div class="col-md-9">
-							<input type="text" class="form-control" id="CustPricingGroupId" placeholder="<?=lang("(Autonumber)")?>" name="CustPricingGroupId" value="<?=$CustPricingGroupId?>" readonly>
-							<div id="CustPricingGroupId_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fin_cust_pricing_group_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_cust_pricing_group_id" value="<?=$fin_cust_pricing_group_id?>" readonly>
+							<div id="fin_cust_pricing_group_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-                    <label for="CustPricingGroupName" class="col-md-3 control-label"><?=lang("Cust Pricing Group Name")?> *</label>
+                    <label for="fst_cust_pricing_group_name" class="col-md-3 control-label"><?=lang("Cust Pricing Group Name")?> *</label>
 						<div class="col-md-9">
-							<input type="text" class="form-control" id="CustPricingGroupName" placeholder="<?=lang("Cust Pricing Group Name")?>" name="CustPricingGroupName">
-							<div id="CustPricingGroupName_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_cust_pricing_group_name" placeholder="<?=lang("Cust Pricing Group Name")?>" name="fst_cust_pricing_group_name">
+							<div id="fst_cust_pricing_group_name_err" class="text-danger"></div>
 						</div>
 					</div>
 
                     <div class="form-group">
-					<label for="PercentOfPriceList" class="col-md-3 control-label"><?= lang("Percent Of Price List")?> (%)</label>
+					<label for="fdc_percent_of_price_list" class="col-md-3 control-label"><?= lang("Percent Of Price List")?> (%)</label>
 						<div class="col-md-1">
-							<input type="text" class="form-control text-right" id="PercentOfPriceList" name="PercentOfPriceList">
+							<input type="text" class="form-control text-right" id="fdc_percent_of_price_list" name="fdc_percent_of_price_list">
 						</div>
 						
-					<label for="DifferenceInAmount" class="col-md-2 control-label"><?= lang("Amount")?></label>
+					<label for="fdc_difference_in_amount" class="col-md-2 control-label"><?= lang("Amount")?></label>
 						<div class="col-md-2">
-							<input type="text" class="form-control text-right money" id="DifferenceInAmount" name="DifferenceInAmount">
-							<div id="DifferenceInAmount_err" class="text-danger"></div>
+							<input type="text" class="form-control text-right money" id="fdc_difference_in_amount" name="fdc_difference_in_amount">
+							<div id="fdc_difference_in_amount_err" class="text-danger"></div>
 						</div>
 					</div>
                 </div>
@@ -91,7 +91,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript">
 	$(function(){
 		<?php if($mode == "EDIT"){?>
-			init_form($("#CustPricingGroupId").val());
+			init_form($("#fin_cust_pricing_group_id").val());
 		<?php } ?>
 
 		$("#btnSubmitAjax").click(function(event){
@@ -100,9 +100,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
-				url =  "<?= site_url() ?>pr/mscustpricinggroups/ajx_add_save";
+				url =  "<?= site_url() ?>pr/cust_pricing_group/ajx_add_save";
 			}else{
-				url =  "<?= site_url() ?>pr/mscustpricinggroups/ajx_edit_save";
+				url =  "<?= site_url() ?>pr/cust_pricing_group/ajx_edit_save";
 			}
 
 			//var formData = new FormData($('form')[0])
@@ -123,7 +123,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>pr/mscustpricinggroups/lizt";
+										window.location.href = "<?= site_url() ?>pr/cust_pricing_group/lizt";
 										return;
 									}
 								},
@@ -138,7 +138,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					}else if(resp.status == "SUCCESS") {
 						data = resp.data;
-						$("#CustPricingGroupId").val(data.insert_id);
+						$("#fin_cust_pricing_group_id").val(data.insert_id);
 
 						//Clear all previous error
 						$(".text-danger").html("");
@@ -146,7 +146,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 
-						$('#CustPricingGroupName').prop('readonly', true);
+						$('#fst_cust_pricing_group_name').prop('readonly', true);
 					}
 				},
 				error: function (e) {
@@ -158,29 +158,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		// OnChange
-		$("#PercentOfPriceList").change(function(){
-			//alert ("PercentOfPriceList");
-			$("#DifferenceInAmount").val(0);
-			$("#DifferenceInAmount").prop('readonly', true);
+		$("#fdc_percent_of_price_list").change(function(){
+			//alert ("fdc_percent_of_price_list");
+			$("#fdc_difference_in_amount").val(0);
+			$("#fdc_difference_in_amount").prop('readonly', true);
 		});
 
-		$("#DifferenceInAmount").change(function(){
-			//alert ("PercentOfPriceList");
-			$("#PercentOfPriceList").val(0);
-			$("#PercentOfPriceList").prop('readonly', true);
+		$("#fdc_difference_in_amount").change(function(){
+			//alert ("fdc_percent_of_price_list");
+			$("#fdc_percent_of_price_list").val(0);
+			$("#fdc_percent_of_price_list").prop('readonly', true);
 		});
 	});
 
-	function init_form(CustPricingGroupId){
+	function init_form(fin_cust_pricing_group_id){
 		//alert("Init Form");
-		var url = "<?=site_url()?>pr/mscustpricinggroups/fetch_data/" + CustPricingGroupId;
+		var url = "<?=site_url()?>pr/cust_pricing_group/fetch_data/" + fin_cust_pricing_group_id;
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.mscustpricinggroups);
+				console.log(resp.ms_custpricinggroups);
 
-				$.each(resp.mscustpricinggroups, function(name, val){
+				$.each(resp.ms_custpricinggroups, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){

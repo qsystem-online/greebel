@@ -20,14 +20,14 @@ class Glaccount extends MY_Controller
         $this->load->library('menus');
         $this->list['page_name'] = "Master GL Account";
         $this->list['list_name'] = "GL Account List";
-        $this->list['addnew_ajax_url'] = site_url() . 'GL/GLAccounts/add';
+        $this->list['addnew_ajax_url'] = site_url() . 'gl/glaccount/add';
         $this->list['pKey'] = "id";
-        $this->list['fetch_list_data_ajax_url'] = site_url() . 'GL/GLAccounts/fetch_list_data';
-        $this->list['delete_ajax_url'] = site_url() . 'GL/GLAccounts/delete/';
-        $this->list['edit_ajax_url'] = site_url() . 'GL/GLAccounts/edit/';
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'gl/glaccount/fetch_list_data';
+        $this->list['delete_ajax_url'] = site_url() . 'gl/glaccount/delete/';
+        $this->list['edit_ajax_url'] = site_url() . 'gl/glaccount/edit/';
         $this->list['arrSearch'] = [
-            'a.GLAccountCode' => 'GL Account Code',
-            'a.GLAccountName' => 'GL Account Name'
+            'a.fst_glaccount_code' => 'GL Account Code',
+            'a.fst_glaccount_name' => 'GL Account Name'
         ];
 
         $this->list['breadcrumbs'] = [
@@ -36,11 +36,11 @@ class Glaccount extends MY_Controller
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'GL Account Code', 'width' => '8%', 'data' => 'GLAccountCode'],
-            ['title' => 'GL Account Name', 'width' => '15%', 'data' => 'GLAccountName'],
-            ['title' => 'GL Main Group Name', 'width' => '10%', 'data' => 'GLAccountMainGroupName'],
+            ['title' => 'GL Account Code', 'width' => '8%', 'data' => 'fst_glaccount_code'],
+            ['title' => 'GL Account Name', 'width' => '15%', 'data' => 'fst_glaccount_name'],
+            ['title' => 'GL Main Group Name', 'width' => '10%', 'data' => 'fst_glaccount_maingroup_name'],
             ['title' => 'Parent', 'width' => '12%', 'data' => 'ParentGLAccountName'],
-            ['title' => 'Default Post', 'width' => '7%', 'data' => 'DefaultPost'],
+            ['title' => 'Default Post', 'width' => '7%', 'data' => 'fst_default_post'],
             ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
@@ -56,7 +56,7 @@ class Glaccount extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
-    private function openForm($mode = "ADD", $GLAccountCode = 0)
+    private function openForm($mode = "ADD", $fst_glaccount_code = 0)
     {
         $this->load->library("menus");
 
@@ -69,7 +69,7 @@ class Glaccount extends MY_Controller
 
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add GL Account" : "Update GL Account";
-        $data["GLAccountCode"] = $GLAccountCode;
+        $data["fst_glaccount_code"] = $fst_glaccount_code;
         $data["mainGLSeparator"] = getDbConfig("main_glaccount_separator");
         $data["parentGLSeparator"] = getDbConfig("parent_glaccount_separator");
         
@@ -91,15 +91,15 @@ class Glaccount extends MY_Controller
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($GLAccountCode)
+    public function Edit($fst_glaccount_code)
     {
-        $this->openForm("EDIT", $GLAccountCode);
+        $this->openForm("EDIT", $fst_glaccount_code);
     }
 
     public function ajx_add_save()
     {
-        $this->load->model('GLAccounts_model');
-        $this->form_validation->set_rules($this->GLAccounts_model->getRules("ADD", 0));
+        $this->load->model('GLaccounts_model');
+        $this->form_validation->set_rules($this->GLaccounts_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
         if ($this->form_validation->run() == FALSE) {
@@ -112,21 +112,21 @@ class Glaccount extends MY_Controller
         }
 
         $data = [
-            "GLAccountCode" =>  $this->input->post("GLAccountCode"),
-            "GLAccountName" => $this->input->post("GLAccountName"),
-            "GLAccountMainGroupId" => $this->input->post("GLAccountMainGroupId"),
-            "GLAccountLevel" => $this->input->post("GLAccountLevel"),
-            "ParentGLAccountCode" => $this->input->post("ParentGLAccountCode"),
-            "DefaultPost" => $this->input->post("DefaultPost"),
-            "MinUserLevelAccess" => $this->input->post("MinUserLevelAccess"),
-            "CurrCode" => $this->input->post("CurrCode"),
+            "fst_glaccount_code" =>  $this->input->post("fst_glaccount_code"),
+            "fst_glaccount_name" => $this->input->post("fst_glaccount_name"),
+            "fin_glaccount_maingroup_id" => $this->input->post("fin_glaccount_maingroup_id"),
+            "fst_glaccount_level" => $this->input->post("fst_glaccount_level"),
+            "fst_parent_glaccount_code" => $this->input->post("fst_parent_glaccount_code"),
+            "fst_default_post" => $this->input->post("fst_default_post"),
+            "fin_min_user_level_access" => $this->input->post("fin_min_user_level_access"),
+            "fst_curr_code" => $this->input->post("fst_curr_code"),
             "fin_seq_no" => $this->input->post("fin_seq_no"),
-            "isAllowInCashBankModule" => ($this->input->post("isAllowInCashBankModule") == null) ? 0 : 1,
+            "fbl_is_allow_in_cash_bank_module" => ($this->input->post("fbl_is_allow_in_cash_bank_module") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
 
         $this->db->trans_start();
-        $insertId = $this->GLAccounts_model->insert($data);
+        $insertId = $this->GLaccounts_model->insert($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -147,19 +147,19 @@ class Glaccount extends MY_Controller
 
     public function ajx_edit_save()
     {
-        $this->load->model('GLAccounts_model');
-        $GLAccountCode = $this->input->post("GLAccountCode");
-        $data = $this->GLAccounts_model->getDataById($GLAccountCode);
-        $gl_accounts = $data["glAccounts"];
-        if (!$gl_accounts) {
+        $this->load->model('GLaccounts_model');
+        $fst_glaccount_code = $this->input->post("fst_glaccount_code");
+        $data = $this->GLaccounts_model->getDataById($fst_glaccount_code);
+        $glaccounts = $data["gl_Account"];
+        if (!$glaccounts) {
             $this->ajxResp["status"] = "DATA_NOT_FOUND";
-            $this->ajxResp["message"] = "Data id $GLAccountCode Not Found ";
+            $this->ajxResp["message"] = "Data id $fst_glaccount_code Not Found ";
             $this->ajxResp["data"] = [];
             $this->json_output();
             return;
         }
 
-        $this->form_validation->set_rules($this->GLAccounts_model->getRules("EDIT", $GLAccountCode));
+        $this->form_validation->set_rules($this->GLaccounts_model->getRules("EDIT", $fst_glaccount_code));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
         if ($this->form_validation->run() == FALSE) {
             //print_r($this->form_validation->error_array());
@@ -171,27 +171,27 @@ class Glaccount extends MY_Controller
         }
 
         $data = [
-            "GLAccountCode" => $GLAccountCode,
-            "GLAccountName" => $this->input->post("GLAccountName"),
-            //"GLAccountMainGroupId" => $this->input->post("GLAccountMainGroupId"),
-            //"GLAccountLevel" => $this->input->post("GLAccountLevel"),
-            //"ParentGLAccountCode" => $this->input->post("ParentGLAccountCode"),
-            "DefaultPost" => $this->input->post("DefaultPost"),
-            "MinUserLevelAccess" => $this->input->post("MinUserLevelAccess"),
-            "CurrCode" => $this->input->post("CurrCode"),
+            "fst_glaccount_code" => $fst_glaccount_code,
+            "fst_glaccount_name" => $this->input->post("fst_glaccount_name"),
+            //"fin_glaccount_maingroup_id" => $this->input->post("fin_glaccount_maingroup_id"),
+            //"fst_glaccount_level" => $this->input->post("fst_glaccount_level"),
+            //"fst_parent_glaccount_code" => $this->input->post("fst_parent_glaccount_code"),
+            "fst_default_post" => $this->input->post("fst_default_post"),
+            "fin_min_user_level_access" => $this->input->post("fin_min_user_level_access"),
+            "fst_curr_code" => $this->input->post("fst_curr_code"),
             "fin_seq_no"=> $this->input->post("fin_seq_no"),
-            "isAllowInCashBankModule" => $this->input->post("isAllowInCashBankModule"),
+            "fbl_is_allow_in_cash_bank_module" => $this->input->post("fbl_is_allow_in_cash_bank_module"),
             "fst_active" => 'A'
         ];
 
-        if ($this->input->post("GLAccountLevel") !=  null){
-            $data["GLAccountLevel"] = $this->input->post("GLAccountLevel");
+        if ($this->input->post("fst_glaccount_level") !=  null){
+            $data["fst_glaccount_level"] = $this->input->post("fst_glaccount_level");
         }
 
 
         $this->db->trans_start();
 
-        $this->GLAccounts_model->update($data);
+        $this->GLaccounts_model->update($data);
         $dbError  = $this->db->error();
         if ($dbError["code"] != 0) {
             $this->ajxResp["status"] = "DB_FAILED";
@@ -206,16 +206,17 @@ class Glaccount extends MY_Controller
 
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
-        $this->ajxResp["data"]["insert_id"] = $GLAccountCode;
+        $this->ajxResp["data"]["insert_id"] = $fst_glaccount_code;
         $this->json_output();
     }
 
     public function fetch_list_data()
     {
         $this->load->library("datatables");
-        $this->datatables->setTableName("(select a.*,b.GLAccountMainGroupName,c.GLAccountName as ParentGLAccountName from glaccounts a inner join glaccountmaingroups b on a.GLAccountMainGroupId = b.GLAccountMainGroupId left join glaccounts c ON a.GLAccountCode = c.ParentGLAccountCode) a");
+        $this->datatables->setTableName("(select a.*,b.fst_glaccount_maingroup_name,c.fst_glaccount_name as ParentGLAccountName from glaccounts a left join 
+        glaccountmaingroups b on a.fin_glaccount_maingroup_id = b.fin_glaccount_maingroup_id left join glaccounts c ON a.fst_parent_glaccount_code = c.fst_glaccount_code) a");
 
-        $selectFields = "a.GLAccountCode,a.GLAccountName,a.GLAccountMainGroupName,a.ParentGLAccountName,a.DefaultPost,'action' as action";
+        $selectFields = "a.fst_glaccount_code,a.fst_glaccount_name,a.fst_glaccount_maingroup_name,a.ParentGLAccountName,a.fst_default_post,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
         $searchFields =[];
@@ -228,19 +229,19 @@ class Glaccount extends MY_Controller
         $arrData = $datasources["data"];
         $arrDataFormated = [];
         foreach ($arrData as $data) {
-            switch ($data["DefaultPost"]) {
+            switch ($data["fst_default_post"]) {
                 case 'D':
-                    $DefaultPost = "Debit";
+                    $fst_default_post = "Debit";
                     break;
                 case 'C':
-                    $DefaultPost = "Credit";
+                    $fst_default_post = "Credit";
                     break;
             }
-            $data["DefaultPost"] = $DefaultPost;
+            $data["fst_default_post"] = $fst_default_post;
             //action
             $data["action"]    = "<div style='font-size:16px'>
-                        <a class='btn-edit' href='#' data-id='" . $data["GLAccountCode"] . "'><i class='fa fa-pencil'></i></a>
-                        <a class='btn-delete' href='#' data-id='" . $data["GLAccountCode"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+                        <a class='btn-edit' href='#' data-id='" . $data["fst_glaccount_code"] . "'><i class='fa fa-pencil'></i></a>
+                        <a class='btn-delete' href='#' data-id='" . $data["fst_glaccount_code"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
                     </div>";
 
             $arrDataFormated[] = $data;
@@ -249,10 +250,10 @@ class Glaccount extends MY_Controller
         $this->json_output($datasources);
     }
 
-    public function fetch_data($GLAccountCode)
+    public function fetch_data($fst_glaccount_code)
     {
-        $this->load->model("GLAccounts_model");
-        $data = $this->GLAccounts_model->getDataById($GLAccountCode);
+        $this->load->model("GLaccounts_model");
+        $data = $this->GLaccounts_model->getDataById($fst_glaccount_code);
 
         //$this->load->library("datatables");		
         $this->json_output($data);
@@ -261,7 +262,7 @@ class Glaccount extends MY_Controller
     public function get_ParentGL($maingroupid)
     {
         $term = $this->input->get("term");
-        $ssql = "SELECT * from glaccounts where GLAccountName like ? and GLAccountMainGroupId = ? and GLAccountLevel = 'HD'";
+        $ssql = "SELECT * from glaccounts where fst_glaccount_name like ? and fin_glaccount_maingroup_id = ? and fst_glaccount_level = 'HD'";
         $qr = $this->db->query($ssql, ['%' . $term . '%', $maingroupid]);
         $rs = $qr->result();
 
@@ -271,17 +272,17 @@ class Glaccount extends MY_Controller
     public function get_MainGL()
     {
         $term = $this->input->get("term");
-        $ssql = "SELECT GLAccountMainGroupId, GLAccountMainGroupName from glaccountmaingroups where GLAccountMainGroupName like ?";
+        $ssql = "SELECT fin_glaccount_maingroup_id, fst_glaccount_maingroup_name from glaccountmaingroups where fst_glaccount_maingroup_name like ?";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
 
         $this->json_output($rs);
     }
 
-    public function get_CurrCode()
+    public function get_Currency()
     {
         $term = $this->input->get("term");
-        $ssql = "SELECT CurrCode, CurrName from mscurrencies";
+        $ssql = "SELECT fst_curr_code, fst_curr_name from mscurrencies";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
 
@@ -298,9 +299,9 @@ class Glaccount extends MY_Controller
         }
         //echo $id;
         //die ();
-        $this->load->model("GLAccounts_model");
+        $this->load->model("GLaccounts_model");
 
-        $this->GLAccounts_model->delete($id);
+        $this->GLaccounts_model->delete($id);
         
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "File deleted successfully";

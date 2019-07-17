@@ -10,14 +10,14 @@ class Msrelations_model extends MY_Model {
     }
 
     public function getDataById($fin_relation_id){
-        $ssql = "select a.*,MID(a.AreaCode, 1, 2) AS province,MID(a.AreaCode, 1, 5) AS district,MID(a.AreaCode, 1, 8) AS subdistrict,MID(a.AreaCode, 1, 13) AS village,b.fst_country_name,
-        c.nama as namaprovince,d.nama as namadistrict,e.nama as namasubdistrict,f.nama as namavillage,g.fst_relation_group_name,h.fst_cust_pricing_group_name,i.fst_notes,j.fst_username as SalesName,
+        $ssql = "select a.*,MID(a.fst_area_code, 1, 2) AS province,MID(a.fst_area_code, 1, 5) AS district,MID(a.fst_area_code, 1, 8) AS subdistrict,MID(a.fst_area_code, 1, 13) AS village,b.fst_country_name,
+        c.fst_nama as fst_province_name,d.fst_nama as fst_district_name,e.fst_nama as fst_subdistrict_name,f.fst_nama as fst_village_name,g.fst_relation_group_name,h.fst_cust_pricing_group_name,i.fst_notes,j.fst_username as SalesName,
         k.fst_warehouse_name,l.fst_name,m.fst_relation_name as ParentName from " . $this->tableName . " a 
         left join mscountries b on a.fin_country_id = b.fin_country_id 
-        left join msarea c on MID(a.AreaCode, 1, 2) = c.kode
-        left join msarea d on MID(a.AreaCode, 1, 5) = d.kode
-        left join msarea e on MID(a.AreaCode, 1, 8) = e.kode
-        left join msarea f on MID(a.AreaCode, 1, 13) = f.kode
+        left join msarea c on MID(a.fst_area_code, 1, 2) = c.fst_kode
+        left join msarea d on MID(a.fst_area_code, 1, 5) = d.fst_kode
+        left join msarea e on MID(a.fst_area_code, 1, 8) = e.fst_kode
+        left join msarea f on MID(a.fst_area_code, 1, 13) = f.fst_kode
         left join msrelationgroups g on a.fin_relation_group_id = g.fin_relation_group_id
         left join mscustpricinggroups h on a.fin_cust_pricing_group_id = h.fin_cust_pricing_group_id
         left join msrelationprintoutnotes i on a.fst_relation_notes = i.fin_note_id
@@ -27,34 +27,34 @@ class Msrelations_model extends MY_Model {
         left join " . $this->tableName . " m on a.fin_parent_id = m.fin_relation_id
         where a.fin_relation_id = ? order by fin_relation_id ";
 		$qr = $this->db->query($ssql, [$fin_relation_id]);
-        $rwMSRelations = $qr->row();
+        $rwRelation = $qr->row();
 
-        $arrTmp = explode(".",$rwMSRelations->district);
+        $arrTmp = explode(".",$rwRelation->district);
         if (sizeof($arrTmp) == 2 ){
-            $arrTmp = explode(".",$rwMSRelations->subdistrict);
+            $arrTmp = explode(".",$rwRelation->subdistrict);
             if (sizeof($arrTmp) == 3){
-                $arrTmp = explode(".",$rwMSRelations->village);
+                $arrTmp = explode(".",$rwRelation->village);
                 if (sizeof($arrTmp) != 4){
-                    $rwMSRelations->village = null;
-                    $rwMSRelations->namavillage = null;
+                    $rwRelation->village = null;
+                    $rwRelation->fst_village_name = null;
                 }
             }else{
-                $rwMSRelations->subdistrict = null;
-                $rwMSRelations->namasubdistrict = null;
-                $rwMSRelations->village = null;
-                $rwMSRelations->namavillage = null;
+                $rwRelation->subdistrict = null;
+                $rwRelation->fst_subdistrict_name = null;
+                $rwRelation->village = null;
+                $rwRelation->fst_village_name = null;
             }
         }else{
-            $rwMSRelations->district = null;
-            $rwMSRelations->namadistrict = null;
-            $rwMSRelations->subdistrict = null;
-            $rwMSRelations->namasubdistrict = null;
-            $rwMSRelations->village = null;
-            $rwMSRelations->namavillage = null;
+            $rwRelation->district = null;
+            $rwRelation->fst_district_name = null;
+            $rwRelation->subdistrict = null;
+            $rwRelation->fst_subdistrict_name = null;
+            $rwRelation->village = null;
+            $rwRelation->fst_village_name = null;
         }
 
 		$data = [
-            "ms_relations" => $rwMSRelations
+            "ms_relations" => $rwRelation
 		];
 
 		return $data;
@@ -122,7 +122,7 @@ class Msrelations_model extends MY_Model {
 
     public function getCreditLimit($relationId){
         $ssql = "select fdc_credit_limit from msrelations where fin_relation_id = ?";
-        $qr = $this->db->query($ssql,[$relationId]);
+        $qr = $this->query($ssql,[$relationId]);
         $rw = $qr->row();
         if(!$rw){
             return 0;

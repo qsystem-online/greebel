@@ -9,19 +9,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
     .border-0 {
         border: 0px;
     }
-
     td {
         padding: 2px;
          !important
     }
-
     .nav-tabs-custom>.nav-tabs>li.active>a {
         font-weight: bold;
         border-left-color: #3c8dbc;
         border-right-color: #3c8dbc;
         border-style: fixed;
     }
-
     .nav-tabs-custom>.nav-tabs {
         border-bottom-color: #3c8dbc;
         border-bottom-style: fixed;
@@ -155,12 +152,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                                     <div id="fdc_min_total_purchase_err" class="text-danger"></div>
                                                 </div>		
                                                 <div class="col-md-2">
-                                                    <input type="text" class="form-control" id="fin_qty_gabungan" placeholder="<?= lang("0") ?>" name="fin_qty_gabungan">
-                                                    <div id="fin_qty_gabungan_err" class="text-danger"></div>
+                                                    <input type="text" class="form-control" id="fdb_qty_gabungan" placeholder="<?= lang("0") ?>" name="fdb_qty_gabungan">
+                                                    <div id="fdb_qty_gabungan_err" class="text-danger"></div>
                                                 </div>						
                                                 <div class="col-md-2">
-                                                    <select class="select2 form-control" id="fst_satuan_gabungan" name="fst_satuan_gabungan" style="width:100%"></select>
-                                                    <div id="fst_satuan_gabungan_err" class="text-danger"></div>
+                                                    <select class="select2 form-control" id="fst_unit_gabungan" name="fst_unit_gabungan" style="width:100%"></select>
+                                                    <div id="fst_unit_gabungan_err" class="text-danger"></div>
                                                 </div>
                                             </div>				
                                             <div class="col-md-2">
@@ -177,21 +174,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         </div>
                                     </form>
                                     <!---<button id="btn-add-item-details" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Item") ?></button>
-
                                     <label for="fbl_qty_gabungan" class="col-sm-2 control-label"><?= lang("Combined") ?> :</label>
                                     <div class="checkbox" style="width:900px">
                                         <label><input id="fbl_qty_gabungan" type="checkbox" name="fbl_qty_gabungan" value="1"><?= lang("Combined") ?></label><br>
                                     </div>
-                                    <label for="fin_qty_gabungan" class="col-md-3 control-label"><?= lang("Qty Terms") ?> :</label>
+                                    <label for="fdb_qty_gabungan" class="col-md-3 control-label"><?= lang("Qty Terms") ?> :</label>
                                     <div class="col-md-2">
-                                        <input type="text" class="form-control" id="fin_qty_gabungan" placeholder="<?= lang("0") ?>" name="fin_qty_gabungan">
-                                        <div id="fin_qty_gabungan_err" class="text-danger"></div>
+                                        <input type="text" class="form-control" id="fdb_qty_gabungan" placeholder="<?= lang("0") ?>" name="fdb_qty_gabungan">
+                                        <div id="fdb_qty_gabungan_err" class="text-danger"></div>
                                     </div>
-
-                                    <label for="fst_satuan_gabungan" class="col-md-1 control-label"><?= lang("Unit") ?> :</label>
+                                    <label for="fst_unit_gabungan" class="col-md-1 control-label"><?= lang("Unit") ?> :</label>
                                     <div class="col-md-2">
-                                        <select class="select2 form-control" id="fst_satuan_gabungan" name="fst_satuan_gabungan" style="width:100%"></select>
-                                        <div id="fst_satuan_gabungan_err" class="text-danger"></div>
+                                        <select class="select2 form-control" id="fst_unit_gabungan" name="fst_unit_gabungan" style="width:100%"></select>
+                                        <div id="fst_unit_gabungan_err" class="text-danger"></div>
                                     </div>
                                     <label for="fdc_min_total_purchase" class="col-md-2 control-label"><?= lang("Minimum Purchase") ?>:</label>
                                         <div class="col-md-2">
@@ -259,10 +254,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-						<label for="fin_qty" class="col-md-3 control-label"><?=lang("Qty")?></label>
+						<label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?></label>
 						<div class="col-md-4">
-							<input type="number" class="form-control text-right numeric" id="fin_qty" value="0">
-							<div id="fin_qty_err" class="text-danger"></div>
+							<input type="number" class="form-control text-right numeric" id="fdb_qty" value="0">
+							<div id="fdb_qty_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -280,18 +275,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $(function() {
             $("#btn-add-item-details").click(function(event) {
                 event.preventDefault();
-
-                var unitCombined = $("#fst_satuan_gabungan").val();
+                var unitCombined = $("#fst_unit_gabungan").val();
                 if ($("#fbl_qty_gabungan").is(":checked")){
                     if (unitCombined == null || unitCombined == "") {
-                        $("#fst_satuan_gabungan_err").html("Please select Unit terms before add item");
-                        $("#fst_satuan_gabungan_err").show();
+                        $("#fst_unit_gabungan_err").html("Please select Unit terms before add item");
+                        $("#fst_unit_gabungan_err").show();
                     } else {
-                        $("#fst_satuan_gabungan_err").hide();
+                        $("#fst_unit_gabungan_err").hide();
                         $("#mdlItemDetails").modal('show');
                     }
                 } else {
-                    $("#fst_satuan_gabungan_err").hide();
+                    $("#fst_unit_gabungan_err").hide();
                     $("#mdlItemDetails").modal('show');
                 }
             });
@@ -299,12 +293,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 searching: false,
                 paging: false,
                 info: false,
-                columns: [{
+                columns: [/*{
                         "title": "<?= lang("ID ") ?>",
                         "width": "5%",
                         data: "fin_id",
                         visible: false
-                    },
+                    },*/
                     {
                         "title": "<?= lang("Item ID ") ?>",
                         "width": "10%",
@@ -314,7 +308,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     {
                         "title": "<?= lang("Item Name ") ?>",
                         "width": "25%",
-                        data: "ItemName",
+                        data: "fst_item_name",
                         visible: true,
                     },
                     {
@@ -328,14 +322,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         "width": "5%",
                         data: "fst_unit",
                         visible: true,
-
                     },
                     {
                         "title": "<?= lang("Qty ") ?>",
                         "width": "5%",
-                        data: "fin_qty",
+                        data: "fdb_qty",
                         visible: true,
-
                     },
                     {
                         "title": "<?= lang("Action ") ?>",
@@ -349,26 +341,24 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 ],
             });
-
             $("#tbl_item_details").on("click", ".btn-delete-item-details", function(event) {
                 event.preventDefault();
                 t = $("#tbl_item_details").DataTable();
                 var trRow = $(this).parents('tr');
                 t.row(trRow).remove().draw();
             });
-
-            $("#fst_satuan_gabungan").select2({
+            $("#fst_unit_gabungan").select2({
                 width: '100%',
                 ajax: {
-                    url: '<?= site_url() ?>Master/promotion/get_data_unit',
+                    url: '<?= site_url() ?>master/promotion/get_data_unit',
                     dataType: 'json',
                     delay: 250,
                     processResults: function(data) {
                         data2 = [];
                         $.each(data, function(index, value) {
                             data2.push({
-                                "id": value.Unit,
-                                "text": value.Unit
+                                "id": value.fst_unit,
+                                "text": value.fst_unit
                             });
                         });
                         console.log(data2);
@@ -379,12 +369,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     cache: true,
                 }
             });
-
-
             /*$("#fin_item_id").select2({
                 width: '100%',
                 ajax: {
-                    url: '<?= site_url() ?>Master/promotion/get_data_ItemPromo',
+                    url: '<?= site_url() ?>master/promotion/get_data_ItemPromo',
                     dataType: 'json',
                     delay: 250,
                     processResults: function(data) {
@@ -392,7 +380,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         $.each(data, function(index, value) {
                             data2.push({
                                 "id": value.ItemId,
-                                "text": value.ItemName
+                                "text": value.fst_item_name
                             });
                         });
                         console.log(data2);
@@ -403,7 +391,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     cache: true,
                 }
             });*/
-
             $("#fst_item_type").change(function(event){
                 event.preventDefault();
                 //$('#fin_item_id').val(null).trigger('change');
@@ -415,7 +402,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     select_itemSubgroup();
                 }
             });
-
             $("#fin_item_id").change(function(event) {
                 event.preventDefault();
                 $('#fst_unit').val(null).trigger('change');
@@ -424,7 +410,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     $("#fst_unit").select2({
                         width: '100%',
                         ajax: {
-                            url: '<?= site_url() ?>Master/promotion/get_data_unitTerms/'+$("#fin_item_id").val(),
+                            url: '<?= site_url() ?>master/promotion/get_data_unitTerms/'+$("#fin_item_id").val(),
                             dataType: 'json',
                             delay: 250,
                             processResults: function(data) {
@@ -432,8 +418,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 data = data.data;
                                 $.each(data,function(index,value) {
                                     units.push({
-                                        "id" : value.Unit,
-                                        "text" : value.Unit
+                                        "id" : value.fst_unit,
+                                        "text" : value.fst_unit
                                     });
                                 });
                                 console.log(units);
@@ -448,15 +434,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     $("#fst_unit").select2({
                         width: '100%',
                         ajax: {
-                            url: '<?= site_url() ?>Master/promotion/get_data_unit',
+                            url: '<?= site_url() ?>master/promotion/get_data_unit',
                             dataType: 'json',
                             delay: 250,
                             processResults: function(data) {
                                 data2 = [];
                                 $.each(data, function(index, value) {
                                     data2.push({
-                                        "id": value.Unit,
-                                        "text": value.Unit
+                                        "id": value.fst_unit,
+                                        "text": value.fst_unit
                                     });
                                 });
                                 console.log(data2);
@@ -469,7 +455,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     });
                 }
             });
-
             $('#fin_item_id').on('select2:select', function(e) {
                 //console.log(selected_itempromo);
                 selected_itempromo = $('#fin_item_id').select2('data')[0];
@@ -477,25 +462,23 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 //var data = e.params.data;
                 //selected_itempromo = data;
             });
-
             $('#fst_unit').on('select2:select', function(e) {
                 selected_unitdetail = $('#fst_unit').select2('data')[0];
                 console.log(selected_unitdetail);
             });
-
             function select_itemDetail(){
                 $("#fin_item_id").select2({
                     width: '100%',
                     ajax: {
-                        url: '<?= site_url() ?>Master/promotion/get_data_ItemPromo',
+                        url: '<?= site_url() ?>master/promotion/get_data_ItemPromo',
                         dataType: 'json',
                         delay: 250,
                         processResults: function(data) {
                             data2 = [];
                             $.each(data, function(index, value) {
                                 data2.push({
-                                    "id": value.ItemId,
-                                    "text": value.ItemName
+                                    "id": value.fin_item_id,
+                                    "text": value.fst_item_name
                                 });
                             });
                             console.log(data2);
@@ -507,20 +490,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
             }
-
             function select_itemSubgroup(){
                 $("#fin_item_id").select2({
                     width: '100%',
                     ajax: {
-                        url: '<?= site_url() ?>Master/promotion/get_item_SubgroupPromo',
+                        url: '<?= site_url() ?>master/promotion/get_item_SubgroupPromo',
                         dataType: 'json',
                         delay: 250,
                         processResults: function(data) {
                             data2 = [];
                             $.each(data, function(index, value) {
                                 data2.push({
-                                    "id": value.ItemSubGroupId,
-                                    "text": value.ItemSubGroupName
+                                    "id": value.fin_item_subgroup_id,
+                                    "text": value.fst_item_subgroup_name
                                 });
                             });
                             console.log(data2);
@@ -532,13 +514,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
             }
-
             $("#btn-add-item").click(function(event) {
                 event.preventDefault();
-
                 t = $('#tbl_item_details').DataTable();
                 addRow = true;
-
                 var itemTerms = $("#fin_item_id").val();
                 if (itemTerms == null || itemTerms == "") {
                     $("#fin_item_id_err").html("Please select item");
@@ -548,7 +527,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 } else {
                     $("#fin_item_id_err").hide();
                 }
-
                 var unitTerms = $("#fst_unit").val();              
                 if (unitTerms == null || unitTerms == "") {
                     $("#fst_unit_err").html("Please select unit");
@@ -558,8 +536,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 } else {
                     $("#fst_unit_err").hide();
                 }
-
-                var unitCombined = $("#fst_satuan_gabungan").val();
+                var unitCombined = $("#fst_unit_gabungan").val();
                 if ($("#fbl_qty_gabungan").is(":checked")){
                     if (unitCombined != selected_unitdetail.text ) {
                         alert(selected_unitdetail.text);
@@ -573,15 +550,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 }else{
                     $("#fst_unit_err").hide();                    
                 }
-
                 t.row.add({
                     fin_id: 0,
                     fin_promo_id: 0,
                     fst_item_type: $("#fst_item_type").val(),
                     fin_item_id: selected_itempromo.id,
-                    ItemName: selected_itempromo.text,
+                    fst_item_name: selected_itempromo.text,
                     fst_unit: selected_unitdetail.text,
-                    fin_qty: $("#fin_qty").val(),
+                    fdb_qty: $("#fdb_qty").val(),
                     action: action
                 }).draw(false);
             });
@@ -679,14 +655,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 ],
             });
-
             $("#tbl_customer_promo").on("click", ".btn-delete-customer-promo", function(event) {
                 event.preventDefault();
                 t = $("#tbl_customer_promo").DataTable();
                 var trRow = $(this).parents('tr');
                 t.row(trRow).remove().draw();
             });
-
             $("#fst_participant_type").change(function(event){
                 event.preventDefault();
                 //$('#fin_customer_id').val(null).trigger('change');
@@ -700,20 +674,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     select_membergroup();
                 }
             });
-
             function select_relation(){
                 $("#fin_customer_id").select2({
                     width: '100%',
                     ajax: {
-                        url: '<?= site_url() ?>Master/promotion/get_relationpromo',
+                        url: '<?= site_url() ?>master/promotion/get_relationpromo',
                         dataType: 'json',
                         delay: 250,
                         processResults: function(data) {
                             data2 = [];
                             $.each(data, function(index, value) {
                                 data2.push({
-                                    "id": value.RelationId,
-                                    "text": value.RelationName
+                                    "id": value.fin_relation_id,
+                                    "text": value.fst_relation_name
                                 });
                             });
                             console.log(data2);
@@ -725,12 +698,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
             }
-
             function select_membergroup(){
                 $("#fin_customer_id").select2({
                     width: '100%',
                     ajax: {
-                        url: '<?= site_url() ?>Master/promotion/get_membergrouppromo',
+                        url: '<?= site_url() ?>master/promotion/get_membergrouppromo',
                         dataType: 'json',
                         delay: 250,
                         processResults: function(data) {
@@ -750,20 +722,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
             }
-
             function select_relationgroup(){
                 $("#fin_customer_id").select2({
                     width: '100%',
                     ajax: {
-                        url: '<?= site_url() ?>Master/promotion/get_relationgrouppromo',
+                        url: '<?= site_url() ?>master/promotion/get_relationgrouppromo',
                         dataType: 'json',
                         delay: 250,
                         processResults: function(data) {
                             data2 = [];
                             $.each(data, function(index, value) {
                                 data2.push({
-                                    "id": value.RelationGroupId,
-                                    "text": value.RelationGroupName
+                                    "id": value.fin_relation_group_id,
+                                    "text": value.fst_relation_group_name
                                 });
                             });
                             console.log(data2);
@@ -777,19 +748,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
             
             var selected_participants;
-
             $('#fin_customer_id').on('select2:select', function(e) {
                 console.log(selected_participants);
                 var data = e.params.data;
                 selected_participants = data;
-
             });
-
             $("#btn-add-participants-promo").click(function(event) {
                 event.preventDefault();
                 t = $('#tbl_customer_promo').DataTable();
                 addRow = true;
-
                 t.row.add({
                     fin_id: 0,
                     fin_promo_id: 0,
@@ -798,7 +765,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     fst_participant_type: $("#fst_participant_type").val(),
                     action: action
                 }).draw(false);
-
             });
         });
     </script>
@@ -809,47 +775,38 @@ defined('BASEPATH') or exit('No direct script access allowed');
         <?php if ($mode == "EDIT") { ?>
             init_form($("#fin_promo_id").val());
         <?php } ?>
-
         $("#btnSubmitAjax").click(function(event) {
             event.preventDefault();
-
             data = $("#frmPromotion").serializeArray();
             //data = new FormData($("#frmMSItems")[0]);
             detail = new Array();
-
             t = $('#tbl_item_details').DataTable();
             datas = t.data();
             $.each(datas, function(i, v) {
                 detail.push(v);
             });
-
             data.push({
                 name: "detail",
                 value: JSON.stringify(detail)
             });
-
             // save Participants
             detailParticipants = new Array();
-
             b = $('#tbl_customer_promo').DataTable();
             datas = b.data();
             $.each(datas, function(i, v) {
                 detailParticipants.push(v);
             });
-
             data.push({
                 name: "detailParticipants",
                 value: JSON.stringify(detailParticipants)
             });
-
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
-                url = "<?= site_url() ?>Master/promotion/ajx_add_save";
+                url = "<?= site_url() ?>master/promotion/ajx_add_save";
             } else {
-                url = "<?= site_url() ?>Master/promotion/ajx_edit_save";
+                url = "<?= site_url() ?>master/promotion/ajx_edit_save";
             }
             console.log(data);
-
             //var formData = new FormData($('form')[0])
             $.ajax({
                 type: "POST",
@@ -868,14 +825,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        window.location.href = "<?= site_url() ?>Master/promotion";
+                                        window.location.href = "<?= site_url() ?>master/promotion";
                                         return;
                                     }
                                 },
                             }
                         });
                     }
-
                     if (resp.status == "VALIDATION_FORM_FAILED") {
                         //Show Error
                         errors = resp.data;
@@ -885,13 +841,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     } else if (resp.status == "SUCCESS") {
                         data = resp.data;
                         $("#fin_promo_id").val(data.insert_id);
-
                         //Clear all previous error
                         $(".text-danger").html("");
-
                         // Change to Edit mode
                         $("#frm-mode").val("EDIT"); //ADD|EDIT
-                        $('#ItemName').prop('readonly', true);
+                        $('#fst_item_name').prop('readonly', true);
                     }
                 },
                 error: function(e) {
@@ -901,19 +855,18 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 }
             });
         });
-
         $("#select-promo_item").select2({
             width: '100%',
             ajax: {
-                url: '<?= site_url() ?>Master/promotion/get_data_ItemPromo',
+                url: '<?= site_url() ?>master/promotion/get_data_ItemPromo',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
                     data2 = [];
                     $.each(data, function(index, value) {
                         data2.push({
-                            "id": value.ItemId,
-                            "text": value.ItemName
+                            "id": value.fin_item_id,
+                            "text": value.fst_item_name
                         });
                     });
                     console.log(data2);
@@ -924,22 +877,21 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 cache: true,
             }
         });
-
         $("#select-promo_item").change(function(event) {
             event.preventDefault();
             $('#select-promo_unit').val(null).trigger('change');
             $("#select-promo_unit").select2({
                 width: '100%',
                 ajax: {
-                    url: '<?= site_url() ?>Master/promotion/get_data_unitPromo/' + $("#select-promo_item").val(),
+                    url: '<?= site_url() ?>master/promotion/get_data_unitPromo/' + $("#select-promo_item").val(),
                     dataType: 'json',
                     delay: 250,
                     processResults: function(data) {
                         data2 = [];
                         $.each(data, function(index, value) {
                             data2.push({
-                                "id": value.Unit,
-                                "text": value.Unit
+                                "id": value.fst_unit,
+                                "text": value.fst_unit
                             });
                         });
                         console.log(data2);
@@ -951,18 +903,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 }
             });
         })
-
     });
-
     function init_form(fin_promo_id) {
         //alert("Init Form");
-        var url = "<?= site_url() ?>Master/promotion/fetch_data/" + fin_promo_id;
+        var url = "<?= site_url() ?>master/promotion/fetch_data/" + fin_promo_id;
         $.ajax({
             type: "GET",
             url: url,
             success: function(resp) {
                 console.log(resp.mspromo);
-
                 $.each(resp.mspromo, function(name, val) {
                     var $el = $('[name="' + name + '"]'),
                         type = $el.attr('type');
@@ -978,47 +927,39 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
-
                 $("#fdt_start").datepicker('update', dateFormat(resp.mspromo.fdt_start));
                 $("#fdt_end").datepicker('update', dateFormat(resp.mspromo.fdt_end));
-
                 // menampilkan data di select2
-                var newOption = new Option(resp.mspromo.ItemName, resp.mspromo.fin_promo_item_id, true, true);
+                var newOption = new Option(resp.mspromo.fst_item_name, resp.mspromo.fin_promo_item_id, true, true);
                 // Append it to the select
                 $('#select-promo_item').append(newOption).trigger('change');
-
                 var newOption = new Option(resp.mspromo.fin_promo_unit, resp.mspromo.fin_promo_unit, true, true);
                 // Append it to the select
                 $('#select-promo_unit').append(newOption).trigger('change');
-
-                var newOption = new Option(resp.mspromo.fst_satuan_gabungan, resp.mspromo.fst_satuan_gabungan, true, true);
+                var newOption = new Option(resp.mspromo.fst_unit_gabungan, resp.mspromo.fst_unit_gabungan, true, true);
                 // Append it to the select
-                $('#fst_satuan_gabungan').append(newOption).trigger('change');
-
+                $('#fst_unit_gabungan').append(newOption).trigger('change');
                 //populate Promo Terms
                 $.each(resp.promoTerms, function(name, val) {
                     console.log(val);
                     //event.preventDefault();
                     t = $('#tbl_item_details').DataTable();
-
                     t.row.add({
                     fin_id: val.fin_id,
                     fin_promo_id: val.fin_promo_id,
                     fst_item_type: val.fst_item_type,
                     fin_item_id: val.fin_item_id,
-                    ItemName: val.ItemTerms,
-                    fin_qty: val.fin_qty,
+                    fst_item_name: val.ItemTerms,
+                    fdb_qty: val.fdb_qty,
                     fst_unit: val.fst_unit,
                     action: action
                 }).draw(false);
                 })
-
                 //populate Promo Participants
                 $.each(resp.promoParticipants, function(name, val) {
                     console.log(val);
                     //event.preventDefault();
                     t = $('#tbl_customer_promo').DataTable();
-
                     t.row.add({
                         fin_id: val.fin_id,
                         fin_promo_id: val.fin_promo_id,
@@ -1028,9 +969,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         action: action
                     }).draw(false);
                 })
-
             },
-
             error: function(e) {
                 $("#result").text(e.responseText);
                 console.log("ERROR : ", e);
