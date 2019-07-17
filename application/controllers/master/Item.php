@@ -513,13 +513,13 @@ class Item extends MY_Controller
         $this->json_output($rs);
     }
 
-    public function getSellingUnit($itemId){
-        $this->load->model("MSItemunitdetails_model");
-        $units = $this->MSItemunitdetails_model->getSellingListUnit($itemId);
+    public function get_selling_unit($itemId){
+        $this->load->model("msitemunitdetails_model");
+        $units = $this->msitemunitdetails_model->getSellingListUnit($itemId);
         $this->json_output($units);
     }
 
-    public function getSellingPrice($itemId,$unit,$custId){
+    public function get_selling_price($itemId,$unit,$custId){
         $sellingPrice = $this->MSItems_model->getSellingPrice($itemId,$unit,$custId);
         $resp = [
             "sellingPrice" => $sellingPrice,

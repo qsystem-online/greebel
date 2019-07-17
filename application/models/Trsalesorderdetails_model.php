@@ -18,7 +18,7 @@ class Trsalesorderdetails_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'fdc_qty',
+            'field' => 'fdb_qty',
             'label' => 'Qty',
             'rules' => 'required|numeric',
 			'errors' => array(

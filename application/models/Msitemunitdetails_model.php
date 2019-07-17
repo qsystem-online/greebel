@@ -84,7 +84,7 @@ class Msitemunitdetails_model extends MY_Model
 
 
     public function getSellingListUnit($itemId){
-        $ssql ="select * from " . $this->tableName . " where fin_item_id = ? and isSelling = 1 and fst_active = 'A' order by fin_rec_id ";
+        $ssql ="select * from " . $this->tableName . " where fin_item_id = ? and fbl_is_selling = 1 and fst_active = 'A' order by fin_rec_id ";
         $qr = $this->db->query($ssql,[$itemId]);
         $rw = $qr->result();
         return $rw;

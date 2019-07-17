@@ -101,7 +101,7 @@ class Msitems_model extends MY_Model
     public function getSellingPrice($fin_item_id,$fst_unit,$custId) {
         //$this->load->model("MSRelations_model");
         //$this->MSRelations_model->
-        $ssql ="select * from msrelations where RelationId = ?";
+        $ssql ="select * from msrelations where fin_relation_id = ?";
         $qr = $this->db->query($ssql,[$custId]);
         $rw = $qr->row();
         if($rw){
@@ -109,18 +109,18 @@ class Msitems_model extends MY_Model
 
             $priceGroupId = $rw->fin_cust_pricing_group_id;
             // cek Special item
-            $ssql = "select * from msitemspecialpricinggroupdetails where fin_item_id = ? and Unit = ? and fin_cust_pricing_group_id = ? and fst_active = 'A'";
+            $ssql = "select * from msitemspecialpricinggroupdetails where fin_item_id = ? and fst_unit = ? and fin_cust_pricing_group_id = ? and fst_active = 'A'";
             $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit,$priceGroupId]);
             $rwPrice = $qr->row();
             if($rwPrice){
-                return $rwPrice->SellingPrice;
+                return $rwPrice->fdc_selling_price;
             }else{
                 //item fst_unit details
-                $ssql = "select * from msitemfst_unitdetails where fin_item_id = ? and Unit = ? and fst_active = 'A'";
+                $ssql = "select * from msitemunitdetails where fin_item_id = ? and fst_unit = ? and fst_active = 'A'";
                 $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit]);
                 $rwPrice = $qr->row();
                 if($rwPrice){
-                    $sellingPrice = $rwPrice->PriceList;
+                    $sellingPrice = $rwPrice->fdc_price_list;
                     //Cek Group Price List
                     $ssql = "select * from mscustpricinggroups where fin_cust_pricing_group_id = ?";
                     $qr = $this->db->query($ssql,[$priceGroupId]);
@@ -146,12 +146,12 @@ class Msitems_model extends MY_Model
         return 0;
     }
 
-    public function getDetailbyArray($fin_item_id){
+    public function getDetailbyArray($arrItemId){
         $ssql = "select * from msitems where fin_item_id in ?";
-        $qr = $this->db->query($ssql,$fin_item_id);
+        $qr = $this->db->query($ssql,[$arrItemId]);
         $rs = $qr->result();
         $result = [];
-        foreach($rs as $w){
+        foreach($rs as $rw){
             $result[$rw->fin_item_id] = $rw;
         }
         return $result;
