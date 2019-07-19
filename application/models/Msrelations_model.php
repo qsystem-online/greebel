@@ -115,6 +115,13 @@ class Msrelations_model extends MY_Model {
         return $rules;
     }
 
+    public function getAllList(){
+        $ssql = "select fin_relation_id,fst_relation_name from " . $this->tableName . " where fst_active = 'A' order by fst_relation_name";
+        $qr = $this->db->query($ssql, []);
+        $rs = $qr->result();
+        return $rs;
+    }
+
     public function get_Relations(){
         $query = $this->db->get('msrelations');
 		return $query->result_array();

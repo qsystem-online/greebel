@@ -83,16 +83,16 @@ class Msitemunitdetails_model extends MY_Model
     }
 
 
-    public function getSellingListUnit($itemId){
+    public function getSellingListUnit($fin_item_id){
         $ssql ="select * from " . $this->tableName . " where fin_item_id = ? and isSelling = 1 and fst_active = 'A' order by fin_rec_id ";
-        $qr = $this->db->query($ssql,[$itemId]);
+        $qr = $this->db->query($ssql,[$fin_item_id]);
         $rw = $qr->result();
         return $rw;
     }
 
 
     public function getConversionUnit($fin_item_id,$qty , $unitFrom,$unitTo){
-        $ssql = "Select * from msitemunitdetails where fin_item_id = ? and Unit = ? and fst_active ='A'";
+        $ssql = "Select * from msitemunitdetails where fin_item_id = ? and fst_unit = ? and fst_active ='A'";
         $qr = $this->db->query($ssql,[$fin_item_id,$unitFrom]);
         $rwFrom = $qr->row();
         if($rwFrom){

@@ -126,7 +126,6 @@ class Relation extends MY_Controller{
 			"fst_birth_place" => $this->input->post("fst_birth_place"),
 			"fst_nik" => $this->input->post("fst_nik"),
 			"fst_address" => $this->input->post("fst_address"),
-			"fst_shipping_address" => $this->input->post("fst_shipping_address"),
 			"fst_phone" => $this->input->post("fst_phone"),
 			"fst_fax" => $this->input->post("fst_fax"),
 			"fst_postal_code" => $this->input->post("fst_postal_code"),
@@ -156,6 +155,30 @@ class Relation extends MY_Controller{
 			$this->db->trans_rollback();
 			return;
 		}
+
+		// SAVE SHIPPING DETAILS \\
+		$this->load->model("msshippingaddress_model");
+        $details = $this->input->post("detail");
+        $details = json_decode($details);
+        foreach ($details as $item) {
+            $data = [
+                "fin_shipping_address_id" => $insertId,
+				"fin_relation_id" => $item->fin_relation_id,
+				"fst_name" => $item->fst_name,
+                "fst_area_code" => $item->fst_kode,
+                "fst_shipping_address" => $item->fst_shipping_address
+            ];
+            $this->msshippingaddress_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
 
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
@@ -200,7 +223,6 @@ class Relation extends MY_Controller{
 			"fst_birth_place" => $this->input->post("fst_birth_place"),
 			"fst_nik" => $this->input->post("fst_nik"),
 			"fst_address" => $this->input->post("fst_address"),
-			"fst_shipping_address" => $this->input->post("fst_shipping_address"),
 			"fst_phone" => $this->input->post("fst_phone"),
 			"fst_fax" => $this->input->post("fst_fax"),
 			"fst_postal_code" => $this->input->post("fst_postal_code"),
@@ -230,6 +252,31 @@ class Relation extends MY_Controller{
 			$this->db->trans_rollback();
 			return;
 		}
+
+		// SAVE SHIPPING DETAILS \\
+		$this->load->model("msshippingaddress_model");
+        $this->msshippingaddress_model->deleteByHeaderId($fin_shipping_address_id);
+        $details = $this->input->post("detail");
+        $details = json_decode($details);
+        foreach ($details as $item) {
+            $data = [
+				"fin_shipping_address_id" => $fin_shipping_address_id,
+				"fin_relation_id" => $item->fin_relation_id,
+                "fst_name" => $item->fst_name,
+                "fst_area_code" => $item->fst_kode,
+                "fst_shipping_address" => $item->fst_shipping_address
+            ];
+            $this->msshippingaddress_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
 
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
@@ -309,6 +356,17 @@ class Relation extends MY_Controller{
 	}
 
 	public function get_provinces($fin_country_id){
+		$term = $this->input->get("term");
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 0 ";
+		$qr = $this->db->query($ssql,['%'.$term.'%',$fin_country_id]);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_dataProvince($fin_country_id){
 		$term = $this->input->get("term");
 		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 0 ";
 		$qr = $this->db->query($ssql,['%'.$term.'%',$fin_country_id]);
@@ -436,5 +494,17 @@ class Relation extends MY_Controller{
         $this->pdf->load_view('report/relations_pdf', $data);
         $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
 		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
-    }
+	}
+	
+	public function getAllList()
+    {
+        $this->load->model('msrelations_model');
+        $result = $this->msrelations_model->getAllList();
+        $this->ajxResp["data"] = $result;
+        $this->json_output();
+	}
+	
+	public function getShippingAddress(){
+		$this->load->model('msshippingaddress_model');
+	}
 }

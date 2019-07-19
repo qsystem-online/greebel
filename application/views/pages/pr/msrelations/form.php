@@ -1,7 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
-<link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
+<link rel="stylesheet" href="<?= base_url() ?>bower_components/select2/dist/css/select2.min.css">
+<link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/datatables.min.css">
+<link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.css">
 
 <style type="text/css">
 	.border-0{
@@ -147,14 +149,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Shipping Address")?> :</label>
-						<div class="col-md-10">
-							<textarea class="form-control" id="fst_shipping_address" placeholder="<?=lang("Shipping Address")?>" name="fst_shipping_address"></textarea>
-							<div id="fst_shipping_address_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
 					<label for="fst_phone" class="col-md-2 control-label"><?=lang("Phone")?> :</label>
 						<div class="col-md-4">
 							<input type="text" class="form-control" id="fst_phone" placeholder="<?=lang("Phone")?>" name="fst_phone">
@@ -239,7 +233,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="fst_relation_notes" class="col-md-2 control-label"><?=lang("Relation fst_notes")?> :</label>
+					<label for="fst_relation_notes" class="col-md-2 control-label"><?=lang("Relation Notes")?> :</label>
 						<div class="col-md-7">
 							<select id="select-notes" class="form-control" name="fst_relation_notes">
 								<option value="0">-- <?=lang("select")?> --</option>
@@ -317,14 +311,303 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 </div>
 				<!-- end box body -->
 
+				<?php $displaytabs = ($mode == "ADD") ? "none" : "" ?>
+				<div class="nav-tabs-custom" style="display:unset">
+					<ul class="nav nav-tabs">
+						<li class="active"><a href="#shipping_details" data-toggle="tab" aria-expanded="true"><?= lang("Shipping Address") ?></a></li>
+					</ul>
+					<div class="tab-content">
+						<div class="tab-pane active" id="shipping_details">
+							<button id="btn-add-shipping-details" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Shipping") ?></button>
+							<div>
+								<table id="tbl_shipping_details" class="table table-bordered table-hover" style="width:100%;"></table>
+							</div>
+						</div>
+					</div>
+					<!-- /.tab-pane -->
+				</div>
+				<!-- /.tab-content -->
+
                 <div class="box-footer text-right">
-                    <a id="btnSubmitAjax" href="#" class="btn btn-primary"><?=lang("Save Ajax")?></a>
+                    <a id="btnSubmitAjax" href="#" class="btn btn-primary"><?=lang("Save Record")?></a>
                 </div>
                 <!-- end box-footer -->
             </form>
         </div>
     </div>
 </section>
+
+
+<!--- // START TAB SHIPPING ADDRESS \\ ---------------------------------------------------------------------------------------------------------------->
+
+<div id="mdlShippingDetails" class="modal fade in" role="dialog" style="display: none">
+    <div class="modal-dialog" style="display:table;width:75%;min-width:750px;max-width:100%">
+        <!-- modal content -->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><?=lang("Add Shipping Address")?></h4>
+			</div>
+
+			<div class="modal-body">
+				<form  class="form-horizontal">
+					<div class="form-group">
+						<label for="fin_shipping_address_id" class="col-md-2 control-label"><?=lang("Shipping Address ID")?> :</label>
+						<div class="col-md-10">
+						<input type="text" class="form-control" id="fin_shipping_address_id" name="fin_shipping_address_id">
+							<div id="fin_shipping_address_id_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="fst_name" class="col-md-2 control-label"><?=lang("Name")?> :</label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="fst_name" name="fst_name">
+							<div id="fst_name_err" class="text-danger"></div>
+						</div>
+					</div>
+				
+					<div class="form-group">
+						<label for="select-provinceName" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
+						<div class="col-md-4">
+							<select id="select-provinceName" class="form-control" name="fst_kode">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fst_nama__err" class="text-danger"></div>
+						</div>
+
+						<label for="select-districtName" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
+						<div class="col-md-4">
+							<select id="select-districtName" class="form-control" name="fst_kode">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fst_nama__err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="select-subdistrictName" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
+						<div class="col-md-4">
+							<select id="select-subdistrictName" class="form-control" name="fst_kode">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fst_nama__err" class="text-danger"></div>
+						</div>
+
+						<label for="select-villageName" class="col-md-2 control-label"><?=lang("Village Name")?> :</label>
+						<div class="col-md-4">
+							<select id="select-villageName" class="form-control" name="fst_kode">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fst_nama__err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Shipping Address")?> :</label>
+						<div class="col-md-10">
+							<textarea class="form-control" id="fst_shipping_address" name="fst_shipping_address"></textarea>
+							<div id="fst_shipping_address_err" class="text-danger"></div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+			<div class="modal-footer">
+				<button id="btn-add-shipping-details" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var action = '<a class="btn-edit" href="#" data-toggle="" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp; <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+        $(function() {
+            $("#btn-add-shipping-details").click(function(event) {
+                event.preventDefault();
+                $("#mdlShippingDetails").modal('show');
+            });
+			$("#tbl_shipping_details").DataTable({
+                searching: false,
+                paging: false,
+                info: false,
+                columns: [{
+					"title": "<?=lang("Relation ID")?>",
+					"width": "10%",
+					data: "fin_relation_id",
+					visible: false,
+				},
+				{	
+					"title": "<?=lang("Shipping Address ID")?>",
+					"width": "10%",
+					data: "fin_shipping_address_id",
+					visible: true,
+				},
+				{
+					"title": "<?=lang("Name")?>",
+					"width": "15%",
+					data: "fst_name",
+					visible: true,
+				},
+				/*{
+					"title": "<?=lang("Area Code")?>",
+					"width": "15%",
+					data: "fst_area_code",
+					visible: false,
+				},*/
+				{
+					"title": "<?=lang("Shipping Address")?>",
+					"width": "15%",
+					data: "fst_shipping_address",
+					visible: true,
+				},
+				{
+					"title": "<?= lang("Action") ?>",
+					"width": "7%",
+					render: function(data, type, row) {
+						action = "<a class='btn-delete-shipping-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+						return action;
+					},
+					"sortable": false,
+					"className": "dt-body-center text-center"
+				}],
+			});
+
+			$("#tbl_shipping_details").on("click", ".btn-delete-shipping-details", function(event) {
+                event.preventDefault();
+                t = $("#tbl_shipping_details").DataTable();
+                var trRow = $(this).parents('tr');
+                t.row(trRow).remove().draw();
+            });
+
+			$("#select-country").change(function(event){
+				event.preventDefault();
+				$('#select-provinceName').val(null).trigger('change');
+				$("#select-provinceName").select2({
+					width: '100%',
+					ajax: {
+						url: '<?=site_url()?>pr/relation/get_dataProvince/'+$("#select-country").val(),
+						dataType: 'json',
+						delay: 250,
+						processResults: function (data){
+							data2 = [];
+							data = data.data;
+							$.each(data,function(index,value){
+								data2.push({
+									"id" : value.fst_kode,
+									"text" : value.fst_nama
+								});
+							});
+							console.log(data2);
+							return {
+								results: data2
+							};
+						},
+						cache: true,
+					}
+				});
+			});
+
+			$("#select-provinceName").change(function(event){
+				event.preventDefault();
+				$('#select-districtName').val(null).trigger('change');
+				$("#select-districtName").select2({
+					width: '100%',
+					ajax: {
+						url: '<?=site_url()?>pr/relation/get_districts/'+$("#select-provinceName").val(),
+						dataType: 'json',
+						delay: 250,
+						processResults: function (data){
+							data2 = [];
+							data = data.data;
+							$.each(data,function(index,value){
+								data2.push({
+									"id" : value.fst_kode,
+									"text" : value.fst_nama
+								});
+							});
+							console.log(data2);
+							return {
+								results: data2
+							};
+						},
+						cache: true,
+					}
+				});
+			});
+
+			$("#select-districtName").change(function(event){
+				event.preventDefault();
+				$('#select-subdistrictName').val(null).trigger('change');
+				$("#select-subdistrictName").select2({
+					width: '100%',
+					ajax: {
+						url: '<?=site_url()?>pr/relation/get_subdistricts/'+$("#select-districtName").val(),
+						dataType: 'json',
+						delay: 250,
+						processResults: function (data){
+							data2 = [];
+							data = data.data;
+							$.each(data,function(index,value){
+								data2.push({
+									"id" : value.fst_kode,
+									"text" : value.fst_nama
+								});
+							});
+							console.log(data2);
+							return {
+								results: data2
+							};
+						},
+						cache: true,
+					}
+				});
+			});
+
+			$("#select-subdistrictName").change(function(event){
+				event.preventDefault();
+				$('#select-villageName').val(null).trigger('change');
+				$("#select-villageName").select2({
+					width: '100%',
+					ajax: {
+						url: '<?=site_url()?>pr/relation/get_village/'+$("#select-subdistrictName").val(),
+						dataType: 'json',
+						delay: 250,
+						processResults: function (data){
+							data2 = [];
+							data = data.data;
+							$.each(data,function(index,value){
+								data2.push({
+									"id" : value.fst_kode,
+									"text" : value.fst_nama
+								});
+							});
+							console.log(data2);
+							return {
+								results: data2
+							};
+						},
+						cache: true,
+					}
+				});
+			});
+
+			$("#btn-add-shipping-details").click(function(event){
+				event.preventDefault();
+                t = $('#tbl_shipping_details').DataTable();
+                addRow = true,
+				t.row.add({
+					fin_shipping_address_id: 0,
+					fst_name: fst_name.text,
+					fst_shipping_address: fst_shipping_address.text,
+				}).draw(false);
+			});
+		});
+			
+	</script>
+</div>
+
+<!--- // END TAB SHIPPING ADDRESS \\ ------------------------------------------------------------------------------------------------------------------>
 
 
 <script type="text/javascript">
@@ -336,7 +619,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			data = $("#frmMSRelations").serializeArray();
+			//data = $("#frmMSRelations").serializeArray();
+			data = new FormData($("#frmMSRelations")[0]);
+			detail = new Array();
+
+            t = $('#tbl_shipping_details').DataTable();
+			datas = t.data();
+            $.each(datas, function(i, v) {
+                detail.push(v);
+            });
+			data.append("detail",JSON.stringify(detail));
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
@@ -344,16 +636,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}else{
 				url =  "<?= site_url() ?>pr/relation/ajx_edit_save";
 			}
+			console.log(data);
 
 			//var formData = new FormData($('form')[0])
 			$.ajax({
 				type: "POST",
-				//enctype: 'multipart/form-data',
+				enctype: 'multipart/form-data',
 				url: url,
 				data: data,
-				//processData: false,
-				//contentType: false,
-				//cache: false,
+				processData: false,
+                contentType: false,
+                cache: false,
 				timeout: 600000,
 				success: function (resp) {	
 					if (resp.message != "")	{
@@ -381,12 +674,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						data = resp.data;
 						$("#fin_relation_id").val(data.insert_id);
 
-						//Clear all previous error
+						// Clear all previous error \\
 						$(".text-danger").html("");
 
-						// Change to Edit mode
+						// Change to Edit mode \\
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 						$('#fst_relation_name').prop('readonly', true);
+						$("#tabs-shipping-details").show();
 					}
 				},
 				error: function (e) {
@@ -805,12 +1099,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$('#select-parentId').append(newOption);
 				$("#select-parentId").val(resp.ms_relations.fin_parent_id).trigger('change');
 
-				// menampilkan data di select2, menu edit/update
+				// menampilkan data di select2, menu edit/update \\
 				var newOption = new Option(resp.ms_relations.fst_relation_group_name, resp.ms_relations.fin_relation_group_id, true, true);
 				// Append it to the select
     			$('#select-groupId').append(newOption).trigger('change');
 
-				// menampilkan data di select2, menu edit/update
+				// menampilkan data di select2, menu edit/update \\
 				var newOption = new Option(resp.ms_relations.fst_country_name, resp.ms_relations.fin_country_id, true, true);
     			$('#select-country').append(newOption).trigger('change');
 
@@ -841,6 +1135,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var newOption = new Option(resp.ms_relations.fst_warehouse_name, resp.ms_relations.fin_warehouse_id, true, true);
 				$('#select-warehouse').append(newOption).trigger('change');
 
+				// POPULATE SHIPPING DETAILS \\
+				$.each(resp.ms_shipping, function(name, val) {
+                    console.log(val);
+                    //event.preventDefault();
+                    t = $('#tbl_shipping_details').DataTable();
+                    t.row.add({
+                        fin_shipping_address_id: val.fin_shipping_address_id,
+                        fst_name: val.fst_name,
+                        fin_relation_id: val.fin_relation_id,
+                        fst_area_code: val.fst_kode,
+                        fst_shipping_address: val.fst_shipping_address,
+                        action: action
+                    }).draw(false);
+                })
 			},
 
 			error: function (e) {
@@ -867,3 +1175,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         });
     });
 </script>
+
+<!-- DataTables -->
+<script src="<?= base_url() ?>bower_components/datatables.net/datatables.min.js"></script>
+<script src="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.min.js"></script>
