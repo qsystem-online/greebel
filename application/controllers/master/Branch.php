@@ -210,6 +210,7 @@ class Branch extends MY_Controller
         $Fields = $this->input->get('optionSearch');
         $searchFields = [$Fields];
         $this->datatables->setSearchFields($searchFields);
+        
         // Format Data
         $datasources = $this->datatables->getData();
         $arrData = $datasources["data"];

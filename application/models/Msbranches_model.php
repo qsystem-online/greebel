@@ -83,7 +83,7 @@ class Msbranches_model extends MY_Model
 
     public function get_Branch()
     {
-        $query = $this->db->get('branches');
+        $query = $this->db->get('msbranches');
         return $query->result_array();
     }
 

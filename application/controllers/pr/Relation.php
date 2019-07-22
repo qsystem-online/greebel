@@ -118,6 +118,7 @@ class Relation extends MY_Controller{
 		$data = [
 			"fin_relation_group_id" => $this->input->post("fin_relation_group_id"),
 			"fst_relation_type" => implode(",",$this->input->post("fst_relation_type")),
+			"fin_branch_id" => $this->input->post("fin_branch_id"),
 			"fin_parent_id" => $this->input->post("fin_parent_id"),
 			"fst_business_type" => $this->input->post("fst_business_type"),
 			"fst_relation_name" => $this->input->post("fst_relation_name"),
@@ -215,6 +216,7 @@ class Relation extends MY_Controller{
 			"fin_relation_id" => $fin_relation_id,
 			"fin_relation_group_id" => $this->input->post("fin_relation_group_id"),
 			"fst_relation_type" => implode(",",$this->input->post("fst_relation_type")),
+			"fin_branch_id" => $this->input->post("fin_branch_id"),
 			"fin_parent_id" => $this->input->post("fin_parent_id"),
 			"fst_business_type" => $this->input->post("fst_business_type"),
 			"fst_relation_name" => $this->input->post("fst_relation_name"),
@@ -325,6 +327,17 @@ class Relation extends MY_Controller{
 	public function get_parent_id(){
 		$term = $this->input->get("term");
 		$ssql = "SELECT fin_relation_id, fst_relation_name FROM msrelations WHERE fst_relation_type = 1" ;
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_branch(){
+		$term = $this->input->get("term");
+		$ssql = "SELECT fin_branch_id, fst_branch_name from msbranches where fst_branch_name like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 
@@ -451,10 +464,10 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_warehouse(){
+	public function get_warehouse($fin_branch_id){
 		$term = $this->input->get("term");
-		$ssql = "SELECT fin_warehouse_id, fst_warehouse_name from mswarehouse where fst_warehouse_name like ?";
-		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$ssql = "SELECT * from mswarehouse where fst_warehouse_name like ? and fin_branch_id = ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%', $fin_branch_id]);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
