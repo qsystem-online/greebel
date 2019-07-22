@@ -142,13 +142,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group personal-info">
 						<label for="fst_nik" class="col-md-2 control-label"><?=lang("NIK")?> :</label>
-						<div class="col-md-4">
+						<div class="col-md-10">
 							<input type="text" class="form-control" id="fst_nik" placeholder="<?=lang("NIK")?>" name="fst_nik">
 							<div id="fst_nik_err" class="text-danger"></div>
 						</div>
+					</div>
 
+					<div class="form-group">
                     	<label for="fst_npwp" class="col-md-2 control-label"><?=lang("NPWP")?> :</label>
-						<div class="col-md-4">
+						<div class="col-md-10">
 							<input type="text" class="form-control" id="fst_npwp" placeholder="<?=lang("NPWP")?>" name="fst_npwp">
 							<div id="fst_npwp_err" class="text-danger"></div>
 						</div>
@@ -324,7 +326,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="shipping_details">
-							<button id="btn-add-shipping-details" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Shipping") ?></button>
+							<button id="btn-shipping" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Shipping") ?></button>
 							<div>
 								<table id="tbl_shipping_details" class="table table-bordered table-hover" style="width:100%;"></table>
 							</div>
@@ -357,10 +359,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			<div class="modal-body">
 				<form  class="form-horizontal">
+
+					<div class="form-group hide">
+						<label for="fin_relation_id" class="col-md-4 control-label"><?=lang("Relation ID")?></label>
+						<div class="col-md-8">
+							<input type="text" class="form-control text-right" id="fin_relation_id" name="fin_relation_id">
+							<div id="fin_relation_id_err" class="text-danger"></div>
+						</div>
+					</div>
+
 					<div class="form-group">
 						<label for="fin_shipping_address_id" class="col-md-2 control-label"><?=lang("Shipping Address ID")?> :</label>
 						<div class="col-md-10">
-						<input type="text" class="form-control" id="fin_shipping_address_id" name="fin_shipping_address_id">
+						<input type="text" class="form-control" id="fin_shipping_address_id" placeholder="<?=lang("Shipping Address ID")?>" name="fin_shipping_address_id">
 							<div id="fin_shipping_address_id_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -420,7 +431,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-footer">
-				<button id="btn-add-shipping" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
+				<button id="btn-details" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
 				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
 			</div>
 		</div>
@@ -430,33 +441,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		var action = '<a class="btn-edit" href="#" data-toggle="" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp; <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
         $(function() {
 
-            $("#btn-add-shipping-details").click(function(event) {
+			var edited_shipp_detail = null;
+			var mode_shipp_detail = "ADD";
+
+            $("#btn-shipping").click(function(event) {
                 event.preventDefault();
                 $("#mdlShippingDetails").modal('show');
-            });
-			$("#tbl_shipping_details").DataTable({
-                searching: false,
-                paging: false,
-                info: false,
-                columns: [
-					{"title": "<?= lang("Shipping Address ID")?>","width": "10%",data:"fin_shipping_address_id",visible:true},
-					{"title": "<?=lang("Name")?>","width": "15%",data: "fst_name",visible: true},
-					{"title": "<?=lang("Shipping Address")?>","width": "15%",data: "fst_shipping_address",visible: true},
-					{"title": "<?= lang("Action") ?>","width": "8%",
-						render: function(data, type, row) {
-						action = "<a class='btn-delete-shipping-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
-						return action;
-					},
-					"sortable": false,
-					"className": "dt-body-center text-center"
-				}],
-			});
-
-			$("#tbl_shipping_details").on("click", ".btn-delete-shipping-details", function(event) {
-                event.preventDefault();
-                t = $("#tbl_shipping_details").DataTable();
-                var trRow = $(this).parents('tr');
-                t.row(trRow).remove().draw();
             });
 
 			$("#select-country").change(function(event){
@@ -571,23 +561,64 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 			});
 
-			$("#btn-add-shipping").click(function(event){
-				event.preventDefault();
-                t = $('#tbl_shipping_details').DataTable();
-				addRow = true,
-				alert("Masuk kolom");
-				if (addRow) {
-                    t.row.add({
-                        fin_relation_id: 0,
-                        fin_shipping_address_id: 0,
-                        fst_name: fst_name.text,
-                        fst_shipping_address: fst_shipping_address.text,
-                        action: action
-                    }).draw(false);
-                }
+			$("#tbl_shipping_details").DataTable({
+				searching: false,
+				paging: false,
+				info: false,
+				columns: [
+					//{"title": "<?=lang("Relation Nama")?>","width": "15%",data: "fin_relation_id",visible: false},
+					{"title": "<?=lang("Shipping Address ID")?>","width": "15%",sortable:false,data: "fin_shipping_address_id",visible: true},
+					{"title": "<?=lang("Name")?>","width": "20%",sortable:false,data: "fst_name",visible: true},
+					{"title": "<?=lang("Shipping Address")?>","width": "20%",sortable:false,data: "fst_shipping_address", visible: true},
+					{"title" : "Action","width": "15%",data:"action",sortable:false,className:'dt-body-center text-center'},
+				],
 			});
-		});
-			
+
+			$("#btn-add-detail").click(function(event){
+				event.preventDefault();
+				mode_shipp_detail = "ADD";
+				$("#mdlShippingDetails").modal({
+					backdrop:"static",
+				});
+			})
+			$("#btn-details").click(function(event) {
+				event.preventDefault();
+				$('#mdlShippingDetails').modal('show');
+				
+				data = {
+					//fin_relation_id: $("#fin_relation_id").val(),
+					fin_shipping_address_id: $("#fin_shipping_address_id").val(),
+					fst_name: $("#fst_name").val(),
+					fst_shipping_address: $("#fst_shipping_address").val(),
+					action: action
+				}
+				t = $('#tbl_shipping_details').DataTable();
+				if(mode_shipp_detail == "EDIT"){
+					edited_shipp_detail.data(data).draw(false);
+				}else{
+					t.row.add(data).draw(false);	
+				}
+			});
+
+			$(".btn-edit").click(function(event){
+				event.preventDefault();
+				$("#mdlShippingDetails").modal({
+					backdrop:"static",
+				});
+
+				t = $('#tbl_shipping_details').DataTable();
+				var trRow = $(this).parents('tr');
+
+				mode_shipp_detail = "EDIT";
+				edited_shipp_detail = t.row(trRow);
+				row = edited_shipp_detail.data();	
+
+				//$("#fin_relation_id").val(row.fin_relation_id);
+				$("#fin_shipping_address_id").val(row.fin_shipping_address_id);
+				$("#fst_name").val(row.fst_name);
+				$("#fst_shipping_address").val(row.fst_shipping_address);
+			});
+		});	
 	</script>
 </div>
 
@@ -603,8 +634,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			//data = $("#frmRelation").serializeArray();
-			data = new FormData($("#frmRelation")[0]);
+			data = $("#frmRelation").serializeArray();
 			detail = new Array();
 
             t = $('#tbl_shipping_details').DataTable();
@@ -612,7 +642,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             $.each(datas, function(i, v) {
                 detail.push(v);
             });
-			data.append("detail",JSON.stringify(detail));
+			data.push({
+				name:"detail",
+				value: JSON.stringify(detail)
+			});
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
@@ -628,9 +661,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				enctype: 'multipart/form-data',
 				url: url,
 				data: data,
-				processData: false,
-                contentType: false,
-                cache: false,
 				timeout: 600000,
 				success: function (resp) {	
 					if (resp.message != "")	{
@@ -1159,7 +1189,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         fin_shipping_address_id: val.fin_shipping_address_id,
                         fst_name: val.fst_name,
                         fin_relation_id: val.fin_relation_id,
-                        fst_area_code: val.fst_kode,
                         fst_shipping_address: val.fst_shipping_address,
                         action: action
                     }).draw(false);

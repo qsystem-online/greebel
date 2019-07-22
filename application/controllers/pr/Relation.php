@@ -163,8 +163,8 @@ class Relation extends MY_Controller{
         $details = json_decode($details);
         foreach ($details as $item) {
             $data = [
-                "fin_shipping_address_id" => $insertId,
-				"fin_relation_id" => $item->fin_relation_id,
+                "fin_relation_id" => $insertId,
+				"fin_shipping_address_id" => $item->fin_shipping_address_id,
 				"fst_name" => $item->fst_name,
                 "fst_area_code" => $item->fst_kode,
                 "fst_shipping_address" => $item->fst_shipping_address
@@ -262,8 +262,8 @@ class Relation extends MY_Controller{
         $details = json_decode($details);
         foreach ($details as $item) {
             $data = [
-				"fin_shipping_address_id" => $fin_shipping_address_id,
-				"fin_relation_id" => $item->fin_relation_id,
+				"fin_relation_id" => $fin_relation_id,
+				"fin_shipping_address_id" => $item->fin_shipping_address_id,
                 "fst_name" => $item->fst_name,
                 "fst_area_code" => $item->fst_kode,
                 "fst_shipping_address" => $item->fst_shipping_address
