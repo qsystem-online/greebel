@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 ?>
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/select2/dist/css/select2.min.css">
+<link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/datatables.min.css">
 
 <section class="content-header">
     <h1><?= lang("Menus") ?><small><?= lang("form") ?></small></h1>
@@ -133,7 +134,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#btnSubmitAjax").click(function(event) {
             event.preventDefault();
-            data = new FormData($("#frmBranch")[0]);
+            //data = new FormData($("#frmBranch")[0]);
+            data = $("#frmBranch").serializeArray();
 
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
@@ -145,12 +147,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
             //var formData = new FormData($('form')[0])
             $.ajax({
                 type: "POST",
-                enctype: 'multipart/form-data',
+                //enctype: 'multipart/form-data',
                 url: url,
                 data: data,
-                processData: false,
-                contentType: false,
-                cache: false,
+                //processData: false,
+                //contentType: false,
+                //cache: false,
                 timeout: 600000,
                 success: function(resp) {
                     if (resp.message != "") {
@@ -184,6 +186,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                         // Change to Edit mode
                         $("#frm-mode").val("EDIT"); //ADD|EDIT
+                        $('#fst_branch_name').prop('readonly', true);
 
                     }
                 },
@@ -384,3 +387,5 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 <!-- Select2 -->
 <script src="<?= base_url() ?>bower_components/select2/dist/js/select2.full.js"></script>
+<!-- DataTables -->
+<script src="<?= base_url() ?>bower_components/datatables.net/datatables.min.js"></script>

@@ -323,7 +323,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	var sel2Warehouse =[];
 	var sel2Currencies =[];
 	var current_pricing_group_id = 0;
-
 	var ajxSel2Item = {
 		url: '<?=site_url()?>tr/sales_order/get_data_item',
 		dataType: 'json',
@@ -345,11 +344,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		},
 		cache: true,
 	}
-
 	$(function(){
 				
 		loadSelect2Data();
-
 		$("#fin_terms_payment").click(function(e){
 			e.preventDefault();
 			//$.blockUI({ message: '<h1>Just a moment...</h1>' });
@@ -366,17 +363,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					});
 			
 		});
-
-
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			var cekPromo = 1;
 			var confirmAuthorize = 0;
 			saveAjax(cekPromo,confirmAuthorize);
 		});
-
 		$("#fdt_salesorder_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
-
 		$("#select-relations").select2({
 			width: '100%',
 			thema:'bootstrap',
@@ -406,20 +399,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		}).on('select2:select',function(e){
 			var data = $('#select-relations').select2("data")[0];
-
 			$("#fin_terms_payment").val(data.fin_terms_payment);
 			$("#fst_shipping_address").val(data.fst_shipping_address);
 			$("#select-sales").val(data.fin_sales_id).trigger("change");
 			$("#select-warehouse").val(data.fin_warehouse_id).trigger("change");
 			current_pricing_group_id = data.current_pricing_group_id;			
 		});
-
 		$("#select-sales").select2();
 		$("#select-warehouse").select2();
 		$("#fbl_is_vat_include").change(function(e){
 			calculateTotal();
 		});
-
 		$("#select-items").select2({
 			width: '100%',
 			ajax: ajxSel2Item
@@ -447,10 +437,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 			
 		});
-
 		$("#select-unit").select2();
 		
-
 		$("#select-disc").select2({
 			dir: 'rtl',
 			width: '100%',
@@ -482,7 +470,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			amount = amount * qty;
 			$("#fdc_disc_amount").val( money_format(calculateDisc(amount,disc)) ); 
 		});
-
 		$('#select-unit').on('select2:select', function (e) {						
 			dataCust = $("#select-relations").select2("data")[0];
 			dataUnit = $('#select-unit').select2("data")[0];
@@ -495,7 +482,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#so-price").val(money_format(resp.sellingPrice));
 				}
 			});
-
 			showInfoStock();
 			
 			
@@ -515,28 +501,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#dialog-info").hide();		
 			
 		})
-
 		$(document).bind('keydown', 'alt+d', function(){
 			//alert("TEST COPY");
 			$("#btn-add-detail").trigger("click");
 		});
-
-
 		$("#btn-add-so-detail").click(function(event){
 			event.preventDefault();		
 			price = money_parse($("#so-price").val());			
 			selected_items = $("#select-items").select2('data')[0];
 			selected_disc = $("#select-disc").select2('data')[0];
 			selectedUnits = $("#select-unit").select2('data')[0];
-
 			qty = $("#so-qty").val();
 			price = money_parse($("#so-price").val());
 			disc = money_parse($("#fdc_disc_amount").val());
-
 			
 			amount = price * qty;
 			maxDisc = calculateDisc(amount,selected_items.maxItemDiscount);
-
 			if (maxDisc < disc){
 				alert("<?= lang('Total discount more than max disc allowed !') ?>" + " (maxDisc:" +  selected_items.maxItemDiscount + ")");
 				return;
@@ -557,7 +537,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				total: (qty * price)  - disc,
 				action: action
 			}
-
 			t = $('#tblSODetails').DataTable();
 			if(mode_so_detail == "EDIT"){
 				edited_so_detail.data(data).draw(false);
@@ -568,12 +547,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			calculateTotal();
 			clearDetailForm();
 		});
-
 		$("#fdc_vat_percent").change(function(e){
 			e.preventDefault();
 			calculateTotal();
 		});
-
 		$('#tblSODetails').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
@@ -632,27 +609,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				rootSelector: '.btn-delete',
 				// other options
 			});	
-
 			$(".btn-delete").click(function(event){
 				t = $('#tblSODetails').DataTable();
 				var trRow = $(this).parents('tr');
-
 				t.row(trRow).remove().draw();
 				calculateTotal();
 			});
-
 			$(".btn-edit").click(function(event){
 				event.preventDefault();
 				$("#myModal").modal({
 					backdrop:"static",
 				});
-
 				t = $('#tblSODetails').DataTable();
 				var trRow = $(this).parents('tr');
 				mode_so_detail = "EDIT";
 				edited_so_detail = t.row(trRow);
 				row = edited_so_detail.data();	
-
 				$("#fin_rec_id").val(row.fin_rec_id);
 				$('#select-items').val(row.fin_item_id).trigger('change');
 				$("#fst_custom_item_name").val(row.fst_custom_item_name);
@@ -664,10 +636,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#fst_memo_item").val(row.fst_memo_item);				
 			});
 		});
-
 		fixedSelect2();
 	});
-
 	function clearDetailForm(){
 		$("#fin_rec_id").val(0);
 		$('#select-items').val(null).trigger('change');
@@ -681,8 +651,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#fdc_disc_amount").val(0);
 		$("#fst_memo_item").val("");
 	}
-
-
 	function calculateDisc(amount, disc){
 		var strArray = disc.split("+");
 		totalDisc = 0;
@@ -693,18 +661,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 		return totalDisc;
 	}
-
 	function calculateTotal(){
 		t = $('#tblSODetails').DataTable();
 		datas = t.data();
 		ttlBfDisc = 0;
 		ttlDisc = 0;
-
 		$.each(datas,function(i,v){
 			ttlBfDisc += v.fdb_qty * v.fdc_price;
 			ttlDisc +=  v.fdc_disc_amount * 1;
 		});
-
 		if ($("#fbl_is_vat_include").prop('checked')){
 			total = ttlBfDisc - ttlDisc;			
 			vat = $("#fdc_vat_percent").val() * 1;
@@ -716,13 +681,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			vat = ($("#fdc_vat_percent").val() /100) * subTotal;
 			total = subTotal + vat;
 		}
-
 		$("#sub-total").val(money_format(subTotal));	
 		$("#fdc_vat_amount").val(money_format(vat));
 		$("#total").val(money_format(total));		
 	}
-
-
 	function init_form(fin_salesorder_id){
 		//alert("Init Form");
 		var url = "<?=site_url()?>tr/sales_order/fetch_data/" + fin_salesorder_id;
@@ -744,8 +706,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							$el.val(val);
 					}
 				});
-
-
 				//Customer
 				var arrCust = [];
 				var currCust = {
@@ -756,17 +716,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					"fin_warehouse_id":resp.sales_order.fin_warehouse_id,
 					"fin_terms_payment":resp.sales_order.fin_terms_payment							
 				}
-
 				arrCust.push(currCust);
-
 				var newOption = new Option(resp.sales_order.fst_relation_name, resp.sales_order.fin_relation_id, true, true);
 				$('#select-relations').append(newOption).trigger('change');
 				current_pricing_group_id = resp.sales_order.current_pricing_group_id;
 				$('#select-sales').val(resp.sales_order.fin_sales_id).trigger('change');
 				$('#select-warehouse').val(resp.sales_order.fin_warehouse_id).trigger('change');
-
 				SODetails = resp.so_details;
-
 				dataItem = [];
 				$.each(SODetails, function(idx, detail){
 					data = {
@@ -785,10 +741,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						total:detail.fdb_qty * detail.fdc_price - detail.fdc_disc_amount,
 						action: (detail.fin_promo_id == 0) ? action : ""
 					}
-
 					t = $('#tblSODetails').DataTable();			
 					t.row.add(data).draw(false);
-
 					//set Data Item select2		
 					tmp = {
 						"id" : detail.fin_item_id,
@@ -799,45 +753,36 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 					dataItem.push(tmp);
 				});
-
 				$("#select-items").select2({
 					width:"100%",
 					data:dataItem,
 					ajax:ajxSel2Item
 				});
 				fixedSelect2();
-
 				
 					
 				//var newOption = new Option(detail.ItemDiscount, false);
 				//$('#select-disc').append(newOption).trigger('change');
-
 				calculateTotal();
 				
 				$("#fdt_salesorder_date").datepicker('update', dateFormat(resp.sales_order.fdt_salesorder_date));
 			},
-
 			error: function (e) {
 				$("#result").text(e.responseText);
 			}
 		});
 	}
-
 	function saveAjax(cekPromo,confirmAuthorize){
 		data = $("#frmSalesOrder").serializeArray();
 		detail = new Array();		
-
 		t = $('#tblSODetails').DataTable();
-
 		t.rows(function(idx,data,node){
 			return data.fin_promo_id != 0 ;
 		}).remove().draw();
-
 		datas = t.data();
 		$.each(datas,function(i,v){
 			detail.push(v);
 		});
-
 		data.push({
 			name:"detail",
 			value: JSON.stringify(detail)
@@ -850,15 +795,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			name:"confirmAuthorize",
 			value: confirmAuthorize
 		});
-
-
 		mode = $("#frm-mode").val();
 		if (mode == "ADD"){
 			url =  "<?= site_url() ?>tr/sales_order/ajx_add_save/";
 		}else{
 			url =  "<?= site_url() ?>tr/sales_order/ajx_edit_save/";
 		}
-
 		//var formData = new FormData($('form')[0])
 		
 		$.ajax({
@@ -882,7 +824,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					});
 				}
-
 				if(resp.status == "VALIDATION_FORM_FAILED" ){
 					//Show Error
 					errors = resp.data;
@@ -909,7 +850,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								fst_memo_item: "",
 								total: 0,
 								action: ""//actionDelete
-
 							}
 							t = $('#tblSODetails').DataTable();							
 							t.row.add(data).draw(false);								
@@ -925,7 +865,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							messageOutofStock = "";
 						}
 					});
-
 					arrOutstanding = resp.data.arrOutstanding;
 					messageOverlimit ="";
 					if (arrOutstanding.totalOutstanding > arrOutstanding.maxCreditLimit){
@@ -947,7 +886,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					message = messageOutofStock + messageOverlimit;
 					message += "<br><br>";
 					message += "<?=lang("Transaksi memerlukan authorization, lanjutkan ?")?>";
-
 					$.confirm({
 						title: 'Authorization transaction',
 						content: message,
@@ -962,10 +900,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}else if(resp.status == "SUCCESS") {
 					data = resp.data;
 					$("#fin_salesorder_id").val(data.insert_id);
-
 					//Clear all previous error
 					$(".text-danger").html("");
-
 					// Change to Edit mode
 					$("#frm-mode").val("EDIT");  //ADD|EDIT
 					$('#fst_salesorder_no').prop('readonly', true);
@@ -979,20 +915,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).always(function(){
 			
 		});
-
 	}
-
 	function loadSelect2Data(){
-
 		$(document).ajaxStart(function() {
 			$.blockUI({ message:'<h1><?=lang("Please wait....")?></h1>'});
 		});
-
 		$(document).ajaxStop(function() {
 			$.unblockUI();
 			$(document).unbind('ajaxStart');
 		});
-
 		$.ajax({
 			url: '<?=site_url()?>tr/sales_order/getSelect2_sales_warehouse_currency',
 			//async:false,
@@ -1008,7 +939,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data: sel2Sales,
 					width:"100%",
 				});
-
 				arrWarehouse = values.data.warehouse;
 				$.each(arrWarehouse,function(i,v){
 					sel2Warehouse.push({
@@ -1020,7 +950,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data: sel2Warehouse,
 					width:"100%",
 				});
-
 				arrCurrencies = values.data.currencies;
 				$.each(arrCurrencies,function(i,v){
 					sel2Currencies.push({
@@ -1032,16 +961,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data: sel2Currencies,
 					width:"100%",
 				});
-
 				<?php if($mode == "EDIT"){?>
 					init_form($("#fin_salesorder_id").val());
 				<?php } ?>
 			}
 		});
-
-
 	}
-
 	function showInfoStock(){
 		
 		dataUnit = $('#select-unit').select2("data")[0];
@@ -1049,12 +974,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if(typeof dataUnit === "undefined"){ // no errors
 			return;
 		}
-
 		if(typeof dataItem === "undefined"){ // no errors
 			return;
 		}
-
-
 		$.ajax({
 			url:"<?=site_url()?>api/get_info_stock/" + $("#select-warehouse").val() + "/" + dataItem.id + "/" + dataUnit.id,
 			success:function(resp){
@@ -1063,7 +985,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					qtyMarketingStock = resp.data.marketin_stock;
 					$("#dialog-info .info-message").html("Qty Stock : " + qtyStock + " | " + " Qty Marketing Stock : " + qtyMarketingStock);
 					$("#dialog-info").show();
-
 					/*
 					$.ajax({
 						url:"<=site_url()?>api/get_item_marketing_stock/" + $("#select-warehouse").val() + "/" + dataItem.id + "/" + dataUnit.id,
@@ -1082,7 +1003,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 	}
-
 </script>
 
 <!-- Select2 -->
