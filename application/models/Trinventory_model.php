@@ -27,7 +27,7 @@ class Trinventory_model extends MY_Model
         marketing stock:
     */
     public function getStock($fin_item_id,$fst_unit,$fin_warehouse_id){
-        $ssql = "select sum(fin_qty_in) as ttl_qty_in,sum(fin_qty_out) as ttl_qty_out from ". $this->tableName . " where fin_warehouse_id = ? and fin_item_id = ? and fst_unit = ? and fst_active = 'A'";
+        $ssql = "select sum(fdb_qty_in) as ttl_qty_in,sum(fdb_qty_out) as ttl_qty_out from ". $this->tableName . " where fin_warehouse_id = ? and fin_item_id = ? and fst_unit = ? and fst_active = 'A'";
         $qr = $this->db->query($ssql,[$fin_warehouse_id,$fin_item_id,$fst_unit]);
         $rw = $qr->row();
         return (int) $rw->ttl_qty_in - (int) $rw->ttl_qty_out;

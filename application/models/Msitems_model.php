@@ -146,12 +146,12 @@ class Msitems_model extends MY_Model
         return 0;
     }
 
-    public function getDetailbyArray($fin_item_id){
+    public function getDetailbyArray($arrItemId){
         $ssql = "select * from msitems where fin_item_id in ?";
-        $qr = $this->db->query($ssql,$fin_item_id);
+        $qr = $this->db->query($ssql,[$arrItemId]);
         $rs = $qr->result();
         $result = [];
-        foreach($rs as $w){
+        foreach($rs as $rw){
             $result[$rw->fin_item_id] = $rw;
         }
         return $result;

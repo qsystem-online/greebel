@@ -450,13 +450,15 @@ class Item extends MY_Controller
         $rs = $qr->result();
         $this->json_output($rs);
     }
-    public function getSellingUnit($fin_item_id){
+
+    public function get_selling_unit($fin_item_id){
         $this->load->model("msitemunitdetails_model");
-        $fst_unit = $this->msitemunitdetails_model->getSellingListUnit($fin_item_id);
-        $this->json_output($fst_unit);
+        $units = $this->msitemunitdetails_model->getSellingListUnit($fin_item_id);
+        $this->json_output($units);
     }
-    public function getSellingPrice($fin_item_id,$fst_unit,$fin_customer_id){
-        $sellingPrice = $this->msitems_model->getSellingPrice($fin_item_id,$fst_unit,$fin_customer_id);
+    
+    public function get_selling_price($fin_item_id,$fst_unit,$fin_customer_id){
+        $sellingPrice = $this->Msitems_model->getSellingPrice($fin_item_id,$fst_unit,$fin_customer_id);
         $resp = [
             "sellingPrice" => $sellingPrice,
             "fin_item_id"=> $fin_item_id,

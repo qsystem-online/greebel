@@ -56,15 +56,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
+					<input type="hidden" class="form-control" id="fin_salesorder_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_salesorder_id" value="<?=$fin_salesorder_id?>" readonly>
 
-					<div class="form-group hidden">
-                        <label for="fin_salesorder_id" class="col-md-2 control-label"><?=lang("Sales Order ID")?> #</label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fin_salesorder_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_salesorder_id" value="<?=$fin_salesorder_id?>" readonly>
-							<div id="fin_salesorder_id_err" class="text-danger"></div>
-						</div>
-					</div>
-
+					
 					<div class="form-group">
 						<label for="fst_salesorder_no" class="col-md-2 control-label"><?=lang("Sales Order No")?> #</label>
 						<div class="col-md-4">
@@ -91,12 +85,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<select id="fst_curr_code" class="form-control" name="fst_curr_code">
 								<option value="<?=$default_currency['CurrCode']?>"><?=$default_currency['CurrName']?></option>
 							</select>
-							<div id="fin_relation_id_err" class="text-danger"></div>
+							<div id="fst_curr_code_err" class="text-danger"></div>
 						</div>
 					
 						<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> </label>
 						<div class="col-md-1">
-							<input type="text" class="form-control" id="fdc_exchange_rate_idr" name="fdc_exchange_rate_idr" style="width:50px" value="1" readonly/>							
+							<input type="text" class="form-control" id="fdc_exchange_rate_idr" name="fdc_exchange_rate_idr" style="width:50px" value="1" readonly/>
 						</div>
 						<label class="col-md-2 control-label" style="text-align:left;padding-left:0px"><?=lang("Rupiah")?> </label>
 					</div>
@@ -114,6 +108,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<label for="select-relations" class="col-md-2 control-label"><?=lang("Term")?> </label>
 						<div class="col-md-1">
 							<input type="text" class="form-control" id="fin_terms_payment" name="fin_terms_payment" style="width:50px"/>							
+							<div id="fin_terms_payment_err" class="text-danger"></div>
 						</div>
 						<label class="col-md-2 control-label" style="text-align:left;padding-left:0px"><?=lang("Hari")?> </label>
 					</div>
@@ -138,7 +133,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</select>
 							<div id="fin_warehouse_id_err" class="text-danger"></div>
 						</div>
-						<div class="checkbox col-sm-3">
+						<div class="checkbox col-sm-6">
 							<label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label>
 							<label style="margin-left:20px"><input id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("Include PPN") ?></label>
 						</div>
@@ -197,6 +192,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									<input type="text" class="form-control text-right" id="total" value="0" readonly>
 								</div>
 							</div>
+							<div class="form-group">
+								<label for="total" class="col-md-8 control-label"><?=lang("Uang Muka")?></label>
+								<div class="col-md-4" style='text-align:right'>
+									<input type="text" class="money form-control text-right" id="fdc_downpayment" name="fdc_downpayment" value="0">
+								</div>
+							</div>
 						</div>
 						
 					</div>
@@ -228,7 +229,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<div class="modal-body">
 				
 				<form id="form-detail" class="form-horizontal">
-				<input type='hidden' id='fin-detail-id'/>
+				<input type='hidden' id='fin_rec_id'/>
 					<div class="form-group">
 						<label for="select-items" class="col-md-2 control-label"><?=lang("Items")?></label>
 						<div class="col-md-10">
@@ -253,10 +254,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-						<label for="fdc_qty" class="col-md-2 control-label"><?=lang("Qty")?></label>
+						<label for="fdb_qty" class="col-md-2 control-label"><?=lang("Qty")?></label>
 						<div class="col-md-2">
 							<input type="number" class="form-control text-right numeric" id="so-qty" value="1">
-							<div id="fdc_qty_err" class="text-danger"></div>
+							<div id="fdb_qty_err" class="text-danger"></div>
 						</div>
 
 						<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?></label>
@@ -295,17 +296,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 				</form>
-				<div id="dialog-info" class="alert alert-info">
-					<a href="#" class="close" onclick="$('#dialog-info').hide()" aria-label="close">&times;</a>
-					<div class="info-message">
-						<strong>Info!</strong> Indicates a neutral informative change or action.
-					</div>
-				</div>
+				
 			</div>
 
 			<div class="modal-footer">
 				<button id="btn-add-so-detail" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
 				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+			</div>
+			<div id="dialog-info" class="alert alert-info">
+				<a href="#" class="close" onclick="$('#dialog-info').hide()" aria-label="close">&times;</a>
+				<div class="info-message">
+					<strong>Info!</strong> Indicates a neutral informative change or action.
+				</div>
 			</div>
 		</div>
 	</div>
@@ -320,10 +322,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	var sel2Sales = [];
 	var sel2Warehouse =[];
 	var sel2Currencies =[];
+	var current_pricing_group_id = 0;
+	var ajxSel2Item = {
+		url: '<?=site_url()?>tr/sales_order/get_data_item',
+		dataType: 'json',
+		delay: 250,
+		processResults: function (data) {
+			data2 = [];
+			$.each(data,function(index,value){
+				data2.push({
+					"id" : value.fin_item_id,
+					"text" : value.ItemCodeName,
+					"fst_item_name" : value.fst_item_name,
+					"fst_item_code" : value.fst_item_code,
+					"maxItemDiscount" : value.fst_max_item_discount
+				});	
+			});
+			return {
+				results: data2
+			};
+		},
+		cache: true,
+	}
 	$(function(){
-		<?php if($mode == "EDIT"){?>
-			init_form($("#fin_salesorder_id").val());
-		<?php } ?>
+				
 		loadSelect2Data();
 		$("#fin_terms_payment").click(function(e){
 			e.preventDefault();
@@ -343,13 +365,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			var cekPromo = 0;
+			var cekPromo = 1;
 			var confirmAuthorize = 0;
 			saveAjax(cekPromo,confirmAuthorize);
 		});
 		$("#fdt_salesorder_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
 		$("#select-relations").select2({
 			width: '100%',
+			thema:'bootstrap',
 			ajax: {
 				url: '<?=site_url()?>tr/sales_order/get_msrelations',
 				dataType: 'json',
@@ -364,10 +387,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							"fin_sales_id" : value.fin_sales_id,
 							"fst_shipping_address":value.fst_shipping_address,
 							"fin_warehouse_id":value.fin_warehouse_id,
-							"fin_terms_payment":value.fin_terms_payment							
+							"fin_terms_payment":value.fin_terms_payment,
+							"fin_cust_pricing_group_id" :value.fin_cust_pricing_group_id					
 						});
-					});
-					console.log(items);
+					});					
 					return {
 						results: items
 					};
@@ -380,7 +403,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#fst_shipping_address").val(data.fst_shipping_address);
 			$("#select-sales").val(data.fin_sales_id).trigger("change");
 			$("#select-warehouse").val(data.fin_warehouse_id).trigger("change");
-			console.log(data);
+			current_pricing_group_id = data.current_pricing_group_id;			
 		});
 		$("#select-sales").select2();
 		$("#select-warehouse").select2();
@@ -389,35 +412,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 		$("#select-items").select2({
 			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>tr/sales_order/get_data_item',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data) {
-					data2 = [];
-					$.each(data,function(index,value){
-						data2.push({
-							"id" : value.fin_item_id,
-							"text" : value.ItemCodeName,
-							"fst_item_name" : value.fst_item_name,
-							"fst_item_code" : value.fst_item_code,
-							"fst_max_item_discount" : value.fst_max_item_discount
-						});	
-					});
-					console.log(data2);
-					return {
-						results: data2
-					};
-				},
-				cache: true,
-			}
+			ajax: ajxSel2Item
 		}).on('select2:select', function (e) {			
 			var data = $('#select-items').select2("data")[0];
-			$("#fst_custom_item_name").val(data.fst_item_name);
-			$('#select-unit').empty();
+			$("#fst_custom_item_name").val(data.fst_item_name);			
 			//$('#select-unit').val(null).trigger('change');
+			$('#select-unit').empty();
 			$.ajax({
-				url: '<?=site_url()?>master/item/getSellingUnit/' + data.id,
+				url: '<?=site_url()?>master/item/get_selling_unit/' + data.id,
 				success:function(data){
 					data2 = [];
 					$.each(data,function(index,value){
@@ -428,12 +430,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						});
 					});
 					$("#select-unit").select2({data:data2});
-					$("#select-unit").trigger("select2:select");					
+					$("#select-unit").trigger("select2:select");
+					fixedSelect2();					
 					showInfoStock();
 				}
 			});
+			
 		});
 		$("#select-unit").select2();
+		
 		$("#select-disc").select2({
 			dir: 'rtl',
 			width: '100%',
@@ -448,8 +453,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							"id" : value.fst_item_discount,
 							"text" : value.fst_item_discount
 						});
-					});
-					console.log(data2);
+					});					
 					return {
 						results: data2
 					};
@@ -472,12 +476,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			dataItem = $('#select-items').select2("data")[0];
 			
 			$.ajax({
-				url:"<?=site_url()?>master/item/getSellingPrice/" + dataItem.id + "/" + dataUnit.id + "/" + dataCust.id,
+				url:"<?=site_url()?>master/item/get_selling_price/" + dataItem.id + "/" + dataUnit.id + "/" + dataCust.id,
 				method:"GET",
 				success:function(resp){
-					//console.log(resp);
-					//$("#so-price").val(numeral(resp.sellingPrice).format("0,000"));
-					//$("#so-price").inputmask("setvalue",resp.sellingPrice);
 					$("#so-price").val(money_format(resp.sellingPrice));
 				}
 			});
@@ -486,15 +487,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			
 		});
 		
-		
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
-			//console.log($("#select-relations").val());
 			if ($("#select-relations").val() == "0"){
 				alert("invalid cust");
 				return;
 			}
-			mode_so_detail = "ADD";
+			mode_so_detail = "ADD";			
 			$("#myModal").modal({
 				backdrop:"static",
 			});
@@ -517,19 +516,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			disc = money_parse($("#fdc_disc_amount").val());
 			
 			amount = price * qty;
-			maxDisc = calculateDisc(amount,selected_items.fst_max_item_discount);
+			maxDisc = calculateDisc(amount,selected_items.maxItemDiscount);
 			if (maxDisc < disc){
-				alert("<?= lang('Total discount more than max disc allowed !') ?>" + " (maxDisc:" +  selected_items.fst_max_item_discount + ")");
+				alert("<?= lang('Total discount more than max disc allowed !') ?>" + " (maxDisc:" +  selected_items.maxItemDiscount + ")");
 				return;
 			}
 			data = {
-				fin_rec_id:$("#fin-detail-id").val(),
+				fin_rec_id:$("#fin_rec_id").val(),
 				fin_promo_id:0,
 				fin_item_id:selected_items.id,
-				fst_item_name:selected_items.text,
-				fst_item_code:selected_items.fst_item_code,
+				ItemName:selected_items.text,
+				ItemCode:selected_items.fst_item_code,
 				fst_custom_item_name:$("#fst_custom_item_name").val(),
-				fdc_qty: $("#so-qty").val(),
+				fdb_qty: $("#so-qty").val(),
 				fst_unit: selectedUnits.id,
 				fdc_price : price,
 				fst_disc_item : selected_disc.id,
@@ -556,18 +555,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
 		}).DataTable({
+			scrollX: true,
 			columns:[
 				{"title" : "id","width": "5%",sortable:false,data:"fin_rec_id",visible:true},
 				{"title" : "promo","width": "5%",sortable:false,data:"fin_promo_id",visible:true},				
-				{"title" : "Items","width": "15%",sortable:false,data:"fin_item_id",
+				{"title" : "Items","width": "200px",sortable:false,data:"fin_item_id",
 					render: function(data,type,row){
-						console.log(row);
-						//return row.fst_item_name;
-						return row.fst_item_code + "-" + row.fst_custom_item_name;
+						return row.ItemCode + "-" + row.fst_custom_item_name;
 					}
 				},
 				{"title" : "Custom Name","width": "15%",sortable:false,data:"fst_custom_item_name",visible:false},
-				{"title" : "Qty","width": "10%",data:"fdc_qty",className:'text-right'},
+				{"title" : "Qty","width": "10%",data:"fdb_qty",className:'text-right'},
 				{"title" : "Unit","width": "10%",data:"fst_unit"},
 				{"title" : "Price","width": "10%",
 					data:"fdc_price",
@@ -584,7 +582,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
 				},
-				{"title" : "Memo","width": "15%",data:"fst_memo_item"},
+				{"title" : "Memo","width": "200px",data:"fst_memo_item"},
 				{"title" : "Total","width": "10%",
 					data:"total",
 					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
@@ -627,19 +625,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				mode_so_detail = "EDIT";
 				edited_so_detail = t.row(trRow);
 				row = edited_so_detail.data();	
+				$("#fin_rec_id").val(row.fin_rec_id);
 				$('#select-items').val(row.fin_item_id).trigger('change');
+				$("#fst_custom_item_name").val(row.fst_custom_item_name);
 				$('#select-disc').val(row.fst_disc_item).trigger('change');
-				$('#select-unit').val(row.fst_unit).trigger('change');
-				$("#fin-detail-id").val(row.rec_id).trigger('change');
-				$("#so-qty").val(row.fdc_qty);
+				$('#select-items').trigger({type:"select2:select"});
+				$("#so-qty").val(row.fdb_qty);
 				$("#so-price").val(money_format(row.fdc_price));
 				$("#fdc_disc_amount").val(money_format(row.fdc_disc_amount));
-				$("#fst_memo_item").val(row.fst_memo_item);
+				$("#fst_memo_item").val(row.fst_memo_item);				
 			});
 		});
+		fixedSelect2();
 	});
 	function clearDetailForm(){
+		$("#fin_rec_id").val(0);
 		$('#select-items').val(null).trigger('change');
+		$('#select-items').focus();
+		$("#fst_custom_item_name").val("");
 		$('#select-disc').val("0").trigger('change');
 		$('#select-unit').val(null).trigger('change');
 		$("#fin-detail-id").val(0);
@@ -650,9 +653,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	}
 	function calculateDisc(amount, disc){
 		var strArray = disc.split("+");
-		//console.log(amount);
-		//console.log(disc);
-		
 		totalDisc = 0;
 		$.each(strArray,function(i,v){
 			disc = amount * (v / 100);
@@ -664,36 +664,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	function calculateTotal(){
 		t = $('#tblSODetails').DataTable();
 		datas = t.data();
-		totalDetail =0;
-		subTotal = 0;
-		disc = parseFloat ($("#ItemDiscount").val());
+		ttlBfDisc = 0;
+		ttlDisc = 0;
 		$.each(datas,function(i,v){
-			totalDetail += v.total;
-		})
+			ttlBfDisc += v.fdb_qty * v.fdc_price;
+			ttlDisc +=  v.fdc_disc_amount * 1;
+		});
 		if ($("#fbl_is_vat_include").prop('checked')){
-			total = totalDetail;
+			total = ttlBfDisc - ttlDisc;			
 			vat = $("#fdc_vat_percent").val() * 1;
-			subTotal = total / (( vat  + 100) /100);
-			vat =  ($("#fdc_vat_percent").val() /100) * subTotal;			
-			$("#sub-total").val(money_format(subTotal));	
-			$("#fdc_vat_amount").val(money_format(vat));
-			$("#total").val(money_format(total));
+			vat = 1 + (vat/100);
+			subTotal = total / vat;
+			vat = ($("#fdc_vat_percent").val() /100) * subTotal;	
 		}else{
-			subTotal=totalDetail;
+			subTotal= ttlBfDisc - ttlDisc;
 			vat = ($("#fdc_vat_percent").val() /100) * subTotal;
-			$("#sub-total").val(money_format(subTotal));	
-			$("#fdc_vat_amount").val(money_format(vat));
-			total =subTotal + vat;
-			$("#total").val(money_format(total));
+			total = subTotal + vat;
 		}
-		
-		/*
-		$("#sub-total").val(numeral(subTotal).format("0,000"));
-		disc_val = subTotal * (disc/100);
-		$("#disc-val").val(numeral(disc_val).format("0,000"));
-		total = subTotal - disc_val;
-		$("#total").val(numeral(total).format("0,000"));
-		*/
+		$("#sub-total").val(money_format(subTotal));	
+		$("#fdc_vat_amount").val(money_format(vat));
+		$("#total").val(money_format(total));		
 	}
 	function init_form(fin_salesorder_id){
 		//alert("Init Form");
@@ -702,7 +692,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.sales_order);
 				$.each(resp.sales_order, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 						type = $el.attr('type');
@@ -715,56 +704,71 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							break;
 						default:
 							$el.val(val);
-							console.log(val);
 					}
 				});
+				//Customer
+				var arrCust = [];
+				var currCust = {
+					"id" : resp.sales_order.fin_relation_id,
+					"text" : resp.sales_order.fst_relation_name,
+					"fin_sales_id" : resp.sales_order.fin_sales_id,
+					"fst_shipping_address":resp.sales_order.fst_shipping_address,
+					"fin_warehouse_id":resp.sales_order.fin_warehouse_id,
+					"fin_terms_payment":resp.sales_order.fin_terms_payment							
+				}
+				arrCust.push(currCust);
+				var newOption = new Option(resp.sales_order.fst_relation_name, resp.sales_order.fin_relation_id, true, true);
+				$('#select-relations').append(newOption).trigger('change');
+				current_pricing_group_id = resp.sales_order.current_pricing_group_id;
+				$('#select-sales').val(resp.sales_order.fin_sales_id).trigger('change');
+				$('#select-warehouse').val(resp.sales_order.fin_warehouse_id).trigger('change');
 				SODetails = resp.so_details;
+				dataItem = [];
 				$.each(SODetails, function(idx, detail){
 					data = {
-						fin_salesorder_id:detail.fin_salesorder_id,
+						fin_rec_id:detail.fin_rec_id,
+						fin_promo_id:detail.fin_promo_id,
 						fin_item_id:detail.fin_item_id,
-						fst_item_name:detail.fst_item_name,
-						fst_item_discount:detail.fst_item_discount,
-						fdc_qty:detail.fdc_qty,
+						ItemCode:detail.fst_item_code,
+						ItemName:detail.fst_item_name,
+						fst_custom_item_name:detail.fst_custom_item_name,
+						fdb_qty:detail.fdb_qty,
+						fst_unit:detail.fst_unit,
 						fdc_price:detail.fdc_price,
-						fst_item_discount:detail.fst_item_discount,
-						total:detail.fdc_qty * detail.fdc_price / detail.fst_item_discount,
-						action: action
+						fst_disc_item:detail.fst_disc_item,
+						fdc_disc_amount:detail.fdc_disc_amount,
+						fst_memo_item:detail.fst_memo_item,
+						total:detail.fdb_qty * detail.fdc_price - detail.fdc_disc_amount,
+						action: (detail.fin_promo_id == 0) ? action : ""
 					}
 					t = $('#tblSODetails').DataTable();			
 					t.row.add(data).draw(false);
-					//set Data select2		
-					var newOption = new Option(detail.fst_item_name, detail.fin_item_id, false, false);
-					$('#select-items').append(newOption).trigger('change');
-					var newOption = new Option(detail.fst_item_discount, false);
-					$('#select-disc').append(newOption).trigger('change');
+					//set Data Item select2		
+					tmp = {
+						"id" : detail.fin_item_id,
+						"text" : detail.fst_item_code + "-" + detail.fst_item_name,
+						"fst_item_name" : detail.fst_item_name,
+						"fst_item_code" : detail.fst_item_code,
+						"maxItemDiscount" : detail.fst_max_item_discount
+					}
+					dataItem.push(tmp);
 				});
-				$('#select-items').trigger('change');
-					calculateTotal();
-				// OnChange
-				//var fdt_salesorder_date = $soDate;
-				$("#fst_salesorder_no").change(function(){
-					//alert ("fst_salesorder_no");
-					$("#soDate").val(0);
-					$("#soDate").prop('readonly', true);
+				$("#select-items").select2({
+					width:"100%",
+					data:dataItem,
+					ajax:ajxSel2Item
 				});
+				fixedSelect2();
+				
+					
+				//var newOption = new Option(detail.ItemDiscount, false);
+				//$('#select-disc').append(newOption).trigger('change');
+				calculateTotal();
+				
 				$("#fdt_salesorder_date").datepicker('update', dateFormat(resp.sales_order.fdt_salesorder_date));
-				// menampilkan data di select2, menu edit/update
-				var newOption = new Option(resp.sales_order.fst_relation_name, resp.sales_order.fin_relation_id, true, true);
-				// Append it to the select
-    			$('#select-relations').append(newOption).trigger('change');
-				var newOption = new Option(resp.sales_order.fst_warehouse_name, resp.sales_order.fin_warehouse_id, true, true);
-    			$('#select-warehouse').append(newOption).trigger('change');
-				var newOption = new Option(resp.sales_order.fst_username, resp.sales_order.fin_user_id, true, true);
-				$('#select-sales').append(newOption).trigger('change');
-				var newOption = new Option(resp.sales_order.fst_username, resp.sales_order.fin_user_id, true, true);
-				$('#select-spv').append(newOption).trigger('change');
-				var newOption = new Option(resp.sales_order.fst_username, resp.sales_order.fin_user_id, true, true);
-				$('#select-mgr').append(newOption).trigger('change');
 			},
 			error: function (e) {
 				$("#result").text(e.responseText);
-				console.log("ERROR : ", e);
 			}
 		});
 	}
@@ -832,13 +836,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$.each(resp.data,function(i,v){
 							event.preventDefault();							
 							data = {
-								fin_rec_id:0,
+								rec_id:0,
 								fin_promo_id:v.fin_promo_id,
 								fin_item_id:v.fin_item_id,
-								fst_item_name:v.fst_item_name,
-								fst_item_code:v.fst_item_code,								
+								ItemName:v.fst_item_name,
+								ItemCode:v.fst_item_code,								
 								fst_custom_item_name: v.fst_custom_item_name,
-								fdc_qty: v.fdc_qty,
+								fdb_qty: money_parse(v.fdb_qty),
 								fst_unit: v.fst_unit,
 								fdc_price : 1,
 								fst_disc_item : 100,
@@ -847,17 +851,52 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								total: 0,
 								action: ""//actionDelete
 							}
-							//console.log(data);
 							t = $('#tblSODetails').DataTable();							
 							t.row.add(data).draw(false);								
-							//calculateTotal();
-							//clearDetailForm();
 						});
 					}else{
-						saveAjax(1,0);
+						saveAjax(0,0);
 					}		
 				}else if( resp.status == "CONFIRM_AUTHORIZE"){
-					saveAjax(1,1);
+					arrOutofStock = resp.data.arrOutofStock;
+					messageOutofStock = "";
+					$.each(arrOutofStock,function(i,v){
+						if (messageOutofStock == ""){
+							messageOutofStock = "";
+						}
+					});
+					arrOutstanding = resp.data.arrOutstanding;
+					messageOverlimit ="";
+					if (arrOutstanding.totalOutstanding > arrOutstanding.maxCreditLimit){
+						messageOverlimit = "<?= lang("Plafon tersedia") ?> :" + money_format(arrOutstanding.maxCreditLimit) + "<br>";
+						messageOverlimit += "<?= lang("Piutang Outstanding") ?> :" + money_format(arrOutstanding.piutangOutstanding) + "<br>";
+						messageOverlimit += "<?= lang("S/O Outstanding") ?> :" + money_format(arrOutstanding.soOutstanding) + "<br><br>";
+						messageOverlimit += "<?= lang("Billyet Outstanding") ?> :" + money_format(arrOutstanding.billyetOutstanding) + "<br><br>";
+						messageOverlimit += "<?= lang("Sisa Plafon Tersedia") ?> :" + money_format(arrOutstanding.sisaPlafon) + "<br>";
+						messageOverlimit += "<hr>";
+						messageOverlimit += "<?= lang("Info Outstanding Faktur") ?>";
+						messageOverlimit += "<hr>";
+					}
+					arrFakturOutstanding = arrOutstanding.dataFakturOutstanding;
+					$.each(arrFakturOutstanding,function(i,v){
+						if(messageOverlimit == ""){
+							
+						}
+					});
+					message = messageOutofStock + messageOverlimit;
+					message += "<br><br>";
+					message += "<?=lang("Transaksi memerlukan authorization, lanjutkan ?")?>";
+					$.confirm({
+						title: 'Authorization transaction',
+						content: message,
+						buttons: {
+							confirm: function () {																
+								saveAjax(0,1);
+							},
+							cancel: function () {
+							},
+						}						
+					});					
 				}else if(resp.status == "SUCCESS") {
 					data = resp.data;
 					$("#fin_salesorder_id").val(data.insert_id);
@@ -867,12 +906,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#frm-mode").val("EDIT");  //ADD|EDIT
 					$('#fst_salesorder_no').prop('readonly', true);
 					$("#tabs-so-detail").show();
-					console.log(data.data_image);
 				}
 			},
 			error: function (e) {
 				$("#result").text(e.responseText);
-				console.log("ERROR : ", e);
 				$("#btnSubmit").prop("disabled", false);
 			},
 		}).always(function(){
@@ -880,6 +917,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 	}
 	function loadSelect2Data(){
+		$(document).ajaxStart(function() {
+			$.blockUI({ message:'<h1><?=lang("Please wait....")?></h1>'});
+		});
+		$(document).ajaxStop(function() {
+			$.unblockUI();
+			$(document).unbind('ajaxStart');
+		});
 		$.ajax({
 			url: '<?=site_url()?>tr/sales_order/getSelect2_sales_warehouse_currency',
 			//async:false,
@@ -890,10 +934,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						id:v.fin_user_id,
 						text:v.fst_username
 					});
-				});
-				
+				});				
 				$("#select-sales").select2({
-					data: sel2Sales
+					data: sel2Sales,
+					width:"100%",
 				});
 				arrWarehouse = values.data.warehouse;
 				$.each(arrWarehouse,function(i,v){
@@ -903,19 +947,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					});
 				});
 				$("#select-warehouse").select2({
-					data: sel2Warehouse
+					data: sel2Warehouse,
+					width:"100%",
 				});
 				arrCurrencies = values.data.currencies;
 				$.each(arrCurrencies,function(i,v){
 					sel2Currencies.push({
-						id:v.fst_curr_code,
-						text:v.fst_curr_name
+						id:v.CurrCode,
+						text:v.CurrName
 					});
 				});
 				$("#fst_curr_code").select2({
-					data: sel2Currencies
+					data: sel2Currencies,
+					width:"100%",
 				});
-				//console.log(sel2Warehouse);
+				<?php if($mode == "EDIT"){?>
+					init_form($("#fin_salesorder_id").val());
+				<?php } ?>
 			}
 		});
 	}
@@ -923,8 +971,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		
 		dataUnit = $('#select-unit').select2("data")[0];
 		dataItem = $('#select-items').select2("data")[0];
-		//console.log(dataUnit);
-		//console.log(dataItem);
 		if(typeof dataUnit === "undefined"){ // no errors
 			return;
 		}
@@ -932,12 +978,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			return;
 		}
 		$.ajax({
-			url:"<?=site_url()?>API/getItemStock/" + $("#select-warehouse").val() + "/" + dataItem.id + "/" + dataUnit.id,
+			url:"<?=site_url()?>api/get_info_stock/" + $("#select-warehouse").val() + "/" + dataItem.id + "/" + dataUnit.id,
 			success:function(resp){
 				if (resp.status == "SUCCESS"){
-					qtyStock = resp.data;
+					qtyStock = resp.data.real_stock;
+					qtyMarketingStock = resp.data.marketin_stock;
+					$("#dialog-info .info-message").html("Qty Stock : " + qtyStock + " | " + " Qty Marketing Stock : " + qtyMarketingStock);
+					$("#dialog-info").show();
+					/*
 					$.ajax({
-						url:"<?=site_url()?>API/getItemMarketingStock/" + $("#select-warehouse").val() + "/" + dataItem.id + "/" + dataUnit.id,
+						url:"<=site_url()?>api/get_item_marketing_stock/" + $("#select-warehouse").val() + "/" + dataItem.id + "/" + dataUnit.id,
 						success:function(resp){
 							if (resp.status == "SUCCESS"){
 								qtyMarketingStock = resp.data;
@@ -946,6 +996,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							}
 						}
 					});
+					*/
 					
 					
 				}
@@ -962,7 +1013,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 <script type="text/javascript">
-    $(function(){
+   function fixedSelect2(){
         $(".select2-container").addClass("form-control"); 
         $(".select2-selection--single , .select2-selection--multiple").css({
             "border":"0px solid #000",
@@ -972,5 +1023,5 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             "margin-top" : "-5px",
             "background-color":"unset"
         });
-    });
+    };
 </script>

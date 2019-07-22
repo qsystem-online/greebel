@@ -26,14 +26,20 @@ class Trsalesorder_model extends MY_Model {
     }
 
     public function getDataById($fin_salesorder_id){
-        $ssql = "select * from trsalesorder where fin_salesorder_id = ? and fst_active = 'A'";
+        $ssql = "select a.*,
+            b.fst_relation_name,b.fin_sales_id,b.fst_shipping_address,b.fin_warehouse_id,
+            b.fin_terms_payment,b.fin_cust_pricing_group_id,
+            c.fst_fullname as fst_sales_name 
+            from trsalesorder a
+            inner join msrelations b on a.fin_relation_id  = b.fin_relation_id 
+            inner join users c on a.fin_sales_id  = c.fin_user_id             
+            where a.fin_salesorder_id = ?";
         $qr = $this->db->query($ssql, [$fin_salesorder_id]);
-        $rwSalesOrder = $qr->row();
-
-        $ssql = "select a.*,b.fst_item_name,c.fdc_selling_price,d.fst_item_discount from trsalesorderdetails a left join msitems b on a.fin_item_id = b.fin_item_id
-        left join msitemspecialpricinggroupdetails c on a.fdc_price = c.fdc_selling_price
-        left join msitemdiscounts d on a.fst_disc_item = d.fst_item_discount 
-        where a.fin_salesorder_id = ? order by fin_salesorder_id";
+        
+        $rwSalesOrder = $qr->row();        
+        $ssql = "select a.*,b.fst_item_name,b.fst_item_code,b.fst_max_item_discount from trsalesorderdetails a 
+        left join msitems b on a.fin_item_id = b.fin_item_id
+        where a.fin_salesorder_id = ?";
 		$qr = $this->db->query($ssql,[$fin_salesorder_id]);
 		$rsSODetails = $qr->result();
 
@@ -49,7 +55,7 @@ class Trsalesorder_model extends MY_Model {
         $soDate = ($soDate == null) ? date ("Y-m-d"): $soDate;
         $tahun = date("ym", strtotime ($soDate));
         $prefix = getDbConfig("salesorder_prefix");
-        $query = $this->db->query("SELECT MAX(fst_salesorder_no) as max_id FROM trsalesorder where fst_salesorder_no like '$tahun%'"); 
+        $query = $this->db->query("SELECT MAX(fst_salesorder_no) as max_id FROM trsalesorder where fst_salesorder_no like '".$prefix.$tahun."%'");
         $row = $query->row_array();
         $max_id = $row['max_id']; 
         $max_id1 =(int) substr($max_id,8,5);
@@ -65,7 +71,7 @@ class Trsalesorder_model extends MY_Model {
         $arrPromo = [];
 
         $ssql = "select a.*,b.fin_member_group_id from msrelations a 
-            left join (select * from msmemberships where fst_active = 'A' and ExpiryDate > ?) b on a.fin_relation_id = b.fin_relation_id 
+            left join (select * from msmemberships where fst_active = 'A' and fdt_expiry_date > ?) b on a.fin_relation_id = b.fin_relation_id 
             where a.fin_relation_id = ?";
         $qr = $this->db->query($ssql,[$trxDate,$fin_customer_id]);
         $rwCek = $qr->row();
@@ -173,9 +179,9 @@ class Trsalesorder_model extends MY_Model {
             if($minTotalPurchase > 0){ //Proses Berdasarkan Total Belanja                
                 $totalPurchase = 0;
                 foreach($details as $item){
-                    $amount = $item->fdc_qty * $item->fdc_price;
+                    $amount = $item->fdb_qty * $item->fdc_price;
                     $ttlDisc = calculateDisc($item->fst_disc_item , $amount);
-                    $totalPurchase += ($item->fdc_qty * $item->fdc_price) - $ttlDisc;                        
+                    $totalPurchase += ($item->fdb_qty * $item->fdc_price) - $ttlDisc;                        
                 }
                 if ($totalPurchase < $minTotalPurchase){
                     //syarat promo tidak terpenuhi hapus dari array
@@ -211,7 +217,7 @@ class Trsalesorder_model extends MY_Model {
                             $isOnRules = $this->isOnPromoItemRules($itemRules,$item->fin_item_id,$item->fin_item_subgroup_id);
                         }
                         if($isOnRules){    
-                            $qtyUnit = $this->msitemunitdetails_model->getConversionUnit($item->fin_item_id,$item->fdc_qty, $item->fst_unit, $satuanGabungan);
+                            $qtyUnit = $this->MSItemunitdetails_model->getConversionUnit($item->fin_item_id,$item->fdb_qty, $item->fst_unit, $satuanGabungan);
                             $totalQtyGabungan += $qtyUnit;
                         }
                     }
@@ -226,10 +232,10 @@ class Trsalesorder_model extends MY_Model {
                             $totalQtySubGroup = 0; 
                             foreach($details as $item){
                                 if ($item->fin_item_subgroup_id == $rule->fin_item_id && $item->fst_unit == $rule->fst_unit){
-                                    $totalQtySubGroup += (float) $item->fdc_qty;
+                                    $totalQtySubGroup += (float) $item->fdb_qty;
                                 }
                             }
-                            if ($totalQtySubGroup < (float) $rule->fin_qty){
+                            if ($totalQtySubGroup < (float) $rule->fdb_qty){
                                 //syarat promo tidak terpenuhi hapus dari array
                                 unset($rs[$i]);
                             }
@@ -237,10 +243,10 @@ class Trsalesorder_model extends MY_Model {
                             $totalQtyItem = 0; 
                             foreach($details as $item){
                                 if ($item->fin_item_id == $rule->fin_item_id && $item->fst_unit == $rule->fst_unit){
-                                    $totalQtyItem += (float) $item->fdc_qty;
+                                    $totalQtyItem += (float) $item->fdb_qty;
                                 }
                             }
-                            if ($totalQtyItem < (float) $rule->fin_qty){
+                            if ($totalQtyItem < (float) $rule->fdb_qty){
                                 //syarat promo tidak terpenuhi hapus dari array
                                 unset($rs[$i]);
                             }
@@ -293,8 +299,8 @@ class Trsalesorder_model extends MY_Model {
                     "fst_item_code"=>$promo->fst_item_code,
                     "fst_item_name"=>$promo->fst_item_name,
                     "fst_custom_item_name"=>$promo->fst_item_name,
-                    "fdc_qty"=>$promo->fin_promo_qty,
-                    "fst_unit"=>$promo->fin_promo_unit,
+                    "fdb_qty"=>$promo->fdb_promo_qty,
+                    "fst_unit"=>$promo->fst_promo_unit,
                     "fdc_cashback"=>0,
                 ];
             }
@@ -307,23 +313,23 @@ class Trsalesorder_model extends MY_Model {
                     "fst_item_code"=>"PRO",
                     "fst_item_name"=>$promo->fst_other_prize,
                     "fst_custom_item_name"=>$promo->fst_other_prize,
-                    "fdc_qty"=>1,
-                    "fst_unit"=>$promo->fin_promo_unit,
+                    "fdb_qty"=>1,
+                    "fst_unit"=>$promo->fst_promo_unit,
                     "fdc_cashback"=>0,
                 ];
             }
 
-            if ($promo->fin_cashback != null && $promo->fin_cashback > 0){
+            if ($promo->fdc_cashback != null && $promo->fdc_cashback > 0){
                 $arrPromoItem[] = [
                     "fin_promo_id"=>$promo->fin_promo_id,
                     "modelPromotion" => "CASHBACK",
                     "fin_item_id"=>0,
                     "fst_item_code"=>"PRO",
                     "fst_item_name"=>null,
-                    "fst_custom_item_name"=>"Voucher Cashback Rp." . formatNumber($promo->fin_cashback),
-                    "fdc_qty"=>1,
+                    "fst_custom_item_name"=>"Voucher Cashback Rp." . formatNumber($promo->fdc_cashback),
+                    "fdb_qty"=>1,
                     "fst_unit"=>"PCS",
-                    "fdc_cashback"=> $promo->fin_cashback,
+                    "fdc_cashback"=> $promo->fdc_cashback,
                 ];
             }
         }
@@ -337,13 +343,24 @@ class Trsalesorder_model extends MY_Model {
         //return false;
     }
 
-    public function getDataOutstanding($fin_customer_id,$current_so_id = 0){
+    public function getDataOutstanding($fin_customer_id,$fdc_credit_limit,$current_so_id = 0){
+        
+        $fdc_credit_limit = (float) $fdc_credit_limit;
+        $piutangOutstanding =0;
+        $soOutstanding = 10000000;
+        $billyetOutstanding = 0;
+        $totalOutstanding = ($piutangOutstanding + $soOutstanding + $billyetOutstanding);        
         return [
-            "dataOutstanding"=>[],
-            "totalOutstanding"=>0
+            "maxCreditLimit"=>$fdc_credit_limit,
+            "piutangOutstanding"=> $piutangOutstanding,
+            "soOutstanding"=> $soOutstanding,
+            "billyetOutstanding"=>$billyetOutstanding,
+            "totalOutstanding"=> $totalOutstanding,
+            "sisaPlafon"=> $fdc_credit_limit - $totalOutstanding,
+            "dataFakturOutstanding"=>[],
         ];
     }
-
+    
     private function isOnPromoItemRules($rules,$fin_item_id,$fin_item_subgroup_id){
         foreach($rules as $rule){
             if($rule->fst_item_type == 'SUB GROUP'){
@@ -359,4 +376,9 @@ class Trsalesorder_model extends MY_Model {
         return false;
     }
 
+    public function posting_so($fin_salesorder_id){
+        //Bila terdapat DP jurnal DP tersebut
+
+
+    }
 }
