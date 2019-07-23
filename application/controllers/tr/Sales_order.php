@@ -837,7 +837,6 @@ class Sales_order extends MY_Controller{
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["fin_salesorder_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -959,6 +958,7 @@ class Sales_order extends MY_Controller{
 		$this->ajxResp["data"] = $data;
 		$this->json_output();
 	}
+
 	public function get_sales(){
 		$term = $this->input->get("term");
 		$salesDeptId = getDbConfig("sales_department_id");
@@ -1042,4 +1042,76 @@ class Sales_order extends MY_Controller{
 		echo "<br><br><br><br><br>Promo Item :  :<br>";
 		var_dump($promo);
 	}
+
+//===== UNHOLD ==============================================================================================================================================================================
+
+	public function unhold(){
+		$this->load->library('menus');
+		$this->list['page_name'] = "Unhold Sales Order";
+		$this->list['list_name'] = "Unhold SO List";
+		$this->list['pKey'] = "id";
+		$this->list['fetch_list_data_ajax_url'] = site_url().'tr/sales_order/unhold_list_data';
+		$this->list['arrSearch'] = [
+			'fin_salesorder_id' => 'Sales Order ID',
+			'fst_salesorder_no' => 'Sales Order No'
+		];
+
+		$this->list['breadcrumbs'] = [
+			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
+			['title' => 'Unhold Sales Order', 'link' => '#', 'icon' => ''],
+			['title' => 'List', 'link' => NULL, 'icon' => ''],
+		];
+
+		$this->list['columns'] = [
+			['title' => 'Sales Order ID', 'width' => '15%', 'data' => 'fin_salesorder_id'],
+			['title' => 'Sales Order No', 'width' => '15%', 'data' => 'fst_salesorder_no'],
+			['title' => 'Sales Order Date', 'width' => '15%', 'data' => 'fdt_salesorder_date'],
+			['title' => 'Memo', 'width' => '15%', 'data' => 'fst_memo'],
+			['title' => 'Customer', 'width' => '15%', 'data' => 'fst_relation_name'],
+			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
+		];
+        $main_header = $this->parser->parse('inc/main_header',[],true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+        $page_content = $this->parser->parse('pages/tr/sales_order/unhold_list',$this->list,true);
+        $main_footer = $this->parser->parse('inc/main_footer',[],true);
+        $control_sidebar=null;
+        $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR']= $main_sidebar;
+        $this->data['PAGE_CONTENT']= $page_content;
+        $this->data['MAIN_FOOTER']= $main_footer;        
+		$this->parser->parse('template/main',$this->data);
+	}
+
+	/*public function unhold_list_data(){
+		$this->load->library("datatables");
+		$this->datatables->setTableName("trsalesorder");
+
+		$selectFields = "fin_salesorder_id,fst_salesorder_no,fdt_salesorder_date,fst_memo,fst_relation_name,'action' as action";
+		$this->datatables->setSelectFields($selectFields);
+
+		$searchFields = [];
+		$searchFields[] = $this->input->get('optionSearch');
+		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "fst_active !='D'";
+
+		//Format Data
+		$datasources = $this->datatables->getData();
+		$arrData = $datasources["data"];
+		$arrDataFormated = [];
+		foreach ($arrData as $data) {
+			$insertDateTime = strtotime($data["fdt_unhold_datetime"]);
+			$data["fdt_unhold_datetime"] = dBDateFormat("d-M-Y H:i:s",$fdt_unhold_datetime);
+
+			//action
+			$data["action"] = "<div style='font-size:16px'>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["fin_salesorder_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
+				</div>";
+			$arrDataFormated[] =$data;
+		}
+		$datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+
+	}*/
 }

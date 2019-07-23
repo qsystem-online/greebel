@@ -302,6 +302,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
+				$("#fdt_birthdate").datepicker('update', dateFormat(resp.user.fdt_birthdate));
+
 				// menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.user.fst_department_name, resp.user.fin_department_id, true, true);
     			// Append it to the select
