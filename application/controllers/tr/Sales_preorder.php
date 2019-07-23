@@ -19,26 +19,26 @@ class Sales_preorder extends MY_Controller
     public function lizt()
     {
         $this->load->library('menus');
-        $this->list['page_name'] = "Sales Pre-Order";
-        $this->list['list_name'] = "Sales Pre-Order List";
+        $this->list['page_name'] = "Sales Pre-order";
+        $this->list['list_name'] = "Sales Pre-order List";
         $this->list['addnew_ajax_url'] = site_url() . 'tr/sales_preorder/add';
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales_preorder/fetch_list_data';
         $this->list['delete_ajax_url'] = site_url() . 'tr/sales_preorder/delete/';
         $this->list['edit_ajax_url'] = site_url() . 'tr/sales_preorder/edit/';
         $this->list['arrSearch'] = [
-            'fin_preorder_id' => 'Pre-Order ID',
-            'fst_preorder_name' => 'Pre-Order Name'
+            'fin_preorder_id' => 'ID',
+            'fst_preorder_name' => 'Pre-order Name'
         ];
 
         $this->list['breadcrumbs'] = [
             ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-            ['title' => 'Sales Pre-Ordertion', 'link' => '#', 'icon' => ''],
+            ['title' => 'Sales Pre-order', 'link' => '#', 'icon' => ''],
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'Pre Order ID', 'width' => '5%', 'data' => 'fin_preorder_id'],
-            ['title' => 'Pre Order Name', 'width' => '10%', 'data' => 'fst_preorder_name'],
+            ['title' => 'ID', 'width' => '5%', 'data' => 'fin_preorder_id'],
+            ['title' => 'Pre-order Name', 'width' => '10%', 'data' => 'fst_preorder_name'],
             ['title' => 'Start Date', 'width' => '5%', 'data' => 'fdt_start_date'],
             ['title' => 'End Date', 'width' => '5%', 'data' => 'fdt_end_date'],
             ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
@@ -68,7 +68,7 @@ class Sales_preorder extends MY_Controller
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 
         $data["mode"] = $mode;
-        $data["title"] = $mode == "ADD" ? "Add Sales Pre-Order" : "Update Sales Pre-Order";
+        $data["title"] = $mode == "ADD" ? "Add Sales Pre-order" : "Update Sales Pre-order";
         $data["fin_preorder_id"] = $fin_preorder_id;
 
         $page_content = $this->parser->parse('pages/tr/sales_preorder/form', $data, true);
@@ -139,8 +139,8 @@ class Sales_preorder extends MY_Controller
 
         //Save Pre-Order Branch Details
 
-        /*$this->load->model("Trsalespreorderdetails_model");
-        $details = $this->input->post("detail");
+        $this->load->model("Trsalespreorderdetails_model");
+        $details = $this->input->post("branchDetail");
         $details = json_decode($details);
         foreach ($details as $preorderbranchdetail) {
             $data = [
@@ -158,7 +158,7 @@ class Sales_preorder extends MY_Controller
                 $this->db->trans_rollback();
                 return;
             }
-        }*/
+        }
 
         $this->db->trans_complete();
         $this->ajxResp["status"] = "SUCCESS";
@@ -224,13 +224,13 @@ class Sales_preorder extends MY_Controller
 
         //Save Pre-Order Branch Details
 
-        /*$this->load->model("Trsalespreorderdetails_model");
-        $this->Trsalespreorderdetails_model->deleteByHeaderId($fin_preorder_id);
-        $details = $this->input->post("detail");
+        $this->load->model("Trsalespreorderdetails_model");
+        $this->Trsalespreorderdetails_model->deleteByDetail($fin_preorder_id);
+        $details = $this->input->post("branchDetail");
         $details = json_decode($details);
         foreach ($details as $preorderbranchdetail) {
             $data = [
-                "fin_preorder_id" => $insertId,
+                "fin_preorder_id" => $fin_preorder_id,
                 "fin_branch_id" => $preorderbranchdetail->fin_branch_id,
                 "fst_active" => 'A'
             ];
@@ -244,7 +244,7 @@ class Sales_preorder extends MY_Controller
                 $this->db->trans_rollback();
                 return;
             }
-        }*/
+        }
 
         $this->db->trans_complete();
         $this->ajxResp["status"] = "SUCCESS";

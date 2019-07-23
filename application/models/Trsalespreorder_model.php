@@ -21,13 +21,13 @@ class Trsalespreorder_model extends MY_Model{
         $qr = $this->db->query($ssql, [$fin_preorder_id]);
         $rwPreorder = $qr->row();
 
-        //$ssql = "select a.*,b.fst_branch_name from preorderbranchdetails a left join msbranches b on a.fin_branch_id = b.fin_branch_id  where a.fin_preorder_id = ?";
-        //$qr = $this->db->query($ssql, [$fin_item_id]);
-        //$rspreorderDetail = $qr->result();
+        $ssql = "select a.*,b.fst_branch_name from preorderbranchdetails a left join msbranches b on a.fin_branch_id = b.fin_branch_id  where a.fin_preorder_id = ?";
+        $qr = $this->db->query($ssql, [$fin_preorder_id]);
+        $rspreorderDetail = $qr->result();
 
         $data = [
             "preOrder" => $rwPreorder,
-            //"preorderDetail" => $rspreorderDetail, 
+            "preorderDetail" => $rspreorderDetail, 
         ];
 
         return $data;

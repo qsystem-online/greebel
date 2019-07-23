@@ -50,12 +50,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="fin_promo_id" class="col-md-2 control-label"><?= lang("Promo ID") ?> :</label>
+                            <label for="fin_promo_id" class="col-md-2 control-label"><?= lang("Promo ID") ?> </label>
                             <div class="col-md-2">
                                 <input type="text" class="form-control" id="fin_promo_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_promo_id" value="<?= $fin_promo_id ?>" readonly>
                                 <div id="fin_promo_id_err" class="text-danger"></div>
                             </div>
-                            <label for="fst_promo_name" class="col-md-2 control-label"><?= lang("Promo Name") ?> :</label>
+                            <label for="fst_promo_name" class="col-md-2 control-label"><?= lang("Promo Name") ?> </label>
                             <div class="col-md-6">
                                 <input type="text" class="form-control" id="fst_promo_name" placeholder="<?= lang("Promo Name") ?>" name="fst_promo_name">
                                 <div id="fst_promo_name_err" class="text-danger"></div>
@@ -63,35 +63,35 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-promo_item" class="col-md-2 control-label"><?= lang("Free Item") ?> :</label>
+                            <label for="select-promo_item" class="col-md-2 control-label"><?= lang("Free Item") ?> </label>
                             <div class="col-md-4">
                                 <select id="select-promo_item" class="form-control" name="fin_promo_item_id"></select>
                             </div>
 
                             <!--<label for="fin_promo_qty" class="col-md-1 control-label"><?= lang("Free Qty") ?> :</label>-->
                             <div class="col-md-4">
-                                <input type="text" class="form-control" id="fin_promo_qty" placeholder="<?= lang("0") ?>" name="fin_promo_qty">
-                                <div id="fin_promo_qty_err" class="text-danger"></div>
+                                <input type="text" class="form-control text-right" id="fdb_promo_qty" placeholder="<?= lang("0") ?>" name="fdb_promo_qty">
+                                <div id="fdb_promo_qty_err" class="text-danger"></div>
                             </div>
 
                             <!---<label for="select-promo_unit" class="col-md-1 control-label"><?= lang("Unit") ?> :</label>-->
                             <div class="col-md-2">
-                                <select id="select-promo_unit" class="form-control" name="fin_promo_unit"></select>
-                                <div id="fin_promo_unit_err" class="text-danger"></div>
+                                <select id="select-promo_unit" class="form-control" name="fst_promo_unit"></select>
+                                <div id="fst_promo_unit_err" class="text-danger"></div>
                             </div>
                         </div>
                         <div class='form-group'>
-                            <label for="fin_cashback" class="col-md-2 control-label"><?= lang("/CashBack (Rp.)") ?>:</label>
+                            <label for="fdc_cashback" class="col-md-2 control-label"><?= lang("/CashBack") ?></label>
                             <div class="col-md-2">
-                                <input type="text" class="form-control money" id="fin_cashback" placeholder="<?= lang("0") ?>" name="fin_cashback">
-                                <div id="fin_cashback_err" class="text-danger"></div>
+                                <input type="text" class="form-control money" id="fdc_cashback" placeholder="<?= lang("0") ?>" name="fdc_cashback">
+                                <div id="fdc_cashback_err" class="text-danger"></div>
                             </div>
-                            <label for="fst_other_prize" class="col-md-2 control-label"><?= lang("/Other Item") ?>:</label>
+                            <label for="fst_other_prize" class="col-md-2 control-label"><?= lang("/Other Item") ?></label>
                             <div class="col-md-3">
                                 <input type="text" class="form-control" id="fst_other_prize" placeholder="<?= lang("Other Item") ?>" name="fst_other_prize">
                                 <div id="fst_other_prize_err" class="text-danger"></div>
                             </div>
-                            <label for="fdc_other_prize_in_value" class="col-md-1 control-label"><?= lang("Value") ?>:</label>
+                            <label for="fdc_other_prize_in_value" class="col-md-1 control-label"><?= lang("Value") ?></label>
                             <div class="col-md-2">
                                 <input type="text" class="form-control money" id="fdc_other_prize_in_value" placeholder="<?= lang("0") ?>" name="fdc_other_prize_in_value">
                                 <div id="fdc_other_prize_in_value_err" class="text-danger"></div>
@@ -106,7 +106,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <option value='POS'><?= lang("POS") ?></option>
                                 </select>
                             </div>
-                            <label for="fdt_start" class="col-md-2 control-label"><?= lang("Start Date") ?> *</label>
+                            <label for="fdt_start" class="col-md-2 control-label"><?= lang("Start Date") ?></label>
                             <div class="col-md-2">
                                 <div class="input-group date">
                                     <div class="input-group-addon">
@@ -117,7 +117,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fdt_start_err" class="text-danger"></div>
                                 <!-- /.input group -->
                             </div>
-                            <label for="fdt_end" class="col-md-2 control-label"><?= lang("End Date") ?> *</label>
+                            <label for="fdt_end" class="col-md-2 control-label"><?= lang("End Date") ?></label>
                             <div class="col-md-2">
                                 <div class="input-group date">
                                     <div class="input-group-addon">
@@ -129,20 +129,63 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <!-- /.input group -->
                             </div>
                         </div>
+                        <div class="form-group">
+                        <label for="fst_list_branch_id" class="col-md-2 control-label"><?=lang("Branch")?></label>
+                            <div class="col-md-10">
+                                <select class="form-control select2" id="fst_list_branch_id" name="fst_list_branch_id[]"  multiple="multiple">
+                                </select>
+                                <div id="fst_list_branch_id_err" class="text-danger"></div>
+                            </div>
+                        </div>
                         <div class='form-group'>
                             <label for="fbl_promo_gabungan" class="col-md-2 control-label"><?= lang("") ?></label>
                             <div class="col-md-2">
                                 <div>
                                     <input type="checkbox" class="minimal form-control icheck" id="fbl_promo_gabungan" name="fbl_promo_gabungan"> &nbsp;
-                                    <label for="fbl_promo_gabungan" class=""> <?= lang("Allow Combined")?> </label>
+                                    <label for="fbl_promo_gabungan" class=""> <?= lang("Allow Combined")?></label>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div>
                                     <input type="checkbox" class="minimal form-control icheck" id="fbl_is_multiples_prize" name="fbl_is_multiples_prize"> &nbsp;
-                                    <label for="fbl_is_multiples_prize" class=""> <?= lang("Multiple prize")?> </label>
+                                    <label for="fbl_is_multiples_prize" class=""> <?= lang("Multiple prize")?></label>
                                 </div>
                             </div>
+                            <div class="col-md-2">
+                                <div>
+                                    <input type="checkbox" class="minimal form-control icheck" id="fbl_disc_per_item" name="fbl_disc_per_item"> &nbsp;
+                                    <label for="fbl_disc_per_item" class=""> <?= lang("Disc per item")?></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+						<label for="fdc_min_total_purchase" class="col-md-2 control-label"><h6><i>*<?=lang("Terms Of Promotion")?>*</i></h6></label>
+					    </div>
+
+                        <div class="form-group">				
+                            <label for="fdc_min_total_purchase" class="col-md-2 control-label"><?= lang("Minimum Purchase") ?></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control money" id="fdc_min_total_purchase" placeholder="<?= lang("0") ?>" name="fdc_min_total_purchase">
+                                <div id="fdc_min_total_purchase_err" class="text-danger"></div>
+                            </div>					
+                        </div>
+                        <div class="form-group">
+                            <label for="fdb_qty_gabungan" class="col-md-2 control-label"><?= lang("Minimum Qty") ?></label>					
+                            <div class="col-md-4">
+                                <input type="text" class="form-control text-right" id="fdb_qty_gabungan" placeholder="<?= lang("0") ?>" name="fdb_qty_gabungan">
+                                <div id="fdb_qty_gabungan_err" class="text-danger"></div>
+                            </div>						
+                            <div class="col-md-2">
+                                <select class="select2 form-control" id="fst_unit_gabungan" name="fst_unit_gabungan"></select>
+                                <div id="fst_unit_gabungan_err" class="text-danger"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <div>
+                                    <input type="checkbox" class="minimal form-control icheck" id="fbl_qty_gabungan" name="fbl_qty_gabungan"> &nbsp;
+                                    <label for="fbl_qty_gabungan" class=""> <?= lang("combined qty of item terms")?> </label>
+                                </div>
+                            </div>				
                         </div>
                         <!-- end box body -->
                         <div class="nav-tabs-custom" style="display:unset">
@@ -155,29 +198,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div class="tab-pane active" id="promo_item_details">
                                     <form class="form-horizontal edit-mode ">	
                                         <div class="form-group">
-                                            <div class="col-md-9">				
-                                                <label for="fdc_min_total_purchase" class="col-md-3 control-label"><?= lang("Minimum Purchase") ?>:</label>
-                                                <div class="col-md-3">
-                                                    <input type="text" class="form-control money" id="fdc_min_total_purchase" placeholder="<?= lang("0") ?>" name="fdc_min_total_purchase">
-                                                    <div id="fdc_min_total_purchase_err" class="text-danger"></div>
-                                                </div>		
-                                                <div class="col-md-2">
-                                                    <input type="text" class="form-control" id="fdb_qty_gabungan" placeholder="<?= lang("0") ?>" name="fdb_qty_gabungan">
-                                                    <div id="fdb_qty_gabungan_err" class="text-danger"></div>
-                                                </div>						
-                                                <div class="col-md-2">
-                                                    <select class="select2 form-control" id="fst_unit_gabungan" name="fst_unit_gabungan" style="width:100%"></select>
-                                                    <div id="fst_unit_gabungan_err" class="text-danger"></div>
-                                                </div>
-                                            </div>				
-                                            <div class="col-md-2">
-                                                <div>
-                                                    <input type="checkbox" class="minimal form-control icheck" id="fbl_qty_gabungan" name="fbl_qty_gabungan"> &nbsp;
-                                                    <label for="fbl_qty_gabungan" class=""> <?= lang("Combined")?> </label>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="col-md-1">
+                                            <div class="col-md-12">
                                             <button id="btn-add-item-details" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Item") ?></button>
                                             </div>						
                                         
@@ -233,7 +254,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="fin_item_id" class="col-md-3 control-label"><?= lang("Item") ?></label>
+                        <label for="fin_item_id" class="col-md-3 control-label"><?= lang("Item terms") ?></label>
                         <div class="col-md-9">
                             <select class="select2 form-control" id="fin_item_id" style="width:100%"></select>
                             <span id="fin_item_id_err" class="text-danger"></span>
@@ -301,7 +322,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         visible: false,
                     },
                     {
-                        "title": "<?= lang("Item Name ") ?>",
+                        "title": "<?= lang("Item terms ") ?>",
                         "width": "25%",
                         data: "fst_item_name",
                         visible: true,
@@ -621,13 +642,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         visible: false,
                     },
                     {
-                        "title": "<?= lang("Customer ID") ?>",
+                        "title": "<?= lang("Participant ID") ?>",
                         "width": "5%",
                         data: "fin_customer_id",
                         visible: false,
                     },
                     {
-                        "title": "<?= lang("Customer Name ") ?>",
+                        "title": "<?= lang("Participant Name ") ?>",
                         "width": "40%",
                         data: "customer_name",
                         visible: true,
@@ -777,39 +798,39 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <div class="modal-body">
                 <form class="form-horizontal ">
                     <div class="form-group">
-                        <label for="fin_item_id" class="col-md-3 control-label"><?= lang("Item") ?></label>
+                        <label for="select-item-disc" class="col-md-3 control-label"><?= lang("Item") ?></label>
                         <div class="col-md-9">
-                            <select class="select2 form-control" id="fin_item_id" style="width:100%"></select>
+                            <select id="select-item-disc" class="form-control" name="fin_item_id" style="width:100%"></select>
                             <span id="fin_item_id_err" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="fst_unit" class="col-md-3 control-label"><?= lang("Unit") ?></label>
+                        <label for="select-unit-disc" class="col-md-3 control-label"><?= lang("Unit") ?></label>
                         <div class="col-md-4">
-                            <select id="fst_unit" class="form-control" name="fst_unit" style="width:100%"></select>
+                            <select id="select-unit-disc" class="form-control" name="fst_unit" style="width:100%"></select>
                             <span id="fst_unit_err" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="form-group">
-						<label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?></label>
+						<label for="fin_qty" class="col-md-3 control-label"><?=lang("Qty")?></label>
 						<div class="col-md-4">
-							<input type="number" class="form-control text-right numeric" id="fdb_qty" value="0">
-							<div id="fdb_qty_err" class="text-danger"></div>
+							<input type="number" class="form-control text-right numeric" id="fin_qty" value="0">
+							<div id="fin_qty_err" class="text-danger"></div>
 						</div>
 					</div>
                     <div class="form-group">
 						<label for="fdc_disc_persen" class="col-md-3 control-label"><?=lang("Disc %")?></label>
 						<div class="col-md-4">
-							<input type="number" class="form-control text-right numeric" id="fdc_disc_persen" value="0">
+							<input type="text" class="form-control text-right numeric" id="fdc_disc_persen" value="0">
 							<div id="fdc_disc_persen_err" class="text-danger"></div>
 						</div>
 					</div>
                     <div class="form-group">
-						<label for="fdc_disc_value" class="col-md-3 control-label"><?=lang("Disc Value")?></label>
+						<label for="fdc_disc_value" class="col-md-3 control-label"><?=lang("Disc Amount")?></label>
 						<div class="col-md-4">
-							<input type="number" class="form-control text-right money" id="fdc_disc_value" value="0">
+							<input type="text" class="form-control text-right money" id="fdc_disc_value" value="0">
 							<div id="fdc_disc_value_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -817,7 +838,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="btn-add-item" type="button" class="btn btn-primary">Add</button>
+                <button id="btn-add-item-disc" type="button" class="btn btn-primary">Add</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -865,7 +886,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         visible: true,
                     },
                     {
-                        "title": "<?= lang("Disc") ?>",
+                        "title": "<?= lang("Disc Amount") ?>",
                         "width": "5%",
                         data: "fdc_disc_value",
                         render: $.fn.dataTable.render.number(',', '.', 2),
@@ -889,7 +910,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 var trRow = $(this).parents('tr');
                 t.row(trRow).remove().draw();
             });
-            $("#fin_item_id").select2({
+
+            $("#select-item-disc").select2({
                 width: '100%',
                 ajax: {
                     url: '<?= site_url() ?>master/promotion/get_data_ItemPromo',
@@ -911,13 +933,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     cache: true,
                 }
             });
-            $("#fin_item_id").change(function(event) {
+            $("#select-item-disc").change(function(event) {
                 event.preventDefault();
-                $('#fst_unit').val(null).trigger('change');
-                $("#fst_unit").select2({
+                $('#select-unit-disc').val(null).trigger('change');
+                $("#select-unit-disc").select2({
                     width: '100%',
                     ajax: {
-                        url: '<?= site_url() ?>master/promotion/get_data_unitTerms/'+$("#fin_item_id").val(),
+                        url: '<?= site_url() ?>master/promotion/get_data_unitTerms/'+$("#select-item-disc").val(),
                         dataType: 'json',
                         delay: 250,
                         processResults: function(data) {
@@ -938,61 +960,41 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
             });
-            $('#fin_item_id').on('select2:select', function(e) {
-                //console.log(selected_itempromo);
-                selected_itempromo = $('#fin_item_id').select2('data')[0];
-                console.log(selected_itempromo);
-                //var data = e.params.data;
-                //selected_itempromo = data;
+            $('#select-item-disc').on('select2:select', function(e) {
+                selected_itemdisc = $('#select-item-disc').select2('data')[0];
+                console.log(selected_itemdisc);
             });
-            $('#fst_unit').on('select2:select', function(e) {
-                selected_unitdetail = $('#fst_unit').select2('data')[0];
-                console.log(selected_unitdetail);
+            $('#select-unit-disc').on('select2:select', function(e) {
+                selected_unitdisc = $('#select-unit-disc').select2('data')[0];
+                console.log(selected_unitdisc);
             });
-            $("#btn-add-item").click(function(event) {
+
+            // On Change disc % and disc value
+            $("#fdc_disc_persen").change(function(){
+                //alert ("fdc_percent_of_price_list");
+                $("#fdc_disc_value").val(0);
+                $("#fdc_disc_value").prop('readonly', true);
+            });
+
+            $("#fdc_disc_value").change(function(){
+                //alert ("fdc_percent_of_price_list");
+                $("#fdc_disc_persen").val(0);
+                $("#fdc_disc_persen").prop('readonly', true);
+            });
+
+            $("#btn-add-item-disc").click(function(event) {
                 event.preventDefault();
-                t = $('#tbl_item_details').DataTable();
+                t = $('#tbl_discount_promo').DataTable();
                 addRow = true;
-                var itemTerms = $("#fin_item_id").val();
-                if (itemTerms == null || itemTerms == "") {
-                    $("#fin_item_id_err").html("Please select item");
-                    $("#fin_item_id_err").show();
-                    addRow = false;
-                    return;
-                } else {
-                    $("#fin_item_id_err").hide();
-                }
-                var unitTerms = $("#fst_unit").val();              
-                if (unitTerms == null || unitTerms == "") {
-                    $("#fst_unit_err").html("Please select unit");
-                    $("#fst_unit_err").show();
-                    addRow = false;
-                    return;
-                } else {
-                    $("#fst_unit_err").hide();
-                }
-                var unitCombined = $("#fst_unit_gabungan").val();
-                if ($("#fbl_qty_gabungan").is(":checked")){
-                    if (unitCombined != selected_unitdetail.text ) {
-                        alert(selected_unitdetail.text);
-                        $("#fst_unit_err").html("Not match with unit terms");
-                        $("#fst_unit_err").show();
-                        addRow = false;
-                        return;
-                    } else {
-                        $("#fst_unit_err").hide();
-                    }  
-                }else{
-                    $("#fst_unit_err").hide();                    
-                }
                 t.row.add({
                     fin_id: 0,
                     fin_promo_id: 0,
-                    fst_item_type: $("#fst_item_type").val(),
-                    fin_item_id: selected_itempromo.id,
-                    fst_item_name: selected_itempromo.text,
-                    fst_unit: selected_unitdetail.text,
-                    fdb_qty: $("#fdb_qty").val(),
+                    fin_item_id: selected_itemdisc.id,
+                    fst_item_name: selected_itemdisc.text,
+                    fin_qty: $("#fin_qty").val(),
+                    fst_unit: selected_unitdisc.text,
+                    fdc_disc_persen: $("#fdc_disc_persen").val(),
+                    fdc_disc_value: $("#fdc_disc_value").val(),
                     action: action
                 }).draw(false);
             });
@@ -1029,6 +1031,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
             data.push({
                 name: "detailParticipants",
                 value: JSON.stringify(detailParticipants)
+            });
+            // save Discount per item promo
+            detaildiscItem = new Array();
+            b = $('#tbl_discount_promo').DataTable();
+            datas = b.data();
+            $.each(datas, function(i, v) {
+                detaildiscItem.push(v);
+            });
+            data.push({
+                name: "detaildiscItem",
+                value: JSON.stringify(detaildiscItem)
             });
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
@@ -1133,6 +1146,29 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 }
             });
         })
+
+        $("#fst_list_branch_id").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/Branch/get_Branch',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value) {
+                        data2.push({
+                            "id": value.fin_branch_id,
+                            "text": value.fst_branch_name
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+        });
     });
     function init_form(fin_promo_id) {
         //alert("Init Form");
@@ -1157,13 +1193,54 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
+
+                var fst_list_branch_id = resp.mspromo.fst_list_branch_id.split(",");
+				console.log(fst_list_branch_id);
+				$("#fst_list_branch_id").val(fst_list_branch_id).trigger('change');
+
+                if (resp.mspromo.fbl_disc_per_item == 1){
+					//alert("check");
+					$('#fbl_disc_per_item').iCheck('check');
+					$('#fbl_disc_per_item').iCheck('update');
+					
+				}else{
+					//alert("uncheck");
+					$('#fbl_disc_per_item').iCheck('uncheck');
+				}
+                if (resp.mspromo.fbl_promo_gabungan == 1){
+					//alert("check");
+					$('#fbl_promo_gabungan').iCheck('check');
+					$('#fbl_promo_gabungan').iCheck('update');
+					
+				}else{
+					//alert("uncheck");
+					$('#fbl_promo_gabungan').iCheck('uncheck');
+				}
+                if (resp.mspromo.fbl_qty_gabungan == 1){
+					//alert("check");
+					$('#fbl_qty_gabungan').iCheck('check');
+					$('#fbl_qty_gabungan').iCheck('update');
+					
+				}else{
+					//alert("uncheck");
+					$('#fbl_qty_gabungan').iCheck('uncheck');
+				}
+                if (resp.mspromo.fbl_is_multiples_prize == 1){
+					//alert("check");
+					$('#fbl_is_multiples_prize').iCheck('check');
+					$('#fbl_is_multiples_prize').iCheck('update');
+					
+				}else{
+					//alert("uncheck");
+					$('#fbl_is_multiples_prize').iCheck('uncheck');
+				}
                 $("#fdt_start").datepicker('update', dateFormat(resp.mspromo.fdt_start));
                 $("#fdt_end").datepicker('update', dateFormat(resp.mspromo.fdt_end));
                 // menampilkan data di select2
                 var newOption = new Option(resp.mspromo.fst_item_name, resp.mspromo.fin_promo_item_id, true, true);
                 // Append it to the select
                 $('#select-promo_item').append(newOption).trigger('change');
-                var newOption = new Option(resp.mspromo.fin_promo_unit, resp.mspromo.fin_promo_unit, true, true);
+                var newOption = new Option(resp.mspromo.fst_promo_unit, resp.mspromo.fst_promo_unit, true, true);
                 // Append it to the select
                 $('#select-promo_unit').append(newOption).trigger('change');
                 var newOption = new Option(resp.mspromo.fst_unit_gabungan, resp.mspromo.fst_unit_gabungan, true, true);
@@ -1196,6 +1273,24 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         fst_participant_type: val.fst_participant_type,
                         fin_customer_id: val.fin_customer_id,
                         customer_name: val.ParticipantName,
+                        action: action
+                    }).draw(false);
+                })
+
+                //populate discount per item promo
+                $.each(resp.promodiscItems, function(name, val) {
+                    console.log(val);
+                    //event.preventDefault();
+                    t = $('#tbl_discount_promo').DataTable();
+                    t.row.add({
+                        fin_id: val.fin_id,
+                        fin_promo_id: val.fin_promo_id,
+                        fin_item_id: val.fin_item_id,
+                        fst_item_name: val.fst_item_name,
+                        fin_qty: val.fin_qty,
+                        fst_unit: val.fst_unit,
+                        fdc_disc_persen: val.fdc_disc_persen,
+                        fdc_disc_value: val.fdc_disc_value,
                         action: action
                     }).draw(false);
                 })

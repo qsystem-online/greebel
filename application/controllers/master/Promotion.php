@@ -110,8 +110,11 @@ class Promotion extends MY_Controller
 
         $data = [
             "fst_promo_name" => $this->input->post("fst_promo_name"),
+            "fst_list_branch_id" => implode(",",$this->input->post("fst_list_branch_id")),
+            "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fdt_start" => dBDateFormat($this->input->post("fdt_start")),
             "fdt_end" => dBDateFormat($this->input->post("fdt_end")),
+            "fbl_disc_per_item" => ($this->input->post("fbl_disc_per_item") == null) ? 0 : 1,
             "fin_promo_item_id" => $this->input->post("fin_promo_item_id"),
             "fdb_promo_qty" => $this->input->post("fdb_promo_qty"),
             "fst_promo_unit" => $this->input->post("fst_promo_unit"),
@@ -119,11 +122,12 @@ class Promotion extends MY_Controller
             "fst_other_prize" => $this->input->post("fst_other_prize"),
             "fdc_other_prize_in_value" => $this->input->post("fdc_other_prize_in_value"),
             "fst_promo_type" => $this->input->post("fst_promo_type"),
+            "fbl_promo_gabungan" => ($this->input->post("fbl_promo_gabungan") == null) ? 0 : 1,
             "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
             "fdb_qty_gabungan" => $this->input->post("fdb_qty_gabungan"),
             "fst_unit_gabungan" => $this->input->post("fst_unit_gabungan"),
             "fdc_min_total_purchase" => $this->input->post("fdc_min_total_purchase"),
-            //"fst_promo_type" => $this->input->post("fst_promo_type"),
+            "fbl_is_multiples_prize" => ($this->input->post("fbl_is_multiples_prize") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
 
@@ -188,6 +192,33 @@ class Promotion extends MY_Controller
             }
         }
 
+        //Save discount per item promo
+
+        $this->load->model("Mspromodiscperitems_model");
+        $details = $this->input->post("detaildiscItem");
+        $details = json_decode($details);
+        foreach ($details as $promodiscitem) {
+            $data = [
+                "fin_promo_id" => $insertId,
+                "fin_item_id" => $promodiscitem->fin_item_id,
+                "fin_qty" => $promodiscitem->fin_qty,
+                "fst_unit" => $promodiscitem->fst_unit,
+                "fdc_disc_persen" => $promodiscitem->fdc_disc_persen,
+                "fdc_disc_value" => $promodiscitem->fdc_disc_value,
+                "fst_active" => 'A'
+            ];
+            $this->Mspromodiscperitems_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
+
         $this->db->trans_complete();
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
@@ -223,8 +254,11 @@ class Promotion extends MY_Controller
         $data = [
             "fin_promo_id" => $fin_promo_id,
             "fst_promo_name" => $this->input->post("fst_promo_name"),
+            "fst_list_branch_id" => implode(",",$this->input->post("fst_list_branch_id")),
+            "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fdt_start" => dBDateFormat($this->input->post("fdt_start")),
             "fdt_end" => dBDateFormat($this->input->post("fdt_end")),
+            "fbl_disc_per_item" => ($this->input->post("fbl_disc_per_item") == null) ? 0 : 1,
             "fin_promo_item_id" => $this->input->post("fin_promo_item_id"),
             "fdb_promo_qty" => $this->input->post("fdb_promo_qty"),
             "fst_promo_unit" => $this->input->post("fst_promo_unit"),
@@ -232,11 +266,12 @@ class Promotion extends MY_Controller
             "fst_other_prize" => $this->input->post("fst_other_prize"),
             "fdc_other_prize_in_value" => $this->input->post("fdc_other_prize_in_value"),
             "fst_promo_type" => $this->input->post("fst_promo_type"),
+            "fbl_promo_gabungan" => ($this->input->post("fbl_promo_gabungan") == null) ? 0 : 1,
             "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
             "fdb_qty_gabungan" => $this->input->post("fdb_qty_gabungan"),
             "fst_unit_gabungan" => $this->input->post("fst_unit_gabungan"),
             "fdc_min_total_purchase" => $this->input->post("fdc_min_total_purchase"),
-            "fst_promo_type" => $this->input->post("fst_promo_type"),
+            "fbl_is_multiples_prize" => ($this->input->post("fbl_is_multiples_prize") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
 
@@ -263,7 +298,7 @@ class Promotion extends MY_Controller
                 "fin_promo_id" => $fin_promo_id,
                 "fst_item_type" => $promoitem->fst_item_type,
                 "fin_item_id" => $promoitem->fin_item_id,
-                "fin_qty" => $promoitem->fin_qty,
+                "fdb_qty" => $promoitem->fdb_qty,
                 "fst_unit" => $promoitem->fst_unit,
                 "fst_active" => 'A'
             ];
@@ -293,6 +328,34 @@ class Promotion extends MY_Controller
                 "fst_active" => 'A'
             ];
             $this->mspromoitemscustomer_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
+
+        //Edit save discount per item promo
+
+        $this->load->model("Mspromodiscperitems_model");
+        $this->Mspromodiscperitems_model->deleteByHeaderId($fin_promo_id);
+        $details = $this->input->post("detaildiscItem");
+        $details = json_decode($details);
+        foreach ($details as $promodiscitem) {
+            $data = [
+                "fin_promo_id" => $fin_promo_id,
+                "fin_item_id" => $promodiscitem->fin_item_id,
+                "fin_qty" => $promodiscitem->fin_qty,
+                "fst_unit" => $promodiscitem->fst_unit,
+                "fdc_disc_persen" => $promodiscitem->fdc_disc_persen,
+                "fdc_disc_value" => $promodiscitem->fdc_disc_value,
+                "fst_active" => 'A'
+            ];
+            $this->Mspromodiscperitems_model->insert($data);
             $dbError  = $this->db->error();
             if ($dbError["code"] != 0) {
                 $this->ajxResp["status"] = "DB_FAILED";

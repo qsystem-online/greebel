@@ -261,6 +261,16 @@ class Branch extends MY_Controller
         $this->json_output();
     }
 
+    public function get_Branch()
+    {
+        $term = $this->input->get("term");
+        $ssql = "select * from msbranches where fst_branch_name like ? order by fst_branch_name";
+        $qr = $this->db->query($ssql, ['%' . $term . '%']);
+        $rs = $qr->result();
+
+        $this->json_output($rs);
+    }
+
     public function report_branch()
     {
         $this->load->library('pdf');
