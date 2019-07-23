@@ -12,7 +12,7 @@ class MY_Controller extends CI_Controller
 	{
 		parent::__construct();
 
-		$this->load->model("MSBranches_model");
+		$this->load->model("Msbranches_model");
 
 		$this->lang->load("general", "english");
 
