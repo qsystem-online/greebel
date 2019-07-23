@@ -110,8 +110,11 @@ class Promotion extends MY_Controller
 
         $data = [
             "fst_promo_name" => $this->input->post("fst_promo_name"),
+            "fst_list_branch_id" => implode(",",$this->input->post("fst_list_branch_id")),
+            "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fdt_start" => dBDateFormat($this->input->post("fdt_start")),
             "fdt_end" => dBDateFormat($this->input->post("fdt_end")),
+            "fbl_disc_per_item" => ($this->input->post("fbl_disc_per_item") == null) ? 0 : 1,
             "fin_promo_item_id" => $this->input->post("fin_promo_item_id"),
             "fdb_promo_qty" => $this->input->post("fdb_promo_qty"),
             "fst_promo_unit" => $this->input->post("fst_promo_unit"),
@@ -119,11 +122,12 @@ class Promotion extends MY_Controller
             "fst_other_prize" => $this->input->post("fst_other_prize"),
             "fdc_other_prize_in_value" => $this->input->post("fdc_other_prize_in_value"),
             "fst_promo_type" => $this->input->post("fst_promo_type"),
+            "fbl_promo_gabungan" => ($this->input->post("fbl_promo_gabungan") == null) ? 0 : 1,
             "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
             "fdb_qty_gabungan" => $this->input->post("fdb_qty_gabungan"),
             "fst_unit_gabungan" => $this->input->post("fst_unit_gabungan"),
             "fdc_min_total_purchase" => $this->input->post("fdc_min_total_purchase"),
-            //"fst_promo_type" => $this->input->post("fst_promo_type"),
+            "fbl_is_multiples_prize" => ($this->input->post("fbl_is_multiples_prize") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
 
@@ -250,8 +254,11 @@ class Promotion extends MY_Controller
         $data = [
             "fin_promo_id" => $fin_promo_id,
             "fst_promo_name" => $this->input->post("fst_promo_name"),
+            "fst_list_branch_id" => implode(",",$this->input->post("fst_list_branch_id")),
+            "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fdt_start" => dBDateFormat($this->input->post("fdt_start")),
             "fdt_end" => dBDateFormat($this->input->post("fdt_end")),
+            "fbl_disc_per_item" => ($this->input->post("fbl_disc_per_item") == null) ? 0 : 1,
             "fin_promo_item_id" => $this->input->post("fin_promo_item_id"),
             "fdb_promo_qty" => $this->input->post("fdb_promo_qty"),
             "fst_promo_unit" => $this->input->post("fst_promo_unit"),
@@ -259,11 +266,12 @@ class Promotion extends MY_Controller
             "fst_other_prize" => $this->input->post("fst_other_prize"),
             "fdc_other_prize_in_value" => $this->input->post("fdc_other_prize_in_value"),
             "fst_promo_type" => $this->input->post("fst_promo_type"),
+            "fbl_promo_gabungan" => ($this->input->post("fbl_promo_gabungan") == null) ? 0 : 1,
             "fbl_qty_gabungan" => ($this->input->post("fbl_qty_gabungan") == null) ? 0 : 1,
             "fdb_qty_gabungan" => $this->input->post("fdb_qty_gabungan"),
             "fst_unit_gabungan" => $this->input->post("fst_unit_gabungan"),
             "fdc_min_total_purchase" => $this->input->post("fdc_min_total_purchase"),
-            "fst_promo_type" => $this->input->post("fst_promo_type"),
+            "fbl_is_multiples_prize" => ($this->input->post("fbl_is_multiples_prize") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
 

@@ -12,7 +12,10 @@ class Mspromo_model extends MY_Model
 
     public function getDataById($fin_promo_id)
     {
-        $ssql = "select a.*,b.fst_item_name from " . $this->tableName . " a left join msitems b on a.fin_promo_item_id = b.fin_item_id where a.fin_promo_id = ? and a.fst_active = 'A'";
+        $ssql = "select a.*,b.fst_item_name,c.fst_branch_name from " . $this->tableName . " a 
+        left join msitems b on a.fin_promo_item_id = b.fin_item_id
+        left join msbranches c on a.fst_list_branch_id = c.fin_branch_id  
+        where a.fin_promo_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rwPromo = $qr->row();
 
