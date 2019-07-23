@@ -188,6 +188,33 @@ class Promotion extends MY_Controller
             }
         }
 
+        //Save discount per item promo
+
+        $this->load->model("Mspromodiscperitems_model");
+        $details = $this->input->post("detaildiscItem");
+        $details = json_decode($details);
+        foreach ($details as $promodiscitem) {
+            $data = [
+                "fin_promo_id" => $insertId,
+                "fin_item_id" => $promodiscitem->fin_item_id,
+                "fin_qty" => $promodiscitem->fin_qty,
+                "fst_unit" => $promodiscitem->fst_unit,
+                "fdc_disc_persen" => $promodiscitem->fdc_disc_persen,
+                "fdc_disc_value" => $promodiscitem->fdc_disc_value,
+                "fst_active" => 'A'
+            ];
+            $this->Mspromodiscperitems_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
+
         $this->db->trans_complete();
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
@@ -263,7 +290,7 @@ class Promotion extends MY_Controller
                 "fin_promo_id" => $fin_promo_id,
                 "fst_item_type" => $promoitem->fst_item_type,
                 "fin_item_id" => $promoitem->fin_item_id,
-                "fin_qty" => $promoitem->fin_qty,
+                "fdb_qty" => $promoitem->fdb_qty,
                 "fst_unit" => $promoitem->fst_unit,
                 "fst_active" => 'A'
             ];
@@ -293,6 +320,34 @@ class Promotion extends MY_Controller
                 "fst_active" => 'A'
             ];
             $this->mspromoitemscustomer_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
+
+        //Edit save discount per item promo
+
+        $this->load->model("Mspromodiscperitems_model");
+        $this->Mspromodiscperitems_model->deleteByHeaderId($fin_promo_id);
+        $details = $this->input->post("detaildiscItem");
+        $details = json_decode($details);
+        foreach ($details as $promodiscitem) {
+            $data = [
+                "fin_promo_id" => $fin_promo_id,
+                "fin_item_id" => $promodiscitem->fin_item_id,
+                "fin_qty" => $promodiscitem->fin_qty,
+                "fst_unit" => $promodiscitem->fst_unit,
+                "fdc_disc_persen" => $promodiscitem->fdc_disc_persen,
+                "fdc_disc_value" => $promodiscitem->fdc_disc_value,
+                "fst_active" => 'A'
+            ];
+            $this->Mspromodiscperitems_model->insert($data);
             $dbError  = $this->db->error();
             if ($dbError["code"] != 0) {
                 $this->ajxResp["status"] = "DB_FAILED";

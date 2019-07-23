@@ -31,10 +31,15 @@ class Mspromo_model extends MY_Model
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rsPromoParticipants = $qr->result();
 
+        $ssql = "select a.*,b.fst_item_name from mspromodiscperitems a left join msitems b on a.fin_item_id = b.fin_item_id where a.fin_promo_id = ? and a.fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$fin_promo_id]);
+        $rwPromodiscItems = $qr->result();
+
         $data = [
             "mspromo" => $rwPromo,
             "promoTerms" => $rsPromoTerms,
             "promoParticipants" => $rsPromoParticipants,
+            "promodiscItems" => $rwPromodiscItems,
         ];
 
         return $data;
@@ -55,7 +60,7 @@ class Mspromo_model extends MY_Model
         ];
 
         $rules[] = [
-            'field' => 'fst_satuan_gabungan',
+            'field' => 'fst_unit_gabungan',
             'label' => 'Unit',
             'rules' => 'required',
             'errors' => array(

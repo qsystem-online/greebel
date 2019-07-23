@@ -76,7 +76,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <div class="input-group-addon">
                                         <i class="fa fa-calendar"></i>
                                     </div>
-                                    <input type="text" class="form-control pull-right datepicker" id="fdt_start_date" name="fdt_start_date" />
+                                    <input type="text" class="form-control pull-right datepicker" autocomplete="off" id="fdt_start_date" name="fdt_start_date" />
                                 </div>
                                 <div id="fdt_start_date_err" class="text-danger"></div>
                                 <!-- /.input group -->
@@ -87,7 +87,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <div class="input-group-addon">
                                         <i class="fa fa-calendar"></i>
                                     </div>
-                                    <input type="text" class="form-control pull-right datepicker" id="fdt_end_date" name="fdt_end_date" />
+                                    <input type="text" class="form-control pull-right datepicker" autocomplete="off" id="fdt_end_date" name="fdt_end_date" />
                                 </div>
                                 <div id="fdt_end_date_err" class="text-danger"></div>
                                 <!-- /.input group -->
@@ -143,7 +143,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <div class="input-group-addon">
                                         <i class="fa fa-calendar"></i>
                                     </div>
-                                    <input type="text" class="form-control pull-right datepicker" id="fdt_eta_date" name="fdt_eta_date" />
+                                    <input type="text" class="form-control pull-right datepicker" autocomplete="off" id="fdt_eta_date" name="fdt_eta_date" />
                                 </div>
                                 <div id="fdt_eta_date_err" class="text-danger"></div>
                                 <!-- /.input group -->
