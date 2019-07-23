@@ -336,9 +336,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
-				$("#fdt_date").datepicker('update', dateFormat(resp.msCurrDetails.Date));
+				$("#fdt_date").datepicker('update', dateFormat(resp.ms_CurrDetails.fdt_date));
 		
-				CurrenciesRateDetails = resp.msCurrDetails;
+				CurrenciesRateDetails = resp.ms_CurrDetails;
 				$.each(CurrenciesRateDetails, function(idx, detail){
 					data = {
 						//recid:detail.recid,

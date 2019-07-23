@@ -21,7 +21,7 @@ class Mscurrencies_model extends MY_Model{
 
         $data = [
             "ms_Currency" => $rwCurrency,
-            "msCurrDetails" => $rsCurrDetails
+            "ms_CurrDetails" => $rsCurrDetails
         ];
 
         return $data;
