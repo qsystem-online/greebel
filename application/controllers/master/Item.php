@@ -451,19 +451,33 @@ class Item extends MY_Controller
         $this->json_output($rs);
     }
 
-    public function get_selling_unit($fin_item_id){
-        $this->load->model("msitemunitdetails_model");
-        $units = $this->msitemunitdetails_model->getSellingListUnit($fin_item_id);
-        $this->json_output($units);
-    }
+
     
-    public function get_selling_price($fin_item_id,$fst_unit,$fin_customer_id){
-        $sellingPrice = $this->Msitems_model->getSellingPrice($fin_item_id,$fst_unit,$fin_customer_id);
+    public function get_selling_unit($itemId,$custId,$warehouseId){
+        $this->load->model("msitemunitdetails_model");
+        $this->load->model("trinventory_model");
+
+        $units = $this->msitemunitdetails_model->getSellingListUnit($itemId);
+        $result = [];
+        foreach($units as $unit){
+            $sellingPrice = $this->msitems_model->getSellingPrice($itemId,$unit->fst_unit,$custId);
+            $result[] = (object) [
+                "fst_unit"=>$unit->fst_unit,
+                "sellingPrice" => $sellingPrice,
+                "real_stock" => $this->trinventory_model->getStock($warehouseId,$itemId,$unit->fst_unit),
+                "marketing_stock" => $this->trinventory_model->getMarketingStock($warehouseId,$itemId,$unit->fst_unit)
+            ];
+        }
+        //$this->json_output($units);
+        $this->json_output($result);
+    }
+    public function get_selling_price($itemId,$unit,$custId){
+        $sellingPrice = $this->msitems_model->getSellingPrice($itemId,$unit,$custId);
         $resp = [
             "sellingPrice" => $sellingPrice,
-            "fin_item_id"=> $fin_item_id,
-            "fst_unit" =>$fst_unit,
-            "fin_customer_id" => $fin_customer_id
+            "fin_item_id"=> $itemId,
+            "fst_unit" =>$unit,
+            "fin_customer_id" => $custId
         ];
         $this->json_output($resp);
     }

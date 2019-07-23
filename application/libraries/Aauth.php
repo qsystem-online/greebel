@@ -21,7 +21,6 @@ class Aauth {
 		}
 		
 	}
-
 	public function is_login(){		
 		if ($this->user == null){
 			return false;
@@ -59,4 +58,8 @@ class Aauth {
 		return true;		
 	}
 
+	public function get_active_branch_id(){
+		return (int) $this->CI->session->userdata('active_branch_id');
+
+	}
 }

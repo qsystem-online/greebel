@@ -65,6 +65,19 @@
         }
     }
 
+    if(!function_exists('getGLConfig')){
+        function getGLConfig($key){
+            $CI = & get_instance();
+            $ssql ="select fst_glaccount_code from msconfigjurnal where fst_key = ? and fbl_active = true";
+            $qr = $CI->db->query($ssql,[$key]);
+            $rw = $qr->row();
+            if ($rw){
+                return $rw->fst_glaccount_code;
+            }
+            return null;
+        }
+    }
+
     if (!function_exists('getDefaultCurrency')){
         function getDefaultCurrency(){
             return [
@@ -95,4 +108,25 @@
         }
     }
 
+    if (!function_exists('exist_array_replace')){
+        //merubah isi nilai array 1 sesuai dengan array2
+        function exist_array_replace($arr1,$arr2){
+            foreach($arr1 as $k => $v){
+                if ( isset($arr2[$k])){
+                    $arr1[$k] = $arr2[$k];
+                }
+            }
+            return $arr1;
+        }
+    }
+
+    if (!function_exists('add_key_array_object')){
+        function add_key_array_object($arr,$key){
+            $tmpArray = [];
+            foreach($arr as $obj){
+                $tmpArray[$obj->$key] = $obj;
+            }
+            return $tmpArray;
+        }
+    }
 

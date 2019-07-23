@@ -61,13 +61,16 @@ if ( ! function_exists('lang'))
 	 * @param	array	$attributes	Any additional HTML attributes
 	 * @return	string
 	 */
-	function lang($line, $for = '', $attributes = array())
+	function lang($line,$arrValue=[], $for = '', $attributes = array())
 	{
 		$cekLine = strtolower($line);
 
 		$cekLine = get_instance()->lang->line($cekLine);
 		if ($cekLine === FALSE){
 			$cekLine = $line;
+		}
+		if (sizeof($arrValue) > 0){
+			$cekLine = vsprintf($cekLine,$arrValue);
 		}
 
 		if ($for !== '')

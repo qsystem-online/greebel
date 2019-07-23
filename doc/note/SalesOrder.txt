@@ -1,81 +1,102 @@
-Sales Order
-1.Cek Stock Pada saat item di pilih
-2.Pada saat save cek Plafon/Credit Limit
-  * credit limit di cek berdasarkan, total nilai faktur yang outstanding + SO saat ini tidak boleh melebihi credit limitnya,
-    bila melebihi membutuhkan autorisasi untuk dapat melanjutkan proses
-  * Informasi nilai sisa credit limit, list faktur yang masih outstanding ditampilkan ke user
-  * Informasikan bila ada faktur jatuh tempo yang belum di bayar, butuh autorisasi
+SALES ORDER
+============================
+Create:
+  * Tanggal transaksi tidak boleh lebih kecil dr tgl lock_transaction_date di config
+  * Info Real Stock & Marketing Stock pada saat item di pilih
+    * Info Real stock, qty di kartu stock 
+	  * Info Marketing stock : qty di (kartu stock - qty di so outstanding ) + qty di po
+  * Harga hanya bisa di rubah bila isinya 0
+  * Authorize transaksi bila stock tidak mencukupi
+  * Authorize transaksi bila credit limit tidak mencukupi
+    * credit limit di cek berdasarkan, total nilai faktur yang outstanding + SO saat ini tidak boleh melebihi credit limitnya
+    * Informasi nilai sisa credit limit, list faktur yang masih outstanding ditampilkan ke user
+    * Informasikan bila ada faktur jatuh tempo yang belum di bayar, butuh autorisasi
+  * Penambahan Promo item
+    * Untuk Hadiah promo berupa cashback, maka diterbitkan berupa voucher yang dapat di gunakan di next transaksi, 
+      voucher hanya dapat digunakan bila status transaksi "ACTIVATED"
+    
+    * hadiah barang lain, hadiah barang lain item id 0, Rp.1, dan disc 100%
+    * promo disc peritem hanya berlaku untuk item yang fbl_is_promo_disc = true, untuk yang false menggunakan disc dari form
+  * SO yang sudah ada surat jalan tidak boleh di edit nilai qty lebih kecil dr sj
+  * add doument dari applikasi edoc
+  * Jurnal transaksi bila terdapat DP, jurnal dilakukan bila status transaksi APPROVED - bila transalski berstatus 
+    suspend dikarenakan transaksi butuh di authorize, maka jurnal dilakukan setelah proses authorize selesai.
+    Piutang dangang pada Uang muka 
+    (pada saat pembayaran bank pada uang muka)
 
-3.Penambahan Promo item
-
-
-4. SO yang sudah ada surat jalan tidak boleh di edit nilai qty lebih kecil dr sj
-untuk sales area(kota, gabungan beberapa kot), region(prov , gab prov),national
-popup bila list surat jalan yang sudah ada
-
-so detail tambahin item name
-
-connect to to edoc
-
-bila ada DP lakukan Jurnal
-Piutang dangang pada Uang muka
-pada saat pembayaran bank pada uang muka
-
-
-penawaran harga -> SO
-=>monitoring status out,hold
-	Info stock, qty di kartu stock 
-	Info stock marketing : qty di (kartu stock - qty di so outstanding ) + qty di po
-
-
-
-=> surat jalan
-so kalau uang muka belum dibayar tidak boleh di proses
-
-
-
-Kartu Stock, tgl, type transaksi, no transaksi, 
-3	finInventoryID	int	4	0	
-0	fstBranchCode	nvarchar	3	1	
-0	fdtTrxDate	datetime	8	1	
-0	fstTrxCode	nvarchar	2	1	
-0	fstTrxRefNo	nvarchar	25	1	
-0	fstReferensi	nvarchar	100	1	
-0	fstPSCode	nvarchar	20	1	
-0	fsmQtyOpening	float	8	1	
-0	fsmQtyIn	float	8	1	
-0	fsmQtyOut	float	8	1	
-0	fstBasicMeasurement	nvarchar	10	1	
-0	fmnSellingNetto	money	8	1	
-0	fmnValueIn	money	8	1	
-0	fmnAvarageCost	money	8	1	
-0	fstLocationCode	nvarchar	3	1	
+Edit:
+============================
+* Tanggal transaksi tidak boleh lebih kecil dr tgl lock_transaction_date di config
+* Tanggal transaksi tidak boleh di rubah lebih kecil dr tgl lock_transaction_date di config
+* Customer tidak dapat di rubah
+* transaksi yang fbl_is_closed true, tidak dapat di edit
+* transaksi yang yang ada promonya tidak bisa diedit bila sudah ada surat jalannya
+* Qty Detail hanya bisa dirubah bila  perubahan lebih besar sama dengan denga nilai Qty di surat jalannya
+* Lakukan proses ulang promo item, bila promo item telah diambil atau digunakan maka perubahan tidak dapat di simpan
+* Lakukan Proses authorize baru, untuk semua transaksi authorize terkait yang belum berstatus approved, 
+  
+  maka akan di void dan di ganti dengan proses authorized yang baru
+* Revisi Jurnal bila terdapat DP dan fst_status telah active
 
 
+Delete:
+============================
+* transaksi yang fbl_is_closed true, tidak dapat di hapus
+* Bila sudah terdapat surat jalan transaksi tidak dapat di hapus.
+* Bila transaksi diperlukan proses authorization, maka transaksi tidak dapat di hapus bila sudah ada yang melakukan authorized
+* Bila Promo telah diambil atau digunakan transaksi tidak dapat di hapus.
+
+
+Close Manual:
+============================
+* Bila terdapat promo item pada transaksi SO, maka hitung ulang apakan promo item tersebut telah memenuhi syarat pada transaksi
+  bila belum memenuhu syarat maka tampilkan warning.
+
+
+Jurnal :
+============================
+Sales: 1000
+disc: 200
+ppn:80
+total: 880
+dp: 100
+sisa : 780
+
+pada saat create so : 
+	piutang (D) -> uang muka (K) : 100
+	
+pada saat uang muka dibayar :
+	Bank -> Piutang : 100
+	
+pada saat terbit faktur:
+	Piutang(D):Sales -DISC -DP + PPN :780	
+	DISC : 200
+    UM: 100	
+	-> Sales:1000
+	   PPN: 80
+		
+pada saat faktur di bayar:
+	Bank : 780(700)
+	**Potongan Pembayaran(80)
+	**Biaya Admin bank(X)
+	-> Piutang :780
+		**Biaya Pengiriman
+		** Denda
+		
+EXPAMPLE Retur : 100;
+
+Retur Penjualan:
+	Retur Penjualan: 100
+	PPN : 8
+	-> Piutang :
+		DISC : 20
+
+AKTIVA = PASIVA + MODAL
+D       =   K
 
 
 
 
-buku besar / 
-
-
-promo Item
-cashback:dibayar kemudia hari, berupa voucer cashback
-disc per item
-hadiah barang lain:
-nilai dari hadiah barang lain item id 0 rp.1 disc 100%, tentukan valuenya
-participan, relation, relation group, member group
-
-bila participan tidak di isi berarti semua ok
-bila item tidak diisi berarti semua item ok
-
-
-
-
-unit detail item
-tabah field retail harus cuma satu
-
-log action untu mencatat perubahan data
-
-
- 
+Other Notes :
+============================
+SO kalau uang muka belum dibayar tidak boleh di proses Surat jalan, maupun voucher cashback (bila ada)

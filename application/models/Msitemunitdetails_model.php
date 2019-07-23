@@ -76,7 +76,9 @@ class Msitemunitdetails_model extends MY_Model
         $rw = $qr->result();
         return $rw;
     }
-    public function getConversionUnit($fin_item_id,$qty,$unitFrom,$unitTo){
+
+
+    public function getConversionUnit($fin_item_id,$qty , $unitFrom,$unitTo){
         $ssql = "Select * from msitemunitdetails where fin_item_id = ? and fst_unit = ? and fst_active ='A'";
         $qr = $this->db->query($ssql,[$fin_item_id,$unitFrom]);
         $rwFrom = $qr->row();
