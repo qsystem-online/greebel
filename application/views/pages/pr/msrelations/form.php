@@ -431,7 +431,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-footer">
-				<button id="btn-details" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
+				<button id="btn-details-shipping" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
 				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
 			</div>
 		</div>
@@ -561,7 +561,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 			});
 
-			$("#tbl_shipping_details").DataTable({
+			/*$("#tbl_shipping_details").DataTable({
 				searching: false,
 				paging: false,
 				info: false,
@@ -572,16 +572,64 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					{"title": "<?=lang("Shipping Address")?>","width": "20%",sortable:false,data: "fst_shipping_address", visible: true},
 					{"title" : "Action","width": "15%",data:"action",sortable:false,className:'dt-body-center text-center'},
 				],
+			});*/
+
+			$('#tbl_shipping_details').on('preXhr.dt', function ( e, settings, data ) {
+				//add aditional data post on ajax call
+				data.sessionId = "TEST SESSION ID";
+			}).DataTable({
+				columns:[
+					//{"title": "<?=lang("Relation Nama")?>","width": "15%",data: "fin_relation_id",visible: false},
+					{"title": "<?=lang("Shipping Address ID")?>","width": "15%",sortable:false,data: "fin_shipping_address_id",visible: true},
+					{"title": "<?=lang("Name")?>","width": "20%",sortable:false,data: "fst_name",visible: true},
+					{"title": "<?=lang("Shipping Address")?>","width": "20%",sortable:false,data: "fst_shipping_address", visible: true},
+					{"title" : "Action","width": "15%",data:"action",sortable:false,className:'dt-body-center text-center'},
+				],
+				processing: true,
+				serverSide: false,
+				searching: false,
+				lengthChange: false,
+				paging: false,
+				info:false,
+			}).on('draw',function(){
+				$('.btn-delete').confirmation({
+					//rootSelector: '[data-toggle=confirmation]',
+					rootSelector: '.btn-delete',
+					// other options
+				});
+				$(".btn-delete").click(function(event){
+					t = $('#tbl_shipping_details').DataTable();
+					var trRow = $(this).parents('tr');
+					t.row(trRow).remove().draw();
+				});
+				$(".btn-edit").click(function(event){
+					event.preventDefault();
+					$("#mdlShippingDetails").modal({
+						backdrop:"static",
+					});
+
+					t = $('#tbl_shipping_details').DataTable();
+					var trRow = $(this).parents('tr');
+
+					mode_shipp_detail = "EDIT";
+					edited_shipp_detail = t.row(trRow);
+					row = edited_shipp_detail.data();	
+
+					//$("#fin_relation_id").val(row.fin_relation_id);
+					$("#fin_shipping_address_id").val(row.fin_shipping_address_id);
+					$("#fst_name").val(row.fst_name);
+					$("#fst_shipping_address").val(row.fst_shipping_address);
+				});
 			});
 
-			$("#btn-add-detail").click(function(event){
+			$("#btn-shipping").click(function(event){
 				event.preventDefault();
 				mode_shipp_detail = "ADD";
 				$("#mdlShippingDetails").modal({
 					backdrop:"static",
 				});
 			})
-			$("#btn-details").click(function(event) {
+			$("#btn-details-shipping").click(function(event) {
 				event.preventDefault();
 				$('#mdlShippingDetails').modal('show');
 				
@@ -658,7 +706,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//var formData = new FormData($('form')[0])
 			$.ajax({
 				type: "POST",
-				enctype: 'multipart/form-data',
+				//enctype: 'multipart/form-data',
 				url: url,
 				data: data,
 				timeout: 600000,
@@ -1181,18 +1229,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$('#select-warehouse').append(newOption).trigger('change');
 
 				// POPULATE SHIPPING DETAILS \\
-				$.each(resp.ms_shipping, function(name, val) {
+				/*$.each(resp.ms_shipping, function(name, val) {
                     console.log(val);
                     //event.preventDefault();
                     t = $('#tbl_shipping_details').DataTable();
                     t.row.add({
                         fin_shipping_address_id: val.fin_shipping_address_id,
-                        fst_name: val.fst_name,
                         fin_relation_id: val.fin_relation_id,
+						fst_name: val.fst_name,
+						fst_area_code: val.fst_kode,
                         fst_shipping_address: val.fst_shipping_address,
                         action: action
                     }).draw(false);
-                })
+				})*/
+				
+				ShippingAddress = resp.ms_shipping;
+				$.each(ShippingAddress, function(idx, detail){
+					data = {
+						//fin_relation_id:detail.fin_relation_id,
+						fin_shipping_address_id:detail.fin_shipping_address_id,
+						fst_name:detail.fst_name,
+						fst_area_code:detail.fst_kode,
+						fst_shipping_address:detail.fst_shipping_address,
+						action: action,
+					}
+					t = $('#tbl_shipping_details').DataTable();			
+					t.row.add(data).draw(false);
+				});
 			},
 
 			error: function (e) {

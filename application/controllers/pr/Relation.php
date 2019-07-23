@@ -163,7 +163,7 @@ class Relation extends MY_Controller{
         $details = json_decode($details);
         foreach ($details as $item) {
             $data = [
-                "fin_relation_id" => $insertId,
+				"fin_relation_id" => $insertId,
 				"fin_shipping_address_id" => $item->fin_shipping_address_id,
 				"fst_name" => $item->fst_name,
                 "fst_area_code" => $item->fst_kode,
@@ -257,7 +257,7 @@ class Relation extends MY_Controller{
 
 		// SAVE SHIPPING DETAILS \\
 		$this->load->model("msshippingaddress_model");
-        $this->msshippingaddress_model->deleteByHeaderId($fin_shipping_address_id);
+        $this->msshippingaddress_model->deleteByHeaderId($fin_relation_id);
         $details = $this->input->post("detail");
         $details = json_decode($details);
         foreach ($details as $item) {
@@ -527,7 +527,11 @@ class Relation extends MY_Controller{
         $this->json_output();
 	}
 	
-	public function getShippingAddress(){
-		$this->load->model('msshippingaddress_model');
+	public function get_shipping_address($fin_relation_id) {
+		$term = $this->input->get("term");
+		$ssql = "SELECT * msshippingaddress where fst_name like ? order by fin_shipping_address_id";
+		$qr = $this->db->query($ssql,['%' . $term . '%']);
+		$rs = $qr->result();
+		$this->json_output($rs);
 	}
 }
