@@ -183,6 +183,130 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </section>
 </div>
 
+<div id="mdlbranchDetail" class="modal fade in" role="dialog" style="display: none">
+    <div class="modal-dialog" style="display:table;width:50%;min-width:350px;max-width:100%">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title"><?= lang("Add Branch") ?></h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal ">
+                    <div class="form-group">
+                        <label for="fin_branch_id" class="col-md-3 control-label"><?= lang("Branch") ?></label>
+                        <div class="col-md-9">
+                            <select class="select2 form-control" id="fin_branch_id" style="width:100%"></select>
+                            <span id="fin_branch_id_err" class="text-danger"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-add-branch-detail" type="button" class="btn btn-primary">Add</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var action = '<a class="btn-edit" href="#" data-toggle="" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp; <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+        $(function() {
+            $("#btn-add-preorder-details").click(function(event) {
+                event.preventDefault();
+                $("#mdlbranchDetail").modal('show');
+            });
+            $("#tbl_preorder_details").DataTable({
+                searching: false,
+                paging: false,
+                info: false,
+                columns: [{
+                        "title": "<?= lang("ID ") ?>",
+                        "width": "5%",
+                        data: "fin_rec_id",
+                        visible: false,
+                    },
+                    {
+                        "title": "<?= lang("Promo ID ") ?>",
+                        "width": "5%",
+                        data: "fin_preorder_id",
+                        visible: false,
+                    },
+                    {
+                        "title": "<?= lang("Branch ID") ?>",
+                        "width": "5%",
+                        data: "fin_branch_id",
+                        visible: true,
+                    },
+                    {
+                        "title": "<?= lang("Branch Name ") ?>",
+                        "width": "40%",
+                        data: "fst_branch_name",
+                        visible: true,
+                    },
+                    {
+                        "title": "<?= lang("Action ") ?>",
+                        "width": "5%",
+                        render: function(data, type, row) {
+                            action = "<a class='btn-delete-branch-detail edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+                            return action;
+                        },
+                        "sortable": false,
+                        "className": "dt-body-center text-center"
+                    }
+                ],
+            });
+            $("#tbl_preorder_details").on("click", ".btn-delete-branch-detail", function(event) {
+                event.preventDefault();
+                t = $("#tbl_preorder_details").DataTable();
+                var trRow = $(this).parents('tr');
+                t.row(trRow).remove().draw();
+            });
+            $("#fin_branch_id").select2({
+                width: '100%',
+                ajax: {
+                    url: '<?= site_url() ?>master/Branch/get_Branch',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        data2 = [];
+                        $.each(data, function(index, value) {
+                            data2.push({
+                                "id": value.fin_branch_id,
+                                "text": value.fst_branch_name
+                            });
+                        });
+                        console.log(data2);
+                        return {
+                            results: data2
+                        };
+                    },
+                    cache: true,
+                }
+            });
+            
+            var selected_branch;
+            $('#fin_branch_id').on('select2:select', function(e) {
+                console.log(selected_branch);
+                var data = e.params.data;
+                selected_branch = data;
+            });
+            $("#btn-add-branch-detail").click(function(event) {
+                event.preventDefault();
+                t = $('#tbl_preorder_details').DataTable();
+                addRow = true;
+                t.row.add({
+                    fin_rec_id: 0,
+                    fin_preorder_id: 0,
+                    fin_branch_id: selected_branch.id,
+                    fst_branch_name: selected_branch.text,
+                    action: action
+                }).draw(false);
+            });
+        });
+    </script>
+</div>
+
 <script type="text/javascript">
     $(function() {
         <?php if ($mode == "EDIT") { ?>
@@ -192,16 +316,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
             event.preventDefault();
             data = $("#frmPreorder").serializeArray();
             //data = new FormData($("#frmPreorder")[0]);
-            /*detail = new Array();
+            detail = new Array();
             t = $('#tbl_preorder_details').DataTable();
             datas = t.data();
             $.each(datas, function(i, v) {
                 detail.push(v);
-            });*/
-            /*data.push({
-                name: "detail",
+            });
+            data.push({
+                name: "branchDetail",
                 value: JSON.stringify(detail)
-            });*/
+            });
             /*data.append("detail",JSON.stringify(detail));*/
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
@@ -400,6 +524,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
+                $("#fdt_start_date").datepicker('update', dateFormat(resp.preOrder.fdt_start_date));
+                $("#fdt_end_date").datepicker('update', dateFormat(resp.preOrder.fdt_end_date));
+                $("#fdt_eta_date").datepicker('update', dateFormat(resp.preOrder.fdt_eta_date));
                 // menampilkan data di select2
                 var newOption = new Option(resp.preOrder.fst_item_maingroup_name, resp.preOrder.fin_item_maingroup_id, true, true);
                 // Append it to the select
@@ -417,24 +544,18 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 // Append it to the select
                 $('#select-ItemId').append(newOption).trigger('change');
                 //populate Pre-Order branch Detail
-                /*$.each(resp.preorderDetail, function(name, val) {
+                $.each(resp.preorderDetail, function(name, val) {
                     console.log(val);
                     //event.preventDefault();
                     t = $('#tbl_preorder_details').DataTable();
                     t.row.add({
                         fin_rec_id: val.fin_rec_id,
                         fin_preorder_id: val.fin_preorder_id,
-                        fst_unit: val.fst_unit,
-                        fbl_is_basic_unit: val.fbl_is_basic_unit,
-                        fdc_conv_to_basic_unit: val.fdc_conv_to_basic_unit,
-                        fbl_is_selling: val.fbl_is_selling,
-                        fbl_is_buying: val.fbl_is_buying,
-                        fbl_is_production_output: val.fbl_is_production_output,
-                        fdc_price_list: val.fdc_price_list,
-                        fdc_het: val.fdc_het,
+                        fin_branch_id: val.fin_branch_id,
+                        fst_branch_name: val.fst_branch_name,
                         action: action
                     }).draw(false);
-                })*/
+                })
             },
             error: function(e) {
                 $("#result").text(e.responseText);
