@@ -44,10 +44,10 @@ class Msitems_model extends MY_Model
         $rsSpecialPricing = $qr->result();
 
         $data = [
-            "msitems" => $rw,
-            "fst_unitDetail" => $rsUnitDetail,
-            "bomDetail" => $rsBomDetail,
-            "specialpricing" => $rsSpecialPricing,
+            "ms_items" => $rw,
+            "unit_Detail" => $rsUnitDetail,
+            "bom_Detail" => $rsBomDetail,
+            "special_Pricing" => $rsSpecialPricing,
         ];
 
         return $data;
@@ -58,7 +58,7 @@ class Msitems_model extends MY_Model
         $rules = [];
 
         $rules[] = [
-            'field' => 'fin_item_code',
+            'field' => 'fst_item_code',
             'label' => 'Item Code',
             'rules' => 'required|min_length[5]',
             'errors' => array(
