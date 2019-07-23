@@ -95,11 +95,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<label class="col-md-2 control-label" style="text-align:left;padding-left:0px"><?=lang("Rupiah")?> </label>
 					</div>
 
-
 					<div class="form-group">						
 						<label for="select-relations" class="col-md-2 control-label"><?=lang("Customer")?> </label>
 						<div class="col-md-4">
-							<select id="select-relations" class="form-control" name="fin_relation_id">
+							<select id="select-relations" class="form-control non-editable" name="fin_relation_id">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="fin_relation_id_err" class="text-danger"></div>
@@ -143,9 +142,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
                         <label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?> </label>
 						<div class="col-md-10">
-							<textarea class="form-control" name="fst_shipping_address" id="fst_shipping_address" style="width:100%" rows="5"></textarea>
+							<select class="select2 form-control" name="fin_shipping_address_id" id="fin_shipping_address_id" style="width:100%"></select>
 							<div id="fst_shipping_address_err" class="text-danger"></div>
-						</div>									
+						</div>														
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label"></label>
+                        <div class="col-md-10">
+							<textarea class="form-control" id="fst_shipping_address" style="width:100%" rows="5" readonly></textarea>
+							<div id="fst_shipping_address_err" class="text-danger"></div>
+						</div>
 					</div>
 
 					<div class="form-group">
@@ -163,7 +169,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div class="form-group">
 								
 								<div class="col-sm-12">
-									<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="5"></textarea>
+									<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="5" style="resize:none"></textarea>
 									<div id="fst_memo_err" class="text-danger"></div>
 								</div>
 							</div>
@@ -323,6 +329,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	var sel2Warehouse =[];
 	var sel2Currencies =[];
 	var current_pricing_group_id = 0;
+	selectedRow = null;
+
 	var ajxSel2Item = {
 		url: '<?=site_url()?>tr/sales_order/get_data_item',
 		dataType: 'json',
@@ -344,35 +352,75 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		},
 		cache: true,
 	}
-	$(function(){
-				
-		loadSelect2Data();
-		$("#fin_terms_payment").click(function(e){
-			e.preventDefault();
-			//$.blockUI({ message: '<h1>Just a moment...</h1>' });
-			message ="";
-			for(i = 0 ; i < 100 ;i++){
-				message +="Test message askjdansd asd asd asd" + i + "<br>";
-			}
-			$.alert({
-						title: 'Message',
-						content: message,
-						useBootstrap:false,
-						//columnClass: 'col-md-12'
-						 boxWidth:"500px"
-					});
+
+	function itemOnSelect(event) {		
+		var data = event.params.data;
+		data = Array.isArray(data) ? data[0] : data;		
+		consoleLog(data);
+		dataCust = $("#select-relations").select2("data")[0];
+
+
+		$("#fst_custom_item_name").val(data.fst_item_name);			
+		blockUIOnAjaxRequest("<h5><?=lang("Please wait....")?></h5>");
+		$('#select-unit').empty();		
+		$.ajax({
+			url: '<?=site_url()?>master/item/get_selling_unit/' + data.id +"/" + dataCust.id +"/" + $("#select-warehouse").val(),
+		}).done(function(resp){
+			arrData = resp;
+			arrSel2 =[];
+			$.each(arrData,function(i,v){
+				arrSel2.push({
+					"id" : v.fst_unit,
+					"text" : v.fst_unit,
+					"price" :v.sellingPrice,
+					"real_stock":v.real_stock,
+					"marketing_stock":v.marketing_stock
+				});
+			});
+
+			$("#select-unit").select2({
+				minimumResultsForSearch: -1,
+				data:arrSel2
+			}).on('select2:select', function (e) {
+				dataUnit = e.params.data;
+				$("#so-price").val(money_format(dataUnit.price));
+				$("#dialog-info .info-message").html("Qty Stock : " + dataUnit.real_stock + " | " + " Qty Marketing Stock : " + dataUnit.marketing_stock);
+				$("#dialog-info").show();							
+			});
 			
-		});
+			defaultUnit =  arrSel2[0];
+			if (selectedRow != null){
+				defaultUnit = $.grep(arrSel2,function(v,i){
+					return v.id == selectedRow.fst_unit;
+				})[0];
+				
+			}
+			$("#select-unit").val(defaultUnit.id).trigger("change");
+			$("#select-unit").trigger({
+				type: 'select2:select',
+				params: {
+					data: defaultUnit,
+				}
+			});
+
+			fixedSelect2();
+		});				
+	}
+
+	$(function(){
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			var cekPromo = 1;
 			var confirmAuthorize = 0;
 			saveAjax(cekPromo,confirmAuthorize);
 		});
+
 		$("#fdt_salesorder_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
+
+		
+		
 		$("#select-relations").select2({
 			width: '100%',
-			thema:'bootstrap',
 			ajax: {
 				url: '<?=site_url()?>tr/sales_order/get_msrelations',
 				dataType: 'json',
@@ -398,94 +446,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				cache: true,
 			}
 		}).on('select2:select',function(e){
-			var data = $('#select-relations').select2("data")[0];
-			$("#fin_terms_payment").val(data.fin_terms_payment);
-			$("#fst_shipping_address").val(data.fst_shipping_address);
-			$("#select-sales").val(data.fin_sales_id).trigger("change");
-			$("#select-warehouse").val(data.fin_warehouse_id).trigger("change");
-			current_pricing_group_id = data.current_pricing_group_id;			
+			//selectedCustomer = $("#select-relations").select2("data")[0];
+			selectedCustomer = e.params.data;
+			getShippingAddressList(selectedCustomer.id);
+			$("#fin_terms_payment").val(selectedCustomer.fin_terms_payment);
+			$("#select-sales").val(selectedCustomer.fin_sales_id).trigger("change");
+			$("#select-warehouse").val(selectedCustomer.fin_warehouse_id).trigger("change");
+			//current_pricing_group_id = selectedCustomer.current_pricing_group_id;			
 		});
-		$("#select-sales").select2();
-		$("#select-warehouse").select2();
+		
+
 		$("#fbl_is_vat_include").change(function(e){
 			calculateTotal();
 		});
+
 		$("#select-items").select2({
 			width: '100%',
 			ajax: ajxSel2Item
-		}).on('select2:select', function (e) {			
-			var data = $('#select-items').select2("data")[0];
-			$("#fst_custom_item_name").val(data.fst_item_name);			
-			//$('#select-unit').val(null).trigger('change');
-			$('#select-unit').empty();
-			$.ajax({
-				url: '<?=site_url()?>master/item/get_selling_unit/' + data.id,
-				success:function(data){
-					data2 = [];
-					$.each(data,function(index,value){
-						data2.push({
-							"id" : value.fst_unit,
-							"text" : value.fst_unit,
-							"price" :value.fdc_price_list
-						});
-					});
-					$("#select-unit").select2({data:data2});
-					$("#select-unit").trigger("select2:select");
-					fixedSelect2();					
-					showInfoStock();
-				}
-			});
-			
+		}).on('select2:select', function(e){
+			itemOnSelect(e);
+			//console.log(e.params.data);
 		});
-		$("#select-unit").select2();
+
 		
-		$("#select-disc").select2({
-			dir: 'rtl',
-			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>tr/sales_order/get_data_disc',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data) {
-					data2 = [];
-					$.each(data,function(index,value){
-						data2.push({
-							"id" : value.fst_item_discount,
-							"text" : value.fst_item_discount
-						});
-					});					
-					return {
-						results: data2
-					};
-				},
-				cache: true,
-			}
-		});
-		
-		$("#select-disc").on('select2:select',function(e){
-			var data = $('#select-disc').select2("data")[0];
-			disc = data.id;
-			qty = $("#so-qty").val();
-			amount = money_parse($("#so-price").val());
-			amount = amount * qty;
-			$("#fdc_disc_amount").val( money_format(calculateDisc(amount,disc)) ); 
-		});
-		$('#select-unit').on('select2:select', function (e) {						
-			dataCust = $("#select-relations").select2("data")[0];
-			dataUnit = $('#select-unit').select2("data")[0];
-			dataItem = $('#select-items').select2("data")[0];
-			
-			$.ajax({
-				url:"<?=site_url()?>master/item/get_selling_price/" + dataItem.id + "/" + dataUnit.id + "/" + dataCust.id,
-				method:"GET",
-				success:function(resp){
-					$("#so-price").val(money_format(resp.sellingPrice));
-				}
-			});
-			showInfoStock();
-			
-			
-		});
 		
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
@@ -501,22 +484,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#dialog-info").hide();		
 			
 		})
+
 		$(document).bind('keydown', 'alt+d', function(){
 			//alert("TEST COPY");
 			$("#btn-add-detail").trigger("click");
 		});
+
+
 		$("#btn-add-so-detail").click(function(event){
 			event.preventDefault();		
 			price = money_parse($("#so-price").val());			
 			selected_items = $("#select-items").select2('data')[0];
 			selected_disc = $("#select-disc").select2('data')[0];
 			selectedUnits = $("#select-unit").select2('data')[0];
+
 			qty = $("#so-qty").val();
 			price = money_parse($("#so-price").val());
 			disc = money_parse($("#fdc_disc_amount").val());
+
 			
 			amount = price * qty;
 			maxDisc = calculateDisc(amount,selected_items.maxItemDiscount);
+
 			if (maxDisc < disc){
 				alert("<?= lang('Total discount more than max disc allowed !') ?>" + " (maxDisc:" +  selected_items.maxItemDiscount + ")");
 				return;
@@ -537,6 +526,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				total: (qty * price)  - disc,
 				action: action
 			}
+
 			t = $('#tblSODetails').DataTable();
 			if(mode_so_detail == "EDIT"){
 				edited_so_detail.data(data).draw(false);
@@ -547,10 +537,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			calculateTotal();
 			clearDetailForm();
 		});
+
 		$("#fdc_vat_percent").change(function(e){
 			e.preventDefault();
 			calculateTotal();
 		});
+
 		$('#tblSODetails').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
@@ -604,40 +596,84 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 			},
 		}).on('draw',function(){
-			$('.btn-delete').confirmation({
+			$('.xbtn-delete').confirmation({
 				//rootSelector: '[data-toggle=confirmation]',
 				rootSelector: '.btn-delete',
 				// other options
 			});	
-			$(".btn-delete").click(function(event){
+
+			$(".xbtn-delete").click(function(event){
 				t = $('#tblSODetails').DataTable();
 				var trRow = $(this).parents('tr');
+
 				t.row(trRow).remove().draw();
 				calculateTotal();
 			});
-			$(".btn-edit").click(function(event){
-				event.preventDefault();
-				$("#myModal").modal({
-					backdrop:"static",
-				});
-				t = $('#tblSODetails').DataTable();
-				var trRow = $(this).parents('tr');
-				mode_so_detail = "EDIT";
-				edited_so_detail = t.row(trRow);
-				row = edited_so_detail.data();	
-				$("#fin_rec_id").val(row.fin_rec_id);
-				$('#select-items').val(row.fin_item_id).trigger('change');
-				$("#fst_custom_item_name").val(row.fst_custom_item_name);
-				$('#select-disc').val(row.fst_disc_item).trigger('change');
-				$('#select-items').trigger({type:"select2:select"});
-				$("#so-qty").val(row.fdb_qty);
-				$("#so-price").val(money_format(row.fdc_price));
-				$("#fdc_disc_amount").val(money_format(row.fdc_disc_amount));
-				$("#fst_memo_item").val(row.fst_memo_item);				
-			});
+
+			$(".xbtn-edit").click();
 		});
+
+
+		$("#tblSODetails").on("click",".btn-delete",function(event){
+			t = $('#tblSODetails').DataTable();
+			var trRow = $(this).parents('tr');
+
+			t.row(trRow).remove().draw();
+			calculateTotal();
+		});
+
+		$("#tblSODetails").on("click",".btn-edit",function(event){
+			event.preventDefault();			
+			$("#myModal").modal({
+				backdrop:"static",
+			});
+
+			t = $('#tblSODetails').DataTable();
+			var trRow = $(this).parents('tr');
+			mode_so_detail = "EDIT";
+			edited_so_detail = t.row(trRow);
+			row = edited_so_detail.data();
+			selectedRow = row;	
+
+			$("#fin_rec_id").val(row.fin_rec_id);
+			
+			$('#select-items').val(row.fin_item_id).trigger('change');
+			//$('#select-items').val(row.fin_item_id);			
+			$('#select-items').trigger({
+				type:"select2:select",
+				params:{
+					data:$("#select-items").select2("data")
+				}
+			});
+
+
+
+			/*			
+			$('#select-items').trigger({
+				type:"select2:select",
+				params: {
+					data:selectedItem
+				}
+			});
+			*/
+			
+			$("#fst_custom_item_name").val(row.fst_custom_item_name);
+			$('#select-disc').val(row.fst_disc_item).trigger('change');
+			
+			//$('#select-items').trigger({type:"select2:select"});
+			$("#so-qty").val(row.fdb_qty);
+			$("#so-price").val(money_format(row.fdc_price));
+			$("#fdc_disc_amount").val(money_format(row.fdc_disc_amount));
+			$("#fst_memo_item").val(row.fst_memo_item);				
+		});
+
+
+		init_form($("#fin_salesorder_id").val());
 		fixedSelect2();
+
+		
 	});
+
 	function clearDetailForm(){
 		$("#fin_rec_id").val(0);
 		$('#select-items').val(null).trigger('change');
@@ -650,7 +686,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#so-price").val(0);
 		$("#fdc_disc_amount").val(0);
 		$("#fst_memo_item").val("");
+		selectedRow = null;
 	}
+
 	function calculateDisc(amount, disc){
 		var strArray = disc.split("+");
 		totalDisc = 0;
@@ -661,15 +699,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 		return totalDisc;
 	}
+
 	function calculateTotal(){
 		t = $('#tblSODetails').DataTable();
 		datas = t.data();
 		ttlBfDisc = 0;
 		ttlDisc = 0;
+
 		$.each(datas,function(i,v){
 			ttlBfDisc += v.fdb_qty * v.fdc_price;
 			ttlDisc +=  v.fdc_disc_amount * 1;
 		});
+
 		if ($("#fbl_is_vat_include").prop('checked')){
 			total = ttlBfDisc - ttlDisc;			
 			vat = $("#fdc_vat_percent").val() * 1;
@@ -681,108 +722,247 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			vat = ($("#fdc_vat_percent").val() /100) * subTotal;
 			total = subTotal + vat;
 		}
+
 		$("#sub-total").val(money_format(subTotal));	
 		$("#fdc_vat_amount").val(money_format(vat));
 		$("#total").val(money_format(total));		
 	}
+
+
 	function init_form(fin_salesorder_id){
-		//alert("Init Form");
-		var url = "<?=site_url()?>tr/sales_order/fetch_data/" + fin_salesorder_id;
+		$(document).ajaxStart(function() {
+			$.blockUI({ message:'<h1><?=lang("Please wait....")?></h1>'});
+		});
+
+		$(document).ajaxStop(function() {
+			$.unblockUI();
+			$(document).unbind('ajaxStart');			
+		});
+
 		$.ajax({
-			type: "GET",
-			url: url,
-			success: function (resp) {	
-				$.each(resp.sales_order, function(name, val){
-					var $el = $('[name="'+name+'"]'),
-						type = $el.attr('type');
-					switch(type){
-						case 'checkbox':
-							$el.filter('[value="' + val + '"]').attr('checked', 'checked');
-							break;
-						case 'radio':
-							$el.filter('[value="' + val + '"]').attr('checked', 'checked');
-							break;
-						default:
-							$el.val(val);
-					}
+			url: '<?=site_url()?>tr/sales_order/getValueFormInit/' + fin_salesorder_id,
+		}).done(function(values){
+			arrSales = values.data.sales;
+			$.each(arrSales,function(i,v){
+				sel2Sales.push({
+					id:v.fin_user_id,
+					text:v.fst_username
 				});
-				//Customer
-				var arrCust = [];
-				var currCust = {
-					"id" : resp.sales_order.fin_relation_id,
-					"text" : resp.sales_order.fst_relation_name,
-					"fin_sales_id" : resp.sales_order.fin_sales_id,
-					"fst_shipping_address":resp.sales_order.fst_shipping_address,
-					"fin_warehouse_id":resp.sales_order.fin_warehouse_id,
-					"fin_terms_payment":resp.sales_order.fin_terms_payment							
+			});				
+			$("#select-sales").select2({
+				minimumResultsForSearch: -1,
+				data: sel2Sales,
+				width:"100%",
+			});
+
+			arrWarehouse = values.data.warehouse;
+			$.each(arrWarehouse,function(i,v){
+				sel2Warehouse.push({
+					id:v.fin_warehouse_id,
+					text:v.fst_warehouse_name
+				});
+			});
+			$("#select-warehouse").select2({
+				minimumResultsForSearch: -1,
+				data: sel2Warehouse,
+				width:"100%",
+			});
+
+			arrCurrencies = values.data.currencies;
+			$.each(arrCurrencies,function(i,v){
+				sel2Currencies.push({
+					id:v.CurrCode,
+					text:v.CurrName
+				});
+			});
+			$("#fst_curr_code").select2({
+				minimumResultsForSearch: -1,
+				data: sel2Currencies,
+				width:"100%",
+			});
+
+			arrDisc = values.data.discounts;
+			sel2Disc = [];
+			$.each(arrDisc,function(i,v){
+				sel2Disc.push({
+					id:v.fst_item_discount,
+					text:v.fst_item_discount
+				});
+			});
+			$("#select-disc").select2({
+				dir: 'rtl',
+				width: '100%',
+				data: sel2Disc,
+			}).on('select2:select',function(e){
+				var data = e.params.data;
+				disc = data.id;
+				qty = $("#so-qty").val();
+				amount = money_parse($("#so-price").val());
+				amount = amount * qty;
+				$("#fdc_disc_amount").val( money_format(calculateDisc(amount,disc)) ); 
+			});
+
+			<?php if($mode == "EDIT"){?>
+				fillForm(values);
+			<?php } ?>
+		}).always(function(resp){
+			fixedSelect2();
+		});
+	}
+
+	function fillForm(resp){
+		resp = resp.data;
+
+		$.each(resp.sales_order, function(name, val){
+			var $el = $('[name="'+name+'"]'),
+				type = $el.attr('type');
+			switch(type){
+				case 'checkbox':
+					$el.filter('[value="' + val + '"]').attr('checked', 'checked');
+					break;
+				case 'radio':
+					$el.filter('[value="' + val + '"]').attr('checked', 'checked');
+					break;
+				default:
+					$el.val(val);
+			}
+		});
+
+
+		//Customer
+		var arrCust = [];
+		var currCust = {
+			"id" : resp.sales_order.fin_relation_id,
+			"text" : resp.sales_order.fst_relation_name,
+			"fin_sales_id" : resp.sales_order.fin_sales_id,
+			"fin_shipping_address_id":resp.sales_order.fin_shipping_address_id,
+			"fin_warehouse_id":resp.sales_order.fin_warehouse_id,
+			"fin_terms_payment":resp.sales_order.fin_terms_payment							
+		}
+		arrCust.push(currCust);
+		//var newOption = new Option(resp.sales_order.fst_relation_name, resp.sales_order.fin_relation_id, true, true);
+		//$('#select-relations').append(newOption).trigger('change');
+		//current_pricing_group_id = resp.sales_order.current_pricing_group_id;
+		$('#select-relations').empty();
+		$('#select-relations').select2({
+			minimumResultsForSearch: -1,
+			width: "100%",
+			data:arrCust
+		});
+
+		getShippingAddressList(currCust.id,currCust.fin_shipping_address_id);
+
+		$('#select-sales').val(resp.sales_order.fin_relation_id).trigger('change');
+		$('#select-sales').val(resp.sales_order.fin_sales_id).trigger('change');
+		$('#select-warehouse').val(resp.sales_order.fin_warehouse_id).trigger('change');
+
+		SODetails = resp.so_details;
+
+		dataItem = [];
+		$.each(SODetails, function(idx, detail){
+			data = {
+				fin_rec_id:detail.fin_rec_id,
+				fin_promo_id:detail.fin_promo_id,
+				fin_item_id:detail.fin_item_id,
+				ItemCode:detail.fst_item_code,
+				ItemName:detail.fst_item_name,
+				fst_custom_item_name:detail.fst_custom_item_name,
+				fdb_qty:detail.fdb_qty,
+				fst_unit:detail.fst_unit,
+				fdc_price:detail.fdc_price,
+				fst_disc_item:detail.fst_disc_item,
+				fdc_disc_amount:detail.fdc_disc_amount,
+				fst_memo_item:detail.fst_memo_item,
+				total:detail.fdb_qty * detail.fdc_price - detail.fdc_disc_amount,
+				action: (detail.fin_promo_id == 0) ? action : ""
+			}
+
+			t = $('#tblSODetails').DataTable();			
+			t.row.add(data).draw(false);
+
+			//set Data Item select2		
+			tmp = {
+				"id" : detail.fin_item_id,
+				"text" : detail.fst_item_code + "-" + detail.fst_item_name,
+				"fst_item_name" : detail.fst_item_name,
+				"fst_item_code" : detail.fst_item_code,
+				"maxItemDiscount" : detail.fst_max_item_discount
+			}
+			dataItem.push(tmp);
+		});
+
+		$("#select-items").select2({
+			width:"100%",
+			data:dataItem,
+			ajax:ajxSel2Item
+		});
+		consoleLog($("#select-items").select2("data"));
+		fixedSelect2();
+		//$(".non-editable").prop('disabled', true);
+		calculateTotal();
+		
+		$("#fdt_salesorder_date").datepicker('update', dateFormat(resp.sales_order.fdt_salesorder_date));
+	
+	}
+
+	function getShippingAddressList(customerId,selectedShippingAddressId){
+		blockUIOnAjaxRequest("<div><?=lang("Please wait....")?></div>");		
+		$("#fin_shipping_address_id").empty();
+		$("#fst_shipping_address").val("");
+		$.ajax({
+			url: '<?=site_url()?>pr/relation/select_shipping_address/' + customerId,
+		}).done(function(resp){
+			arrShippingAddress = resp.data;
+			arrSelect = [];
+			defaultValue = null;
+
+			$.each(arrShippingAddress,function(i,v){
+				obj = {
+					id: v.fin_shipping_address_id,
+					text: v.fst_name,
+					fst_shipping_address:v.fst_shipping_address
+				};
+				arrSelect.push(obj);
+				if (obj.id == selectedShippingAddressId){
+					defaultValue = obj;
 				}
-				arrCust.push(currCust);
-				var newOption = new Option(resp.sales_order.fst_relation_name, resp.sales_order.fin_relation_id, true, true);
-				$('#select-relations').append(newOption).trigger('change');
-				current_pricing_group_id = resp.sales_order.current_pricing_group_id;
-				$('#select-sales').val(resp.sales_order.fin_sales_id).trigger('change');
-				$('#select-warehouse').val(resp.sales_order.fin_warehouse_id).trigger('change');
-				SODetails = resp.so_details;
-				dataItem = [];
-				$.each(SODetails, function(idx, detail){
-					data = {
-						fin_rec_id:detail.fin_rec_id,
-						fin_promo_id:detail.fin_promo_id,
-						fin_item_id:detail.fin_item_id,
-						ItemCode:detail.fst_item_code,
-						ItemName:detail.fst_item_name,
-						fst_custom_item_name:detail.fst_custom_item_name,
-						fdb_qty:detail.fdb_qty,
-						fst_unit:detail.fst_unit,
-						fdc_price:detail.fdc_price,
-						fst_disc_item:detail.fst_disc_item,
-						fdc_disc_amount:detail.fdc_disc_amount,
-						fst_memo_item:detail.fst_memo_item,
-						total:detail.fdb_qty * detail.fdc_price - detail.fdc_disc_amount,
-						action: (detail.fin_promo_id == 0) ? action : ""
-					}
-					t = $('#tblSODetails').DataTable();			
-					t.row.add(data).draw(false);
-					//set Data Item select2		
-					tmp = {
-						"id" : detail.fin_item_id,
-						"text" : detail.fst_item_code + "-" + detail.fst_item_name,
-						"fst_item_name" : detail.fst_item_name,
-						"fst_item_code" : detail.fst_item_code,
-						"maxItemDiscount" : detail.fst_max_item_discount
-					}
-					dataItem.push(tmp);
+			});
+			if(arrSelect.length > 0){
+				defaultValue = (defaultValue == null) ? arrSelect[0] : defaultValue;
+				$("#fin_shipping_address_id").select2({
+					minimumResultsForSearch: -1,
+					data: arrSelect
+				}).on("select2:select",function(e){
+					data = e.params.data;
+					$("#fst_shipping_address").val(data.fst_shipping_address);
 				});
-				$("#select-items").select2({
-					width:"100%",
-					data:dataItem,
-					ajax:ajxSel2Item
+
+				$("#fin_shipping_address_id").trigger({
+					type: 'select2:select',
+					params: {
+						data: defaultValue
+					}
 				});
-				fixedSelect2();
-				
-					
-				//var newOption = new Option(detail.ItemDiscount, false);
-				//$('#select-disc').append(newOption).trigger('change');
-				calculateTotal();
-				
-				$("#fdt_salesorder_date").datepicker('update', dateFormat(resp.sales_order.fdt_salesorder_date));
-			},
-			error: function (e) {
-				$("#result").text(e.responseText);
 			}
 		});
 	}
+
+
 	function saveAjax(cekPromo,confirmAuthorize){
 		data = $("#frmSalesOrder").serializeArray();
 		detail = new Array();		
+
 		t = $('#tblSODetails').DataTable();
+
 		t.rows(function(idx,data,node){
 			return data.fin_promo_id != 0 ;
 		}).remove().draw();
+
 		datas = t.data();
 		$.each(datas,function(i,v){
 			detail.push(v);
 		});
+
 		data.push({
 			name:"detail",
 			value: JSON.stringify(detail)
@@ -795,12 +975,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			name:"confirmAuthorize",
 			value: confirmAuthorize
 		});
+
+
 		mode = $("#frm-mode").val();
 		if (mode == "ADD"){
 			url =  "<?= site_url() ?>tr/sales_order/ajx_add_save/";
 		}else{
 			url =  "<?= site_url() ?>tr/sales_order/ajx_edit_save/";
 		}
+
 		//var formData = new FormData($('form')[0])
 		
 		$.ajax({
@@ -824,6 +1007,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					});
 				}
+
 				if(resp.status == "VALIDATION_FORM_FAILED" ){
 					//Show Error
 					errors = resp.data;
@@ -832,27 +1016,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				}else if (resp.status == "INFOPROMO"){					
 					if (confirm(resp.confirm_message)){
-						var actionDelete = '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+						//var actionDelete = '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
 						$.each(resp.data,function(i,v){
-							event.preventDefault();							
-							data = {
-								rec_id:0,
-								fin_promo_id:v.fin_promo_id,
-								fin_item_id:v.fin_item_id,
-								ItemName:v.fst_item_name,
-								ItemCode:v.fst_item_code,								
-								fst_custom_item_name: v.fst_custom_item_name,
-								fdb_qty: money_parse(v.fdb_qty),
-								fst_unit: v.fst_unit,
-								fdc_price : 1,
-								fst_disc_item : 100,
-								fdc_disc_amount: 1,
-								fst_memo_item: "",
-								total: 0,
-								action: ""//actionDelete
+							if (v.modelPromotion == "ITEM" || v.modelPromotion == "OTHER ITEM"){
+								data = {
+									fin_rec_id:0,
+									fin_promo_id:v.fin_promo_id,
+									fin_item_id:v.fin_item_id,
+									ItemName:v.fst_item_name,
+									ItemCode:v.fst_item_code,								
+									fst_custom_item_name: v.fst_custom_item_name,
+									fdb_qty: money_parse(v.fdb_qty),
+									fst_unit: v.fst_unit,
+									fdc_price : 1,
+									fst_disc_item : 100,
+									fdc_disc_amount: 1,
+									fst_memo_item: "",
+									total: 0,
+									action: ""//actionDelete
+
+								}
+								t = $('#tblSODetails').DataTable();							
+								t.row.add(data).draw(false);
 							}
-							t = $('#tblSODetails').DataTable();							
-							t.row.add(data).draw(false);								
 						});
 					}else{
 						saveAjax(0,0);
@@ -865,6 +1051,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							messageOutofStock = "";
 						}
 					});
+
 					arrOutstanding = resp.data.arrOutstanding;
 					messageOverlimit ="";
 					if (arrOutstanding.totalOutstanding > arrOutstanding.maxCreditLimit){
@@ -886,6 +1073,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					message = messageOutofStock + messageOverlimit;
 					message += "<br><br>";
 					message += "<?=lang("Transaksi memerlukan authorization, lanjutkan ?")?>";
+
 					$.confirm({
 						title: 'Authorization transaction',
 						content: message,
@@ -900,8 +1088,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}else if(resp.status == "SUCCESS") {
 					data = resp.data;
 					$("#fin_salesorder_id").val(data.insert_id);
+
 					//Clear all previous error
 					$(".text-danger").html("");
+
 					// Change to Edit mode
 					$("#frm-mode").val("EDIT");  //ADD|EDIT
 					$('#fst_salesorder_no').prop('readonly', true);
@@ -915,94 +1105,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).always(function(){
 			
 		});
+
 	}
-	function loadSelect2Data(){
-		$(document).ajaxStart(function() {
-			$.blockUI({ message:'<h1><?=lang("Please wait....")?></h1>'});
-		});
-		$(document).ajaxStop(function() {
-			$.unblockUI();
-			$(document).unbind('ajaxStart');
-		});
-		$.ajax({
-			url: '<?=site_url()?>tr/sales_order/getSelect2_sales_warehouse_currency',
-			//async:false,
-			success:function(values){
-				arrSales = values.data.sales;
-				$.each(arrSales,function(i,v){
-					sel2Sales.push({
-						id:v.fin_user_id,
-						text:v.fst_username
-					});
-				});				
-				$("#select-sales").select2({
-					data: sel2Sales,
-					width:"100%",
-				});
-				arrWarehouse = values.data.warehouse;
-				$.each(arrWarehouse,function(i,v){
-					sel2Warehouse.push({
-						id:v.fin_warehouse_id,
-						text:v.fst_warehouse_name
-					});
-				});
-				$("#select-warehouse").select2({
-					data: sel2Warehouse,
-					width:"100%",
-				});
-				arrCurrencies = values.data.currencies;
-				$.each(arrCurrencies,function(i,v){
-					sel2Currencies.push({
-						id:v.CurrCode,
-						text:v.CurrName
-					});
-				});
-				$("#fst_curr_code").select2({
-					data: sel2Currencies,
-					width:"100%",
-				});
-				<?php if($mode == "EDIT"){?>
-					init_form($("#fin_salesorder_id").val());
-				<?php } ?>
-			}
-		});
-	}
-	function showInfoStock(){
-		
-		dataUnit = $('#select-unit').select2("data")[0];
-		dataItem = $('#select-items').select2("data")[0];
-		if(typeof dataUnit === "undefined"){ // no errors
-			return;
-		}
-		if(typeof dataItem === "undefined"){ // no errors
-			return;
-		}
-		$.ajax({
-			url:"<?=site_url()?>api/get_info_stock/" + $("#select-warehouse").val() + "/" + dataItem.id + "/" + dataUnit.id,
-			success:function(resp){
-				if (resp.status == "SUCCESS"){
-					qtyStock = resp.data.real_stock;
-					qtyMarketingStock = resp.data.marketin_stock;
-					$("#dialog-info .info-message").html("Qty Stock : " + qtyStock + " | " + " Qty Marketing Stock : " + qtyMarketingStock);
-					$("#dialog-info").show();
-					/*
-					$.ajax({
-						url:"<=site_url()?>api/get_item_marketing_stock/" + $("#select-warehouse").val() + "/" + dataItem.id + "/" + dataUnit.id,
-						success:function(resp){
-							if (resp.status == "SUCCESS"){
-								qtyMarketingStock = resp.data;
-								$("#dialog-info .info-message").html("Qty Stock : " + qtyStock + " | " + " Qty Marketing Stock : " + qtyMarketingStock);
-								$("#dialog-info").show();
-							}
-						}
-					});
-					*/
-					
-					
-				}
-			}
-		});
-	}
+
 </script>
 
 <!-- Select2 -->

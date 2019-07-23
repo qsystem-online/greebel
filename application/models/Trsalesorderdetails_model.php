@@ -36,7 +36,6 @@ class Trsalesorderdetails_model extends MY_Model {
                 'numeric' => '%s harus berupa angka',
             )
         ];
-
         return $rules;
     }
 
@@ -47,4 +46,6 @@ class Trsalesorderdetails_model extends MY_Model {
         $qr = $this->db->query($ssql,[$fin_salesorder_id]);
         return $qr->result();
     }
+
+    
 }
