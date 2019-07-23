@@ -21,11 +21,11 @@ class Sales_preorder extends MY_Controller
         $this->load->library('menus');
         $this->list['page_name'] = "Sales Pre-Order";
         $this->list['list_name'] = "Sales Pre-Order List";
-        $this->list['addnew_ajax_url'] = site_url() . 'tr/Sales_preorder/add';
+        $this->list['addnew_ajax_url'] = site_url() . 'tr/sales_preorder/add';
         $this->list['pKey'] = "id";
-        $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/Sales_preorder/fetch_list_data';
-        $this->list['delete_ajax_url'] = site_url() . 'tr/Sales_preorder/delete/';
-        $this->list['edit_ajax_url'] = site_url() . 'tr/Sales_preorder/edit/';
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales_preorder/fetch_list_data';
+        $this->list['delete_ajax_url'] = site_url() . 'tr/sales_preorder/delete/';
+        $this->list['edit_ajax_url'] = site_url() . 'tr/sales_preorder/edit/';
         $this->list['arrSearch'] = [
             'fin_preorder_id' => 'Pre-Order ID',
             'fst_preorder_name' => 'Pre-Order Name'
@@ -71,7 +71,7 @@ class Sales_preorder extends MY_Controller
         $data["title"] = $mode == "ADD" ? "Add Sales Pre-Order" : "Update Sales Pre-Order";
         $data["fin_preorder_id"] = $fin_preorder_id;
 
-        $page_content = $this->parser->parse('pages/tr/Sales_preorder/form', $data, true);
+        $page_content = $this->parser->parse('pages/tr/sales_preorder/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
 
         $control_sidebar = NULL;
