@@ -122,7 +122,7 @@ class Msrelations_model extends MY_Model {
 
     public function getCreditLimit($relationId){
         $ssql = "select fdc_credit_limit from msrelations where fin_relation_id = ?";
-        $qr = $this->query($ssql,[$relationId]);
+        $qr = $this->db->query($ssql,[$relationId]);
         $rw = $qr->row();
         if(!$rw){
             return 0;

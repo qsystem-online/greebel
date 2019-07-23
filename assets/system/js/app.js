@@ -54,7 +54,7 @@ function dateFormat(strDate){
 }
 
 function money_parse(money){
-	value = money;
+	value = money.toString();
 	var digitPatern = ',';
 	if (DIGIT_GROUP == "."){
 		digitPatern ='\\.';  			
@@ -73,4 +73,15 @@ function money_parse(money){
 
 function consoleLog(obj){
 	console.log(obj);	
+}
+
+function blockUIOnAjaxRequest(message){
+	$(document).ajaxStart(function() {
+		$.blockUI({ message:message});
+	});
+
+	$(document).ajaxStop(function() {
+		$.unblockUI();
+		$(document).unbind('ajaxStart');
+	});
 }

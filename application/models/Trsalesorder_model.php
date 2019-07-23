@@ -1,5 +1,39 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
+class SalesOrder{
+    private $rw;
+    private $CI;
+    public function __construct($CI,$fin_salesorder_id){
+        $this->CI = $CI;
+        $ssql = "Select * from trsalesorder where fin_salesorder_id = ?";
+        $qr = $this->CI->db->query($ssql,[$fin_salesorder_id]);
+        $this->rw  = $qr->row();
+
+    }
+    public function isClosed(){
+        return $this->rw->fbl_is_closed;
+    }    
+    public function getValue($key){
+        return $this->rw->$key;
+    }
+
+    public function getDetails(){
+        $ssql = "Select * from trsalesorderdetails where fin_salesorder_id = ?";
+        $qr = $this->CI->db->query($ssql,[$this->rw->fin_salesorder_id]);       
+        $rs = $qr->result();
+        return $rs;
+    }
+    public function getData(){
+        return $this->rw;
+    }
+
+    public function isPromoWithSJ(){
+        //transaksi ini memiliki promo item dan sudah ada surat jalan atas transaksi ini
+        // Free Item, Free Custom Item, Free Cashback, Disc Per Item
+
+        return false;
+    }
+}
 
 class Trsalesorder_model extends MY_Model {
     public $tableName = "trsalesorder";
@@ -25,18 +59,23 @@ class Trsalesorder_model extends MY_Model {
         return $rules;
     }
 
+    public function createObject($fin_salesorder_id){
+        $CI = &get_instance();
+        $salesOrder = new SalesOrder($this,$fin_salesorder_id);
+        return $salesOrder;
+    }
+
     public function getDataById($fin_salesorder_id){
         $ssql = "select a.*,
-            b.fst_relation_name,b.fin_sales_id,b.fst_shipping_address,b.fin_warehouse_id,
-            b.fin_terms_payment,b.fin_cust_pricing_group_id,
+            b.fst_relation_name,b.fin_sales_id,a.fin_shipping_address_id,b.fin_cust_pricing_group_id,
             c.fst_fullname as fst_sales_name 
             from trsalesorder a
             inner join msrelations b on a.fin_relation_id  = b.fin_relation_id 
             inner join users c on a.fin_sales_id  = c.fin_user_id             
             where a.fin_salesorder_id = ?";
         $qr = $this->db->query($ssql, [$fin_salesorder_id]);
-        
-        $rwSalesOrder = $qr->row();        
+        $rwSalesOrder = $qr->row();
+
         $ssql = "select a.*,b.fst_item_name,b.fst_item_code,b.fst_max_item_discount from trsalesorderdetails a 
         left join msitems b on a.fin_item_id = b.fin_item_id
         where a.fin_salesorder_id = ?";
@@ -206,8 +245,8 @@ class Trsalesorder_model extends MY_Model {
                 }
 
                 if ($rwPromo->fbl_qty_gabungan){ //Proses Qty Gabungan                    
-                    $qtyGabungan =$rwPromo->fin_qty_gabungan;
-                    $satuanGabungan = $rwPromo->fst_satuan_gabungan;
+                    $qtyGabungan =$rwPromo->fdb_qty_gabungan;
+                    $satuanGabungan = $rwPromo->fst_unit_gabungan;
                     $totalQtyGabungan =0;
                     foreach($details as $item){
                         $isOnRules = false;
@@ -217,7 +256,7 @@ class Trsalesorder_model extends MY_Model {
                             $isOnRules = $this->isOnPromoItemRules($itemRules,$item->fin_item_id,$item->fin_item_subgroup_id);
                         }
                         if($isOnRules){    
-                            $qtyUnit = $this->MSItemunitdetails_model->getConversionUnit($item->fin_item_id,$item->fdb_qty, $item->fst_unit, $satuanGabungan);
+                            $qtyUnit = $this->msitemunitdetails_model->getConversionUnit($item->fin_item_id,$item->fdb_qty, $item->fst_unit, $satuanGabungan);
                             $totalQtyGabungan += $qtyUnit;
                         }
                     }
@@ -378,7 +417,16 @@ class Trsalesorder_model extends MY_Model {
 
     public function posting_so($fin_salesorder_id){
         //Bila terdapat DP jurnal DP tersebut
-
+        $ssql ="";
 
     }
+
+    public function update($data){
+        //Delete Field yang tidak boleh berubah
+        unset($data["fin_relation_id"]);
+        unset($data["fst_salesorder_no"]);
+        parent::update($data);        
+    }
 }
+
+
