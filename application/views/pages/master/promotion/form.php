@@ -142,7 +142,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <div class="col-md-2">
                                 <div>
                                     <input type="checkbox" class="minimal form-control icheck" id="fbl_promo_gabungan" name="fbl_promo_gabungan"> &nbsp;
-                                    <label for="fbl_promo_gabungan" class=""> <?= lang("Allow Combined")?></label>
+                                    <label for="fbl_promo_gabungan" class=""> <?= lang("Allow other promo")?></label>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -1004,6 +1004,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 <script type="text/javascript">
     $(function() {
+        branchList = [];
+        <?php foreach($arrBranch as $branch){ ?>
+            branchList.push({
+                "id":"<?= $branch->fin_branch_id ?>",
+                "text":"<?= $branch->fst_branch_name ?>"
+            });  
+        <?php } ?>
+
         <?php if ($mode == "EDIT") { ?>
             init_form($("#fin_promo_id").val());
         <?php } ?>
@@ -1149,6 +1157,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#fst_list_branch_id").select2({
             width: '100%',
+            data: branchList
+            /*
             ajax: {
                 url: '<?= site_url() ?>master/Branch/get_Branch',
                 dataType: 'json',
@@ -1168,8 +1178,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 },
                 cache: true,
             }
+            */
         });
     });
+
+
     function init_form(fin_promo_id) {
         //alert("Init Form");
         var url = "<?= site_url() ?>master/promotion/fetch_data/" + fin_promo_id;
@@ -1177,7 +1190,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
             type: "GET",
             url: url,
             success: function(resp) {
-                console.log(resp.mspromo);
                 $.each(resp.mspromo, function(name, val) {
                     var $el = $('[name="' + name + '"]'),
                         type = $el.attr('type');
@@ -1194,9 +1206,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
 
-                var fst_list_branch_id = resp.mspromo.fst_list_branch_id.split(",");
-				console.log(fst_list_branch_id);
-				$("#fst_list_branch_id").val(fst_list_branch_id).trigger('change');
+                if (resp.mspromo.fst_list_branch_id != null){
+                    var fst_list_branch_id = resp.mspromo.fst_list_branch_id.split(",");
+                    $("#fst_list_branch_id").val(fst_list_branch_id).trigger('change');
+                }
 
                 if (resp.mspromo.fbl_disc_per_item == 1){
 					//alert("check");

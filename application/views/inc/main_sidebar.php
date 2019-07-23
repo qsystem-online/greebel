@@ -19,7 +19,7 @@ if (file_exists($cekAvatar)) {
 		<div class="pull-left info">
 			<?php
 			$active_user = $this->session->userdata("active_user");
-			$branchs = $this->Msbranches_model->getAllList();
+			$branchs = $this->msbranches_model->getAllList();
 			$disabledSelect = ($active_user->fbl_is_hq == 1) ? "" : "disabled";
 			$disabledSelect = ($active_user->fin_level <= getDbConfig("change_branch_level")) ? "" : "disabled";
 			?>

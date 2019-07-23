@@ -70,6 +70,8 @@ class Promotion extends MY_Controller
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Sales Promotion" : "Update Sales Promotion";
         $data["fin_promo_id"] = $fin_promo_id;
+        $data["arrBranch"] = $this->msbranches_model->getAllList();
+
 
         $page_content = $this->parser->parse('pages/master/promotion/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
