@@ -139,8 +139,8 @@ class Sales_preorder extends MY_Controller
 
         //Save Pre-Order Branch Details
 
-        /*$this->load->model("Trsalespreorderdetails_model");
-        $details = $this->input->post("detail");
+        $this->load->model("Trsalespreorderdetails_model");
+        $details = $this->input->post("branchDetail");
         $details = json_decode($details);
         foreach ($details as $preorderbranchdetail) {
             $data = [
@@ -158,7 +158,7 @@ class Sales_preorder extends MY_Controller
                 $this->db->trans_rollback();
                 return;
             }
-        }*/
+        }
 
         $this->db->trans_complete();
         $this->ajxResp["status"] = "SUCCESS";
