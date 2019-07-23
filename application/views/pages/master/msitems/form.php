@@ -1109,9 +1109,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
             type: "GET",
             url: url,
             success: function(resp) {
-                console.log(resp.msitems);
+                console.log(resp.ms_items);
 
-                $.each(resp.msitems, function(name, val) {
+                $.each(resp.ms_items, function(name, val) {
                     var $el = $('[name="' + name + '"]'),
                         type = $el.attr('type');
                     switch (type) {
@@ -1126,7 +1126,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
-                if (resp.msitems.fbl_is_batch_number == 1){
+                if (resp.ms_items.fbl_is_batch_number == 1){
 					//alert("check");
 					$('#fbl_is_batch_number').iCheck('check');
 					$('#fbl_is_batch_number').iCheck('update');
@@ -1135,7 +1135,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					//alert("uncheck");
 					$('#fbl_is_batch_number').iCheck('uncheck');
 				}
-                if (resp.msitems.fbl_is_serial_number == 1){
+                if (resp.ms_items.fbl_is_serial_number == 1){
 					//alert("check");
 					$('#fbl_is_serial_number').iCheck('check');
 					$('#fbl_is_serial_number').iCheck('update');
@@ -1145,17 +1145,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					$('#fbl_is_serial_number').iCheck('uncheck');
 				}
                 // menampilkan data di select2
-                var newOption = new Option(resp.msitems.fst_item_maingroup_name, resp.msitems.fin_item_maingroup_id, true, true);
+                var newOption = new Option(resp.ms_items.fst_item_maingroup_name, resp.ms_items.fin_item_maingroup_id, true, true);
                 // Append it to the select
                 $('#select-maingroupitem').append(newOption).trigger('change');
-                var newOption = new Option(resp.msitems.fst_item_group_name, resp.msitems.fin_item_group_id, true, true);
+                var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
                 // Append it to the select
                 $('#select-GroupItemId').append(newOption).trigger('change');
-                var newOption = new Option(resp.msitems.fst_item_subgroup_name, resp.msitems.fin_item_subgroup_id, true, true);
+                var newOption = new Option(resp.ms_items.fst_item_subgroup_name, resp.ms_items.fin_item_subgroup_id, true, true);
                 // Append it to the select
                 $('#select-SubGroupItemId').append(newOption).trigger('change');
                 //Image Load 
-				$('#imgItem').attr("src", resp.msitems.imageURL);
+				$('#imgItem').attr("src", resp.ms_items.imageURL);
                 //populate Unit Detail
                 $.each(resp.unit_Detail, function(name, val) {
                     console.log(val);

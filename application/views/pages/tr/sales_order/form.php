@@ -899,8 +899,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		consoleLog($("#select-items").select2("data"));
 		fixedSelect2();
 		//$(".non-editable").prop('disabled', true);
-		calculateTotal();
-		
+		calculateTotal();		
 		$("#fdt_salesorder_date").datepicker('update', dateFormat(resp.sales_order.fdt_salesorder_date));
 	
 	}
@@ -936,7 +935,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data = e.params.data;
 					$("#fst_shipping_address").val(data.fst_shipping_address);
 				});
-
+				$("#fin_shipping_address_id").val(defaultValue.id).trigger("change");
 				$("#fin_shipping_address_id").trigger({
 					type: 'select2:select',
 					params: {
