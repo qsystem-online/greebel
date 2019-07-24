@@ -164,10 +164,11 @@ class Relation extends MY_Controller{
         foreach ($details as $item) {
             $data = [
 				"fin_relation_id" => $insertId,
-				"fin_shipping_address_id" => $item->fin_shipping_address_id,
+				"fin_shipping_address_id" => $fin_shipping_address_id,
 				"fst_name" => $item->fst_name,
                 "fst_area_code" => $item->fst_kode,
-                "fst_shipping_address" => $item->fst_shipping_address
+				"fst_shipping_address" => $item->fst_shipping_address,
+				"fst_active" => 'A'
             ];
             $this->msshippingaddress_model->insert($data);
             $dbError  = $this->db->error();
@@ -266,7 +267,8 @@ class Relation extends MY_Controller{
 				"fin_shipping_address_id" => $item->fin_shipping_address_id,
                 "fst_name" => $item->fst_name,
                 "fst_area_code" => $item->fst_kode,
-                "fst_shipping_address" => $item->fst_shipping_address
+				"fst_shipping_address" => $item->fst_shipping_address,
+				"fst_active" => 'A'
             ];
             $this->msshippingaddress_model->insert($data);
             $dbError  = $this->db->error();
@@ -491,16 +493,17 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function select_shipping_address($relationId){
+	public function get_shipping_address($fin_relation_id) {
 		$term = $this->input->get("term");
-		$ssql = "SELECT fin_shipping_address_id, fst_name,fst_shipping_address from msshippingaddress where fin_relation_id = ? and fst_name like ?";
-		$qr = $this->db->query($ssql,[(int) $relationId,'%'.$term.'%']);
+		$ssql = "SELECT fin_shipping_address_id, fst_name,fst_shipping_address from msshippingaddress where fst_name like ? and fin_relation_id = ?";
+		$qr = $this->db->query($ssql,['%' . $term . '%', $fin_relation_id]);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["data"] = $rs;
 		$this->json_output();
 	}
+
 	public function report_relations(){
         $this->load->library('pdf');
         //$customPaper = array(0,0,381.89,595.28);
@@ -525,13 +528,5 @@ class Relation extends MY_Controller{
         $result = $this->msrelations_model->getAllList();
         $this->ajxResp["data"] = $result;
         $this->json_output();
-	}
-	
-	public function get_shipping_address($fin_relation_id) {
-		$term = $this->input->get("term");
-		$ssql = "SELECT * msshippingaddress where fst_name like ? order by fin_shipping_address_id";
-		$qr = $this->db->query($ssql,['%' . $term . '%']);
-		$rs = $qr->result();
-		$this->json_output($rs);
 	}
 }

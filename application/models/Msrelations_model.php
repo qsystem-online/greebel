@@ -54,7 +54,7 @@ class Msrelations_model extends MY_Model {
             $rwRelation->fst_village_name = null;
         }
 
-        $ssql = "SELECT * from msshippingaddress where fin_relation_id = ?";
+        $ssql = "SELECT * from msshippingaddress where fin_relation_id = ? and fst_active ='A'";
         $qr = $this->db->query($ssql, [$fin_relation_id]);
         $rsShipping = $qr->result();
 

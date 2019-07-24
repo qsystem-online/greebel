@@ -326,7 +326,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="shipping_details">
-							<button id="btn-shipping" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Shipping") ?></button>
+							<button id="btn-add-shipping" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Shipping") ?></button>
 							<div>
 								<table id="tbl_shipping_details" class="table table-bordered table-hover" style="width:100%;"></table>
 							</div>
@@ -431,7 +431,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-footer">
-				<button id="btn-details-shipping" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
+				<button id="btn-add-shippDetails" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
 				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
 			</div>
 		</div>
@@ -444,9 +444,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			var edited_shipp_detail = null;
 			var mode_shipp_detail = "ADD";
 
-            $("#btn-shipping").click(function(event) {
+			$("#btn-add-shipping").click(function(event){
+				event.preventDefault();
+				mode_shipp_detail = "ADD";
+				$("#mdlShippingDetails").modal({
+					backdrop:"static",
+				});
+			})
+
+            $("#btn-add-shippDetails").click(function(event) {
                 event.preventDefault();
                 $("#mdlShippingDetails").modal('show');
+
+				data = {
+					//fin_relation_id: $("#fin_relation_id").val(),
+					fin_shipping_address_id: $("#fin_shipping_address_id").val(),
+					fst_name: $("#fst_name").val(),
+					fst_area_code: $("#fst_area_code").val(),
+					fst_shipping_address: $("#fst_shipping_address").val(),
+					action: action
+				}
+
+				t = $('#tbl_shipping_details').DataTable();
+				if(mode_shipp_detail == "EDIT"){
+					edited_shipp_detail.data(data).draw(false);
+				} else {
+					t.row.add(data).draw(false);
+				}
             });
 
 			$("#select-country").change(function(event){
@@ -560,30 +584,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 			});
-
-			/*$("#tbl_shipping_details").DataTable({
-				searching: false,
-				paging: false,
-				info: false,
-				columns: [
-					//{"title": "<?=lang("Relation Nama")?>","width": "15%",data: "fin_relation_id",visible: false},
-					{"title": "<?=lang("Shipping Address ID")?>","width": "15%",sortable:false,data: "fin_shipping_address_id",visible: true},
-					{"title": "<?=lang("Name")?>","width": "20%",sortable:false,data: "fst_name",visible: true},
-					{"title": "<?=lang("Shipping Address")?>","width": "20%",sortable:false,data: "fst_shipping_address", visible: true},
-					{"title" : "Action","width": "15%",data:"action",sortable:false,className:'dt-body-center text-center'},
-				],
-			});*/
-
+		
 			$('#tbl_shipping_details').on('preXhr.dt', function ( e, settings, data ) {
 				//add aditional data post on ajax call
 				data.sessionId = "TEST SESSION ID";
 			}).DataTable({
 				columns:[
-					//{"title": "<?=lang("Relation Nama")?>","width": "15%",data: "fin_relation_id",visible: false},
-					{"title": "<?=lang("Shipping Address ID")?>","width": "15%",sortable:false,data: "fin_shipping_address_id",visible: true},
+					//{"title": "<?=lang("Relation ID")?>","width": "10%",data: "fin_relation_id",visible: false},
+					{"title": "<?=lang("Shipping Address ID")?>","width": "12%",sortable:false,data: "fin_shipping_address_id",visible: true},
 					{"title": "<?=lang("Name")?>","width": "20%",sortable:false,data: "fst_name",visible: true},
 					{"title": "<?=lang("Shipping Address")?>","width": "20%",sortable:false,data: "fst_shipping_address", visible: true},
-					{"title" : "Action","width": "15%",data:"action",sortable:false,className:'dt-body-center text-center'},
+					{"title" : "Action","width": "10%",data:"action",sortable:false,className:'dt-body-center text-center'},
 				],
 				processing: true,
 				serverSide: false,
@@ -597,17 +608,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					rootSelector: '.btn-delete',
 					// other options
 				});
+
 				$(".btn-delete").click(function(event){
 					t = $('#tbl_shipping_details').DataTable();
 					var trRow = $(this).parents('tr');
 					t.row(trRow).remove().draw();
 				});
+
 				$(".btn-edit").click(function(event){
 					event.preventDefault();
 					$("#mdlShippingDetails").modal({
 						backdrop:"static",
 					});
-
 					t = $('#tbl_shipping_details').DataTable();
 					var trRow = $(this).parents('tr');
 
@@ -620,51 +632,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#fst_name").val(row.fst_name);
 					$("#fst_shipping_address").val(row.fst_shipping_address);
 				});
-			});
-
-			$("#btn-shipping").click(function(event){
-				event.preventDefault();
-				mode_shipp_detail = "ADD";
-				$("#mdlShippingDetails").modal({
-					backdrop:"static",
-				});
-			})
-			$("#btn-details-shipping").click(function(event) {
-				event.preventDefault();
-				$('#mdlShippingDetails').modal('show');
-				
-				data = {
-					//fin_relation_id: $("#fin_relation_id").val(),
-					fin_shipping_address_id: $("#fin_shipping_address_id").val(),
-					fst_name: $("#fst_name").val(),
-					fst_shipping_address: $("#fst_shipping_address").val(),
-					action: action
-				}
-				t = $('#tbl_shipping_details').DataTable();
-				if(mode_shipp_detail == "EDIT"){
-					edited_shipp_detail.data(data).draw(false);
-				}else{
-					t.row.add(data).draw(false);	
-				}
-			});
-
-			$(".btn-edit").click(function(event){
-				event.preventDefault();
-				$("#mdlShippingDetails").modal({
-					backdrop:"static",
-				});
-
-				t = $('#tbl_shipping_details').DataTable();
-				var trRow = $(this).parents('tr');
-
-				mode_shipp_detail = "EDIT";
-				edited_shipp_detail = t.row(trRow);
-				row = edited_shipp_detail.data();	
-
-				//$("#fin_relation_id").val(row.fin_relation_id);
-				$("#fin_shipping_address_id").val(row.fin_shipping_address_id);
-				$("#fst_name").val(row.fst_name);
-				$("#fst_shipping_address").val(row.fst_shipping_address);
 			});
 		});	
 	</script>
@@ -683,8 +650,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			data = $("#frmRelation").serializeArray();
-			detail = new Array();
+			//data = new FormData($("#frmRelation")[0]);
+			//console.log(data);
 
+			detail = new Array();
             t = $('#tbl_shipping_details').DataTable();
 			datas = t.data();
             $.each(datas, function(i, v) {
@@ -709,6 +678,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				//enctype: 'multipart/form-data',
 				url: url,
 				data: data,
+				//processData: false,
+                //contentType: false,
+                //cache: false,
 				timeout: 600000,
 				success: function (resp) {	
 					if (resp.message != "")	{
@@ -742,7 +714,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						// Change to Edit mode \\
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
 						$('#fst_relation_name').prop('readonly', true);
-						$("#tabs-shipping-details").show();
 					}
 				},
 				error: function (e) {
@@ -1242,7 +1213,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         action: action
                     }).draw(false);
 				})*/
-				
+
 				ShippingAddress = resp.ms_shipping;
 				$.each(ShippingAddress, function(idx, detail){
 					data = {
