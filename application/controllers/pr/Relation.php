@@ -1,8 +1,6 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-
 class Relation extends MY_Controller{
-
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -26,13 +24,11 @@ class Relation extends MY_Controller{
 			'fin_relation_id' => 'Relations ID',
 			'fst_relation_name' => 'Relations Name'
 		];
-
 		$this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
 			['title' => 'Master Relations', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
-
 		$this->list['columns'] = [
 			['title' => 'Relation ID', 'width' => '15%', 'data' => 'fin_relation_id'],
 			['title' => 'Relation Name', 'width' => '20%', 'data' => 'fst_relation_name'],
@@ -69,21 +65,16 @@ class Relation extends MY_Controller{
 
 	private function openForm($mode = "ADD", $fin_relation_id = 0){
 		$this->load->library("menus");
-
 		if ($this->input->post("submit") != "") {
 			$this->add_save();
 		}
-
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
-
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Master Relations" : "Update Master Relations";
 		$data["fin_relation_id"] = $fin_relation_id;
-
 		$page_content = $this->parser->parse('pages/pr/msrelations/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
-
 		$control_sidebar = NULL;
 		$this->data["MAIN_HEADER"] = $main_header;
 		$this->data["MAIN_SIDEBAR"] = $main_sidebar;
@@ -105,7 +96,6 @@ class Relation extends MY_Controller{
 		$this->load->model('msrelations_model');
 		$this->form_validation->set_rules($this->msrelations_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
 			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
@@ -114,7 +104,6 @@ class Relation extends MY_Controller{
 			$this->json_output();
 			return;
 		}
-
 		$data = [
 			"fin_relation_group_id" => $this->input->post("fin_relation_group_id"),
 			"fst_relation_type" => implode(",",$this->input->post("fst_relation_type")),
@@ -144,7 +133,6 @@ class Relation extends MY_Controller{
 			"fin_top_plus_komisi" => $this->input->post("fin_top_plus_komisi"),
 			"fst_active" => 'A'
 		];
-
 		$this->db->trans_start();
 		$insertId = $this->msrelations_model->insert($data);
 		$dbError  = $this->db->error();
@@ -156,15 +144,14 @@ class Relation extends MY_Controller{
 			$this->db->trans_rollback();
 			return;
 		}
-
 		// SAVE SHIPPING DETAILS \\
 		$this->load->model("msshippingaddress_model");
-        $details = $this->input->post("detail");
+        $details = $this->input->post("shippingDetail");
         $details = json_decode($details);
         foreach ($details as $item) {
             $data = [
 				"fin_relation_id" => $insertId,
-				"fin_shipping_address_id" => $fin_shipping_address_id,
+				"fin_shipping_address_id" => $insertId,
 				"fst_name" => $item->fst_name,
                 "fst_area_code" => $item->fst_kode,
 				"fst_shipping_address" => $item->fst_shipping_address,
@@ -181,7 +168,6 @@ class Relation extends MY_Controller{
                 return;
             }
         }
-
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
@@ -201,7 +187,6 @@ class Relation extends MY_Controller{
 			$this->json_output();
 			return;
 		}
-
 		$this->form_validation->set_rules($this->msrelations_model->getRules("EDIT", $fin_relation_id));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
@@ -255,11 +240,10 @@ class Relation extends MY_Controller{
 			$this->db->trans_rollback();
 			return;
 		}
-
 		// SAVE SHIPPING DETAILS \\
 		$this->load->model("msshippingaddress_model");
         $this->msshippingaddress_model->deleteByHeaderId($fin_relation_id);
-        $details = $this->input->post("detail");
+        $details = $this->input->post("shippingDetail");
         $details = json_decode($details);
         foreach ($details as $item) {
             $data = [
@@ -281,7 +265,6 @@ class Relation extends MY_Controller{
                 return;
             }
         }
-
 		$this->db->trans_complete();
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
@@ -312,7 +295,6 @@ class Relation extends MY_Controller{
 					<a class='btn-edit' href='#' data-id='" . $data["fin_relation_id"] . "'><i class='fa fa-pencil'></i></a>
 					<a class='btn-delete' href='#' data-id='" . $data["fin_relation_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
-
 			$arrDataFormated[] = $data;
 		}
 		$datasources["data"] = $arrDataFormated;
@@ -331,7 +313,6 @@ class Relation extends MY_Controller{
 		$ssql = "SELECT fin_relation_id, fst_relation_name FROM msrelations WHERE fst_relation_type = 1" ;
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
-
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["data"] = $rs;
 		$this->json_output();
@@ -342,7 +323,6 @@ class Relation extends MY_Controller{
 		$ssql = "SELECT fin_branch_id, fst_branch_name from msbranches where fst_branch_name like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
-
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["data"] = $rs;
 		$this->json_output();
@@ -392,7 +372,7 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_districts($fst_kode){
+	public function get_district($fst_kode){
 		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 1 and fst_kode like ? ";
 		$qr = $this->db->query($ssql,[$fst_kode .'%']);
 		$rs = $qr->result();
@@ -402,7 +382,7 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_subdistricts($fst_kode){
+	public function get_subdistrict($fst_kode){
 		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 2 and fst_kode like ? ";
 		$qr = $this->db->query($ssql,[$fst_kode .'%']);
 		$rs = $qr->result();
@@ -484,9 +464,7 @@ class Relation extends MY_Controller{
 			$this->json_output();
 			return;
 		}
-
 		$this->load->model("msrelations_model");
-
 		$this->msrelations_model->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
@@ -495,7 +473,7 @@ class Relation extends MY_Controller{
 
 	public function get_shipping_address($fin_relation_id) {
 		$term = $this->input->get("term");
-		$ssql = "SELECT fin_shipping_address_id, fst_name,fst_shipping_address from msshippingaddress where fst_name like ? and fin_relation_id = ?";
+		$ssql = "SELECT * from msshippingaddress where fst_name like ? and fin_relation_id = ?";
 		$qr = $this->db->query($ssql,['%' . $term . '%', $fin_relation_id]);
 		$rs = $qr->result();
 		

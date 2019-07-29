@@ -326,10 +326,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</ul>
 					<div class="tab-content">
 						<div class="tab-pane active" id="shipping_details">
-							<button id="btn-add-shipping" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Shipping") ?></button>
-							<div>
-								<table id="tbl_shipping_details" class="table table-bordered table-hover" style="width:100%;"></table>
-							</div>
+							<form class="form-horizontal edit-mode ">	
+								<div class="form-group">
+									<div class="col-md-12">
+									<button id="btn-add-shipping" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Shipping") ?></button>
+									</div>	
+								</div>
+                            </form>
+							<table id="tbl_shipping_details" class="table table-bordered table-hover" style="width:100%;"></table>
 						</div>
 					</div>
 					<!-- /.tab-pane -->
@@ -344,6 +348,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
     </div>
 </section>
+</div>
 
 
 <!--- // START TAB SHIPPING ADDRESS \\ ---------------------------------------------------------------------------------------------------------------->
@@ -359,6 +364,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			<div class="modal-body">
 				<form  class="form-horizontal">
+					
+					<!-- <div class="form-group hide">
+						<label for="fin_shipping_address_id" class="col-md-2 control-label"><?=lang("Shipping Address ID")?> :</label>
+						<div class="col-md-10">
+						<input type="text" class="form-control" id="fin_shipping_address_id" placeholder="<?=lang("Autonumber")?>" name="fin_shipping_address_id" value="<?$fin_shipping_address_id?>" readonly>
+							<div id="fin_shipping_address_id_err" class="text-danger"></div>
+						</div>
+					</div>
 
 					<div class="form-group hide">
 						<label for="fin_relation_id" class="col-md-4 control-label"><?=lang("Relation ID")?></label>
@@ -366,15 +379,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<input type="text" class="form-control text-right" id="fin_relation_id" name="fin_relation_id">
 							<div id="fin_relation_id_err" class="text-danger"></div>
 						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="fin_shipping_address_id" class="col-md-2 control-label"><?=lang("Shipping Address ID")?> :</label>
-						<div class="col-md-10">
-						<input type="text" class="form-control" id="fin_shipping_address_id" placeholder="<?=lang("Shipping Address ID")?>" name="fin_shipping_address_id">
-							<div id="fin_shipping_address_id_err" class="text-danger"></div>
-						</div>
-					</div>
+					</div> -->
 
 					<div class="form-group">
 						<label for="fst_name" class="col-md-2 control-label"><?=lang("Name")?> :</label>
@@ -385,38 +390,38 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 				
 					<div class="form-group">
-						<label for="select-provinceName" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
+						<label for="provinceShipp" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-provinceName" class="form-control" name="fst_kode">
+							<select id="provinceShipp" class="form-control" name="fst_kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="fst_nama__err" class="text-danger"></div>
+							<div id="fst_nama_err" class="text-danger"></div>
 						</div>
 
-						<label for="select-districtName" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
+						<label for="districtShipp" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-districtName" class="form-control" name="fst_kode">
+							<select id="districtShipp" class="form-control" name="fst_kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="fst_nama__err" class="text-danger"></div>
+							<div id="fst_nama_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="select-subdistrictName" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
+						<label for="subdistrictShipp" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-subdistrictName" class="form-control" name="fst_kode">
+							<select id="subdistrictShipp" class="form-control" name="fst_kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="fst_nama__err" class="text-danger"></div>
+							<div id="fst_nama_err" class="text-danger"></div>
 						</div>
 
-						<label for="select-villageName" class="col-md-2 control-label"><?=lang("Village Name")?> :</label>
+						<label for="villageShipp" class="col-md-2 control-label"><?=lang("Village Name")?> :</label>
 						<div class="col-md-4">
-							<select id="select-villageName" class="form-control" name="fst_kode">
+							<select id="villageShipp" class="form-control" name="fst_kode">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
-							<div id="fst_nama__err" class="text-danger"></div>
+							<div id="fst_nama_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -439,44 +444,42 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<script type="text/javascript">
 		var action = '<a class="btn-edit" href="#" data-toggle="" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp; <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
-        $(function() {
+		$(function() {
 
-			var edited_shipp_detail = null;
-			var mode_shipp_detail = "ADD";
-
-			$("#btn-add-shipping").click(function(event){
+			$("#btn-add-shipping").click(function(event) {
 				event.preventDefault();
-				mode_shipp_detail = "ADD";
-				$("#mdlShippingDetails").modal({
-					backdrop:"static",
-				});
-			})
+				$("#mdlShippingDetails").modal('show');
+			});
 
-            $("#btn-add-shippDetails").click(function(event) {
-                event.preventDefault();
-                $("#mdlShippingDetails").modal('show');
+			$("#tbl_shipping_details").DataTable({
+				searching: false,
+				paging: false,
+				info:false,
+				columns:[
+					{"title": "<?=lang("Shipping Address ID")?>","width": "15%",sortable:false,data: "fin_shipping_address_id",visible: false},
+					{"title": "<?=lang("Relation ID")?>","width": "10%",data: "fin_relation_id",visible: false},
+					{"title": "<?=lang("Name")?>","width": "20%",sortable:false,data: "fst_name",visible: true},
+					{"title": "<?=lang("Area Code")?>","width": "15%",sortable:false,data: "fst_kode",visible: true},
+					{"title": "<?=lang("Shipping Address")?>","width": "20%",sortable:false,data: "fst_shipping_address", visible: true},
+					{"title": "<?= lang("Action")?>","width": "10%",render: function(data, type, row) {
+                            action = "<a class='btn-delete-shipping-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+                            return action;
+                        },
+						"sortable":false,"className":"dt-body-center text-center"}
+				],
+			});
 
-				data = {
-					//fin_relation_id: $("#fin_relation_id").val(),
-					fin_shipping_address_id: $("#fin_shipping_address_id").val(),
-					fst_name: $("#fst_name").val(),
-					fst_area_code: $("#fst_area_code").val(),
-					fst_shipping_address: $("#fst_shipping_address").val(),
-					action: action
-				}
-
+			$("#tbl_shipping_details").on("click", ".btn-delete-shipping-details", function(event) {
+				event.preventDefault();
 				t = $('#tbl_shipping_details').DataTable();
-				if(mode_shipp_detail == "EDIT"){
-					edited_shipp_detail.data(data).draw(false);
-				} else {
-					t.row.add(data).draw(false);
-				}
-            });
+				var trRow = $(this).parents('tr');
+				t.row(trRow).remove().draw();
+			});
 
 			$("#select-country").change(function(event){
 				event.preventDefault();
-				$('#select-provinceName').val(null).trigger('change');
-				$("#select-provinceName").select2({
+				$('#provinceShipp').val(null).trigger('change');
+				$("#provinceShipp").select2({
 					width: '100%',
 					ajax: {
 						url: '<?=site_url()?>pr/relation/get_dataProvince/'+$("#select-country").val(),
@@ -501,13 +504,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 			});
 
-			$("#select-provinceName").change(function(event){
+			$("#provinceShipp").change(function(event){
 				event.preventDefault();
-				$('#select-districtName').val(null).trigger('change');
-				$("#select-districtName").select2({
+				$('#districtShipp').val(null).trigger('change');
+				$("#districtShipp").select2({
 					width: '100%',
 					ajax: {
-						url: '<?=site_url()?>pr/relation/get_districts/'+$("#select-provinceName").val(),
+						url: '<?=site_url()?>pr/relation/get_district/'+$("#provinceShipp").val(),
 						dataType: 'json',
 						delay: 250,
 						processResults: function (data){
@@ -529,13 +532,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 			});
 
-			$("#select-districtName").change(function(event){
+			$("#districtShipp").change(function(event){
 				event.preventDefault();
-				$('#select-subdistrictName').val(null).trigger('change');
-				$("#select-subdistrictName").select2({
+				$('#subdistrictShipp').val(null).trigger('change');
+				$("#subdistrictShipp").select2({
 					width: '100%',
 					ajax: {
-						url: '<?=site_url()?>pr/relation/get_subdistricts/'+$("#select-districtName").val(),
+						url: '<?=site_url()?>pr/relation/get_subdistrict/'+$("#districtShipp").val(),
 						dataType: 'json',
 						delay: 250,
 						processResults: function (data){
@@ -557,13 +560,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				});
 			});
 
-			$("#select-subdistrictName").change(function(event){
+			$("#subdistrictShipp").change(function(event){
 				event.preventDefault();
-				$('#select-villageName').val(null).trigger('change');
-				$("#select-villageName").select2({
+				$('#villageShipp').val(null).trigger('change');
+				$("#villageShipp").select2({
 					width: '100%',
 					ajax: {
-						url: '<?=site_url()?>pr/relation/get_village/'+$("#select-subdistrictName").val(),
+						url: '<?=site_url()?>pr/relation/get_village/'+$("#subdistrictShipp").val(),
 						dataType: 'json',
 						delay: 250,
 						processResults: function (data){
@@ -584,54 +587,44 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 			});
-		
-			$('#tbl_shipping_details').on('preXhr.dt', function ( e, settings, data ) {
-				//add aditional data post on ajax call
-				data.sessionId = "TEST SESSION ID";
-			}).DataTable({
-				columns:[
-					//{"title": "<?=lang("Relation ID")?>","width": "10%",data: "fin_relation_id",visible: false},
-					{"title": "<?=lang("Shipping Address ID")?>","width": "12%",sortable:false,data: "fin_shipping_address_id",visible: true},
-					{"title": "<?=lang("Name")?>","width": "20%",sortable:false,data: "fst_name",visible: true},
-					{"title": "<?=lang("Shipping Address")?>","width": "20%",sortable:false,data: "fst_shipping_address", visible: true},
-					{"title" : "Action","width": "10%",data:"action",sortable:false,className:'dt-body-center text-center'},
-				],
-				processing: true,
-				serverSide: false,
-				searching: false,
-				lengthChange: false,
-				paging: false,
-				info:false,
-			}).on('draw',function(){
-				$('.btn-delete').confirmation({
-					//rootSelector: '[data-toggle=confirmation]',
-					rootSelector: '.btn-delete',
-					// other options
-				});
 
-				$(".btn-delete").click(function(event){
-					t = $('#tbl_shipping_details').DataTable();
-					var trRow = $(this).parents('tr');
-					t.row(trRow).remove().draw();
-				});
+			var selected_areaCode;
+			$('#provinceShipp').on('select2:select', function(e) {
+				console.log(selected_areaCode);
+				var data = e.params.data;
+				selected_areaCode = data;
+			})
 
-				$(".btn-edit").click(function(event){
-					event.preventDefault();
-					$("#mdlShippingDetails").modal({
-						backdrop:"static",
-					});
-					t = $('#tbl_shipping_details').DataTable();
-					var trRow = $(this).parents('tr');
+			$('#districtShipp').on('select2:select', function(e) {
+				console.log(selected_areaCode);
+				var data = e.params.data;
+				selected_areaCode = data;
+			})
 
-					mode_shipp_detail = "EDIT";
-					edited_shipp_detail = t.row(trRow);
-					row = edited_shipp_detail.data();	
+			$('#subdistrictShipp').on('select2:select', function(e) {
+				console.log(selected_areaCode);
+				var data = e.params.data;
+				selected_areaCode = data;
+			})
 
-					//$("#fin_relation_id").val(row.fin_relation_id);
-					$("#fin_shipping_address_id").val(row.fin_shipping_address_id);
-					$("#fst_name").val(row.fst_name);
-					$("#fst_shipping_address").val(row.fst_shipping_address);
-				});
+			$('#villageShipp').on('select2:select', function(e) {
+				console.log(selected_areaCode);
+				var data = e.params.data;
+				selected_areaCode = data;
+			})
+
+			$("#btn-add-shippDetails").click(function(event) {
+				event.preventDefault();
+				t = $('#tbl_shipping_details').DataTable();
+				t.row.add({
+					fin_shipping_address_id: 0,
+					fin_relation_id: 0,
+					fst_kode: selected_areaCode.id,
+					fst_nama: selected_areaCode.text,
+					fst_name: $("#fst_name").val(),
+					fst_shipping_address: $("#fst_shipping_address").val(),
+					action:action
+				}).draw(false);
 			});
 		});	
 	</script>
@@ -651,8 +644,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			event.preventDefault();
 			data = $("#frmRelation").serializeArray();
 			//data = new FormData($("#frmRelation")[0]);
-			//console.log(data);
-
 			detail = new Array();
             t = $('#tbl_shipping_details').DataTable();
 			datas = t.data();
@@ -660,9 +651,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 detail.push(v);
             });
 			data.push({
-				name:"detail",
+				name:"shippingDetail",
 				value: JSON.stringify(detail)
 			});
+			//data.append("detail",JSON.stringify(detail));
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
@@ -721,7 +713,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					console.log("ERROR : ", e);
 					$("#btnSubmit").prop("disabled", false);
 				}
-
 			});
 		});
 
@@ -869,7 +860,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#select-district").select2({
 				width: '100%',
 				ajax: {
-					url: '<?=site_url()?>pr/relation/get_districts/'+$("#select-provinces").val(),
+					url: '<?=site_url()?>pr/relation/get_district/'+$("#select-provinces").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -897,7 +888,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#select-subdistrict").select2({
 				width: '100%',
 				ajax: {
-					url: '<?=site_url()?>pr/relation/get_subdistricts/'+$("#select-district").val(),
+					url: '<?=site_url()?>pr/relation/get_subdistrict/'+$("#select-district").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -1172,7 +1163,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var newOption = new Option(resp.ms_relations.fst_country_name, resp.ms_relations.fin_country_id, true, true);
     			$('#select-country').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.fst_province_name, resp.ms_relations.province, true, true);
+				var newOption = new Option(resp.ms_relations.fst_province_name, resp.ms_relations.provinces, true, true);
 				$('#select-provinces').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.fst_district_name, resp.ms_relations.district, true, true);
@@ -1200,7 +1191,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$('#select-warehouse').append(newOption).trigger('change');
 
 				// POPULATE SHIPPING DETAILS \\
-				/*$.each(resp.ms_shipping, function(name, val) {
+				$.each(resp.ms_shipping, function(name, val) {
                     console.log(val);
                     //event.preventDefault();
                     t = $('#tbl_shipping_details').DataTable();
@@ -1208,25 +1199,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         fin_shipping_address_id: val.fin_shipping_address_id,
                         fin_relation_id: val.fin_relation_id,
 						fst_name: val.fst_name,
-						fst_area_code: val.fst_kode,
+						fst_kode: val.fst_area_code,
                         fst_shipping_address: val.fst_shipping_address,
                         action: action
                     }).draw(false);
-				})*/
+				})
 
-				ShippingAddress = resp.ms_shipping;
-				$.each(ShippingAddress, function(idx, detail){
-					data = {
-						//fin_relation_id:detail.fin_relation_id,
-						fin_shipping_address_id:detail.fin_shipping_address_id,
-						fst_name:detail.fst_name,
-						fst_area_code:detail.fst_kode,
-						fst_shipping_address:detail.fst_shipping_address,
-						action: action,
-					}
-					t = $('#tbl_shipping_details').DataTable();			
-					t.row.add(data).draw(false);
-				});
+				var newOption = new Option(resp.ms_shipping.fst_province_name, resp.ms_shipping.province, true, true);
+				$('#provinceShipp').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.ms_shipping.fst_district_name, resp.ms_shipping.district, true, true);
+				$('#districtShipp').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.ms_shipping.fst_subdistrict_name, resp.ms_shipping.subdistrict, true, true);
+				$('#subdistrictShipp').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.ms_shipping.fst_village_name, resp.ms_shipping.village, true, true);
+				$('#villageShipp').append(newOption).trigger('change');
+
 			},
 
 			error: function (e) {
@@ -1239,7 +1229,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
-
+<!-- DataTables -->
+<script src="<?= base_url() ?>bower_components/datatables.net/datatables.min.js"></script>
+<script src="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.min.js"></script>
 <script type="text/javascript">
     $(function(){
         $(".select2-container").addClass("form-control"); 
@@ -1253,7 +1245,3 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         });
     });
 </script>
-
-<!-- DataTables -->
-<script src="<?= base_url() ?>bower_components/datatables.net/datatables.min.js"></script>
-<script src="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.min.js"></script>
