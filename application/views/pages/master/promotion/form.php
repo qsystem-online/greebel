@@ -385,28 +385,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     cache: true,
                 }
             });
-            /*$("#fin_item_id").select2({
-                width: '100%',
-                ajax: {
-                    url: '<?= site_url() ?>master/promotion/get_data_ItemPromo',
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function(data) {
-                        data2 = [];
-                        $.each(data, function(index, value) {
-                            data2.push({
-                                "id": value.ItemId,
-                                "text": value.fst_item_name
-                            });
-                        });
-                        console.log(data2);
-                        return {
-                            results: data2
-                        };
-                    },
-                    cache: true,
-                }
-            });*/
+
             $("#fst_item_type").change(function(event){
                 event.preventDefault();
                 //$('#fin_item_id').val(null).trigger('change');
@@ -971,15 +950,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
             // On Change disc % and disc value
             $("#fdc_disc_persen").change(function(){
-                //alert ("fdc_percent_of_price_list");
                 $("#fdc_disc_value").val(0);
-                $("#fdc_disc_value").prop('readonly', true);
             });
 
             $("#fdc_disc_value").change(function(){
-                //alert ("fdc_percent_of_price_list");
                 $("#fdc_disc_persen").val(0);
-                $("#fdc_disc_persen").prop('readonly', true);
             });
 
             $("#btn-add-item-disc").click(function(event) {
@@ -1158,27 +1133,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $("#fst_list_branch_id").select2({
             width: '100%',
             data: branchList
-            /*
-            ajax: {
-                url: '<?= site_url() ?>master/Branch/get_Branch',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value) {
-                        data2.push({
-                            "id": value.fin_branch_id,
-                            "text": value.fst_branch_name
-                        });
-                    });
-                    console.log(data2);
-                    return {
-                        results: data2
-                    };
-                },
-                cache: true,
-            }
-            */
         });
     });
 

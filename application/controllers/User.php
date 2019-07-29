@@ -61,7 +61,7 @@ class User extends MY_Controller
 	public function openForm($mode = "ADD", $fin_user_id = 0)
 	{
 		$this->load->library("menus");
-		//$this->load->model("groups_model");
+		$this->load->model("usersgroup_model");
 
 		if ($this->input->post("submit") != "") {
 			$this->add_save();
@@ -73,6 +73,8 @@ class User extends MY_Controller
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add User" : "Update User";
 		$data["fin_user_id"] = $fin_user_id;
+		$data["arrBranch"] = $this->msbranches_model->getAllList();
+		$data["arrGroup"] = $this->usersgroup_model->getAllList();
 
 		$page_content = $this->parser->parse('pages/user/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -123,6 +125,8 @@ class User extends MY_Controller
 			"fst_email" => $this->input->post("fst_email"),
 			"fst_phone" => $this->input->post("fst_phone"),
 			"fin_department_id" => $this->input->post("fin_department_id"),
+			"fin_branch_id" => $this->input->post("fin_branch_id"),
+			"fin_group_id" => $this->input->post("fin_group_id"),
 			"fbl_admin" => $this->input->post("fbl_admin")
 		];
 
@@ -210,6 +214,8 @@ class User extends MY_Controller
 			"fst_email" => $this->input->post("fst_email"),
 			"fst_phone" => $this->input->post("fst_phone"),
 			"fin_department_id" => $this->input->post("fin_department_id"),
+			"fin_branch_id" => $this->input->post("fin_branch_id"),
+			"fin_group_id" => $this->input->post("fin_group_id"),
 			"fbl_admin" => $this->input->post("fbl_admin")
 		];
 
