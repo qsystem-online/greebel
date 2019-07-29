@@ -329,9 +329,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
             /*data.append("detail",JSON.stringify(detail));*/
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
-                url = "<?= site_url() ?>tr/Sales_preorder/ajx_add_save";
+                url = "<?= site_url() ?>tr/sales_preorder/ajx_add_save";
             } else {
-                url = "<?= site_url() ?>tr/Sales_preorder/ajx_edit_save";
+                url = "<?= site_url() ?>tr/sales_preorder/ajx_edit_save";
             }
             console.log(data);
             //var formData = new FormData($('form')[0])
@@ -352,7 +352,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        window.location.href = "<?= site_url() ?>tr/Sales_preorder/lizt";
+                                        window.location.href = "<?= site_url() ?>tr/sales_preorder/lizt";
                                         return;
                                     }
                                 },
@@ -386,7 +386,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $("#select-maingroupitem").select2({
             width: '100%',
             ajax: {
-                url: '<?= site_url() ?>tr/Sales_preorder/get_data_ItemMainGroupId',
+                url: '<?= site_url() ?>tr/sales_preorder/get_data_ItemMainGroupId',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
@@ -408,7 +408,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $("#select-GroupItemId").select2({
             width: '100%',
             ajax: {
-                url: '<?= site_url() ?>tr/Sales_preorder/get_data_ItemGroupId',
+                url: '<?= site_url() ?>tr/sales_preorder/get_data_ItemGroupId',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
@@ -433,7 +433,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             $("#select-SubGroupItemId").select2({
                 width: '100%',
                 ajax: {
-                    url: '<?= site_url() ?>tr/Sales_preorder/get_data_ItemSubGroupId/' + $("#select-GroupItemId").val(),
+                    url: '<?= site_url() ?>tr/sales_preorder/get_data_ItemSubGroupId/' + $("#select-GroupItemId").val(),
                     dataType: 'json',
                     delay: 250,
                     processResults: function(data) {
@@ -480,7 +480,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $("#select-ItemId").select2({
             width: '100%',
             ajax: {
-                url: '<?= site_url() ?>tr/Sales_preorder/get_data_Item',
+                url: '<?= site_url() ?>tr/sales_preorder/get_data_Item',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
@@ -502,7 +502,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     });
     function init_form(fin_preorder_id) {
         //alert("Init Form");
-        var url = "<?= site_url() ?>tr/Sales_preorder/fetch_data/" + fin_preorder_id;
+        var url = "<?= site_url() ?>tr/sales_preorder/fetch_data/" + fin_preorder_id;
         $.ajax({
             type: "GET",
             url: url,
