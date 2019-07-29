@@ -457,7 +457,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				info:false,
 				columns:[
 					{"title": "<?=lang("Shipping Address ID")?>","width": "15%",sortable:false,data: "fin_shipping_address_id",visible: false},
-					{"title": "<?=lang("Relation ID")?>","width": "10%",data: "fin_relation_id",visible: false},
+					{"title": "<?=lang("Relation Name")?>","width": "10%",data: "fin_relation_id",visible: false},
 					{"title": "<?=lang("Name")?>","width": "20%",sortable:false,data: "fst_name",visible: true},
 					{"title": "<?=lang("Area Code")?>","width": "15%",sortable:false,data: "fst_kode",visible: true},
 					{"title": "<?=lang("Shipping Address")?>","width": "20%",sortable:false,data: "fst_shipping_address", visible: true},
