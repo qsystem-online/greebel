@@ -364,23 +364,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			<div class="modal-body">
 				<form  class="form-horizontal">
-					
-					<!-- <div class="form-group hide">
-						<label for="fin_shipping_address_id" class="col-md-2 control-label"><?=lang("Shipping Address ID")?> :</label>
-						<div class="col-md-10">
-						<input type="text" class="form-control" id="fin_shipping_address_id" placeholder="<?=lang("Autonumber")?>" name="fin_shipping_address_id" value="<?$fin_shipping_address_id?>" readonly>
-							<div id="fin_shipping_address_id_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group hide">
-						<label for="fin_relation_id" class="col-md-4 control-label"><?=lang("Relation ID")?></label>
-						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="fin_relation_id" name="fin_relation_id">
-							<div id="fin_relation_id_err" class="text-danger"></div>
-						</div>
-					</div> -->
-
 					<div class="form-group">
 						<label for="fst_name" class="col-md-2 control-label"><?=lang("Name")?> :</label>
 						<div class="col-md-10">
@@ -456,11 +439,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				paging: false,
 				info:false,
 				columns:[
-					{"title": "<?=lang("Shipping Address ID")?>","width": "15%",sortable:false,data: "fin_shipping_address_id",visible: false},
-					{"title": "<?=lang("Relation Name")?>","width": "10%",data: "fin_relation_id",visible: false},
-					{"title": "<?=lang("Name")?>","width": "20%",sortable:false,data: "fst_name",visible: true},
-					{"title": "<?=lang("Area Code")?>","width": "15%",sortable:false,data: "fst_kode",visible: true},
-					{"title": "<?=lang("Shipping Address")?>","width": "20%",sortable:false,data: "fst_shipping_address", visible: true},
+					{"title": "<?=lang("Shipping Address ID")?>","width": "15%",data: "fin_shipping_address_id",visible: false},
+					{"title": "<?=lang("Relation ID")?>","width": "10%",data: "fin_relation_id",visible: false},
+					{"title": "<?=lang("Name")?>","width": "20%",data: "fst_name",visible: true},
+					{"title": "<?=lang("Area Code")?>","width": "15%",data: "fst_nama",visible: true},
+					{"title": "<?=lang("Shipping Address")?>","width": "20%",data: "fst_shipping_address", visible: true},
 					{"title": "<?= lang("Action")?>","width": "10%",render: function(data, type, row) {
                             action = "<a class='btn-delete-shipping-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
                             return action;
@@ -1204,19 +1187,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         action: action
                     }).draw(false);
 				})
-
-				var newOption = new Option(resp.ms_shipping.fst_province_name, resp.ms_shipping.province, true, true);
-				$('#provinceShipp').append(newOption).trigger('change');
-
-				var newOption = new Option(resp.ms_shipping.fst_district_name, resp.ms_shipping.district, true, true);
-				$('#districtShipp').append(newOption).trigger('change');
-
-				var newOption = new Option(resp.ms_shipping.fst_subdistrict_name, resp.ms_shipping.subdistrict, true, true);
-				$('#subdistrictShipp').append(newOption).trigger('change');
-
-				var newOption = new Option(resp.ms_shipping.fst_village_name, resp.ms_shipping.village, true, true);
-				$('#villageShipp').append(newOption).trigger('change');
-
 			},
 
 			error: function (e) {

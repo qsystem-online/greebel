@@ -973,12 +973,12 @@ class Sales_order extends MY_Controller{
 		var_dump($promo);
 	}
 
-//===== UNHOLD ==============================================================================================================================================================================
+//===== UNHOLD SALES ORDER ==============================================================================================================================================================================
 
 	public function unhold(){
 		$this->load->library('menus');
 		$this->list['page_name'] = "Unhold Sales Order";
-		$this->list['list_name'] = "Unhold SO List";
+		$this->list['list_name'] = "Unhold Sales Order List";
 		$this->list['pKey'] = "id";
 		$this->list['fetch_list_data_ajax_url'] = site_url().'tr/sales_order/unhold_list_data';
 		$this->list['arrSearch'] = [
