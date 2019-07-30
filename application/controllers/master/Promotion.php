@@ -97,22 +97,9 @@ class Promotion extends MY_Controller
 
     public function ajx_add_save()
     {
-        $this->load->model('mspromo_model');
-        $this->form_validation->set_rules($this->mspromo_model->getRules("ADD", 0));
-        $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-
-        if ($this->form_validation->run() == FALSE) {
-            //print_r($this->form_validation->error_array());
-            $this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-            $this->ajxResp["message"] = "Error Validation Forms";
-            $this->ajxResp["data"] = $this->form_validation->error_array();
-            $this->json_output();
-            return;
-        }
-
         $data = [
             "fst_promo_name" => $this->input->post("fst_promo_name"),
-            "fst_list_branch_id" => implode(",",$this->input->post("fst_list_branch_id")),
+            //"fst_list_branch_id" => implode(",",$this->input->post("fst_list_branch_id")),
             "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fdt_start" => dBDateFormat($this->input->post("fdt_start")),
             "fdt_end" => dBDateFormat($this->input->post("fdt_end")),
@@ -132,6 +119,26 @@ class Promotion extends MY_Controller
             "fbl_is_multiples_prize" => ($this->input->post("fbl_is_multiples_prize") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
+
+        if ($this->input->post("fst_list_branch_id") !=  null){
+            $data["fst_list_branch_id"] = implode(",",$this->input->post("fst_list_branch_id"));
+        }else{
+            $data["fst_list_branch_id"] = $this->input->post("fst_list_branch_id");
+        }
+        
+        $this->load->model('mspromo_model');
+        $this->form_validation->set_data($data);
+        $this->form_validation->set_rules($this->mspromo_model->getRules("ADD", 0));
+        $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+
+        if ($this->form_validation->run() == FALSE) {
+            //print_r($this->form_validation->error_array());
+            $this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+            $this->ajxResp["message"] = "Error Validation Forms";
+            $this->ajxResp["data"] = $this->form_validation->error_array();
+            $this->json_output();
+            return;
+        }
 
         $this->db->trans_start();
         $insertId = $this->mspromo_model->insert($data);
@@ -242,21 +249,10 @@ class Promotion extends MY_Controller
             return;
         }
 
-        $this->form_validation->set_rules($this->mspromo_model->getRules("EDIT", $fin_promo_id));
-        $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-        if ($this->form_validation->run() == FALSE) {
-            //print_r($this->form_validation->error_array());
-            $this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-            $this->ajxResp["message"] = "Error Validation Forms";
-            $this->ajxResp["data"] = $this->form_validation->error_array();
-            $this->json_output();
-            return;
-        }
-
         $data = [
             "fin_promo_id" => $fin_promo_id,
             "fst_promo_name" => $this->input->post("fst_promo_name"),
-            "fst_list_branch_id" => implode(",",$this->input->post("fst_list_branch_id")),
+            //"fst_list_branch_id" => implode(",",$this->input->post("fst_list_branch_id")),
             "fst_promo_type" => $this->input->post("fst_promo_type"),
             "fdt_start" => dBDateFormat($this->input->post("fdt_start")),
             "fdt_end" => dBDateFormat($this->input->post("fdt_end")),
@@ -276,6 +272,24 @@ class Promotion extends MY_Controller
             "fbl_is_multiples_prize" => ($this->input->post("fbl_is_multiples_prize") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
+
+        if ($this->input->post("fst_list_branch_id") !=  null){
+            $data["fst_list_branch_id"] = implode(",",$this->input->post("fst_list_branch_id"));
+        }else{
+            $data["fst_list_branch_id"] = $this->input->post("fst_list_branch_id");
+        }
+
+        $this->form_validation->set_data($data);
+        $this->form_validation->set_rules($this->mspromo_model->getRules("EDIT", $fin_promo_id));
+        $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+        if ($this->form_validation->run() == FALSE) {
+            //print_r($this->form_validation->error_array());
+            $this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+            $this->ajxResp["message"] = "Error Validation Forms";
+            $this->ajxResp["data"] = $this->form_validation->error_array();
+            $this->json_output();
+            return;
+        }
 
         $this->db->trans_start();
         $this->mspromo_model->update($data);
@@ -304,6 +318,7 @@ class Promotion extends MY_Controller
                 "fst_unit" => $promoitem->fst_unit,
                 "fst_active" => 'A'
             ];
+
             $this->mspromoitems_model->insert($data);
             $dbError  = $this->db->error();
             if ($dbError["code"] != 0) {

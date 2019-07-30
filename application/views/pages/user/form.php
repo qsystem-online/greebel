@@ -135,6 +135,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
+                        <label for="fin_branch_id" class="col-md-2 control-label"><?=lang("Branch")?></label>
+                            <div class="col-md-4">
+                                <select class="form-control select2" id="fin_branch_id" name="fin_branch_id"></select>
+                                <div id="fin_branch_id_err" class="text-danger"></div>
+                            </div>
+                    </div>
+					<div class="form-group">
+                        <label for="fin_group_id" class="col-md-2 control-label"><?=lang("Group")?></label>
+                            <div class="col-md-4">
+                                <select class="form-control select2" id="fin_group_id" name="fin_group_id"></select>
+                                <div id="fin_group_id_err" class="text-danger"></div>
+                            </div>
+                    </div>
+					<div class="form-group">
 						<label for="fst_birthplace" class="col-sm-2 control-label"></label>
 						<div class="col-sm-10">
 							<img id="imgAvatar" style="border:1px solid #999;width:128px;" src="<?=site_url()?>assets/app/users/avatar/default.jpg"/>
@@ -165,8 +179,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </section>
 
 <script type="text/javascript">
-	$(function(){
+    $(function() {
+        branchList = [];
+        <?php foreach($arrBranch as $branch){ ?>
+            branchList.push({
+                "id":"<?= $branch->fin_branch_id ?>",
+                "text":"<?= $branch->fst_branch_name ?>"
+            });  
+        <?php } ?>
 
+		groupList = [];
+        <?php foreach($arrGroup as $group){ ?>
+            groupList.push({
+                "id":"<?= $group->fin_group_id ?>",
+                "text":"<?= $group->fst_group_name ?>"
+            });  
+        <?php } ?>
 		<?php if($mode == "EDIT"){?>
 			init_form($("#fin_user_id").val());
 		<?php } ?>
@@ -272,8 +300,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				cache: true,
 			}
 		});
-		
-		$("#fdt_birthdate").datepicker('update', dateFormat(user.fdt_birthdate));
+
+		$("#fin_branch_id").select2({
+            width: '100%',
+            data: branchList
+        });
+
+		$("#fin_group_id").select2({
+            width: '100%',
+            data: groupList
+        });
+
 	});
 
 
@@ -308,6 +345,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var newOption = new Option(resp.user.fst_department_name, resp.user.fin_department_id, true, true);
     			// Append it to the select
     			$('#select-departmentname').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.user.fst_group_name, resp.user.fin_group_id, true, true);
+    			// Append it to the select
+    			$('#fin_group_id').append(newOption).trigger('change');
+
+				var newOption = new Option(resp.user.fst_branch_name, resp.user.fin_branch_id, true, true);
+    			// Append it to the select
+    			$('#fin_branch_id').append(newOption).trigger('change');
 
 				//Image Load 
 				$('#imgAvatar').attr("src",resp.user.avatarURL);

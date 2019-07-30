@@ -9,16 +9,17 @@ class Msshippingaddress_model extends MY_Model {
         parent:: __construct();
     }
 
-    public function getDataById($fin_shipping_address_id){
-        $ssql = "SELECT * from msshippingaddress where fin_shipping_address_id ? and fst_active = 'A'";
-        $qr = $this->db->query($ssql,[$fin_shipping_address_id]);
+    public function getDataById($fin_shipping_address_id)
+    {
+        $ssql = "select * from " . $this->tableName . " where fin_shipping_address_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$fin_shipping_address_id]);
         $rw = $qr->row();
-        
-        $data = [
-            "ms_shipping" => $rw
-		];
 
-		return $data;
+        $data = [
+            "shipping_Detail" => $rw
+        ];
+
+        return $data;
     }
 
     public function getRules($mode="ADD",$id=0){
@@ -42,4 +43,5 @@ class Msshippingaddress_model extends MY_Model {
         $ssql = "delete from " . $this->tableName . " where fin_relation_id = $fin_relation_id";
         $this->db->query($ssql);
     }
+
 }

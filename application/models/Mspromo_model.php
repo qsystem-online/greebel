@@ -70,6 +70,15 @@ class Mspromo_model extends MY_Model
                 'required' => '%s Required'
             )
         ];
+        $rules[] = [
+            'field' => 'fst_list_branch_id',
+            'label' => 'Branch',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s Required'
+            )
+        ];
+        
 
         return $rules;
     }
