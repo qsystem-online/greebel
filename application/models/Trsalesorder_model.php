@@ -415,9 +415,57 @@ class Trsalesorder_model extends MY_Model {
         return false;
     }
 
-    public function posting_so($fin_salesorder_id){
+    
+    public function posting($fin_salesorder_id){
         //Bila terdapat DP jurnal DP tersebut
-        $ssql ="";
+        
+
+        $ssql ="select * from trsalesorder where fin_salesorder_id = ?";
+        $qr = $this->db->query($ssql,[$fin_salesorder_id]);
+        $dataH = $qr->row_array();
+
+        if ($dataH["fdc_downpayment"] > 0 && $dataH["fst_active"] == "A"){
+            $this->load->model("glledger_model");
+            $dataJurnal = [
+                [
+                    "fin_branch_id"=>$dataH["fin_branch_id"],
+                    "fst_account_code"=>getGLConfig("SO_PIUTANG"),
+                    "fdt_trx_datetime"=>$dataH["fdt_salesorder_date"],
+                    "fst_trx_sourcecode"=>JURNAL_TRX_SC_SO,
+                    "fin_trx_id"=>$dataH["fin_salesorder_id"],
+                    "fst_reference"=>null,
+                    "fdc_debit"=>$dataH["fdc_downpayment"],
+                    "fdc_credit"=>0,
+                    "fst_orgi_curr_code"=>$dataH["fst_curr_code"],
+                    "fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
+                    "fst_no_ref_bank"=>null,
+                    "fst_profit_cost_center_code"=>null,
+                    "fin_relation_id"=>$dataH["fin_relation_id"],
+                    "fst_active"=>"A"
+                ],
+                [
+                    "fin_branch_id"=>$dataH["fin_branch_id"],
+                    "fst_account_code"=>getGLConfig("SO_DP"),
+                    "fdt_trx_datetime"=>$dataH["fdt_salesorder_date"],
+                    "fst_trx_sourcecode"=>JURNAL_TRX_SC_SO,
+                    "fin_trx_id"=>$dataH["fin_salesorder_id"],
+                    "fst_reference"=>null,
+                    "fdc_debit"=>0,
+                    "fdc_credit"=>$dataH["fdc_downpayment"],
+                    "fst_orgi_curr_code"=>$dataH["fst_curr_code"],
+                    "fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
+                    "fst_no_ref_bank"=>null,
+                    "fst_profit_cost_center_code"=>null,
+                    "fin_relation_id"=>$dataH["fin_relation_id"],
+                    "fst_active"=>"A"
+                ],
+            ];
+            
+            if($this->glledger_model->createJurnal($dataJurnal) === false){
+                throw new Exception("Error Create Jurnal !", EXCEPTION_JURNAL);
+            }
+        }
+
 
     }
 
@@ -426,6 +474,30 @@ class Trsalesorder_model extends MY_Model {
         unset($data["fin_relation_id"]);
         unset($data["fst_salesorder_no"]);
         parent::update($data);        
+    }
+
+    public function approved($finSalesOrderId){
+
+        $data = [
+            "fin_salesorder_id"=>$finSalesOrderId,
+            "fst_active"=>"A"
+        ];
+        parent::update($data);
+        
+
+        //Cek kalau semua proses verification sudah selesai
+        $ssql = "select * from trverification 
+        where fst_controller ='SO' 
+        and fin_transaction_id = ? 
+        and fst_verification_status != 'VF' 
+        and fst_active='A'" ;
+
+        $qr = $this->db->query($ssql,[$finSalesOrderId]);
+
+        $rw = $qr->row();
+        if ($rw == false){
+            $this->posting($finSalesOrderId);
+        }
     }
 }
 

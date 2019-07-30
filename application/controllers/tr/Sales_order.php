@@ -131,7 +131,7 @@ class Sales_order extends MY_Controller{
 			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),			
 			"fbl_is_hold" => ($this->input->post("fbl_is_hold") == false) ? 0 : 1,
 			"fbl_is_vat_include" => ($this->input->post("fbl_is_vat_include") == false) ? 0 : 1,
-			"fst_shipping_address" =>$this->input->post("fst_shipping_address"),			
+			"fin_shipping_address_id" =>$this->input->post("fin_shipping_address_id"),			
 			"fst_memo" =>$this->input->post("fst_memo"),
 			"fdc_dpp_amount" => 0, // calculate from detail
 			"fdc_vat_percent" => $this->input->post("fdc_vat_percent"),
@@ -384,46 +384,8 @@ class Sales_order extends MY_Controller{
 		}
 
 		//Posting Transaction		
-		if ($dataH["fdc_downpayment"] > 0){
-			$dataJurnal = [
-				[
-					"fin_branch_id"=>$dataH["fin_branch_id"],
-					"fst_account_code"=>getGLConfig("SO_PIUTANG"),
-					"fdt_trx_datetime"=>$dataH["fdt_salesorder_date"],
-					"fst_trx_sourcecode"=>JURNAL_TRX_SC_SO,
-					"fin_trx_id"=>$insertId,
-					"fst_reference"=>null,
-					"fdc_debit"=>$dataH["fdc_downpayment"],
-					"fdc_credit"=>0,
-					"fst_orgi_curr_code"=>$dataH["fst_curr_code"],
-					"fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
-					"fst_no_ref_bank"=>null,
-					"fst_profit_cost_center_code"=>null,
-					"fin_relation_id"=>$dataH["fin_relation_id"],
-					"fst_active"=>"A"
-				],
-				[
-					"fin_branch_id"=>$dataH["fin_branch_id"],
-					"fst_account_code"=>getGLConfig("SO_DP"),
-					"fdt_trx_datetime"=>$dataH["fdt_salesorder_date"],
-					"fst_trx_sourcecode"=> JURNAL_TRX_SC_SO,
-					"fin_trx_id"=>$insertId,
-					"fst_reference"=>null,
-					"fdc_debit"=>0,
-					"fdc_credit"=>$dataH["fdc_downpayment"],
-					"fst_orgi_curr_code"=>$dataH["fst_curr_code"],
-					"fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
-					"fst_no_ref_bank"=>null,
-					"fst_profit_cost_center_code"=>null,
-					"fin_relation_id"=>$dataH["fin_relation_id"],
-					"fst_active"=>"A"
-				],
-			];
-			$this->load->model("glledger_model");
-			//var_dump($dataJurnal);
-			if($this->glledger_model->createJurnal($dataJurnal) === false){
-				throw new Exception("Error Create Jurnal !", EXCEPTION_JURNAL);
-			}
+		if ($dataH["fdc_downpayment"] > 0 && $dataH["fst_active"] == "A"){
+			$this->trsalesorder->posting($insertId);
 		}
 		$this->db->trans_complete();
 
@@ -508,47 +470,52 @@ class Sales_order extends MY_Controller{
 			for($i=0; $i < sizeof($postDetails) ; $i++){
 				//Sync data dari form post dengan data di db
 				$postDetail = $postDetails[$i];
-				$dbDetail = $dbDetails[$postDetail->fin_rec_id];
+				if(isset($dbDetails[$postDetail->fin_rec_id])){
+					$dbDetail = $dbDetails[$postDetail->fin_rec_id];
 
-				//Item dan unit tidak boleh di ganti bila sudah ada SJ
-				if ($dbDetail->fdb_qty_out > 0 && $postDetail->fin_item_id != $dbDetail->fin_item_id){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = "Error Validation Forms";
-					$error = [
-						"detail"=> lang("Detail item tidak boleh dirubah bila sudah terdapat surat jalan!")
-					];
-					$this->ajxResp["data"] = $error;
-					$this->json_output();
-					return;
-				}				
-				if ($dbDetail->fdb_qty_out > 0 && $postDetail->fst_unit != $dbDetail->fst_unit){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = "Error Validation Forms";
-					$error = [
-						"detail"=> lang("Detail item tidak boleh dirubah bila sudah terdapat surat jalan!")
-					];
-					$this->ajxResp["data"] = $error;
-					$this->json_output();
-					return;
+					//Item dan unit tidak boleh di ganti bila sudah ada SJ
+					if ($dbDetail->fdb_qty_out > 0 && $postDetail->fin_item_id != $dbDetail->fin_item_id){
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = "Error Validation Forms";
+						$error = [
+							"detail"=> lang("Detail item tidak boleh dirubah bila sudah terdapat surat jalan!")
+						];
+						$this->ajxResp["data"] = $error;
+						$this->json_output();
+						return;
+					}				
+					if ($dbDetail->fdb_qty_out > 0 && $postDetail->fst_unit != $dbDetail->fst_unit){
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = "Error Validation Forms";
+						$error = [
+							"detail"=> lang("Detail item tidak boleh dirubah bila sudah terdapat surat jalan!")
+						];
+						$this->ajxResp["data"] = $error;
+						$this->json_output();
+						return;
+					}
+
+					//Qty Tidak boleh di edit lebih kecil dari qty out
+					if ($postDetail->fdb_qty < $dbDetail->fdb_qty_out){
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = "Error Validation Forms";
+						$error = [
+							"detail"=> lang("Qty edit tidak boleh lebih kecil dari qty yang telah dikeluarkan")
+						];
+						$this->ajxResp["data"] = $error;
+						$this->json_output();
+						return;
+					}
+		
+					//update data qty_out
+					$postDetails[$i]->fdb_qty_out = $dbDetail->fdb_qty_out;
+
+					//Delete arr data db yang sudah di sync
+					unset($dbDetails[$postDetail->fin_rec_id]);
+				}else{
+					unset($postDetails[$i]->fin_rec_id);
+
 				}
-
-				//Qty Tidak boleh di edit lebih kecil dari qty out
-				if ($postDetail->fdb_qty < $dbDetail->fdb_qty_out){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = "Error Validation Forms";
-					$error = [
-						"detail"=> lang("Qty edit tidak boleh lebih kecil dari qty yang telah dikeluarkan")
-					];
-					$this->ajxResp["data"] = $error;
-					$this->json_output();
-					return;
-				}
-	
-				//update data qty_out
-				$postDetails[$i]->fdb_qty_out = $dbDetail->fdb_qty_out;
-
-				//Delete arr data db yang sudah di sync
-				unset($dbDetails[$postDetail->fin_rec_id]);
 			}
 			
 			//jika tersisa data db, pastikan data di db tidak memiliki qty_out (Ada detail yang di hapus dr form)
@@ -579,10 +546,6 @@ class Sales_order extends MY_Controller{
 				}
 			}
 			
-			
-
-
-
 
 			//** Cek if this transaction need authorization */
 			$this->load->model("trinventory_model");
@@ -725,13 +688,15 @@ class Sales_order extends MY_Controller{
 					$this->trvoucher_model->createVoucher($dataVoucher);
 				}
 			}
-
-			//Insert Data Detail
+			
+			//Insert Data Detail			
 			foreach ($postDetails as $item) {
 				$dataDetail = (array) $item;
 				$dataDetail["fin_salesorder_id"] = $dataH["fin_salesorder_id"];
 				$dataDetail["fst_active"] = "A";
-				$this->trsalesorderdetails_model->insert($dataDetail);			
+				//print_r($item);
+				$id = $this->trsalesorderdetails_model->insert($dataDetail);		
+				//echo $this->db->last_query() . " id :" .$id;
 				$dbError  = $this->db->error();
 				if ($dbError["code"] != 0){			
 					$this->ajxResp["status"] = "DB_FAILED";
@@ -765,48 +730,11 @@ class Sales_order extends MY_Controller{
 			$this->glledger_model->cancelJurnal(JURNAL_TRX_SC_SO,$dataH["fin_salesorder_id"],$dataH["fdt_salesorder_date"]);
 
 			//Posting Transaction
-			if ($dataH["fdc_downpayment"] > 0){
-				$dataJurnal = [
-					[
-						"fin_branch_id"=>$dataH["fin_branch_id"],
-						"fst_account_code"=>getGLConfig("SO_PIUTANG"),
-						"fdt_trx_datetime"=>$dataH["fdt_salesorder_date"],
-						"fst_trx_sourcecode"=>JURNAL_TRX_SC_SO,
-						"fin_trx_id"=>$dataH["fin_salesorder_id"],
-						"fst_reference"=>null,
-						"fdc_debit"=>$dataH["fdc_downpayment"],
-						"fdc_credit"=>0,
-						"fst_orgi_curr_code"=>$dataH["fst_curr_code"],
-						"fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
-						"fst_no_ref_bank"=>null,
-						"fst_profit_cost_center_code"=>null,
-						"fin_relation_id"=>$dataH["fin_relation_id"],
-						"fst_active"=>"A"
-					],
-					[
-						"fin_branch_id"=>$dataH["fin_branch_id"],
-						"fst_account_code"=>getGLConfig("SO_DP"),
-						"fdt_trx_datetime"=>$dataH["fdt_salesorder_date"],
-						"fst_trx_sourcecode"=>JURNAL_TRX_SC_SO,
-						"fin_trx_id"=>$dataH["fin_salesorder_id"],
-						"fst_reference"=>null,
-						"fdc_debit"=>0,
-						"fdc_credit"=>$dataH["fdc_downpayment"],
-						"fst_orgi_curr_code"=>$dataH["fst_curr_code"],
-						"fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
-						"fst_no_ref_bank"=>null,
-						"fst_profit_cost_center_code"=>null,
-						"fin_relation_id"=>$dataH["fin_relation_id"],
-						"fst_active"=>"A"
-					],
-				];
-				
-				if($this->glledger_model->createJurnal($dataJurnal) === false){
-					throw new Exception("Error Create Jurnal !", EXCEPTION_JURNAL);
-				}
+			if ($dataH["fdc_downpayment"] > 0 && $dataH["fst_active"] == "A"){
+				$this->trsalesorder->posting($dataH["fin_salesorder_id"]);
 			}
 			
-			$this->db->trans_complete();						
+			$this->db->trans_complete();	
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
 			$this->ajxResp["data"]["insert_id"] = $fin_salesorder_id;
@@ -837,6 +765,7 @@ class Sales_order extends MY_Controller{
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -1020,6 +949,7 @@ class Sales_order extends MY_Controller{
 		$b = 2;
 		$c = $a+$b;
 		echo $c;
+		die();
 
 		$data=[
 			"fst_transaction_type"=>"SALESORDER"

@@ -61,6 +61,9 @@ class Datatables
 		$limit = (int)$this->CI->input->get_post("length");
 
 		$orders = $this->CI->input->get_post("order");
+		if ($orders ==""){
+			$orders=[];
+		}
 		$columns = $this->CI->input->get_post("columns");
 
 
@@ -69,8 +72,7 @@ class Datatables
 		//Get Total Row 
 		$ssql = "select count(*) as ttl_records from " . $this->countTableName . " where " . $this->activeCondition;
 		$qr = $this->db->query($ssql, []);
-		//echo $this->db->last_query();
-		//die();
+		//lastQuery();
 
 		$rw = $qr->row();
 
@@ -129,7 +131,6 @@ class Datatables
 		$ssql = "select " . $this->selectFields . " from " . $this->tableName . " " . $strWhere . " " . $strGroupBy . " " . $strOrder . " limit ? offset ?";
 
 		$qr = $this->db->query($ssql, $params);
-		
 		$rs = $qr->result_array();
 		//print_r($this->CI->input->get_post("draw"));
 		$datasource = [

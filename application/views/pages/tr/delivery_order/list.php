@@ -27,7 +27,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="box-header with-border">
 				<h3 class="box-title"><?=$list_name?></h3>
 				<div class="box-tools">
-					<a id="btnNew" data-toggle="confirmation" href="<?=$addnew_ajax_url?>" class="btn btn-primary btn-sm"><i class="fa fa-plus" aria-hidden="true"></i> New Record</a>
+					<a id="btnNew" href="<?=site_url()?>tr/delivery_order/add" class="btn btn-primary btn-sm"><i class="fa fa-plus" aria-hidden="true"></i> New Record</a>
 				</div>
 
 			</div>			
@@ -37,15 +37,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<span>Search on:</span>
 					<span>
                         <select id="selectSearch" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">                            
-                            <?php
-                                foreach($arrSearch as $key => $value){ ?>
-                                    <option value=<?=$key?>><?=$value?></option>
-                                <?php
-                                }
-							// <option value="a.fin_id">No.Transaksi</option>
-							// <option value="a.fst_customer_name">Customer</option>
-                            // <option value="c.fst_salesname">Sales Name</option>
-                            ?>
+                            <?php foreach($arrSearch as $key => $value){ ?>
+                                <option value=<?=$key?>><?=$value?></option>
+                            <?php } ?>
 						</select>
 					</span>
 				</div>
@@ -69,13 +63,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).DataTable({
 			columns:[
                 <?php
-					foreach($columns as $col){?>
-						<?php
-							$strData = isset($col['data']) ? ",data:\"" . $col['data'] ."\"" : "";
-
-						?>
-						{"title" : "<?=$col['title']?>","width": "<?=$col['width']?>"
-							<?= $strData ?>
+                    foreach($columns as $col){?>
+                        {"title" : "<?=$col['title']?>","width": "<?=$col['width']?>","data":"<?=$col['data']?>"
                             <?php if(isset($col['render'])){?>
                                 ,"render":<?php echo $col['render'] ?>
                             <?php } ?>
@@ -100,29 +89,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			serverSide: true,
 			ajax: "<?=$fetch_list_data_ajax_url?>"
 		}).on('draw',function(){
-			$('.btn-delete').confirmation({
-				//rootSelector: '[data-toggle=confirmation]',
-				rootSelector: '.btn-delete',
-				// other options
-			});	
-
-			$(".btn-delete").click(function(event){
-				var trRow = $(this).parents('tr');
-				$.ajax({
-					url:"<?=$delete_ajax_url?>" + $(this).data("<?=$pKey?>"),
-					success:function(resp){
-						if (resp.status == "SUCCESS"){
-							trRow.remove();
-						}
-					}
-				})
-			});
-
-			$(".btn-edit").click(function(event){
-				id = $(this).data("<?=$pKey?>");
-				window.location.replace("<?=$edit_ajax_url?>" + id);
-			});
-
+            
 		});
 
 	});

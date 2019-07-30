@@ -6,6 +6,7 @@ class Login extends CI_Controller
 	public $data = [];
 	public function index()
 	{
+		
 		$this->load->model("users_model");
 		$username = $this->input->post("username");
 		$password = $this->input->post("password");
@@ -34,6 +35,7 @@ class Login extends CI_Controller
 			}
 		}
 		$this->parser->parse('pages/login', $this->data);
+		
 	}
 
 	public function signout($type = "logout")
@@ -43,5 +45,8 @@ class Login extends CI_Controller
 			$this->session->unset_userdata("last_uri");
 		}
 		redirect('/login', 'refresh');
+	}
+	public function test(){
+		echo "TEST";
 	}
 }

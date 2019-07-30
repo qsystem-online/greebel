@@ -117,4 +117,14 @@ class Users_model extends MY_Model
 		$query = $this->db->get('users');
 		return $query->result_array();
 	}
+
+
+	public function getSelect2Driver(){
+		$activeBranchId = $this->aauth->get_active_branch_id();
+		$driverDepartmentId = getDbConfig("driver_department_id");
+		$ssql ="select fin_user_id as id, fst_fullname as text from users where fin_branch_id = ? and fin_department_id = ? and fst_active ='A' ";
+		$qr = $this->db->query($ssql,[$activeBranchId,$driverDepartmentId]);
+		$rs = $qr->result();
+		return $rs;
+	}
 }

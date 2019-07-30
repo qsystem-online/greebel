@@ -5,8 +5,25 @@ class Aauth {
 	private $user;
 	public function __construct() {
 		$this->CI = & get_instance();		
-		$this->CI->load->library("session");
+		$this->CI->load->library("session");		
 		$this->user = $this->CI->session->userdata("active_user");
+		/*
+		if ($this->user == null){
+			if ($this->CI->input->is_ajax_request()){
+				$resp =[];
+				$resp["status"] = AJAX_STATUS_SESSION_EXPIRED;
+				$this->CI->session->unset_userdata("last_uri");
+				header('Content-Type: application/json');
+				http_response_code($http_code);
+				echo json_encode($resp);
+
+			}else{
+				redirect('/login', 'refresh');
+			}
+		}
+		*/
+		
+
 	}
 
 	public function user(){

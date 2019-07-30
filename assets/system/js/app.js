@@ -66,7 +66,7 @@ function money_parse(money){
 	if (DECIMAL_SEPARATOR == ","){
 		value = value.replace(",",".");
 	}
-	return value;
+	return parseFloat(value);
 
 	
 }
@@ -85,3 +85,15 @@ function blockUIOnAjaxRequest(message){
 		$(document).unbind('ajaxStart');
 	});
 }
+
+function fixedSelect2(){
+	$(".select2-container").addClass("form-control"); 
+	$(".select2-selection--single , .select2-selection--multiple").css({
+		"border":"0px solid #000",
+		"padding":"0px 0px 0px 0px"
+	});         
+	$(".select2-selection--multiple").css({
+		"margin-top" : "-5px",
+		"background-color":"unset"
+	});
+};
