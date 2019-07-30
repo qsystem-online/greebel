@@ -147,27 +147,48 @@ class Trsuratjalan_model extends MY_Model {
         }
         foreach($rs as $rw){
             $finSalesorderDetailId = $rw->fin_salesorder_detail_id;
-            $ssql = "update trsalesorderdetails set fdb_qty_out = fdb_qty_out +  " . $rw->fdb_qty  ." where fin_rec_id = ?";
+            $ssql = "update trsalesorderdetails set fdb_qty_out = fdb_qty_out -  " . $rw->fdb_qty  ." where fin_rec_id = ?";
             $query = $this->db->query($ssql,[$finSalesorderDetailId]);               
         }
 
     }
 
     public function posting($sjId){
+        $this->load->model("trinventory_model");        
+    
+        $ssql = "select a.*,b.fin_warehouse_id from trsuratjalandetails a 
+            inner join trsuratjalan b on a.fin_sj_id = b.fin_sj_id 
+            where a.fin_sj_id = ?";
 
-        // Update Kartu Stock
-
-        //update Sales Order
-        $ssql = "select * from trsuratjalandetails where fin_sj_id = ?";
         $qr = $this->db->query($ssql,[$sjId]);
         $rs = $qr->result();
         if(!$rs){
             return false;
         }
         foreach($rs as $rw){
+            //update Sales Order
             $finSalesorderDetailId = $rw->fin_salesorder_detail_id;
             $ssql = "update trsalesorderdetails set fdb_qty_out = fdb_qty_out +  " . $rw->fdb_qty  ." where fin_rec_id = ?";
             $query = $this->db->query($ssql,[$finSalesorderDetailId]);               
+
+            // Update Kartu Stock
+            $data = [
+                "fin_warehouse_id"=>$rw->fin_warehouse_id,
+                "fdt_trx_datetime"=>$rw->fdt_sj_date,
+                "fst_trx_code"=>"DO",
+                "fin_trx_id"=>$sjId,
+                "fst_referensi"=>null,
+                "fin_item_id"=>$rw->fin_item_id,
+                "fst_unit"=>$rw->fst_unit,
+                "fdb_qty_in"=>0,
+                "fdb_qty_out"=>0,
+                "fdc_price_in"=>0,
+                "fst_active"=>"A"
+            ];
+
+
+            $this->trinventory_model->insert();
+        
         }
 
         // Jurnal

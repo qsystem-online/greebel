@@ -20,6 +20,8 @@
 		<link rel="stylesheet" href="<?=base_url()?>bower_components/jvectormap/jquery-jvectormap.css">
 		<!-- Date Picker -->
 		<link rel="stylesheet" href="<?=base_url()?>bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+		<!-- DateTime Picker -->
+		<link rel="stylesheet" href="<?=base_url()?>plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css">		
 		<!-- Daterange picker -->
 		<link rel="stylesheet" href="<?=base_url()?>bower_components/bootstrap-daterangepicker/daterangepicker.css">
 		<!-- bootstrap wysihtml5 - text editor -->
@@ -171,6 +173,8 @@
 		<script src="<?=base_url()?>bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
 		<!-- datepicker -->
 		<script src="<?=base_url()?>bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+		<!-- datetimepicker -->
+		<script src="<?=base_url()?>plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
 		<!-- Bootstrap WYSIHTML5 -->
 		<script src="<?=base_url()?>plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
 		<!-- Jquery-Confirm -->

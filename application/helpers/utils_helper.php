@@ -22,7 +22,7 @@
         }
     }
     if (!function_exists('dBDateTimeFormat')){
-        function dBDateTimeFormat($strDate,$inputFormat){
+        function dBDateTimeFormat($strDate,$inputFormat =''){
             $inputFormat = ($inputFormat == '' ) ? DATEPICKER_FORMAT_ALIAS . " H:i:s" : $inputFormat;
             
             $date = DateTime::createFromFormat($inputFormat, $strDate);

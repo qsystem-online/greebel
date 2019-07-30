@@ -262,7 +262,8 @@ class Delivery_order extends MY_Controller{
         $this->load->model("trsuratjalandetails_model");
         
         $dataH = $this->input->post();        
-        $dataH["fdt_sj_date"] = dBDateFormat($dataH["fdt_sj_date"]);
+        $dataH["fdt_sj_date"] = dBDateTimeFormat($dataH["fdt_sj_date"]);
+        
         $this->form_validation->set_rules($this->trsuratjalan_model->getRules("ADD", 0));
         $this->form_validation->set_data($dataH);
         
@@ -324,7 +325,7 @@ class Delivery_order extends MY_Controller{
         $this->trsuratjalan_model->unposting($dataH["fin_sj_id"]);
 
         //Delete Detail
-        $this->trsuratjalan_model->delete($dataH["fin_sj_id"]);
+        $this->trsuratjalandetails_model->deleteByHId($dataH["fin_sj_id"]);
         
         foreach($details as $detail){
             $detail = (array) $detail;

@@ -22,4 +22,10 @@ class Trsuratjalandetails_model extends MY_Model {
         return $rules;
     }
     
+    public function deleteByHId($sjId){
+        $ssql ="delete from trsuratjalandetails where fin_sj_id = ?";
+        $this->db->query($ssql,[$sjId]);
+        
+    }
+
 }

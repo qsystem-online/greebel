@@ -28,6 +28,22 @@ $(function(){
 			digits: 2
 		});
 	}
+
+	if (typeof $(".datetimepicker").datetimepicker === "function") { 
+		$('.datetimepicker').datetimepicker({
+			//language:  'fr',
+			weekStart: 0,
+			todayBtn:  1,
+			autoclose: 1,
+			todayHighlight: 1,
+			startView: 2,
+			forceParse: 0,
+			format: DATETIMEPICKER_FORMAT,
+			showMeridian: 0
+		});	
+	};
+		
+
 });
 
 //Format data dari ajax ke format datepicker, setting di config.js
@@ -35,6 +51,13 @@ function dateFormat(strDate){
 	var result = moment(strDate,'YYYY-MM-DD').format(DATEPICKER_FORMAT_MOMENT);
 	return result;
 }
+
+function dateTimeFormat(strDateTime){
+	var result = moment(strDateTime,'YYYY-MM-DD HH:mm:ss').format(DATETIMEPICKER_FORMAT_MOMENT);
+	return result;
+}
+
+
 
  function money_format (number) {
 	decimals = DECIMAL_DIGIT;

@@ -52,7 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div class="input-group-addon">
 									<i class="fa fa-calendar"></i>
 								</div>
-								<input type="text" class="form-control pull-right datepicker" id="fdt_sj_date" name="fdt_sj_date"/>								
+								<input type="text" class="form-control text-right datetimepicker" id="fdt_sj_date" name="fdt_sj_date"/>								
 							</div>
 							<div id="fdt_sj_date_err" class="text-danger"></div>
 							<!-- /.input group -->
@@ -72,7 +72,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div class="input-group-addon">
 									<i class="fa fa-calendar"></i>
 								</div>
-								<input type="text" class="unfocus form-control pull-right" id="fdt_salesorder_date" />								
+								<input type="text" class="unfocus form-control text-right" id="fdt_salesorder_date" />								
 							</div>
 						</div>
 					</div>
@@ -246,7 +246,9 @@ $(function(){
 		
 		
 
-        $("#fdt_sj_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
+		//$("#fdt_sj_date").datetimepicker('update'), dateFormat("<= date("Y-m-d")?>"));
+		$("#fdt_sj_date").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>"));
+		$("#fdt_sj_date").datetimepicker('update');
 
         $(".unfocus").focus(function(){
             $(this).blur();
@@ -289,7 +291,7 @@ $(function(){
             $("#fst_relation_name").val(data.fst_relation_name);
             
             //$("#fdt_salesorder_date").datepicker('update', dateFormat(data.fdt_salesorder_date));
-            $("#fdt_salesorder_date").val(dateFormat(data.fdt_salesorder_date));   
+            $("#fdt_salesorder_date").val(dateTimeFormat(data.fdt_salesorder_date));   
             $("#fin_warehouse_id").val(data.fin_warehouse_id).trigger("change");
             
             initShippingAddress(data.fin_relation_id,data.fin_shipping_address_id);
@@ -444,11 +446,11 @@ $(function(){
 
 			$("#fst_sj_no").val(dataH.fst_sj_no);
 			$("#fst_sj_no").val(dataH.fst_sj_no);
-			$("#fdt_sj_date").val(dateFormat(dataH.fdt_sj_date));
+			$("#fdt_sj_date").val(dateTimeFormat(dataH.fdt_sj_date));
 
 			var newOption = new Option( dataH.fst_salesorder_no, dataH.fin_salesorder_id, true, true);
 			$('#fin_salesorder_id').append(newOption).trigger('change');
-			$("#fdt_salesorder_date").val(dateFormat(dataH.fdt_salesorder_date));
+			$("#fdt_salesorder_date").val(dateTimeFormat(dataH.fdt_salesorder_date));
 			$("#fst_relation_name").val(dataH.fst_relation_name);
 
 			initShippingAddress(dataH.fin_relation_id,dataH.fin_shipping_address_id);
