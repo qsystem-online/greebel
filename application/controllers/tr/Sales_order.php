@@ -977,71 +977,75 @@ class Sales_order extends MY_Controller{
 
 	public function unhold(){
 		$this->load->library('menus');
-		$this->list['page_name'] = "Unhold Sales Order";
-		$this->list['list_name'] = "Unhold Sales Order List";
-		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url().'tr/sales_order/unhold_list_data';
-		$this->list['arrSearch'] = [
-			'fin_salesorder_id' => 'Sales Order ID',
-			'fst_salesorder_no' => 'Sales Order No'
-		];
 
-		$this->list['breadcrumbs'] = [
-			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-			['title' => 'Unhold Sales Order', 'link' => '#', 'icon' => ''],
-			['title' => 'List', 'link' => NULL, 'icon' => ''],
-		];
-
-		$this->list['columns'] = [
+		/*$this->list['columns'] = [
 			['title' => 'Sales Order ID', 'width' => '15%', 'data' => 'fin_salesorder_id'],
 			['title' => 'Sales Order No', 'width' => '15%', 'data' => 'fst_salesorder_no'],
 			['title' => 'Sales Order Date', 'width' => '15%', 'data' => 'fdt_salesorder_date'],
 			['title' => 'Memo', 'width' => '15%', 'data' => 'fst_memo'],
 			['title' => 'Customer', 'width' => '15%', 'data' => 'fst_relation_name'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
-		];
+		];*/
         $main_header = $this->parser->parse('inc/main_header',[],true);
-        $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
-        $page_content = $this->parser->parse('pages/tr/sales_order/unhold_list',$this->list,true);
+		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
+		$data["title"] = lang("Unhold Sales Order");
+
+        $page_content = $this->parser->parse('pages/tr/sales_order/unhold_list',$data, true);
         $main_footer = $this->parser->parse('inc/main_footer',[],true);
-        $control_sidebar=null;
-        $this->data['ACCESS_RIGHT']="A-C-R-U-D-P";
+        $control_sidebar = NULL;
         $this->data['MAIN_HEADER'] = $main_header;
-        $this->data['MAIN_SIDEBAR']= $main_sidebar;
-        $this->data['PAGE_CONTENT']= $page_content;
-        $this->data['MAIN_FOOTER']= $main_footer;        
+        $this->data['MAIN_SIDEBAR'] = $main_sidebar;
+        $this->data['PAGE_CONTENT'] = $page_content;
+		$this->data['MAIN_FOOTER'] = $main_footer;
+		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;        
 		$this->parser->parse('template/main',$this->data);
 	}
 
-	/*public function unhold_list_data(){
+	public function unhold_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("trsalesorder");
 
-		$selectFields = "fin_salesorder_id,fst_salesorder_no,fdt_salesorder_date,fst_memo,fst_relation_name,'action' as action";
+		$activeBranchId = $this->aauth->get_active_branch_id();
+        $user = $this->aauth->user();
+
+        $this->datatables->setTableName(
+            "(select * from trverification 
+            where fst_verification_status = 'RV' 
+            and fin_branch_id = ".$activeBranchId ." 
+            and fin_department_id = ". $user->fin_department_id ." 
+            and fin_user_group_id = ". $user->fin_group_id . ") a "
+        );
+
+		$selectFields = "a.fin_salesorder_id,a.fst_salesorder_no,a.fdt_salesorder_date,a.fst_memo,a.fst_relation_name";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields = [];
 		$searchFields[] = $this->input->get('optionSearch');
 		$this->datatables->setSearchFields($searchFields);
-		$this->datatables->activeCondition = "fst_active !='D'";
+		$this->datatables->activeCondition = "a.fst_active !='D'";
 
 		//Format Data
 		$datasources = $this->datatables->getData();
 		$arrData = $datasources["data"];
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
-			$insertDateTime = strtotime($data["fdt_unhold_datetime"]);
-			$data["fdt_unhold_datetime"] = dBDateFormat("d-M-Y H:i:s",$fdt_unhold_datetime);
-
-			//action
-			$data["action"] = "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["fin_salesorder_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
-				</div>";
+			$insertDate = strtotime($data["fdt_unhold_datetime"]);
+			$data["fdt_unhold_datetime"] = dBDateFormat("d-M-Y H:i:s",$insertDate);
 			$arrDataFormated[] =$data;
 		}
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
+	}
 
-	}*/
+	public function doUnhold($finRecId){
+		$this->load->model('trverification_model');
+
+        $this->db->trans_start();
+        $this->trverification_model->approve($finRecId);
+        $this->db->trans_complete();
+        
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["message"] = "";
+        $this->ajxResp["data"]=[];
+        $this->json_output();
+    }
 }

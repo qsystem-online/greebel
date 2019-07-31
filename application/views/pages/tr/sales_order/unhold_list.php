@@ -1,22 +1,14 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
-<!-- <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css"> -->
-<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net/datatables.min.css">
+<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 
 <section class="content-header">
-	<h1><?=$page_name?><small>List</small></h1>
+<h1><?=lang("Unhold Sales Order")?><small><?=lang("List")?></small></h1>
 	<ol class="breadcrumb">
-		<?php 
-			foreach($breadcrumbs as $breadcrumb){
-				if ($breadcrumb["link"] == NULL){
-					echo "<li class='active'>".$breadcrumb["title"]."</li>";
-				}else{
-					echo "<li><a href='".$breadcrumb["link"]."'>".$breadcrumb["icon"].$breadcrumb["title"]."</a></li>";
-				}
-				
-			} 
-		?>
+		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
+		<li><a href="#"><?= lang("Tools") ?></a></li>
+		<li class="active title"><?=$title?></li>
 	</ol>
 </section>
 
@@ -25,116 +17,64 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<div class="col-md-12">
 			<div class="box box-info">
 				<div class="box-header with-border">
-				<h3 class="box-title"><?=$list_name?></h3>
-				
-			</div>			
+					<h3 class="box-title"><?=$title?></h3>
+				</div>			
 			<!-- /.box-header -->
 			<div class="box-body">
-				<form class="form-inline">
-					<div class="form-group col-sm-3">
-						
-					</div>
-					
-					<div class="form-group col-sm-3">
-						<label for="end-to" style=""></label>
-					</div>
-					
-					<div class="form-group col-sm-3" style= "">
-						<label for="end-to"></label>							
-						
-					</div>
-
-					<div class="form-group col-sm-3 text-right" style="padding-right:0px">
-													
-							<span>Search on:</span>
-							<span>
-								<select id="selectSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
-									<?php
-										foreach($arrSearch as $key => $value){ ?>
-											<option value=<?=$key?>><?=$value?></option>
-										<?php
-										}
-									?>
-								</select>
-							</span>
-						
-					</div>
-					
-				</form>
-				<table id="tblList" class="table table-bordered table-hover table-striped"></table>
+				<div class="table">
+					<table class="table">
+					<table id="tblUnhold" style="width:100%"></table>
+					</table>
+				</div>
 			</div>
-			<!-- /.box-body -->
-			<div class="box-footer">
-			</div>
-			<!-- /.box-footer -->		
+			<!-- /.box-body -->	
 		</div>
 	</div>
-</div>
+</section>
 
 <script type="text/javascript">
 	$(function(){
-
-		$(".filterData").change(function(event){
-			event.preventDefault();
-			$('#tblList').DataTable().ajax.reload();
-		});
-		
-
-		$('#tblList').on('preXhr.dt', function ( e, settings, data ) {
-		 	//add aditional data post on ajax call
-			//data.sessionId = "TEST SESSION ID";
-			data.optionSearch = $('#selectSearch').val();
-
-		}).DataTable({
+		$("#tblUnhold").DataTable({
+			ajax: {
+				url:"<?=site_url()?>tr/sales_order/unhold_list_data",
+			},
 			columns:[
-                <?php
-                    foreach($columns as $col){?>
-                        {"title" : "<?=$col['title']?>","width": "<?=$col['width']?>","data":"<?=$col['data']?>"
-                            <?php if(isset($col['render'])){?>
-                                ,"render":<?php echo $col['render'] ?>
-                            <?php } ?>
-                            <?php if(isset($col['sortable'])){
-                                if ($col['sortable']){ ?>
-                                    ,"sortable": true
-                                <?php }else
-                                {?>
-                                    ,"sortable": false
-                                <?php }
-                                
-                            } ?>
-                            <?php if(isset($col['className'])){?>
-                                ,"className":"<?=$col['className']?>"
-                            <?php } ?>
-                        },
-                    <?php }
-                ?>
+				{"title" : "Sales Order ID","width": "13%",sortable:true,data:"fin_salesorder_id",visible:true},
+				{"title" : "Sales Order No","width": "12%",sortable:true,data:"fst_salesorder_no",visible:true},
+				{"title" : "Sales Order Date","width": "15%",sortable:true,data:"fdt_salesorder_date",visible:true},
+				{"title" : "Memo","width": "15%",sortable:true,data:"fst_memo",visible:true},
+				{"title" : "Customer","width": "13%",sortable:true,data:"fin_relation_id",visible:true},
+				{"title" : "Unhold Date","width": "15%",sortable:true,data:"fdt_unhold_datetime",visible:true},
+				{"title" : "Unhold ID","width": "12%",sortable:true,data:"fin_unhold_id",visible:true}
 			],
 			dataSrc:"data",
 			processing: true,
 			serverSide: true,
-			ajax: "<?=$fetch_list_data_ajax_url?>"
-		}).on('draw',function(){			
 		});
 
-		$('#tblList').on('click','.btn-view',function(event){
-			event.preventDefault();
-			//alert("test");
-			t = $('#tblList').DataTable();			
-            var trRow = $(this).parents('tr');
-			data = t.row(trRow).data();
-			window.location = "<?= base_url() ?>tr/sales_order/unhold" + data.fin_salesorder_id; 
+		$("#tblUnhold").on("click",".btn-unhold",function(e){
+			e.preventDefault();
+			$(this).confirmation({
+				title:"Unhold ?",
+				rootSelector: '.btn-approve',
+				onConfirm:function() {
+					doUnhold($(this));
+				}
+			});
+			$(this).confirmation("show");
 		});
 		
-
-
-
-
 	});
-</script>
-<?php
-	if (isset($script)){
-		echo $script;
+
+	function doUnhold(elemet){
+		t = $('#tblUnhold').DataTable();
+		var trRow = element.parents('tr');
+		data = t.row(trRow).data();
+
+		$.ajak({
+			url:"<?= site_url() ?>tr/unhold_list/doUnhold/" + data.fin_salesorder_id
+		})
 	}
-?>
+</script>
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
