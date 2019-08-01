@@ -70,13 +70,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		
 	});
 
-	function doUnhold(elemet){
+	function doUnhold(element){
 		t = $('#tblUnhold').DataTable();
 		var trRow = element.parents('tr');
 		data = t.row(trRow).data();
 
-		$.ajak({
-			url:"<?= site_url() ?>tr/unhold_list/doUnhold/" + data.fin_salesorder_id
+		$.ajax({
+			url:"<?= site_url() ?>tr/sales_order/unhold/doUnhold/" + data.fin_salesorder_id,
 		}).done(function(resp){
 			if (resp.message != "") {
 				$.alert({

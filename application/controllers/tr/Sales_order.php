@@ -982,7 +982,7 @@ class Sales_order extends MY_Controller{
 		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
 		$data["title"] = lang("Unhold Sales Order");
 
-        $page_content = $this->parser->parse('pages/tr/sales_order/unhold_list',$data, true);
+        $page_content = $this->parser->parse('pages/tr/sales_order/unhold',$data, true);
         $main_footer = $this->parser->parse('inc/main_footer',[],true);
         $control_sidebar = NULL;
         $this->data['MAIN_HEADER'] = $main_header;
@@ -1014,19 +1014,19 @@ class Sales_order extends MY_Controller{
 		$arrData = $datasources["data"];
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
-			$insertDate = strtotime($data["fdt_unhold_datetime"]);
-			$data["fdt_unhold_datetime"] = dBDateFormat("d-M-Y H:i:s",$insertDate);
+			$insertDateTime = strtotime($data["fdt_unhold_datetime"]);
+			$data["fdt_unhold_datetime"] = date("d-M-Y H:i:s",$insertDateTime);
 			$arrDataFormated[] =$data;
 		}
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 	}
 
-	public function doUnhold($finSal){
-		$this->load->model('trverification_model');
+	public function doUnhold($finSalesOrderId){
+		$this->load->model('trsalesorder_model');
 
         $this->db->trans_start();
-        $this->trverification_model->approve($finRecId);
+        $this->trsalesorder_model->approve($finSalesOrderId);
         $this->db->trans_complete();
         
         $this->ajxResp["status"] = "SUCCESS";
