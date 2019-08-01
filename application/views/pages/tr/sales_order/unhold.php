@@ -47,7 +47,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "Unhold Date","width": "15%",sortable:true,data:"fdt_unhold_datetime",visible:true},
 				{"title" : "Unhold","width": "10%",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){
-						return "<a class='btn-unhold' href='#'><i class='fa fa-chevron-circle-right'></i></a>";
+						return "<a class='btn-unhold' href='#'><i class='fa fa-pause-circle'></i></a>";
 					}
 				},
 			],
@@ -62,7 +62,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				title:" Unhold ?",
 				rootSelector: '.btn-unhold',
 				onConfirm:function() {
-					console.log($(this));
 					
 					doUnhold($(this));
 				}
@@ -104,3 +103,4 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
+<script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>

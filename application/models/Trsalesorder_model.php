@@ -503,13 +503,16 @@ class Trsalesorder_model extends MY_Model {
 
     //==== UNHOLD ===============================\\
     public function unhold($finSalesOrderId){
+        
+        $activeUser = $this->aauth->user();
+        //print_r($activeUser);
     
         $data = [
             "fin_salesorder_id" => $finSalesOrderId,
             "fbl_is_hold" => "0", //Unhold Success
+            "fin_unhold_id" => $activeUser->fin_user_id
         ];
 
-        
         parent::update($data);
        
     }
