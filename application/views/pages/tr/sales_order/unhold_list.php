@@ -36,16 +36,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		$("#tblUnhold").DataTable({
 			ajax: {
-				url:"<?=site_url()?>tr/sales_order/unhold_list_data",
+				url:"<?=site_url()?>tr/sales_order/unhold_fetch_list_data",
 			},
 			columns:[
 				{"title" : "Sales Order ID","width": "13%",sortable:true,data:"fin_salesorder_id",visible:true},
 				{"title" : "Sales Order No","width": "12%",sortable:true,data:"fst_salesorder_no",visible:true},
-				{"title" : "Sales Order Date","width": "15%",sortable:true,data:"fdt_salesorder_date",visible:true},
-				{"title" : "Memo","width": "15%",sortable:true,data:"fst_memo",visible:true},
+				{"title" : "SO Insert Date","width": "15%",sortable:true,data:"fdt_insert_datetime",visible:true},
 				{"title" : "Customer","width": "13%",sortable:true,data:"fin_relation_id",visible:true},
+				{"title" : "Memo","width": "15%",sortable:true,data:"fst_memo",visible:true},
 				{"title" : "Unhold Date","width": "15%",sortable:true,data:"fdt_unhold_datetime",visible:true},
-				{"title" : "Unhold ID","width": "12%",sortable:true,data:"fin_unhold_id",visible:true}
+				{"title" : "Unhold","width": "10%",sortable:false,className:'dt-body-center text-center',
+					render: function(data,type,row){
+						return "<a class='btn-unhold' href='#'><i class='fa fa-chevron-circle-right'></i></a>";
+					}
+				},
 			],
 			dataSrc:"data",
 			processing: true,
@@ -56,7 +60,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			e.preventDefault();
 			$(this).confirmation({
 				title:"Unhold ?",
-				rootSelector: '.btn-approve',
+				rootSelector: '.btn-unhold',
 				onConfirm:function() {
 					doUnhold($(this));
 				}
@@ -73,7 +77,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$.ajak({
 			url:"<?= site_url() ?>tr/unhold_list/doUnhold/" + data.fin_salesorder_id
-		})
+		}).done(function(resp){
+			if (resp.message != "") {
+				$.alert({
+					title: 'Message',
+					content: resp.message,
+					buttons: {
+						OK : function(){
+							if (resp.status == "SUCCESS"){
+								//window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
+								return;
+							}
+						},
+					}
+				});
+			}
+			if (resp.status == "SUCCESS") {
+				//remove row
+				trRow.remove();
+			}
+		});
 	}
 </script>
 <!-- DataTables -->

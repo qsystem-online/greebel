@@ -499,6 +499,17 @@ class Trsalesorder_model extends MY_Model {
             $this->posting($finSalesOrderId);
         }
     }
+
+//==== UNHOLD ===============================\\
+    /*public function unhold($finSalesOrderId){
+        $ssql = "SELECT * from trsalesorder WHERE fin_salesorder_id = ?";
+        $qr = $this->db->query($ssql,[$finSalesOrderId]);
+        $rw = $qr->row();
+
+        $activeUser = $this->aauth->user();
+        //di unhold
+        if ($rw->)
+    }*/
 }
 
 

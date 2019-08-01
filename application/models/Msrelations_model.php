@@ -78,6 +78,15 @@ clASs Msrelations_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
+            'field' => 'fst_relation_type',
+            'label' => 'Relation Type',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong'
+            )
+        ];
+
+        $rules[] = [
             'field' => 'fst_relation_name',
             'label' => 'Relation Name',
             'rules' => 'required|min_length[5]',

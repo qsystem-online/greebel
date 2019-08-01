@@ -978,14 +978,6 @@ class Sales_order extends MY_Controller{
 	public function unhold(){
 		$this->load->library('menus');
 
-		/*$this->list['columns'] = [
-			['title' => 'Sales Order ID', 'width' => '15%', 'data' => 'fin_salesorder_id'],
-			['title' => 'Sales Order No', 'width' => '15%', 'data' => 'fst_salesorder_no'],
-			['title' => 'Sales Order Date', 'width' => '15%', 'data' => 'fdt_salesorder_date'],
-			['title' => 'Memo', 'width' => '15%', 'data' => 'fst_memo'],
-			['title' => 'Customer', 'width' => '15%', 'data' => 'fst_relation_name'],
-			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
-		];*/
         $main_header = $this->parser->parse('inc/main_header',[],true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
 		$data["title"] = lang("Unhold Sales Order");
@@ -1001,21 +993,15 @@ class Sales_order extends MY_Controller{
 		$this->parser->parse('template/main',$this->data);
 	}
 
-	public function unhold_list_data(){
+	public function unhold_fetch_list_data(){
 		$this->load->library("datatables");
 
-		$activeBranchId = $this->aauth->get_active_branch_id();
+		$useractive = $this->aauth->get_user_id();
         $user = $this->aauth->user();
 
-        $this->datatables->setTableName(
-            "(select * from trverification 
-            where fst_verification_status = 'RV' 
-            and fin_branch_id = ".$activeBranchId ." 
-            and fin_department_id = ". $user->fin_department_id ." 
-            and fin_user_group_id = ". $user->fin_group_id . ") a "
-        );
+        $this->datatables->setTableName("(select * from trsalesorder where fbl_is_hold = '1' and fin_insert_id = $useractive) a ");
 
-		$selectFields = "a.fin_salesorder_id,a.fst_salesorder_no,a.fdt_salesorder_date,a.fst_memo,a.fst_relation_name";
+		$selectFields = "fin_salesorder_id,fst_salesorder_no,fdt_insert_datetime,fin_relation_id,fst_memo,fdt_unhold_datetime";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields = [];
@@ -1036,7 +1022,7 @@ class Sales_order extends MY_Controller{
 		$this->json_output($datasources);
 	}
 
-	public function doUnhold($finRecId){
+	public function doUnhold($finSal){
 		$this->load->model('trverification_model');
 
         $this->db->trans_start();
