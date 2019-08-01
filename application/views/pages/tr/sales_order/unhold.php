@@ -59,9 +59,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#tblUnhold").on("click",".btn-unhold",function(e){
 			e.preventDefault();
 			$(this).confirmation({
-				title:"Unhold ?",
+				title:" Unhold ?",
 				rootSelector: '.btn-unhold',
 				onConfirm:function() {
+					console.log($(this));
+					
 					doUnhold($(this));
 				}
 			});
@@ -74,9 +76,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		t = $('#tblUnhold').DataTable();
 		var trRow = element.parents('tr');
 		data = t.row(trRow).data();
+		console.log(data);
 
 		$.ajax({
-			url:"<?= site_url() ?>tr/sales_order/unhold/doUnhold/" + data.fin_salesorder_id,
+			url:"<?= site_url() ?>tr/sales_order/doUnhold/" + data.fin_salesorder_id,
 		}).done(function(resp){
 			if (resp.message != "") {
 				$.alert({

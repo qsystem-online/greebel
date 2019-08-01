@@ -1001,7 +1001,7 @@ class Sales_order extends MY_Controller{
 
         $this->datatables->setTableName("(select * from trsalesorder where fbl_is_hold = '1' and fin_insert_id = $useractive) a ");
 
-		$selectFields = "fin_salesorder_id,fst_salesorder_no,fdt_insert_datetime,fin_relation_id,fst_memo,fdt_unhold_datetime";
+		$selectFields = "a.fin_salesorder_id,a.fst_salesorder_no,a.fdt_insert_datetime,a.fin_relation_id,a.fst_memo,a.fdt_unhold_datetime,a.fin_unhold_id";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields = [];
@@ -1014,8 +1014,8 @@ class Sales_order extends MY_Controller{
 		$arrData = $datasources["data"];
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
-			$insertDateTime = strtotime($data["fdt_unhold_datetime"]);
-			$data["fdt_unhold_datetime"] = date("d-M-Y H:i:s",$insertDateTime);
+			$insertDate = strtotime($data["fdt_unhold_datetime"]);
+			$data["fdt_unhold_datetime"] = date("d-M-Y H:i:s",$insertDate);
 			$arrDataFormated[] =$data;
 		}
 		$datasources["data"] = $arrDataFormated;
@@ -1026,7 +1026,7 @@ class Sales_order extends MY_Controller{
 		$this->load->model('trsalesorder_model');
 
         $this->db->trans_start();
-        $this->trsalesorder_model->approve($finSalesOrderId);
+        $this->trsalesorder_model->unhold($finSalesOrderId);
         $this->db->trans_complete();
         
         $this->ajxResp["status"] = "SUCCESS";

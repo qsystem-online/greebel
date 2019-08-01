@@ -500,16 +500,19 @@ class Trsalesorder_model extends MY_Model {
         }
     }
 
-//==== UNHOLD ===============================\\
-    /*public function unhold($finSalesOrderId){
-        $ssql = "SELECT * from trsalesorder WHERE fin_salesorder_id = ?";
-        $qr = $this->db->query($ssql,[$finSalesOrderId]);
-        $rw = $qr->row();
 
-        $activeUser = $this->aauth->user();
-        //di unhold
-        if ($rw->)
-    }*/
+    //==== UNHOLD ===============================\\
+    public function unhold($finSalesOrderId){
+    
+        $data = [
+            "fin_salesorder_id" => $finSalesOrderId,
+            "fbl_is_hold" => "0", //Unhold Success
+        ];
+
+        
+        parent::update($data);
+       
+    }
 }
 
 
