@@ -1014,8 +1014,8 @@ class Sales_order extends MY_Controller{
 		$arrData = $datasources["data"];
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
-			$insertDate = strtotime($data["fdt_unhold_datetime"]);
-			$data["fdt_unhold_datetime"] = date("d-M-Y H:i:s",$insertDate);
+			//$insertDate = strtotime($data["fdt_unhold_datetime"]);
+			//$data["fdt_unhold_datetime"] = date("d-M-Y H:i:s",$insertDate);
 			$arrDataFormated[] =$data;
 		}
 		$datasources["data"] = $arrDataFormated;
