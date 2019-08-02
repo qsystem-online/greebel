@@ -42,7 +42,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "Sales Order ID","width": "13%",sortable:true,data:"fin_salesorder_id",visible:true},
 				{"title" : "Sales Order No","width": "12%",sortable:true,data:"fst_salesorder_no",visible:true},
 				{"title" : "SO Insert Date","width": "15%",sortable:true,data:"fdt_insert_datetime",visible:true},
-				{"title" : "Customer","width": "15%",sortable:true,data:"fin_relation_id",visible:true},
+				{"title" : "Customer","width": "15%",sortable:true,data:"fst_relation_name",visible:true},
 				{"title" : "Memo","width": "15%",sortable:true,data:"fst_memo",visible:true},
 				{"title" : "Unhold Date","width": "15%",sortable:true,data:"fdt_unhold_datetime",visible:false},
 				{"title" : "Unhold","width": "10%",sortable:false,className:'dt-body-center text-center',

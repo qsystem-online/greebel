@@ -505,7 +505,7 @@ class Trsalesorder_model extends MY_Model {
     public function unhold($finSalesOrderId){
         
         $activeUser = $this->aauth->user();
-        //print_r($activeUser)
+        //print_r($activeUser);
     
         $data = [
             "fin_salesorder_id" => $finSalesOrderId,
