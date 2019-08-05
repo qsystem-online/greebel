@@ -1003,7 +1003,7 @@ class Sales_order extends MY_Controller{
 		$this->datatables->setTableName("(select a.*,b.fst_relation_name from trsalesorder a left join msrelations b
 			on a.fin_relation_id = b.fin_relation_id where a.fbl_is_hold = '1' and a.fin_insert_id = $useractive) a ");
 
-		$selectFields = "a.fin_salesorder_id,a.fst_salesorder_no,a.fdt_insert_datetime,a.fst_relation_name,a.fst_memo,a.fdt_unhold_datetime,a.fin_unhold_id";
+		$selectFields = "a.fin_salesorder_id,a.fst_salesorder_no,a.fdt_salesorder_date,a.fst_relation_name,a.fst_memo,a.fdt_unhold_datetime,a.fin_unhold_id";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields = [];
