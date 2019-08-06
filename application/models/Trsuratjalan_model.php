@@ -214,4 +214,19 @@ class Trsuratjalan_model extends MY_Model {
         parent::update($data);
        
     }
+
+    public function update($sjId){
+
+        $activeUser = $this->aauth->user();
+
+        $data = [
+            "fin_sj_id" => $sjId,
+            "fdt_sj_return_datetime" => date("Y-m-d H:i:s"),
+            "fst_sj_return_resi_no" => "INV001",
+            "fin_sj_return_by_id" => $activeUser->fin_user_id,
+            "fst_sj_return_memo" => "TEST MEMO",
+        ];
+        parent::update($data);
+    }
+
 }

@@ -71,5 +71,18 @@ class Monitoring_sj extends MY_Controller{
         $this->ajxResp["message"] = "";
         $this->ajxResp["data"]=[];
         $this->json_output();
-    }
+	}
+
+	public function doUpdate($sjId){
+		$this->load->model('trsuratjalan_model');
+
+        $this->db->trans_start();
+        $this->trsuratjalan_model->update($sjId);
+        $this->db->trans_complete();
+        
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["message"] = "";
+        $this->ajxResp["data"]=[];
+        $this->json_output();
+	}
 }

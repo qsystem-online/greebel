@@ -74,11 +74,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			<div class="modal-body">
 				<form  class="form-horizontal">
-					<div class="form-group hide">
+					<div class="form-group">
 						<label for="fin_sj_id" class="col-md-4 control-label"><?=lang("S/J ID")?></label>
 						<div class="col-md-8">
 							<input type="text" class="form-control text-right" id="fin_sj_id" name="fin_sj_id">
 							<div id="fin_sj_id_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="fst_sj_no" class="col-md-4 control-label"><?=lang("S/J No.")?></label>
+						<div class="col-md-8">
+							<input type="text" class="form-control text-right" id="fst_sj_no" name="fst_sj_no" readonly>
+							<div id="fst_sj_no_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -100,7 +108,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<input type="text" class="form-control pull-right datepicker" id="fdt_sj_return_datetime" name="fdt_sj_return_datetime"/>								
 							</div>
 							<div id="fdt_sj_return_datetime_err" class="text-danger"></div>
-							<!-- /.input group -->
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="fst_sj_return_memo" class="col-md-4 control-label"><?=lang("S/J Return Memo")?></label>
+						<div class="col-md-8">
+							<input type="text" class="form-control text-right" id="fst_sj_return_memo" name="fst_sj_return_memo">
+							<div id="fst_sj_return_memo_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="fin_sj_return_by_id" class="col-md-4 control-label"><?=lang("S/J Return By Id")?></label>
+						<div class="col-md-8">
+							<input type="text" class="form-control text-right" id="fin_sj_return_by_id" name="fin_sj_return_by_id" readonly>
+							<div id="fin_sj_return_by_id_err" class="text-danger"></div>
 						</div>
 					</div>
 				</form>
@@ -117,8 +140,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript">
 	$(function(){
 		$("#tblMonitoring").DataTable({
-
-			"scrollX": true,
+			//"scrollX": true,
 			ajax: {
 				url:"<?=site_url()?>adm_persediaan/monitoring_sj/fetch_monitoring_list",
 			},
@@ -133,11 +155,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 {"title" : "Hold","width": "10%",sortable:true,data:"fbl_is_hold",visible:true},
                 {"title" : "Return Date","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
                 //{"title" : "S/J Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true},
-				{"title" : "S/J Resi No","width": "20%",sortable:true,className:'dt-body-center text-center',
-					render: function(data,type,row){
-						return "<a class='btn-resi' href='#'><i class='fa fa-play-circle'></i></a>";
-					}
-				},
+				{"title" : "S/J Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,placeholder:"Update",className:'btn-resi'},
 				{"title" : "S/J Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
                 {"title" : "S/J Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:true},
 				{"title" : "Unhold Date","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:true},
@@ -150,6 +168,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			dataSrc:"data",
 			processing: true,
 			serverSide: true,
+			scrollX: true,
 		});
 
 		$("#tblMonitoring").on("click",".btn-unhold",function(e){
@@ -167,14 +186,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#tblMonitoring").on("click",".btn-resi",function(e){
 			e.preventDefault();
-			$(this).confirmation({
-				title:"Update ?",
-				rootSelector: '.btn-resi',
-				onConfirm:function() {
-					doUpdate($(this));
-				}
-			});
-			$(this).confirmation("show");
+			t = $('#tblMonitoring').DataTable();
+			var trRow = $(this).parents('tr');
+			update_sj = t.row(trRow);
+			row = update_sj.data();
+            $("#resiModal").modal('show');
+			
+			$('#fin_sj_id').val(row.fin_sj_id);
+			$('#fst_sj_no').val(row.fst_sj_no);
 		});
 		
 	});
@@ -202,38 +221,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 			}
-			if (resp.status == "SUCCESS") {
+			/*if (resp.status == "SUCCESS") {
 				//remove row
 				trRow.remove();
-			}
+			}*/
 		});
 	}
 
-	function upDate($fin_sj_id, $data){
+	function doUpdate(element){
 		t = $('#tblMonitoring').DataTable();
 		var trRow = element.parents('tr');
 		data = t.row(trRow).data();
 		console.log(data);
 
 		$.ajax({
-			url:"<?=site_url() ?>adm_persediaan/monitoring_sj/upDate/" + data.fin_sj_id,
+			url:"<?= site_url() ?>adm_persediaan/monitoring_sj/doUpdate/" + data.fin_sj_id,
 		}).done(function(resp){
-			if (resp.message != ""){
+			if (resp.message != "") {
 				$.alert({
 					title: 'Message',
 					content: resp.message,
 					buttons: {
 						OK : function(){
 							if (resp.status == "SUCCESS"){
+								//window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
 								return;
 							}
 						},
 					}
 				});
 			}
-			if (resp.status == "SUCCESS") {
-				trRow.show();
-			}
+			/*if (resp.status == "SUCCESS") {
+				//remove row
+				trRow.remove();
+			}*/
 		});
 	}
 
