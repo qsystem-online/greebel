@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 
 <section class="content-header">
-<h1><?=lang("Surat Jalan")?><small><?=lang("List")?></small></h1>
+<h1><?=lang("Delivery Order")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
 		<li><a href="#"><?= lang("Tools") ?></a></li>
@@ -23,12 +23,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="box-body">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="false"><label>Monitoring Surat Jalan</label></a></li>
+                        <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="false"><label>Delivery Order Monitoring</label></a></li>
                         <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false"><label>Histories</label></a></li>
                     </ul>
 
-                    <div class="tab-content" style="overflow-x:auto;">
-                        <div class="tab-pane active" id="tab_1">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab_1" style="overflow-x:auto;">
+						<div align="right">					
+							<span>Search on:</span>
+							<span>
+								<select id="selectSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
+									<option value="1"><?=lang("Customer")?></option>
+									<option value="2"><?=lang("Nomor S/J")?></option>
+								</select>
+							</span>
+						</div>
                             <table id="tblMonitoring" style="width:100%"></table>
                         </div> <!-- /.tab-pane -->
 
@@ -62,16 +71,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				url:"<?=site_url()?>adm_persediaan/monitoring_sj/fetch_monitoring_list",
 			},
 			columns:[
-                {"title" : "S/O ID","width": "0%",sortable:true,data:"fin_sj_id",visible:false},
-				{"title" : "S/O No","width": "15%",sortable:true,data:"fst_sj_no",visible:true},
-                {"title" : "S/O Date","width": "15%",sortable:true,data:"fdt_sj_date",visible:true},
-                {"title" : "Gudang","width": "15%",sortable:true,data:"fin_warehouse_id",visible:true},
+                {"title" : "S/J ID","width": "10%",sortable:true,data:"fin_sj_id",visible:true},
+				{"title" : "S/J No","width": "15%",sortable:true,data:"fst_sj_no",visible:true},
+                {"title" : "S/J Date","width": "15%",sortable:true,data:"fdt_sj_date",visible:true},
+				{"title" : "S/O No","width": "15%",sortable:true,data:"fst_salesorder_no",visible:true},
+				{"title" : "S/O Date","width": "15%",sortable:true,data:"fdt_salesorder_date",visible:true},
+                {"title" : "Gudang","width": "15%",sortable:true,data:"fst_warehouse_name",visible:true},
 				{"title" : "Cust","width": "20%",sortable:true,data:"fst_relation_name",visible:true},
                 {"title" : "Hold","width": "5%",sortable:true,data:"fbl_is_hold",visible:true},
                 {"title" : "Return Date","width": "15%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
-                {"title" : "Resi No","width": "15%",sortable:true,data:"fst_sj_return_resi_no",visible:true},
-				{"title" : "Memo","width": "15%",sortable:true,data:"fst_sj_memo",visible:true},
-                {"title" : "Return By ID","width": "15%",sortable:true,data:"fin_sj_return_by_id",visible:true},
+                {"title" : "S/J Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true},
+				{"title" : "S/J Return Memo","width": "15%",sortable:true,data:"fst_sj_return_memo",visible:true},
+                {"title" : "S/J Return By ID","width": "15%",sortable:true,data:"fin_sj_return_by_id",visible:true},
 				{"title" : "Unhold Date","width": "0%",sortable:true,data:"fdt_unhold_datetime",visible:false},
 				{"title" : "Unhold","width": "15%",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){

@@ -511,7 +511,8 @@ class Trsalesorder_model extends MY_Model {
             "fin_salesorder_id" => $finSalesOrderId,
             "fbl_is_hold" => "0", //Unhold Success
             "fin_unhold_id" => $activeUser->fin_user_id,
-            "fdt_unhold_datetime" => dBDateFormat("fdt_unhold_datetime")
+            //"fdt_unhold_datetime" => dBDateFormat("fdt_unhold_datetime")
+            "fdt_unhold_datetime" => date("Y-m-d H:i:s")
         ];
 
         parent::update($data);

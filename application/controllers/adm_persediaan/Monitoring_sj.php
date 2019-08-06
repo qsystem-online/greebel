@@ -8,8 +8,8 @@ class Monitoring_sj extends MY_Controller{
 		
 	}
 	public function index(){
-		$this->load->library("menus");		
-        
+		$this->load->library("menus");
+	
         $main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);		
 		$data["title"] = lang("Monitoring Surat Jalan");
@@ -32,11 +32,14 @@ class Monitoring_sj extends MY_Controller{
         $user = $this->aauth->user();
 
 		//$this->datatables->setTableName("(select * from trsuratjalan where fbl_is_hold = '1' and fin_insert_id = $useractive) a ");
-		$this->datatables->setTableName("(select a.*,b.fst_warehouse_name from trsuratjalan a
+		$this->datatables->setTableName("(select a.*,b.fst_warehouse_name,c.fst_salesorder_no,c.fdt_salesorder_date,d.fst_relation_name from trsuratjalan a
 			left join mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id
-			where a.fbl_is_hold = '1' and a.fin_insert_id = $useractive) a ");
+			left join trsalesorder c on a.fin_salesorder_id = c.fin_salesorder_id
+			left join msrelations d on c.fin_relation_id = d.fin_relation_id
+			where a.fbl_is_hold = '1' and a.fin_insert_id = $useractive ) a ");
 
-		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_date,a.fst_warehouse_name,a.fst_sj_memo,a.fdt_unhold_datetime,a.fin_unhold_id";
+		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_date,a.fst_warehouse_name,a.fst_salesorder_no,a.fdt_salesorder_date,
+			a.fst_relation_name,a.fdt_sj_return_datetime,a.fst_sj_return_resi_no,a.fst_sj_return_memo,a.fin_sj_return_by_id,a.fbl_is_hold,a.fdt_unhold_datetime,a.fin_unhold_id";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields = [];
@@ -57,11 +60,11 @@ class Monitoring_sj extends MY_Controller{
 		$this->json_output($datasources);
 	}
 
-	public function doUnhold($finSjId){
-		$this->load->model('trsalesorder_model');
+	public function doUnhold($sjId){
+		$this->load->model('trsuratjalan_model');
 
         $this->db->trans_start();
-        $this->trsalesorder_model->unhold($finSjId);
+        $this->trsuratjalan_model->unhold($sjId);
         $this->db->trans_complete();
         
         $this->ajxResp["status"] = "SUCCESS";

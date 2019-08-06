@@ -199,16 +199,17 @@ class Trsuratjalan_model extends MY_Model {
     }
 
     //===== MONITORING 02/08/2019 enny06 ==========\\
-    public function unhold($finSjId){
+    public function unhold($sjId){
         
         $activeUser = $this->aauth->user();
         //print_r($activeUser);
     
         $data = [
-            "fin_salesorder_id" => $finSjId,
+            "fin_sj_id" => $sjId,
             "fbl_is_hold" => "0", //Unhold Success
             "fin_unhold_id" => $activeUser->fin_user_id,
-            "fdt_unhold_datetime" => dBDateFormat("fdt_unhold_datetime")
+            //"fdt_unhold_datetime" => dBDateFormat("fdt_unhold_datetime")
+            "fdt_unhold_datetime" => date("Y-m-d H:i:s")
         ];
         parent::update($data);
        
