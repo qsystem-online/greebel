@@ -73,16 +73,41 @@ class Monitoring_sj extends MY_Controller{
         $this->json_output();
 	}
 
-	public function doUpdate($sjId){
-		$this->load->model('trsuratjalan_model');
+	public function doUpdateResi(){
+		$activeUser = $this->aauth->user();
+		//print_r($activeUser);
 
-        $this->db->trans_start();
-        $this->trsuratjalan_model->update($sjId);
-        $this->db->trans_complete();
-        
-        $this->ajxResp["status"] = "SUCCESS";
-        $this->ajxResp["message"] = "";
-        $this->ajxResp["data"]=[];
-        $this->json_output();
+		$fin_sj_id = $this->input->post("fin_sj_id");
+
+		$this->load->model('trsuratjalan_model');
+		$data = $this->trsuratjalan_model->getDataById($fin_sj_id);
+		//$user = $data["user"];
+
+		$data = [
+			"fin_sj_id" => $fin_sj_id,
+			"fin_sj_return_by_id" =>$activeUser->fin_user_id,
+            "fdt_sj_return_datetime" => date("Y-m-d H:i:s"),
+            "fst_sj_return_resi_no" => $this->input->post("fst_sj_return_resi_no"),
+            "fst_sj_return_memo" => $this->input->post("fst_sj_return_memo"),
+		];
+		$this->db->trans_start();
+
+		$this->trsuratjalan_model->update($data);
+		$dbError  = $this->db->error();
+		if ($dbError["code"] != 0) {
+			$this->ajxResp["status"] = "DB_FAILED";
+			$this->ajxResp["message"] = "Insert Failed";
+			$this->ajxResp["data"] = $this->db->error();
+			$this->json_output();
+			$this->db->trans_rollback();
+			return;
+		}
+
+
+		$this->db->trans_complete();
+
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = "Updated Invoice !";
+		$this->json_output();
 	}
 }

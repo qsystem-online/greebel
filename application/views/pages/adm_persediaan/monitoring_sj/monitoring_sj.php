@@ -29,30 +29,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab_1">
-						<div align="right">					
-							<span>Search on:</span>
-							<span>
-								<select id="selectSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
-									<option value="1"><?=lang("Customer")?></option>
-									<option value="2"><?=lang("Nomor S/J")?></option>
-								</select>
-							</span>
-						</div>
                             <table id="tblMonitoring" class="display nowrap" style="width:100%"></table>
                         </div> <!-- /.tab-pane -->
 
                         <div class="tab-pane" id="tab_2">
-                            <div class="col-md-12 form-group">
-                                <label for="start-from" class="col-md-1 control-label"><?= lang("Date")?>: &nbsp;</label>
-                                <div class="col-md-2">
-                                    <input type="text" class="form-control datepicker filterData" id="start-date">
-                                </div>
-                                
-                                <label for="end-to" class="col-md-1 control-label" style=""><?= lang("s/d")?>: &nbsp;</label>
-                                <div class="col-md-2">
-                                    <input type="text" class="form-control datepicker filterData" id="end-date">
-                                </div>
-                            </div>
                             <table id="tblHistory" class="display nowrap" style="width:100%"></table>
                         </div><!-- /.tab-pane -->
                                             
@@ -65,7 +45,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </section>
 
 <div id="resiModal" class="modal fade" role="dialog">
-	<div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">	
+	<div class="modal-dialog" style="display:table;width:65%;min-width:650px;max-width:100%">	
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -73,65 +53,60 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-body">
-				<form  class="form-horizontal">
+				<form  class="form-horizontal" id="resi-modal" method="POST" enctype="multipart/form-data">
 					<div class="form-group">
-						<label for="fin_sj_id" class="col-md-4 control-label"><?=lang("S/J ID")?></label>
-						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="fin_sj_id" name="fin_sj_id">
+						<label for="fin_sj_id" class="col-md-2 control-label"><?=lang("S/J ID")?> :</label>
+						<div class="col-md-4">
+							<input type="text" class="form-control text-right" id="fin_sj_id" name="fin_sj_id" readonly>
 							<div id="fin_sj_id_err" class="text-danger"></div>
 						</div>
-					</div>
 
-					<div class="form-group">
-						<label for="fst_sj_no" class="col-md-4 control-label"><?=lang("S/J No.")?></label>
-						<div class="col-md-8">
+						<label for="fst_sj_no" class="col-md-2 control-label"><?=lang("S/J No.")?> :</label>
+						<div class="col-md-4">
 							<input type="text" class="form-control text-right" id="fst_sj_no" name="fst_sj_no" readonly>
 							<div id="fst_sj_no_err" class="text-danger"></div>
 						</div>
 					</div>
 
-					<div class="form-group">
-						<label for="fst_sj_return_resi_no" class="col-md-4 control-label"><?=lang("S/J Resi No.")?></label>
+					<div class="form-group hide">
+						<label for="fin_sj_return_by_id" class="col-md-4 control-label"><?=lang("S/J Return By Id")?> :</label>
 						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="fst_sj_return_resi_no" name="fst_sj_return_resi_no">
-							<div id="fst_sj_return_resi_no_err" class="text-danger"></div>
+							<input type="text" class="form-control text-right" id="fin_sj_return_by_id" name="fin_sj_return_by_id" readonly>
+							<div id="fin_sj_return_by_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-					<label for="fdt_sj_return_datetime" class="col-md-4 control-label"><?=lang("S/J Return Date")?></label>
-						<div class="col-md-8">
+						<label for="fst_sj_return_resi_no" class="col-md-2 control-label"><?=lang("S/J Resi No.")?> :</label>
+						<div class="col-md-4">
+							<input type="text" class="form-control text-right" id="fst_sj_return_resi_no" name="fst_sj_return_resi_no">
+							<div id="fst_sj_return_resi_no_err" class="text-danger"></div>
+						</div>
+
+					<label for="fdt_sj_return_datetime" class="col-md-2 control-label"><?=lang("S/J Return Date")?> :</label>
+						<div class="col-md-4">
 							<div class="input-group date">
 								<div class="input-group-addon">
 									<i class="fa fa-calendar"></i>
 								</div>
-								<input type="text" class="form-control pull-right datepicker" id="fdt_sj_return_datetime" name="fdt_sj_return_datetime"/>								
+								<input type="text" class="form-control pull-right datepicker text-right" id="fdt_sj_return_datetime" name="fdt_sj_return_datetime"/>								
 							</div>
 							<div id="fdt_sj_return_datetime_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="fst_sj_return_memo" class="col-md-4 control-label"><?=lang("S/J Return Memo")?></label>
-						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="fst_sj_return_memo" name="fst_sj_return_memo">
+						<label for="fst_sj_return_memo" class="col-md-2 control-label"><?=lang("S/J Return Memo")?> :</label>
+						<div class="col-md-6">
+							<textarea class="form-control" id="fst_sj_return_memo" name="fst_sj_return_memo"></textarea>
 							<div id="fst_sj_return_memo_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="fin_sj_return_by_id" class="col-md-4 control-label"><?=lang("S/J Return By Id")?></label>
-						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="fin_sj_return_by_id" name="fin_sj_return_by_id" readonly>
-							<div id="fin_sj_return_by_id_err" class="text-danger"></div>
 						</div>
 					</div>
 				</form>
 			</div>
 
 			<div class="modal-footer">
-				<button id="btn-resi" type="button" class="btn btn-primary" ><?=lang("Update")?></button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+				<button id="btn-update" type="button" class="btn btn-primary" ><?=lang("Update")?></button>
 			</div>
 		</div>
 	</div>
@@ -140,7 +115,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript">
 	$(function(){
 		$("#tblMonitoring").DataTable({
-			//"scrollX": true,
 			ajax: {
 				url:"<?=site_url()?>adm_persediaan/monitoring_sj/fetch_monitoring_list",
 			},
@@ -154,8 +128,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "Customer","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
                 {"title" : "Hold","width": "10%",sortable:true,data:"fbl_is_hold",visible:true},
                 {"title" : "Return Date","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
-                //{"title" : "S/J Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true},
-				{"title" : "S/J Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,placeholder:"Update",className:'btn-resi'},
+				{"title" : "S/J Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,className:'btn-resi'},
 				{"title" : "S/J Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
                 {"title" : "S/J Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:true},
 				{"title" : "Unhold Date","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:true},
@@ -170,6 +143,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			serverSide: true,
 			scrollX: true,
 		});
+
+		$("#fdt_sj_return_datetime").datepicker('update', dateFormat("<?=date("Y-m-d")?>"));
 
 		$("#tblMonitoring").on("click",".btn-unhold",function(e){
 			e.preventDefault();
@@ -194,6 +169,37 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			
 			$('#fin_sj_id').val(row.fin_sj_id);
 			$('#fst_sj_no').val(row.fst_sj_no);
+		});
+
+		$("#btn-update").click(function(event){
+			event.preventDefault();
+			data = $("#resiModal").serializeArray();
+			alert("TEST RESI");
+
+            //var formData = new FormData($('form')[0])
+			$.ajax({
+				url:"<?= site_url() ?>adm_persediaan/monitoring_sj/doUpdateResi/" + data.fin_sj_id,
+			}).done(function(resp){
+				if (resp.message != "") {
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons: {
+							OK : function(){
+								if (resp.status == "SUCCESS"){
+									window.location.href = "<?= site_url() ?>adm_persediaan/monitoring_sj";
+									return;
+								}
+							},
+						}
+					});
+				}
+				/*if (resp.status == "SUCCESS") {
+					//remove row
+					trRow.remove();
+				}*/
+			});
+
 		});
 		
 	});
@@ -221,19 +227,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 			}
-			/*if (resp.status == "SUCCESS") {
+			if (resp.status == "SUCCESS") {
 				//remove row
 				trRow.remove();
-			}*/
+			}
 		});
 	}
 
-	function doUpdate(element){
+	/*function doUpdate(element){
 		t = $('#tblMonitoring').DataTable();
 		var trRow = element.parents('tr');
 		data = t.row(trRow).data();
 		console.log(data);
-
+		
 		$.ajax({
 			url:"<?= site_url() ?>adm_persediaan/monitoring_sj/doUpdate/" + data.fin_sj_id,
 		}).done(function(resp){
@@ -251,12 +257,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 			}
-			/*if (resp.status == "SUCCESS") {
-				//remove row
-				trRow.remove();
-			}*/
+			if (resp.status == "SUCCESS") {
+				//update row
+				trRow.update();
+			}
 		});
-	}
+	}*/
 
 </script>
 <!-- DataTables -->
