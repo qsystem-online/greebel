@@ -151,7 +151,6 @@ class Relation extends MY_Controller{
         foreach ($details as $item) {
             $data = [
 				"fin_relation_id" => $insertId,
-				"fin_shipping_address_id" => $insertId,
 				"fst_name" => $item->fst_name,
                 "fst_area_code" => $item->fst_kode,
 				"fst_shipping_address" => $item->fst_shipping_address,

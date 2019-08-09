@@ -439,10 +439,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				paging: false,
 				info:false,
 				columns:[
-					{"title": "<?=lang("Shipping Address ID")?>","width": "15%",data: "fin_shipping_address_id",visible: false},
+					{"title": "<?=lang("Shipping Address ID")?>","width": "15%",data: "fin_shipping_address_id",visible: true},
 					{"title": "<?=lang("Relation ID")?>","width": "10%",data: "fin_relation_id",visible: false},
 					{"title": "<?=lang("Name")?>","width": "20%",data: "fst_name",visible: true},
-					{"title": "<?=lang("Area Code")?>","width": "15%",data: "fst_nama",visible: true},
+					{"title": "<?=lang("Area Code")?>","width": "15%",data: "fst_kode",visible: true},
 					{"title": "<?=lang("Shipping Address")?>","width": "20%",data: "fst_shipping_address", visible: true},
 					{"title": "<?= lang("Action")?>","width": "10%",render: function(data, type, row) {
                             action = "<a class='btn-delete-shipping-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
@@ -465,7 +465,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#provinceShipp").select2({
 					width: '100%',
 					ajax: {
-						url: '<?=site_url()?>pr/relation/get_dataProvince/'+$("#select-country").val(),
+						url: '<?=site_url()?>pr/relation/get_dataProvince/'+ $("#select-country").val(),
 						dataType: 'json',
 						delay: 250,
 						processResults: function (data){
@@ -493,7 +493,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#districtShipp").select2({
 					width: '100%',
 					ajax: {
-						url: '<?=site_url()?>pr/relation/get_district/'+$("#provinceShipp").val(),
+						url: '<?=site_url()?>pr/relation/get_district/'+ $("#provinceShipp").val(),
 						dataType: 'json',
 						delay: 250,
 						processResults: function (data){
@@ -521,7 +521,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#subdistrictShipp").select2({
 					width: '100%',
 					ajax: {
-						url: '<?=site_url()?>pr/relation/get_subdistrict/'+$("#districtShipp").val(),
+						url: '<?=site_url()?>pr/relation/get_subdistrict/'+ $("#districtShipp").val(),
 						dataType: 'json',
 						delay: 250,
 						processResults: function (data){
@@ -549,7 +549,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#villageShipp").select2({
 					width: '100%',
 					ajax: {
-						url: '<?=site_url()?>pr/relation/get_village/'+$("#subdistrictShipp").val(),
+						url: '<?=site_url()?>pr/relation/get_village/'+ $("#subdistrictShipp").val(),
 						dataType: 'json',
 						delay: 250,
 						processResults: function (data){
@@ -1182,7 +1182,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         fin_shipping_address_id: val.fin_shipping_address_id,
                         fin_relation_id: val.fin_relation_id,
 						fst_name: val.fst_name,
-						fst_kode: val.fst_area_code,
+						fst_kode: val.fst_province_name,
+						fst_kode: val.fst_district_name,
+						fst_kode: val.fst_subdistrict_name,
+						fst_kode: val.fst_village_name,
                         fst_shipping_address: val.fst_shipping_address,
                         action: action
                     }).draw(false);

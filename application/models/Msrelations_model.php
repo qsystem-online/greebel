@@ -54,7 +54,15 @@ clASs Msrelations_model extends MY_Model {
             $rwRelation->fst_village_name = null;
         }
 
-        $ssql = "SELECT * FROM msshippingaddress where fin_relation_id = ? and fst_active = 'A' ";
+        //$ssql = "SELECT * FROM msshippingaddress where fin_relation_id = ? and fst_active = 'A' ";
+        $ssql = "SELECT a.*,MID(a.fst_area_code, 1, 2) AS provinceShipp,MID(a.fst_area_code, 1, 5) AS districtShipp,MID(a.fst_area_code, 1, 8) AS subdistrictShipp,MID(a.fst_area_code, 1, 13) AS villageShipp,
+        b.fst_nama AS fst_province_name,c.fst_nama AS fst_district_name,d.fst_nama AS fst_subdistrict_name,e.fst_nama AS fst_village_name,f.fst_relation_name AS fst_name FROM msshippingaddress a
+        LEFT JOIN msarea b ON MID(a.fst_area_code, 1, 2) = b.fst_kode
+        LEFT JOIN msarea c ON MID(a.fst_area_code, 1, 5) = c.fst_kode
+        LEFT JOIN msarea d ON MID(a.fst_area_code, 1, 8) = d.fst_kode
+        LEFT JOIN msarea e ON MID(a.fst_area_code, 1, 13) = e.fst_kode
+        LEFT JOIN msrelations f ON a.fin_relation_id = f.fin_relation_id
+        WHERE a.fin_relation_id = ? and a.fst_active = 'A' ";
         $qr = $this->db->query($ssql, [$fin_relation_id]);
         $rsShipping = $qr->result();
 
@@ -68,6 +76,15 @@ clASs Msrelations_model extends MY_Model {
 
     public function getRules($mode="ADD",$id=0){
         $rules = [];
+
+        $rules[] = [
+            'field' => 'fst_relation_type',
+            'label' => 'Relation Type',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong'
+            )
+        ];
 
         $rules[] = [
             'field' => 'fst_relation_name',

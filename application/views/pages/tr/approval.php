@@ -18,8 +18,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="col-md-12">
             <div class="box box-info">
 				<div class="box-header with-border">
-				<h3 class="box-title title"><?=$title?></h3>
-			</div>
+				    <h3 class="box-title title"><?=$title?></h3>
+			    </div>
             <div class="box-body">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
