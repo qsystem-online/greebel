@@ -40,6 +40,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 										}
 										//<option value="a.fst_relation_name">Customer</option>
 									?>
+									<option value="a.fst_relation_name">Customer</option>
+									<option value="a.fst_sj_no">S/J No.</option>
 								</select>
 							</span>
 						</div>
