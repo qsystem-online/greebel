@@ -1,5 +1,38 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
+
+class Suratjalan {
+    private $CI;
+    private $rw;
+    private $db;
+
+    public function __construct($CI,$sjId){
+        $this->CI = $CI;
+        $this->db = $CI->db;
+
+        $ssql = "select * from trsuratjalan where fin_sj_id = ?";
+        $qr = $this->CI->db->query($ssql,[$sjId]);
+        $this->rw = $qr->row();
+        if ($this->rw == false){
+            throw new Exception("Invalid ID");
+        }
+    }
+    public function __debugInfo() {
+        //support on php 5.6
+        return [
+            'rw' => $this->rw
+        ];
+    }
+    public function __get($name){
+        if (property_exists($this->rw,$name)){
+            return $this->rw->$name;
+        }else{
+            throw new Exception("Invalid Property Name !");
+        }
+    }
+    
+}
+
 class Trsuratjalan_model extends MY_Model {
     public $tableName = "trsuratjalan";
     public $pkey = "fin_sj_id";
@@ -57,8 +90,6 @@ class Trsuratjalan_model extends MY_Model {
 
         return $rules;
     }
-
-    
 
     public function getDataById($fin_sj_id){
         $ssql = "select a.*,
@@ -136,19 +167,25 @@ class Trsuratjalan_model extends MY_Model {
     }
 
     public function unposting($sjId){
-        // Update Kartu Stock
-
+        $this->load->model("trinventory_model");   
+        
         //update Sales Order
-        $ssql = "select * from trsuratjalandetails where fin_sj_id = ?";
+        $ssql = "select a.*,b.fin_warehouse_id from trsuratjalandetails a 
+            inner join trsuratjalan b on a.fin_sj_id = b.fin_sj_id 
+            where a.fin_sj_id = ?";
+
         $qr = $this->db->query($ssql,[$sjId]);
         $rs = $qr->result();
         if(!$rs){
             return false;
         }
+        
+        $this->trinventory_model->deleteByCodeId("DO",$sjId);
+
         foreach($rs as $rw){
             $finSalesorderDetailId = $rw->fin_salesorder_detail_id;
             $ssql = "update trsalesorderdetails set fdb_qty_out = fdb_qty_out -  " . $rw->fdb_qty  ." where fin_rec_id = ?";
-            $query = $this->db->query($ssql,[$finSalesorderDetailId]);               
+            $query = $this->db->query($ssql,[$finSalesorderDetailId]);                  
         }
 
     }
@@ -156,7 +193,7 @@ class Trsuratjalan_model extends MY_Model {
     public function posting($sjId){
         $this->load->model("trinventory_model");        
     
-        $ssql = "select a.*,b.fin_warehouse_id from trsuratjalandetails a 
+        $ssql = "select a.*,b.fin_warehouse_id,b.fdt_sj_date from trsuratjalandetails a 
             inner join trsuratjalan b on a.fin_sj_id = b.fin_sj_id 
             where a.fin_sj_id = ?";
 
@@ -181,21 +218,22 @@ class Trsuratjalan_model extends MY_Model {
                 "fin_item_id"=>$rw->fin_item_id,
                 "fst_unit"=>$rw->fst_unit,
                 "fdb_qty_in"=>0,
-                "fdb_qty_out"=>0,
+                "fdb_qty_out"=>$rw->fdb_qty,
                 "fdc_price_in"=>0,
                 "fst_active"=>"A"
             ];
-
-
-            $this->trinventory_model->insert();
-        
+            $this->trinventory_model->insert($data);
         }
+    }
 
-        // Jurnal
-       //$accPersediaan = getGLConfig("SJ_PERSEDIAAN");
-       //$accHPP = getGLConfig("SJ_HPP");
-
-
+    public function createObject($sjId){
+        $ci = & get_instance();
+        try{
+            $suratJalan = new SuratJalan($ci,$sjId);
+            return $suratJalan;
+        }catch(Exception $e){
+            return null;
+        }        
     }
 
     //===== MONITORING 02/08/2019 enny06 ==========\\

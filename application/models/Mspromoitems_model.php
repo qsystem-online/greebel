@@ -3,17 +3,17 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 class Mspromoitems_model extends MY_Model
 {
     public $tableName = "mspromoitems";
-    public $pkey = "fin_id";
+    public $pkey = "fin_rec_id";
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function getDataById($fin_id)
+    public function getDataById($fin_rec_id)
     {
-        $ssql = "select * from " . $this->tableName . " where fin_id = ? and fst_active = 'A'";
-        $qr = $this->db->query($ssql, [$fin_id]);
+        $ssql = "select * from " . $this->tableName . " where fin_rec_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql, [$fin_rec_id]);
         $rw = $qr->row();
 
         $data = [

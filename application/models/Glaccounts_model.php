@@ -12,7 +12,8 @@ class Glaccounts_model extends MY_Model
 
     public function getDataById($fst_glaccount_code)
     {
-        $ssql = "select a.*,b.fst_curr_name, c.fst_glaccount_name as GLParentName, d.fst_glaccount_maingroup_name, d.fst_glaccount_main_prefix from " . $this->tableName . " a 
+        $ssql = "select a.*,b.fst_curr_name, c.fst_glaccount_name as GLParentName, d.fst_glaccount_maingroup_name, d.fst_glaccount_main_prefix 
+        from " . $this->tableName . " a 
         left join mscurrencies b on a.fst_curr_code = b.fst_curr_code 
         left join " . $this->tableName . " c on a.fst_parent_glaccount_code = c.fst_glaccount_code
         left join glaccountmaingroups d on a.fin_glaccount_maingroup_id = d.fin_glaccount_maingroup_id

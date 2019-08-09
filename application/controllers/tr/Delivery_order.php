@@ -16,9 +16,9 @@ class Delivery_order extends MY_Controller{
 		$this->list['page_name'] = "Surat Jalan";
 		$this->list['list_name'] = "Surat Jalan List";
 		$this->list['addnew_ajax_url'] = site_url() . 'tr/delivery_order/add';
-		$this->list['pKey'] = "id";
+		$this->list['pKey'] = "fin_sj_id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/delivery_order/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'tr/delivery_order/delete/';
+		$this->list['delete_ajax_url'] = site_url() . 'tr/delivery_order/ajx_delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'tr/delivery_order/edit/';
 		$this->list['arrSearch'] = [
 			'fin_ssj_id' => 'Surat jalan ID',
@@ -182,9 +182,13 @@ class Delivery_order extends MY_Controller{
     public function ajx_add_save(){
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsuratjalandetails_model");
+        $this->load->model("trinventory_model");
+        
         
         $dataH = $this->input->post();        
-        $dataH["fdt_sj_date"] = dBDateFormat($dataH["fdt_sj_date"]);
+        $dataH["fdt_sj_date"] = dBDateTimeFormat($dataH["fdt_sj_date"]);
+        $dataH["fbl_is_hold"] = isset($dataH["fbl_is_hold"]) ? TRUE : FALSE;
+
         $this->form_validation->set_rules($this->trsuratjalan_model->getRules("ADD", 0));
         $this->form_validation->set_data($dataH);
         
@@ -228,6 +232,17 @@ class Delivery_order extends MY_Controller{
                 $valid = false;
             }
 
+            //Validation stock is available
+            $qtyStock = (float) $this->trinventory_model->getStock($detail->fin_item_id,$detail->fst_unit,$dataH["fin_warehouse_id"]);
+            if ($detail->fdb_qty > $qtyStock ){
+                $error = [
+					"detail"=> sprintf(lang("Stock %s tersisa : %d %s") ,$detail->fst_custom_item_name,$qtyStock,$detail->fst_unit),
+				];
+                $this->ajxResp["data"] = $error;
+                $valid = false;
+            }
+
+
 
             if ($valid == false){
                 $this->json_output();
@@ -252,7 +267,7 @@ class Delivery_order extends MY_Controller{
 
         $this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		//$this->ajxResp["data"]["insert_id"] = $insertId;
+		$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
     
     }
@@ -260,9 +275,13 @@ class Delivery_order extends MY_Controller{
     public function ajx_edit_save(){
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsuratjalandetails_model");
+        $this->load->model("trinventory_model");
         
         $dataH = $this->input->post();        
         $dataH["fdt_sj_date"] = dBDateTimeFormat($dataH["fdt_sj_date"]);
+        
+        $dataH["fbl_is_hold"] = isset($dataH["fbl_is_hold"]) ? TRUE : FALSE;
+
         
         $this->form_validation->set_rules($this->trsuratjalan_model->getRules("ADD", 0));
         $this->form_validation->set_data($dataH);
@@ -281,6 +300,10 @@ class Delivery_order extends MY_Controller{
         $details = $this->input->post("detail");
         $details = json_decode($details);
         foreach($details as $detail){
+            $detailOld = $this->trsuratjalandetails_model->getDataById($detail->fin_rec_id);
+
+            $qtyOld = ($detailOld == false) ? 0 :(float) $detailOld->fdb_qty;
+
             $valid = true;
 
             $this->form_validation->set_rules($this->trsuratjalandetails_model->getRules("ADD", 0));
@@ -299,13 +322,28 @@ class Delivery_order extends MY_Controller{
             }
 
             //Validation if qty more than SO
-            if ($detail->fdb_qty > $this->trsuratjalan_model->maxQtyItem($detail->fin_salesorder_detail_id,$dataH["fin_sj_id"])){
+            $maxQty = $this->trsuratjalan_model->maxQtyItem($detail->fin_salesorder_detail_id,$dataH["fin_sj_id"]);
+            //$maxQty = $maxQty + $qtyOld;
+            if ($detail->fdb_qty > $maxQty ){
                 $error = [
 					"detail"=> sprintf(lang("Qty %s melebihi qty pada sales order") ,$detail->fst_custom_item_name),
 				];
                 $this->ajxResp["data"] = $error;
                 $valid = false;
             }
+
+            //Validation stock is available
+            $qtyStock = (float) $this->trinventory_model->getStock($detail->fin_item_id,$detail->fst_unit,$dataH["fin_warehouse_id"]);
+            $qtyStock = $qtyStock + $qtyOld;
+
+            if ($detail->fdb_qty > $qtyStock ){
+                $error = [
+					"detail"=> sprintf(lang("Stock %s tersisa : %d %s") ,$detail->fst_custom_item_name,$qtyStock,$detail->fst_unit),
+				];
+                $this->ajxResp["data"] = $error;
+                $valid = false;
+            }
+
 
 
             if ($valid == false){
@@ -338,8 +376,47 @@ class Delivery_order extends MY_Controller{
 
         $this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
-		//$this->ajxResp["data"]["insert_id"] = $insertId;
+		$this->ajxResp["data"]["insert_id"] = $dataH["fin_sj_id"];
 		$this->json_output();
     
+    }
+
+    public function ajx_delete($sjId){
+        $suratJalan = $this->trsuratjalan_model->createObject($sjId);
+        if($suratJalan == null){
+            show_404();
+        }
+
+        //SJ yg memiliki invoice tidak bisa dihapus
+        if ($suratJalan->fin_inv_id != null){
+            $this->ajxResp["status"] = "FAILED";
+            $this->ajxResp["message"] = lang("Transaksi yang telah memiliki invoice tidak dapat di hapus");
+            $this->ajxResp["data"]["id"] = $sjId;
+            $this->json_output();
+        }
+        $this->load->model("trsuratjalandetails_model");
+
+        $this->db->trans_start();
+        $this->trsuratjalan_model->delete($sjId);
+
+        //Unposting
+        $this->trsuratjalan_model->unposting($sjId);
+
+        //Delete Detail
+        $this->trsuratjalandetails_model->deleteByHId($sjId);        
+        $this->db->trans_complete();
+
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["message"] = lang("Transaksi yang telah di hapus");
+        $this->ajxResp["data"]["id"] = $sjId;
+        $this->json_output();
+    }
+
+    public function test(){
+        $this->load->model("trinventory_model");
+
+        $qtyStock = (float) $this->trinventory_model->getStock(2,"BOX",1);
+        echo $qtyStock;
+            
     }
 }

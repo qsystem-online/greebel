@@ -480,4 +480,37 @@ class Item extends MY_Controller
         ];
         $this->json_output($resp);
     }
+
+    public function testTree(){
+        $this->load->library('menus');
+        $this->list['page_name'] = "Master Items";
+        $this->list['list_name'] = "Master Items List";
+        $this->list['addnew_ajax_url'] = site_url() . 'master/item/add';
+        $this->list['pKey'] = "id";
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/item/fetch_list_data';
+        $this->list['delete_ajax_url'] = site_url() . 'master/item/delete/';
+        $this->list['edit_ajax_url'] = site_url() . 'master/item/edit/';
+        $this->list['arrSearch'] = [
+            'fin_item_id' => 'Item ID',
+            'fst_item_code' => 'Item Code',
+            'fst_item_name' => 'Item Name'
+        ];
+        $this->list['breadcrumbs'] = [
+            ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
+            ['title' => 'Master Items', 'link' => '#', 'icon' => ''],
+            ['title' => 'List', 'link' => NULL, 'icon' => ''],
+        ];
+        $this->list['title'] = "Demo Tree";
+        $main_header = $this->parser->parse('inc/main_header', [], true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+        $page_content = $this->parser->parse('test/test_tree', $this->list, true);
+        $main_footer = $this->parser->parse('inc/main_footer', [], true);
+        $control_sidebar = null;
+        $this->data['ACCESS_RIGHT'] = "A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR'] = $main_sidebar;
+        $this->data['PAGE_CONTENT'] = $page_content;
+        $this->data['MAIN_FOOTER'] = $main_footer;
+        $this->parser->parse('template/main', $this->data);
+    }
 }

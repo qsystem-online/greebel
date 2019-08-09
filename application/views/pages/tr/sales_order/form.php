@@ -47,179 +47,188 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="col-md-12">
             <div class="box box-info">
 				<div class="box-header with-border">
-				<h3 class="box-title title"><?=$title?></h3>
-			</div>
-            <!-- end box header -->
+					<h3 class="box-title title pull-left"><?=$title?></h3>
+					<div class="btn-group btn-group-sm  pull-right">					
+						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
+						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+					</div>
+				</div>
+				<!-- end box header -->
+				<!-- form start -->
+				<form id="frmSalesOrder" class="form-horizontal" action="<?=site_url()?>tr/sales_order/add" method="POST" enctype="multipart/form-data">			
+					<div class="box-body">
+						<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
+						<input type="hidden" id="frm-mode" value="<?=$mode?>">
+						<input type="hidden" class="form-control" id="fin_salesorder_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_salesorder_id" value="<?=$fin_salesorder_id?>" readonly>
 
-            <!-- form start -->
-            <form id="frmSalesOrder" class="form-horizontal" action="<?=site_url()?>tr/sales_order/add" method="POST" enctype="multipart/form-data">			
-				<div class="box-body">
-					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
-					<input type="hidden" id="frm-mode" value="<?=$mode?>">
-					<input type="hidden" class="form-control" id="fin_salesorder_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_salesorder_id" value="<?=$fin_salesorder_id?>" readonly>
+						
+						<div class="form-group">
+							<label for="fst_salesorder_no" class="col-md-2 control-label"><?=lang("Sales Order No")?> #</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control" id="fst_salesorder_no" placeholder="<?=lang("Sales Order No")?>" name="fst_salesorder_no" value="<?=$fst_salesorder_no?>" readonly>
+								<div id="fst_salesorder_no_err" class="text-danger"></div>
+							</div>
+							
+							<label for="fdt_salesorder_date" class="col-md-2 control-label"><?=lang("Sales Order Date")?> *</label>
+							<div class="col-md-4">
+								<div class="input-group date">
+									<div class="input-group-addon">
+										<i class="fa fa-calendar"></i>
+									</div>
+									<input type="text" class="form-control text-right datetimepicker" id="fdt_salesorder_date" name="fdt_salesorder_date"/>
+								</div>
+								<div id="fdt_salesorder_date_err" class="text-danger"></div>
+								<!-- /.input group -->
+							</div>						
+						</div>
 
-					
-					<div class="form-group">
-						<label for="fst_salesorder_no" class="col-md-2 control-label"><?=lang("Sales Order No")?> #</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control" id="fst_salesorder_no" placeholder="<?=lang("Sales Order No")?>" name="fst_salesorder_no" value="<?=$fst_salesorder_no?>" readonly>
-							<div id="fst_salesorder_no_err" class="text-danger"></div>
+						<div class="form-group">						
+							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> </label>
+							<div class="col-md-4">
+								<select id="fst_curr_code" class="form-control" name="fst_curr_code">
+									<option value="<?=$default_currency['CurrCode']?>"><?=$default_currency['CurrName']?></option>
+								</select>
+								<div id="fst_curr_code_err" class="text-danger"></div>
+							</div>
+						
+							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> </label>
+							<div class="col-md-1">
+								<input type="text" class="form-control" id="fdc_exchange_rate_idr" name="fdc_exchange_rate_idr" style="width:50px" value="1" readonly/>
+							</div>
+							<label class="col-md-2 control-label" style="text-align:left;padding-left:0px"><?=lang("Rupiah")?> </label>
+						</div>
+
+						<div class="form-group">						
+							<label for="select-relations" class="col-md-2 control-label"><?=lang("Customer")?> </label>
+							<div class="col-md-4">
+								<select id="select-relations" class="form-control non-editable" name="fin_relation_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fin_relation_id_err" class="text-danger"></div>
+							</div>
+						
+							<label for="select-relations" class="col-md-2 control-label"><?=lang("Term")?> </label>
+							<div class="col-md-1">
+								<input type="text" class="form-control" id="fin_terms_payment" name="fin_terms_payment" style="width:50px"/>							
+								<div id="fin_terms_payment_err" class="text-danger"></div>
+							</div>
+							<label class="col-md-2 control-label" style="text-align:left;padding-left:0px"><?=lang("Hari")?> </label>
+						</div>
+
+
+						<div class="form-group">
+							
+							<label for="select-sales" class="col-md-2 control-label"><?=lang("Sales")?> </label>
+							<div class="col-md-4">
+								<select id="select-sales" class="form-control" name="fin_sales_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fin_sales_id_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?> </label>
+							<div class="col-md-4">
+								<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fin_warehouse_id_err" class="text-danger"></div>
+							</div>
+							<div class="checkbox col-sm-6">
+								<label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label>
+								<label style="margin-left:20px"><input id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("Include PPN") ?></label>
+							</div>
+							
+						</div>
+
+						<div class="form-group">
+							<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?> </label>
+							<div class="col-md-10">
+								<select class="select2 form-control" name="fin_shipping_address_id" id="fin_shipping_address_id" style="width:100%"></select>
+								<div id="fst_shipping_address_err" class="text-danger"></div>
+							</div>														
+						</div>
+						<div class="form-group">
+							<label class="col-md-2 control-label"></label>
+							<div class="col-md-10">
+								<textarea class="form-control" id="fst_shipping_address" style="width:100%" rows="5" readonly></textarea>
+								<div id="fst_shipping_address_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-md-12" style='text-align:right'>
+								<button id="btn-add-detail" class="btn btn-primary btn-sm">
+									<i class="fa fa-cart-plus" aria-hidden="true"></i>
+									<?=lang("Tambah Item")?>
+								</button>
+							</div>
+						</div>
+
+						<table id="tblSODetails" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+						<br>
+						<div class="form-group">
+							<div class="col-sm-6">	
+								<div class="form-group">
+									
+									<div class="col-sm-12">
+										<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="5" style="resize:none"></textarea>
+										<div id="fst_memo_err" class="text-danger"></div>
+									</div>
+								</div>
+		
+							</div>
+							<div class="col-sm-6">	
+								<div class="form-group">
+									<label for="sub-total" class="col-md-8 control-label"><?=lang("Sub total")?></label>
+									<div class="col-md-4" style='text-align:right'>
+										<input type="text" class="form-control text-right" id="sub-total" value="0" readonly>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="sub-total" class="col-md-6 control-label">%<?=lang("PPn")?></label>
+									<div class="col-md-2" style='text-align:right'>
+										<input type="text" class="form-control text-right" id="fdc_vat_percent" name="fdc_vat_percent" value="<?=$percent_ppn?>" >
+									</div>
+									<div class="col-md-4" style='text-align:right'>
+										<input type="text" class="form-control text-right" id="fdc_vat_amount" name="fdc_vat_amount" value="0" readonly>	
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label for="total" class="col-md-8 control-label"><?=lang("Total")?></label>
+									<div class="col-md-4" style='text-align:right'>
+										<input type="text" class="form-control text-right" id="total" value="0" readonly>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="total" class="col-md-8 control-label"><?=lang("Uang Muka")?></label>
+									<div class="col-md-4" style='text-align:right'>
+										<input type="text" class="money form-control text-right" id="fdc_downpayment" name="fdc_downpayment" value="0">
+									</div>
+								</div>
+							</div>
+							
 						</div>
 						
-						<label for="fdt_salesorder_date" class="col-md-2 control-label"><?=lang("Sales Order Date")?> *</label>
-						<div class="col-md-4">
-							<div class="input-group date">
-								<div class="input-group-addon">
-									<i class="fa fa-calendar"></i>
-								</div>
-								<input type="text" class="form-control pull-right datepicker" id="fdt_salesorder_date" name="fdt_salesorder_date"/>								
-							</div>
-							<div id="fdt_salesorder_date_err" class="text-danger"></div>
-							<!-- /.input group -->
-						</div>						
-                    </div>
-
-					<div class="form-group">						
-						<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> </label>
-						<div class="col-md-4">
-							<select id="fst_curr_code" class="form-control" name="fst_curr_code">
-								<option value="<?=$default_currency['CurrCode']?>"><?=$default_currency['CurrName']?></option>
-							</select>
-							<div id="fst_curr_code_err" class="text-danger"></div>
-						</div>
-					
-						<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> </label>
-						<div class="col-md-1">
-							<input type="text" class="form-control" id="fdc_exchange_rate_idr" name="fdc_exchange_rate_idr" style="width:50px" value="1" readonly/>
-						</div>
-						<label class="col-md-2 control-label" style="text-align:left;padding-left:0px"><?=lang("Rupiah")?> </label>
-					</div>
-
-					<div class="form-group">						
-						<label for="select-relations" class="col-md-2 control-label"><?=lang("Customer")?> </label>
-						<div class="col-md-4">
-							<select id="select-relations" class="form-control non-editable" name="fin_relation_id">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fin_relation_id_err" class="text-danger"></div>
-						</div>
-					
-						<label for="select-relations" class="col-md-2 control-label"><?=lang("Term")?> </label>
-						<div class="col-md-1">
-							<input type="text" class="form-control" id="fin_terms_payment" name="fin_terms_payment" style="width:50px"/>							
-							<div id="fin_terms_payment_err" class="text-danger"></div>
-						</div>
-						<label class="col-md-2 control-label" style="text-align:left;padding-left:0px"><?=lang("Hari")?> </label>
-					</div>
-
-
-                    <div class="form-group">
 						
-						<label for="select-sales" class="col-md-2 control-label"><?=lang("Sales")?> </label>
-						<div class="col-md-4">
-							<select id="select-sales" class="form-control" name="fin_sales_id">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fin_sales_id_err" class="text-danger"></div>
-						</div>
+
 					</div>
+					<!-- end box body -->
 
-					<div class="form-group">
-                        <label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?> </label>
-						<div class="col-md-4">
-							<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fin_warehouse_id_err" class="text-danger"></div>
-						</div>
-						<div class="checkbox col-sm-6">
-							<label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label>
-							<label style="margin-left:20px"><input id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("Include PPN") ?></label>
-						</div>
-						
+					<div class="box-footer text-right">
+						<!-- <a id="btnSubmitAjaxOld" href="#" class="btn btn-primary"><=lang("Save Ajax")?></a> -->
 					</div>
-
-					<div class="form-group">
-                        <label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?> </label>
-						<div class="col-md-10">
-							<select class="select2 form-control" name="fin_shipping_address_id" id="fin_shipping_address_id" style="width:100%"></select>
-							<div id="fst_shipping_address_err" class="text-danger"></div>
-						</div>														
-					</div>
-					<div class="form-group">
-						<label class="col-md-2 control-label"></label>
-                        <div class="col-md-10">
-							<textarea class="form-control" id="fst_shipping_address" style="width:100%" rows="5" readonly></textarea>
-							<div id="fst_shipping_address_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<div class="col-md-12" style='text-align:right'>
-							<button id="btn-add-detail" class="btn btn-default btn-sm">
-								<i class="fa fa-plus" aria-hidden="true"></i>
-								<?=lang("Tambah Item")?>
-							</button>
-						</div>
-					</div>
-
-					<table id="tblSODetails" class="table table-bordered table-hover table-striped"></table>
-					<div class="form-group">
-						<div class="col-sm-6">	
-							<div class="form-group">
-								
-								<div class="col-sm-12">
-									<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="5" style="resize:none"></textarea>
-									<div id="fst_memo_err" class="text-danger"></div>
-								</div>
-							</div>
-	
-						</div>
-						<div class="col-sm-6">	
-							<div class="form-group">
-								<label for="sub-total" class="col-md-8 control-label"><?=lang("Sub total")?></label>
-								<div class="col-md-4" style='text-align:right'>
-									<input type="text" class="form-control text-right" id="sub-total" value="0" readonly>
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="sub-total" class="col-md-6 control-label">%<?=lang("PPn")?></label>
-								<div class="col-md-2" style='text-align:right'>
-									<input type="text" class="form-control text-right" id="fdc_vat_percent" name="fdc_vat_percent" value="<?=$percent_ppn?>" >
-								</div>
-								<div class="col-md-4" style='text-align:right'>
-									<input type="text" class="form-control text-right" id="fdc_vat_amount" name="fdc_vat_amount" value="0" readonly>	
-								</div>
-							</div>
-
-							<div class="form-group">
-								<label for="total" class="col-md-8 control-label"><?=lang("Total")?></label>
-								<div class="col-md-4" style='text-align:right'>
-									<input type="text" class="form-control text-right" id="total" value="0" readonly>
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="total" class="col-md-8 control-label"><?=lang("Uang Muka")?></label>
-								<div class="col-md-4" style='text-align:right'>
-									<input type="text" class="money form-control text-right" id="fdc_downpayment" name="fdc_downpayment" value="0">
-								</div>
-							</div>
-						</div>
-						
-					</div>
-					
-					
-
-                </div>
-				<!-- end box body -->
-
-                <div class="box-footer text-right">
-                    <a id="btnSubmitAjax" href="#" class="btn btn-primary"><?=lang("Save Ajax")?></a>
-                </div>
-                <!-- end box-footer -->
-            </form>
-        </div>
-    </div>
+					<!-- end box-footer -->
+				</form>
+        	</div>
+    	</div>
+	</div>
 </section>
 
 <!-- modal atau popup "ADD" -->
@@ -318,7 +327,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 	</div>
 </div>
-			
+
+<?php
+	echo $mdlJurnal;
+?>
+
+
 			
 <script type="text/javascript">
 	var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
@@ -408,6 +422,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	}
 
 	$(function(){
+		$("#btnJurnal").click(function(e){
+			e.preventDefault();
+			$("#mdlJurnal").modal({
+				backdrop:"static",
+			});
+		});
+
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			var cekPromo = 1;
@@ -415,7 +436,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			saveAjax(cekPromo,confirmAuthorize);
 		});
 
-		$("#fdt_salesorder_date").datepicker('update', dateFormat("<?= date("Y-m-d")?>"));
+		//$("#fdt_salesorder_date").datepicker('update', dateFormat("<= date("Y-m-d")?>"));
+		$("#fdt_salesorder_date").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 
 		
 		
@@ -547,40 +569,44 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
 		}).DataTable({
-			scrollX: true,
+			scrollY: "300px",
+			scrollX: true,			
+			scrollCollapse: true,	
+			order: [],
 			columns:[
-				{"title" : "id","width": "5%",sortable:false,data:"fin_rec_id",visible:true},
-				{"title" : "promo","width": "5%",sortable:false,data:"fin_promo_id",visible:true},				
-				{"title" : "Items","width": "200px",sortable:false,data:"fin_item_id",
+				{"title" : "Action","width": "40px",data:"action",sortable:false,className:'dt-body-center text-center'},
+				{"title" : "id",sortable:false,data:"fin_rec_id",visible:true},
+				{"title" : "promo",sortable:false,data:"fin_promo_id",visible:true},				
+				{"title" : "Items","width": "450px",sortable:false,data:"fin_item_id",
 					render: function(data,type,row){
 						return row.ItemCode + "-" + row.fst_custom_item_name;
 					}
 				},
-				{"title" : "Custom Name","width": "15%",sortable:false,data:"fst_custom_item_name",visible:false},
-				{"title" : "Qty","width": "10%",data:"fdb_qty",className:'text-right'},
-				{"title" : "Unit","width": "10%",data:"fst_unit"},
-				{"title" : "Price","width": "10%",
+				{"title" : "Custom Name","width": "0px",sortable:false,data:"fst_custom_item_name",visible:false},
+				{"title" : "Qty",data:"fdb_qty",className:'text-right'},
+				{"title" : "Unit",width:"50px",data:"fst_unit"},
+				{"title" : "Price",width:"80px",
 					data:"fdc_price",
 					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
 				},
-				{"title" : "Disc ++","width": "10%",
+				{"title" : "Disc ++",width:"50px",
 					data:"fst_disc_item",
 					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
 				},
-				{"title" : "Disc Amt","width": "10%",
+				{"title" : "Disc Amt",width:"80px",
 					data:"fdc_disc_amount",
 					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
-				},
-				{"title" : "Memo","width": "200px",data:"fst_memo_item"},
-				{"title" : "Total","width": "10%",
+				},				
+				{"title" : "Total",width:"80px",
 					data:"total",
 					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
 				},
-				{"title" : "Action","width": "8%",data:"action",sortable:false,className:'dt-body-center text-center'},
+				{"title" : "Memo","width": "200px",data:"fst_memo_item"},
+				
 			],
 			processing: true,
 			serverSide: false,
@@ -596,6 +622,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 			},
 		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+
 			$('.xbtn-delete').confirmation({
 				//rootSelector: '[data-toggle=confirmation]',
 				rootSelector: '.btn-delete',
@@ -896,11 +925,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			data:dataItem,
 			ajax:ajxSel2Item
 		});
-		consoleLog($("#select-items").select2("data"));
+
 		fixedSelect2();
 		//$(".non-editable").prop('disabled', true);
 		calculateTotal();		
-		$("#fdt_salesorder_date").datepicker('update', dateFormat(resp.sales_order.fdt_salesorder_date));
+		//$("#fdt_salesorder_date").datepicker('update', dateTimeFormat(resp.sales_order.fdt_salesorder_date));
+		$("#fdt_salesorder_date").val(dateTimeFormat(resp.sales_order.fdt_salesorder_date)).datetimepicker('update');
 	
 	}
 
@@ -909,7 +939,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#fin_shipping_address_id").empty();
 		$("#fst_shipping_address").val("");
 		$.ajax({
-			url: '<?=site_url()?>pr/relation/select_shipping_address/' + customerId,
+			//url: '<=site_url()?>pr/relation/select_shipping_address/' + customerId,
+			url:"<?=site_url()?>select_data/get_shipping_address/" + customerId,
 		}).done(function(resp){
 			arrShippingAddress = resp.data;
 			arrSelect = [];
@@ -948,6 +979,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 	function saveAjax(cekPromo,confirmAuthorize){
+		alert("simpan");
+		return;
+
 		data = $("#frmSalesOrder").serializeArray();
 		detail = new Array();		
 
@@ -1114,7 +1148,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
 <script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-
 
 <script type="text/javascript">
    function fixedSelect2(){

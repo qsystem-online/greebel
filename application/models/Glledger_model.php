@@ -59,6 +59,9 @@ class Glledger_model extends MY_Model{
         }
         $ids=[];
         foreach($datas as $data){
+            if ($data["fdc_debit"] == 0 && $data["fdc_credit"] == 0){
+                continue;
+            }
             $ids[]= parent::insert($data);
         }
         return $ids;
@@ -71,20 +74,27 @@ class Glledger_model extends MY_Model{
         if ((boolean) getDbConfig("delete_jurnal")){
             //Delete Transaction;
             foreach($rs as $rw){
-                parent::delete($rw->fin_rec_id);
+                parent::delete($rw->fin_rec_id,false);
             }
         }else{
+
             //Balik Jurnal
             for($i=0;$i<sizeof($rs);$i++){
-                $debet =  $rs[$i]->fdc_debet;
+                $rw = $rs[$i];
+                parent::delete($rw->fin_rec_id,true);
+                /*
+                $debet =  $rs[$i]->fdc_debit;
                 $credit = $rs[$i]->fdc_credit;
 
-                $rs[$i]->fdc_debet = $credit;
+                $rs[$i]->fdc_debit = $credit;
                 $rs[$i]->fdc_credit = $debet;
+                $rs[$i]->fbl_is_flip = 1;            
+                unset($rs[$i]->fin_rec_id);
                 if ($newTrxDate != ""){
                     $rs[$i]->fdt_trx_datetime = $newTrxDate;
                 }
-                parent::insert($rs[$i]);
+                parent::insert((array) $rs[$i]);
+                */
             }
         }
     }
