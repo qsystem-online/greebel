@@ -33,6 +33,26 @@ class SalesOrder{
 
         return false;
     }
+    
+    public function __get($name){
+        if (property_exists($this->rw,$name)){
+            return $this->rw->$name;
+        }else{
+            throw new Exception("Invalid Property Name !");
+        }
+    }
+
+    public function getDPClaimed($salesOrderId,$excludeInvId = 0){
+        $ssql = "select sum(fdc_downpayment_claimed) as fdc_downpayment_claimed from trinvoice where fin_salesorder_id = ? and fst_active ='A' and fin_inv_id != ?";
+        $qr = $this->CI->db->query($ssql,[$salesOrderId,$excludeInvId]);
+        $rw =$qr->row();
+        $totalClaimed = $rw->fdc_downpayment_claimed;
+        return $totalClaimed;
+    }
+    public function getDPAvailableToClaimed($salesOrderId,$excludeInvId = 0){        
+        $totalClaimed =  $this->getDPClaimed($salesOrderId,$excludeInvId);
+        return (float) $this->fdc_downpayment_paid - (float) $totalClaimed;
+    }
 }
 
 class Trsalesorder_model extends MY_Model {

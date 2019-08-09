@@ -26,10 +26,31 @@ class Trinventory_model extends MY_Model
         marketing stock:
     */
     public function getStock($fin_item_id,$fst_unit,$fin_warehouse_id){
-        $ssql = "select sum(fdb_qty_in) as ttl_qty_in,sum(fdb_qty_out) as ttl_qty_out from ". $this->tableName . " where fin_warehouse_id = ? and fin_item_id = ? and fst_unit = ? and fst_active = 'A'";
+        //$ssql = "select sum(fdb_qty_in) as ttl_qty_in,sum(fdb_qty_out) as ttl_qty_out from ". $this->tableName . " where fin_warehouse_id = ? and fin_item_id = ? and fst_unit = ? and fst_active = 'A'";
+        $ssql = "select * from msitems where fin_item_id = ?";
+        $qr = $this->db->query($ssql,[$fin_item_id]);
+        $rw = $qr->row();
+        if(!$rw){
+            return 0;
+        }
+        if ($rw->fbl_stock == false){
+            return 999999999;
+        }
+
+        $ssql ="select * from trinventory a 
+            where fin_warehouse_id =? 
+            and fin_item_id = ?
+            and fst_unit = ? 
+            order by fdt_trx_datetime desc , fin_rec_id desc limit 1";
         $qr = $this->db->query($ssql,[$fin_warehouse_id,$fin_item_id,$fst_unit]);
         $rw = $qr->row();
-        return (int) $rw->ttl_qty_in - (int) $rw->ttl_qty_out;
+        if (!$rw){
+            return 0;
+        }else{
+            //return (int) $rw->ttl_qty_in - (int) $rw->ttl_qty_out;
+            return (float) $rw->fdb_qty_balance_after;
+        }
+        
     }
 
     public function getMarketingStock($fin_item_id,$fst_unit,$fin_warehouse_id){
@@ -44,12 +65,24 @@ class Trinventory_model extends MY_Model
     }
 
     public function insert($data){
+
+        $ssql ="select * from msitems where fin_item_id = ?";
+        $qr = $this->db->query($ssql,[$data["fin_item_id"]]);
+        $rw = $qr->row();
+        if(!$rw){
+            return;
+        }else{
+            if ($rw->fbl_stock == false){
+                return;
+            }
+        }
+
         //get last record
         $ssql ="select * from trinventory 
         where fin_warehouse_id = ?
         and fin_item_id = ?
         and fst_unit = ?        
-        fdt_trx_datetime <= ? order by fdt_trx_datetime desc , fin_rec_id desc limit 1";
+        and fdt_trx_datetime <= ? order by fdt_trx_datetime desc , fin_rec_id desc limit 1";
 
         $qr = $this->db->query($ssql,[$data["fin_warehouse_id"],$data["fin_item_id"],$data["fst_unit"],$data["fdt_trx_datetime"]]);
         $rw = $qr->row();
@@ -80,7 +113,7 @@ class Trinventory_model extends MY_Model
         where fin_warehouse_id = ?
         and fin_item_id = ?
         and fst_unit = ?        
-        fdt_trx_datetime > ? order by fdt_trx_datetime ,fin_rec_id";
+        and fdt_trx_datetime > ? order by fdt_trx_datetime ,fin_rec_id";
 
         $qr = $this->db->query($ssql,[$data["fin_warehouse_id"],$data["fin_item_id"],$data["fst_unit"],$datetime]);
         $rs = $qr->result();
@@ -99,7 +132,7 @@ class Trinventory_model extends MY_Model
             unset($rw["fdt_update_datetime"]);
             unset($rw["fin_update_id"]);
 
-            parrent::update($rw);
+            parent::update($rw);
             $currentData = $rw;
         }
 
@@ -107,8 +140,8 @@ class Trinventory_model extends MY_Model
 
     }
 
-    public function delete($trxCode,$trxId){
-        $ssql = "select * from from trinventory where $fst_trx_code =? and $fin_trx_id =? order by fdt_trx_datetime,fin_rec_id";
+    public function deleteByCodeId($trxCode,$trxId){
+        $ssql = "select *  from trinventory where fst_trx_code =? and fin_trx_id =? order by fdt_trx_datetime,fin_rec_id";
         $qr = $this->db->query($ssql,[$trxCode,$trxId]);
         $rs = $qr->result();
         foreach($rs as $rw){
@@ -122,7 +155,7 @@ class Trinventory_model extends MY_Model
                 where fin_warehouse_id = ?
                 and fin_item_id = ?
                 and fst_unit = ?
-                and fdt_trx_datetime <= ? order by fdt_trxt_datetime desc , fin_rec_id desc limit 1";
+                and fdt_trx_datetime <= ? order by fdt_trx_datetime desc , fin_rec_id desc limit 1";
             $qr = $this->db->query($ssql,[$rw->fin_warehouse_id,$rw->fin_item_id,$rw->fst_unit,$rw->fdt_trx_datetime]);
             $currentData = $qr->row();
 
@@ -140,7 +173,7 @@ class Trinventory_model extends MY_Model
                 where fin_warehouse_id = ?
                 and fin_item_id = ?
                 and fst_unit = ?
-                and fdt_trx_datetime >= ? order by fdt_trxt_datetime,fin_rec_id";
+                and fdt_trx_datetime >= ? order by fdt_trx_datetime,fin_rec_id";
             $qr = $this->db->query($ssql,[$rw->fin_warehouse_id,$rw->fin_item_id,$rw->fst_unit,$rw->fdt_trx_datetime]);
             $rs = $qr->result();    
             foreach($rs as $rw){

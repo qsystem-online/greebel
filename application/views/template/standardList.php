@@ -49,7 +49,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</select>
 					</span>
 				</div>
-				<table id="tblList" class="table table-bordered table-hover table-striped"></table>
+				<table id="tblList" class="table table-bordered table-hover table-striped row-border compact nowarp" style="min-width:100%"></table>
 			</div>
 			<!-- /.box-body -->
 			<div class="box-footer">
@@ -67,6 +67,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			 //data.sessionId = "TEST SESSION ID";
 			 data.optionSearch = $('#selectSearch').val();
 		}).DataTable({
+			scrollX: true,
+			scrollCollapse: true,
 			columns:[
                 <?php
 					foreach($columns as $col){?>
@@ -100,29 +102,46 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			serverSide: true,
 			ajax: "<?=$fetch_list_data_ajax_url?>"
 		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+			$(".dataTables_scrollBody").css("position","static");
+
 			$('.btn-delete').confirmation({
 				//rootSelector: '[data-toggle=confirmation]',
+				title: "<?=lang('Hapus data ini ?')?>",
 				rootSelector: '.btn-delete',
 				// other options
 			});	
+		});
+		
+		$("#tblList").on("click",".btn-delete",function(event){
+			id = $(this).data("<?=$pKey?>");
+			if (typeof id === "undefined") {			
+				t = $('#tblList').DataTable();
+				var trRow = $(this).parents('tr');				
+				data = t.row(trRow).data();
+				id = data.<?=$pKey?>;
+			}
 
-			$(".btn-delete").click(function(event){
-				var trRow = $(this).parents('tr');
-				$.ajax({
-					url:"<?=$delete_ajax_url?>" + $(this).data("<?=$pKey?>"),
-					success:function(resp){
-						if (resp.status == "SUCCESS"){
-							trRow.remove();
-						}
+			$.ajax({
+				url:"<?=$delete_ajax_url?>" + id,
+				success:function(resp){
+					if (resp.status == "SUCCESS"){
+						t.row(trRow).remove();
 					}
-				})
-			});
+				}
+			})
+		});
 
-			$(".btn-edit").click(function(event){
-				id = $(this).data("<?=$pKey?>");
-				window.location.replace("<?=$edit_ajax_url?>" + id);
-			});
-
+		$("#tblList").on("click",".btn-edit",function(event){
+			id = $(this).data("<?=$pKey?>");
+			if (typeof id === "undefined") {
+				t = $('#tblList').DataTable();
+				var trRow = $(this).parents('tr');				
+				data = t.row(trRow).data();
+				id = data.<?=$pKey?>;
+			}
+			window.location.replace("<?=$edit_ajax_url?>" + id);
 		});
 
 	});
