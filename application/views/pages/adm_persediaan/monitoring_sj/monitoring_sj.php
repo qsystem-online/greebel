@@ -116,6 +116,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			<div class="modal-body">
 				<form  class="form-horizontal" id="resi-modal" method="POST" enctype="multipart/form-data">
+				<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<div class="form-group">
 						<label for="fin_sj_id" class="col-md-2 control-label"><?=lang("S/J ID")?> :</label>
 						<div class="col-md-4">
@@ -151,7 +152,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div class="input-group-addon">
 									<i class="fa fa-calendar"></i>
 								</div>
-								<input type="text" class="form-control pull-right datepicker text-right" id="fdt_sj_return_datetime" name="fdt_sj_return_datetime"/>								
+								<input type="text" class="form-control datetimepicker text-right" id="fdt_sj_return_datetime" name="fdt_sj_return_datetime"/>								
 							</div>
 							<div id="fdt_sj_return_datetime_err" class="text-danger"></div>
 						</div>
@@ -193,8 +194,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "S/J Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,className:'btn-resi'},
 				{"title" : "S/J Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
                 {"title" : "S/J Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:true},
-				{"title" : "Unhold Date","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:true},
-				{"title" : "Unhold","width": "10%",sortable:false,className:'dt-body-center text-center',
+				{"title" : "Unhold Date","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:false},
+				{"title" : "Unhold","width": "15%",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){
 						return "<a class='btn-unhold' href='#'><i class='fa fa-pause-circle'></i></a>";
 					}
@@ -206,7 +207,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			scrollX: true,
 		});
 
-		$("#fdt_sj_return_datetime").datepicker('update', dateFormat("<?=date("Y-m-d")?>"));
+		$(".dataTables_scrollBody").css("position","static");
+		$("#fdt_sj_return_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 
 		$("#tblMonitoring").on("click",".btn-unhold",function(e){
 			e.preventDefault();
@@ -233,51 +235,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$('#fst_sj_no').val(row.fst_sj_no);
 			$('#fst_sj_return_resi_no').val(row.fst_sj_return_resi_no);
 			$('#fst_sj_return_memo').val(row.fst_sj_return_memo);
-			//$('#fdt_sj_return_datetime').val(row.fdt_sj_return_datetime);
-			$("#fdt_sj_return_datetime").datepicker('update', dateFormat(row.fdt_sj_return_datetime));
+			$("#fdt_sj_return_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		});
 
-		/*$("#btn-update").click(function(event){
-			event.preventDefault();
-			data = $('#resi-modal').serializeArray();
-			//data = new FormData($("#resi-modal")[0]);
-			url= "<?= site_url() ?>adm_persediaan/monitoring_sj/doUpdateResi";
-			console.log(data);
-
-            $.ajax({
-                type: "POST",
-                //enctype: 'multipart/form-data',
-                url: url,
-                data: data,
-                //processData: false,
-                //contentType: false,
-                //cache: false,
-                timeout: 600000,
-                success: function(resp) {
-                    if (resp.message != "") {
-                        $.alert({
-                            title: 'Message',
-                            content: resp.message,
-                            buttons: {
-                                OK: function() {
-                                    if (resp.status == "SUCCESS") {
-                                        //location.reload();
-                                        window.location.href = "<?= site_url() ?>adm_persediaan/monitoring_sj";
-                                        return;
-                                    }
-                                },
-                            }
-                        });
-                    }
-                },
-                error: function(e) {
-                    $("#result").text(e.responseText);
-                    console.log("ERROR : ", e);
-                    $("#btnSubmit").prop("disabled", false);
-                }
-            });
-		});*/
-		
 	});
 
 	function doUnhold(element){
@@ -309,36 +269,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 	}
-
-	/*function doUpdate(element){
-		t = $('#tblMonitoring').DataTable();
-		var trRow = element.parents('tr');
-		data = t.row(trRow).data();
-		console.log(data);
-		
-		$.ajax({
-			url:"<?= site_url() ?>adm_persediaan/monitoring_sj/doUpdate/" + data.fin_sj_id,
-		}).done(function(resp){
-			if (resp.message != "") {
-				$.alert({
-					title: 'Message',
-					content: resp.message,
-					buttons: {
-						OK : function(){
-							if (resp.status == "SUCCESS"){
-								//window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
-								return;
-							}
-						},
-					}
-				});
-			}
-			if (resp.status == "SUCCESS") {
-				//update row
-				trRow.update();
-			}
-		});
-	}*/
 
 </script>
 <!-- DataTables -->

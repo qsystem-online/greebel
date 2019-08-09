@@ -75,7 +75,7 @@ class Monitoring_sj extends MY_Controller{
 		$data = [
 			"fin_sj_id" => $fin_sj_id,
 			"fin_sj_return_by_id" => $activeUser->fin_user_id,
-            "fdt_sj_return_datetime" => dBDateFormat($this->input->post("fdt_sj_return_datetime")),
+            "fdt_sj_return_datetime" => dBDateTimeFormat($this->input->post("fdt_sj_return_datetime")),
             "fst_sj_return_resi_no" => $this->input->post("fst_sj_return_resi_no"),
             "fst_sj_return_memo" => $this->input->post("fst_sj_return_memo"),
 		];

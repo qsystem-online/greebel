@@ -246,24 +246,10 @@ class Trsuratjalan_model extends MY_Model {
             "fin_sj_id" => $sjId,
             "fbl_is_hold" => "0", //Unhold Success
             "fin_unhold_id" => $activeUser->fin_user_id,
-            //"fdt_unhold_datetime" => dBDateFormat("fdt_unhold_datetime")
             "fdt_unhold_datetime" => date("Y-m-d H:i:s")
         ];
         parent::update($data);
        
     }
-
-    /*public function update($fin_sj_id){
-
-        $activeUser = $this->aauth->user();
-        $data = [
-            "fin_sj_id" => $fin_sj_id,
-            "fin_sj_return_by_id" => $activeUser->fin_user_id,
-            "fdt_sj_return_datetime" => date("Y-m-d H:i:s"),
-            "fst_sj_return_resi_no" => $this->input->post("fst_sj_return_resi_no"),
-            "fst_sj_return_memo" => $this->input->post("fst_sj_return_memo"),
-        ];
-        parent::update($data);
-    }*/
 
 }
