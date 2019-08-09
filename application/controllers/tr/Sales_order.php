@@ -18,7 +18,7 @@ class Sales_order extends MY_Controller{
 		$this->list['page_name'] = "Sales Order";
 		$this->list['list_name'] = "Sales Order List";
 		$this->list['addnew_ajax_url'] = site_url() . 'tr/sales_order/add';
-		$this->list['pKey'] = "id";
+		$this->list['pKey'] = "fin_salesorder_id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales_order/fetch_list_data';
 		$this->list['delete_ajax_url'] = site_url() . 'tr/sales_order/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'tr/sales_order/edit/';
@@ -60,9 +60,12 @@ class Sales_order extends MY_Controller{
 
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+		$mdlJurnal =$this->parser->parse('template/mdlJUrnal.php', [], true);
 
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Sales Order" : "Update Sales Order";
+		$data["mdlJurnal"] = $mdlJurnal;
+
 		if($mode == 'ADD'){
 			$data["fin_salesorder_id"] = 0;
 			$data["fst_salesorder_no"] = $this->trsalesorder_model->GenerateSONo();
@@ -944,19 +947,22 @@ class Sales_order extends MY_Controller{
 	}*/
 	
 	public function coba(){
-		$this->load->model("trvoucher_model");
-		$a= 1;
-		$b = 2;
-		$c = $a+$b;
-		echo $c;
-		die();
-
-		$data=[
-			"fst_transaction_type"=>"SALESORDER"
-		];
-		$this->trvoucher_model->createVoucher($data);
+		$ssql = "create temporary table tbltmp select * from users";
+		$this->db->query($ssql,[]);
+		
+		$ssql = "select * from tbltmp";
+		$qr = $this->db->query($ssql,[]);
+		//print_r($qr->result());
 		
 	}
+	public function coba2(){
+		$ssql = "select * from tbltmp";
+		$qr = $this->db->query($ssql,[]);
+		print_r($qr->result());
+		
+		
+	}
+
 	public function testPromo(){
 		$this->load->model("trsalesorder_model");
 		$fin_customer_id =9;

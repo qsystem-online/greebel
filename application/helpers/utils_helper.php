@@ -130,3 +130,8 @@
         }
     }
 
+    function add_date($tgl,$days){
+        $tsTgl = strtotime($tgl. ' + ' .$days.' days');
+        return date('Y-m-d', $tsTgl); 
+    }
+

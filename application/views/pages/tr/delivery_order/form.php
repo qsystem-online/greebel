@@ -14,7 +14,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-	<h1><?=lang("Sales Order")?><small><?=lang("form")?></small></h1>
+	<h1><?=lang("Delivery Order")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
 		<li><a href="#"><?= lang("Delivery Order") ?></a></li>
@@ -132,7 +132,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<table id="tblSJDetails" class="table table-bordered table-hover table-striped" style="width:100%"></table>
-                    <br>
+                    <div id="detail_err" class="text-danger"></div>
+					<br>
 					
                     <div class="form-group">
 						<div class="col-sm-6">	
@@ -458,8 +459,8 @@ $(function(){
 			$("#fin_driver_id").val(dataH.fin_driver_id).trigger("change");
 			$("#fst_no_polisi").val(dataH.fst_no_polisi);
 			$("#fin_warehouse_id").val(dataH.fin_warehouse_id).trigger("change");
-			isHold = (dataH.fbl_hold == 0) ? false : true;
-			
+
+			isHold = (dataH.fbl_is_hold == 0) ? false : true;			
 			$("#fbl_is_hold").prop('checked', isHold);
 			
 			details = resp.sj_details;
@@ -520,11 +521,15 @@ $(function(){
 			url = "<?=site_url()?>tr/delivery_order/ajx_edit_save";
 		<?php } ?>
 
+		blockUIOnAjaxRequest("<h5>Please wait....</h5>");
+
+		//$.blockUI({ message:"<h5>Please wait....</h5>"});
         $.ajax({
             url : url,
             data: data,
             method: "POST",
         }).done(function(resp){
+			//$.unblockUI();
             if (resp.message != "")	{
 					$.alert({
 						title: 'Message',
@@ -532,7 +537,7 @@ $(function(){
 						buttons : {
 							OK : function(){
 								if(resp.status == "SUCCESS"){
-									//window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
+									//window.location.href = "<= site_url() ?>tr/delivery_order/lizt";
 									//return;
 								}
 							},
@@ -548,17 +553,18 @@ $(function(){
 					}
 				}else if(resp.status == "SUCCESS") {
 					data = resp.data;
-					$("#fin_salesorder_id").val(data.insert_id);
+					$("#fin_sj_id").val(data.insert_id);
 
 					//Clear all previous error
 					$(".text-danger").html("");
-
 					// Change to Edit mode
 					$("#frm-mode").val("EDIT");  //ADD|EDIT
-					$('#fst_salesorder_no').prop('readonly', true);
+					$('#fst_sj_no').prop('readonly', true);
 					$("#tabs-so-detail").show();
 				}
-        });
+        }).always(function(resp){
+			//$.unblockUI();
+		});
 
     }
 </Script>

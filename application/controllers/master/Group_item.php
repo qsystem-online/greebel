@@ -38,7 +38,7 @@ class Group_item extends MY_Controller
         $this->list['columns'] = [
             ['title' => 'Group ID', 'width' => '10%', 'data' => 'fin_item_group_id'],
             ['title' => 'Group Name', 'width' => '25%', 'data' => 'fst_item_group_name'],
-            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);

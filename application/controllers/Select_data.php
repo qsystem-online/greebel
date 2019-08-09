@@ -26,4 +26,11 @@ class Select_data extends MY_Controller {
         $this->ajxResp["data"] = $this->select2->get_warehouse($branchId);
         $this->json_output();
     }
+
+    public function get_customer($branchId){
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["data"] = $this->select2->get_customer($branchId);
+        $this->json_output();
+
+    }
 }
