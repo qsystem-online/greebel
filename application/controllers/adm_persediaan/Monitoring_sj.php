@@ -7,6 +7,10 @@ class Monitoring_sj extends MY_Controller{
 	}
 	public function index(){
 		$this->load->library("menus");
+		$this->list['arrSearch']=[
+			'a.fst_relation_name' => 'Customer',
+			'a.fst_sj_no' => 'S/J No.',
+		];
 	
         $main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);		

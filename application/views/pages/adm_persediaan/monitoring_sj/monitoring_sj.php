@@ -29,6 +29,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab_1">
+						<div align = "right">						
+							<span>Search on:</span>
+							<span>
+								<select id="selectSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
+									<?php
+										foreach($arrSearch as $key => $value){ ?>
+											<option value=<?=$key?>><?=$value?></option>
+										<?php
+										}
+										//<option value="a.fst_relation_name">Customer</option>
+									?>
+								</select>
+							</span>
+						</div>
                             <table id="tblMonitoring" class="display nowrap" style="width:100%"></table>
                         </div> <!-- /.tab-pane -->
 
@@ -177,6 +191,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript">
 	$(function(){
+
+		$(".filterData").change(function(event){
+			event.preventDefault();
+			$('#tblMonitoring').DataTable().ajax.reload();
+		});
+
+		$('#tblMonitoring').on('preXhr.dt', function ( e, settings, data ) {
+		 	//add aditional data post on ajax call
+			//data.sessionId = "TEST SESSION ID";
+			data.optionSearch = $('#selectSearch').val();
+		});
+
 		$("#tblMonitoring").DataTable({
 			ajax: {
 				url:"<?=site_url()?>adm_persediaan/monitoring_sj/fetch_monitoring_list",
