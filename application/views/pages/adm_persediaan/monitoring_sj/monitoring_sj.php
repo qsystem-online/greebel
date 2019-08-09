@@ -44,6 +44,68 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
 </section>
 
+
+<script type="text/javascript">
+    $(function() {
+
+        $("#btn-update").click(function(event) {
+			event.preventDefault();
+			$(".text-danger").html("");
+			//data = $('#resi-modal').serializeArray();
+			data = new FormData($("#resi-modal")[0]);
+			url= "<?= site_url() ?>adm_persediaan/monitoring_sj/doUpdateResi";
+			console.log(data);
+
+            $.ajax({
+                type: "POST",
+                enctype: 'multipart/form-data',
+                url: url,
+                data: data,
+                processData: false,
+                contentType: false,
+                cache: false,
+                timeout: 600000,
+                success: function(resp) {
+                    if (resp.message != "") {
+                        $.alert({
+                            title: 'Message',
+                            content: resp.message,
+                            buttons: {
+                                OK: function() {
+                                    if (resp.status == "SUCCESS") {
+                                        window.location.href = "<?= site_url() ?>adm_persediaan/monitoring_sj";
+                                        return;
+                                    }
+                                },
+                            }
+                        });
+                    }
+
+                    if (resp.status == "VALIDATION_FORM_FAILED") {
+                        //Show Error
+                        errors = resp.data;
+                        for (key in errors) {
+                            $("#" + key + "_err").html(errors[key]);
+                        }
+                    } else if (resp.status == "SUCCESS") {
+                        data = resp.data;
+
+                        //Clear all previous error
+                        $(".text-danger").html("");
+
+                    }
+                },
+                error: function(e) {
+                    $("#result").text(e.responseText);
+                    console.log("ERROR : ", e);
+                }
+            });
+
+        });
+    });
+</script>
+
+
 <div id="resiModal" class="modal fade" role="dialog">
 	<div class="modal-dialog" style="display:table;width:65%;min-width:650px;max-width:100%">	
 		<div class="modal-content">
@@ -169,38 +231,52 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			
 			$('#fin_sj_id').val(row.fin_sj_id);
 			$('#fst_sj_no').val(row.fst_sj_no);
+			$('#fst_sj_return_resi_no').val(row.fst_sj_return_resi_no);
+			$('#fst_sj_return_memo').val(row.fst_sj_return_memo);
+			//$('#fdt_sj_return_datetime').val(row.fdt_sj_return_datetime);
+			$("#fdt_sj_return_datetime").datepicker('update', dateFormat(row.fdt_sj_return_datetime));
 		});
 
-		$("#btn-update").click(function(event){
+		/*$("#btn-update").click(function(event){
 			event.preventDefault();
-			data = $("#resiModal").serializeArray();
-			alert("TEST RESI");
+			data = $('#resi-modal').serializeArray();
+			//data = new FormData($("#resi-modal")[0]);
+			url= "<?= site_url() ?>adm_persediaan/monitoring_sj/doUpdateResi";
+			console.log(data);
 
-            //var formData = new FormData($('form')[0])
-			$.ajax({
-				url:"<?= site_url() ?>adm_persediaan/monitoring_sj/doUpdateResi/" + data.fin_sj_id,
-			}).done(function(resp){
-				if (resp.message != "") {
-					$.alert({
-						title: 'Message',
-						content: resp.message,
-						buttons: {
-							OK : function(){
-								if (resp.status == "SUCCESS"){
-									window.location.href = "<?= site_url() ?>adm_persediaan/monitoring_sj";
-									return;
-								}
-							},
-						}
-					});
-				}
-				/*if (resp.status == "SUCCESS") {
-					//remove row
-					trRow.remove();
-				}*/
-			});
-
-		});
+            $.ajax({
+                type: "POST",
+                //enctype: 'multipart/form-data',
+                url: url,
+                data: data,
+                //processData: false,
+                //contentType: false,
+                //cache: false,
+                timeout: 600000,
+                success: function(resp) {
+                    if (resp.message != "") {
+                        $.alert({
+                            title: 'Message',
+                            content: resp.message,
+                            buttons: {
+                                OK: function() {
+                                    if (resp.status == "SUCCESS") {
+                                        //location.reload();
+                                        window.location.href = "<?= site_url() ?>adm_persediaan/monitoring_sj";
+                                        return;
+                                    }
+                                },
+                            }
+                        });
+                    }
+                },
+                error: function(e) {
+                    $("#result").text(e.responseText);
+                    console.log("ERROR : ", e);
+                    $("#btnSubmit").prop("disabled", false);
+                }
+            });
+		});*/
 		
 	});
 
