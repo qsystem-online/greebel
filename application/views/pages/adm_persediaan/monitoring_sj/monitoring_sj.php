@@ -58,10 +58,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											<?php
 											}
 										?>
+										<option value="a.fdt_sj_date">S/J DateTime</option>
 										<option value="a.fst_relation_name">Customer</option>
 										<option value="a.fst_sj_no">S/J No.</option>
 										<option value="a.fst_sj_return_resi_no">S/J Return Resi No.</option>
-										<option value="a.fdt_sj_return_datetime">S/J Return DateTime</option>
 									</select>
 								</span>
 							</div>
