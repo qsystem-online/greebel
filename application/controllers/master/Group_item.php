@@ -8,6 +8,7 @@ class Group_item extends MY_Controller
     {
         parent::__construct();
         $this->load->library('form_validation');
+        $this->load->model("msgroupitems_model");
     }
 
     public function index()
@@ -212,7 +213,7 @@ class Group_item extends MY_Controller
 
     public function fetch_data($fin_item_group_id)
     {
-        $this->load->model("msgroupitems_model");
+        
         $data = $this->msgroupitems_model->getDataById($fin_item_group_id);
 
         //$this->load->library("datatables");		
@@ -235,5 +236,88 @@ class Group_item extends MY_Controller
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "File deleted successfully";
         $this->json_output();
+    }
+
+    public function data_tree(){
+        $ssql ="select fin_item_group_id as id,fst_item_group_name as text,ifnull(fin_parent_item_group_id,'#') as parent from msgroupitems where fst_active ='A'";
+        $qr = $this->db->query($ssql,[]);
+        $rs = $qr->result();
+        $this->json_output($rs);
+    }
+
+    public function update_data_tree(){
+        $this->load->model("msgroupitems_model");
+
+
+        $post = $this->input->post();
+        var_dump($post);
+
+        $id =  $post["id"];
+        $data = $this->msgroupitems_model->getDataById($id);
+        $rw = $data["groupitems"];
+
+        if($rw == false){
+            //Data Baru
+            $parent = $post["parent"];
+            $parent = $parent == "#" ? null :$parent;
+
+            $data =[
+                "fin_item_group_id"=>$id,
+                "fst_item_group_name"=>$post["text"],
+                "fin_parent_item_group_id"=> $parent,
+                "fst_active"=>"A"
+            ];
+            $this->db->trans_start();        
+            $id = $this->msgroupitems_model->insert($data);
+            $this->db->trans_complete();
+
+        }else{
+            //Update Data
+            $data =[
+                "fin_item_group_id"=>$id,
+                "fst_item_group_name"=>$post["text"],                                
+            ];
+            $this->db->trans_start();        
+            $this->msgroupitems_model->update($data);
+            $this->db->trans_complete();
+        }
+
+    }
+
+    public function delete_data_tree(){
+        $this->load->model("msgroupitems_model");
+        $post = $this->input->post();
+        $id =  $post["id"];
+        try {
+            $deleted = $this->msgroupitems_model->delete($id);
+            
+            $this->ajxResp["status"] = "SUCCESS";
+            $this->ajxResp["message"] = "File deleted successfully";
+            $this->json_output();
+
+        }catch(Exception $e){
+            if ($e->getCode() == EXCEPTION_DATA_USED){
+                $this->ajxResp["status"] = "FAILED";
+                $this->ajxResp["message"] = lang("Group ini telah terpakai");
+                $this->json_output();
+            }
+        }
+    }
+
+    public function is_node_used($id){
+        $cek = $this->msgroupitems_model->isUsed($id);
+        if ($cek == false){
+            //not used
+            $this->ajxResp["status"] = "SUCCESS";
+            $this->ajxResp["message"] = "";
+            $this->ajxResp["data"] = ["result"=>false];
+            $this->json_output();
+        }else{
+            //already used
+            $this->ajxResp["status"] = "SUCCESS";
+            $this->ajxResp["message"] = "";
+            $this->ajxResp["data"] = ["result"=>true];
+            $this->json_output();
+        }
     }
 }
