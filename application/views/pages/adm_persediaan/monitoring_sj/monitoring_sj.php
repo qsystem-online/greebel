@@ -29,7 +29,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab_1">
-						<div align = "right">						
+						<div align="right">						
 							<span>Search on:</span>
 							<span>
 								<select id="selectSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
@@ -38,7 +38,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											<option value=<?=$key?>><?=$value?></option>
 										<?php
 										}
-										//<option value="a.fst_relation_name">Customer</option>
 									?>
 									<option value="a.fst_relation_name">Customer</option>
 									<option value="a.fst_sj_no">S/J No.</option>
@@ -48,8 +47,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <table id="tblMonitoring" class="display nowrap" style="width:100%"></table>
                         </div> <!-- /.tab-pane -->
 
-                        <div class="tab-pane" id="tab_2">
-                            <table id="tblHistory" class="display nowrap" style="width:100%"></table>
+                        <div class="tab-pane active" id="tab_2">
+							<div align="right">						
+								<span>Search on:</span>
+								<span>
+									<select id="selectSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
+										<?php
+											foreach($arrSearch as $key => $value){ ?>
+												<option value=<?=$key?>><?=$value?></option>
+											<?php
+											}
+										?>
+										<option value="a.fst_relation_name">Customer</option>
+										<option value="a.fst_sj_no">S/J No.</option>
+										<option value="a.fst_sj_return_resi_no">S/J Return Resi No.</option>
+										<option value="a.fdt_sj_return_datetime">S/J Return DateTime</option>
+									</select>
+								</span>
+							</div>
+                            <table id="tblHistMonitoring" class="display nowrap" style="width:100%"></table>
                         </div><!-- /.tab-pane -->
                                             
                     </div> <!-- /.tab-content -->                    
@@ -291,14 +307,54 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 			}
-			if (resp.status == "SUCCESS") {
+			/*if (resp.status == "SUCCESS") {
 				//remove row
 				trRow.remove();
-			}
+			}*/
 		});
 	}
-
 </script>
+
+<script type="text/javascript">
+	$(function(){
+
+		$(".filterData").change(function(event){
+			event.preventDefault();
+			$('#tblHistMonitoring').DataTable().ajax.reload();
+		});
+
+		$('#tblHistMonitoring').on('preXhr.dt', function ( e, settings, data ) {
+		 	//add aditional data post on ajax call
+			//data.sessionId = "TEST SESSION ID";
+			data.optionSearch = $('#selectSearch').val();
+		});
+
+		$("#tblHistMonitoring").DataTable({
+			ajax: {
+				url:"<?=site_url()?>adm_persediaan/monitoring_sj/fetch_histmonitoring_list",
+			},
+			columns:[
+                {"title" : "S/J ID","width": "10%",sortable:true,data:"fin_sj_id",visible:true},
+				{"title" : "S/J No","width": "20%",sortable:true,data:"fst_sj_no",visible:true},
+                {"title" : "S/J Date","width": "20%",sortable:true,data:"fdt_sj_date",visible:true},
+				{"title" : "S/O No","width": "20%",sortable:true,data:"fst_salesorder_no",visible:true},
+				{"title" : "S/O Date","width": "20%",sortable:true,data:"fdt_salesorder_date",visible:true},
+                {"title" : "Gudang","width": "20%",sortable:true,data:"fst_warehouse_name",visible:true},
+				{"title" : "Customer","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
+                {"title" : "Return Date","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
+				{"title" : "S/J Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true},
+				{"title" : "S/J Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
+                {"title" : "S/J Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:true},
+				{"title" : "Unhold Date","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:true},
+			],
+			dataSrc:"data",
+			processing: true,
+			serverSide: true,
+			scrollX: true,
+		});
+	});
+</script>
+
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
 <script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
