@@ -51,7 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div align="right">						
 								<span>Search on:</span>
 								<span>
-									<select id="pilihSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
+									<select id="pilihSearch" class="filterData" name="pilihSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
 										<?php
 											foreach($arrSearch as $key => $value){ ?>
 												<option value=<?=$key?>><?=$value?></option>
