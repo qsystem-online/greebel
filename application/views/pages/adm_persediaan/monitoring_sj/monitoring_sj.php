@@ -51,7 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div align="right">						
 								<span>Search on:</span>
 								<span>
-									<select id="selectSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
+									<select id="pilihSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
 										<?php
 											foreach($arrSearch as $key => $value){ ?>
 												<option value=<?=$key?>><?=$value?></option>
@@ -217,8 +217,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$('#tblMonitoring').on('preXhr.dt', function ( e, settings, data ) {
-		 	//add aditional data post on ajax call
-			//data.sessionId = "TEST SESSION ID";
 			data.optionSearch = $('#selectSearch').val();
 		}).DataTable({
 			ajax: {
@@ -254,8 +252,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
 			$(".dataTables_scrollBody").css("position","static");
 		});
-
-		$(".dataTables_scrollBody").css("position","static");
+		
 		$("#fdt_sj_return_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 
 		$("#tblMonitoring").on("click",".btn-unhold",function(e){
@@ -329,9 +326,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$('#tblHistMonitoring').on('preXhr.dt', function ( e, settings, data ) {
-		 	//add aditional data post on ajax call
-			//data.sessionId = "TEST SESSION ID";
-			data.optionSearch = $('#selectSearch').val();
+			data.optionSearch = $('#pilihSearch').val();
 			console.log(data);
 		}).DataTable({
 			ajax: {
