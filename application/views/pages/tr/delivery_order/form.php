@@ -147,8 +147,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div class="form-group">
 								
 								<div class="col-sm-12">
-									<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="5" style="resize:none"></textarea>
-									<div id="fst_memo_err" class="text-danger"></div>
+									<textarea class="form-control" id="fst_sj_memo" placeholder="<?= lang("Memo") ?>" name="fst_sj_memo" rows="5" style="resize:none"></textarea>
+									<div id="fst_sj_memo_err" class="text-danger"></div>
 								</div>
 							</div>
 	
@@ -467,6 +467,8 @@ $(function(){
 			$("#fin_driver_id").val(dataH.fin_driver_id).trigger("change");
 			$("#fst_no_polisi").val(dataH.fst_no_polisi);
 			$("#fin_warehouse_id").val(dataH.fin_warehouse_id).trigger("change");
+			$("#fst_sj_memo").val(dataH.fst_sj_memo);
+			
 
 			isHold = (dataH.fbl_is_hold == 0) ? false : true;			
 			$("#fbl_is_hold").prop('checked', isHold);
