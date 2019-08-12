@@ -68,18 +68,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
 					<div class="form-group">						
-						<label for="fin_relation_id" class="col-md-2 control-label"><?=lang("Customer")?> </label>
-						<div class="col-md-10">
-							<select  class="form-control" id="fin_relation_id" name="fin_relation_id">
-                            </select>
-							<div id="fin_relation_id_err" class="text-danger"></div>
-						</div>
-					</div>
-
-                    <div class="form-group">						
 						<label for="fin_sj_id" class="col-md-2 control-label"><?=lang("Delivery Order")?> </label>
 						<div class="col-md-4">
-							<!-- <select id="fst_sj_id_list" class="form-control" name="fst_sj_id_list[]"  multiple="multiple"> -->
                             <select id="fst_sj_id_list" class="form-control" name="fst_sj_id_list">
                             </select>
 							<div id="fst_sj_id_list_err" class="text-danger"></div>
@@ -89,17 +79,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <input id="fst_salesorder_no" class="form-control unfocus">
 						</div>
 					</div>
+
+					<div class="form-group">						
+						<label for="fin_relation_id" class="col-md-2 control-label"><?=lang("Customer")?> </label>
+						<div class="col-md-10">
+							<select  class="form-control" id="fin_relation_id" name="fin_relation_id">
+                            </select>
+							<div id="fin_relation_id_err" class="text-danger"></div>
+						</div>
+					</div>
+
+                    
 					<div class="form-group">						
 						<label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Gudang")?> </label>
 						<div class="col-md-4">
-							<!-- <select id="fst_sj_id_list" class="form-control" name="fst_sj_id_list[]"  multiple="multiple"> -->
                             <select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id">
                             </select>
 							<div id="fin_warehouse_id_err" class="text-danger"></div>
 						</div>
 						<label for="fin_sales_id" class="col-md-2 control-label"><?=lang("Sales")?> </label>
 						<div class="col-md-4">
-							<!-- <select id="fst_sj_id_list" class="form-control" name="fst_sj_id_list[]"  multiple="multiple"> -->
                             <select id="fin_sales_id" class="form-control" name="fin_sales_id">
                             </select>
 							<div id="fin_sales_id_err" class="text-danger"></div>
@@ -290,11 +289,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 var selectedDetail;
 
 $(function(){		
-		initVarForm();				
+		initVarForm();	
+
+
+		/*			
         $("#fin_relation_id").select2().on("change",function(e){
             //consoleLog(e);
 			//alert("selec2 on change" + $("#fin_relation_id").select2("val"));			
             $.ajax({
+                url:"<?= site_url() ?>tr/invoice/get_select2_uninvoice_sj/" + $("#fin_relation_id").select2("val") +"/" + $("#fin_inv_id").val(),
+            }).done(function(resp){
+                data = resp.data;
+                $("#fst_sj_id_list").select2({
+                    data: data.arrSJ,
+              $.ajax({
                 url:"<?= site_url() ?>tr/invoice/get_select2_uninvoice_sj/" + $("#fin_relation_id").select2("val") +"/" + $("#fin_inv_id").val(),
             }).done(function(resp){
                 data = resp.data;
@@ -308,6 +316,7 @@ $(function(){
 				fixedSelect2();            
             });
         });
+		*/
 
 		//$("#fdt_sj_date").datetimepicker('update'), dateFormat("<= date("Y-m-d")?>"));
 		$("#fdt_inv_date").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>"));
@@ -519,6 +528,10 @@ $(function(){
         $.each(data,function(i,v){
 			//consoleLog(v);
 			//dataH = v.arrSJ;
+			$('#fin_relation_id').empty();
+			var newOption = new Option(v.fst_relation_name, v.fin_relation_id, false, false);
+			$('#fin_relation_id').append(newOption).trigger('change');
+
 			$("#fst_salesorder_no").val(v.fst_salesorder_no);
 			
 			$('#fin_warehouse_id').empty();
@@ -554,17 +567,30 @@ $(function(){
 	
     function initVarForm(){
 		blockUIOnAjaxRequest();
+
         $.ajax({
-            url:"<?=site_url()?>tr/invoice/initVarForm"
+            url:"<?=site_url()?>tr/invoice/initVarForm/" + $("#fin_inv_id").val(),
         }).done(function(resp){
             data = resp.data;
-
+			/*
             $("#fin_relation_id").select2({
                 data:data.arrCustomer
             });
 			$("#fin_relation_id").trigger("change");
+			*/
+			$("#fst_sj_id_list").select2({
+				placeholder: "<?= lang('Pilih Surat Jalan')?>",
+				data:data.arrSJ,
+			}).on("change",function(e){                    
+				data = $("#fst_sj_id_list").select2("data");
+				consoleLog(data);
+				listSuratJalanChange();					
+			});
+			$("#fst_sj_id_list").val("").change();			
             fixedSelect2();
 		});
+
+
 		
 		$(document).ajaxStop(function(){
 			<?php if($mode == "EDIT"){?>
