@@ -40,27 +40,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 										}
 									?>
 									<option value="a.fst_relation_name">Customer</option>
-									<option value="a.fst_sj_no">S/J No.</option>
+									<option value="a.fst_sj_no">Surat Jalan No.</option>
 								</select>
 							</span>
 						</div>
                             <table id="tblMonitoring" class="display nowrap" style="width:100%"></table>
                         </div> <!-- /.tab-pane -->
 
-                        <div class="tab-pane active" id="tab_2">
+                        <div class="tab-pane" id="tab_2">
 							<div align="right">						
 								<span>Search on:</span>
 								<span>
-									<select id="selectSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
+									<select id="pilihSearch" class="filterData" name="pilihSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
 										<?php
 											foreach($arrSearch as $key => $value){ ?>
 												<option value=<?=$key?>><?=$value?></option>
 											<?php
 											}
 										?>
-										<option value="a.fdt_sj_date">S/J DateTime</option>
 										<option value="a.fst_relation_name">Customer</option>
-										<option value="a.fst_sj_no">S/J No.</option>
+										<option value="a.fst_sj_no">Surat Jalan No.</option>
+										<option value="a.fdt_sj_date">S/J DateTime</option>
 										<option value="a.fst_sj_return_resi_no">S/J Return Resi No.</option>
 									</select>
 								</span>
@@ -207,6 +207,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 </div>
 
+<!------- MONITORING ------>
 <script type="text/javascript">
 	$(function(){
 
@@ -216,29 +217,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$('#tblMonitoring').on('preXhr.dt', function ( e, settings, data ) {
-		 	//add aditional data post on ajax call
-			//data.sessionId = "TEST SESSION ID";
 			data.optionSearch = $('#selectSearch').val();
-		});
-
-		$("#tblMonitoring").DataTable({
+		}).DataTable({
 			ajax: {
 				url:"<?=site_url()?>adm_persediaan/monitoring_sj/fetch_monitoring_list",
 			},
 			columns:[
-                {"title" : "S/J ID","width": "10%",sortable:true,data:"fin_sj_id",visible:true},
-				{"title" : "S/J No","width": "20%",sortable:true,data:"fst_sj_no",visible:true},
-                {"title" : "S/J Date","width": "20%",sortable:true,data:"fdt_sj_date",visible:true},
-				{"title" : "S/O No","width": "20%",sortable:true,data:"fst_salesorder_no",visible:true},
-				{"title" : "S/O Date","width": "20%",sortable:true,data:"fdt_salesorder_date",visible:true},
-                {"title" : "Gudang","width": "20%",sortable:true,data:"fst_warehouse_name",visible:true},
-				{"title" : "Customer","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
+                {"title" : "Surat Jalan ID","width": "10%",sortable:true,data:"fin_sj_id",visible:true},
+				{"title" : "Surat Jalan No","width": "20%",sortable:true,data:"fst_sj_no",visible:true},
+                {"title" : "Surat Jalan DateTime","width": "20%",sortable:true,data:"fdt_sj_date",visible:true},
+				{"title" : "Sales Order No","width": "20%",sortable:true,data:"fst_salesorder_no",visible:true},
+				{"title" : "Sales Order Date","width": "20%",sortable:true,data:"fdt_salesorder_date",visible:true},
+                {"title" : "Warehouse Name","width": "20%",sortable:true,data:"fst_warehouse_name",visible:true},
+				{"title" : "Customer Name","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
                 {"title" : "Hold","width": "10%",sortable:true,data:"fbl_is_hold",visible:true},
-                {"title" : "Return Date","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
-				{"title" : "S/J Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,className:'btn-resi'},
-				{"title" : "S/J Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
-                {"title" : "S/J Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:true},
-				{"title" : "Unhold Date","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:false},
+                {"title" : "Surat Jalan Return Date","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
+				{"title" : "Surat Jalan Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,className:'btn-resi'},
+				{"title" : "Surat Jalan Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
+                {"title" : "Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:true},
+				{"title" : "Unhold DateTime","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:false},
 				{"title" : "Unhold","width": "15%",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){
 						return "<a class='btn-unhold' href='#'><i class='fa fa-pause-circle'></i></a>";
@@ -249,9 +246,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			processing: true,
 			serverSide: true,
 			scrollX: true,
+			scrollCollapse: true,
+		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+			$(".dataTables_scrollBody").css("position","static");
 		});
-
-		$(".dataTables_scrollBody").css("position","static");
+		
 		$("#fdt_sj_return_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 
 		$("#tblMonitoring").on("click",".btn-unhold",function(e){
@@ -300,21 +301,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					buttons: {
 						OK : function(){
 							if (resp.status == "SUCCESS"){
-								//window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
+								//window.location.href = "<?= site_url() ?>adm_persediaan/monitoring_sj";
 								return;
 							}
 						},
 					}
 				});
 			}
-			/*if (resp.status == "SUCCESS") {
+			if (resp.status == "SUCCESS") {
 				//remove row
 				trRow.remove();
-			}*/
+			}
 		});
 	}
 </script>
 
+<!----------- HISTORY MONITORING ---------->
 <script type="text/javascript">
 	$(function(){
 
@@ -324,33 +326,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$('#tblHistMonitoring').on('preXhr.dt', function ( e, settings, data ) {
-		 	//add aditional data post on ajax call
-			//data.sessionId = "TEST SESSION ID";
-			data.optionSearch = $('#selectSearch').val();
-		});
-
-		$("#tblHistMonitoring").DataTable({
+			data.optionSearch = $('#pilihSearch').val();
+			console.log(data);
+		}).DataTable({
 			ajax: {
 				url:"<?=site_url()?>adm_persediaan/monitoring_sj/fetch_histmonitoring_list",
 			},
 			columns:[
-                {"title" : "S/J ID","width": "10%",sortable:true,data:"fin_sj_id",visible:true},
-				{"title" : "S/J No","width": "20%",sortable:true,data:"fst_sj_no",visible:true},
-                {"title" : "S/J Date","width": "20%",sortable:true,data:"fdt_sj_date",visible:true},
-				{"title" : "S/O No","width": "20%",sortable:true,data:"fst_salesorder_no",visible:true},
-				{"title" : "S/O Date","width": "20%",sortable:true,data:"fdt_salesorder_date",visible:true},
-                {"title" : "Gudang","width": "20%",sortable:true,data:"fst_warehouse_name",visible:true},
-				{"title" : "Customer","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
-                {"title" : "Return Date","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
-				{"title" : "S/J Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true},
-				{"title" : "S/J Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
-                {"title" : "S/J Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:true},
-				{"title" : "Unhold Date","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:true},
+                {"title" : "Surat Jalan ID","width": "10%",sortable:true,data:"fin_sj_id",visible:true},
+				{"title" : "Surat Jalan No","width": "20%",sortable:true,data:"fst_sj_no",visible:true},
+                {"title" : "Surat Jalan DateTime","width": "20%",sortable:true,data:"fdt_sj_date",visible:true},
+				{"title" : "Sales Order No","width": "20%",sortable:true,data:"fst_salesorder_no",visible:true},
+				{"title" : "Sales Order Date","width": "20%",sortable:true,data:"fdt_salesorder_date",visible:true},
+                {"title" : "Warehouse Name","width": "20%",sortable:true,data:"fst_warehouse_name",visible:true},
+				{"title" : "Customer Name","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
+                {"title" : "Surat Jalan Return DateTime","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
+				{"title" : "Surat Jalan Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true},
+				{"title" : "Surat Jalan Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
+                {"title" : "Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:true},
+				{"title" : "Unhold DateTime","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:true},
 			],
 			dataSrc:"data",
 			processing: true,
 			serverSide: true,
 			scrollX: true,
+			scrollCollapse: true,
+		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+			$(".dataTables_scrollBody").css("position","static");
 		});
 	});
 </script>
