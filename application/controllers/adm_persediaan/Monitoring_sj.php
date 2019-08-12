@@ -1,10 +1,11 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 class Monitoring_sj extends MY_Controller{
+
 	public function __construct(){
 		parent::__construct();
-		
 	}
+
 	public function index(){
 		$this->load->library("menus");
 	
@@ -115,7 +116,7 @@ class Monitoring_sj extends MY_Controller{
 			where a.fbl_is_hold = '0' ) a ");
 
 		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_date,a.fst_warehouse_name,a.fst_salesorder_no,a.fdt_salesorder_date,
-			a.fst_relation_name,a.fdt_sj_return_datetime,a.fst_sj_return_resi_no,a.fst_sj_return_memo,a.fin_sj_return_by_id,a.fbl_is_hold,a.fdt_unhold_datetime,a.fin_unhold_id";
+			a.fst_relation_name,a.fdt_sj_return_datetime,a.fst_sj_return_resi_no,a.fst_sj_return_memo,a.fin_sj_return_by_id,a.fdt_unhold_datetime";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields = [];
