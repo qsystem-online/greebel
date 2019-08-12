@@ -91,6 +91,7 @@ defined('DATE_DATATABLES_FORMAT') OR define ('DATE_DATATABLES_FORMAT','DD-MM-YYY
 defined('DECIMAL_SIGN') OR define ('DECIMAL_SIGN','.');
 
 defined('EXCEPTION_DB') OR define ('EXCEPTION_DB',1000);
+defined('EXCEPTION_DATA_USED') OR define ('EXCEPTION_DATA_USED',1009);
 defined('EXCEPTION_JURNAL') OR define ('EXCEPTION_JURNAL',2000);
 
 
@@ -98,6 +99,7 @@ defined('JURNAL_TRX_SC_SO') OR define ('JURNAL_TRX_SC_SO','SO');
 
 
 include_once 'host_const.php';
+
 
 
 

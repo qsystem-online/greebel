@@ -924,6 +924,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
         });
     </script>
 </div>
+
+<?php
+    echo $mdlItemGroups;
+?>
+
 <script type="text/javascript">
     $(function() {
         <?php if ($mode == "EDIT") { ?>
@@ -1074,6 +1079,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 },
                 cache: true,
             }
+        }).on("select2:open",function(e){
+            e.preventDefault();
+
+            $(this).select2("close");
+
+            showItemGroup(true,function(node){
+                //consoleLog(node);
+                $("#select-GroupItemId").empty();
+                var newOption = new Option(node.text, node.id, false, false);
+                $('#select-GroupItemId').append(newOption).trigger('change');
+
+                //$("#select-GroupItemId").val(node.id).trigger("change");
+            });
+
         });
         $("#select-GroupItemId").change(function(event) {
             event.preventDefault();
@@ -1100,7 +1119,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     cache: true,
                 }
             });
-        })
+        });
+        
     });
     function init_form(fin_item_id) {
         //alert("Init Form");

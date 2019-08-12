@@ -1,40 +1,35 @@
-<?php
-defined('BASEPATH') or exit('No direct script access allowed');
-?>
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/jstree/dist/themes/default/style.min.css" />
-
-<section class="content-header">
-    <h1><?= lang("Menus") ?><small><?= lang("form") ?></small></h1>
-    <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
-        <li><a href="#"><?= lang("Menus") ?></a></li>
-        <li class="active title"><?= $title ?></li>
-    </ol>
-</section>
-
-<section class="content">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="box box-info">
-                <div class="box-header with-border">
-                    <h3 class="box-title title"><?= $title ?></h3>
-                </div>
-                <!-- end box header -->
-                <div class="box-body">
-                    <div class="pull-right">
-                        <label>Search : </label>
-                        <input type="text" id="jstree_group_q" class=""/> 
-                    </div>
-                    <div class="pull-left">
-                        <button id="btnCreateRoot" class="btn btn-primary"><?=lang("Group Baru")?></button>
-                    </div>
-                    <div style="clear:both"></div>
-                    <div id="jstree_group"></div>
-                </div>                
-            </div>
-        </div>
-</section>
+<style>
+.vakata-context, .vakata-context ul{
+	z-index:1060;
+}
+</style>
+<div id="mdlItemGroup" class="modal fade" role="dialog">
+	<div class="modal-dialog" style="width:800px">
+		<!-- Modal content-->
+		<div class="modal-content" style="border-top-left-radius:10px;border-top-right-radius:10px;border-bottom-left-radius:5px;border-bottom-right-radius:5px;">
+			<div class="modal-header" style="padding:5px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 5px;border-top-right-radius: 10px;">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><?=lang("Group Item")?></h4>
+			</div>
+			<div class="modal-body">
+				<div class="pull-right">
+					<label>Search : </label>
+					<input type="text" id="jstree_group_q" class=""/> 
+				</div>
+				<div class="pull-left">
+					<button id="btnCreateRoot" class="btn btn-primary"><?=lang("Group Baru")?></button>
+				</div>
+				<div style="clear:both"></div>
+				<div id="jstree_group"></div>
+			</div>
+		</div>
+	</div>
+</div>
 <script type="text/javascript">
+	var selected_callback;
+	var g_LeafOnly;
+
     $(function () {
         $.ajax({
             url:"<?=site_url() ?>master/group_item/data_tree",
@@ -103,7 +98,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 
                  "check_callback" : true,
              },
-             plugins:['search','contextmenu'],
+             plugins:['search','contextmenu','wholerow'],
              contextmenu:{
                  items:function($node){
                     var tree = $("#jstree_group").jstree(true);
@@ -189,10 +184,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
             //var data = node.data("jstree");
             id = arrTmp[0].id;            
             node = $('#jstree_group').jstree(true).get_node(id,false);
-            consoleLog(node);
-            if ($('#jstree_group').jstree(true).is_leaf(node)){
-                alert("IS LEAF");
-            }
+
+			if (g_LeafOnly){
+				if ($('#jstree_group').jstree(true).is_leaf(node)){ 
+					$('#mdlItemGroup').modal('toggle');               
+					selected_callback(node);
+            	}
+			}else{
+				$('#mdlItemGroup').modal('toggle');               
+				selected_callback(node);
+			}
+            
             // Do some action
         });
 
@@ -238,6 +240,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         });
     });
+
+	function showItemGroup(leafOnly,callback){
+		$("#mdlItemGroup").modal({
+			backdrop:"static",
+		});
+		g_LeafOnly = leafOnly;
+		selected_callback = callback;
+	}
+		
 </script>
 
 <!-- jstree -->
