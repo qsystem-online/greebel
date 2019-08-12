@@ -230,17 +230,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "Sales Order Date","width": "20%",sortable:true,data:"fdt_salesorder_date",visible:true},
                 {"title" : "Warehouse Name","width": "20%",sortable:true,data:"fst_warehouse_name",visible:true},
 				{"title" : "Customer Name","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
-                {"title" : "Hold","width": "10%",sortable:true,data:"fbl_is_hold",visible:true},
-                {"title" : "Surat Jalan Return Date","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
-				{"title" : "Surat Jalan Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,className:'btn-resi'},
-				{"title" : "Surat Jalan Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
-                {"title" : "Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:true},
-				{"title" : "Unhold DateTime","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:false},
 				{"title" : "Unhold","width": "15%",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){
 						return "<a class='btn-unhold' href='#'><i class='fa fa-pause-circle'></i></a>";
 					}
 				},
+				{"title" : "Unhold DateTime","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:false},
+				{"title" : "Surat Jalan Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,className:'btn-resi'},
+				{"title" : "Surat Jalan Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
+				{"title" : "Surat Jalan Return Date","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
+				{"title" : "Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:false},
 			],
 			dataSrc:"data",
 			processing: true,
@@ -289,7 +288,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		t = $('#tblMonitoring').DataTable();
 		var trRow = element.parents('tr');
 		data = t.row(trRow).data();
-		console.log(data);
 
 		$.ajax({
 			url:"<?= site_url() ?>adm_persediaan/monitoring_sj/doUnhold/" + data.fin_sj_id,
@@ -308,10 +306,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 			}
-			if (resp.status == "SUCCESS") {
-				//remove row
-				trRow.remove();
-			}
+			/*if(resp.status == "SUCCESS") {
+                //remove row
+                trRow.remove();
+            }*/
 		});
 	}
 </script>
@@ -340,11 +338,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "Sales Order Date","width": "20%",sortable:true,data:"fdt_salesorder_date",visible:true},
                 {"title" : "Warehouse Name","width": "20%",sortable:true,data:"fst_warehouse_name",visible:true},
 				{"title" : "Customer Name","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
-                {"title" : "Surat Jalan Return DateTime","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
+				{"title" : "Unhold DateTime","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:true},
 				{"title" : "Surat Jalan Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true},
 				{"title" : "Surat Jalan Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
-                {"title" : "Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:true},
-				{"title" : "Unhold DateTime","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:true},
+				{"title" : "Surat Jalan Return DateTime","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
+                {"title" : "Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:false},
 			],
 			dataSrc:"data",
 			processing: true,

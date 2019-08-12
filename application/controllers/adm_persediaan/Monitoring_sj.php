@@ -65,7 +65,7 @@ class Monitoring_sj extends MY_Controller{
         $this->db->trans_complete();
         
         $this->ajxResp["status"] = "SUCCESS";
-        $this->ajxResp["message"] = "";
+        $this->ajxResp["message"] = "Unhold Success !!!";
         $this->ajxResp["data"]=[];
         $this->json_output();
 	}
