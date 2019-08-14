@@ -79,7 +79,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript">
     $(function() {
-
         $("#btn-update").click(function(event) {
 			event.preventDefault();
 			$(".text-danger").html("");
@@ -87,7 +86,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			data = new FormData($("#resi-modal")[0]);
 			url= "<?= site_url() ?>adm_persediaan/monitoring_sj/doUpdateResi";
 			console.log(data);
-
             $.ajax({
                 type: "POST",
                 enctype: 'multipart/form-data',
@@ -112,7 +110,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             }
                         });
                     }
-
                     if (resp.status == "VALIDATION_FORM_FAILED") {
                         //Show Error
                         errors = resp.data;
@@ -121,10 +118,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         }
                     } else if (resp.status == "SUCCESS") {
                         data = resp.data;
-
                         //Clear all previous error
                         $(".text-danger").html("");
-
                     }
                 },
                 error: function(e) {
@@ -132,7 +127,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     console.log("ERROR : ", e);
                 }
             });
-
         });
     });
 </script>
@@ -210,12 +204,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!------- MONITORING ------>
 <script type="text/javascript">
 	$(function(){
-
 		$(".filterData").change(function(event){
 			event.preventDefault();
 			$('#tblMonitoring').DataTable().ajax.reload();
 		});
-
+		
 		$('#tblMonitoring').on('preXhr.dt', function ( e, settings, data ) {
 			data.optionSearch = $('#selectSearch').val();
 		}).DataTable({
@@ -232,7 +225,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "Customer Name","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
 				{"title" : "Unhold","width": "15%",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){
-						return "<a class='btn-unhold' href='#'><i class='fa fa-pause-circle'></i></a>";
+						if (row.fbl_is_hold == "1"){
+							return "<a class='btn-unhold show' href='#'><i class='fa fa-play-circle'></i></a>";
+						}else{
+							return "<a class='btn-unhold hide' href='#'><i class='fa fa-play-circle'></i></a>";
+						}
 					}
 				},
 				{"title" : "Unhold DateTime","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:false},
@@ -253,7 +250,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 		
 		$("#fdt_sj_return_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
-
+		
 		$("#tblMonitoring").on("click",".btn-unhold",function(e){
 			e.preventDefault();
 			$(this).confirmation({
@@ -266,7 +263,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 			$(this).confirmation("show");
 		});
-
+		
 		$("#tblMonitoring").on("click",".btn-resi",function(e){
 			e.preventDefault();
 			t = $('#tblMonitoring').DataTable();
@@ -281,14 +278,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$('#fst_sj_return_memo').val(row.fst_sj_return_memo);
 			$("#fdt_sj_return_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		});
-
 	});
-
+	
 	function doUnhold(element){
 		t = $('#tblMonitoring').DataTable();
 		var trRow = element.parents('tr');
 		data = t.row(trRow).data();
-
+		
 		$.ajax({
 			url:"<?= site_url() ?>adm_persediaan/monitoring_sj/doUnhold/" + data.fin_sj_id,
 		}).done(function(resp){
@@ -299,7 +295,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					buttons: {
 						OK : function(){
 							if (resp.status == "SUCCESS"){
-								//window.location.href = "<?= site_url() ?>adm_persediaan/monitoring_sj";
+								window.location.href = "<?= site_url() ?>adm_persediaan/monitoring_sj";
 								return;
 							}
 						},
@@ -308,7 +304,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 			/*if(resp.status == "SUCCESS") {
                 //remove row
-                trRow.remove();
+               trRow.remove();
             }*/
 		});
 	}
@@ -317,12 +313,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!----------- HISTORY MONITORING ---------->
 <script type="text/javascript">
 	$(function(){
-
 		$(".filterData").change(function(event){
 			event.preventDefault();
 			$('#tblHistMonitoring').DataTable().ajax.reload();
 		});
-
+		
 		$('#tblHistMonitoring').on('preXhr.dt', function ( e, settings, data ) {
 			data.optionSearch = $('#pilihSearch').val();
 			console.log(data);
@@ -339,7 +334,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 {"title" : "Warehouse Name","width": "20%",sortable:true,data:"fst_warehouse_name",visible:true},
 				{"title" : "Customer Name","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
 				{"title" : "Unhold DateTime","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:true},
-				{"title" : "Surat Jalan Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true},
+				{"title" : "Surat Jalan Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,className:'btn-edit'},
 				{"title" : "Surat Jalan Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
 				{"title" : "Surat Jalan Return DateTime","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
                 {"title" : "Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:false},
@@ -353,6 +348,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$(".dataTables_scrollHeadInner").css("min-width","100%");
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
 			$(".dataTables_scrollBody").css("position","static");
+		});
+
+		$("#tblHistMonitoring").on("click",".btn-edit",function(e){
+			e.preventDefault();
+			t = $('#tblHistMonitoring').DataTable();
+			var trRow = $(this).parents('tr');
+			edit_sj = t.row(trRow);
+			row = edit_sj.data();
+            $("#resiModal").modal('show');
+			
+			$('#fin_sj_id').val(row.fin_sj_id);
+			$('#fst_sj_no').val(row.fst_sj_no);
+			$('#fst_sj_return_resi_no').val(row.fst_sj_return_resi_no);
+			$('#fst_sj_return_memo').val(row.fst_sj_return_memo);
+			$("#fdt_sj_return_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		});
 	});
 </script>
