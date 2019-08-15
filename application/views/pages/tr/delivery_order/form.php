@@ -28,6 +28,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="box box-info">
 				<div class="box-header with-border">
 				<h3 class="box-title title"><?=$title?></h3>
+				<div class="btn-group btn-group-sm  pull-right">					
+					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+				</div>
 			</div>
             <!-- end box header -->
 
@@ -140,8 +147,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div class="form-group">
 								
 								<div class="col-sm-12">
-									<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="5" style="resize:none"></textarea>
-									<div id="fst_memo_err" class="text-danger"></div>
+									<textarea class="form-control" id="fst_sj_memo" placeholder="<?= lang("Memo") ?>" name="fst_sj_memo" rows="5" style="resize:none"></textarea>
+									<div id="fst_sj_memo_err" class="text-danger"></div>
 								</div>
 							</div>
 	
@@ -163,7 +170,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<!-- end box body -->
 
                 <div class="box-footer text-right">
-                    <a id="btnSubmitAjax" href="#" class="btn btn-primary"><?=lang("Simpan")?></a>
+                    
                 </div>
                 <!-- end box-footer -->
             </form>
@@ -410,6 +417,7 @@ $(function(){
                 $("#fst_shipping_address").val(data.fst_shipping_address);
             }).on("change",function(e){
                 data = $("#fin_shipping_address_id").select2("data")[0];
+				//consoleLog(data);
                 $("#fst_shipping_address").val(data.fst_shipping_address);
             });
             if (defaultValue != 0){
@@ -459,13 +467,15 @@ $(function(){
 			$("#fin_driver_id").val(dataH.fin_driver_id).trigger("change");
 			$("#fst_no_polisi").val(dataH.fst_no_polisi);
 			$("#fin_warehouse_id").val(dataH.fin_warehouse_id).trigger("change");
+			$("#fst_sj_memo").val(dataH.fst_sj_memo);
+			
 
 			isHold = (dataH.fbl_is_hold == 0) ? false : true;			
 			$("#fbl_is_hold").prop('checked', isHold);
 			
 			details = resp.sj_details;
-			$.each(details,function(i,v){
-				t = $("#tblSJDetails").DataTable(); 
+			t = $("#tblSJDetails").DataTable(); 
+			$.each(details,function(i,v){				
 				t.row.add(v);				
 			});
 			t.draw();

@@ -53,6 +53,10 @@ class MY_Model extends CI_Model
 			$this->db->where($this->pkey, $key);
 			$this->db->delete($this->tableName);
 		}
+		$error = $this->db->error();
+		if ($error["code"] != 0) {
+			throw new Exception("Delete Database Error !!!", EXCEPTION_DB);
+		}
 	}
 
 	public function getTableName()

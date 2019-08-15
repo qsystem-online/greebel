@@ -18,6 +18,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <div class="box box-info">
                 <div class="box-header with-border">
                     <h3 class="box-title title"><?= $title ?></h3>
+                    <div class="btn-group btn-group-sm pull-right">
+                        <a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
+						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+						<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+					</div>
                 </div>
                 <!-- end box header -->
 
@@ -118,7 +126,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <!-- end box body -->
 
                         <div class="box-footer text-right">
-                            <a id="btnSubmitAjax" href="#" class="btn btn-primary">Save Record</a>
+                            <!--<a id="btnSubmitAjaxOld" href="#" class="btn btn-primary">Save Record</a>-->
                         </div>
                         <!-- end box-footer -->
                 </form>
@@ -157,7 +165,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             //$(".maingroups").hide();
         <?php } ?>
 
-        $("#btnSubmitAjax").click(function(event) {
+        /*$("#btnSubmitAjax").click(function(event) {
             event.preventDefault();
             //data = new FormData($("#frmGlaccounts")[0]);
             data = $("#frmGlaccounts").serializeArray();
@@ -217,7 +225,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     $("#btnSubmit").prop("disabled", false);
                 }
             });
-        });
+        });*/
+
+        $("#btnSubmitAjax").click(function(event){
+            event.preventDefault();
+            submitAjax();
+
+        })
 
         $("#select-MainGL").select2({
             width: '100%',

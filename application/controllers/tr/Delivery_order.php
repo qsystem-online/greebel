@@ -323,7 +323,7 @@ class Delivery_order extends MY_Controller{
 
             //Validation if qty more than SO
             $maxQty = $this->trsuratjalan_model->maxQtyItem($detail->fin_salesorder_detail_id,$dataH["fin_sj_id"]);
-            //$maxQty = $maxQty + $qtyOld;
+            $maxQty = $maxQty + $qtyOld;
             if ($detail->fdb_qty > $maxQty ){
                 $error = [
 					"detail"=> sprintf(lang("Qty %s melebihi qty pada sales order") ,$detail->fst_custom_item_name),

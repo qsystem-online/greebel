@@ -31,12 +31,12 @@ class Invoice extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Invoice ID', 'width' => '20%', 'data' => 'fin_inv_id'],
-			['title' => 'Invoice No', 'width' => '20%', 'data' => 'fst_inv_no'],
-            ['title' => 'Invoice Date', 'width' => '20%', 'data' => 'fdt_inv_date'],
+			['title' => 'Invoice ID', 'width' => '10%', 'data' => 'fin_inv_id'],
+			['title' => 'Invoice No', 'width' => '10%', 'data' => 'fst_inv_no'],
+            ['title' => 'Invoice Date', 'width' => '15%', 'data' => 'fdt_inv_date'],
             ['title' => 'Customer', 'width' => '20%', 'data' => 'fst_relation_name'],
             ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_inv_memo'],
-            ['title' => 'Action', 'width' => '15%', 'sortable' => false, 'className' => 'dt-body-center text-center',
+            ['title' => 'Action', 'width' => '10%', 'sortable' => false, 'className' => 'dt-body-center text-center',
                 'render'=>'function( data, type, row, meta ) {
                     return "<div style=\'font-size:16px\'><a data-id=\'" + row.fin_inv_id + "\' class=\'btn-edit\' href=\'#\'><i class=\'fa fa-pencil\'></i></a><a class=\'btn-delete\' href=\'#\'><i class=\'fa fa-trash\'></i></a></div>";
                 }',
@@ -77,7 +77,7 @@ class Invoice extends MY_Controller{
 		$this->json_output($datasources);
 	}
 
-    public function initVarForm(){
+    public function initVarForm($invId){
         $this->load->model("mswarehouse_model");
         $this->load->model("users_model");
         $this->load->library("select2");
@@ -86,10 +86,14 @@ class Invoice extends MY_Controller{
         
         //Get Data Customer
         $arrCustomer = $this->select2->get_customer($branchId);
+
+        //Get uninvoice SJ        
+        $arrSJ = $this->trinvoice_model->get_select2_uninvoice_sj($invId);
         
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["data"] = [
             "arrCustomer"=>$arrCustomer,
+            "arrSJ"=>$arrSJ,
         ];
         $this->json_output();
 

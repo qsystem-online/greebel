@@ -249,7 +249,6 @@ class Trsuratjalan_model extends MY_Model {
             "fdt_unhold_datetime" => date("Y-m-d H:i:s")
         ];
         parent::update($data);
-       
     }
 
 }

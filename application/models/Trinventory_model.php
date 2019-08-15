@@ -176,20 +176,20 @@ class Trinventory_model extends MY_Model
                 and fdt_trx_datetime >= ? order by fdt_trx_datetime,fin_rec_id";
             $qr = $this->db->query($ssql,[$rw->fin_warehouse_id,$rw->fin_item_id,$rw->fst_unit,$rw->fdt_trx_datetime]);
             $rs = $qr->result();    
-            foreach($rs as $rw){
-                $rw["fdb_qty_balance_after"] = $currentData["fdb_qty_balance_after"] + (float) $rw->fdb_qty_in -  (float) $rw->fdb_qty_out;
-                if ($rw["fdb_qty_in"] > 0){
-                    $newAvg = ((float) $currentData["fdb_qty_balance_after"] * (float) $currentData["fdc_avg_cost"]) + ($rw["fdb_qty_in"] * $rw["fdc_price_in"]);
-                    $newAvg = $newAvg / $rw["fdb_qty_balance_after"];
-                    $rw["fdc_avg_cost"] = $newAvg;
+            foreach($rs as $rw2){
+                $rw2->fdb_qty_balance_after = $currentData["fdb_qty_balance_after"] + (float) $rw2->fdb_qty_in -  (float) $rw2->fdb_qty_out;
+                if ($rw2->fdb_qty_in > 0){
+                    $newAvg = ((float) $currentData["fdb_qty_balance_after"] * (float) $currentData["fdc_avg_cost"]) + ($rw2->fdb_qty_in * $rw2->fdc_price_in);
+                    $newAvg = $newAvg / $rw2->fdb_qty_balance_after;
+                    $rw2->fdc_avg_cost = $newAvg;
                 }else{
-                    $rw["fdc_avg_cost"] = (float) $currentData["fdc_avg_cost"];
+                    $rw2->fdc_avg_cost = (float) $currentData["fdc_avg_cost"];
                 }
-                unset($rw["fin_update_id"]);
-                unset($rw["fdt_update_datetime"]);
+                unset($rw2->fin_update_id);
+                unset($rw2->fdt_update_datetime);
 
-                parrent::update($rw);
-                $currentData = (array) $rw;
+                parent::update((array) $rw2);
+                $currentData = (array) $rw2;
             }
 
 

@@ -111,20 +111,20 @@ class Trinvoice_model extends MY_Model {
         return $max_inv_no;
     }
 
-    public function get_select2_uninvoice_sj($customerId,$excInvId = 0){
+    public function get_select2_uninvoice_sj($excInvId = 0){
         $ssql = "select a.fin_sj_id as id,a.fst_sj_no as text,a.fin_warehouse_id,c.fst_warehouse_name,
-            b.fst_salesorder_no,b.fbl_is_vat_include,b.fin_branch_id,b.fin_terms_payment,b.fin_sales_id,b.fdc_downpayment_paid,
+            b.fin_relation_id,f.fst_relation_name,b.fst_salesorder_no,b.fbl_is_vat_include,b.fin_branch_id,b.fin_terms_payment,b.fin_sales_id,b.fdc_downpayment_paid,
             d.fst_fullname as fst_sales_name,IFNULL(e.ttl_downpayment_claimed,0) as ttl_downpayment_claimed 
             from trsuratjalan a 
             inner join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id
             inner join mswarehouse c on a.fin_warehouse_id = c.fin_warehouse_id
-            inner join users d on b.fin_sales_id = d.fin_user_id
+            inner join users d on b.fin_sales_id = d.fin_user_id            
             left join (select fin_salesorder_id,sum(fdc_downpayment_claimed) as ttl_downpayment_claimed from trinvoice group by fin_salesorder_id) e on a.fin_salesorder_id = e.fin_salesorder_id 
-            where b.fin_relation_id = ?
-            and (a.fin_inv_id is null || a.fin_inv_id = ?) 
+            inner join msrelations f on b.fin_relation_id = f.fin_relation_id 
+            where (a.fin_inv_id is null || a.fin_inv_id = ?) 
             and a.fst_active = 'A'";
 
-        $qr = $this->db->query($ssql,[$customerId,$excInvId]);
+        $qr = $this->db->query($ssql,[$excInvId]);
         //echo $this->db->last_query();
         //die();
         $rs = $qr->result();

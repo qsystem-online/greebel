@@ -21,6 +21,7 @@ class Trverification_model extends MY_Model {
         $this->db->query($ssql,[$branchId,$controller,$transactionId]);
 
     }
+    
     public function createAuthorize($controller,$module,$transactionId,$message,$notes = null){
         $this->load->model("msverification_model");
         $arrVerify = $this->msverification_model->getData($controller,$module);
