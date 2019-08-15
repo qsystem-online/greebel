@@ -37,6 +37,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="box box-info">
 				<div class="box-header with-border">
 				<h3 class="box-title title"><?=$title?></h3>
+				<div class="btn-group btn-group-sm  pull-right">					
+					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+				</div>
 			</div>
             <!-- end box header -->
 
@@ -65,7 +72,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="form-group">
                     <label for="fin_relation_id" class="col-md-2 control-label"><?=lang("Relation Name")?> *</label>
                         <div class="col-md-4">
-                            <select id="select-fin_relation_id" class="form-control" name="fin_relation_id">
+                            <select id="select-relationId" class="form-control" name="fin_relation_id">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="fin_relation_id_err" class="text-danger"></div>
@@ -111,7 +118,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <!-- end box-body -->
 
                 <div class="box-footer text-right">
-                    <a id="btnSubmitAjax" href="#" class="btn btn-primary"><?=lang("Save Ajax")?></a>
+                    
                 </div>
 
             </form>
@@ -214,7 +221,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
-        $("#select-fin_relation_id").select2({
+        $("#select-relationId").select2({
 			width: '100%',
 			//minimumInputLength: 2,
 			ajax: {
@@ -276,9 +283,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 // menampilkan data di select2, menu edit/update
 				var newOption = new Option(resp.ms_memberships.fst_relation_name, resp.ms_memberships.fin_relation_id, true, true);
 				// Append it to the select
-    			$('#select-fin_relation_id').append(newOption).trigger('change');
+    			$('#select-relationId').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_memberships.fst_relation_group_name, resp.ms_memberships.fin_member_group_id, true, true);
+				var newOption = new Option(resp.ms_memberships.fst_member_group_name, resp.ms_memberships.fin_member_group_id, true, true);
 				$('#select-MemberGroup').append(newOption).trigger('change');
 
 			},
