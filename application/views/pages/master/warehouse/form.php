@@ -190,11 +190,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			window.location.replace("<?=site_url()?>master/warehouse/add")
 		});
 
-		$("#btnSubmitAjax").click(function(e){
-			e.preventDefault();
-			submitAjax();
-		});
-
 		$("#btnDelete").confirmation({
 			title:"<?=lang("Hapus data ini ?")?>",
 			rootSelector: '#btnDelete',

@@ -316,6 +316,57 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#fdc_exchange_rate_to_idr").val(money_format(row.fdc_exchange_rate_to_idr));
 			});
 		});
+		
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>master/currency/add")
+		});
+
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+			$.ajax({
+				url:"<?= site_url() ?>master/currency/delete/" + $("#fst_curr_code").val(),
+			}).done(function(resp){
+				//consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != "")	{
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons : {
+							OK : function() {
+								if (resp.status == "SUCCESS") {
+									window.location.href = "<?= site_url() ?>master/currency/lizt";
+									return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fst_curr_code").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_curr_name').prop('readonly', true);
+				}
+			});
+		});
+
+		$("#btnList").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>master/currency");
+		});
 	});
 
 	function init_form(fst_curr_code){

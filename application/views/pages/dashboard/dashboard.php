@@ -32,8 +32,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
             </div>
         </div>
 
-        <div class="col-lg-3 col-xs-6">
-            <!-- small box --> 
+        <!--<div class="col-lg-3 col-xs-6">
+            // small box 
             <div class="small-box bg-green">
                 <div class="inner">
                     <h3>{ttlNeedApproval}</h3>
@@ -47,7 +47,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         </div>
 
         <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
+            // small box
             <div class="small-box bg-yellow">
                 <div class="inner">
                     <h3>{ttlChangeAfterApproved}</h3>
@@ -61,7 +61,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         </div>
 
         <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
+            // small box 
             <div class="small-box bg-red">
                 <div class="inner">
                     <h3>{ttlVoidAuthorize}</h3>
@@ -72,6 +72,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 </div>
                 <a href="<?= site_url() ?>tr/approval" class="small-box-footer">More info <i class="fa fa-ban"></i></a>
             </div>
-        </div>
+        </div>-->
     </div>
 </section>
