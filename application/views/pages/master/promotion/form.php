@@ -139,21 +139,21 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
                         <div class='form-group'>
                             <label for="fbl_promo_gabungan" class="col-md-2 control-label"><?= lang("") ?></label>
-                            <div class="col-md-2">
+                            <div class="checkbox">
                                 <div>
-                                    <input type="checkbox" class="minimal form-control icheck" id="fbl_promo_gabungan" name="fbl_promo_gabungan"> &nbsp;
+                                    <input type="checkbox" class="minimal form-control" id="fbl_promo_gabungan" name="fbl_promo_gabungan"> &nbsp;
                                     <label for="fbl_promo_gabungan" class=""> <?= lang("Allow other promo")?></label>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="checkbox">
                                 <div>
-                                    <input type="checkbox" class="minimal form-control icheck" id="fbl_is_multiples_prize" name="fbl_is_multiples_prize"> &nbsp;
+                                    <input type="checkbox" class="minimal form-control" id="fbl_is_multiples_prize" name="fbl_is_multiples_prize"> &nbsp;
                                     <label for="fbl_is_multiples_prize" class=""> <?= lang("Multiple prize")?></label>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="checkbox">
                                 <div>
-                                    <input type="checkbox" class="minimal form-control icheck" id="fbl_disc_per_item" name="fbl_disc_per_item"> &nbsp;
+                                    <input type="checkbox" class="minimal form-control " id="fbl_disc_per_item" name="fbl_disc_per_item"> &nbsp;
                                     <label for="fbl_disc_per_item" class=""> <?= lang("Disc per item")?></label>
                                 </div>
                             </div>
@@ -1165,42 +1165,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     $("#fst_list_branch_id").val(fst_list_branch_id).trigger('change');
                 }
 
-                if (resp.mspromo.fbl_disc_per_item == 1){
-					//alert("check");
-					$('#fbl_disc_per_item').iCheck('check');
-					$('#fbl_disc_per_item').iCheck('update');
-					
-				}else{
-					//alert("uncheck");
-					$('#fbl_disc_per_item').iCheck('uncheck');
-				}
-                if (resp.mspromo.fbl_promo_gabungan == 1){
-					//alert("check");
-					$('#fbl_promo_gabungan').iCheck('check');
-					$('#fbl_promo_gabungan').iCheck('update');
-					
-				}else{
-					//alert("uncheck");
-					$('#fbl_promo_gabungan').iCheck('uncheck');
-				}
-                if (resp.mspromo.fbl_qty_gabungan == 1){
-					//alert("check");
-					$('#fbl_qty_gabungan').iCheck('check');
-					$('#fbl_qty_gabungan').iCheck('update');
-					
-				}else{
-					//alert("uncheck");
-					$('#fbl_qty_gabungan').iCheck('uncheck');
-				}
-                if (resp.mspromo.fbl_is_multiples_prize == 1){
-					//alert("check");
-					$('#fbl_is_multiples_prize').iCheck('check');
-					$('#fbl_is_multiples_prize').iCheck('update');
-					
-				}else{
-					//alert("uncheck");
-					$('#fbl_is_multiples_prize').iCheck('uncheck');
-				}
                 $("#fdt_start").datepicker('update', dateFormat(resp.mspromo.fdt_start));
                 $("#fdt_end").datepicker('update', dateFormat(resp.mspromo.fdt_end));
                 // menampilkan data di select2
