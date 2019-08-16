@@ -577,7 +577,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "Action","width": "40px",data:"action",sortable:false,className:'dt-body-center text-center'},
 				{"title" : "id",sortable:false,data:"fin_rec_id",visible:true},
 				{"title" : "promo",sortable:false,data:"fin_promo_id",visible:true},				
-				{"title" : "Items","width": "450px",sortable:false,data:"fin_item_id",
+				{"title" : "Items","width": "250px",sortable:false,data:"fin_item_id",
 					render: function(data,type,row){
 						return row.ItemCode + "-" + row.fst_custom_item_name;
 					}

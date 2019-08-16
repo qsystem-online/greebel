@@ -205,12 +205,15 @@
         });
 
         $("#jstree_group").on('rename_node.jstree', function (e, data) {            
+            data = data.node;
+            data["<?=$this->security->get_csrf_token_name()?>"] = "<?=$this->security->get_csrf_hash()?>";
+
             consoleLog(data);
             //consoleLog($('#jstree_group').jstree(true).is_leaf(data.node));
             $.ajax({
                 url:"<?=site_url() ?>master/group_item/update_data_tree",
                 method:"POST",
-                data:data.node,
+                data:data,
             }).done(function(resp){
                 consoleLog(resp);
             });
