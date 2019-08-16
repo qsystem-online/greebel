@@ -12,13 +12,16 @@
 	},
 	"require": {
 		"php": ">=5.3.7",
-		"dompdf/dompdf": "^0.8.3"
+		"dompdf/dompdf": "^0.8.3",
+		"phpoffice/phpspreadsheet": "^1.8",
+		"mpdf/mpdf": "^8.0",
+		"tecnickcom/tcpdf": "^6.2"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
 	},
 	"require-dev": {
-		"mikey179/vfsStream": "1.1.*",
+		"mikey179/vfsstream": "1.1.*",
 		"phpunit/phpunit": "4.* || 5.*"
 	}
 }
