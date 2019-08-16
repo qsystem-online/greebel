@@ -176,6 +176,57 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#fdc_percent_of_price_list").val(0);
 			$("#fdc_percent_of_price_list").prop('readonly', true);
 		});
+		
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>pr/cust_pricing_group/add")
+		});
+
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+			$.ajax({
+				url:"<?= site_url() ?>pr/cust_pricing_group/delete/" + $("#fin_cust_pricing_group_id").val(),
+			}).done(function(resp){
+				//consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != "")	{
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons : {
+							OK : function() {
+								if (resp.status == "SUCCESS") {
+									window.location.href = "<?= site_url() ?>pr/cust_pricing_group/lizt";
+									return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fst_curr_code").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_curr_name').prop('readonly', true);
+				}
+			});
+		});
+
+		$("#btnList").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>pr/cust_pricing_group");
+		});
 	});
 
 	function init_form(fin_cust_pricing_group_id){
