@@ -40,6 +40,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <div class="box box-info">
                 <div class="box-header with-border">
                     <h3 class="box-title title"><?= $title ?></h3>
+                    <div class="btn-group btn-group-sm  pull-right">					
+                        <a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
+						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+					</div>
                 </div>
                 <!-- end box header -->
 
@@ -187,19 +195,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="unit_details">
-                                    <button id="btn-add-unit-details" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Unit") ?></button>
+                                    <button id="btn-add-unit-details" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Unit") ?></button>
                                     <div>
                                         <table id="tbl_unit_details" class="table table-bordered table-hover" style="width:100%;"></table>
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="bom_details">
-                                    <button id="btn-add-bom" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add BOM") ?></button>
+                                    <button id="btn-add-bom" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add BOM") ?></button>
                                     <div>
                                         <table id="tbl_bom_details" class="table table-bordered table-hover" style="width:100%;"></table>
                                     </div>
                                 </div>
                                 <div <?= $displaytabs ?> class="tab-pane" id="special_pricing">
-                                    <button id="btn-add-special_pricing" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Special Pricing") ?></button>
+                                    <button id="btn-add-special_pricing" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Special Pricing") ?></button>
                                     <div>
                                         <table id="tbl_special_pricing" class="table table-bordered table-hover" style="width:100%;"></table>
                                     </div>
@@ -210,7 +218,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <!-- /.tab-content -->
 
                         <div class="box-footer text-right">
-                            <a id="btnSubmitAjax" href="#" class="btn btn-primary"><?= lang("Save Record") ?></a>
+                            
                         </div>
                         <!-- end box-footer -->
                 </form>
@@ -277,8 +285,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 </form>
             </div>
             <div class="modal-footer">
-                <button id="btn-add-unit" type="button" class="btn btn-primary">Add</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="btn-add-unit" type="button" class="btn btn-primary"><?=lang("Add")?></button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
             </div>
         </div>
     </div>
@@ -568,6 +576,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             </div>
         </div>
     </div>
+
     <script type="text/javascript">
         $(function() {
             $("#btn-add-bom").click(function(event) {
@@ -716,6 +725,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         });
     </script>
 </div>
+
 <div id="mdlSpecialPricing" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">
         <!-- Modal content-->
@@ -921,6 +931,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         <?php if ($mode == "EDIT") { ?>
             init_form($("#fin_item_id").val());
         <?php } ?>
+        
         $("#btnSubmitAjax").click(function(event) {
             event.preventDefault();
             //data = $("#frmItem").serializeArray();
@@ -1015,6 +1026,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 }
             });
         });
+
         $("#fst_image").change(function(event) {
 			event.preventDefault();
 			var reader = new FileReader();

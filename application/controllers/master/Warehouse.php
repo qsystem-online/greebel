@@ -110,6 +110,7 @@ class Warehouse extends MY_Controller
         $data = [
             "fst_warehouse_name" => $this->input->post("fst_warehouse_name"),
             "fin_branch_id" => $this->input->post("fin_branch_id"),
+			"fst_delivery_address" => $this->input->post("fst_delivery_address"),
             "fbl_is_external" => ($this->input->post("fbl_is_external") == null) ? 0 : 1,
             "fbl_is_main" => ($this->input->post("fbl_is_main") == null) ? 0 : 1,
             "fst_active" => 'A'
@@ -164,6 +165,7 @@ class Warehouse extends MY_Controller
             "fin_warehouse_id" => $fin_warehouse_id,
             "fst_warehouse_name" => $this->input->post("fst_warehouse_name"),
             "fin_branch_id" => $this->input->post("fin_branch_id"),
+			"fst_delivery_address" => $this->input->post("fst_delivery_address"),
             "fbl_is_external" => $this->input->post("fbl_is_external"),
             "fbl_is_main" => $this->input->post("fbl_is_main"),
             "fst_active" => 'A'
@@ -195,7 +197,7 @@ class Warehouse extends MY_Controller
         $this->load->library("datatables");
         $this->datatables->setTableName("(select a.*,b.fst_branch_name from mswarehouse a inner join msbranches b on a.fin_branch_id = b.fin_branch_id) a");
 
-        $selectFields = "fin_warehouse_id,fst_warehouse_name,fst_branch_name,'action' as action";
+        $selectFields = "fin_warehouse_id,fst_warehouse_name,fst_branch_name,fst_delivery_address,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');
@@ -227,23 +229,17 @@ class Warehouse extends MY_Controller
         $this->json_output($data);
     }
 
-    public function delete($id)
-    {
-        if (!$this->aauth->is_permit("")) {
-            $this->ajxResp["status"] = "NOT_PERMIT";
-            $this->ajxResp["message"] = "You not allowed to do this operation !";
-            $this->json_output();
-            return;
-        }
+	public function delete($id){
+		$this->db->trans_start();
+        $this->mswarehouse_model->delete($id);
+        $this->db->trans_complete();
 
-        $this->load->model("mswarehouse_model");
-
-        $this->departments_model->delete($id);
-        $this->ajxResp["status"] = "DELETED";
-        $this->ajxResp["message"] = "File deleted successfully";
-        $this->json_output();
-    }
-
+        $this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = lang("Data dihapus !");
+		//$this->ajxResp["data"]["insert_id"] = $insertId;
+		$this->json_output();
+	}
+		
     public function get_Branch()
     {
         $term = $this->input->get("term");

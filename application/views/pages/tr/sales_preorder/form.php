@@ -40,6 +40,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <div class="box box-info">
                 <div class="box-header with-border">
                     <h3 class="box-title title"><?= $title ?></h3>
+                    <div class="btn-group btn-group-sm  pull-right">					
+						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
+						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+					</div>
                 </div>
                 <!-- end box header -->
 
@@ -163,7 +171,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="preorder_details">
-                                    <button id="btn-add-preorder-details" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Branch") ?></button>
+                                    <button id="btn-add-preorder-details" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Branch") ?></button>
                                     <div>
                                         <table id="tbl_preorder_details" class="table table-bordered table-hover" style="width:100%;"></table>
                                     </div>
@@ -174,7 +182,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <!-- /.tab-content -->
 
                         <div class="box-footer text-right">
-                            <a id="btnSubmitAjax" href="#" class="btn btn-primary"><?= lang("Save Record") ?></a>
+                            
                         </div>
                         <!-- end box-footer -->
                 </form>

@@ -251,9 +251,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 var selectedDetail;
 $(function(){		
 		initVarForm();
-		
-		
-
+	
 		//$("#fdt_sj_date").datetimepicker('update'), dateFormat("<= date("Y-m-d")?>"));
 		$("#fdt_sj_date").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>"));
 		$("#fdt_sj_date").datetimepicker('update');
@@ -305,8 +303,6 @@ $(function(){
             initShippingAddress(data.fin_relation_id,data.fin_shipping_address_id);
             getDetail();
         });
-
-        
 
 	
 		$(document).bind('keydown', 'alt+d', function(){
@@ -426,6 +422,7 @@ $(function(){
         });
 
     }
+
 	function initVarForm(){
 		blockUIOnAjaxRequest();
         $.ajax({
@@ -445,9 +442,9 @@ $(function(){
             
         });
     }
+
 	function initForm(){
 		
-
 		$.ajax({
 			url:"<?= site_url() ?>tr/delivery_order/fetch_data/" + $("#fin_sj_id").val(),
 		}).done(function(resp){
@@ -483,6 +480,7 @@ $(function(){
 
 		});
 	}
+
     function getDetail(){
         $.ajax({
             url:"<?=site_url()?>tr/delivery_order/get_detail_so/" + $("#fin_salesorder_id").val(),
@@ -510,6 +508,7 @@ $(function(){
         $("#sub-total").val(money_format(ttl));
     }
 </script>
+
 <Script type="text/javascript">
     function submitAjax(){
         

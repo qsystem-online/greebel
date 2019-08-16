@@ -39,6 +39,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="box box-info">
 				<div class="box-header with-border">
 				<h3 class="box-title title"><?=$title?></h3>
+				<div class="btn-group btn-group-sm  pull-right">					
+					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+				</div>
 			</div>
             <!-- end box header -->
 
@@ -329,7 +336,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<form class="form-horizontal edit-mode ">	
 								<div class="form-group">
 									<div class="col-md-12">
-									<button id="btn-add-shipping" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-plus"></i>&nbsp;&nbsp;<?= lang("Add Shipping") ?></button>
+									<button id="btn-add-shipping" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Shipping") ?></button>
 									</div>	
 								</div>
                             </form>
@@ -341,7 +348,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<!-- /.tab-content -->
 
                 <div class="box-footer text-right">
-                    <a id="btnSubmitAjax" href="#" class="btn btn-primary"><?=lang("Save Record")?></a>
+                    
                 </div>
                 <!-- end box-footer -->
             </form>
@@ -623,6 +630,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			init_form($("#fin_relation_id").val());
 		<?php } ?>
 
+
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			data = $("#frmRelation").serializeArray();
@@ -665,7 +673,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>pr/relation/lizt";
+										window.location.href = "<?= site_url() ?>pr/relation/add";
 										return;
 									}
 								},
@@ -1083,6 +1091,57 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//alert (sstr);
 			$("#fst_relation_notes").val(sstr + data.text + "\r\n");
 			//console.log(selected_fst_relation_notes);
+		});
+
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>pr/relation/add");
+		});
+
+		$("#btnDelete").confirmation({
+			title:"<?= lang("Hapus data ini ?") ?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+			$.ajax({
+				url:"<?= site_url() ?>pr/relation/delete/" + $("#fin_relation_id").val(),
+			}).done(function(resp){
+				consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != "")	{
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons : {
+							OK : function(){
+								if(resp.status == "SUCCESS"){
+									window.location.href = "<?= site_url() ?>pr/relation";
+									//return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fin_relation_id").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_relation_name').prop('readonly', true);				
+				}
+			});
+		});
+
+		$("#btnList").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>master/relation");
 		});
 	});
 
