@@ -95,9 +95,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-maingroupitem" class="col-md-2 control-label"><?= lang("Main Group") ?> :</label>
+                            <label for="select-GroupItemId" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
                             <div class="col-md-4">
-                                <select id="select-maingroupitem" class="form-control" name="fin_item_maingroup_id"></select>
+                                <select id="select-GroupItemId" class="form-control" name="fin_item_group_id"></select>
                             </div>
 
                             <label for="fin_item_type_id" class="col-md-2 control-label"><?= lang("Item Type") ?> *</label>
@@ -113,19 +113,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-GroupItemId" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
-                            <div class="col-md-4">
-                                <select id="select-GroupItemId" class="form-control" name="fin_item_group_id"></select>
-                            </div>
-
-                            <label for="select-SubGroupItemId" class="col-md-2 control-label"><?= lang("Sub Group") ?> :</label>
-                            <div class="col-md-4">
-                                <select id="select-SubGroupItemId" class="form-control" name="fin_item_subgroup_id"></select>
-                                <div id="fin_item_subgroup_id_err" class="text-danger"></div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
                             <div class="col-md-10" style="left: 20px;">				
                                 <label for="fdc_scale_for_bom" class="col-md-2 control-label"><?= lang("Scale For BOM") ?>:</label>
                                 <div class="col-md-5">
@@ -133,9 +120,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <div id="fdc_scale_for_bom_err" class="text-danger"></div>
                                 </div>
                             </div>				
-                            <div class="col-md-2">
+                            <div class="checkbox col-sm-2">
                                 <div>
-                                    <input type="checkbox" class="minimal form-control icheck" id="fbl_is_batch_number" name="fbl_is_batch_number" value="1"> &nbsp;
+                                    <input type="checkbox" id="fbl_is_batch_number" name="fbl_is_batch_number" value="1"> &nbsp;
                                     <label for="fbl_is_batch_number" class=""> <?= lang("Batch Number")?> </label>
                                 </div>
                             </div>
@@ -148,9 +135,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <div id="fst_storage_rack_info_err" class="text-danger"></div>
                                 </div>
                             </div>				
-                            <div class="col-md-2">
+                            <div class="checkbox col-sm-2">
                                 <div>
-                                    <input type="checkbox" class="minimal form-control icheck" id="fbl_is_serial_number" name="fbl_is_serial_number" value="1"> &nbsp;
+                                    <input type="checkbox" id="fbl_is_serial_number" name="fbl_is_serial_number" value="1"> &nbsp;
                                     <label for="fbl_is_serial_number" class=""> <?= lang("Serial Number")?> </label>
                                 </div>
                             </div>
@@ -1048,28 +1035,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			}
 			reader.readAsDataURL(this.files[0]);
 		});
-        $("#select-maingroupitem").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>master/item/get_data_ItemMainGroupId',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value) {
-                        data2.push({
-                            "id": value.fin_item_maingroup_id,
-                            "text": value.fst_item_maingroup_name
-                        });
-                    });
-                    console.log(data2);
-                    return {
-                        results: data2
-                    };
-                },
-                cache: true,
-            }
-        });
+
         $("#select-GroupItemId").select2({
             width: '100%',
             ajax: {
@@ -1106,32 +1072,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
 
         });
-        $("#select-GroupItemId").change(function(event) {
-            event.preventDefault();
-            $('#select-SubGroupItemId').val(null).trigger('change');
-            $("#select-SubGroupItemId").select2({
-                width: '100%',
-                ajax: {
-                    url: '<?= site_url() ?>master/item/get_data_ItemSubGroupId/' + $("#select-GroupItemId").val(),
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function(data) {
-                        data2 = [];
-                        $.each(data, function(index, value) {
-                            data2.push({
-                                "id": value.fin_item_subgroup_id,
-                                "text": value.fst_item_subgroup_name
-                            });
-                        });
-                        console.log(data2);
-                        return {
-                            results: data2
-                        };
-                    },
-                    cache: true,
-                }
-            });
-        });
         
     });
     function init_form(fin_item_id) {
@@ -1148,7 +1088,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         type = $el.attr('type');
                     switch (type) {
                         case 'checkbox':
-                            $el.attr('checked', 'checked');
+                            $el.filter('[value="' + val + '"]').attr('checked', 'checked');
                             break;
                         case 'radio':
                             $el.filter('[value="' + val + '"]').attr('checked', 'checked');
@@ -1158,24 +1098,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
-                if (resp.ms_items.fbl_is_batch_number == 1){
-					//alert("check");
-					$('#fbl_is_batch_number').iCheck('check');
-					$('#fbl_is_batch_number').iCheck('update');
-					
-				}else{
-					//alert("uncheck");
-					$('#fbl_is_batch_number').iCheck('uncheck');
-				}
-                if (resp.ms_items.fbl_is_serial_number == 1){
-					//alert("check");
-					$('#fbl_is_serial_number').iCheck('check');
-					$('#fbl_is_serial_number').iCheck('update');
-					
-				}else{
-					//alert("uncheck");
-					$('#fbl_is_serial_number').iCheck('uncheck');
-				}
                 // menampilkan data di select2
                 var newOption = new Option(resp.ms_items.fst_item_maingroup_name, resp.ms_items.fin_item_maingroup_id, true, true);
                 // Append it to the select
