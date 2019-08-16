@@ -94,7 +94,7 @@ class Relation extends MY_Controller{
 	}
 
 	public function ajx_add_save(){
-		$this->load->model('msrelations_model');
+		$this->load->model("msrelations_model");
 		$this->form_validation->set_rules($this->msrelations_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
@@ -176,7 +176,7 @@ class Relation extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
-		$this->load->model('msrelations_model');
+		$this->load->model("msrelations_model");
 		$fin_relation_id = $this->input->post("fin_relation_id");
 		$data = $this->msrelations_model->getDataById($fin_relation_id);
 		$msrelations = $data["ms_relations"];
@@ -457,16 +457,13 @@ class Relation extends MY_Controller{
 	}
 
 	public function delete($id){
-		if (!$this->aauth->is_permit("")) {
-			$this->ajxResp["status"] = "NOT_PERMIT";
-			$this->ajxResp["message"] = "You not allowed to do this operation !";
-			$this->json_output();
-			return;
-		}
-		$this->load->model("msrelations_model");
+		$this->db->trans_start();
 		$this->msrelations_model->delete($id);
-		$this->ajxResp["status"] = "DELETED";
-		$this->ajxResp["message"] = "File deleted successfully";
+		$this->db->trans_complete();
+
+        $this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = lang("Data dihapus !");
+		//$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
 	}
 

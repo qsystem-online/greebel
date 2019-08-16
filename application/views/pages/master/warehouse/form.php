@@ -58,6 +58,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fin_branch_id_err" class="text-danger"></div>
                             </div>
                         </div>
+						<div class="form-group">
+							<label for="fst_delivery_address" class="col-md-2 control-label"><?= lang("Deliver ") ?> :</label>
+							<div class="col-sm-4">
+								<textarea class="form-control" id="fst_delivery_address" name="fst_delivery_address"></textarea>
+								<div id="fst_delivery_address_err" class="text-danger"></div>
+							</div>
+						</div>
                         <div class="form-group">
                             <label for="fbl_is_external" class="col-sm-2 control-label"><?= lang("External") ?> :</label>
                             <div class="checkbox col-sm-2">
@@ -177,6 +184,62 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 cache: true,
             }
         });
+		
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>master/warehouse/add")
+		});
+
+		$("#btnSubmitAjax").click(function(e){
+			e.preventDefault();
+			submitAjax();
+		});
+
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+			$.ajax({
+				url:"<?= site_url() ?>master/warehouse/delete/" + $("#fin_warehouse_id").val(),
+			}).done(function(resp){
+				//consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != "")	{
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons : {
+							OK : function() {
+								if (resp.status == "SUCCESS") {
+									window.location.href = "<?= site_url() ?>master/warehouse/lizt";
+									return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fin_relation_id").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_relation_name').prop('readonly', true);
+				}
+			});
+		});
+
+		$("#btnList").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>master/warehouse");
+		});
 
     });
 

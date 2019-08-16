@@ -630,7 +630,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			init_form($("#fin_relation_id").val());
 		<?php } ?>
 
-		/*$("#btnSubmitAjax").click(function(event){
+
+		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
 			data = $("#frmRelation").serializeArray();
 			//data = new FormData($("#frmRelation")[0]);
@@ -704,7 +705,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#btnSubmit").prop("disabled", false);
 				}
 			});
-		});*/
+		});
 
 		$(".select2").select2();
 
@@ -1094,16 +1095,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnNew").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>pr/relation/add")
-		});
-
-		$("#btnSubmitAjax").click(function(e){
-			e.preventDefault();
-			submitAjax();
+			window.location.replace("<?=site_url()?>pr/relation/add");
 		});
 
 		$("#btnDelete").confirmation({
-			title:"<?=lang("Hapus data ini ?")?>",
+			title:"<?= lang("Hapus data ini ?") ?>",
 			rootSelector: '#btnDelete',
 			placement: 'left',
 		});
@@ -1113,17 +1109,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$.ajax({
 				url:"<?= site_url() ?>pr/relation/delete/" + $("#fin_relation_id").val(),
 			}).done(function(resp){
-				//consoleLog(resp);
+				consoleLog(resp);
 				$.unblockUI();
 				if (resp.message != "")	{
 					$.alert({
 						title: 'Message',
 						content: resp.message,
 						buttons : {
-							OK : function() {
-								if (resp.status == "SUCCESS") {
+							OK : function(){
+								if(resp.status == "SUCCESS"){
 									window.location.href = "<?= site_url() ?>pr/relation";
-									return;
+									//return;
 								}
 							},
 						}
@@ -1138,14 +1134,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$(".text-danger").html("");
 					// Change to Edit mode
 					$("#frm-mode").val("EDIT");  //ADD|EDIT
-					$('#fst_relation_name').prop('readonly', true);
+					$('#fst_relation_name').prop('readonly', true);				
 				}
 			});
 		});
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>pr/relation");
+			window.location.replace("<?=site_url()?>master/relation");
 		});
 	});
 
@@ -1259,71 +1255,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#result").text(e.responseText);
 				console.log("ERROR : ", e);
 			}
-		});
-	}
-</script>
-
-<script type="text/javascript">
-	
-	function submitAjax(){
-		data = $("#frmRelation").serializeArray();
-		detail = new Array();
-
-		t = $('#tbl_shipping_details').DataTable();
-		datas = t.data();
-		$.each(datas,function(i,v){
-			detail.push(v);
-		});
-		data.push({
-			name:"detail",
-			value: JSON.stringify(detail)
-		});
-
-		url = "<?=site_url()?>pr/relation/ajx_add_save";
-		<?php if ($mode == "EDIT"){ ?>
-			url = "<?=site_url()?>pr/relation/ajx_edit_save";
-		<?php } ?>
-
-		blockUIOnAjaxRequest("<h5>Please wait....</h5>");
-		$.ajax({
-			url : url,
-			data: data,
-			method: "POST",
-		}).done(function(reps){
-			$.unblockUI();
-			if (resp.message != ""){
-				$.alert({
-					title: 'Message',
-					content: resp.message,
-					buttons : {
-						OK : function(){
-							if(resp.status == "SUCCESSS"){
-								//window.location.href = "<?=site_url()?>pr/relation/lizt";
-								//return;
-							}
-						},
-					}
-				});
-			}
-
-			if(resp.status == "VALIDATION_FORM_FAILED"){
-				//Show Error
-				errors = resp.data;
-				for (key in errors) {
-					$("#"+key+"_err").html(errors[key]);
-				}
-			}else if(resp.status == "SUCCESS") {
-				data = resp.data;
-				$("#fin_relation_id").val(data.insert_id);
-
-				//Clear all previous error
-				$(".text-danger").html("");
-				//Change to Edit Mode
-				$("#frm-mode").val("EDIT"); //ADD|EDIT
-				$('#fst_relation_name').prop('readonly', true);
-			}
-		}).always(function(resp){
-			//$.unblockUI();
 		});
 	}
 </script>

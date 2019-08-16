@@ -289,8 +289,7 @@ class Glaccount extends MY_Controller
         $this->json_output($rs);
     }
 
-    public function delete($id)
-    {
+    /*public function delete($id){
         if (!$this->aauth->is_permit("")) {
             $this->ajxResp["status"] = "NOT_PERMIT";
             $this->ajxResp["message"] = "You not allowed to do this operation !";
@@ -306,5 +305,25 @@ class Glaccount extends MY_Controller
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "File deleted successfully";
         $this->json_output();
+    }*/
+
+    public function delete($id){
+        if (!$this->aauth->is_permit("")) {
+            $this->ajxResp["status"] = "NOT_PERMIT";
+            $this->ajxResp["message"] = "You not allowed to do this operation !";
+            $this->json_output();
+            return;
+        }
+        //echo $id;
+        //die ();
+        $this->load->model("GLaccounts_model");
+
+        $this->GLaccounts_model->delete($id);
+        $this->db->trans_complete();
+
+        $this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = lang("Data dihapus !");
+		//$this->ajxResp["data"]["insert_id"] = $insertId;
+		$this->json_output();
     }
 }
