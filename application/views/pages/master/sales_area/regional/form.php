@@ -245,7 +245,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						buttons : {
 							OK : function() {
 								if (resp.status == "SUCCESS") {
-									window.location.href = "<?= site_url() ?>master/sales_area/add_regional";
+									window.location.href = "<?= site_url() ?>master/sales_area/regional/lizt";
 									return;
 								}
 							},

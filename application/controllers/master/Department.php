@@ -253,20 +253,14 @@ class Department extends MY_Controller
 		$this->json_output($data);
 	}
 
-	public function delete($id)
-	{
-		if (!$this->aauth->is_permit("")) {
-			$this->ajxResp["status"] = "NOT_PERMIT";
-			$this->ajxResp["message"] = "You not allowed to do this operation !";
-			$this->json_output();
-			return;
-		}
+	public function delete($id){
+		$this->db->trans_start();
+        $this->Msdepartments_model->delete($id);
+        $this->db->trans_complete();
 
-		$this->load->model("Msdepartments_model");
-
-		$this->Msdepartments_model->delete($id);
-		$this->ajxResp["status"] = "DELETED";
-		$this->ajxResp["message"] = "File deleted successfully";
+        $this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = lang("Data dihapus !");
+		//$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
 	}
 
