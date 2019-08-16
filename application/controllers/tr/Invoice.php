@@ -157,13 +157,13 @@ class Invoice extends MY_Controller{
 	public function Edit($fin_inv_id){
 		$this->openForm("EDIT", $fin_inv_id);
     }
+
     public function fetch_data($fin_inv_id){
 		$this->load->model("trinvoice_model");
 		$data = $this->trinvoice_model->getDataById($fin_inv_id);		
 		$this->json_output($data);
 	}
     
-
     public function get_select2_uninvoice_sj($customerId,$invId){
         $arrSJ = $this->trinvoice_model->get_select2_uninvoice_sj($customerId,$invId);
         if (!$arrSJ){

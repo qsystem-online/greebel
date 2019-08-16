@@ -39,6 +39,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="box box-info">
 				<div class="box-header with-border">
 				<h3 class="box-title title"><?=$title?></h3>
+				<div class="btn-group btn-group-sm  pull-right">					
+					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+				</div>
 			</div>
             <!-- end box header -->
 
@@ -80,7 +87,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<!-- end box body -->
 
                 <div class="box-footer text-right">
-                    <a id="btnSubmitAjax" href="#" class="btn btn-primary"><?=lang("Save Ajax")?></a>
+                    
                 </div>
                 <!-- end box-footer -->
             </form>
@@ -168,6 +175,57 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//alert ("fdc_percent_of_price_list");
 			$("#fdc_percent_of_price_list").val(0);
 			$("#fdc_percent_of_price_list").prop('readonly', true);
+		});
+		
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>pr/cust_pricing_group/add")
+		});
+
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+			$.ajax({
+				url:"<?= site_url() ?>pr/cust_pricing_group/delete/" + $("#fin_cust_pricing_group_id").val(),
+			}).done(function(resp){
+				//consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != "")	{
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons : {
+							OK : function() {
+								if (resp.status == "SUCCESS") {
+									window.location.href = "<?= site_url() ?>pr/cust_pricing_group/lizt";
+									return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fst_curr_code").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_curr_name').prop('readonly', true);
+				}
+			});
+		});
+
+		$("#btnList").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>pr/cust_pricing_group");
 		});
 	});
 
