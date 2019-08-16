@@ -422,7 +422,7 @@ $(function(){
 						buttons : {
 							OK : function(){
 								if(resp.status == "SUCCESS"){
-									window.location.href = "<= site_url() ?>tr/invoice";
+									window.location.href = "<?= site_url() ?>tr/invoice";
 									//return;
 								}
 							},

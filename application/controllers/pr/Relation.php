@@ -65,6 +65,7 @@ class Relation extends MY_Controller{
 
 	private function openForm($mode = "ADD", $fin_relation_id = 0){
 		$this->load->library("menus");
+		$this->list['addnew_ajax_url'] = site_url() . 'pr/relation/add';
 		if ($this->input->post("submit") != "") {
 			$this->add_save();
 		}
@@ -498,8 +499,7 @@ class Relation extends MY_Controller{
 		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
 	}
 	
-	public function getAllList()
-    {
+	public function getAllList(){
         $this->load->model('msrelations_model');
         $result = $this->msrelations_model->getAllList();
         $this->ajxResp["data"] = $result;
