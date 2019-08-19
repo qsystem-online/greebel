@@ -210,18 +210,14 @@ class Member_group extends MY_Controller{
 	}
 
 	public function delete($id){
-		if (!$this->aauth->is_permit("")) {
-			$this->ajxResp["status"] = "NOT_PERMIT";
-			$this->ajxResp["message"] = "You not allowed to do this operation !";
-			$this->json_output();
-			return;
-		}
-
 		$this->load->model("msmembergroups_model");
+		$this->db->trans_start();
+        $this->msmembergroups_model->delete($id);
+        $this->db->trans_complete();
 
-		$this->msmembergroups_model->delete($id);
-		$this->ajxResp["status"] = "DELETED";
-		$this->ajxResp["message"] = "File deleted successfully";
+        $this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = lang("Data dihapus !");
+		//$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
 	}
 
