@@ -290,17 +290,10 @@ class Glaccount extends MY_Controller
     }
 
     public function delete($id){
-        if (!$this->aauth->is_permit("")) {
-            $this->ajxResp["status"] = "NOT_PERMIT";
-            $this->ajxResp["message"] = "You not allowed to do this operation !";
-            $this->json_output();
-            return;
-        }
-        //echo $id;
-        //die ();
         $this->load->model("GLaccounts_model");
-
+        $this->db->trans_start();
         $this->GLaccounts_model->delete($id);
+        $this->db->trans_complete();
 
         $this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = lang("Data dihapus !");
