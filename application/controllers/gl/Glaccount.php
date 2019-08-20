@@ -289,15 +289,33 @@ class Glaccount extends MY_Controller
         $this->json_output($rs);
     }
 
-    public function delete($id){
-        $this->load->model("GLaccounts_model");
+    public function ajx_delete($id){
+        $gl_Account = $this->glaccounts_model->createObject($id);
+        if($gl_Account == null){
+            show_404();
+        }
+
+        //GLAccount yang belum terdaftar di GLLedger tidak bisa dihapus
+        if ($gl_Account->fst_glaccount_code != null){
+            $this->ajxResp["status"] = "FAILED";
+            $this->ajxResp["message"] = lang("Transaksi yang telah memiliki invoice tidak dapat di hapus");
+            $this->ajxResp["data"]["id"] = $id;
+            $this->json_output();
+        }
+
+        $this->load->model("Glledger_model");
+
         $this->db->trans_start();
         $this->GLaccounts_model->delete($id);
+
+        //Unposting
+        $this->GLaccounts_model->unposting($sjId);
+
         $this->db->trans_complete();
 
         $this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = lang("Data dihapus !");
-		//$this->ajxResp["data"]["insert_id"] = $insertId;
+		$this->ajxResp["data"]["id"] = $id;
 		$this->json_output();
     }
 }
