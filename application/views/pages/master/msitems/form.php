@@ -44,9 +44,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
 						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
-						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+						<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
                 </div>
                 <!-- end box header -->
@@ -1073,7 +1072,58 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         });
         
+        $("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>master/item/add")
+		});
+
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+			$.ajax({
+				url:"<?= site_url() ?>master/item/delete/" + $("#fin_item_id").val(),
+			}).done(function(resp){
+				//consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != "")	{
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons : {
+							OK : function() {
+								if (resp.status == "SUCCESS") {
+									window.location.href = "<?= site_url() ?>master/item/lizt";
+									return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fin_item_id").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_item_name').prop('readonly', true);
+				}
+			});
+		});
+
+		$("#btnList").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>master/item/lizt");
+		});
     });
+
     function init_form(fin_item_id) {
         //alert("Init Form");
         var url = "<?= site_url() ?>master/item/fetch_data/" + fin_item_id;
