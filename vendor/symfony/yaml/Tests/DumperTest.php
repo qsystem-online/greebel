@@ -372,7 +372,6 @@ outer2:
 YAML;
         $this->assertSame($expected, $yaml);
     }
-
     public function testDumpingTaggedValueSequenceRespectsInlineLevel()
     {
         $data = [
@@ -383,19 +382,15 @@ YAML;
                 'username' => 'john',
             ]),
         ];
-
         $yaml = $this->dumper->dump($data, 2);
-
         $expected = <<<YAML
 - !user
   username: jane
 - !user
   username: john
-
 YAML;
         $this->assertSame($expected, $yaml);
     }
-
     public function testDumpingTaggedValueSequenceWithInlinedTagValues()
     {
         $data = [
@@ -406,17 +401,13 @@ YAML;
                 'username' => 'john',
             ]),
         ];
-
         $yaml = $this->dumper->dump($data, 1);
-
         $expected = <<<YAML
 - !user { username: jane }
 - !user { username: john }
-
 YAML;
         $this->assertSame($expected, $yaml);
     }
-
     public function testDumpingTaggedValueMapRespectsInlineLevel()
     {
         $data = [
@@ -427,19 +418,15 @@ YAML;
                 'username' => 'john',
             ]),
         ];
-
         $yaml = $this->dumper->dump($data, 2);
-
         $expected = <<<YAML
 user1: !user
     username: jane
 user2: !user
     username: john
-
 YAML;
         $this->assertSame($expected, $yaml);
     }
-
     public function testDumpingTaggedValueMapWithInlinedTagValues()
     {
         $data = [
@@ -450,9 +437,7 @@ YAML;
                 'username' => 'john',
             ]),
         ];
-
         $yaml = $this->dumper->dump($data, 1);
-
         $expected = <<<YAML
 user1: !user { username: jane }
 user2: !user { username: john }

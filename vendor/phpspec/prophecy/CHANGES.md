@@ -2,7 +2,6 @@
 ==================
 
 * [fixed] Don't try to patch final constructors (@NiR)
-
 1.8.0 / 2018/08/05
 ==================
 
