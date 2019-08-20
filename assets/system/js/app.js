@@ -42,9 +42,59 @@ $(function(){
 			showMeridian: 0
 		});	
 	};
-		
-
 });
+
+var App = {
+	calculateDisc : function(amount, disc){
+		if (disc == "" || disc == null){
+			return 0;
+		}
+		var strArray = disc.split("+");
+		totalDisc = 0;
+		$.each(strArray,function(i,v){
+			disc = amount * (v / 100);
+			totalDisc += disc;
+			amount = amount - disc;
+		});
+		return totalDisc;
+	},
+	money_format : function(number) {
+		decimals = DECIMAL_DIGIT;
+		dec_point = DECIMAL_SEPARATOR;
+		thousands_sep = DIGIT_GROUP;
+		number = parseFloat(number);
+		number = number.toFixed(decimals);
+		var nstr = number.toString();
+		nstr += '';
+		x = nstr.split('.');
+		x1 = x[0];
+		x2 = x.length > 1 ? dec_point + x[1] : '';
+		var rgx = /(\d+)(\d{3})/;
+		while (rgx.test(x1))
+			x1 = x1.replace(rgx, '$1' + thousands_sep + '$2');
+		return x1 + x2;
+	},
+	money_parse : function(money){
+		value = money.toString();
+		var digitPatern = ',';
+		if (DIGIT_GROUP == "."){
+			digitPatern ='\\.';  			
+		}
+	
+		var re = new RegExp(digitPatern,"g");
+		value = value.replace(re,'');
+	
+		if (DECIMAL_SEPARATOR == ","){
+			value = value.replace(",",".");
+		}
+		return parseFloat(value);
+	
+		
+	}
+
+
+}
+
 
 //Format data dari ajax ke format datepicker, setting di config.js
 function dateFormat(strDate){
@@ -94,6 +144,9 @@ function money_parse(money){
 	
 }
 
+
+
+
 function consoleLog(obj){
 	console.log(obj);	
 }
@@ -120,3 +173,4 @@ function fixedSelect2(){
 		"background-color":"unset"
 	});
 };
+

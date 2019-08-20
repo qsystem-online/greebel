@@ -891,11 +891,14 @@ class Purchase_order extends MY_Controller{
 		//Get Warehouse 
 		$arrWarehouse = $this->select2->get_warehouse($branchId);
 		
-
-        
+		//get List Disc
+		$arrDisc = $this->select2->get_discountList();
+		
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["data"] = [
-            "arrSupplier"=>$arrSupplier,
+			"arrSupplier"=>$arrSupplier,
+			"arrWarehouse"=>$arrWarehouse,
+			"arrDisc"=>$arrDisc
             //"arrSJ"=>$arrSJ,
         ];
         $this->json_output();
@@ -903,4 +906,23 @@ class Purchase_order extends MY_Controller{
 
     }
 	
+
+	public function get_item($supplierId){
+		$this->load->library("select2");
+		$arrItem = $this->select2->get_itemBySupplier($supplierId);
+		$this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["data"] = [
+			"arrItem"=>$arrItem,
+        ];
+        $this->json_output();
+	}
+	public function get_item_unit($itemId){
+		$this->load->library("select2");
+		$arrUnit = $this->select2->get_buyItemUnit($itemId);
+		$this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["data"] = [
+			"arrUnit"=>$arrUnit,
+        ];
+        $this->json_output();
+	}
 }
