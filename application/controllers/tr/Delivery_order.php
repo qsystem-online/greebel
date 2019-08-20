@@ -142,6 +142,7 @@ class Delivery_order extends MY_Controller{
 	public function Edit($fin_sj_id){
 		$this->openForm("EDIT", $fin_sj_id);
     }
+    
     public function fetch_data($fin_sj_id){
 		$this->load->model("trsuratjalan_model");
 		$data = $this->trsuratjalan_model->getDataById($fin_sj_id);		
