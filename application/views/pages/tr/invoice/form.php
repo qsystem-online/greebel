@@ -455,8 +455,6 @@ $(function(){
 
     });
     
-    
-	
 	function initForm(){
 		$.ajax({
 			url:"<?= site_url() ?>tr/invoice/fetch_data/" + $("#fin_inv_id").val(),

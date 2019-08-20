@@ -41,7 +41,7 @@ class Glaccount extends MY_Controller
             ['title' => 'GL Main Group Name', 'width' => '10%', 'data' => 'fst_glaccount_maingroup_name'],
             ['title' => 'Parent', 'width' => '12%', 'data' => 'ParentGLAccountName'],
             ['title' => 'Default Post', 'width' => '7%', 'data' => 'fst_default_post'],
-            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
@@ -290,17 +290,10 @@ class Glaccount extends MY_Controller
     }
 
     public function delete($id){
-        if (!$this->aauth->is_permit("")) {
-            $this->ajxResp["status"] = "NOT_PERMIT";
-            $this->ajxResp["message"] = "You not allowed to do this operation !";
-            $this->json_output();
-            return;
-        }
-        //echo $id;
-        //die ();
         $this->load->model("GLaccounts_model");
-
+        $this->db->trans_start();
         $this->GLaccounts_model->delete($id);
+        $this->db->trans_complete();
 
         $this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = lang("Data dihapus !");

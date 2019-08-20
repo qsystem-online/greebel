@@ -636,25 +636,22 @@ class Sales_area extends MY_Controller{
     }
 
     //=========================================================================================================================================================
-
-	public function delete($id) {
-		if(!$this->aauth->is_permit("")){
-			$this->ajxResp["status"] = "NOT_PERMIT";
-			$this->ajxResp["message"] = "You not allowed to do this operation !";
-			$this->json_output();
-			return;
-		}
-		
-        $this->load->model("mssalesarea_model");
-        $this->load->model("mssalesregional_model");
+	
+	public function delete($id){
+		$this->load->model("mssalesarea_model");
+		$this->load->model("mssalesregional_model");
         $this->load->model("mssalesnational_model");
+		$this->db->trans_start();
         $this->mssalesarea_model->delete($id);
         $this->mssalesregional_model->delete($id);
         $this->mssalesnational_model->delete($id);
-		$this->ajxResp["status"] = "DELETED";
-		$this->ajxResp["message"] = "File deleted successfully";
+        $this->db->trans_complete();
+
+        $this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = lang("Data dihapus !");
+		//$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
-    }
+	}
     
     public function get_salesId(){
 		$term = $this->input->get("term");

@@ -19,4 +19,11 @@ class Select2 {
         $rs = $qr->result();
         return $rs;
     }
+
+    public function get_supplier($branchId){
+        $ssql = "select fin_relation_id as id,fst_relation_name as text from msrelations where fin_branch_id = ? and FIND_IN_SET(1,fst_relation_type) and fst_active ='A'";
+        $qr = $this->CI->db->query($ssql,[$branchId]);
+        $rs = $qr->result();
+        return $rs;
+    }
 }

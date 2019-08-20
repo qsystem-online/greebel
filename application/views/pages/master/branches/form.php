@@ -263,7 +263,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			$("#select-district").select2({
 				width: '100%',
 				ajax: {
-					url: '<?=site_url()?>pr/relation/get_districts/'+$("#select-provinces").val(),
+					url: '<?=site_url()?>pr/relation/get_district/'+$("#select-provinces").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -291,7 +291,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			$("#select-subdistrict").select2({
 				width: '100%',
 				ajax: {
-					url: '<?=site_url()?>pr/relation/get_subdistricts/'+$("#select-district").val(),
+					url: '<?=site_url()?>pr/relation/get_subdistrict/'+$("#select-district").val(),
 					dataType: 'json',
 					delay: 250,
 					processResults: function (data){
@@ -341,7 +341,56 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			});
 		});
 
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>master/branch/add")
+		});
 
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+			$.ajax({
+				url:"<?= site_url() ?>master/branch/delete/" + $("#fin_branch_id").val(),
+			}).done(function(resp){
+				//consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != "")	{
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons : {
+							OK : function() {
+								if (resp.status == "SUCCESS") {
+									window.location.href = "<?= site_url() ?>master/branch/lizt";
+									return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fin_branch_id").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_branch_name').prop('readonly', true);
+				}
+			});
+		});
+
+		$("#btnList").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>master/branch/lizt");
+		});
     });
 
     function init_form(fin_branch_id) {

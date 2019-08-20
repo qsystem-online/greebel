@@ -346,7 +346,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 						buttons : {
 							OK : function() {
 								if (resp.status == "SUCCESS") {
-									window.location.href = "<?= site_url() ?>gl/glaccount";
+									window.location.href = "<?= site_url() ?>gl/glaccount/lizt";
 									//return;
 								}
 							},
@@ -369,7 +369,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>gl/glaccount");
+			window.location.replace("<?=site_url()?>gl/glaccount/lizt");
 		});
         
     });

@@ -245,13 +245,13 @@ class Group_item extends MY_Controller
         $this->json_output($rs);
     }
 
-    public function update_data_tree(){
+    public function update_data_tree(){        
         $this->load->model("msgroupitems_model");
 
 
         $post = $this->input->post();
-        var_dump($post);
-
+        //var_dump($post);
+    
         $id =  $post["id"];
         $data = $this->msgroupitems_model->getDataById($id);
         $rw = $data["groupitems"];
