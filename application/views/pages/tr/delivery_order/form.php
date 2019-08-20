@@ -244,9 +244,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 </div>
 
-
-
-
 <script type="text/javascript">
 var selectedDetail;
 $(function(){		

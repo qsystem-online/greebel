@@ -76,4 +76,14 @@ class Glaccounts_model extends MY_Model
     public function isUsed($fst_glaccount_code){
         return true;
     }
+
+    public function createObject($glId){
+        $ci = & get_instance();
+        try{
+            $glaccount = new GLAccounts($ci,$glId);
+            return $glaccount;
+        }catch(Exception $e){
+            return null;
+        }
+    }
 }
