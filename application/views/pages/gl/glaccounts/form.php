@@ -371,7 +371,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>gl/glaccount/lizt");
 		});
-        
     });
 
     function init_form(fst_glaccount_code) {
