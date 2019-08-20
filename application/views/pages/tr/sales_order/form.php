@@ -675,8 +675,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 			});
 
-
-
 			/*			
 			$('#select-items').trigger({
 				type:"select2:select",
