@@ -41,7 +41,7 @@ class Glaccount extends MY_Controller
             ['title' => 'GL Main Group Name', 'width' => '10%', 'data' => 'fst_glaccount_maingroup_name'],
             ['title' => 'Parent', 'width' => '12%', 'data' => 'ParentGLAccountName'],
             ['title' => 'Default Post', 'width' => '7%', 'data' => 'fst_default_post'],
-            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
