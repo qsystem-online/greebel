@@ -292,21 +292,16 @@ class Sales_preorder extends MY_Controller
         $this->json_output($data);
     }
 
-    public function delete($id)
-    {
-        if (!$this->aauth->is_permit("")) {
-            $this->ajxResp["status"] = "NOT_PERMIT";
-            $this->ajxResp["message"] = "You not allowed to do this operation !";
-            $this->json_output();
-            return;
-        }
-
+    public function delete($id){
         $this->load->model("Trsalespreorder_model");
-
+        $this->db->trans_start();
         $this->Trsalespreorder_model->delete($id);
-        $this->ajxResp["status"] = "DELETED";
-        $this->ajxResp["message"] = "File deleted successfully";
-        $this->json_output();
+        $this->db->trans_complete();
+
+        $this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = lang("Data dihapus !");
+		//$this->ajxResp["data"]["insert_id"] = $insertId;
+		$this->json_output();
     }
 
     public function getAllList()
