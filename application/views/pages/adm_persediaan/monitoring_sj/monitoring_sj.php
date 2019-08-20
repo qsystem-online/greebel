@@ -362,8 +362,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$('#fst_sj_no').val(row.fst_sj_no);
 			$('#fst_sj_return_resi_no').val(row.fst_sj_return_resi_no);
 			$('#fst_sj_return_memo').val(row.fst_sj_return_memo);
-			//$("#fdt_sj_return_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
-			//$('#fdt_sj_return_datetime').datetimepicker('update', val(row.fdt_sj_return_datetime));
 			$("#fdt_sj_return_datetime").val(dateTimeFormat(row.fdt_sj_return_datetime)).datetimepicker('update');
 		});
 	});
