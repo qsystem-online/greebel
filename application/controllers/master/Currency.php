@@ -287,21 +287,6 @@ class Currency extends MY_Controller {
 		$this->json_output($data);
 	}
 
-	/*public function delete($id){
-		if(!$this->aauth->is_permit("")){
-			$this->ajxResp["status"] = "NOT_PERMIT";
-			$this->ajxResp["message"] = "You not allowed to do this operation !";
-			$this->json_output();
-			return;
-		}
-		
-		$this->load->model("mscurrencies_model");
-		$this->mscurrencies_model->delete($id);
-		$this->ajxResp["status"] = "DELETED";
-		$this->ajxResp["message"] = "File deleted successfully";
-		$this->json_output();
-	}*/
-	
 	public function delete($id){
 		$this->load->model("mscurrencies_model");
 		$this->db->trans_start();
