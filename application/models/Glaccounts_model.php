@@ -1,37 +1,6 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class GL_account {
-    private $CI;
-    private $rw;
-    private $db;
-
-    public function __construct($CI,$id){
-        $this->CI = $CI;
-        $this->db = $CI->db;
-
-        $ssql = "select * from glaccounts where fst_glaccount_code = ?";
-        $qr = $this->CI->db->query($ssql,[$id]);
-        $this->rw = $qr->row();
-        if ($this->rw == false){
-            throw new Exception("Invalid ID");
-        }
-    }
-    public function __debugInfo() {
-        //support on php 5.6
-        return [
-            'rw' => $this->rw
-        ];
-    }
-    public function __get($name){
-        if (property_exists($this->rw,$name)){
-            return $this->rw->$name;
-        }else{
-            throw new Exception("Invalid Property Name !");
-        }
-    }
-}
-
 class Glaccounts_model extends MY_Model
 {
     public $tableName = "glaccounts";
