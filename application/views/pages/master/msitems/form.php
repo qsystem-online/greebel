@@ -24,6 +24,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
         border-bottom-style: fixed;
     }
 </style>
+<?php
+	echo $mdlPrint;
+?>
 
 <section class="content-header">
     <h1><?= lang("Master Items") ?><small><?= lang("form") ?></small></h1>
@@ -224,6 +227,63 @@ defined('BASEPATH') or exit('No direct script access allowed');
             </div>
         </div>
 </section>
+
+<!-- modal atau popup "ADD" -->
+<div id="mdlPrint" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="display:table;width:800px">
+        <-- modal content -->
+		<div class="modal-content">
+            <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><?=lang("Daftar Barang")?></h4>
+			</div>
+
+            <div class="modal-body">
+
+                <form id="form-detail" class="form-horizontal">
+                    <input type='hidden' id='fin_item_id'/>
+                    <div class="form-group">
+                        <label for="fin_item_id" class="col-md-2 control-label"><?=lang("Items")?></label>
+                        <div class="col-md-10">
+                            <select id="fin_item_id" class="form-control" style="width:100%"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="fst_vendor_item_name" class="col-md-2 control-label"><?= lang("Vendor Item Name") ?> *</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" id="fst_vendor_item_name" placeholder="<?= lang("Vendor Item Name") ?>" name="fst_vendor_item_name">
+                            <div id="fst_vendor_item_name_err" class="text-danger"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="select-GroupItemId" class="col-md-2 control-label"><?=lang("Group")?></label>
+                        <div class="col-md-4">
+                            <select id="select-GroupItemId" class="form-control" name="fin_item_group_id">
+                                <option value="0">-- <?=lang("select")?> --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="fst_item_code" class="col-md-2 control-label"><?= lang("Item Code") ?> #</label>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="fst_item_code" placeholder="<?= lang("Item Code") ?>" name="fst_item_code">
+                            <div id="fst_item_code_err" class="text-danger"></div>
+                        </div>
+                        <label for="fst_item_code" class="col-sm-0 control-label"><?=lang("s/d")?></label>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="fst_item_code" placeholder="<?= lang("Item Code") ?>" name="fst_item_code">
+                            <div id="fst_item_code_err" class="text-danger"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-add-print" type="button" class="btn btn-primary"><?=lang("Print")?></button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div id="mdlUnitDetails" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">
@@ -1098,7 +1158,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 							OK : function() {
 								if (resp.status == "SUCCESS") {
 									window.location.href = "<?= site_url() ?>master/item/lizt";
-									return;
+									//return;
 								}
 							},
 						}
@@ -1121,6 +1181,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		$("#btnList").click(function(e){
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>master/item/lizt");
+		});
+
+        $("#btnPrint").click(function(e){
+			$("#mdlPrint").modal("toggle");
+		});
+
+        $("#btnExport2Excel").click(function(e){
+			e.preventDefault();
+			window.location = "<?= base_url() ?>item/record2Excel/?dateLog=" + $("#date-log").val();
+			//window.open("<?= base_url() ?>item/record2Excel/?dateLog=" + $("#date-log").val(),"blank","",true);
 		});
     });
 

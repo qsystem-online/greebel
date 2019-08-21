@@ -32,6 +32,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		font-weight:700;
 	}
 </style>
+<?php
+	echo $mdlPrint;
+?>
 
 <section class="content-header">
 	<h1><?=lang("Sales Order")?><small><?=lang("form")?></small></h1>
@@ -485,6 +488,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btnClose").click(function(e){
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>tr/sales_order/lizt");
+		});
+
+		$("#btnPrint").click(function(e){
+			$("#mdlPrint").modal("toggle");
 		});
 
 		//$("#fdt_salesorder_date").datepicker('update', dateFormat("<= date("Y-m-d")?>"));
