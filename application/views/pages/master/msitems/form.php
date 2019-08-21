@@ -24,9 +24,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
         border-bottom-style: fixed;
     }
 </style>
-<?php
-	echo $mdlPrint;
-?>
 
 <section class="content-header">
     <h1><?= lang("Master Items") ?><small><?= lang("form") ?></small></h1>
@@ -229,8 +226,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="mdlPrint" class="modal fade" role="dialog">
-    <div class="modal-dialog" style="display:table;width:800px">
+<div id="mdlPrint" class="modal fade in" role="dialog" style="display: none">
+    <div class="modal-dialog" style="display:table;width:60%;min-width:600px;max-width:100%">
         <-- modal content -->
 		<div class="modal-content">
             <div class="modal-header">
@@ -243,34 +240,34 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 <form id="form-detail" class="form-horizontal">
                     <input type='hidden' id='fin_item_id'/>
                     <div class="form-group">
-                        <label for="fin_item_id" class="col-md-2 control-label"><?=lang("Items")?></label>
-                        <div class="col-md-10">
+                        <label for="fin_item_id" class="col-md-3 control-label"><?=lang("Items")?></label>
+                        <div class="col-md-7">
                             <select id="fin_item_id" class="form-control" style="width:100%"></select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="fst_vendor_item_name" class="col-md-2 control-label"><?= lang("Vendor Item Name") ?> *</label>
-                        <div class="col-md-10">
+                        <label for="fst_vendor_item_name" class="col-md-3 control-label"><?= lang("Vendor Item Name") ?> :</label>
+                        <div class="col-md-7">
                             <input type="text" class="form-control" id="fst_vendor_item_name" placeholder="<?= lang("Vendor Item Name") ?>" name="fst_vendor_item_name">
                             <div id="fst_vendor_item_name_err" class="text-danger"></div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="select-GroupItemId" class="col-md-2 control-label"><?=lang("Group")?></label>
-                        <div class="col-md-4">
+                        <label for="select-GroupItemId" class="col-md-3 control-label"><?=lang("Group")?> :</label>
+                        <div class="col-md-7">
                             <select id="select-GroupItemId" class="form-control" name="fin_item_group_id">
                                 <option value="0">-- <?=lang("select")?> --</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="fst_item_code" class="col-md-2 control-label"><?= lang("Item Code") ?> #</label>
-                        <div class="col-md-4">
+                        <label for="fst_item_code" class="col-md-3 control-label"><?= lang("Item Code") ?> :</label>
+                        <div class="col-md-3">
                             <input type="text" class="form-control" id="fst_item_code" placeholder="<?= lang("Item Code") ?>" name="fst_item_code">
                             <div id="fst_item_code_err" class="text-danger"></div>
                         </div>
-                        <label for="fst_item_code" class="col-sm-0 control-label"><?=lang("s/d")?></label>
-                        <div class="col-md-4">
+                        <label for="fst_item_code" class="col-sm-1 control-label"><?=lang("s/d")?> :</label>
+                        <div class="col-md-3">
                             <input type="text" class="form-control" id="fst_item_code" placeholder="<?= lang("Item Code") ?>" name="fst_item_code">
                             <div id="fst_item_code_err" class="text-danger"></div>
                         </div>
