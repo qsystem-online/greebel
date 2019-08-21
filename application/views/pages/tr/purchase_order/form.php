@@ -285,7 +285,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<input type="text" class="form-control text-right" id="fdc_disc_amount" readonly>
 						</div>
 					</div>
-					
+
 					<div class="form-group">
 						<label for="total" class="col-md-8 control-label">Uang Muka</label>
 						<div class="col-md-4" style="text-align:right">
@@ -368,7 +368,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		initVarForm();
 
 		$("#btnPrint").click(function(e){
-			$("#mdlPrint").modal("toggle");
+			layoutColumn = [
+				{column: "Coloumn 1",hidden:false,id:"fst_column1"},
+				{column: "Coloumn 2",hidden:true,id:"fst_column2"},
+				{column: "Coloumn 3",hidden:true,id:"fst_column3"},
+				{column: "Coloumn 4",hidden:true,id:"fst_column4"},
+				{column: "Coloumn 5",hidden:true,id:"fst_column5"},
+				{column: "Coloumn 6",hidden:true,id:"fst_column6"},
+				{column: "Coloumn 7",hidden:true,id:"fst_column7"},
+				{column: "Coloumn 8",hidden:true,id:"fst_column8"},
+			];
+
+
+			MdlPrint.showPrint(layoutColumn);
 		});
 
 		$("#btnJurnal").click(function(e){

@@ -25,7 +25,8 @@ class MY_Controller extends CI_Controller
 			if ($this->input->is_ajax_request()) {
 				$this->ajxResp["status"] = AJAX_STATUS_SESSION_EXPIRED;
 				$this->session->unset_userdata("last_uri");
-				$this->json_output(401);
+				$this->json_output(null,401);
+				die();
 			} else {
 				$lastURI = $this->uri->uri_string();
 				$this->session->set_userdata("last_uri", $lastURI);

@@ -104,9 +104,7 @@ class Msitems_model extends MY_Model
         $ssql ="select * from msrelations where fin_relation_id = ?";
         $qr = $this->db->query($ssql,[$fin_customer_id]);
         $rw = $qr->row();
-        if($rw){
-            
-
+        if($rw){            
             $fin_cust_pricing_group_id = $rw->fin_cust_pricing_group_id;
             // cek Special item
             $ssql = "select * from msitemspecialpricinggroupdetails where fin_item_id = ? and fst_unit = ? and fin_cust_pricing_group_id = ? and fst_active = 'A'";
@@ -126,7 +124,7 @@ class Msitems_model extends MY_Model
                     $qr = $this->db->query($ssql,[$fin_cust_pricing_group_id]);
                     $rwGroupPrice = $qr->row();
                     if($rwGroupPrice){
-                        if ($rwGroupPrice->fdc_percent_of_price_list == 100){
+                        if ($rwGroupPrice->fdc_percent_of_price_list == 0){
                             return $sellingPrice - $rwGroupPrice->fdc_difference_in_amount;
                         }else{
                             return $sellingPrice * ($rwGroupPrice->fdc_percent_of_price_list /100);
@@ -145,6 +143,42 @@ class Msitems_model extends MY_Model
 
         return 0;
     }
+
+    public function getSellingPriceByPricingGroup($fin_item_id,$fst_unit,$pricingGroupId) {                 
+        $fin_cust_pricing_group_id = $pricingGroupId;
+        // cek Special item
+        $ssql = "select * from msitemspecialpricinggroupdetails where fin_item_id = ? and fst_unit = ? and fin_cust_pricing_group_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit,$fin_cust_pricing_group_id]);
+        $rwPrice = $qr->row();
+        if($rwPrice){
+            return $rwPrice->fdc_selling_price;
+        }else{
+            //item fst_unit details
+            $ssql = "select * from msitemunitdetails where fin_item_id = ? and fst_unit = ? and fst_active = 'A'";
+            $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit]);
+            $rwPrice = $qr->row();
+            if($rwPrice){
+                $sellingPrice = $rwPrice->fdc_price_list;
+                //Cek Group Price List
+                $ssql = "select * from mscustpricinggroups where fin_cust_pricing_group_id = ?";
+                $qr = $this->db->query($ssql,[$fin_cust_pricing_group_id]);
+                $rwGroupPrice = $qr->row();
+                if($rwGroupPrice){
+                    if ($rwGroupPrice->fdc_percent_of_price_list == 0){
+                        return $sellingPrice - $rwGroupPrice->fdc_difference_in_amount;
+                    }else{
+                        return $sellingPrice * ($rwGroupPrice->fdc_percent_of_price_list /100);
+                    }
+                }else{
+                    return $sellingPrice;
+                }
+            }else{
+                return 0;
+            }
+        }
+        return 0;
+    }
+
 
     public function getDetailbyArray($arrItemId){
         $ssql = "select * from msitems where fin_item_id in ?";

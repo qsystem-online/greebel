@@ -49,10 +49,19 @@
 
 
 <script type="text/javascript">
+    
 	layoutColumn = [
         {column: "Coloumn 1",hidden:false,id:"fst_column1"},
         {column: "Coloumn 2",hidden:true,id:"fst_column2"},
     ];
+
+    
+    MdlPrint = {
+        showPrint : function(colLayout){
+            layoutColumn = colLayout;
+            $("#mdlPrint").modal("toggle");
+        }
+    }
 
     $(function () {
         //$("#tblLayout").DataTable();
@@ -111,6 +120,7 @@
 		});
 		g_LeafOnly = leafOnly;
 		selected_callback = callback;
-	}
-		
+    }
+    
+   
 </script>
