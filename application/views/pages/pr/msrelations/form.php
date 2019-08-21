@@ -1141,7 +1141,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>master/relation");
+			window.location.replace("<?=site_url()?>pr/relation/lizt");
 		});
 	});
 
