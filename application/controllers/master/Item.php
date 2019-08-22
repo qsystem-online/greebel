@@ -622,32 +622,4 @@ class Item extends MY_Controller
 		//var_dump($spreadsheet);
 		$this->phpspreadsheet->save("item_report_" . date("Ymd") ,$spreadsheet);
     }
-
-    //----------------------- PRINT ------------------------------------------------------------------------------------------------------------------------------\\
-
-    /*public function get_vendor(){
-        $term   = $this->input->get("term");
-        $ssql   = "SELECT fin_item_id,fst_vendor_item_name from msitems where fst_vendor_item_name like ?";
-        $qr     = $this->db->query($ssql, ['%' . $term . '%']);
-        $rs     = $qr->result();
-        $this->json_output($rs);
-    }
-
-    public function get_GroupId(){
-        $term   = $this->input->get("term");
-        $ssql   = "SELECT fin_item_group_id,fst_item_group_name from msgroupitems WHERE fst_item_group_name like ? order by fst_item_group_name";
-        $qr     = $this->db->query($ssql, ['%' . $term . '%']);
-        $rs     = $qr->result();
-
-        $this->json_output($rs);
-    }
-
-    public function get_itemCode(){
-        $term   = $this->input->get("term");
-        $ssql   = "SELECT fst_item_code,fst_item_name FROM msitems WHERE fst_item_code LIKE ?";
-        $qr     = $this->db->query($ssql, ['%' . $term . '%']);
-        $rs     = $qr->result();
-
-        $this->json_output($rs);
-    }*/
 }
