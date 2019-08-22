@@ -72,7 +72,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     <div class="form-group">
 						<div class="col-md-12" style='text-align:right'>
-							<button id="btn-add-detail" class="btn btn-default btn-sm">
+							<button id="btn-add-detail" class="btn btn-primary btn-sm">
 								<i class="fa fa-cart-plus" aria-hidden="true"></i>
 								<?=lang("Add Detail")?>
 							</button>
@@ -97,50 +97,58 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div id="CurrDetailModal" class="modal fade" role="dialog" >
 	<div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">
 		<!-- modal content -->
-		<div class="modal-content">
-			<div class="modal-header">
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<h4 class="modal-title"><?=lang("Add Currencies Detail")?></h4>
 			</div>
 
 			<div class="modal-body">
-				<form  class="form-horizontal">
-				
-					<div class="form-group hide">
-						<label for="fst_curr_code" class="col-md-4 control-label"><?=lang("Currencies Code")?></label>
-						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="fst_curr_code" name="fst_curr_code">
-							<div id="fst_curr_code_err" class="text-danger"></div>
+				<div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+								<form  class="form-horizontal">
+								
+									<div class="form-group hide">
+										<label for="fst_curr_code" class="col-md-4 control-label"><?=lang("Currencies Code")?></label>
+										<div class="col-md-8">
+											<input type="text" class="form-control text-right" id="fst_curr_code" name="fst_curr_code">
+											<div id="fst_curr_code_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fdt_date" class="col-md-4 control-label"><?=lang("Date")?></label>
+										<div class="col-md-8">
+											<div class="input-group date">
+												<div class="input-group-addon">
+													<i class="fa fa-calendar"></i>
+												</div>
+												<input type="text" class="form-control pull-right datepicker" id="fdt_date" name="fdt_date"/>								
+											</div>
+											<div id="fdt_date_err" class="text-danger"></div>
+											<!-- /.input group -->
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fdc_exchange_rate_to_idr" class="col-md-4 control-label"><?=lang("Exc Rate To IDR")?></label>
+										<div class="col-md-8">
+											<input type="text" class="form-control text-right money" id="fdc_exchange_rate_to_idr" placeholder="<?= lang("Exchange Rate To IDR") ?>" value="0" name="fdc_exchange_rate_to_idr">
+											<div id="fdc_exchange_rate_to_idr_err" class="text-danger"></div>
+										</div>
+									</div>
+								</form>
+
+								<div class="modal-footer" style="width:100%;padding:10px" class="text-center">
+									<button id="btn-add-currDetails" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+									<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+								</div>
+							</fieldset>
 						</div>
 					</div>
-
-					<div class="form-group">
-					    <label for="fdt_date" class="col-md-4 control-label"><?=lang("Date")?></label>
-						<div class="col-md-8">
-                            <div class="input-group date">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                <input type="text" class="form-control pull-right datepicker" id="fdt_date" name="fdt_date"/>								
-                            </div>
-                            <div id="fdt_date_err" class="text-danger"></div>
-                            <!-- /.input group -->
-                        </div>
-					</div>
-
-					<div class="form-group">
-						<label for="fdc_exchange_rate_to_idr" class="col-md-4 control-label"><?=lang("Exc Rate To IDR")?></label>
-						<div class="col-md-8">
-							<input type="text" class="form-control text-right money" id="fdc_exchange_rate_to_idr" placeholder="<?= lang("Exchange Rate To IDR") ?>" value="0" name="fdc_exchange_rate_to_idr">
-							<div id="fdc_exchange_rate_to_idr_err" class="text-danger"></div>
-						</div>
-					</div>
-				</form>
-			</div>
-
-			<div class="modal-footer">
-				<button id="btn-add-currDetails" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+				</div>
 			</div>
 		</div>
 	</div>
