@@ -24,9 +24,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
         border-bottom-style: fixed;
     }
 </style>
-<!--<?php
-    //echo $mdlPrint;
-?>-->
 
 <section class="content-header">
     <h1><?= lang("Master Items") ?><small><?= lang("form") ?></small></h1>
@@ -924,67 +921,81 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </script>
 </div>
 
-<div id="mdlPrint" class="modal fade in" role="dialog" style="display: none">
+<div id="modalPrint" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:60%;min-width:600px;max-width:100%">
-        <-- modal content -->
-		<div class="modal-content">
-            <div class="modal-header">
+        <!-- modal content -->
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<h4 class="modal-title"><?= lang("Daftar Barang") ?></h4>
 			</div>
 
             <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
 
-                <form class="form-horizontal">
-                    <div class="form-group">
-                        <label for="select-vendorName" class="col-md-3 control-label"><?= lang("Vendor Item Name") ?> :</label>
-                        <div class="col-md-7">
-                            <select id="select-vendorName" class="form-control" name="fst_vendor_item_name">
-                                <option value="0">-- <?= lang("select") ?> --</option>
-                            </select>
-                            <div id="fst_vendor_item_name_err" class="text-danger"></div>
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="select-vendorName" class="col-md-3 control-label"><?= lang("Vendor Item Name") ?> :</label>
+                                    <div class="col-md-7">
+                                        <select id="select-vendorName" class="form-control" name="fst_vendor_item_name">
+                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                        </select>
+                                        <div id="fst_vendor_item_name_err" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="select-groupItemName" class="col-md-3 control-label"><?= lang("Group") ?> :</label>
+                                    <div class="col-md-7">
+                                        <select id="select-groupItemName" class="form-control" name="fin_item_group_id">
+                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                        </select>
+                                        <div id="fst_item_group_name_err" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="select-ItemCode" class="col-md-3 control-label"><?= lang("Item Code") ?> :</label>
+                                    <div class="col-md-3">
+                                        <select id="select-ItemCode" class="form-control" name="fst_item_code">
+                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                        </select>
+                                        <div id="fst_item_code_err" class="text-danger"></div>
+                                    </div>
+                                    <label for="select-CodeItem" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
+                                    <div class="col-md-3">
+                                        <select id="select-CodeItem" class="form-control" name="fst_item_code">
+                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                        </select>
+                                        <div id="fst_item_code_err" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="mdlBomDetails" class="col-md-3 control-label"><?= lang("BOM") ?> :</label>
+                                    <div class="checkbox col-md-2">
+                                        <label><input id="mdlBomDetails" type="checkbox" name="mdlBomDetails" value="1"><?= lang("BOM") ?></label><br>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="modal-footer" style="width:100%;padding:10px" class="text-center">
+                                <button id="btn-add-print" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Print")?></button>
+                                <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+                            </div>
+
+                            </fieldset>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="select-groupItemName" class="col-md-3 control-label"><?= lang("Group") ?> :</label>
-                        <div class="col-md-7">
-                            <select id="select-groupItemName" class="form-control" name="fin_item_group_id">
-                                <option value="0">-- <?= lang("select") ?> --</option>
-                            </select>
-                            <div id="fst_item_group_name_err" class="text-danger"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="select-ItemCode" class="col-md-3 control-label"><?= lang("Item Code") ?> :</label>
-                        <div class="col-md-3">
-                            <select id="select-ItemCode" class="form-control" name="fst_item_code">
-                                <option value="0">-- <?= lang("select") ?> --</option>
-                            </select>
-                            <div id="fst_item_code_err" class="text-danger"></div>
-                        </div>
-                        <label for="select-CodeItem" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
-                        <div class="col-md-3">
-                            <select id="select-CodeItem" class="form-control" name="fst_item_code">
-                                <option value="0">-- <?= lang("select") ?> --</option>
-                            </select>
-                            <div id="fst_item_code_err" class="text-danger"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="mdlBomDetails" class="col-md-3 control-label"><?= lang("BOM") ?> :</label>
-                        <div class="checkbox col-md-2">
-                            <label><input id="mdlBomDetails" type="checkbox" name="mdlBomDetails" value="1"><?= lang("BOM") ?></label><br>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="btn-add-print" type="button" class="btn btn-primary"><?=lang("Print")?></button>
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<?php
+    echo $mdlPrint;
+?>
 
 <?php
     echo $mdlItemGroups;
@@ -1290,8 +1301,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		});
 
         $("#btnPrint").click(function(e){
-			$("#mdlPrint").modal("toggle");
+			$("#modalPrint").modal("toggle");
 		});
+
+        $("#btn-add-print").click(function(e){
+            $("#mdlPrint").modal("toggle");
+        });
 
         $("#btnExport2Excel").click(function(e){
 			e.preventDefault();
