@@ -925,4 +925,28 @@ class Purchase_order extends MY_Controller{
         ];
         $this->json_output();
 	}
+
+	public function print_po(){
+		$this->load->library("phpspreadsheet");
+		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_sales_log.xlsx");
+		//$spreadsheet = $this->phpspreadsheet->test();
+		//die();
+		$spreadsheet = $this->phpspreadsheet->load();
+		$sheet = $spreadsheet->getActiveSheet();
+		
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+		$sheet->getPageMargins()->setBottom(1);
+		$sheet->setCellValue('A1', 'Hello World !'); 
+
+		$filename = 'coba.xls';
+		
+		$this->phpspreadsheet->save($filename,$spreadsheet);
+
+		//var_dump($_POST);
+		//echo "PRINT......";
+	}
 }

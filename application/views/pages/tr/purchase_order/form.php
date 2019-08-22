@@ -378,9 +378,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{column: "Coloumn 7",hidden:true,id:"fst_column7"},
 				{column: "Coloumn 8",hidden:true,id:"fst_column8"},
 			];
-
-
-			MdlPrint.showPrint(layoutColumn);
+			url = "<?= site_url() ?>tr/purchase_order/print_po";
+			MdlPrint.showPrint(layoutColumn,url);
+			
 		});
 
 		$("#btnJurnal").click(function(e){

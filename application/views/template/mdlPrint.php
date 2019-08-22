@@ -17,7 +17,7 @@
                             </fieldset>
                             <div style="width:100%;padding:5px" class="text-center">
                                 <button id="btnLayout" class="btn btn-primary btn-sm text-center" style="width:100%;margin-bottom:5px;"><i class="fa fa-columns"></i> Layout</button>
-                                <button class="btn btn-primary btn-sm text-center" style="width:100%"><i class="fa fa-print"></i> Print</button>
+                                <button id="btnSubmitPrinter" class="btn btn-primary btn-sm text-center" style="width:100%"><i class="fa fa-print"></i> Print</button>
                             </div>
                         </div>
                     </div>
@@ -46,7 +46,12 @@
 	</div>
 </div>
 
-
+<form id="frmSubmitPrint" style="display:none" target="_blank" method="POST">
+    <input type="text" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
+    <input type="text" id="layoutColumn" name="layoutColumn" />
+    <input type="text" id="printMode" name="printMode" value="download" />
+    <input type="submit" value="submit"/>
+</form>
 
 <script type="text/javascript">
     
@@ -54,12 +59,41 @@
         {column: "Coloumn 1",hidden:false,id:"fst_column1"},
         {column: "Coloumn 2",hidden:true,id:"fst_column2"},
     ];
-
     
     MdlPrint = {
-        showPrint : function(colLayout){
+        url: "",
+        showPrint : function(colLayout,url){
             layoutColumn = colLayout;
+            
+            if ( $.fn.dataTable.isDataTable( '#tblLayout' ) ) {
+                $("#tblLayout").DataTable().destroy();
+            }
+
+            $("#tblLayout").DataTable({
+                columns: [
+                    { title: "Kolom",width:"80%",data:"column" },
+                    { title: "Hiden",className: 'dt-center',width:"20%",data:"hidden",
+                        render: function(data, type, row) {
+                            if (data == false) {
+                                return '<input type="checkbox" class="chk-hidden editor-active">';
+                            } else {
+                                return '<input type="checkbox" class="chk-hidden editor-active" checked>';
+                            }
+                            return data;
+                        }
+                    },
+                ],
+                data:layoutColumn,
+                paging:false,
+                ordering:false,
+                info:false,
+                filter:false,
+            });
+            
+            this.url = url;
+
             $("#mdlPrint").modal("toggle");
+            
         }
     }
 
@@ -111,7 +145,22 @@
             e.preventDefault();
             t = $("#tblLayout").DataTable();
             console.log(t.rows().data());
-        })
+        });
+
+        $("#btnSubmitPrinter").click(function(e){
+            e.preventDefault();
+            t = $("#tblLayout").DataTable();
+            data = t.rows().data();
+            newData = [];
+            $.each(data,function(i,v){
+                newData.push(v);
+            });            
+            $("#layoutColumn").val(JSON.stringify(newData));
+            $("#frmSubmitPrint").attr("action",MdlPrint.url);
+            $("#frmSubmitPrint").submit(); 
+
+
+        });
     });
 
 	function showItemGroup(leafOnly,callback){
