@@ -8,10 +8,12 @@ class Item extends MY_Controller
         $this->load->library('form_validation');
         $this->load->model('msitems_model');
     }
+
     public function index()
     {
         $this->lizt();
     }
+
     public function lizt()
     {
         $this->load->library('menus');
@@ -51,18 +53,23 @@ class Item extends MY_Controller
         $this->data['MAIN_FOOTER'] = $main_footer;
         $this->parser->parse('template/main', $this->data);
     }
+
     private function openForm($mode = "ADD", $fin_item_id = 0)
     {
         $this->load->library("menus");
         if ($this->input->post("submit") != "") {
             $this->add_save();
         }
+
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+        $mdlPrint = $this->parser->parse('template/mdlPrint.php', [], true);
+
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Master Items" : "Update Master Items";
         $data["fin_item_id"] = $fin_item_id;
         $data["mdlItemGroups"] =$this->parser->parse('template/mdlItemGroup', [], true);
+        $data["mdlPrint"] = $mdlPrint;
 
         $page_content = $this->parser->parse('pages/master/msitems/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -74,14 +81,17 @@ class Item extends MY_Controller
         $this->data["CONTROL_SIDEBAR"] = $control_sidebar;
         $this->parser->parse('template/main', $this->data);
     }
+
     public function add()
     {
         $this->openForm("ADD", 0);
     }
+
     public function Edit($fin_item_id)
     {
         $this->openForm("EDIT", $fin_item_id);
     }
+
     public function ajx_add_save()
     {
         $this->load->model('msitems_model');
@@ -182,6 +192,7 @@ class Item extends MY_Controller
         $this->ajxResp["data"]["insert_id"] = $insertId;
         $this->json_output();
     }
+
     public function ajx_edit_save()
     {
         $this->load->model('msitems_model');
@@ -339,6 +350,7 @@ class Item extends MY_Controller
         $this->ajxResp["data"]["insert_id"] = $fin_item_id;
         $this->json_output();
     }
+
     public function fetch_list_data()
     {
         $this->load->library("datatables");
@@ -364,6 +376,7 @@ class Item extends MY_Controller
         $datasources["data"] = $arrDataFormated;
         $this->json_output($datasources);
     }
+
     public function fetch_data($fin_item_id)
     {
         $this->load->model("msitems_model");
@@ -371,6 +384,7 @@ class Item extends MY_Controller
         //$this->load->library("datatables");		
         $this->json_output($data);
     }
+
     public function delete($id){
         $this->load->model("msitems_model");
         $this->db->trans_start();
@@ -382,14 +396,15 @@ class Item extends MY_Controller
 		//$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
     }
-    public function get_data_ItemMainGroupId()
-    {
+
+    public function get_data_ItemMainGroupId(){
         $term = $this->input->get("term");
         $ssql = "select * from msmaingroupitems where fst_item_maingroup_name like ? order by fst_item_maingroup_name";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
         $this->json_output($rs);
     }
+
     public function get_data_ItemGroupId()
     {
         $term = $this->input->get("term");
@@ -398,6 +413,7 @@ class Item extends MY_Controller
         $rs = $qr->result();
         $this->json_output($rs);
     }
+
     public function get_data_ItemSubGroupId($fin_item_group_id)
     {
         $term = $this->input->get("term");
@@ -406,6 +422,34 @@ class Item extends MY_Controller
         $rs = $qr->result();
         $this->json_output($rs);
     }
+
+    public function get_data_vendorName(){
+        $term = $this->input->get("term");
+        $ssql = "select * from msitems where fst_vendor_item_name like ? order by fst_vendor_item_name";
+        $qr = $this->db->query($ssql, ['%' . $term . '%']);
+        $rs = $qr->result();
+
+        $this->json_output($rs);
+    }
+
+    public function get_data_groupItemName(){
+        $term = $this->input->get("term");
+        $ssql = "select * from msgroupitems where fst_item_group_name like ? order by fst_item_group_name";
+        $qr = $this->db->query($ssql, ['%' . $term . '%']);
+        $rs = $qr->result();
+
+        $this->json_output($rs);
+    }
+
+    public function get_data_ItemCode(){
+        $term = $this->input->get("term");
+        $ssql = "select * from msitems where fst_item_code like ? order by fst_item_code";
+        $qr = $this->db->query($ssql, ['%' . $term . '%']);
+        $rs = $qr->result();
+
+        $this->json_output($rs);
+    }
+
     public function getAllList()
     {
         $this->load->model('msitems_model');
@@ -413,6 +457,7 @@ class Item extends MY_Controller
         $this->ajxResp["data"] = $result;
         $this->json_output();
     }
+
     public function get_data_ItemBom()
     {
         $term = $this->input->get("term");
@@ -421,6 +466,7 @@ class Item extends MY_Controller
         $rs = $qr->result();
         $this->json_output($rs);
     }
+
     public function get_data_unit()
     {
         $term = $this->input->get("term");
@@ -429,6 +475,7 @@ class Item extends MY_Controller
         $rs = $qr->result();
         $this->json_output($rs);
     }
+
     public function get_data_unitbom($fin_item_id)
     {
         $term = $this->input->get("term");
@@ -437,6 +484,7 @@ class Item extends MY_Controller
         $rs = $qr->result();
         $this->json_output($rs);
     }
+
     public function get_data_pricinggroup()
     {
         $term = $this->input->get("term");
@@ -507,5 +555,71 @@ class Item extends MY_Controller
         $this->data['PAGE_CONTENT'] = $page_content;
         $this->data['MAIN_FOOTER'] = $main_footer;
         $this->parser->parse('template/main', $this->data);
+    }
+
+    public function record2Excel(){
+        $this->load->model("msitems_model");
+        $datelog = $this->input->get("dateLog");
+        
+        $arrDateLog = explode("-",$datelog);
+        $date = dateFormat(trim($arrDateLog[0]),"j/m/Y","Y-m-d");
+        
+        $ssql = 
+        $query = $this->db->query($ssql,[]);
+        $rs = $query->result();
+
+        $this->load->library('phpspreadsheet');
+
+        //echo FCPATH . "assets\\templates\\". "template_item_log.xlsx";		 
+		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets\\templates\\template_item_log.xlsx");		
+		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_item_log.xlsx");		
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+        $sheet->getPageMargins()->setBottom(1);
+        
+        $iRow = 4;
+		$sheet->setCellValue("B2", $datelog); 
+		
+		$inScheduleStyle =[
+			'fill' => array(
+				'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_NONE,
+				'color' => array('rgb' => 'FFFFFF')
+			)
+		];
+
+		$outOfScheduleStyle =[
+			'fill' => array(
+				'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+				'color' => array('rgb' => 'F5BEBE')
+			)
+		];
+		
+		foreach($rs as $rw){
+			if ($this->msitems_model->inSchedule($rw->fin_item_id,$rw->fdt_checkin_datetime)){
+				$sheet->getStyle("A$iRow:H$iRow")->applyFromArray($inScheduleStyle);
+			}else{
+				$sheet->getStyle("A$iRow:H$iRow")->applyFromArray($outOfScheduleStyle);
+			}
+
+			$sheet->setCellValue("A$iRow", $rw->fin_item_id); 
+			$sheet->setCellValue("B$iRow", $rw->fst_sales);
+			$sheet->setCellValue("C$iRow", $rw->fst_customer);
+			$sheet->setCellValue("D$iRow", $rw->fdt_checkin_datetime);
+			$sheet->setCellValue("E$iRow", $rw->fdt_checkout_datetime);
+			$sheet->setCellValue("F$iRow", $rw->fin_visit_duration);
+			$sheet->setCellValue("G$iRow", $rw->fin_distance_meters);
+			$sheet->setCellValue("H$iRow", visit_day_name($rw->fin_visit_day));
+			$sheet->setCellValue("I$iRow", 'Photo');
+			$sheet->getCell("I$iRow")->getHyperlink()->setUrl(site_url() . "item/show_link_pics/" .$rw->fin_item_id);
+			
+			$iRow++;
+		}
+		
+		//var_dump($spreadsheet);
+		$this->phpspreadsheet->save("item_report_" . date("Ymd") ,$spreadsheet);
     }
 }

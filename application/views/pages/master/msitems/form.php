@@ -228,64 +228,73 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <div id="mdlUnitDetails" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">
         <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h4 class="modal-title"><?= lang("Add Unit Details") ?></h4>
             </div>
 
             <div class="modal-body">
-                <form class="form-horizontal ">
-                    <div class="form-group">
-                        <label for="fst_unit" class="col-md-2 control-label"><?= lang("Unit") ?></label>
-                        <div class="col-md-4">
-                            <select class="select2 form-control" id="fst_unit" style="width:100%"></select>
-                            <span id="fst_unit_error" class="text-danger"></span>
-                        </div>
-                        <label for="fdc_conv_to_basic_unit" class="col-md-2 control-label"><?= lang("Konversi") ?></label>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control text-right numeric" id="fdc_conv_to_basic_unit" value="1">
-                            <span id="fdc_conv_to_basic_unit_error" class="text-danger"></span>
+                <div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+                                <form class="form-horizontal ">
+                                    <div class="form-group">
+                                        <label for="fst_unit" class="col-md-2 control-label"><?= lang("Unit") ?></label>
+                                        <div class="col-md-4">
+                                            <select class="select2 form-control" id="fst_unit" style="width:100%"></select>
+                                            <span id="fst_unit_error" class="text-danger"></span>
+                                        </div>
+                                        <label for="fdc_conv_to_basic_unit" class="col-md-2 control-label"><?= lang("Konversi") ?></label>
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control text-right numeric" id="fdc_conv_to_basic_unit" value="1">
+                                            <span id="fdc_conv_to_basic_unit_error" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fdc_price_list" class="col-md-2 control-label"><?= lang("Price") ?></label>
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control text-right money" id="fdc_price_list" value="0">
+                                            <span id="fdc_price_list_error" class="text-danger"></span>
+                                        </div>
+                                        <label for="fdc_het" class="col-md-2 control-label"><?= lang("HET") ?></label>
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control text-right money" id="fdc_het" value="0">
+                                            <span id="fdc_het_error" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fbl_is_basic_unit" class="col-sm-3 control-label"><?= lang("Basic") ?> :</label>
+                                        <div class="checkbox">
+                                            <label><input id="fbl_is_basic_unit" type="checkbox" name="fbl_is_basic_unit" value="1"><?= lang("Basic") ?></label><br>
+                                        </div>
+
+                                        <label for="fbl_is_production_output" class="col-sm-3 control-label"><?= lang("Production") ?> :</label>
+                                        <div class="checkbox">
+                                            <label><input id="fbl_is_production_output" type="checkbox" name="fbl_is_production_output" value="1"><?= lang("Production") ?></label><br>
+                                        </div>
+
+                                        <label for="fbl_is_selling" class="col-sm-3 control-label"><?= lang("Selling") ?> :</label>
+                                        <div class="checkbox">
+                                            <label><input id="fbl_is_selling" type="checkbox" name="fbl_is_selling" value="1"><?= lang("Selling") ?></label><br>
+                                        </div>
+
+                                        <label for="fbl_is_buying" class="col-sm-3 control-label"><?= lang("Buying") ?> :</label>
+                                        <div class="checkbox">
+                                            <label><input id="fbl_is_buying" type="checkbox" name="fbl_is_buying" value="1"><?= lang("Buying") ?></label><br>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <div class="modal-footer" style="width:100%;padding:10px" class="text-center">
+                                    <button id="btn-add-unit" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+                                    <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="fdc_price_list" class="col-md-2 control-label"><?= lang("Price") ?></label>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control text-right money" id="fdc_price_list" value="0">
-                            <span id="fdc_price_list_error" class="text-danger"></span>
-                        </div>
-                        <label for="fdc_het" class="col-md-2 control-label"><?= lang("HET") ?></label>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control text-right money" id="fdc_het" value="0">
-                            <span id="fdc_het_error" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="fbl_is_basic_unit" class="col-sm-3 control-label"><?= lang("Basic") ?> :</label>
-                        <div class="checkbox">
-                            <label><input id="fbl_is_basic_unit" type="checkbox" name="fbl_is_basic_unit" value="1"><?= lang("Basic") ?></label><br>
-                        </div>
-
-                        <label for="fbl_is_production_output" class="col-sm-3 control-label"><?= lang("Production") ?> :</label>
-                        <div class="checkbox">
-                            <label><input id="fbl_is_production_output" type="checkbox" name="fbl_is_production_output" value="1"><?= lang("Production") ?></label><br>
-                        </div>
-
-                        <label for="fbl_is_selling" class="col-sm-3 control-label"><?= lang("Selling") ?> :</label>
-                        <div class="checkbox">
-                            <label><input id="fbl_is_selling" type="checkbox" name="fbl_is_selling" value="1"><?= lang("Selling") ?></label><br>
-                        </div>
-
-                        <label for="fbl_is_buying" class="col-sm-3 control-label"><?= lang("Buying") ?> :</label>
-                        <div class="checkbox">
-                            <label><input id="fbl_is_buying" type="checkbox" name="fbl_is_buying" value="1"><?= lang("Buying") ?></label><br>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="btn-add-unit" type="button" class="btn btn-primary"><?=lang("Add")?></button>
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+                </div>
             </div>
         </div>
     </div>
@@ -543,35 +552,46 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <div id="mdlBomDetails" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">
         <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h4 class="modal-title"><?= lang("Add BOM Details") ?></h4>
             </div>
 
             <div class="modal-body">
-                <form class="form-horizontal ">
-                    <div class="form-group">
-                        <label for="fin_item_id_bom" class="col-md-3 control-label"><?= lang("Item BOM") ?></label>
-                        <div class="col-md-9">
-                            <select class="select2 form-control" id="fin_item_id_bom" style="width:100%"></select>
-                            <span id="fin_item_id_bom_error" class="text-danger"></span>
+                <div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+
+                                <form class="form-horizontal ">
+                                    <div class="form-group">
+                                        <label for="fin_item_id_bom" class="col-md-3 control-label"><?= lang("Item BOM") ?></label>
+                                        <div class="col-md-9">
+                                            <select class="select2 form-control" id="fin_item_id_bom" style="width:100%"></select>
+                                            <span id="fin_item_id_bom_error" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="fst_unit-bom" class="col-md-3 control-label"><?= lang("Unit") ?></label>
+                                        <div class="col-md-9">
+                                            <select class="select2 form-control" id="fst_unit-bom" style="width:100%"></select>
+                                            <span id="fst_unit-bom_error" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                </form>
+
+                                <div class="modal-footer">
+                                    <button id="btn-add-bom-details" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+                                    <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+                                </div>
+
+                            </fieldset>
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="fst_unit-bom" class="col-md-3 control-label"><?= lang("Unit") ?></label>
-                        <div class="col-md-9">
-                            <select class="select2 form-control" id="fst_unit-bom" style="width:100%"></select>
-                            <span id="fst_unit-bom_error" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="btn-add-bom-details" type="button" class="btn btn-primary">Add</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -726,41 +746,52 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </div>
 
 <div id="mdlSpecialPricing" class="modal fade in" role="dialog" style="display: none">
-    <div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">
+    <div class="modal-dialog" style="display:table;width:40%;min-width:400px;max-width:100%">
         <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h4 class="modal-title"><?= lang("Add Special Pricing") ?></h4>
             </div>
 
             <div class="modal-body">
-                <form class="form-horizontal ">
-                    <div class="form-group">
-                        <label for="fin_cust_pricing_group_id" class="col-md-3 control-label"><?= lang("Pricing group") ?></label>
-                        <div class="col-md-9">
-                            <select class="select2 form-control" id="fin_cust_pricing_group_id" style="width:100%"></select>
-                            <span id="fin_cust_pricing_group_id_error" class="text-danger"></span>
+                <div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+
+                                <form class="form-horizontal ">
+                                    <div class="form-group">
+                                        <label for="fin_cust_pricing_group_id" class="col-md-3 control-label"><?= lang("Pricing group") ?></label>
+                                        <div class="col-md-9">
+                                            <select class="select2 form-control" id="fin_cust_pricing_group_id" style="width:100%"></select>
+                                            <span id="fin_cust_pricing_group_id_error" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fst_unit" class="col-md-3 control-label"><?= lang("Unit") ?></label>
+                                        <div class="col-md-9">
+                                            <select class="select2 form-control" id="fst_unit_pricing" style="width:100%"></select>
+                                            <span id="fst_unit_pricing_error" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fdc_selling_price" class="col-md-3 control-label"><?= lang("Selling Price") ?></label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control text-right money" id="fdc_selling_price" value="0">
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <div class="modal-footer">
+                                    <button id="btn-add-special-pricing" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+                                    <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+                                </div>
+
+                            </fieldset>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="fst_unit" class="col-md-3 control-label"><?= lang("Unit") ?></label>
-                        <div class="col-md-9">
-                            <select class="select2 form-control" id="fst_unit_pricing" style="width:100%"></select>
-                            <span id="fst_unit_pricing_error" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="fdc_selling_price" class="col-md-3 control-label"><?= lang("Selling Price") ?></label>
-                        <div class="col-md-9">
-                            <input type="text" class="form-control text-right money" id="fdc_selling_price" value="0">
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="btn-add-special-pricing" type="button" class="btn btn-primary">Add</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -921,6 +952,82 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </script>
 </div>
 
+<div id="modalPrint" class="modal fade in" role="dialog" style="display: none">
+    <div class="modal-dialog" style="display:table;width:60%;min-width:600px;max-width:100%">
+        <!-- modal content -->
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><?= lang("Daftar Barang") ?></h4>
+			</div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="select-vendorName" class="col-md-3 control-label"><?= lang("Vendor Item Name") ?> :</label>
+                                    <div class="col-md-7">
+                                        <select id="select-vendorName" class="form-control" name="fst_vendor_item_name">
+                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                        </select>
+                                        <div id="fst_vendor_item_name_err" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="select-groupItemName" class="col-md-3 control-label"><?= lang("Group") ?> :</label>
+                                    <div class="col-md-7">
+                                        <select id="select-groupItemName" class="form-control" name="fin_item_group_id">
+                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                        </select>
+                                        <div id="fst_item_group_name_err" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="select-ItemCode" class="col-md-3 control-label"><?= lang("Item Code") ?> :</label>
+                                    <div class="col-md-3">
+                                        <select id="select-ItemCode" class="form-control" name="fst_item_code">
+                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                        </select>
+                                        <div id="fst_item_code_err" class="text-danger"></div>
+                                    </div>
+                                    <label for="select-CodeItem" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
+                                    <div class="col-md-3">
+                                        <select id="select-CodeItem" class="form-control" name="fst_item_code">
+                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                        </select>
+                                        <div id="fst_item_code_err" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="mdlBomDetails" class="col-md-3 control-label"><?= lang("BOM") ?> :</label>
+                                    <div class="checkbox col-md-2">
+                                        <label><input id="mdlBomDetails" type="checkbox" name="mdlBomDetails" value="1"><?= lang("BOM") ?></label><br>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="modal-footer" style="width:100%;padding:10px" class="text-center">
+                                <button id="btn-add-print" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Print")?></button>
+                                <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+                            </div>
+
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+    echo $mdlPrint;
+?>
+
 <?php
     echo $mdlItemGroups;
 ?>
@@ -1067,9 +1174,110 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 var newOption = new Option(node.text, node.id, false, false);
                 $('#select-GroupItemId').append(newOption).trigger('change');
 
-                //$("#select-GroupItemId").val(node.id).trigger("change");
             });
 
+        });
+
+        $("#select-vendorName").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_vendorName',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fst_vendor_item_name,
+                            "text": value.fst_vendor_item_name
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true
+            }
+        });
+
+        $("#select-groupItemName").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_groupItemName',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fin_item_group_id,
+                            "text": value.fst_item_group_name
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+        }).on("select2:open",function(e){
+            e.preventDefault();
+
+            $(this).select2("close");
+
+            showItemGroup(true,function(node){
+                $("#select-groupItemName").empty();
+                var newOption = new Option(node.text,node.id, false,false);
+                $('#select-groupItemName').append(newOption).trigger('change');
+            });
+        });
+
+        $("#select-ItemCode").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_ItemCode',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fst_item_code,
+                            "text": value.fst_item_code
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+        });
+
+        $("#select-CodeItem").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_ItemCode',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fst_item_code,
+                            "text": value.fst_item_code
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
         });
         
         $("#btnNew").click(function(e){
@@ -1098,7 +1306,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 							OK : function() {
 								if (resp.status == "SUCCESS") {
 									window.location.href = "<?= site_url() ?>master/item/lizt";
-									return;
+									//return;
 								}
 							},
 						}
@@ -1121,6 +1329,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		$("#btnList").click(function(e){
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>master/item/lizt");
+		});
+
+        $("#btnPrint").click(function(e){
+			$("#modalPrint").modal("toggle");
+		});
+
+        $("#btn-add-print").click(function(e){
+            $("#mdlPrint").modal("toggle");
+        });
+
+        $("#btnExport2Excel").click(function(e){
+			e.preventDefault();
+			window.location = "<?= base_url() ?>item/record2Excel/?dateLog=" + $("#date-log").val();
+			//window.open("<?= base_url() ?>item/record2Excel/?dateLog=" + $("#date-log").val(),"blank","",true);
 		});
     });
 
@@ -1157,7 +1379,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $('#select-GroupItemId').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_subgroup_name, resp.ms_items.fin_item_subgroup_id, true, true);
                 // Append it to the select
-                $('#select-SubGroupItemId').append(newOption).trigger('change');
+                $('#select-SubgItemId').append(newOption).trigger('change');
                 //Image Load 
 				$('#imgItem').attr("src", resp.ms_items.imageURL);
                 //populate Unit Detail
@@ -1216,7 +1438,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
         });
     }
 </script>
-
 
 <!-- Select2 -->
 <script src="<?= base_url() ?>bower_components/select2/dist/js/select2.full.js"></script>

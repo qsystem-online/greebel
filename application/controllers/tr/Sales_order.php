@@ -60,11 +60,13 @@ class Sales_order extends MY_Controller{
 
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
-		$mdlJurnal =$this->parser->parse('template/mdlJUrnal.php', [], true);
+		$mdlJurnal = $this->parser->parse('template/mdlJUrnal.php', [], true);
+		$mdlPrint = $this->parser->parse('template/mdlPrint.php', [], true);
 
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Sales Order" : "Update Sales Order";
 		$data["mdlJurnal"] = $mdlJurnal;
+		$data["mdlPrint"] = $mdlPrint;
 
 		if($mode == 'ADD'){
 			$data["fin_salesorder_id"] = 0;
