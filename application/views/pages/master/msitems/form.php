@@ -24,6 +24,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
         border-bottom-style: fixed;
     }
 </style>
+<!--<?php
+    //echo $mdlPrint;
+?>-->
 
 <section class="content-header">
     <h1><?= lang("Master Items") ?><small><?= lang("form") ?></small></h1>
@@ -224,63 +227,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
             </div>
         </div>
 </section>
-
-<!-- modal atau popup "ADD" -->
-<div id="mdlPrint" class="modal fade in" role="dialog" style="display: none">
-    <div class="modal-dialog" style="display:table;width:60%;min-width:600px;max-width:100%">
-        <-- modal content -->
-		<div class="modal-content">
-            <div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title"><?=lang("Daftar Barang")?></h4>
-			</div>
-
-            <div class="modal-body">
-
-                <form id="form-detail" class="form-horizontal">
-                    <input type='hidden' id='fin_item_id'/>
-                    <div class="form-group">
-                        <label for="fin_item_id" class="col-md-3 control-label"><?=lang("Items")?></label>
-                        <div class="col-md-7">
-                            <select id="fin_item_id" class="form-control" style="width:100%"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="fst_vendor_item_name" class="col-md-3 control-label"><?= lang("Vendor Item Name") ?> :</label>
-                        <div class="col-md-7">
-                            <input type="text" class="form-control" id="fst_vendor_item_name" placeholder="<?= lang("Vendor Item Name") ?>" name="fst_vendor_item_name">
-                            <div id="fst_vendor_item_name_err" class="text-danger"></div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="select-GroupItemId" class="col-md-3 control-label"><?=lang("Group")?> :</label>
-                        <div class="col-md-7">
-                            <select id="select-GroupItemId" class="form-control" name="fin_item_group_id">
-                                <option value="0">-- <?=lang("select")?> --</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="fst_item_code" class="col-md-3 control-label"><?= lang("Item Code") ?> :</label>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" id="fst_item_code" placeholder="<?= lang("Item Code") ?>" name="fst_item_code">
-                            <div id="fst_item_code_err" class="text-danger"></div>
-                        </div>
-                        <label for="fst_item_code" class="col-sm-1 control-label"><?=lang("s/d")?> :</label>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" id="fst_item_code" placeholder="<?= lang("Item Code") ?>" name="fst_item_code">
-                            <div id="fst_item_code_err" class="text-danger"></div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="btn-add-print" type="button" class="btn btn-primary"><?=lang("Print")?></button>
-                <button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div id="mdlUnitDetails" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:35%;min-width:350px;max-width:100%">
@@ -978,6 +924,68 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </script>
 </div>
 
+<div id="mdlPrint" class="modal fade in" role="dialog" style="display: none">
+    <div class="modal-dialog" style="display:table;width:60%;min-width:600px;max-width:100%">
+        <-- modal content -->
+		<div class="modal-content">
+            <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><?= lang("Daftar Barang") ?></h4>
+			</div>
+
+            <div class="modal-body">
+
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="select-vendorName" class="col-md-3 control-label"><?= lang("Vendor Item Name") ?> :</label>
+                        <div class="col-md-7">
+                            <select id="select-vendorName" class="form-control" name="fst_vendor_item_name">
+                                <option value="0">-- <?= lang("select") ?> --</option>
+                            </select>
+                            <div id="fst_vendor_item_name_err" class="text-danger"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="select-groupItemName" class="col-md-3 control-label"><?= lang("Group") ?> :</label>
+                        <div class="col-md-7">
+                            <select id="select-groupItemName" class="form-control" name="fin_item_group_id">
+                                <option value="0">-- <?= lang("select") ?> --</option>
+                            </select>
+                            <div id="fst_item_group_name_err" class="text-danger"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="select-ItemCode" class="col-md-3 control-label"><?= lang("Item Code") ?> :</label>
+                        <div class="col-md-3">
+                            <select id="select-ItemCode" class="form-control" name="fst_item_code">
+                                <option value="0">-- <?= lang("select") ?> --</option>
+                            </select>
+                            <div id="fst_item_code_err" class="text-danger"></div>
+                        </div>
+                        <label for="select-CodeItem" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
+                        <div class="col-md-3">
+                            <select id="select-CodeItem" class="form-control" name="fst_item_code">
+                                <option value="0">-- <?= lang("select") ?> --</option>
+                            </select>
+                            <div id="fst_item_code_err" class="text-danger"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="mdlBomDetails" class="col-md-3 control-label"><?= lang("BOM") ?> :</label>
+                        <div class="checkbox col-md-2">
+                            <label><input id="mdlBomDetails" type="checkbox" name="mdlBomDetails" value="1"><?= lang("BOM") ?></label><br>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-add-print" type="button" class="btn btn-primary"><?=lang("Print")?></button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php
     echo $mdlItemGroups;
 ?>
@@ -1124,9 +1132,110 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 var newOption = new Option(node.text, node.id, false, false);
                 $('#select-GroupItemId').append(newOption).trigger('change');
 
-                //$("#select-GroupItemId").val(node.id).trigger("change");
             });
 
+        });
+
+        $("#select-vendorName").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_vendorName',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fst_vendor_item_name,
+                            "text": value.fst_vendor_item_name
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true
+            }
+        });
+
+        $("#select-groupItemName").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_groupItemName',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fin_item_group_id,
+                            "text": value.fst_item_group_name
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+        }).on("select2:open",function(e){
+            e.preventDefault();
+
+            $(this).select2("close");
+
+            showItemGroup(true,function(node){
+                $("#select-groupItemName").empty();
+                var newOption = new Option(node.text,node.id, false,false);
+                $('#select-groupItemName').append(newOption).trigger('change');
+            });
+        });
+
+        $("#select-ItemCode").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_ItemCode',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fst_item_code,
+                            "text": value.fst_item_code
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+        });
+
+        $("#select-CodeItem").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_ItemCode',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fst_item_code,
+                            "text": value.fst_item_code
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
         });
         
         $("#btnNew").click(function(e){
@@ -1224,7 +1333,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $('#select-GroupItemId').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_subgroup_name, resp.ms_items.fin_item_subgroup_id, true, true);
                 // Append it to the select
-                $('#select-SubGroupItemId').append(newOption).trigger('change');
+                $('#select-SubgItemId').append(newOption).trigger('change');
                 //Image Load 
 				$('#imgItem').attr("src", resp.ms_items.imageURL);
                 //populate Unit Detail
@@ -1283,7 +1392,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
         });
     }
 </script>
-
 
 <!-- Select2 -->
 <script src="<?= base_url() ?>bower_components/select2/dist/js/select2.full.js"></script>
