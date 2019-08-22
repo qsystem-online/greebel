@@ -133,69 +133,77 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 <div id="resiModal" class="modal fade" role="dialog">
-	<div class="modal-dialog" style="display:table;width:65%;min-width:650px;max-width:100%">	
-		<div class="modal-content">
-			<div class="modal-header">
+	<div class="modal-dialog" style="display:table;width:60%;min-width:600px;max-width:100%">	
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<h4 class="modal-title"><?=lang("Update Resi")?></h4>
 			</div>
 
 			<div class="modal-body">
-				<form  class="form-horizontal" id="resi-modal" method="POST" enctype="multipart/form-data">
-				<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
-					<div class="form-group">
-						<label for="fin_sj_id" class="col-md-2 control-label"><?=lang("S/J ID")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control text-right" id="fin_sj_id" name="fin_sj_id" readonly>
-							<div id="fin_sj_id_err" class="text-danger"></div>
-						</div>
+				<div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+								<form  class="form-horizontal" id="resi-modal" method="POST" enctype="multipart/form-data">
+									<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
+									<div class="form-group">
+										<label for="fin_sj_id" class="col-md-3 control-label"><?=lang("S/J ID")?> :</label>
+										<div class="col-md-3">
+											<input type="text" class="form-control text-right" id="fin_sj_id" name="fin_sj_id" readonly>
+											<div id="fin_sj_id_err" class="text-danger"></div>
+										</div>
 
-						<label for="fst_sj_no" class="col-md-2 control-label"><?=lang("S/J No.")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control text-right" id="fst_sj_no" name="fst_sj_no" readonly>
-							<div id="fst_sj_no_err" class="text-danger"></div>
-						</div>
-					</div>
+										<label for="fst_sj_no" class="col-md-3 control-label"><?=lang("S/J No.")?> :</label>
+										<div class="col-md-3">
+											<input type="text" class="form-control text-right" id="fst_sj_no" name="fst_sj_no" readonly>
+											<div id="fst_sj_no_err" class="text-danger"></div>
+										</div>
+									</div>
 
-					<div class="form-group hide">
-						<label for="fin_sj_return_by_id" class="col-md-4 control-label"><?=lang("S/J Return By Id")?> :</label>
-						<div class="col-md-8">
-							<input type="text" class="form-control text-right" id="fin_sj_return_by_id" name="fin_sj_return_by_id" readonly>
-							<div id="fin_sj_return_by_id_err" class="text-danger"></div>
-						</div>
-					</div>
+									<div class="form-group hide">
+										<label for="fin_sj_return_by_id" class="col-md-4 control-label"><?=lang("S/J Return By Id")?> :</label>
+										<div class="col-md-8">
+											<input type="text" class="form-control text-right" id="fin_sj_return_by_id" name="fin_sj_return_by_id" readonly>
+											<div id="fin_sj_return_by_id_err" class="text-danger"></div>
+										</div>
+									</div>
 
-					<div class="form-group">
-						<label for="fst_sj_return_resi_no" class="col-md-2 control-label"><?=lang("S/J Resi No.")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control text-right" id="fst_sj_return_resi_no" name="fst_sj_return_resi_no">
-							<div id="fst_sj_return_resi_no_err" class="text-danger"></div>
-						</div>
+									<div class="form-group">
+										<label for="fst_sj_return_resi_no" class="col-md-3 control-label"><?=lang("S/J Resi No.")?> :</label>
+										<div class="col-md-3">
+											<input type="text" class="form-control text-right" id="fst_sj_return_resi_no" name="fst_sj_return_resi_no">
+											<div id="fst_sj_return_resi_no_err" class="text-danger"></div>
+										</div>
 
-					<label for="fdt_sj_return_datetime" class="col-md-2 control-label"><?=lang("S/J Return Date")?> :</label>
-						<div class="col-md-4">
-							<div class="input-group date">
-								<div class="input-group-addon">
-									<i class="fa fa-calendar"></i>
+									<label for="fdt_sj_return_datetime" class="col-md-3 control-label"><?=lang("S/J Return Date")?> :</label>
+										<div class="col-md-3">
+											<div class="input-group date">
+												<div class="input-group-addon">
+													<i class="fa fa-calendar"></i>
+												</div>
+												<input type="text" class="form-control datetimepicker text-right" id="fdt_sj_return_datetime" name="fdt_sj_return_datetime"/>								
+											</div>
+											<div id="fdt_sj_return_datetime_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fst_sj_return_memo" class="col-md-3 control-label"><?=lang("S/J Return Memo")?> :</label>
+										<div class="col-md-6">
+											<textarea class="form-control" id="fst_sj_return_memo" name="fst_sj_return_memo"></textarea>
+											<div id="fst_sj_return_memo_err" class="text-danger"></div>
+										</div>
+									</div>
+								</form>
+
+								<div class="modal-footer" style="width:100%;padding:10px" class="text-center">
+									<button id="btn-update" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Update")?></button>
 								</div>
-								<input type="text" class="form-control datetimepicker text-right" id="fdt_sj_return_datetime" name="fdt_sj_return_datetime"/>								
-							</div>
-							<div id="fdt_sj_return_datetime_err" class="text-danger"></div>
+							</fieldset>
 						</div>
 					</div>
-
-					<div class="form-group">
-						<label for="fst_sj_return_memo" class="col-md-2 control-label"><?=lang("S/J Return Memo")?> :</label>
-						<div class="col-md-6">
-							<textarea class="form-control" id="fst_sj_return_memo" name="fst_sj_return_memo"></textarea>
-							<div id="fst_sj_return_memo_err" class="text-danger"></div>
-						</div>
-					</div>
-				</form>
-			</div>
-
-			<div class="modal-footer">
-				<button id="btn-update" type="button" class="btn btn-primary" ><?=lang("Update")?></button>
+				</div>
 			</div>
 		</div>
 	</div>
