@@ -242,53 +242,62 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <div id="mdlItemDetails" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:50%;min-width:350px;max-width:100%">
         <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h4 class="modal-title"><?= lang("Add Item terms") ?></h4>
             </div>
 
             <div class="modal-body">
-                <form class="form-horizontal ">
-                    <div class="form-group">
-                        <label for="fst_item_type" class="col-sm-3 control-label"><?= lang("Type") ?></label>
-                        <div class="col-sm-4">
-                            <select class="form-control" id="fst_item_type" name="fst_item_type">
-                                <option value="0">-- <?=lang("select")?> --</option>
-                                <option value="ITEM"><?= lang("ITEM") ?></option>
-                                <option value="SUB GROUP"><?= lang("SUB GROUP") ?></option>
-                            </select>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+                                <form class="form-horizontal ">
+                                    <div class="form-group">
+                                        <label for="fst_item_type" class="col-sm-3 control-label"><?= lang("Type") ?> :</label>
+                                        <div class="col-sm-4">
+                                            <select class="form-control" id="fst_item_type" name="fst_item_type">
+                                                <option value="0">-- <?=lang("select")?> --</option>
+                                                <option value="ITEM"><?= lang("ITEM") ?></option>
+                                                <option value="SUB GROUP"><?= lang("SUB GROUP") ?></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fin_item_id" class="col-md-3 control-label"><?= lang("Item terms") ?> :</label>
+                                        <div class="col-md-9">
+                                            <select class="select2 form-control" id="fin_item_id" style="width:100%"></select>
+                                            <span id="fin_item_id_err" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="fst_unit" class="col-md-3 control-label"><?= lang("Unit") ?> :</label>
+                                        <div class="col-md-4">
+                                            <select id="fst_unit" class="form-control" name="fst_unit" style="width:100%"></select>
+                                            <span id="fst_unit_err" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?> :</label>
+                                        <div class="col-md-4">
+                                            <input type="number" class="form-control text-right numeric" id="fdb_qty" value="0">
+                                            <div id="fdb_qty_err" class="text-danger"></div>
+                                        </div>
+                                    </div>
+
+                                </form>
+
+                                <div class="modal-footer">
+                                    <button id="btn-add-item" type="button" class="btn btn-primary" style="width:15%">Add</button>
+                                    <button type="button" class="btn btn-default" style="width:15%" data-dismiss="modal">Close</button>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="fin_item_id" class="col-md-3 control-label"><?= lang("Item terms") ?></label>
-                        <div class="col-md-9">
-                            <select class="select2 form-control" id="fin_item_id" style="width:100%"></select>
-                            <span id="fin_item_id_err" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fst_unit" class="col-md-3 control-label"><?= lang("Unit") ?></label>
-                        <div class="col-md-4">
-                            <select id="fst_unit" class="form-control" name="fst_unit" style="width:100%"></select>
-                            <span id="fst_unit_err" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-						<label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?></label>
-						<div class="col-md-4">
-							<input type="number" class="form-control text-right numeric" id="fdb_qty" value="0">
-							<div id="fdb_qty_err" class="text-danger"></div>
-						</div>
-					</div>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="btn-add-item" type="button" class="btn btn-primary">Add</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
