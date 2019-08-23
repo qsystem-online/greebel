@@ -569,9 +569,9 @@ class Item extends MY_Controller
 		$sheet->getPageMargins()->setRight(0.5);
 		$sheet->getPageMargins()->setLeft(0.5);
 		$sheet->getPageMargins()->setBottom(1);
-		$sheet->setCellValue('A1', 'HELLO WORLD ! GUTEN MORGEN !'); 
+        $sheet->setCellValue('A1', 'HELLO WORLD ! GUTEN MORGEN !');
 
-		$filename = 'coba.xls';
+		$filename = 'item_code.xls';
 		
 		$this->phpspreadsheet->save($filename,$spreadsheet);
 

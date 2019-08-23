@@ -1347,14 +1347,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#btnLayout").click(function(e){
             layoutColumn = [
-                {column: "Item Code",hidden:false,id:"fst_item_code"},
-				{column: "Item Name",hidden:false,id:"fst_item_name"},
+                {column: "Item ID",hidden:false,id:"fin_item_id"},
+				{column: "Item Code",hidden:false,id:"fst_item_code"},
+                {column: "Item Name",hidden:false,id:"fst_item_name"},
+                {column: "Group",hidden:false,id:"fst_item_group_id"},
+				{column: "Vendor Name",hidden:true,id:"fst_vendor_item_name"},
 				{column: "Harga Beli",hidden:false,id:"fst_column3"},
 				{column: "Satuan",hidden:true,id:"fst_unit"},
 				{column: "Harga Jual",hidden:true,id:"fst_column5"},
 				{column: "Satuan",hidden:true,id:"fst_unit"},
-				{column: "Group",hidden:false,id:"fst_item_group_id"},
-				{column: "Vendor Name",hidden:true,id:"fst_vendor_item_name"},
 			];
 			url = "<?= site_url() ?>master/item/print_item";
 			MdlPrint.showPrint(layoutColumn,url);
