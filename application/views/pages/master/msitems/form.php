@@ -1345,22 +1345,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
             $("#mdlPrint").modal("toggle");
         });
 
-        $("#btnPrint").click(function(e){
-			layoutColumn = [
-				{column: "Coloumn 1",hidden:false,id:"fst_column1"},
-				{column: "Coloumn 2",hidden:true,id:"fst_column2"},
-				{column: "Coloumn 3",hidden:true,id:"fst_column3"},
-				{column: "Coloumn 4",hidden:true,id:"fst_column4"},
-				{column: "Coloumn 5",hidden:true,id:"fst_column5"},
-				{column: "Coloumn 6",hidden:true,id:"fst_column6"},
-				{column: "Coloumn 7",hidden:true,id:"fst_column7"},
-				{column: "Coloumn 8",hidden:true,id:"fst_column8"},
-                {column: "Coloumn 9",hidden:true,id:"fst_column9"},
+        $("#btnLayout").click(function(e){
+            layoutColumn = [
+                {column: "Item Code",hidden:false,id:"fst_item_code"},
+				{column: "Item Name",hidden:true,id:"fst_item_name"},
+				{column: "Harga Beli",hidden:true,id:"fst_column3"},
+				{column: "Satuan",hidden:true,id:"fst_unit"},
+				{column: "Harga Jual",hidden:true,id:"fst_column5"},
+				{column: "Satuan",hidden:true,id:"fst_unit"},
+				{column: "Group",hidden:true,id:"fst_item_group_id"},
+				{column: "Vendor Name",hidden:true,id:"fst_vendor_item_name"},
 			];
 			url = "<?= site_url() ?>master/item/print_item";
-            MdlPrint.showPrint(layoutColumn,url);
-			
-		});
+			MdlPrint.showPrint(layoutColumn,url);
+        });
     });
 
     function init_form(fin_item_id) {

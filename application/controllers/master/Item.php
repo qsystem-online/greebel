@@ -557,7 +557,7 @@ class Item extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
-    public function printItem(){
+    public function print_item() {
         $this->load->library("phpspreadsheet");
 
         $spreadsheet = $this->phpspreadsheet->load();
