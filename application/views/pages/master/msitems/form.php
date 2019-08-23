@@ -23,6 +23,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
         border-bottom-color: #3c8dbc;
         border-bottom-style: fixed;
     }
+    .form-group{
+		margin-bottom: 5px;
+	}
+	.checkbox label, .radio label {
+		font-weight:700;
+	}
 </style>
 
 <section class="content-header">
@@ -43,9 +49,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     <div class="btn-group btn-group-sm  pull-right">					
                         <a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<a id="btnPrinted" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
-						<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
                 </div>
                 <!-- end box header -->
@@ -239,7 +245,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     <div class="col-md-12" >
                         <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
                             <fieldset style="padding:10px">
-                                <form class="form-horizontal ">
+                                <form class="form-horizontal">
                                     <div class="form-group">
                                         <label for="fst_unit" class="col-md-2 control-label"><?= lang("Unit") ?></label>
                                         <div class="col-md-4">
@@ -564,7 +570,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
                             <fieldset style="padding:10px">
 
-                                <form class="form-horizontal ">
+                                <form class="form-horizontal">
                                     <div class="form-group">
                                         <label for="fin_item_id_bom" class="col-md-3 control-label"><?= lang("Item BOM") ?></label>
                                         <div class="col-md-9">
@@ -760,7 +766,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
                             <fieldset style="padding:10px">
 
-                                <form class="form-horizontal ">
+                                <form class="form-horizontal">
                                     <div class="form-group">
                                         <label for="fin_cust_pricing_group_id" class="col-md-3 control-label"><?= lang("Pricing group") ?></label>
                                         <div class="col-md-9">
@@ -952,7 +958,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </script>
 </div>
 
-<div id="modalPrint" class="modal fade in" role="dialog" style="display: none">
+<div id="modal_Prints" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:60%;min-width:600px;max-width:100%">
         <!-- modal content -->
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
@@ -1025,11 +1031,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </div>
 
 <?php
-    echo $mdlPrint;
+    echo $mdlItemGroups;
 ?>
 
 <?php
-    echo $mdlItemGroups;
+    echo $mdlPrint;
 ?>
 
 <script type="text/javascript">
@@ -1326,23 +1332,34 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			});
 		});
 
-		$("#btnList").click(function(e){
+		$("#btnClose").click(function(e){
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>master/item/lizt");
 		});
 
-        $("#btnPrint").click(function(e){
-			$("#modalPrint").modal("toggle");
+        $("#btnPrinted").click(function(e){
+			$("#modal_Prints").modal("toggle");
 		});
 
         $("#btn-add-print").click(function(e){
             $("#mdlPrint").modal("toggle");
         });
 
-        $("#btnExport2Excel").click(function(e){
-			e.preventDefault();
-			window.location = "<?= base_url() ?>item/record2Excel/?dateLog=" + $("#date-log").val();
-			//window.open("<?= base_url() ?>item/record2Excel/?dateLog=" + $("#date-log").val(),"blank","",true);
+        $("#btnPrint").click(function(e){
+			layoutColumn = [
+				{column: "Coloumn 1",hidden:false,id:"fst_column1"},
+				{column: "Coloumn 2",hidden:true,id:"fst_column2"},
+				{column: "Coloumn 3",hidden:true,id:"fst_column3"},
+				{column: "Coloumn 4",hidden:true,id:"fst_column4"},
+				{column: "Coloumn 5",hidden:true,id:"fst_column5"},
+				{column: "Coloumn 6",hidden:true,id:"fst_column6"},
+				{column: "Coloumn 7",hidden:true,id:"fst_column7"},
+				{column: "Coloumn 8",hidden:true,id:"fst_column8"},
+                {column: "Coloumn 9",hidden:true,id:"fst_column9"}
+			];
+			url = "<?= site_url() ?>master/item/print_item";
+            MdlPrint.showPrint(layoutColumn,url);
+			
 		});
     });
 
@@ -1444,3 +1461,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <!-- DataTables -->
 <script src="<?= base_url() ?>bower_components/datatables.net/datatables.min.js"></script>
 <script src="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.min.js"></script>
+
+<script type="text/javascript">
+   function fixedSelect2(){
+        $(".select2-container").addClass("form-control"); 
+        $(".select2-selection--single , .select2-selection--multiple").css({
+            "border":"0px solid #000",
+            "padding":"0px 0px 0px 0px"
+        });         
+        $(".select2-selection--multiple").css({
+            "margin-top" : "-5px",
+            "background-color":"unset"
+        });
+    };
+</script>

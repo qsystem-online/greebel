@@ -15,21 +15,21 @@ class Purchase_order extends MY_Controller{
 
 	public function lizt(){
 		$this->load->library('menus');
-		$this->list['page_name'] = "Sales Order";
-		$this->list['list_name'] = "Sales Order List";
-		$this->list['addnew_ajax_url'] = site_url() . 'tr/sales_order/add';
-		$this->list['pKey'] = "fin_salesorder_id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales_order/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'tr/sales_order/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'tr/sales_order/edit/';
+		$this->list['page_name'] = "Purchase Order";
+		$this->list['list_name'] = "Purchase Order List";
+		$this->list['addnew_ajax_url'] = site_url() . 'tr/purchase_order/add';
+		$this->list['pKey'] = "fin_po_id";
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/purchase_order/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'tr/purchase_order/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'tr/purchase_order/edit/';
 		$this->list['arrSearch'] = [
-			'fin_salesorder_id' => 'Sales Order ID',
-			'fst_salesorder_no' => 'Sales Order No'
+			'fin_po_id' => 'Purchase Order ID',
+			'fst_po_no' => 'Purchase Order No'
 		];
 
 		$this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-			['title' => 'Sales Order', 'link' => '#', 'icon' => ''],
+			['title' => 'Purchase Order', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [

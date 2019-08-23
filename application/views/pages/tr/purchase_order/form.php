@@ -127,7 +127,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id"></select>
 									<div id="fin_warehouse_id_err" class="text-danger"></div>
 								</div>
-								<div class="pull-left" style="width:25%" >
+								<div class="pull-left" style="width:26%" >
 									<div class="form-group">
 										<label for="fst_do_no" class="col-md-5 control-label"><?=lang("Nomor DO")?> </label>
 										<div class="col-md-7">
@@ -269,8 +269,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<input type="text" class="ele-disc form-control text-right money" id="fdc_price" value="0">
 						</div>
 					</div>
-
-					
 
 					<div class="form-group">
 						<label for="fst_disc_item" class=" col-md-2 control-label"><?=lang("Disc ++")?></label>
@@ -621,6 +619,56 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		//init_form($("#fin_salesorder_id").val());
 		fixedSelect2();
 
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>tr/purchase_order/add")
+		});
+
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+			$.ajax({
+				url:"<?= site_url() ?>tr/purchase_order/delete/" + $("#fin_po_id").val(),
+			}).done(function(resp){
+				//consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != "")	{
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons : {
+							OK : function() {
+								if (resp.status == "SUCCESS") {
+									window.location.href = "<?= site_url() ?>tr/purchase_order/lizt";
+									//return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fin_po_id").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_po_no').prop('readonly', true);
+				}
+			});
+		});
+
+		$("#btnClose").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>tr/purchase_order/lizt");
+		});
 		
 	});
 
