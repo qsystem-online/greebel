@@ -958,7 +958,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </script>
 </div>
 
-<div id="modal_Prints" class="modal fade in" role="dialog" style="display: none">
+<div id="modal_Printed" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:60%;min-width:600px;max-width:100%">
         <!-- modal content -->
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
@@ -1338,7 +1338,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		});
 
         $("#btnPrinted").click(function(e){
-			$("#modal_Prints").modal("toggle");
+			$("#modal_Printed").modal("toggle");
 		});
 
         $("#btn-add-print").click(function(e){
@@ -1355,7 +1355,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 				{column: "Coloumn 6",hidden:true,id:"fst_column6"},
 				{column: "Coloumn 7",hidden:true,id:"fst_column7"},
 				{column: "Coloumn 8",hidden:true,id:"fst_column8"},
-                {column: "Coloumn 9",hidden:true,id:"fst_column9"}
+                {column: "Coloumn 9",hidden:true,id:"fst_column9"},
 			];
 			url = "<?= site_url() ?>master/item/print_item";
             MdlPrint.showPrint(layoutColumn,url);
