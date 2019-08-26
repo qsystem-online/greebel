@@ -590,7 +590,7 @@ class Item extends MY_Controller
 
         //$filename = 'item_code.xls';
         
-        $iRow = 10;
+        $iRow = 4;
         $sheet->setCellValue("H3", $datelog);
 
         $inScheduleStyle =[
