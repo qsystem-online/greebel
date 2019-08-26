@@ -558,22 +558,73 @@ class Item extends MY_Controller
     }
 
     public function print_item() {
+        $this->load->model("msitems_model");
+        $datelog = $this->input->get("dateLog");
+
+        //selectSearch
+        //$arrDateLog = explode("-",$dateLog);
+        //$date = dateFormat(trim($arrDateLog[0]),"j/m/Y","Y-m-d");
+
+        $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,
+                CONCAT(a.fin_item_group_id,'  -  ',b.fst_item_group_name) as fst_item_group,a.fin_item_group_id,
+                c.fdc_selling_price,c.fst_unit
+                FROM msitems a
+                LEFT JOIN msgroupitems b ON a.fin_item_group_id = b.fin_item_group_id
+                LEFT JOIN msitemspecialpricinggroupdetails c ON a.fin_item_id = c.fin_item_id
+                WHERE a.fin_item_id";
+
+        $query = $this->db->query($ssql, []);
+        $rs = $query->result();
+
         $this->load->library("phpspreadsheet");
 
-        $spreadsheet = $this->phpspreadsheet->load();
+        $spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_items_log.xlsx");		
 		$sheet = $spreadsheet->getActiveSheet();
-		
 		$sheet->getPageSetup()->setFitToWidth(1);
 		$sheet->getPageSetup()->setFitToHeight(0);
 		$sheet->getPageMargins()->setTop(1);
 		$sheet->getPageMargins()->setRight(0.5);
 		$sheet->getPageMargins()->setLeft(0.5);
 		$sheet->getPageMargins()->setBottom(1);
-        $sheet->setCellValue('A1', 'HELLO WORLD ! GUTEN MORGEN !');
+        //$sheet->setCellValue('A1', 'HELLO WORLD ! GUTEN MORGEN !');
 
-		$filename = 'item_code.xls';
-		
-		$this->phpspreadsheet->save($filename,$spreadsheet);
+        //$filename = 'item_code.xls';
+        
+        $iRow = 10;
+        $sheet->setCellValue("H3", $datelog);
+
+        $inScheduleStyle =[
+			'fill' => array(
+				'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_NONE,
+				'color' => array('rgb' => 'FFFFFF')
+			)
+		];
+
+		$outOfScheduleStyle =[
+			'fill' => array(
+				'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+				'color' => array('rgb' => 'F5BEBE')
+			)
+        ];
+        
+        foreach ($rs as $rw) {
+            /*if ($this->msitems_model->inScheduleStyle($rw->fst_item_code)){
+                $sheet->getStyle("A$iRow:H$iRow")->applyFromArray($inScheduleStyle);
+            }else{
+                $sheet->getStyle("A$iRow:H$iRow")->applyFromArray($outOfScheduleStyle);
+            }*/
+
+            $sheet->setCellValue("A$iRow", $rw->fin_item_id);
+            $sheet->setCellValue("B$iRow", $rw->fst_item_code);
+            $sheet->setCellValue("C$iRow", $rw->fst_item_name);
+            $sheet->setCellValue("D$iRow", $rw->fst_item_group);
+            $sheet->setCellValue("E$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("F$iRow", $rw->fst_unit);
+
+            $iRow++;
+        }
+        
+		$this->phpspreadsheet->save("item_report.xls" ,$spreadsheet);
 
 		//var_dump($_POST);
 		//echo "PRINT......";

@@ -1350,11 +1350,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 {column: "Item ID",hidden:false,id:"fin_item_id"},
 				{column: "Item Code",hidden:false,id:"fst_item_code"},
                 {column: "Item Name",hidden:false,id:"fst_item_name"},
-                {column: "Group",hidden:false,id:"fst_item_group_id"},
+                {column: "Group",hidden:false,id:"fst_item_group_name"},
 				{column: "Vendor Name",hidden:true,id:"fst_vendor_item_name"},
-				{column: "Harga Beli",hidden:false,id:"fst_column3"},
-				{column: "Satuan",hidden:true,id:"fst_unit"},
-				{column: "Harga Jual",hidden:true,id:"fst_column5"},
+				{column: "Harga Beli",hidden:false,id:"fdc_selling_price"},
+				{column: "Satuan",hidden:false,id:"fst_unit"},
+				{column: "Harga Jual",hidden:true,id:"fdc_price_list"},
 				{column: "Satuan",hidden:true,id:"fst_unit"},
 			];
 			url = "<?= site_url() ?>master/item/print_item";
