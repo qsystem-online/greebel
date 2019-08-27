@@ -192,4 +192,24 @@ class Msitems_model extends MY_Model
 
     }
     
+    /*public function inSchedule($fst_item_code,$fdt_date){
+        //php => 0 = minggu -> 6 = sabtu
+        //DB =>  1 = Senin  -> 7 = Minggu
+
+        $dayofweek = date('w', strtotime($fdt_date));
+        if ($dayofweek == 0 ){
+            $dayofweek = 7;
+        }
+
+        $ssql = "Select * from msitems where fst_item_code = ? and fin_visit_day = ?";
+        $qr = $this->db->query($ssql,[$fst_item_code,$dayofweek]);
+        //echo $this->db->last_query();
+        //die();
+
+        $rw = $qr->row();
+        if($rw){
+            return true;
+        }
+        return false;
+    }*/
 }

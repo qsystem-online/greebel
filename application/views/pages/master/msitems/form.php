@@ -1350,12 +1350,18 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 {column: "Item ID",hidden:false,id:"fin_item_id"},
 				{column: "Item Code",hidden:false,id:"fst_item_code"},
                 {column: "Item Name",hidden:false,id:"fst_item_name"},
-                {column: "Group",hidden:false,id:"fst_item_group_name"},
-				{column: "Vendor Name",hidden:true,id:"fst_vendor_item_name"},
+                {column: "Vendor Name",hidden:true,id:"fst_vendor_item_name"},
+                {column: "Item Group",hidden:false,id:"fst_item_group"},
 				{column: "Harga Beli",hidden:false,id:"fdc_selling_price"},
 				{column: "Satuan",hidden:false,id:"fst_unit"},
 				{column: "Harga Jual",hidden:true,id:"fdc_price_list"},
-				{column: "Satuan",hidden:true,id:"fst_unit"},
+				{column: "Satuan",hidden:true,id:"fst_unit-detail"},
+                {column: "Harga Retail",hidden:true,id:"fdc_selling_price"},
+                {column: "Harga Hypermart",hidden:true,id:"fdc_selling_price"},
+                {column: "Grosir",hidden:true,id:"fdc_selling_price"},
+                {column: "Sekolah/PO",hideen:true,id:"fdc_selling_price"},
+                {column: "MT Lokal",hidden:true,id:"fdc_selling_price"},
+                {column: "Group SMM/Internal",hidden:true,id:"fdc_selling_price"},
 			];
 			url = "<?= site_url() ?>master/item/print_item";
 			MdlPrint.showPrint(layoutColumn,url);

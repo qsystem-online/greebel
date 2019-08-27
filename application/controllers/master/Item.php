@@ -558,19 +558,21 @@ class Item extends MY_Controller
     }
 
     public function print_item() {
-        $this->load->model("msitems_model");
+        $this->load->model("msgroupitems_model");
         $datelog = $this->input->get("dateLog");
 
         //selectSearch
         //$arrDateLog = explode("-",$dateLog);
         //$date = dateFormat(trim($arrDateLog[0]),"j/m/Y","Y-m-d");
 
-        $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,
-                CONCAT(a.fin_item_group_id,'  -  ',b.fst_item_group_name) as fst_item_group,a.fin_item_group_id,
-                c.fdc_selling_price,c.fst_unit
+        $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fst_vendor_item_name,
+                CONCAT(a.fin_item_group_id,'   -   ',b.fst_item_group_name) AS fst_item_group,a.fin_item_group_id,
+                c.fdc_selling_price,c.fst_unit,d.fdc_selling_price,d.fst_unit,e.fdc_price_list,e.fst_unit
                 FROM msitems a
                 LEFT JOIN msgroupitems b ON a.fin_item_group_id = b.fin_item_group_id
                 LEFT JOIN msitemspecialpricinggroupdetails c ON a.fin_item_id = c.fin_item_id
+                LEFT JOIN msitemspecialpricinggroupdetails d ON a.fin_item_id = d.fin_item_id
+                LEFT JOIN msitemunitdetails e ON a.fin_item_id = e.fin_item_id
                 WHERE a.fin_item_id";
 
         $query = $this->db->query($ssql, []);
@@ -578,7 +580,7 @@ class Item extends MY_Controller
 
         $this->load->library("phpspreadsheet");
 
-        $spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_items_log.xlsx");		
+        $spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_items_log.xlsx");
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->getPageSetup()->setFitToWidth(1);
 		$sheet->getPageSetup()->setFitToHeight(0);
@@ -588,10 +590,10 @@ class Item extends MY_Controller
 		$sheet->getPageMargins()->setBottom(1);
         //$sheet->setCellValue('A1', 'HELLO WORLD ! GUTEN MORGEN !');
 
-        //$filename = 'item_code.xls';
-        
-        $iRow = 4;
-        $sheet->setCellValue("H3", $datelog);
+        $iRow1 = 4;
+        $iRowB = 5;
+        $iRow = 8;
+        //$sheet->setCellValue("L3", $datelog);
 
         $inScheduleStyle =[
 			'fill' => array(
@@ -616,14 +618,24 @@ class Item extends MY_Controller
 
             $sheet->setCellValue("A$iRow", $rw->fin_item_id);
             $sheet->setCellValue("B$iRow", $rw->fst_item_code);
+            $sheet->setCellValue("B$iRow1", $rw->fst_vendor_item_name);
+            $sheet->setCellValue("B$iRowB", $rw->fst_item_group);
             $sheet->setCellValue("C$iRow", $rw->fst_item_name);
-            $sheet->setCellValue("D$iRow", $rw->fst_item_group);
-            $sheet->setCellValue("E$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("F$iRow", $rw->fst_unit);
+            $sheet->setCellValue("D$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("E$iRow", $rw->fst_unit);
+            $sheet->setCellValue("F$iRow", $rw->fdc_price_list);
+            $sheet->setCellValue("G$iRow", $rw->fst_unit);
+            $sheet->setCellValue("H$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("I$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("J$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("K$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("L$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("M$iRow", $rw->fdc_selling_price);
 
             $iRow++;
         }
         
+        //$this->phpspreadsheet->save("item_report_" . date("Ymd") ,$spreadsheet);
 		$this->phpspreadsheet->save("item_report.xls" ,$spreadsheet);
 
 		//var_dump($_POST);
