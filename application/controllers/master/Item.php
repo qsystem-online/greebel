@@ -558,12 +558,7 @@ class Item extends MY_Controller
     }
 
     public function print_item() {
-        $this->load->model("msgroupitems_model");
-        $datelog = $this->input->get("dateLog");
-
-        //selectSearch
-        //$arrDateLog = explode("-",$dateLog);
-        //$date = dateFormat(trim($arrDateLog[0]),"j/m/Y","Y-m-d");
+        $this->load->model("msitems_model");
 
         $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fst_vendor_item_name,
                 CONCAT(a.fin_item_group_id,'   -   ',b.fst_item_group_name) AS fst_item_group,a.fin_item_group_id,
@@ -587,53 +582,96 @@ class Item extends MY_Controller
 		$sheet->getPageMargins()->setTop(1);
 		$sheet->getPageMargins()->setRight(0.5);
 		$sheet->getPageMargins()->setLeft(0.5);
-		$sheet->getPageMargins()->setBottom(1);
-        //$sheet->setCellValue('A1', 'HELLO WORLD ! GUTEN MORGEN !');
+        $sheet->getPageMargins()->setBottom(1);
 
-        $iRow1 = 4;
-        $iRowB = 5;
+        $sheet ->getColumnDimension ( "A" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "B" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "C" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "D" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "E" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "F" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "G" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "H" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "I" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "J" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "K" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "L" )->setAutoSize ( true );
+
+        // TITLE
+        $sheet->mergeCells('A1:L1');
+        $sheet->setCellValue("A1", "Daftar Barang");
+
+        //KOLOM HEADER
+        $sheet->setCellValue("A7", "No");
+        $sheet->setCellValue("B7", "ID");
+        $sheet->setCellValue("C7", "Item Code");
+        $sheet->setCellValue("D7", "Item Name");
+        $sheet->setCellValue("E7", "Harga Beli");
+        $sheet->setCellValue("F7", "Satuan");
+        $sheet->setCellValue("G7", "Harga Jual");
+        $sheet->setCellValue("H7", "Satuan");
+        $sheet->setCellValue("I7", "Retail");
+        $sheet->setCellValue("J7", "Hypermart");
+        $sheet->setCellValue("K7", "Grosir");
+        $sheet->setCellValue("L7", "Sekolah/PO");
+        $backgroound['fill']=array();
+        $backgroound['fill']['type']=\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID;
+        $backgroound['fill']['color']=array();
+        $backgroound['fill']['color']['rgb']='99FFFF';
+        $sheet->getStyle( 'A7:L7' )->applyFromArray ($backgroound);
+
+        $iRow4 = 4;
+        $iRow5 = 5;
         $iRow = 8;
-        //$sheet->setCellValue("L3", $datelog);
+        $no = 1;
 
-        $inScheduleStyle =[
-			'fill' => array(
-				'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_NONE,
-				'color' => array('rgb' => 'FFFFFF')
-			)
-		];
+        //DATE & TIME
+        /*$spreadsheet->getActiveSheet()->getStyle('J3') 
+            ->getNumberFormat() 
+            ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DATETIME);
+        
+        $value = $sheet->getCell('J3')->getValue();
+        $excelDateValue = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value);
+        $sheet->setCellValue('J3',$excelDateValue);*/
+        $sheet->setCellValue('J3', '=NOW()');
+        $sheet->mergeCells('J3:L3');
+        $sheet->setCellValue('J4', '=NOW()');
+        $sheet->mergeCells('J4:L4');
 
-		$outOfScheduleStyle =[
-			'fill' => array(
-				'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-				'color' => array('rgb' => 'F5BEBE')
-			)
-        ];
         
         foreach ($rs as $rw) {
-            /*if ($this->msitems_model->inScheduleStyle($rw->fst_item_code)){
-                $sheet->getStyle("A$iRow:H$iRow")->applyFromArray($inScheduleStyle);
+            /*if ($this->msitems_model->inScheduleStyle($rw->fin_item_id,$rw->fdc_selling_price)){
+                $sheet->getStyle("A$iRow:J$iRow")->applyFromArray($inScheduleStyle);
             }else{
-                $sheet->getStyle("A$iRow:H$iRow")->applyFromArray($outOfScheduleStyle);
+                $sheet->getStyle("A$iRow:J$iRow")->applyFromArray($outOfScheduleStyle);
             }*/
-
-            $sheet->setCellValue("A$iRow", $rw->fin_item_id);
-            $sheet->setCellValue("B$iRow", $rw->fst_item_code);
-            $sheet->setCellValue("B$iRow1", $rw->fst_vendor_item_name);
-            $sheet->setCellValue("B$iRowB", $rw->fst_item_group);
-            $sheet->setCellValue("C$iRow", $rw->fst_item_name);
-            $sheet->setCellValue("D$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("E$iRow", $rw->fst_unit);
-            $sheet->setCellValue("F$iRow", $rw->fdc_price_list);
-            $sheet->setCellValue("G$iRow", $rw->fst_unit);
-            $sheet->setCellValue("H$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("A$iRow", $no++);
+            $sheet->setCellValue("B$iRow", $rw->fin_item_id);
+            $sheet->setCellValue("C$iRow", $rw->fst_item_code);
+            $sheet->setCellValue("B$iRow4", $rw->fst_item_group);
+            $sheet->setCellValue("B$iRow5", $rw->fst_vendor_item_name);
+            $sheet->setCellValue("D$iRow", $rw->fst_item_name);
+            $sheet->setCellValue("E$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("F$iRow", $rw->fst_unit);
+            $sheet->setCellValue("G$iRow", $rw->fdc_price_list);
+            $sheet->setCellValue("H$iRow", $rw->fst_unit);
             $sheet->setCellValue("I$iRow", $rw->fdc_selling_price);
             $sheet->setCellValue("J$iRow", $rw->fdc_selling_price);
             $sheet->setCellValue("K$iRow", $rw->fdc_selling_price);
             $sheet->setCellValue("L$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("M$iRow", $rw->fdc_selling_price);
 
             $iRow++;
         }
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                ],
+            ],
+        ];
+        $iRow = $iRow - 1;
+        $sheet->getStyle('A7:L'.$iRow)->applyFromArray($styleArray);
         
         //$this->phpspreadsheet->save("item_report_" . date("Ymd") ,$spreadsheet);
 		$this->phpspreadsheet->save("item_report.xls" ,$spreadsheet);

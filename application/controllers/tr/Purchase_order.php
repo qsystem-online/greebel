@@ -95,8 +95,8 @@ class Purchase_order extends MY_Controller{
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_salesorder_id){
-		$this->openForm("EDIT", $fin_salesorder_id);
+	public function Edit($fin_po_id){
+		$this->openForm("EDIT", $fin_po_id);
 	}
 
 	public function ajx_add_save(){
