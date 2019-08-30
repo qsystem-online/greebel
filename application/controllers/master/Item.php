@@ -570,7 +570,7 @@ class Item extends MY_Controller
                 LEFT JOIN msgroupitems b ON a.fin_item_group_id = b.fin_item_group_id
                 LEFT JOIN msitemspecialpricinggroupdetails c ON a.fin_item_id = c.fin_item_id
                 LEFT JOIN msitemunitdetails d ON a.fin_item_id = d.fin_item_id
-                WHERE a.fin_item_group_id";
+                WHERE a.fin_item_group_id ORDER BY a.fin_item_id AND a.fst_active = 'A'";
 
         $query = $this->db->query($ssql, []);
         $rs = $query->result();
