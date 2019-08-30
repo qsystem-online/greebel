@@ -559,16 +559,18 @@ class Item extends MY_Controller
 
     public function print_item() {
         $this->load->model("msitems_model");
+        $this->load->model("msgroupitems_model");
+        $this->load->model("msitemspecialpricinggroupdetails_model");
+        $this->load->model("msitemunitdetails_model");
 
         $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fst_vendor_item_name,
                 CONCAT(a.fin_item_group_id,'   -   ',b.fst_item_group_name) AS fst_item_group,a.fin_item_group_id,
-                c.fdc_selling_price,c.fst_unit,d.fdc_selling_price,d.fst_unit,e.fdc_price_list,e.fst_unit
+                c.fdc_selling_price,c.fst_unit,d.fdc_price_list,d.fst_unit
                 FROM msitems a
                 LEFT JOIN msgroupitems b ON a.fin_item_group_id = b.fin_item_group_id
                 LEFT JOIN msitemspecialpricinggroupdetails c ON a.fin_item_id = c.fin_item_id
-                LEFT JOIN msitemspecialpricinggroupdetails d ON a.fin_item_id = d.fin_item_id
-                LEFT JOIN msitemunitdetails e ON a.fin_item_id = e.fin_item_id
-                WHERE a.fin_item_id";
+                LEFT JOIN msitemunitdetails d ON a.fin_item_id = d.fin_item_id
+                WHERE a.fin_item_group_id";
 
         $query = $this->db->query($ssql, []);
         $rs = $query->result();
@@ -596,10 +598,14 @@ class Item extends MY_Controller
         $sheet ->getColumnDimension ( "J" )->setAutoSize ( true );
         $sheet ->getColumnDimension ( "K" )->setAutoSize ( true );
         $sheet ->getColumnDimension ( "L" )->setAutoSize ( true );
+        $sheet ->getColumnDimension ( "M" )->setAutoSize ( true );
 
         // TITLE
         $sheet->mergeCells('A1:L1');
         $sheet->setCellValue("A1", "Daftar Barang");
+        $sheet->mergeCells('B4:C4');
+        $sheet->mergeCells('B5:C5');
+        $sheet->mergeCells('B3:C3');
 
         //KOLOM HEADER
         $sheet->setCellValue("A7", "No");
@@ -614,6 +620,7 @@ class Item extends MY_Controller
         $sheet->setCellValue("J7", "Hypermart");
         $sheet->setCellValue("K7", "Grosir");
         $sheet->setCellValue("L7", "Sekolah/PO");
+        //COLOR KOLOM HEADER
         $backgroound['fill']=array();
         $backgroound['fill']['type']=\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID;
         $backgroound['fill']['color']=array();
@@ -637,6 +644,7 @@ class Item extends MY_Controller
         $sheet->mergeCells('J3:L3');
         $sheet->setCellValue('J4', '=NOW()');
         $sheet->mergeCells('J4:L4');
+
 
         
         foreach ($rs as $rw) {
@@ -663,6 +671,7 @@ class Item extends MY_Controller
             $iRow++;
         }
 
+        //BORDER
         $styleArray = [
             'borders' => [
                 'allBorders' => [
