@@ -558,11 +558,6 @@ class Item extends MY_Controller
     }
 
     public function print_item() {
-        $this->load->model("msitems_model");
-        $this->load->model("msgroupitems_model");
-        $this->load->model("msitemspecialpricinggroupdetails_model");
-        $this->load->model("msitemunitdetails_model");
-
         $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fst_vendor_item_name,
                 CONCAT(a.fin_item_id,'   -   ',a.fst_vendor_item_name) AS fst_vendor,a.fin_item_id,
                 CONCAT(a.fin_item_group_id,'   -   ',b.fst_item_group_name) AS fst_item_group,a.fin_item_group_id,
