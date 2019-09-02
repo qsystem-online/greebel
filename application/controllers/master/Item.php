@@ -607,7 +607,7 @@ class Item extends MY_Controller
         $sheet->mergeCells('B5:C5');
         $sheet->mergeCells('B3:C3');
 
-        //KOLOM HEADER
+        //HEADER COLUMN
         $sheet->setCellValue("A7", "No");
         $sheet->setCellValue("B7", "ID");
         $sheet->setCellValue("C7", "Item Code");
@@ -622,11 +622,20 @@ class Item extends MY_Controller
         $sheet->setCellValue("L7", "Sekolah/PO");
         $sheet->setCellValue("M7", "MT Lokal");
         //COLOR KOLOM HEADER
-        $backgroound['fill']=array();
-        $backgroound['fill']['type']=\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID;
-        $backgroound['fill']['color']=array();
-        $backgroound['fill']['color']['rgb']='99FFFF';
-        $sheet->getStyle( 'A7:M7' )->applyFromArray ($backgroound);
+        $spreadsheet->getActiveSheet()->getStyle('A7:M7')
+            ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('99FFFF');
+
+        //FONT HEADER CENTER
+        $spreadsheet->getActiveSheet()->getStyle('A7:M7')
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        //FONT BOLD
+        $styleArray = [
+            'font' => [
+                'bold' => true,
+            ]
+        ];
+        $sheet->getStyle('A7:M7')->applyFromArray($styleArray);
 
         $iRow4 = 4;
         $iRow5 = 5;
@@ -686,7 +695,5 @@ class Item extends MY_Controller
         
         $this->phpspreadsheet->save("item_report_" . date("Ymd") . ".xls" ,$spreadsheet);
 
-		//var_dump($_POST);
-		//echo "PRINT......";
     }
 }
