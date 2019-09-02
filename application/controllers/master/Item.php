@@ -601,7 +601,7 @@ class Item extends MY_Controller
         $sheet ->getColumnDimension ( "M" )->setAutoSize ( true );
 
         // TITLE
-        $sheet->mergeCells('A1:L1');
+        $sheet->mergeCells('A1:M1');
         $sheet->setCellValue("A1", "Daftar Barang");
         $sheet->mergeCells('B4:C4');
         $sheet->mergeCells('B5:C5');
@@ -620,12 +620,13 @@ class Item extends MY_Controller
         $sheet->setCellValue("J7", "Hypermart");
         $sheet->setCellValue("K7", "Grosir");
         $sheet->setCellValue("L7", "Sekolah/PO");
+        $sheet->setCellValue("M7", "MT Lokal");
         //COLOR KOLOM HEADER
         $backgroound['fill']=array();
         $backgroound['fill']['type']=\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID;
         $backgroound['fill']['color']=array();
         $backgroound['fill']['color']['rgb']='99FFFF';
-        $sheet->getStyle( 'A7:L7' )->applyFromArray ($backgroound);
+        $sheet->getStyle( 'A7:M7' )->applyFromArray ($backgroound);
 
         $iRow4 = 4;
         $iRow5 = 5;
@@ -641,9 +642,9 @@ class Item extends MY_Controller
         $excelDateValue = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value);
         $sheet->setCellValue('J3',$excelDateValue);*/
         $sheet->setCellValue('J3', '=NOW()');
-        $sheet->mergeCells('J3:L3');
+        $sheet->mergeCells('J3:M3');
         $sheet->setCellValue('J4', '=NOW()');
-        $sheet->mergeCells('J4:L4');
+        $sheet->mergeCells('J4:M4');
 
 
         
@@ -667,6 +668,7 @@ class Item extends MY_Controller
             $sheet->setCellValue("J$iRow", $rw->fdc_selling_price);
             $sheet->setCellValue("K$iRow", $rw->fdc_selling_price);
             $sheet->setCellValue("L$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("M$iRow", $rw->fdc_selling_price);
 
             $iRow++;
         }
@@ -680,10 +682,9 @@ class Item extends MY_Controller
             ],
         ];
         $iRow = $iRow - 1;
-        $sheet->getStyle('A7:L'.$iRow)->applyFromArray($styleArray);
+        $sheet->getStyle('A7:M'.$iRow)->applyFromArray($styleArray);
         
-        //$this->phpspreadsheet->save("item_report_" . date("Ymd") ,$spreadsheet);
-		$this->phpspreadsheet->save("item_report.xls" ,$spreadsheet);
+        $this->phpspreadsheet->save("item_report_" . date("Ymd") . ".xls" ,$spreadsheet);
 
 		//var_dump($_POST);
 		//echo "PRINT......";
