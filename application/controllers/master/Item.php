@@ -587,6 +587,7 @@ class Item extends MY_Controller
 		$sheet->getPageMargins()->setLeft(0.5);
         $sheet->getPageMargins()->setBottom(1);
 
+        //AUTO SIZE COLUMN
         $sheet ->getColumnDimension ( "A" )->setAutoSize ( true );
         $sheet ->getColumnDimension ( "B" )->setAutoSize ( true );
         $sheet ->getColumnDimension ( "C" )->setAutoSize ( true );
@@ -618,7 +619,8 @@ class Item extends MY_Controller
         $sheet->setCellValue("I7", "Retail");
         $sheet->setCellValue("J7", "Hypermart");
         $sheet->setCellValue("K7", "Grosir");
-        //COLOR KOLOM HEADER
+
+        //COLOR HEADER COLUMN
         $spreadsheet->getActiveSheet()->getStyle('A7:K7')
             ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setRGB('99FFFF');
@@ -626,6 +628,7 @@ class Item extends MY_Controller
         //FONT HEADER CENTER
         $spreadsheet->getActiveSheet()->getStyle('A7:K7')
             ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
         //FONT BOLD
         $styleArray = [
             'font' => [
@@ -636,6 +639,7 @@ class Item extends MY_Controller
         $sheet->getStyle('B3:K3')->applyFromArray($styleArray);
         $sheet->getStyle('B4:K4')->applyFromArray($styleArray);
         $sheet->getStyle('B5:K5')->applyFromArray($styleArray);
+
         // FONT SIZE
         $spreadsheet->getActiveSheet()->getStyle("A1")->getFont()->setSize(18);
         $spreadsheet->getActiveSheet()->getStyle("A3:K5")->getFont()->setSize(12);
@@ -694,6 +698,7 @@ class Item extends MY_Controller
         $iRow = $iRow - 1;
         $sheet->getStyle('A7:K'.$iRow)->applyFromArray($styleArray);
         
+        //FILE NAME WITH DATE
         $this->phpspreadsheet->save("item_report_" . date("Ymd") . ".xls" ,$spreadsheet);
 
     }
