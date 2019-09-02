@@ -597,11 +597,9 @@ class Item extends MY_Controller
         $sheet ->getColumnDimension ( "I" )->setAutoSize ( true );
         $sheet ->getColumnDimension ( "J" )->setAutoSize ( true );
         $sheet ->getColumnDimension ( "K" )->setAutoSize ( true );
-        $sheet ->getColumnDimension ( "L" )->setAutoSize ( true );
-        $sheet ->getColumnDimension ( "M" )->setAutoSize ( true );
 
         // TITLE
-        $sheet->mergeCells('A1:M1');
+        $sheet->mergeCells('A1:K1');
         $sheet->setCellValue("A1", "Daftar Barang");
         $sheet->mergeCells('B4:C4');
         $sheet->mergeCells('B5:C5');
@@ -619,15 +617,13 @@ class Item extends MY_Controller
         $sheet->setCellValue("I7", "Retail");
         $sheet->setCellValue("J7", "Hypermart");
         $sheet->setCellValue("K7", "Grosir");
-        $sheet->setCellValue("L7", "Sekolah/PO");
-        $sheet->setCellValue("M7", "MT Lokal");
         //COLOR KOLOM HEADER
-        $spreadsheet->getActiveSheet()->getStyle('A7:M7')
+        $spreadsheet->getActiveSheet()->getStyle('A7:K7')
             ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setRGB('99FFFF');
 
         //FONT HEADER CENTER
-        $spreadsheet->getActiveSheet()->getStyle('A7:M7')
+        $spreadsheet->getActiveSheet()->getStyle('A7:K7')
             ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         //FONT BOLD
         $styleArray = [
@@ -635,10 +631,13 @@ class Item extends MY_Controller
                 'bold' => true,
             ]
         ];
-        $sheet->getStyle('A7:M7')->applyFromArray($styleArray);
+        $sheet->getStyle('A7:K7')->applyFromArray($styleArray);
+        $sheet->getStyle('B3:K3')->applyFromArray($styleArray);
+        $sheet->getStyle('B4:K4')->applyFromArray($styleArray);
+        $sheet->getStyle('B5:K5')->applyFromArray($styleArray);
 
-        $iRow4 = 4;
-        $iRow5 = 5;
+        $iRow1 = 4;
+        $iRow2 = 5;
         $iRow = 8;
         $no = 1;
 
@@ -650,10 +649,10 @@ class Item extends MY_Controller
         $value = $sheet->getCell('J3')->getValue();
         $excelDateValue = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value);
         $sheet->setCellValue('J3',$excelDateValue);*/
-        $sheet->setCellValue('J3', '=NOW()');
-        $sheet->mergeCells('J3:M3');
-        $sheet->setCellValue('J4', '=NOW()');
-        $sheet->mergeCells('J4:M4');
+        $sheet->setCellValue('I3', '=NOW()');
+        $sheet->mergeCells('I3:K3');
+        $sheet->setCellValue('I4', '=NOW()');
+        $sheet->mergeCells('I4:K4');
 
 
         
@@ -663,11 +662,11 @@ class Item extends MY_Controller
             }else{
                 $sheet->getStyle("A$iRow:J$iRow")->applyFromArray($outOfScheduleStyle);
             }*/
+            $sheet->setCellValue("B$iRow1", $rw->fst_item_group);
+            $sheet->setCellValue("B$iRow2", $rw->fst_vendor_item_name);
             $sheet->setCellValue("A$iRow", $no++);
             $sheet->setCellValue("B$iRow", $rw->fin_item_id);
             $sheet->setCellValue("C$iRow", $rw->fst_item_code);
-            $sheet->setCellValue("B$iRow4", $rw->fst_item_group);
-            $sheet->setCellValue("B$iRow5", $rw->fst_vendor_item_name);
             $sheet->setCellValue("D$iRow", $rw->fst_item_name);
             $sheet->setCellValue("E$iRow", $rw->fdc_selling_price);
             $sheet->setCellValue("F$iRow", $rw->fst_unit);
@@ -676,8 +675,6 @@ class Item extends MY_Controller
             $sheet->setCellValue("I$iRow", $rw->fdc_selling_price);
             $sheet->setCellValue("J$iRow", $rw->fdc_selling_price);
             $sheet->setCellValue("K$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("L$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("M$iRow", $rw->fdc_selling_price);
 
             $iRow++;
         }
@@ -691,7 +688,7 @@ class Item extends MY_Controller
             ],
         ];
         $iRow = $iRow - 1;
-        $sheet->getStyle('A7:M'.$iRow)->applyFromArray($styleArray);
+        $sheet->getStyle('A7:K'.$iRow)->applyFromArray($styleArray);
         
         $this->phpspreadsheet->save("item_report_" . date("Ymd") . ".xls" ,$spreadsheet);
 

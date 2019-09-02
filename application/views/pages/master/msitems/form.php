@@ -1357,9 +1357,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 {column: "Harga Retail",hidden:true,id:"fdc_selling_price"},
                 {column: "Harga Hypermart",hidden:true,id:"fdc_selling_price"},
                 {column: "Grosir",hidden:true,id:"fdc_selling_price"},
-                {column: "Sekolah/PO",hideen:true,id:"fdc_selling_price"},
-                {column: "MT Lokal",hidden:true,id:"fdc_selling_price"},
-                {column: "Group SMM/Internal",hidden:true,id:"fdc_selling_price"},
 			];
 			url = "<?= site_url() ?>master/item/print_item";
 			MdlPrint.showPrint(layoutColumn,url);
