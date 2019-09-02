@@ -374,14 +374,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnPrint").click(function(e){
 			layoutColumn = [
-				{column: "Coloumn 1",hidden:false,id:"fst_column1"},
-				{column: "Coloumn 2",hidden:true,id:"fst_column2"},
-				{column: "Coloumn 3",hidden:true,id:"fst_column3"},
-				{column: "Coloumn 4",hidden:true,id:"fst_column4"},
-				{column: "Coloumn 5",hidden:true,id:"fst_column5"},
-				{column: "Coloumn 6",hidden:true,id:"fst_column6"},
-				{column: "Coloumn 7",hidden:true,id:"fst_column7"},
-				{column: "Coloumn 8",hidden:true,id:"fst_column8"},
+				{column: "Kode",hidden:false,id:"fst_kode"},
+				{column: "Nama",hidden:false,id:"fst_nama"},
+				{column: "Harga Beli",hidden:true,id:"fdc_harga_beli"},
+				{column: "Satuan",hidden:true,id:"fst_unit"},
+				{column: "Harga Jual",hidden:true,id:"fdc_harga_jual"},
 			];
 			url = "<?= site_url() ?>tr/purchase_order/print_po";
 			MdlPrint.showPrint(layoutColumn,url);

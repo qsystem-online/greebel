@@ -945,8 +945,12 @@ class Purchase_order extends MY_Controller{
 		$filename = 'coba.xls';
 		
 		$this->phpspreadsheet->save($filename,$spreadsheet);
-
-		//var_dump($_POST);
+		
+		/*
+		var_dump($this->input->post("layoutColumn"));
+		$arrLayoutCol = json_decode($this->input->post("layoutColumn"));
+		var_dump($arrLayoutCol);
 		//echo "PRINT......";
+		*/
 	}
 }
