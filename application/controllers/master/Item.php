@@ -564,6 +564,7 @@ class Item extends MY_Controller
         $this->load->model("msitemunitdetails_model");
 
         $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fst_vendor_item_name,
+                CONCAT(a.fin_item_id,'   -   ',a.fst_vendor_item_name) AS fst_vendor,a.fin_item_id,
                 CONCAT(a.fin_item_group_id,'   -   ',b.fst_item_group_name) AS fst_item_group,a.fin_item_group_id,
                 c.fdc_selling_price,c.fst_unit,d.fdc_price_list,d.fst_unit
                 FROM msitems a
@@ -607,7 +608,7 @@ class Item extends MY_Controller
 
         //HEADER COLUMN
         $sheet->setCellValue("A7", "No");
-        $sheet->setCellValue("B7", "ID");
+        $sheet->setCellValue("B7", "Item ID");
         $sheet->setCellValue("C7", "Item Code");
         $sheet->setCellValue("D7", "Item Name");
         $sheet->setCellValue("E7", "Harga Beli");
@@ -635,6 +636,10 @@ class Item extends MY_Controller
         $sheet->getStyle('B3:K3')->applyFromArray($styleArray);
         $sheet->getStyle('B4:K4')->applyFromArray($styleArray);
         $sheet->getStyle('B5:K5')->applyFromArray($styleArray);
+        // FONT SIZE
+        $spreadsheet->getActiveSheet()->getStyle("A1")->getFont()->setSize(18);
+        $spreadsheet->getActiveSheet()->getStyle("A3:K5")->getFont()->setSize(12);
+        $spreadsheet->getActiveSheet()->getStyle("A7:K7")->getFont()->setSize(12);
 
         $iRow1 = 4;
         $iRow2 = 5;
@@ -654,7 +659,6 @@ class Item extends MY_Controller
         $sheet->setCellValue('I4', '=NOW()');
         $sheet->mergeCells('I4:K4');
 
-
         
         foreach ($rs as $rw) {
             /*if ($this->msitems_model->inScheduleStyle($rw->fin_item_id,$rw->fdc_selling_price)){
@@ -663,7 +667,7 @@ class Item extends MY_Controller
                 $sheet->getStyle("A$iRow:J$iRow")->applyFromArray($outOfScheduleStyle);
             }*/
             $sheet->setCellValue("B$iRow1", $rw->fst_item_group);
-            $sheet->setCellValue("B$iRow2", $rw->fst_vendor_item_name);
+            $sheet->setCellValue("B$iRow2", $rw->fst_vendor);
             $sheet->setCellValue("A$iRow", $no++);
             $sheet->setCellValue("B$iRow", $rw->fin_item_id);
             $sheet->setCellValue("C$iRow", $rw->fst_item_code);
