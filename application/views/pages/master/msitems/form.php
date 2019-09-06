@@ -1017,7 +1017,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </form>
 
                             <div class="modal-footer" style="width:100%;padding:10px" class="text-center">
-                                <button id="btn-add-print" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Print")?></button>
+                                <button id="btnPrint" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Print")?></button>
                                 <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
                             </div>
 
@@ -1341,25 +1341,24 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			$("#modal_Printed").modal("toggle");
 		});
 
-        $("#btn-add-print").click(function(e){
-            $("#mdlPrint").modal("toggle");
-        });
-
-        $("#btnLayout").click(function(e){
+        $("#btnPrint").click(function(e){
             layoutColumn = [
                 {column: "Item ID",hidden:false,id:"fin_item_id"},
 				{column: "Item Code",hidden:false,id:"fst_item_code"},
                 {column: "Item Name",hidden:false,id:"fst_item_name"},
-				{column: "Harga Beli",hidden:false,id:"fdc_selling_price"},
+				{column: "Harga Beli",hidden:false,id:"fdc_price_list"},
 				{column: "Satuan",hidden:false,id:"fst_unit"},
-				{column: "Harga Jual",hidden:true,id:"fdc_price_list"},
-				{column: "Satuan",hidden:true,id:"fst_unit-detail"},
-                {column: "Harga Retail",hidden:true,id:"fdc_selling_price"},
-                {column: "Harga Hypermart",hidden:true,id:"fdc_selling_price"},
+				{column: "Harga Jual",hidden:false,id:"fdc_selling_price"},
+				{column: "Satuan",hidden:false,id:"fst_unit-detail"},
+                {column: "Retail",hidden:true,id:"fdc_selling_price"},
+                {column: "Hypermart",hidden:true,id:"fdc_selling_price"},
                 {column: "Grosir",hidden:true,id:"fdc_selling_price"},
+                {column: "Sekolah/PO",hidden:true,id:"fdc_selling_price"},
+                {column: "MT Lokal",hidden:true,id:"fdc_selling_price"},
+                {column: "Group SMM/Internal",hidden:true,id:"fdc_selling_price"}
 			];
-			url = "<?= site_url() ?>master/item/print_item";
-			MdlPrint.showPrint(layoutColumn,url);
+			url = "<?= site_url() ?>master/item/get_printItem/" + $("#select-vendorName").val() + '/' + $("#select-groupItemName").val() + '/' + $("#select-ItemCode").val() + '/' + $("#select-CodeItem").val();
+            MdlPrint.showPrint(layoutColumn,url);
         });
     });
 
@@ -1387,6 +1386,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
+
                 // menampilkan data di select2
                 var newOption = new Option(resp.ms_items.fst_item_maingroup_name, resp.ms_items.fin_item_maingroup_id, true, true);
                 // Append it to the select
@@ -1395,6 +1395,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 // Append it to the select
                 $('#select-GroupItemId').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_subgroup_name, resp.ms_items.fin_item_subgroup_id, true, true);
+
+                var newOption = new Option(resp.ms_items.fst_vendor_item_name, resp.ms_items.fst_vendor_item_name, true, true);
+                $('#select-vendorName').append(newOption).trigger('change');
+                var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
+                $('#select-groupItemName').append(newOption).trigger('change');
+
                 // Append it to the select
                 $('#select-SubgItemId').append(newOption).trigger('change');
                 //Image Load 

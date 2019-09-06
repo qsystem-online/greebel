@@ -179,7 +179,6 @@ class Msitems_model extends MY_Model
         return 0;
     }
 
-
     public function getDetailbyArray($arrItemId){
         $ssql = "select * from msitems where fin_item_id in ?";
         $qr = $this->db->query($ssql,[$arrItemId]);
@@ -191,25 +190,23 @@ class Msitems_model extends MY_Model
         return $result;
 
     }
-    
-    /*public function inSchedule($fin_item_id,$fdt_date){
-        //php => 0 = minggu -> 6 = sabtu
-        //DB =>  1 = Senin  -> 7 = Minggu
 
-        $dayofweek = date('w', strtotime($fdt_date));
-        if ($dayofweek == 0 ){
-            $dayofweek = 7;
-        }
+    public function getPrintItem($vendorName,$groupId,$itemCode_awal,$itemCode_akhir){
+        $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fst_vendor_item_name,
+                CONCAT(a.fin_item_group_id,'  -  ',b.fst_item_group_name) as fst_item_group,
+                c.fdc_price_list,c.fst_unit,d.fdc_selling_price,d.fst_unit
+                FROM msitems a
+                LEFT JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
+                LEFT JOIN msitemunitdetails c on a.fin_item_id = c.fin_item_id
+                LEFT JOIN msitemspecialpricinggroupdetails d on a.fin_item_id = d.fin_item_id
+                WHERE a.fst_vendor_item_name like '$vendorName' AND a.fin_item_group_id like '$groupId'
+                AND a.fst_item_code >= '$itemCode_awal' AND a.fst_item_code <= '$itemCode_akhir' ORDER BY a.fin_item_id";
 
-        $ssql = "Select * from msitems where fin_item_id = ? and fin_visit_day = ?";
-        $qr = $this->db->query($ssql,[$fin_item_id,$dayofweek]);
+        $query = $this->db->query($ssql,[$vendorName,$groupId,$itemCode_awal,$itemCode_akhir]);
         //echo $this->db->last_query();
         //die();
+        $rs = $query->result();
 
-        $rw = $qr->row();
-        if($rw){
-            return true;
-        }
-        return false;
-    }*/
+        return $rs;
+    }
 }
