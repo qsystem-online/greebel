@@ -1,5 +1,6 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
+
 class Msprofitcostcenter_model extends MY_Model {
     public $tableName = "msprofitcostcenter";
     public $pkey = "fin_pcc_id";
@@ -9,11 +10,11 @@ class Msprofitcostcenter_model extends MY_Model {
     }
 
     public function getDataById($fin_pcc_id){
-		$ssql = "select * from " . $this->tableName ." where fin_pcc_id = ?";
+		$ssql = "select * from msprofitcostcenter where fin_pcc_id = ? and fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$fin_pcc_id]);		
 		$rwProfitCostCenter = $qr->row();
         $data = [
-            "profitcostcenter" => $rwProfitCostCenter
+            "profit_cost_center" => $rwProfitCostCenter
         ];
         return $data;
     }
@@ -39,7 +40,6 @@ class Msprofitcostcenter_model extends MY_Model {
         $qr = $this->db->query($ssql,[]);		
         $rs = $qr->result();		
 		return $rs;
-
     }
 
     public function get_profitcostcenter(){

@@ -21,11 +21,11 @@ class ProfitCostCenter extends MY_Controller
 		$this->load->library('menus');
 		$this->list['page_name'] = "Profit Cost Center";
 		$this->list['list_name'] = "Profit Cost Center List";
-		$this->list['addnew_ajax_url'] = site_url() . 'master/profit_cost_center/add';
+		$this->list['addnew_ajax_url'] = site_url() . 'gl/profit_cost_center/add';
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'master/profit_cost_center/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'master/profit_cost_center/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'master/profit_cost_center/edit/';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'gl/profit_cost_center/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'gl/profit_cost_center/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'gl/profit_cost_center/edit/';
 		$this->list['arrSearch'] = [
 			'fin_pcc_id' => 'Profit Cost Center ID',
 			'fst_pcc_name' => 'Profit Cost Center Name'
@@ -69,7 +69,7 @@ class ProfitCostCenter extends MY_Controller
 		$data["title"] = $mode == "ADD" ? "Add Profit Cost Center" : "Update Profit Cost Center";
 		$data["fin_pcc_id"] = $fin_pcc_id;
 
-		$page_content = $this->parser->parse('pages/master/profit_cost_center/form', $data, true);
+		$page_content = $this->parser->parse('pages/gl/profit_cost_center/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 
 		$control_sidebar = NULL;
@@ -107,7 +107,8 @@ class ProfitCostCenter extends MY_Controller
 		}
 
 		$data = [
-			"fst_pcc_name" => $this->input->post("fst_pcc_name")
+			"fst_pcc_name" => $this->input->post("fst_pcc_name"),
+			"fst_active" => 'A'
 		];
 
 		$this->db->trans_start();
@@ -135,7 +136,7 @@ class ProfitCostCenter extends MY_Controller
 		$this->load->model('msprofitcostcenter_model');
 		$fin_pcc_id = $this->input->post("fin_pcc_id");
 		$data = $this->msprofitcostcenter_model->getDataById($fin_pcc_id);
-		$profitcostcenter = $data["profitcostcenter"];
+		$profitcostcenter = $data["profit_cost_center"];
 		if (!$profitcostcenter) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
 			$this->ajxResp["message"] = "Data id $fin_pcc_id Not Found ";
@@ -158,6 +159,7 @@ class ProfitCostCenter extends MY_Controller
 		$data = [
 			"fin_pcc_id" => $fin_pcc_id,
 			"fst_pcc_name" => $this->input->post("fst_pcc_name"),
+			"fst_active" => 'A' 
 		];
 
 		$this->db->trans_start();
@@ -188,7 +190,7 @@ class ProfitCostCenter extends MY_Controller
 		$data = [
 			'fst_pcc_name' => $this->input->get("fst_pcc_name")
 		];
-		if ($this->db->insert('profitcostcenter', $data)) {
+		if ($this->db->insert('msprofitcostcenter', $data)) {
 			echo "insert success";
 		} else {
 			$error = $this->db->error();
@@ -269,7 +271,7 @@ class ProfitCostCenter extends MY_Controller
 		$this->json_output();
 	}
 
-	public function report_departments(){
+	public function report_profitcostcenter(){
         $this->load->library('pdf');
         //$customPaper = array(0,0,381.89,595.28);
         //$this->pdf->setPaper($customPaper, 'landscape');
@@ -277,12 +279,12 @@ class ProfitCostCenter extends MY_Controller
 		//$this->pdf->setPaper('A4', 'landscape');
 		
 		$this->load->model("msprofitcostcenter_model");
-		$listDepartment = $this->msprofitcostcenter_model->get_departments();
+		$listProfitCostCenter = $this->msprofitcostcenter_model->get_profitcostcenter();
         $data = [
-			"datas" => $listDepartment
+			"datas" => $listProfitCostCenter
 		];
 			
-        $this->pdf->load_view('report/departments_pdf', $data);
+        $this->pdf->load_view('report/profitcostcenter_pdf', $data);
         $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
         $this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
     }

@@ -44,13 +44,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
 					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
-					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Profit Cost Center")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 				</div>
 			</div>
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmProfitCostCenter" class="form-horizontal" action="<?=site_url()?>profit_cost_center/add" method="POST" enctype="multipart/form-data">			
+            <form id="frmPcc" class="form-horizontal" action="<?=site_url()?>gl/profit_cost_center/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
@@ -90,13 +90,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			data = new FormData($("#frmProfitCostCenter")[0]);
+			data = new FormData($("#frmPcc")[0]);
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
-				url =  "<?= site_url() ?>master/profit_cost_center/ajx_add_save";
+				url =  "<?= site_url() ?>gl/profit_cost_center/ajx_add_save";
 			}else{
-				url =  "<?= site_url() ?>master/profit_cost_center/ajx_edit_save";
+				url =  "<?= site_url() ?>gl/profit_cost_center/ajx_edit_save";
 			}
 
 			//var formData = new FormData($('form')[0])
@@ -117,7 +117,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>master/profit_cost_center/lizt";
+										window.location.href = "<?= site_url() ?>gl/profit_cost_center/lizt";
 										return;
 									}
 								},
@@ -154,7 +154,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		
 		$("#btnNew").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>master/profit_cost_center/add")
+			window.location.replace("<?=site_url()?>gl/profit_cost_center/add")
 		});
 
 		$("#btnDelete").confirmation({
@@ -166,7 +166,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			e.preventDefault();
 			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
 			$.ajax({
-				url:"<?= site_url() ?>master/profit_cost_center/delete/" + $("#fin_pcc_id").val(),
+				url:"<?= site_url() ?>gl/profit_cost_center/delete/" + $("#fin_pcc_id").val(),
 			}).done(function(resp){
 				//consoleLog(resp);
 				$.unblockUI();
@@ -177,7 +177,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						buttons : {
 							OK : function() {
 								if (resp.status == "SUCCESS") {
-									window.location.href = "<?= site_url() ?>master/profit_cost_center/lizt";
+									window.location.href = "<?= site_url() ?>gl/profit_cost_center/lizt";
 									return;
 								}
 							},
@@ -200,20 +200,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>master/profit_cost_center/lizt");
+			window.location.replace("<?=site_url()?>gl/profit_cost_center/lizt");
 		});
 	});
 
 	function init_form(fin_pcc_id){
 		//alert("Init Form");
-		var url = "<?=site_url()?>master/profit_cost_center/fetch_data/" + fin_pcc_id;
+		var url = "<?=site_url()?>gl/profit_cost_center/fetch_data/" + fin_pcc_id;
 		$.ajax({
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.msprofitcostcenter);
+				console.log(resp.profit_cost_center);
 
-				$.each(resp.msprofitcostcenter, function(name, val){
+				$.each(resp.profit_cost_center, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					type = $el.attr('type');
 					switch(type){
