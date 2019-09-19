@@ -183,38 +183,6 @@ class ProfitCostCenter extends MY_Controller
 		$this->json_output();
 	}
 
-	public function add_save()
-	{
-		$this->load->model('msprofitcostcenter_model');
-
-		$data = [
-			'fst_pcc_name' => $this->input->get("fst_pcc_name")
-		];
-		if ($this->db->insert('msprofitcostcenter', $data)) {
-			echo "insert success";
-		} else {
-			$error = $this->db->error();
-			print_r($error);
-		}
-		die();
-
-		echo "Table Name :" . $this->msprofitcostcenter_model->getTableName();
-		print_r($this->msprofitcostcenter_model->getRules());
-
-		$this->form_validation->set_rules($this->msprofitcostcenter_model->rules);
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-
-		if ($this->form_validation->run() == FALSE) {
-			echo form_error();
-		} else {
-			echo "Success";
-		}
-
-		//print_r($upload_data);
-
-		print_r($_FILES);
-	}
-
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("msprofitcostcenter");
@@ -263,29 +231,4 @@ class ProfitCostCenter extends MY_Controller
 		//$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
 	}
-
-	public function getAllList()
-	{
-		$result = $this->msprofitcostcenter_model->getAllList();
-		$this->ajxResp["data"] = $result;
-		$this->json_output();
-	}
-
-	public function report_profitcostcenter(){
-        $this->load->library('pdf');
-        //$customPaper = array(0,0,381.89,595.28);
-        //$this->pdf->setPaper($customPaper, 'landscape');
-        $this->pdf->setPaper('A4', 'portrait');
-		//$this->pdf->setPaper('A4', 'landscape');
-		
-		$this->load->model("msprofitcostcenter_model");
-		$listProfitCostCenter = $this->msprofitcostcenter_model->get_profitcostcenter();
-        $data = [
-			"datas" => $listProfitCostCenter
-		];
-			
-        $this->pdf->load_view('report/profitcostcenter_pdf', $data);
-        $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
-        $this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
-    }
 }
