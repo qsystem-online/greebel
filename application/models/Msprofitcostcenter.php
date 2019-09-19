@@ -24,7 +24,7 @@ class Msprofitcostcenter_model extends MY_Model {
 
         $rules[] = [
             'field' => 'fst_pcc_name',
-            'label' => 'Profit Cost Center Name',
+            'label' => 'Profit & Cost Center Name',
             'rules' => 'required|min_length[5]',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',

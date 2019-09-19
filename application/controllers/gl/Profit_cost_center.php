@@ -19,26 +19,26 @@ class ProfitCostCenter extends MY_Controller
 	public function lizt()
 	{
 		$this->load->library('menus');
-		$this->list['page_name'] = "Profit Cost Center";
-		$this->list['list_name'] = "Profit Cost Center List";
+		$this->list['page_name'] = "Profit & Cost Center";
+		$this->list['list_name'] = "Profit & Cost Center List";
 		$this->list['addnew_ajax_url'] = site_url() . 'gl/profit_cost_center/add';
 		$this->list['pKey'] = "id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'gl/profit_cost_center/fetch_list_data';
 		$this->list['delete_ajax_url'] = site_url() . 'gl/profit_cost_center/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'gl/profit_cost_center/edit/';
 		$this->list['arrSearch'] = [
-			'fin_pcc_id' => 'Profit Cost Center ID',
-			'fst_pcc_name' => 'Profit Cost Center Name'
+			'fin_pcc_id' => 'Profit & Cost Center ID',
+			'fst_pcc_name' => 'Profit & Cost Center Name'
 		];
 
 		$this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-			['title' => 'Profit Cost Center', 'link' => '#', 'icon' => ''],
+			['title' => 'Profit & Cost Center', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Profit Cost Center ID', 'width' => '10%', 'data' => 'fin_pcc_id'],
-			['title' => 'Profit Cost Center Name', 'width' => '25%', 'data' => 'fst_pcc_name'],
+			['title' => 'Profit & Cost Center ID', 'width' => '10%', 'data' => 'fin_pcc_id'],
+			['title' => 'Profit & Cost Center Name', 'width' => '25%', 'data' => 'fst_pcc_name'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
@@ -66,7 +66,7 @@ class ProfitCostCenter extends MY_Controller
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 
 		$data["mode"] = $mode;
-		$data["title"] = $mode == "ADD" ? "Add Profit Cost Center" : "Update Profit Cost Center";
+		$data["title"] = $mode == "ADD" ? "Add Profit & Cost Center" : "Update Profit & Cost Center";
 		$data["fin_pcc_id"] = $fin_pcc_id;
 
 		$page_content = $this->parser->parse('pages/gl/profit_cost_center/form', $data, true);

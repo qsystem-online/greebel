@@ -25,10 +25,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-	<h1><?=lang("Profit Cost Center")?><small><?=lang("form")?></small></h1>
+	<h1><?=lang("Profit & Cost Center")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
-		<li><a href="#"><?= lang("Profit Cost Center") ?></a></li>
+		<li><a href="#"><?= lang("Profit & Cost Center") ?></a></li>
 		<li class="active title"><?=$title?></li>
 	</ol>
 </section>
@@ -56,7 +56,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class='form-group'>
-                    <label for="fin_pcc_id" class="col-sm-2 control-label"><?=lang("Profit Cost Center ID")?></label>
+                    <label for="fin_pcc_id" class="col-sm-2 control-label"><?=lang("Profit & Cost Center ID")?></label>
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="fin_pcc_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_pcc_id" value="<?=$fin_pcc_id?>" readonly>
 							<div id="fin_pcc_id_err" class="text-danger"></div>
@@ -64,9 +64,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-                    <label for="fst_pcc_name" class="col-sm-2 control-label"><?=lang("Profit Cost Center Name")?> *</label>
+                    <label for="fst_pcc_name" class="col-sm-2 control-label"><?=lang("Profit & Cost Center Name")?> *</label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="fst_pcc_name" placeholder="<?=lang("Profit Cost Center Name")?>" name="fst_pcc_name">
+							<input type="text" class="form-control" id="fst_pcc_name" placeholder="<?=lang("Profit & Cost Center Name")?>" name="fst_pcc_name">
 							<div id="fst_pcc_name_err" class="text-danger"></div>
 						</div>
 					</div>
