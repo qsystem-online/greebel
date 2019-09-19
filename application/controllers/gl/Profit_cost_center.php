@@ -1,23 +1,20 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class ProfitCostCenter extends MY_Controller
+class Profit_cost_center extends MY_Controller
 {
 
-	public function __construct()
-	{
+	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
-		$this->load->model('msprofitcostcenter_model');
+		$this->load->model('profitcostcenter_model');
 	}
 
-	public function index()
-	{
+	public function index(){
 		$this->lizt();
 	}
 
-	public function lizt()
-	{
+	public function lizt(){
 		$this->load->library('menus');
 		$this->list['page_name'] = "Profit & Cost Center";
 		$this->list['list_name'] = "Profit & Cost Center List";
@@ -39,7 +36,7 @@ class ProfitCostCenter extends MY_Controller
 		$this->list['columns'] = [
 			['title' => 'Profit & Cost Center ID', 'width' => '10%', 'data' => 'fin_pcc_id'],
 			['title' => 'Profit & Cost Center Name', 'width' => '25%', 'data' => 'fst_pcc_name'],
-			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
@@ -54,8 +51,7 @@ class ProfitCostCenter extends MY_Controller
 		$this->parser->parse('template/main', $this->data);
 	}
 
-	private function openForm($mode = "ADD", $fin_pcc_id = 0)
-	{
+	private function openForm($mode = "ADD", $fin_pcc_id = 0){
 		$this->load->library("menus");
 
 		if ($this->input->post("submit") != "") {
@@ -81,20 +77,17 @@ class ProfitCostCenter extends MY_Controller
 		$this->parser->parse('template/main', $this->data);
 	}
 
-	public function add()
-	{
+	public function add(){
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_pcc_id)
-	{
+	public function Edit($fin_pcc_id){
 		$this->openForm("EDIT", $fin_pcc_id);
 	}
 
-	public function ajx_add_save()
-	{
-		$this->load->model('msprofitcostcenter_model');
-		$this->form_validation->set_rules($this->msprofitcostcenter_model->getRules("ADD", 0));
+	public function ajx_add_save(){
+		$this->load->model('profitcostcenter_model');
+		$this->form_validation->set_rules($this->profitcostcenter_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -112,7 +105,7 @@ class ProfitCostCenter extends MY_Controller
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->msprofitcostcenter_model->insert($data);
+		$insertId = $this->profitcostcenter_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -131,12 +124,11 @@ class ProfitCostCenter extends MY_Controller
 		$this->json_output();
 	}
 
-	public function ajx_edit_save()
-	{
-		$this->load->model('msprofitcostcenter_model');
+	public function ajx_edit_save(){
+		$this->load->model('profitcostcenter_model');
 		$fin_pcc_id = $this->input->post("fin_pcc_id");
-		$data = $this->msprofitcostcenter_model->getDataById($fin_pcc_id);
-		$profitcostcenter = $data["profit_cost_center"];
+		$data = $this->profitcostcenter_model->getDataById($fin_pcc_id);
+		$profitcostcenter = $data["profitcost_center"];
 		if (!$profitcostcenter) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
 			$this->ajxResp["message"] = "Data id $fin_pcc_id Not Found ";
@@ -145,7 +137,7 @@ class ProfitCostCenter extends MY_Controller
 			return;
 		}
 
-		$this->form_validation->set_rules($this->msprofitcostcenter_model->getRules("EDIT", $fin_pcc_id));
+		$this->form_validation->set_rules($this->profitcostcenter_model->getRules("EDIT", $fin_pcc_id));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -164,7 +156,7 @@ class ProfitCostCenter extends MY_Controller
 
 		$this->db->trans_start();
 
-		$this->msprofitcostcenter_model->update($data);
+		$this->profitcostcenter_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -212,10 +204,9 @@ class ProfitCostCenter extends MY_Controller
 	}
 
 
-	public function fetch_data($fin_pcc_id)
-	{
-		$this->load->model("msprofitcostcenter_model");
-		$data = $this->msprofitcostcenter_model->getDataById($fin_pcc_id);
+	public function fetch_data($fin_pcc_id){
+		$this->load->model("profitcostcenter_model");
+		$data = $this->profitcostcenter_model->getDataById($fin_pcc_id);
 
 		//$this->load->library("datatables");		
 		$this->json_output($data);
@@ -223,7 +214,7 @@ class ProfitCostCenter extends MY_Controller
 
 	public function delete($id){
 		$this->db->trans_start();
-        $this->msprofitcostcenter_model->delete($id);
+        $this->profitcostcenter_model->delete($id);
         $this->db->trans_complete();
 
         $this->ajxResp["status"] = "SUCCESS";

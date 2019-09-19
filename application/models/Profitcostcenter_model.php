@@ -1,7 +1,7 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Msprofitcostcenter_model extends MY_Model {
+class Profitcostcenter_model extends MY_Model {
     public $tableName = "msprofitcostcenter";
     public $pkey = "fin_pcc_id";
 
@@ -14,7 +14,7 @@ class Msprofitcostcenter_model extends MY_Model {
 		$qr = $this->db->query($ssql,[$fin_pcc_id]);		
 		$rwProfitCostCenter = $qr->row();
         $data = [
-            "profit_cost_center" => $rwProfitCostCenter
+            "profitcost_center" => $rwProfitCostCenter
         ];
         return $data;
     }

@@ -56,16 +56,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class='form-group'>
-                    <label for="fin_pcc_id" class="col-sm-2 control-label"><?=lang("Profit & Cost Center ID")?></label>
-						<div class="col-sm-10">
+                    <label for="fin_pcc_id" class="col-sm-3 control-label"><?=lang("Profit & Cost Center ID")?> :</label>
+						<div class="col-sm-9">
 							<input type="text" class="form-control" id="fin_pcc_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_pcc_id" value="<?=$fin_pcc_id?>" readonly>
 							<div id="fin_pcc_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-                    <label for="fst_pcc_name" class="col-sm-2 control-label"><?=lang("Profit & Cost Center Name")?> *</label>
-						<div class="col-sm-10">
+                    <label for="fst_pcc_name" class="col-sm-3 control-label"><?=lang("Profit & Cost Center Name")?> :</label>
+						<div class="col-sm-9">
 							<input type="text" class="form-control" id="fst_pcc_name" placeholder="<?=lang("Profit & Cost Center Name")?>" name="fst_pcc_name">
 							<div id="fst_pcc_name_err" class="text-danger"></div>
 						</div>
@@ -102,10 +102,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//var formData = new FormData($('form')[0])
 			$.ajax({
 				type: "POST",
-				enctype: 'multipart/form-data',
-				url: url,
-				data: data,
-				processData: false,
+                enctype: 'multipart/form-data',
+                url: url,
+                data: data,
+                processData: false,
 				contentType: false,
 				cache: false,
 				timeout: 600000,
@@ -117,7 +117,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>gl/profit_cost_center/lizt";
+                                        //location.reload();
+										window.location.href = "<?= site_url() ?>gl/profit_cost_center";
 										return;
 									}
 								},
@@ -211,11 +212,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.profit_cost_center);
+				console.log(resp.profitcost_center);
 
-				$.each(resp.profit_cost_center, function(name, val){
+				$.each(resp.profitcost_center, function(name, val){
 					var $el = $('[name="'+name+'"]'),
-					type = $el.attr('type');
+					    type = $el.attr('type');
 					switch(type){
 						case 'checkbox':
 							$el.attr('checked', 'checked');
