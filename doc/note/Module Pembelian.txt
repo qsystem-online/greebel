@@ -1,0 +1,91 @@
+*Lokal,Import,Non Stock
+PO -> Approval -> Faktur Biaya Pembelian -> Pembayaran DP -> Penerimaan Barang -> Faktur Pembelian -> Pembayaran
+
+
+PO (Purchase Order)
+Uang muka (DP)
+	* Uang muka bisa sudah termasuk pajak
+	
+=================================================================================================
+Approval PO
+
+* Jurnal bila terdapat uang muka :
+	Uang Muka Pembelian Lokal
+		Hutang Dagang Lokal		 
+
+(IMPORT) nilai di rupiahkan (simpan kurs)
+	Uang muka pembelian Import
+		Hutang Dagang Import
+		
+=================================================================================================
+Pembayaran DP (Module Kas & Bank - Pengeluaran)
+Pembayaran DP dengan referensi no PO
+Jurnal:
+	Hutang Dagang Lokal
+		Bank/Kas
+		
+(IMPORT) nilai di rupiahkan (simpan kurs, bukukan selisih kurs)
+	Hutang Dagang Import
+	Rugi selisih kurs
+		Bank /Kas 
+		Laba Selisih kurs
+		
+		
+		
+=================================================================================================
+Penerimaan Barang:
+dalam satu PO bisa terjadi penerimaan barang berkali-kali
+* Update kartu stock
+
+batch number
+
+=================================================================================================
+Purchase Invoice (Faktur Beli)
+input Kubikasi
+
+Jurnal:
+	Pembelian Lokal
+	PPN Masukan
+		Uang muka Pembelian
+		Disc
+		Hutang Dagang
+		
+
+
+Closing manual pembebanan HPP
+
+
+
+
+
+Return ??
+Uang muka tidak di claim saat pembayaran ??
+Pembagian biaya untuk tiap item pembelian  ??
+
+hanya account masuk ke biaya pembelian yg mempengaruhi HPP
+
+
+
+
+Module Pembelian Greebel
+Lokal:  
+*PO ->
+* Approve ->
+PO Uang muka
+->jurnal Uangmuka pembelian lokal > Hutang dagang lokal-
+
+
+*Penerimaan barang
+akui sebagai pembelian
+1 po penerimaan bisa beberapa kali
+update stock
+
+*Faktur pembelian
+1 faktur bisa beberapa penerimaan barang
+jurnal 
+pembelian pembelian loka
+
+
+
+IMPORT:
+selisih kurs

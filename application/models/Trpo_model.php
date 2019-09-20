@@ -217,7 +217,7 @@ class Trpo_model extends MY_Model {
         parent::update($data);        
     }
 
-    public function approved($finSalesOrderId){
+    public function approved($finSalesOrderId,$approved = true){
 
         $data = [
             "fin_salesorder_id"=>$finSalesOrderId,
