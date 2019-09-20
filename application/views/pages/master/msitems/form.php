@@ -1346,16 +1346,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 {column: "Item ID",hidden:false,id:"fin_item_id"},
 				{column: "Item Code",hidden:false,id:"fst_item_code"},
                 {column: "Item Name",hidden:false,id:"fst_item_name"},
-				{column: "Harga Beli",hidden:false,id:"fdc_price_list"},
+				{column: "Harga Beli",hidden:false,id:0},
 				{column: "Satuan",hidden:false,id:"fst_unit"},
-				{column: "Harga Jual",hidden:false,id:"fdc_selling_price"},
-				{column: "Satuan",hidden:false,id:"fst_unit-detail"},
-                {column: "Retail",hidden:true,id:"fdc_selling_price"},
-                {column: "Hypermart",hidden:true,id:"fdc_selling_price"},
-                {column: "Grosir",hidden:true,id:"fdc_selling_price"},
-                {column: "Sekolah/PO",hidden:true,id:"fdc_selling_price"},
-                {column: "MT Lokal",hidden:true,id:"fdc_selling_price"},
-                {column: "Group SMM/Internal",hidden:true,id:"fdc_selling_price"}
+				{column: "Price List",hidden:false,id:"fdc_price_list"},
+				{column: "Satuan",hidden:false,id:"fst_unit"},
+                {column: "Retail",hidden:true,id:"sellingPrice"},
+                {column: "Hypermart",hidden:true,id:"sellingPrice"},
+                {column: "Grosir",hidden:true,id:"sellingPrice"},
+                {column: "Sekolah/PO",hidden:true,id:"sellingPrice"},
+                {column: "MT Lokal",hidden:true,id:"sellingPrice"},
+                {column: "Group SMM/Internal",hidden:true,id:"sellingPrice"},
 			];
 			url = "<?= site_url() ?>master/item/get_printItem/" + $("#select-vendorName").val() + '/' + $("#select-groupItemName").val() + '/' + $("#select-ItemCode").val() + '/' + $("#select-CodeItem").val();
             MdlPrint.showPrint(layoutColumn,url);
@@ -1386,7 +1386,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
-
                 // menampilkan data di select2
                 var newOption = new Option(resp.ms_items.fst_item_maingroup_name, resp.ms_items.fin_item_maingroup_id, true, true);
                 // Append it to the select
@@ -1400,6 +1399,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $('#select-vendorName').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
                 $('#select-groupItemName').append(newOption).trigger('change');
+                var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
+                /*$('#select-ItemCode').append(newOption).trigger('change');
+                var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
+                $('#select-CodeItem').append(newOption).trigger('change');*/
 
                 // Append it to the select
                 $('#select-SubgItemId').append(newOption).trigger('change');
