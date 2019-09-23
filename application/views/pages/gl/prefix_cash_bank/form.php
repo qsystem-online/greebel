@@ -182,20 +182,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#select-glaccounts").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>gl/config/prefix_cash_bank/get_glaccount',
+				url: '<?=site_url()?>gl/config/prefix_cash_bank/get_Glaccounts',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
-					items = [];
+					data2 = [];
 					$.each(data,function(index,value){
-						items.push({
-							"id" : value.fst_gl_account_code,
-							"text" : value.fst_gl_account_code
+						data2.push({
+							"id" : value.fst_glaccount_code,
+							"text" : value.fst_glaccount_code
 						});
 					});
-					console.log(items);
+					console.log(data2);
 					return {
-						results: items
+						results: data2
 					};
 				},
 				cache: true,
@@ -278,7 +278,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
-				var newOption = new Option(resp.ms_kasbank.fst_gl_account_code, resp.ms_kasbank.fst_gl_account_code, true, true);
+				var newOption = new Option(resp.ms_kasbank.fst_glaccount_code, resp.ms_kasbank.fst_glaccount_code, true, true);
 				$('#select-glaccounts').append(newOption).trigger('change');
 			},
 

@@ -219,7 +219,7 @@ class Prefix_cash_bank extends MY_Controller {
 		$this->json_output($data);
     }
 
-    public function get_glaccount(){
+    public function get_Glaccounts(){
         $term = $this->input->get("term");
         $ssql = "SELECT fst_glaccount_code from glaccounts where fst_glaccount_code like ? ";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
