@@ -1399,8 +1399,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $('#select-vendorName').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
                 $('#select-groupItemName').append(newOption).trigger('change');
-                var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
-                /*$('#select-ItemCode').append(newOption).trigger('change');
+                /*var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
+                $('#select-ItemCode').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
                 $('#select-CodeItem').append(newOption).trigger('change');*/
 

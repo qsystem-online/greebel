@@ -1,8 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
-<link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
-<link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+<link rel="stylesheet" href="<?= base_url() ?>bower_components/select2/dist/css/select2.min.css">
 
 <style type="text/css">
 	.border-0{
@@ -24,10 +23,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-	<h1><?=lang("Prefix Trans Cash/Bank")?><small><?=lang("form")?></small></h1>
+	<h1><?=lang("Master Prefix Trans Kas/Bank")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
-		<li><a href="#"><?= lang("Prefix Trans Cash/Bank") ?></a></li>
+		<li><a href="#"><?= lang("Prefix Trans Kas/Bank") ?></a></li>
 		<li class="active title"><?=$title?></li>
 	</ol>
 </section>
@@ -55,17 +54,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class="form-group">
-                        <label for="fin_kasbank_id" class="col-md-2 control-label"><?=lang("Cash/Bank ID")?> #</label>
+                        <label for="fin_kasbank_id" class="col-md-2 control-label"><?=lang("Kas/Bank ID")?> #</label>
                             <div class="col-md-10">
-                                <input type="text" class="form-control" id="fin_kasbank_id" placeholder="<?=lang("Cash/Bank ID")?>" name="fin_kasbank_id" value="<?=$fin_kasbank_id?>" readonly>
+                                <input type="text" class="form-control" id="fin_kasbank_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_kasbank_id" value="<?=$fin_kasbank_id?>" readonly>
                                 <div id="fin_kasbank_id_err" class="text-danger"></div>
                             </div>
 					</div>
 
 					<div class="form-group">
-					<label for="fst_kasbank_name" class="col-md-2 control-label"><?=lang("Cash/Bank Name")?> :</label>
+					<label for="fst_kasbank_name" class="col-md-2 control-label"><?=lang("Kas/Bank Name")?> :</label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_kasbank_name" placeholder="<?=lang("Cash/Bank Name")?>" name="fst_kasbank_name">
+							<input type="text" class="form-control" id="fst_kasbank_name" placeholder="<?=lang("Kas/Bank Name")?>" name="fst_kasbank_name">
                             <div id="fst_kasbank_name_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -85,18 +84,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
                     <div class="form-group">
-                    <label for="fst_type" class="col-md-2 control-label"><?=lang("Type")?> :</label>
+					<label for="fst_type" class="col-md-2 control-label"><?=lang("Type")?> :</label>
 						<div class="col-md-4">
 							<select class="form-control" id="fst_type" name="fst_type">
 								<option value="0">-- <?=lang("select")?> --</option>
-								<option value="Cash"><?=lang("Cash")?></option>
-								<option value="Bank"><?=lang("Bank")?></option>
+								<option value='C'><?=lang("Cash")?></option>
+								<option value='B'><?=lang("Bank")?></option>
 							</select>
 						</div>
                     
-                    <label for="select-glaccount_code" class="col-md-2 control-label"><?=lang("Rekening GL Account")?> :</label>
+                    <label for="select-glaccount" class="col-md-2 control-label"><?=lang("Rekening GL Account")?> :</label>
 						<div class="col-md-4">
-							<select id="select-glaccount_code" class="form-control" name="fst_gl_account_code">
+							<select id="select-glaccount" class="form-control" name="fst_gl_account_code">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="fst_gl_account_code_err" class="text-danger"></div>
@@ -123,7 +122,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			data = new FormData($("#frmKasbank")[0]);
+			//data = new FormData($("#frmKasbank")[0]);
+			data = $("#frmKasbank").serializeArray();
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
@@ -135,12 +135,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//var formData = new FormData($('form')[0])
 			$.ajax({
 				type: "POST",
-                enctype: 'multipart/form-data',
+                //enctype: 'multipart/form-data',
                 url: url,
                 data: data,
-                processData: false,
-				contentType: false,
-				cache: false,
+                //processData: false,
+				//contentType: false,
+				//cache: false,
 				timeout: 600000,
 				success: function (resp) {	
 					if (resp.message != "")	{
@@ -151,7 +151,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								OK : function(){
 									if(resp.status == "SUCCESS"){
                                         //location.reload();
-										window.location.href = "<?= site_url() ?>gl/config/prefix_cash_bank";
+										window.location.href = "<?= site_url() ?>gl/config/prefix_cash_bank/add";
 										return;
 									}
 								},
@@ -174,7 +174,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 						// Change to Edit mode
 						$("#frm-mode").val("EDIT");  //ADD|EDIT
-
 						$('#fst_kasbank_name').prop('readonly', true);
 					}
 				},
@@ -186,24 +185,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-glaccount_code").select2({
+		$("#select-glaccount").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>gl/config/prefix_cash_bank/get_glaccount_code',
+				url: '<?=site_url()?>gl/config/prefix_cash_bank/get_glaccount',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
-					items = [];
+					data2 = [];
 					data = data.data;
 					$.each(data,function(index,value){
-						items.push({
-							"id" : value.fst_gl_account_code,
-							"text" : value.fst_gl_account_code
+						data2.push({
+							"id" : value.fst_glaccount_code,
+							"text" : value.fst_glaccount_code
 						});
 					});
-					console.log(items);
+					console.log(data2);
 					return {
-						results: items
+						results: data2
 					};
 				},
 				cache: true,
@@ -251,7 +250,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$(".text-danger").html("");
 					// Change to Edit mode
 					$("#frm-mode").val("EDIT");  //ADD|EDIT
-					$('#fst_pcc_name').prop('readonly', true);
+					$('#fst_kasbank_name').prop('readonly', true);
 				}
 			});
 		});
@@ -283,11 +282,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							break;
 						default:
 							$el.val(val);
+							console.log(val);
 					}
 				});
 
-				var newOption = new Option(resp.ms_kasbank.fst_gl_account_code, resp.ms_kasbank.fst_gl_account_code, true, true);
-				$('#select-glaccount_code').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_kasbank.fst_glaccount_code, resp.ms_kasbank.fst_glaccount_code, true, true);
+				$('#select-glaccount').append(newOption).trigger('change');
 			},
 
 			error: function (e) {

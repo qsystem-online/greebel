@@ -15,25 +15,25 @@ class Prefix_cash_bank extends MY_Controller {
 
     public function lizt(){
         $this->load->library('menus');
-        $this->list['page_name'] = "Master Prefix Trans Cash/Bank";
-        $this->list['list_name'] = "Prefix Trans Cash/Bank List";
+        $this->list['page_name'] = "Master Prefix Trans Kas/Bank";
+        $this->list['list_name'] = "Prefix Trans Kas/Bank List";
         $this->list['addnew_ajax_url'] = site_url() . 'gl/config/prefix_cash_bank/add';
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'gl/config/prefix_cash_bank/fetch_list_data';
         $this->list['delete_ajax_url'] = site_url() . 'gl/config/prefix_cash_bank/delete/';
         $this->list['edit_ajax_url'] = site_url() . 'gl/config/prefix_cash_bank/edit/';
         $this->list['arrSearch'] = [
-            'fin_kasbank_id' => 'Cash/Bank ID',
-            'fst_kasbank_name' => 'Cash/Bank Name'
+            'fin_kasbank_id' => 'Kas/Bank ID',
+            'fst_kasbank_name' => 'Kas/Bank Name'
         ];
         $this->list['breadcrumbs'] = [
             ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-            ['title' => 'Prefix Trans Cash/Bank', 'link' => '#', 'icon' => ''],
+            ['title' => 'Prefix Trans Kas/Bank', 'link' => '#', 'icon' => ''],
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'Cash/Bank ID', 'width' => '10%', 'data' => 'fin_kasbank_id'],
-            ['title' => 'Cash/Bank Name', 'width' => '20%', 'data' => 'fst_kasbank_name'],
+            ['title' => 'Kas/Bank ID', 'width' => '10%', 'data' => 'fin_kasbank_id'],
+            ['title' => 'Kas/Bank Name', 'width' => '20%', 'data' => 'fst_kasbank_name'],
             ['title' => 'Prefix Pengeluaran', 'width' => '13%', 'data' => 'fst_prefix_pengeluaran'],
             ['title' => 'Prefix Pemasukan', 'width' => '13%', 'data' => 'fst_prefix_pemasukan'],
             ['title' => 'Type', 'width' => '8%', 'data' => 'fst_type'],
@@ -63,7 +63,7 @@ class Prefix_cash_bank extends MY_Controller {
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 
 		$data["mode"] = $mode;
-		$data["title"] = $mode == "ADD" ? "Add Prefix Trans Cash/Bank" : "Update Prefix Trans Cash/Bank";
+		$data["title"] = $mode == "ADD" ? "Add Prefix Trans Kas/Bank" : "Update Prefix Trans Kas/Bank";
 		$data["fin_kasbank_id"] = $fin_kasbank_id;
 
 		$page_content = $this->parser->parse('pages/gl/prefix_cash_bank/form', $data, true);
@@ -220,9 +220,9 @@ class Prefix_cash_bank extends MY_Controller {
 		$this->json_output($data);
     }
 
-    public function get_glaccount_code(){
+    public function get_glaccount(){
         $term = $this->input->get("term");
-        $ssql = "SELECT fst_glaccount_code from glaccounts where fst_glaccount_code like ?";
+        $ssql = "SELECT fst_glaccount_code from glaccounts where fst_glaccount_code like ? order by fst_glaccount_code ";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
 
