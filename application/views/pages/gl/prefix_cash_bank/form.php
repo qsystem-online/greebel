@@ -24,10 +24,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-	<h1><?=lang("Prefix Trans Kas/Bank")?><small><?=lang("form")?></small></h1>
+	<h1><?=lang("Prefix Trans Cash/Bank")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
-		<li><a href="#"><?= lang("Prefix Trans Kas/Bank") ?></a></li>
+		<li><a href="#"><?= lang("Prefix Trans Cash/Bank") ?></a></li>
 		<li class="active title"><?=$title?></li>
 	</ol>
 </section>
@@ -55,17 +55,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class="form-group">
-                        <label for="fin_kasbank_id" class="col-md-2 control-label"><?=lang("Kas/Bank ID")?> #</label>
+                        <label for="fin_kasbank_id" class="col-md-2 control-label"><?=lang("Cash/Bank ID")?> #</label>
                             <div class="col-md-10">
-                                <input type="text" class="form-control" id="fin_kasbank_id" placeholder="<?=lang("Kas/Bank ID")?>" name="fin_kasbank_id" value="<?=$fin_kasbank_id?>" readonly>
+                                <input type="text" class="form-control" id="fin_kasbank_id" placeholder="<?=lang("Cash/Bank ID")?>" name="fin_kasbank_id" value="<?=$fin_kasbank_id?>" readonly>
                                 <div id="fin_kasbank_id_err" class="text-danger"></div>
                             </div>
 					</div>
 
 					<div class="form-group">
-					<label for="fst_kasbank_name" class="col-md-2 control-label"><?=lang("Kas/Bank Name")?> :</label>
+					<label for="fst_kasbank_name" class="col-md-2 control-label"><?=lang("Cash/Bank Name")?> :</label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_kasbank_name" placeholder="<?=lang("Kas/Bank Name")?>" name="fst_kasbank_name">
+							<input type="text" class="form-control" id="fst_kasbank_name" placeholder="<?=lang("Cash/Bank Name")?>" name="fst_kasbank_name">
                             <div id="fst_kasbank_name_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -197,8 +197,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data = data.data;
 					$.each(data,function(index,value){
 						items.push({
-							"id" : value.fst_glaccount_code,
-							"text" : value.fst_glaccount_code
+							"id" : value.fst_gl_account_code,
+							"text" : value.fst_gl_account_code
 						});
 					});
 					console.log(items);
@@ -286,7 +286,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				});
 
-				var newOption = new Option(resp.ms_kasbank.fst_glaccount_code, resp.ms_kasbank.fst_glaccount_code, true, true);
+				var newOption = new Option(resp.ms_kasbank.fst_gl_account_code, resp.ms_kasbank.fst_gl_account_code, true, true);
 				$('#select-glaccount_code').append(newOption).trigger('change');
 			},
 

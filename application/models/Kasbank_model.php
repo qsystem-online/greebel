@@ -28,8 +28,8 @@ class Kasbank_model extends MY_Model{
         $rules = [];
 
         $rules[] = [
-            'field' => 'fst_curr_name',
-            'label' => 'Currencies Name',
+            'field' => 'fst_kasbank_name',
+            'label' => 'Cash/Bank Name',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
