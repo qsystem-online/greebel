@@ -136,4 +136,55 @@ class Trverification_model extends MY_Model {
         
 
     }
+    public function reject($finRecId){
+        $ssql = "select * from " . $this->tableName . " where fin_rec_id = ?";
+        $qr = $this->db->query($ssql,[$finRecId]);
+        $rw = $qr->row();
+
+        $activeUser = $this->aauth->user();
+        //di approved oleh orang dr departemen dan group sesuai ketentuan
+        if ($rw->fin_department_id == $activeUser->fin_department_id && $rw->fin_user_group_id == $activeUser->fin_group_id){
+            $data=[
+                "fin_rec_id"=>$finRecId,
+                "fst_verification_status"=>"RJ" //Verified
+            ];
+            parent::update($data);
+            //Rubah semua seq_no (yang sama dan belum VF) dan seq_no diatasnya menjadi rejected
+            $ssql ="update " . $this->tableName . " set fst_verification_status = 'RJ' 
+                where fst_controller = ? 
+                and fst_verification_type = ? 
+                and fin_transaction_id = ?
+                and fin_seqno >= ? 
+                and fst_verification_status != 'VF'";
+
+            $this->db->query($ssql,array($rw->fst_controller,$rw->fst_verification_type,$rw->fin_transaction_id,$rw->fin_seqno));
+            $this->load->model($rw->fst_model,'model');
+            $action = $rw->fst_method;
+
+            if(is_callable(array($this->model, $action))){
+                $this->model->$action($rw->fin_transaction_id,false);
+            }
+
+
+        }else{
+            return false;
+        }
+    }
+
+    public function showTransaction($finRecId){
+        $ssql = "select * from " . $this->tableName . " where fin_rec_id = ?";
+        $qr = $this->db->query($ssql,[$finRecId]);
+        $rw = $qr->row();
+
+        if($rw){
+            $this->load->model($rw->fst_model,'model');
+            $action = $rw->fst_show_record_method;
+
+            if(is_callable(array($this->model, $action))){
+                $this->model->$action($rw->fin_transaction_id);
+            }
+            
+        }
+    
+    }
 }

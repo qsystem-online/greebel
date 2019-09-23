@@ -6,6 +6,7 @@ if (file_exists($cekAvatar)) {
 } else {
 	$avatar = base_url() . 'assets/app/users/avatar/default.jpg';
 }
+
 ?>
 
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/select2/dist/css/select2.min.css">
@@ -18,9 +19,7 @@ if (file_exists($cekAvatar)) {
 		</div>
 		<div class="pull-left info">
 			<?php
-			$active_user = $this->session->userdata("active_user");
-			//var_dump($active_user);
-			//die();
+			$active_user = $this->session->userdata("active_user");			
 			$branchs = $this->msbranches_model->getAllList();
 			$disabledSelect = ($active_user->fbl_is_hq == 1) ? "" : "disabled";
 			$disabledSelect = ($active_user->fin_level <= getDbConfig("change_branch_level")) ? "" : "disabled";
