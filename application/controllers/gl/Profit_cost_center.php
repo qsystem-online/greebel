@@ -124,7 +124,7 @@ class Profit_cost_center extends MY_Controller
 		$this->json_output();
 	}
 
-	public function ajx_edit_edit(){
+	public function ajx_edit_save(){
 		$this->load->model('profitcostcenter_model');
 		$fin_pcc_id = $this->input->post("fin_pcc_id");
 		$data = $this->profitcostcenter_model->getDataById($fin_pcc_id);

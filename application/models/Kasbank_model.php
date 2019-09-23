@@ -11,12 +11,13 @@ class Kasbank_model extends MY_Model{
     }
 
     public function getDataById($fin_kasbank_id){
-        $ssql = "SELECT fin_kasbank_id,fst_kasbank_name FROM mskasbank where fin_kasbank_id = ? and fst_active = 'A'";
+        $ssql = "SELECT a.*,b.fst_glaccount_code FROM mskasbank a LEFT JOIN glaccounts b ON a.fst_gl_account_code = b.fst_glaccount_code
+                where a.fin_kasbank_id = ? AND a.fst_active = 'A' ";
         $qr = $this->db->query($ssql, [$fin_kasbank_id]);
         $rwKasbank = $qr->row();
 
         $data = [
-            "ms_Kasbank" => $rwKasbank
+            "ms_kasbank" => $rwKasbank
         ];
 
         return $data;

@@ -57,7 +57,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
                         <label for="fin_kasbank_id" class="col-md-2 control-label"><?=lang("Kas/Bank ID")?> #</label>
                             <div class="col-md-10">
-                                <input type="text" class="form-control" id="fin_kasbank_id" placeholder="<?=lang("Kas/Bank ID")?>" name="fin_kasbank_id" value="<?=$fin_kasbank_id?>">
+                                <input type="text" class="form-control" id="fin_kasbank_id" placeholder="<?=lang("Kas/Bank ID")?>" name="fin_kasbank_id" value="<?=$fin_kasbank_id?>" readonly>
                                 <div id="fin_kasbank_id_err" class="text-danger"></div>
                             </div>
 					</div>
@@ -85,16 +85,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
                     <div class="form-group">
-                    <label for="fst_type" class="col-md-2 control-label personal-info"><?=lang("Type")?> :</label>
-						<div class="col-md-4 personal-info">
+                    <label for="fst_type" class="col-md-2 control-label"><?=lang("Type")?> :</label>
+						<div class="col-md-4">
 							<select class="form-control" id="fst_type" name="fst_type">
 								<option value="0">-- <?=lang("select")?> --</option>
-								<option value="C"><?=lang("Cash")?></option>
-								<option value="B"><?=lang("Bank")?></option>
+								<option value="Cash"><?=lang("Cash")?></option>
+								<option value="Bank"><?=lang("Bank")?></option>
 							</select>
 						</div>
                     
-                    <label for="select-glaccount_code" class="col-md-2 control-label"><?=lang("Rekening GL Account KasBank")?> :</label>
+                    <label for="select-glaccount_code" class="col-md-2 control-label"><?=lang("Rekening GL Account")?> :</label>
 						<div class="col-md-4">
 							<select id="select-glaccount_code" class="form-control" name="fst_gl_account_code">
 								<option value="0">-- <?=lang("select")?> --</option>
@@ -185,6 +185,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 			});
 		});
+
+		$("#select-glaccount_code").select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>gl/config/prefix_cash_bank/get_glaccount_code',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					items = [];
+					data = data.data;
+					$.each(data,function(index,value){
+						items.push({
+							"id" : value.fst_glaccount_code,
+							"text" : value.fst_glaccount_code
+						});
+					});
+					console.log(items);
+					return {
+						results: items
+					};
+				},
+				cache: true,
+			}
+		});
 		
 		$("#btnNew").click(function(e){
 			e.preventDefault();
@@ -245,9 +269,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			type: "GET",
 			url: url,
 			success: function (resp) {	
-				console.log(resp.ms_Kasbank);
+				console.log(resp.ms_kasbank);
 
-				$.each(resp.ms_Kasbank, function(name, val){
+				$.each(resp.ms_kasbank, function(name, val){
 					var $el = $('[name="'+name+'"]'),
 					    type = $el.attr('type');
 					switch(type){
@@ -261,6 +285,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							$el.val(val);
 					}
 				});
+
+				var newOption = new Option(resp.ms_kasbank.fst_glaccount_code, resp.ms_kasbank.fst_glaccount_code, true, true);
+				$('#select-glaccount_code').append(newOption).trigger('change');
 			},
 
 			error: function (e) {
