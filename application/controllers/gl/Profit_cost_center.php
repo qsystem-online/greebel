@@ -16,7 +16,7 @@ class Profit_cost_center extends MY_Controller
 
 	public function lizt(){
 		$this->load->library('menus');
-		$this->list['page_name'] = "Profit & Cost Center";
+		$this->list['page_name'] = "Master Profit & Cost Center";
 		$this->list['list_name'] = "Profit & Cost Center List";
 		$this->list['addnew_ajax_url'] = site_url() . 'gl/profit_cost_center/add';
 		$this->list['pKey'] = "id";
@@ -124,7 +124,7 @@ class Profit_cost_center extends MY_Controller
 		$this->json_output();
 	}
 
-	public function ajx_edit_save(){
+	public function ajx_edit_edit(){
 		$this->load->model('profitcostcenter_model');
 		$fin_pcc_id = $this->input->post("fin_pcc_id");
 		$data = $this->profitcostcenter_model->getDataById($fin_pcc_id);
