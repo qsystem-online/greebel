@@ -103,7 +103,7 @@ class Prefix_cash_bank extends MY_Controller {
 		$data = [
             "fst_kasbank_name" => $this->input->post("fst_kasbank_name"),
             "fst_prefix_pengeluaran" => $this->input->post("fst_prefix_pengeluaran"),
-            "fst_prefix_pengeluaran" => $this->input->post("fst_prefix_pengeluaran"),
+            "fst_prefix_pemasukan" => $this->input->post("fst_prefix_pemasukan"),
             "fst_type" => $this->input->post("fst_type"),
             "fst_gl_account_code" =>$this->input->post("fst_gl_account_code"),
 			"fst_active" => 'A'
@@ -215,14 +215,13 @@ class Prefix_cash_bank extends MY_Controller {
     public function fetch_data($fin_kasbank_id){
         $this->load->model("kasbank_model");
 		$data = $this->kasbank_model->getDataById($fin_kasbank_id);
-
-		//$this->load->library("datatables");		
+		
 		$this->json_output($data);
     }
 
     public function get_glaccount(){
         $term = $this->input->get("term");
-        $ssql = "SELECT fst_glaccount_code from glaccounts where fst_glaccount_code like ? order by fst_glaccount_code ";
+        $ssql = "SELECT fst_glaccount_code from glaccounts where fst_glaccount_code like ? ";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
 
@@ -239,4 +238,11 @@ class Prefix_cash_bank extends MY_Controller {
 		//$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
     }
+
+    public function getAllList(){
+        $this->load->model('kasbank_model');
+        $result = $this->kasbank_model->getAllList();
+        $this->ajxResp["data"] = $result;
+        $this->json_output();
+	}
 }

@@ -87,15 +87,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<label for="fst_type" class="col-md-2 control-label"><?=lang("Type")?> :</label>
 						<div class="col-md-4">
 							<select class="form-control" id="fst_type" name="fst_type">
-								<option value="0">-- <?=lang("select")?> --</option>
-								<option value='C'><?=lang("Cash")?></option>
-								<option value='B'><?=lang("Bank")?></option>
+								<option value='Cash'><?=lang("Cash")?></option>
+								<option value='Bank'><?=lang("Bank")?></option>
 							</select>
 						</div>
                     
-                    <label for="select-glaccount" class="col-md-2 control-label"><?=lang("Rekening GL Account")?> :</label>
+                    <label for="select-glaccounts" class="col-md-2 control-label"><?=lang("Rekening GL Account")?> :</label>
 						<div class="col-md-4">
-							<select id="select-glaccount" class="form-control" name="fst_gl_account_code">
+							<select id="select-glaccounts" class="form-control" name="fst_gl_account_code">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="fst_gl_account_code_err" class="text-danger"></div>
@@ -122,7 +121,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			//data = new FormData($("#frmKasbank")[0]);
 			data = $("#frmKasbank").serializeArray();
 
 			mode = $("#frm-mode").val();
@@ -135,12 +133,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//var formData = new FormData($('form')[0])
 			$.ajax({
 				type: "POST",
-                //enctype: 'multipart/form-data',
                 url: url,
                 data: data,
-                //processData: false,
-				//contentType: false,
-				//cache: false,
 				timeout: 600000,
 				success: function (resp) {	
 					if (resp.message != "")	{
@@ -185,24 +179,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-glaccount").select2({
+		$("#select-glaccounts").select2({
 			width: '100%',
 			ajax: {
 				url: '<?=site_url()?>gl/config/prefix_cash_bank/get_glaccount',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
-					data2 = [];
-					data = data.data;
+					items = [];
 					$.each(data,function(index,value){
-						data2.push({
-							"id" : value.fst_glaccount_code,
-							"text" : value.fst_glaccount_code
+						items.push({
+							"id" : value.fst_gl_account_code,
+							"text" : value.fst_gl_account_code
 						});
 					});
-					console.log(data2);
+					console.log(items);
 					return {
-						results: data2
+						results: items
 					};
 				},
 				cache: true,
@@ -282,12 +275,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							break;
 						default:
 							$el.val(val);
-							console.log(val);
 					}
 				});
 
-				var newOption = new Option(resp.ms_kasbank.fst_glaccount_code, resp.ms_kasbank.fst_glaccount_code, true, true);
-				$('#select-glaccount').append(newOption).trigger('change');
+				var newOption = new Option(resp.ms_kasbank.fst_gl_account_code, resp.ms_kasbank.fst_gl_account_code, true, true);
+				$('#select-glaccounts').append(newOption).trigger('change');
 			},
 
 			error: function (e) {
