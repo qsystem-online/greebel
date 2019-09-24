@@ -564,15 +564,16 @@ class Item extends MY_Controller
         /*var_dump($arrLayout);
         echo "PRINT......";*/
         
-        foreach($arrlayout as $layout){
-            if($layout->hidden == true){
-                echo "sembunyikan";
-            }else{
-                echo "tampilkan";
+        foreach($arrLayout as $layout){
+            if($layout->column == "Retail"){
+                if($layout->hidden == true){
+                    echo "sembunyikan";
+                }else{
+                    echo "tampilkan";
+                }
             }
         }
-
-        //die();
+        die();
         
         $this->load->model("msitems_model");
         $printItem = $this->msitems_model->getPrintItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir);
@@ -668,10 +669,8 @@ class Item extends MY_Controller
         $sheet->mergeCells('F4:'.$col.'4');
 
         foreach ($printItem as $rw) {
-            $sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->pricingGroupId);
-            $ssql = "select * from msitem where fin_item_id and fst_active = 'A'";
-
-
+            //$sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->pricingGroupId);
+            //$ssql = "select * from msitem where fin_item_id and fst_active = 'A'";
 
             $sheet->setCellValue("B$iRow1", $rw->fst_vendor_item_name);
             $sheet->setCellValue("B$iRow2", $rw->fst_item_group);
