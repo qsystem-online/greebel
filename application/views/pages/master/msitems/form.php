@@ -1108,7 +1108,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        window.location.href = "<?= site_url() ?>master/item/lizt";
+                                        window.location.href = "<?= site_url() ?>master/item";
                                         return;
                                     }
                                 },
@@ -1356,6 +1356,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 {column: "Sekolah/PO",hidden:true,id:"sellingPrice"},
                 {column: "MT Lokal",hidden:true,id:"sellingPrice"},
                 {column: "Group SMM/Internal",hidden:true,id:"sellingPrice"},
+                {column: "Online Shop",hidden:true,id:"sellingPrice"},
+                {column: "Enigma Tbk",hidden:true,id:"sellingPrice"},
+                {column: "Tourtuile",hidden:true,id:"sellingPrice"}
 			];
 			url = "<?= site_url() ?>master/item/get_printItem/" + $("#select-vendorName").val() + '/' + $("#select-groupItemName").val() + '/' + $("#select-ItemCode").val() + '/' + $("#select-CodeItem").val();
             MdlPrint.showPrint(layoutColumn,url);
