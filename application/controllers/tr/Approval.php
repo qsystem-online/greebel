@@ -71,5 +71,26 @@ class Approval extends MY_Controller{
         $this->ajxResp["message"] = "";
         $this->ajxResp["data"]=[];
         $this->json_output();
-    }
+	}
+	
+	public function doReject($finRecId){
+        $this->load->model('trverification_model');
+
+        $this->db->trans_start();
+        $result = $this->trverification_model->reject($finRecId);
+        $this->db->trans_complete();
+        
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["message"] = "";
+        $this->ajxResp["data"]=[];
+        $this->json_output();
+	}
+	
+	public function viewDetail($finRecId){
+		$this->load->model('trverification_model');
+		$this->trverification_model->showTransaction($finRecId);
+	}
+
+
+	
 }

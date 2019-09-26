@@ -127,7 +127,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id"></select>
 									<div id="fin_warehouse_id_err" class="text-danger"></div>
 								</div>
-								<div class="pull-left" style="width:25%" >
+								<div class="pull-left" style="width:26%" >
 									<div class="form-group">
 										<label for="fst_do_no" class="col-md-5 control-label"><?=lang("Nomor DO")?> </label>
 										<div class="col-md-7">
@@ -227,86 +227,91 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div id="mdlAddDetail" class="modal fade" role="dialog" >
 	<div class="modal-dialog" style="display:table;width:800px">
 		<!-- modal content -->
-		<div class="modal-content">
-			<div class="modal-header">
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
 				<h4 class="modal-title"><?=lang("Add PO Detail")?></h4>
 			</div>
 
 			<div class="modal-body">
+				<div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
 				
-				<form id="form-detail" class="form-horizontal">
-					<input type='hidden' id='fin_rec_id'/>
-					<div class="form-group">
-						<label for="fin_item_id" class="col-md-2 control-label"><?=lang("Items")?></label>
-						<div class="col-md-10">
-							<select id="fin_item_id" class="form-control" style="width:100%"></select>
+								<form id="form-detail" class="form-horizontal">
+									<input type='hidden' id='fin_rec_id'/>
+									<div class="form-group">
+										<label for="fin_item_id" class="col-md-2 control-label"><?=lang("Items")?></label>
+										<div class="col-md-10">
+											<select id="fin_item_id" class="form-control" style="width:100%"></select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="fst_custom_item_name" class="col-md-2 control-label"><?=lang("Custom Name")?></label>
+										<div class="col-md-10">
+											<input id="fst_custom_item_name" class="form-control"></select>
+											<div id="fst_custom_item_name_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fst_unit" class="col-md-2 control-label"><?=lang("Unit")?></label>
+										<div class="col-md-10">
+											<select id="fst_unit" name="fst_unit" class="form-control" style="width:100%"></select>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fdb_qty" class="col-md-2 control-label"><?=lang("Qty")?></label>
+										<div class="col-md-2">
+											<input type="number" class="ele-disc form-control text-right numeric" id="fdb_qty" value="1" min="1">
+										</div>
+
+										<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?></label>
+										<div class="col-md-6">
+											<input type="text" class="ele-disc form-control text-right money" id="fdc_price" value="0">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fst_disc_item" class=" col-md-2 control-label"><?=lang("Disc ++")?></label>
+										<div class="col-md-10">
+											<select id="fst_disc_item" class="ele-disc form-control text-right" style="width:100%"></select>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fdc_disc_amount" class="col-md-2 control-label"><?=lang("Disc Amt")?></label>
+										<div class="col-md-10">
+											<input type="text" class="form-control text-right" id="fdc_disc_amount" readonly>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="total" class="col-md-8 control-label">Uang Muka</label>
+										<div class="col-md-4" style="text-align:right">
+											<input type="text" class="money form-control text-right" id="fdc_downpayment" name="fdc_downpayment" value="0" style="text-align: right;">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fst_memo_item" class="col-md-2 control-label"><?=lang("Memo")?></label>
+										<div class="col-md-10">
+											<textarea type="text" class="form-control" id="fst_memo_item" rows="3"></textarea>
+										</div>
+									</div>
+
+								</form>
+								
+								<div class="modal-footer">
+									<button id="btn-add-po-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+									<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+								</div>
+							</fieldset>
 						</div>
 					</div>
-					<div class="form-group">
-						<label for="fst_custom_item_name" class="col-md-2 control-label"><?=lang("Custom Name")?></label>
-						<div class="col-md-10">
-							<input id="fst_custom_item_name" class="form-control"></select>
-							<div id="fst_custom_item_name_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="fst_unit" class="col-md-2 control-label"><?=lang("Unit")?></label>
-						<div class="col-md-10">
-							<select id="fst_unit" name="fst_unit" class="form-control" style="width:100%"></select>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="fdb_qty" class="col-md-2 control-label"><?=lang("Qty")?></label>
-						<div class="col-md-2">
-							<input type="number" class="ele-disc form-control text-right numeric" id="fdb_qty" value="1" min="1">
-						</div>
-
-						<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?></label>
-						<div class="col-md-6">
-							<input type="text" class="ele-disc form-control text-right money" id="fdc_price" value="0">
-						</div>
-					</div>
-
-					
-
-					<div class="form-group">
-						<label for="fst_disc_item" class=" col-md-2 control-label"><?=lang("Disc ++")?></label>
-						<div class="col-md-10">
-							<select id="fst_disc_item" class="ele-disc form-control text-right" style="width:100%"></select>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="fdc_disc_amount" class="col-md-2 control-label"><?=lang("Disc Amt")?></label>
-						<div class="col-md-10">
-							<input type="text" class="form-control text-right" id="fdc_disc_amount" readonly>
-						</div>
-					</div>
-					
-					<div class="form-group">
-						<label for="total" class="col-md-8 control-label">Uang Muka</label>
-						<div class="col-md-4" style="text-align:right">
-							<input type="text" class="money form-control text-right" id="fdc_downpayment" name="fdc_downpayment" value="0" style="text-align: right;">
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="fst_memo_item" class="col-md-2 control-label"><?=lang("Memo")?></label>
-						<div class="col-md-10">
-							<textarea type="text" class="form-control" id="fst_memo_item" rows="3"></textarea>
-						</div>
-					</div>
-
-					
-					
-				</form>				
-			</div>
-			<div class="modal-footer">
-				<button id="btn-add-po-detail" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -368,7 +373,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		initVarForm();
 
 		$("#btnPrint").click(function(e){
-			$("#mdlPrint").modal("toggle");
+			layoutColumn = [
+				{column: "Kode",hidden:false,id:"fst_kode"},
+				{column: "Nama",hidden:false,id:"fst_nama"},
+				{column: "Harga Beli",hidden:true,id:"fdc_harga_beli"},
+				{column: "Satuan",hidden:true,id:"fst_unit"},
+				{column: "Harga Jual",hidden:true,id:"fdc_harga_jual"},
+			];
+			url = "<?= site_url() ?>tr/purchase_order/print_po";
+			MdlPrint.showPrint(layoutColumn,url);
+			
 		});
 
 		$("#btnJurnal").click(function(e){
@@ -609,6 +623,56 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		//init_form($("#fin_salesorder_id").val());
 		fixedSelect2();
 
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>tr/purchase_order/add")
+		});
+
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+			$.ajax({
+				url:"<?= site_url() ?>tr/purchase_order/delete/" + $("#fin_po_id").val(),
+			}).done(function(resp){
+				//consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != "")	{
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons : {
+							OK : function() {
+								if (resp.status == "SUCCESS") {
+									window.location.href = "<?= site_url() ?>tr/purchase_order/lizt";
+									//return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fin_po_id").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_po_no').prop('readonly', true);
+				}
+			});
+		});
+
+		$("#btnClose").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>tr/purchase_order/lizt");
+		});
 		
 	});
 

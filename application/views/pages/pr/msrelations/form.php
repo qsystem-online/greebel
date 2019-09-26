@@ -363,71 +363,79 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div id="mdlShippingDetails" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:75%;min-width:750px;max-width:100%">
         <!-- modal content -->
-		<div class="modal-content">
-			<div class="modal-header">
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
 				<button type="button" class="close" data-dismiss="modal">x</button>
 				<h4 class="modal-title"><?=lang("Add Shipping Address")?></h4>
 			</div>
 
 			<div class="modal-body">
-				<form  class="form-horizontal">
-					<div class="form-group">
-						<label for="fst_name" class="col-md-2 control-label"><?=lang("Name")?> :</label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_name" name="fst_name">
-							<div id="fst_name_err" class="text-danger"></div>
+				<div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+								<form  class="form-horizontal">
+									<div class="form-group">
+										<label for="fst_name" class="col-md-2 control-label"><?=lang("Name")?> :</label>
+										<div class="col-md-10">
+											<input type="text" class="form-control" id="fst_name" name="fst_name">
+											<div id="fst_name_err" class="text-danger"></div>
+										</div>
+									</div>
+								
+									<div class="form-group">
+										<label for="provinceShipp" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
+										<div class="col-md-4">
+											<select id="provinceShipp" class="form-control" name="fst_kode">
+												<option value="0">-- <?=lang("select")?> --</option>
+											</select>
+											<div id="fst_nama_err" class="text-danger"></div>
+										</div>
+
+										<label for="districtShipp" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
+										<div class="col-md-4">
+											<select id="districtShipp" class="form-control" name="fst_kode">
+												<option value="0">-- <?=lang("select")?> --</option>
+											</select>
+											<div id="fst_nama_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="subdistrictShipp" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
+										<div class="col-md-4">
+											<select id="subdistrictShipp" class="form-control" name="fst_kode">
+												<option value="0">-- <?=lang("select")?> --</option>
+											</select>
+											<div id="fst_nama_err" class="text-danger"></div>
+										</div>
+
+										<label for="villageShipp" class="col-md-2 control-label"><?=lang("Village Name")?> :</label>
+										<div class="col-md-4">
+											<select id="villageShipp" class="form-control" name="fst_kode">
+												<option value="0">-- <?=lang("select")?> --</option>
+											</select>
+											<div id="fst_nama_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Shipping Address")?> :</label>
+										<div class="col-md-10">
+											<textarea class="form-control" id="fst_shipping_address" name="fst_shipping_address"></textarea>
+											<div id="fst_shipping_address_err" class="text-danger"></div>
+										</div>
+									</div>
+								</form>
+
+								<div class="modal-footer" style="width:100%;padding:10px" class="text-center">
+									<button id="btn-add-shippDetails" type="button" class="btn btn-primary btn-sm text-center" style="width:10%" ><?=lang("Add")?></button>
+									<button type="button" class="btn btn-default btn-sm text-center" style="width:10%" data-dismiss="modal"><?=lang("Close")?></button>
+								</div>
+							</fieldset>
 						</div>
 					</div>
-				
-					<div class="form-group">
-						<label for="provinceShipp" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
-						<div class="col-md-4">
-							<select id="provinceShipp" class="form-control" name="fst_kode">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fst_nama_err" class="text-danger"></div>
-						</div>
-
-						<label for="districtShipp" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
-						<div class="col-md-4">
-							<select id="districtShipp" class="form-control" name="fst_kode">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fst_nama_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="subdistrictShipp" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
-						<div class="col-md-4">
-							<select id="subdistrictShipp" class="form-control" name="fst_kode">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fst_nama_err" class="text-danger"></div>
-						</div>
-
-						<label for="villageShipp" class="col-md-2 control-label"><?=lang("Village Name")?> :</label>
-						<div class="col-md-4">
-							<select id="villageShipp" class="form-control" name="fst_kode">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fst_nama_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Shipping Address")?> :</label>
-						<div class="col-md-10">
-							<textarea class="form-control" id="fst_shipping_address" name="fst_shipping_address"></textarea>
-							<div id="fst_shipping_address_err" class="text-danger"></div>
-						</div>
-					</div>
-				</form>
-			</div>
-
-			<div class="modal-footer">
-				<button id="btn-add-shippDetails" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
-				<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1141,7 +1149,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>master/relation");
+			window.location.replace("<?=site_url()?>pr/relation/lizt");
 		});
 	});
 

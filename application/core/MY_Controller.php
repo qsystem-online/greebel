@@ -21,17 +21,21 @@ class MY_Controller extends CI_Controller
 			redirect(site_url() . 'login', 'refresh');
 		}
 
+		
+
 		if ($this->aauth->is_session_timeout()) {
-			if ($this->input->is_ajax_request()) {
+			if ($this->input->is_ajax_request()) {			
 				$this->ajxResp["status"] = AJAX_STATUS_SESSION_EXPIRED;
 				$this->session->unset_userdata("last_uri");
-				$this->json_output(401);
-			} else {
+				$this->json_output(null,401);
+				die();
+			} else {				
 				$lastURI = $this->uri->uri_string();
 				$this->session->set_userdata("last_uri", $lastURI);
 				redirect('/signout/expired', 'refresh');
 			}
 		} else {
+			
 			$this->aauth->renew_session_timeout();
 		}
 		//End - Check User Login and Session expired

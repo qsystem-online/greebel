@@ -9,7 +9,7 @@ class Home extends MY_Controller {
         $this->load->model('dashboard_model');
 	}
 	
-	public function index(){
+	public function index(){		
 		$this->load->library("menus");
 		
 		$main_header = $this->parser->parse('inc/main_header',[],true);

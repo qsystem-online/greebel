@@ -32,6 +32,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		font-weight:700;
 	}
 </style>
+<?php
+	echo $mdlPrint;
+?>
 
 <section class="content-header">
 	<h1><?=lang("Sales Order")?><small><?=lang("form")?></small></h1>
@@ -434,6 +437,61 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			var cekPromo = 1;
 			var confirmAuthorize = 0;
 			saveAjax(cekPromo,confirmAuthorize);
+		});
+
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>tr/sales_order/add")
+		});
+
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+			$.ajax({
+				url:"<?= site_url() ?>tr/sales_order/delete/" + $("#fin_salesorder_id").val(),
+			}).done(function(resp){
+				//consoleLog(resp);
+				$.unblockUI();
+				if (resp.message != "")	{
+					$.alert({
+						title: 'Message',
+						content: resp.message,
+						buttons : {
+							OK : function() {
+								if (resp.status == "SUCCESS") {
+									window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
+									//return;
+								}
+							},
+						}
+					});
+				}
+
+				if(resp.status == "SUCCESS") {
+					data = resp.data;
+					$("#fin_salesorder_id").val(data.insert_id);
+
+					//Clear all previous error
+					$(".text-danger").html("");
+					// Change to Edit mode
+					$("#frm-mode").val("EDIT");  //ADD|EDIT
+					$('#fst_salesorder_name').prop('readonly', true);
+				}
+			});
+		});
+
+		$("#btnClose").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>tr/sales_order/lizt");
+		});
+
+		$("#btnPrint").click(function(e){
+			$("#mdlPrint").modal("toggle");
 		});
 
 		//$("#fdt_salesorder_date").datepicker('update', dateFormat("<= date("Y-m-d")?>"));

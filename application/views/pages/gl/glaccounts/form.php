@@ -192,8 +192,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
                                         //location.reload();
-                                        window.location.href = "<?= site_url() ?>gl/glaccount/lizt";
-                                        return;
+                                        //window.location.href = "<?= site_url() ?>gl/glaccount/lizt";
+                                        //return;
                                     }
                                 },
                             }
@@ -306,7 +306,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         });
 
-        
 		$("#fst_glaccount_level").change(function(event){
             //alert("fst_glaccount_level");
 			event.preventDefault();

@@ -1,35 +1,30 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-
 class Purchase_order extends MY_Controller{
-
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
 		$this->load->model('trpo_model');
 	}
-
 	public function index(){
 		$this->lizt();
 	}
-
 	public function lizt(){
 		$this->load->library('menus');
-		$this->list['page_name'] = "Sales Order";
-		$this->list['list_name'] = "Sales Order List";
-		$this->list['addnew_ajax_url'] = site_url() . 'tr/sales_order/add';
-		$this->list['pKey'] = "fin_salesorder_id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales_order/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'tr/sales_order/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'tr/sales_order/edit/';
+		$this->list['page_name'] = "Purchase Order";
+		$this->list['list_name'] = "Purchase Order List";
+		$this->list['addnew_ajax_url'] = site_url() . 'tr/purchase_order/add';
+		$this->list['pKey'] = "fin_po_id";
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/purchase_order/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'tr/purchase_order/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'tr/purchase_order/edit/';
 		$this->list['arrSearch'] = [
-			'fin_salesorder_id' => 'Sales Order ID',
-			'fst_salesorder_no' => 'Sales Order No'
+			'fin_po_id' => 'Purchase Order ID',
+			'fst_po_no' => 'Purchase Order No'
 		];
-
 		$this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-			['title' => 'Sales Order', 'link' => '#', 'icon' => ''],
+			['title' => 'Purchase Order', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
@@ -51,23 +46,19 @@ class Purchase_order extends MY_Controller{
 		$this->data['MAIN_FOOTER'] = $main_footer;
 		$this->parser->parse('template/main', $this->data);
 	}
-
 	private function openForm($mode = "ADD", $fin_salesorder_id = 0){
 		$this->load->library("menus");		
 		if ($this->input->post("submit") != "") {
 			$this->add_save();
 		}
-
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$mdlJurnal =$this->parser->parse('template/mdlJurnal.php', [], true);
 		$mdlPrint =$this->parser->parse('template/mdlPrint.php', [], true);
-
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Purchase Order" : "Update Purchase Order";
 		$data["mdlJurnal"] = $mdlJurnal;
 		$data["mdlPrint"] = $mdlPrint;
-
 		if($mode == 'ADD'){
 			$data["fin_po_id"] = 0;
 			$data["fst_po_no"] = $this->trpo_model->GeneratePONo();			
@@ -81,7 +72,6 @@ class Purchase_order extends MY_Controller{
 		
 		$page_content = $this->parser->parse('pages/tr/purchase_order/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
-
 		$control_sidebar = NULL;
 		$this->data["MAIN_HEADER"] = $main_header;
 		$this->data["MAIN_SIDEBAR"] = $main_sidebar;
@@ -90,25 +80,20 @@ class Purchase_order extends MY_Controller{
 		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
 		$this->parser->parse('template/main', $this->data);
 	}
-
 	public function add(){
 		$this->openForm("ADD", 0);
 	}
-
-	public function Edit($fin_salesorder_id){
-		$this->openForm("EDIT", $fin_salesorder_id);
+	public function Edit($fin_po_id){
+		$this->openForm("EDIT", $fin_po_id);
 	}
-
 	public function ajx_add_save(){
 		$this->load->model('trsalesorder_model');
 		$this->load->model("trsalesorderdetails_model");
 		$this->load->model("trinventory_model");
 		$this->load->model("msitems_model");
 		$this->load->model("msrelations_model");
-
 		$cekPromo = $this->input->post("cekPromo");
 		$confirmAuthorize = $this->input->post("confirmAuthorize");
-
 		$this->form_validation->set_rules($this->trsalesorder_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
@@ -144,13 +129,11 @@ class Purchase_order extends MY_Controller{
 			"fdc_downpayment" =>$this->input->post("fdc_downpayment"),
 			"fst_active" => 'A'
 		];
-
 		$this->form_validation->set_rules($this->trsalesorderdetails_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		$details = $this->input->post("detail");
 		$details = json_decode($details);
 		$arrItem = $this->msitems_model->getDetailbyArray(array_column($details, 'fin_item_id'));
-
 		for($i = 0; $i < sizeof($details) ; $i++){
 			$item = $details[$i];
 			$objItem = $arrItem[$item->fin_item_id];
@@ -161,7 +144,6 @@ class Purchase_order extends MY_Controller{
 			if ($price == 0 ){
 				$price = $item->fdc_price;
 			}
-
 			$details[$i]->fdc_price = $price;
 			$details[$i]->fdc_disc_amount = calculateDisc($item->fst_disc_item,$price);			
 			
@@ -195,7 +177,6 @@ class Purchase_order extends MY_Controller{
 			}
 		}
 		
-
 		//Get Promo Item
 		$rsPromoItem = $this->trsalesorder_model->getDataPromo($this->input->post("fin_relation_id"),$details);
 		if ( $rsPromoItem != false){
@@ -209,7 +190,6 @@ class Purchase_order extends MY_Controller{
 				return;
 			}
 		}
-
 		//** Cek if this transaction need authorization */
 		$needAuthorize = false;
 		//Cek Qty is Available, need authorization if qty not available
@@ -235,7 +215,6 @@ class Purchase_order extends MY_Controller{
 		foreach ($details as $item){
 			$price = $item->fdc_price;
 			$total = ($item->fdb_qty * $price);
-
 			//cek max disc
 			$maxDiscPersen = $arrItem[$item->fin_item_id]->fst_max_item_discount;
 			$maxDiscValue = calculateDisc($maxDiscPersen,$total);
@@ -253,10 +232,8 @@ class Purchase_order extends MY_Controller{
 		if ($totalOutstanding + $grandTotal > $maxCreditLimit){
 			$arrOutstanding["maxCreditLimit"] = $maxCreditLimit;
 			$authorizeCreditLimit = true;
-
 			$needAuthorize = true;
 		}
-
 		if ($needAuthorize == true){
 			if ($confirmAuthorize == 0){								
 				$this->ajxResp["status"] = "CONFIRM_AUTHORIZE";
@@ -270,8 +247,6 @@ class Purchase_order extends MY_Controller{
 				return;
 			}
 		}
-
-
 		//Competed data header before save
 		$totalDPP = 0;
 		$subTotal =0;
@@ -287,9 +262,7 @@ class Purchase_order extends MY_Controller{
 		}else{
 			$totalDPP = $subTotal -  $totalDisc;			
 		}
-
 		$vat = ($dataH["fdc_vat_percent"] * 1) / 100;			
-
 		$dataH["fdc_dpp_amount"] = $totalDPP; // calculate from detail
 		$dataH["fdc_vat_amount"] = $totalDPP * $vat; //total vat recalculate
 		$dataH["fdc_disc_amount"] = $totalDisc; //get Total Disc recalculate
@@ -340,11 +313,9 @@ class Purchase_order extends MY_Controller{
 				$this->trvoucher_model->createVoucher($dataVoucher);
 			}
 		}
-
 		//Insert Data Detail
 		foreach ($details as $item) {
 			$dataDetail = (array) $item;
-
 			$dataDetail =[
   				"fin_salesorder_id"=>$insertId,
   				"fin_item_id"=>$item->fin_item_id,
@@ -358,7 +329,6 @@ class Purchase_order extends MY_Controller{
 				"fin_promo_id"=>$item->fin_promo_id,
 				"fst_active"=> 'A'
 			];
-
 			$this->trsalesorderdetails_model->insert($dataDetail);			
 			$dbError  = $this->db->error();
 			if ($dbError["code"] != 0){			
@@ -376,7 +346,6 @@ class Purchase_order extends MY_Controller{
 			//$authorizeOutofStock
 			//Get Master			
 			$this->load->model("trverification_model");
-
 			if ($authorizeOutofStock){
 				$message = "Item for Sales Order " .$dataH["fst_salesorder_no"] ." Out of stock";
 				$this->trverification_model->createAuthorize("SO","QtyOutStock",$insertId,$message);
@@ -386,25 +355,20 @@ class Purchase_order extends MY_Controller{
 				$this->trverification_model->createAuthorize("SO","CreditLimit",$insertId,$message);
 			}
 		}
-
 		//Posting Transaction		
 		if ($dataH["fdc_downpayment"] > 0 && $dataH["fst_active"] == "A"){
 			$this->trsalesorder->posting($insertId);
 		}
 		$this->db->trans_complete();
-
-
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
 		$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
 	}
-
 	public function ajx_edit_save(){
 		$this->load->model('trsalesorder_model');
 		$fin_salesorder_id = $this->input->post("fin_salesorder_id");
 		$salesOrder = $this->trsalesorder_model->createObject($fin_salesorder_id);
-
 		if ($salesOrder->isClosed()){
 			$this->ajxResp["status"] = "IS_CLOSED";
 			$this->ajxResp["message"] = lang("Failed!, Sales Order %s is closed",[$salesOrder->getValue("fst_salesorder_no")]);
@@ -420,11 +384,9 @@ class Purchase_order extends MY_Controller{
 		}else{
 			$cekPromo = $this->input->post("cekPromo");
 			$confirmAuthorize = $this->input->post("confirmAuthorize");
-
 			//transaksi without promo or transaksi does have SJ
 			//existing Data
 			$dataH = (array) $salesOrder->getData();
-
 			//New Data
 			$newData = $this->input->post();
 			$newData["fdt_salesorder_date"] = dBDateFormat($newData["fdt_salesorder_date"]);
@@ -432,10 +394,7 @@ class Purchase_order extends MY_Controller{
 			//Delete Field yang tidak boleh berubah			
 			unset($newData["fin_relation_id"]);
 			unset($newData["fst_salesorder_no"]);
-
-
 			$dataH = exist_array_replace($dataH,$newData);
-
 			//Down Payment tidak boleh di edit lebih kecil dari yang sudah dibayarkan
 			if($dataH["fdc_downpayment"] < $dataH["fdc_downpayment_paid"]){
 				//print_r($this->form_validation->error_array());
@@ -448,7 +407,6 @@ class Purchase_order extends MY_Controller{
 				$this->json_output();
 				return;
 			}
-
 			$this->form_validation->set_rules($this->trsalesorder_model->getRules("EDIT", $fin_salesorder_id));
 			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 			if ($this->form_validation->run() == FALSE) {
@@ -461,22 +419,17 @@ class Purchase_order extends MY_Controller{
 				return;
 			}
 			
-
 			//Detail Proses
 			$dbDetails = $salesOrder->getDetails();
 			$dbDetails = add_key_array_object($dbDetails,"fin_rec_id");
-
 			$postDetails = $this->input->post("detail");
 			$postDetails = json_decode($postDetails);
 			//$postDetails = add_key_array_object($postDetails,"fin_rec_id");
-
-
 			for($i=0; $i < sizeof($postDetails) ; $i++){
 				//Sync data dari form post dengan data di db
 				$postDetail = $postDetails[$i];
 				if(isset($dbDetails[$postDetail->fin_rec_id])){
 					$dbDetail = $dbDetails[$postDetail->fin_rec_id];
-
 					//Item dan unit tidak boleh di ganti bila sudah ada SJ
 					if ($dbDetail->fdb_qty_out > 0 && $postDetail->fin_item_id != $dbDetail->fin_item_id){
 						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
@@ -498,7 +451,6 @@ class Purchase_order extends MY_Controller{
 						$this->json_output();
 						return;
 					}
-
 					//Qty Tidak boleh di edit lebih kecil dari qty out
 					if ($postDetail->fdb_qty < $dbDetail->fdb_qty_out){
 						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
@@ -513,12 +465,10 @@ class Purchase_order extends MY_Controller{
 		
 					//update data qty_out
 					$postDetails[$i]->fdb_qty_out = $dbDetail->fdb_qty_out;
-
 					//Delete arr data db yang sudah di sync
 					unset($dbDetails[$postDetail->fin_rec_id]);
 				}else{
 					unset($postDetails[$i]->fin_rec_id);
-
 				}
 			}
 			
@@ -535,7 +485,6 @@ class Purchase_order extends MY_Controller{
 					return;
 				}
 			}
-
 			//Hitung ulang Promo
 			$rsPromoItem = $this->trsalesorder_model->getDataPromo($dataH["fin_relation_id"],$postDetails,$dataH["fdt_salesorder_date"]);
 			if ( $rsPromoItem != false){
@@ -550,14 +499,12 @@ class Purchase_order extends MY_Controller{
 				}
 			}
 			
-
 			//** Cek if this transaction need authorization */
 			$this->load->model("trinventory_model");
 			$this->load->model("msitems_model");
 			$this->load->model("msrelations_model");		
 			$this->load->model("trsalesorderdetails_model");
 			$this->load->model("trvoucher_model");
-
 			$needAuthorize = false;
 			//Cek Qty is Available, need authorization if qty not available
 			$arrOutofStock =[];
@@ -583,7 +530,6 @@ class Purchase_order extends MY_Controller{
 			foreach ($postDetails as $item){
 				$price = $item->fdc_price;
 				$total = ($item->fdb_qty * $price);
-
 				//cek max disc
 				$maxDiscPersen = $arrItem[$item->fin_item_id]->fst_max_item_discount;
 				$maxDiscValue = calculateDisc($maxDiscPersen,$total);
@@ -603,7 +549,6 @@ class Purchase_order extends MY_Controller{
 				$authorizeCreditLimit = true;
 				$needAuthorize = true;
 			}
-
 			if ($needAuthorize == true){
 				if ($confirmAuthorize == 0){								
 					$this->ajxResp["status"] = "CONFIRM_AUTHORIZE";
@@ -617,7 +562,6 @@ class Purchase_order extends MY_Controller{
 					return;
 				}
 			}
-
 			//Competed data header before save
 			$totalDPP = 0;
 			$subTotal =0;
@@ -626,7 +570,6 @@ class Purchase_order extends MY_Controller{
 				$subTotal += $item->fdb_qty * $item->fdc_price;
 				$totalDisc += calculateDisc($item->fst_disc_item,$subTotal)   ;
 			}
-
 			if($dataH["fbl_is_vat_include"] == 1 ){
 				$total = $subTotal - $totalDisc;			
 				$vat = 1 + ($dataH["fdc_vat_percent"] * 1) / 100;
@@ -634,13 +577,11 @@ class Purchase_order extends MY_Controller{
 			}else{
 				$totalDPP = $subTotal -  $totalDisc;			
 			}
-
 			$vat = ($dataH["fdc_vat_percent"] * 1) / 100;
 			$dataH["fdc_dpp_amount"] = $totalDPP; // calculate from detail
 			$dataH["fdc_vat_amount"] = $totalDPP * $vat; //total vat recalculate
 			$dataH["fdc_disc_amount"] = $totalDisc; //get Total Disc recalculate
 			$dataH["fst_active"] = ($needAuthorize == true) ? "S" :"A";
-
 						
 			$this->db->trans_start();
 			//Insert Data Header
@@ -654,10 +595,8 @@ class Purchase_order extends MY_Controller{
 				$this->db->trans_rollback();
 				return;
 			}
-
 			//Delete Detail
 			$this->trsalesorderdetails_model->deleteByDetail($dataH["fin_salesorder_id"]);
-
 			//Delete Voucher
 			$this->trvoucher_model->deleteVoucher("SALESORDER" , $dataH["fin_salesorder_id"]);
 			
@@ -727,12 +666,9 @@ class Purchase_order extends MY_Controller{
 					$this->trverification_model->createAuthorize("SO","CreditLimit",$dataH["fin_salesorder_id"],$message);
 				}
 			}
-
 			$this->load->model("glledger_model");
-
 			//Cancel Posting before (Jurnal balik or delete Jurnal)
 			$this->glledger_model->cancelJurnal(JURNAL_TRX_SC_SO,$dataH["fin_salesorder_id"],$dataH["fdt_salesorder_date"]);
-
 			//Posting Transaction
 			if ($dataH["fdc_downpayment"] > 0 && $dataH["fst_active"] == "A"){
 				$this->trsalesorder->posting($dataH["fin_salesorder_id"]);
@@ -745,20 +681,15 @@ class Purchase_order extends MY_Controller{
 			$this->json_output();
 		}
 	}
-
-
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("trsalesorder");
-
 		$selectFields = "fin_salesorder_id,fst_salesorder_no,fdt_salesorder_date,fst_memo,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
-
 		$searchFields =[];
 		$searchFields[] = $this->input->get('optionSearch'); //["fin_salesorder_id","fst_salesorder_no"];
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "fst_active !='D'";
-
 		// Format Data
 		$datasources = $this->datatables->getData();
 		$arrData = $datasources["data"];
@@ -771,19 +702,16 @@ class Purchase_order extends MY_Controller{
 					<a class='btn-edit' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-pencil'></i></a>
 					<a class='btn-delete' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-trash'></i></a>
 				</div>";
-
 			$arrDataFormated[] = $data;
 		}
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 	}
-
 	public function fetch_data($fin_salesorder_id){
 		$this->load->model("trsalesorder_model");
 		$data = $this->trsalesorder_model->getDataById($fin_salesorder_id);		
 		$this->json_output($data);
 	}
-
 	public function delete($id){
 		if (!$this->aauth->is_permit("")) {
 			$this->ajxResp["status"] = "NOT_PERMIT";
@@ -791,14 +719,12 @@ class Purchase_order extends MY_Controller{
 			$this->json_output();
 			return;
 		}
-
 		$this->load->model("trsalesorder_model");
 		$this->trsalesorder_model->delete($id);
 		$this->ajxResp["status"] = "DELETED";
 		$this->ajxResp["message"] = "File deleted successfully";
 		$this->json_output();
 	}
-
 	public function get_msrelations(){
 		$term = $this->input->get("term");
 		$ssql = "select fin_relation_id, fst_relation_name,fin_sales_id,fin_warehouse_id,fin_terms_payment from msrelations where fin_branch_id = ? and fst_relation_name like ? and FIND_IN_SET(1,fst_relation_type)";
@@ -810,7 +736,6 @@ class Purchase_order extends MY_Controller{
 		$this->ajxResp["data"] = $rs;
 		$this->json_output();
 	}
-
 	public function get_mswarehouse(){
 		$term = $this->input->get("term");
 		$ssql = "select fin_warehouse_id, fst_warehouse_name from mswarehouse where fst_warehouse_name like ?";
@@ -821,11 +746,9 @@ class Purchase_order extends MY_Controller{
 		$this->ajxResp["data"] = $rs;
 		$this->json_output();
 	}
-
 	public function getValueFormInit($fin_salesorder_id){
 		$salesDeptId = getDbConfig("sales_department_id");
 		$activeBranchId = $this->aauth->get_active_branch_id();
-
 		$ssql = "select fin_user_id, fst_username from users where  fin_branch_id =? and fin_department_id = $salesDeptId order by fst_username";
 		$qr = $this->db->query($ssql,[$activeBranchId]);
 		$rsSales = $qr->result();
@@ -836,11 +759,9 @@ class Purchase_order extends MY_Controller{
 	
 		$rscurrencies = [];
 		$rscurrencies[] = getDefaultCurrency();
-
 		$ssql = "select fst_item_discount from msitemdiscounts where fst_active ='A'";
 		$qr = $this->db->query($ssql,[]);
 		$rsdiscount = $qr->result();
-
 		$data = [
 			"sales" => $rsSales,
 			"warehouse" => $rsWarehouse,
@@ -848,26 +769,20 @@ class Purchase_order extends MY_Controller{
 			"discounts" => $rsdiscount,
 			"min_date_time"=>getDbConfig("lock_transaction_date")
 		];
-
 		if ($fin_salesorder_id != 0){
 			$this->load->model("trsalesorder_model");
 			$tmp = $this->trsalesorder_model->getDataById($fin_salesorder_id);		
 			$data["sales_order"] = $tmp["sales_order"];
 			$data["so_details"] = $tmp["so_details"];
 		}
-
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["data"] = $data;
 		$this->json_output();
-
 	
 	}
-
-
 	public function get_sales(){
 		$term = $this->input->get("term");
 		$salesDeptId = getDbConfig("sales_department_id");
-
 		$ssql = "select fin_user_id, fst_username from users where fst_username like ? and fin_department_id = $salesDeptId order by fst_username";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
@@ -876,7 +791,6 @@ class Purchase_order extends MY_Controller{
 		$this->ajxResp["data"] = $rs;
 		$this->json_output();
 	}
-
 	
 	public function initVarForm($poId){
         $this->load->model("mswarehouse_model");
@@ -902,11 +816,8 @@ class Purchase_order extends MY_Controller{
             //"arrSJ"=>$arrSJ,
         ];
         $this->json_output();
-
-
     }
 	
-
 	public function get_item($supplierId){
 		$this->load->library("select2");
 		$arrItem = $this->select2->get_itemBySupplier($supplierId);
@@ -924,5 +835,31 @@ class Purchase_order extends MY_Controller{
 			"arrUnit"=>$arrUnit,
         ];
         $this->json_output();
+	}
+	public function print_po(){
+		$this->load->library("phpspreadsheet");
+		//$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_sales_log.xlsx");
+		//$spreadsheet = $this->phpspreadsheet->test();
+		//die();
+		$spreadsheet = $this->phpspreadsheet->load();
+		$sheet = $spreadsheet->getActiveSheet();
+		
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+		$sheet->getPageMargins()->setBottom(1);
+		$sheet->setCellValue('A1', 'Hello World !'); 
+		$filename = 'coba.xls';
+		
+		$this->phpspreadsheet->save($filename,$spreadsheet);
+		
+		/*
+		var_dump($this->input->post("layoutColumn"));
+		$arrLayoutCol = json_decode($this->input->post("layoutColumn"));
+		var_dump($arrLayoutCol);
+		//echo "PRINT......";
+		*/
 	}
 }
