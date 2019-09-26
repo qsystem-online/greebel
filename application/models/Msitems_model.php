@@ -13,10 +13,12 @@ class Msitems_model extends MY_Model
     public function getDataById($fin_item_id)
     {
         //$ssql = "select * from " . $this->tableName . " where fin_item_id = ? and fst_active = 'A'";
-        $ssql = "select a.*,b.fst_item_maingroup_name,c.fst_item_group_name,d.fst_item_subgroup_name from " . $this->tableName . " a 
+        $ssql = "select a.*,b.fst_item_maingroup_name,c.fst_item_group_name,d.fst_item_subgroup_name,e.fst_relation_name as standardVendor,f.fst_relation_name as optionalVendor from " . $this->tableName . " a 
         left join msmaingroupitems b on a.fin_item_maingroup_id = b.fin_item_maingroup_id 
         left join msgroupitems c on a.fin_item_group_id = c.fin_item_group_id  
-        left join mssubgroupitems d on a.fin_item_subgroup_id = d.fin_item_subgroup_id 
+        left join mssubgroupitems d on a.fin_item_subgroup_id = d.fin_item_subgroup_id
+        left join msrelations e on a.fin_standard_vendor_id = e.fin_relation_id
+        left join msrelations f on a.fin_optional_vendor_id = f.fin_relation_id  
         where a.fin_item_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$fin_item_id]);
         $rwItem = $qr->row();

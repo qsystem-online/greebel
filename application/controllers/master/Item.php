@@ -432,6 +432,15 @@ class Item extends MY_Controller
         $this->json_output($rs);
     }
 
+    public function get_data_relationVendor(){
+        $term = $this->input->get("term");
+        $ssql = "select * from msrelations where fst_relation_name like ? and fst_relation_type =2 order by fst_relation_name";
+        $qr = $this->db->query($ssql, ['%' . $term . '%']);
+        $rs = $qr->result();
+
+        $this->json_output($rs);
+    }
+
     public function get_data_groupItemName(){
         $term = $this->input->get("term");
         $ssql = "select * from msgroupitems where fst_item_group_name like ? order by fst_item_group_name";
