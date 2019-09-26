@@ -281,13 +281,22 @@ class Group_item extends MY_Controller
             $this->msgroupitems_model->update($data);
             $this->db->trans_complete();
         }
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["message"] = "";
+        $this->ajxResp["data"] = ["id"=>$id];
+        $this->json_output();
 
     }
 
     public function delete_data_tree(){
         $this->load->model("msgroupitems_model");
-        $post = $this->input->post();
+
+
+        $post = $this->input->get();
+        //var_dump($post);
+    
         $id =  $post["id"];
+        //$id = 41;
         try {
             $deleted = $this->msgroupitems_model->delete($id);
             

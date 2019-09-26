@@ -70,6 +70,7 @@ class Sales_preorder extends MY_Controller
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Sales Pre-order" : "Update Sales Pre-order";
         $data["fin_preorder_id"] = $fin_preorder_id;
+        $data["mdlItemGroups"] =$this->parser->parse('template/mdlItemGroup', [], true);
 
         $page_content = $this->parser->parse('pages/tr/sales_preorder/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -116,7 +117,7 @@ class Sales_preorder extends MY_Controller
             "fin_item_subgroup_id" => $this->input->post("fin_item_subgroup_id"),
             "fdt_start_date" => dBDateFormat($this->input->post("fdt_start_date")),
             "fdt_end_date" => dBDateFormat($this->input->post("fdt_end_date")),
-            "fin_item_id" => $this->input->post("fin_item_id"),
+            "fst_item_name" => $this->input->post("fst_item_name"),
             "fst_curr_code" => $this->input->post("fst_curr_code"),
             "fdc_preorder_price" => $this->input->post("fdc_preorder_price"),
             "fdc_minimal_deposit" => $this->input->post("fdc_minimal_deposit"),
@@ -201,7 +202,7 @@ class Sales_preorder extends MY_Controller
             "fin_item_subgroup_id" => $this->input->post("fin_item_subgroup_id"),
             "fdt_start_date" => dBDateFormat($this->input->post("fdt_start_date")),
             "fdt_end_date" => dBDateFormat($this->input->post("fdt_end_date")),
-            "fin_item_id" => $this->input->post("fin_item_id"),
+            "fst_item_name" => $this->input->post("fst_item_name"),
             "fst_curr_code" => $this->input->post("fst_curr_code"),
             "fdc_preorder_price" => $this->input->post("fdc_preorder_price"),
             "fdc_minimal_deposit" => $this->input->post("fdc_minimal_deposit"),
