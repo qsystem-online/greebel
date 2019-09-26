@@ -432,6 +432,14 @@ class Item extends MY_Controller
         $this->json_output($rs);
     }
 
+    public function get_data_relationVendor(){
+        $term = $this->input->get("term");
+        $ssql = "select * from msrelations where fst_relation_name like ? and fst_relation_type =2 order by fst_relation_name";
+        $qr = $this->db->query($ssql, ['%' . $term . '%']);
+        $rs = $qr->result();
+        $this->json_output($rs);
+    }
+
     public function get_data_groupItemName(){
         $term = $this->input->get("term");
         $ssql = "select * from msgroupitems where fst_item_group_name like ? order by fst_item_group_name";
@@ -561,8 +569,9 @@ class Item extends MY_Controller
         $layout = $this->input->post("layoutColumn");
         $arrLayout = json_decode($layout);
         
-        /*var_dump($arrLayout);
-        echo "PRINT......";*/
+        /*
+        var_dump($arrLayout);
+        echo "PRINT......";
         
         foreach($arrLayout as $layout){
             if($layout->column == "Retail"){
@@ -573,13 +582,13 @@ class Item extends MY_Controller
                 }
             }
         }
-        die();
+        die();*/
         
         $this->load->model("msitems_model");
-        $printItem = $this->msitems_model->getPrintItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir);
-        
         $this->load->library("phpspreadsheet");
 
+        $printItem = $this->msitems_model->getPrintItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir);
+        
         $spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_items_log.xlsx");
         $sheet = $spreadsheet->getActiveSheet();
         
@@ -591,13 +600,14 @@ class Item extends MY_Controller
         $sheet->getPageMargins()->setBottom(1);
 
         //AUTO SIZE COLUMN
-        $sheet->getColumnDimension("A")->setAutoSize ( true );
-        $sheet->getColumnDimension("B")->setAutoSize ( true );
-        $sheet->getColumnDimension("C")->setAutoSize ( true );
-        $sheet->getColumnDimension("D")->setAutoSize ( true );
-        $sheet->getColumnDimension("E")->setAutoSize ( true );
-        $sheet->getColumnDimension("F")->setAutoSize ( true );
-        $sheet->getColumnDimension("G")->setAutoSize ( true );
+        $sheet->getColumnDimension("A")->setAutoSize(true);
+        $sheet->getColumnDimension("B")->setAutoSize(true);
+        $sheet->getColumnDimension("C")->setAutoSize(true);
+        $sheet->getColumnDimension("D")->setAutoSize(true);
+        $sheet->getColumnDimension("E")->setAutoSize(true);
+        $sheet->getColumnDimension("F")->setAutoSize(true);
+        $sheet->getColumnDimension("G")->setAutoSize(true);
+        $sheet->getColumnDimension("H")->setAutoSize(true);
 
         // SUBTITLE
         $sheet->mergeCells('B4:D4');
@@ -630,7 +640,7 @@ class Item extends MY_Controller
         $sheet->setCellValue("A1", "Daftar Barang");
 
         //FORMAT NUMBER
-        $sheet->getStyle('E8:'.$col.'10')->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle('E8:'.$col.'500')->getNumberFormat()->setFormatCode('#,##0.00');
         
         //COLOR HEADER COLUMN
         $spreadsheet->getActiveSheet()->getStyle('A7:'.$col.'7')
@@ -669,30 +679,31 @@ class Item extends MY_Controller
         $sheet->mergeCells('F4:'.$col.'4');
 
         foreach ($printItem as $rw) {
-            //$sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->pricingGroupId);
-            //$ssql = "select * from msitem where fin_item_id and fst_active = 'A'";
 
-            $sheet->setCellValue("B$iRow1", $rw->fst_vendor_item_name);
-            $sheet->setCellValue("B$iRow2", $rw->fst_item_group);
-            $sheet->setCellValue("A$iRow", $no++);
-            $sheet->setCellValue("B$iRow", $rw->fin_item_id);
-            $sheet->setCellValue("C$iRow", $rw->fst_item_code);
-            $sheet->setCellValue("D$iRow", $rw->fst_item_name);
-            $sheet->setCellValue("E$iRow", 0);
-            $sheet->setCellValue("F$iRow", $rw->fst_unit);
-            $sheet->setCellValue("G$iRow", $rw->fdc_price_list);
-            $sheet->setCellValue("H$iRow", $rw->fst_unit);
-            $sheet->setCellValue("I$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("J$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("K$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("L$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("M$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("N$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("O$iRow", 0);
-            $sheet->setCellValue("P$iRow", 0);
-            $sheet->setCellValue("Q$iRow", 0);
+                $sheet->setCellValue("B$iRow1", $rw->fst_vendor_item_name);
+                $sheet->setCellValue("B$iRow2", $rw->fst_item_group);
+                $sheet->setCellValue("A$iRow", $no++);
+                $sheet->setCellValue("B$iRow", $rw->fin_item_id);
+                $sheet->setCellValue("C$iRow", $rw->fst_item_code);
+                $sheet->setCellValue("D$iRow", $rw->fst_item_name);
+                $sheet->setCellValue("E$iRow", 0);
+                $sheet->setCellValue("F$iRow", $rw->fst_unit_selling);
+                $sheet->setCellValue("G$iRow", $rw->fdc_price_list);
+                $sheet->setCellValue("H$iRow", $rw->fst_unit);
+                $sheet->setCellValue("I$iRow", $rw->fdc_selling_price);
+                $sheet->setCellValue("J$iRow", 0);
+                $sheet->setCellValue("K$iRow", 0);
+                $sheet->setCellValue("L$iRow", 0);
+                $sheet->setCellValue("M$iRow", $rw->fdc_selling_price);
+                $sheet->setCellValue("N$iRow", 0);
+                $sheet->setCellValue("O$iRow", 0);
+                $sheet->setCellValue("P$iRow", $rw->fdc_selling_price);
+                $sheet->setCellValue("Q$iRow", 0);
+                $sheet->setCellValue("R$iRow", 0);
 
-            $iRow++;
+                $iRow++;
+
+            //}
         }
 
         //BORDER

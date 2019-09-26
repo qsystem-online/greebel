@@ -194,12 +194,12 @@ class Msitems_model extends MY_Model
     public function getPrintItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir){
         $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fst_vendor_item_name,
                 CONCAT(a.fin_item_group_id,'  -  ',b.fst_item_group_name) as fst_item_group,
-                c.fdc_price_list,c.fst_unit,d.fdc_selling_price,d.fst_unit FROM msitems a
+                c.fdc_price_list,c.fst_unit,d.fdc_selling_price,d.fst_unit as fst_unit_selling FROM msitems a
                 LEFT JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
                 LEFT JOIN msitemunitdetails c on a.fin_item_id = c.fin_item_id
                 LEFT JOIN msitemspecialpricinggroupdetails d on a.fin_item_id = d.fin_item_id
                 WHERE a.fst_vendor_item_name like '$vendorName' AND a.fin_item_group_id like '$groupItem'
-                AND a.fst_item_code >= '$itemCode_awal' AND a.fst_item_code <= '$itemCode_akhir'";
+                AND a.fst_item_code >= '$itemCode_awal' AND a.fst_item_code <= '$itemCode_akhir' ORDER BY a.fin_item_id";
 
         $query = $this->db->query($ssql,[$vendorName,$groupItem,$itemCode_awal,$itemCode_akhir]);
         //echo $this->db->last_query();

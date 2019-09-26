@@ -978,7 +978,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <label for="select-vendorName" class="col-md-3 control-label"><?= lang("Vendor Item Name") ?> :</label>
                                     <div class="col-md-7">
                                         <select id="select-vendorName" class="form-control" name="fst_vendor_item_name">
-                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                            
                                         </select>
                                         <div id="fst_vendor_item_name_err" class="text-danger"></div>
                                     </div>
@@ -996,14 +996,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <label for="select-ItemCode" class="col-md-3 control-label"><?= lang("Item Code") ?> :</label>
                                     <div class="col-md-3">
                                         <select id="select-ItemCode" class="form-control" name="fst_item_code">
-                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                            <option value="0">--  <?= lang("select") ?>  --</option>
                                         </select>
                                         <div id="fst_item_code_err" class="text-danger"></div>
                                     </div>
                                     <label for="select-CodeItem" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
                                     <div class="col-md-3">
                                         <select id="select-CodeItem" class="form-control" name="fst_item_code">
-                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                            <option value="0">--  <?= lang("select") ?>  --</option>
                                         </select>
                                         <div id="fst_item_code_err" class="text-danger"></div>
                                     </div>
@@ -1357,7 +1357,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 {column: "MT Lokal",hidden:true,id:"sellingPrice"},
                 {column: "Group SMM/Internal",hidden:true,id:"sellingPrice"},
                 {column: "Online Shop",hidden:true,id:"sellingPrice"},
-                {column: "Enigma Tbk",hidden:true,id:"sellingPrice"},
+                {column: "Tous Les Jours",hidden:true,id:"sellingPrice"},
                 {column: "Tourtuile",hidden:true,id:"sellingPrice"}
 			];
 			url = "<?= site_url() ?>master/item/get_printItem/" + $("#select-vendorName").val() + '/' + $("#select-groupItemName").val() + '/' + $("#select-ItemCode").val() + '/' + $("#select-CodeItem").val();
