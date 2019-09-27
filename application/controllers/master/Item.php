@@ -435,6 +435,15 @@ class Item extends MY_Controller
         $this->json_output($rs);
     }
 
+    public function get_data_relationVendor(){
+        $term = $this->input->get("term");
+        $ssql = "select * from msrelations where fst_relation_name like ? and fst_relation_type =2 order by fst_relation_name";
+        $qr = $this->db->query($ssql, ['%' . $term . '%']);
+        $rs = $qr->result();
+
+        $this->json_output($rs);
+    }
+
     public function get_data_groupItemName(){
         $term = $this->input->get("term");
         $ssql = "select * from msgroupitems where fst_item_group_name like ? order by fst_item_group_name";
@@ -565,60 +574,18 @@ class Item extends MY_Controller
         $arrLayout = json_decode($layout);
         
         /*var_dump($arrLayout);
-		echo "PRINT......";
-
+        echo "PRINT......";*/
+        
         foreach($arrLayout as $layout){
-            if ($layout->column == "Retail"){
+            if($layout->column == "Retail"){
                 if($layout->hidden == true){
-                    $layout->retail = 0;
-                    $layout->fdc_selling_price = 0;
+                    echo "sembunyikan";
+                }else{
+                    echo "tampilkan";
                 }
             }
-            else if($layout->column == "Hypermart"){
-                if($layout->hidden == true){
-                    $layout->hypermart = 0;
-                    $layout->fdc_selling_price = 0;
-                }
-            }
-            else if($layout->column == "Grosir"){
-                if($layout->hidden == true){
-                    $layout->grosir = 0;
-                    $layout->fdc_selling_price = 0;
-                }
-            }
-            else if($layout->column == "Sekolah/PO"){
-                if($layout->hidden == true){
-                    $layout->sekolah = 0;
-                    $layout->fdc_selling_price = 0;
-                }
-            }
-            else if($layout->column == "MT Lokal"){
-                if($layout->hidden == true){
-                    $layout->mt_lokal = 0;
-                    $layout->fdc_selling_price = 0;
-                }
-            }
-            else if($layout->column == "Group SMM/Internal"){
-                if($layout->hidden == true){
-                    $layout->group = 0;
-                    $layout->fdc_selling_price = 0;
-                }
-            }
-            else{
-                $layout->retail = 1;
-                $layout->fdc_selling_price = 1;
-                $layout->hypermart = 1;
-                $layout->fdc_selling_price = 1;
-                $layout->grosir = 1;
-                $layout->fdc_selling_price = 1;
-                $layout->sekolah = 1;
-                $layout->fdc_selling_price = 1;
-                $layout->lokal = 1;
-                $layout->fdc_selling_price = 1;
-                $layout->group = 1;
-            }
-        }*/
-        //die();
+        }
+        die();
         
         $this->load->model("msitems_model");
         $printItem = $this->msitems_model->getPrintItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir);
@@ -675,7 +642,7 @@ class Item extends MY_Controller
         $sheet->setCellValue("A1", "Daftar Barang");
 
         //FORMAT NUMBER
-        $sheet->getStyle('E8:'.$col.'8')->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle('E8:'.$col.'10')->getNumberFormat()->setFormatCode('#,##0.00');
         
         //COLOR HEADER COLUMN
         $spreadsheet->getActiveSheet()->getStyle('A7:'.$col.'7')
@@ -713,33 +680,17 @@ class Item extends MY_Controller
         $sheet->setCellValue('F4', '=NOW()');
         $sheet->mergeCells('F4:'.$col.'4');
 
-        $printItem = $this->msitems_model->getPrintItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir);
-
         foreach ($printItem as $rw) {
-            $sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->pricingGroupId);
-            $ssql = "select * from msitem where fin_item_id and fst_active = 'A'";
+            //$sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->pricingGroupId);
+            //$ssql = "select * from msitem where fin_item_id and fst_active = 'A'";
 
-            /*foreach ($fst_item_id as $item) {
-                $ssql = "select * from msitemunitdetails where fin_item_id = itemId";
-                print $item;
-    
-                foreach ($fst_unit as $unit){
-                    $ssql = "select * from mscustpricinggroups where fst_unit = units";
-                    print $unit;
-    
-                    foreach ($fdc_selling_price as $pricegroup){
-                        $ssql = "select * from mscustpricinggroups where fin_cust_pricing_group_id = ?";
-                    }
-                }
-            }*/
-            
             $sheet->setCellValue("B$iRow1", $rw->fst_vendor_item_name);
             $sheet->setCellValue("B$iRow2", $rw->fst_item_group);
             $sheet->setCellValue("A$iRow", $no++);
             $sheet->setCellValue("B$iRow", $rw->fin_item_id);
             $sheet->setCellValue("C$iRow", $rw->fst_item_code);
             $sheet->setCellValue("D$iRow", $rw->fst_item_name);
-            $sheet->setCellValue("E$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("E$iRow", 0);
             $sheet->setCellValue("F$iRow", $rw->fst_unit);
             $sheet->setCellValue("G$iRow", $rw->fdc_price_list);
             $sheet->setCellValue("H$iRow", $rw->fst_unit);
@@ -749,6 +700,9 @@ class Item extends MY_Controller
             $sheet->setCellValue("L$iRow", $rw->fdc_selling_price);
             $sheet->setCellValue("M$iRow", $rw->fdc_selling_price);
             $sheet->setCellValue("N$iRow", $rw->fdc_selling_price);
+            $sheet->setCellValue("O$iRow", 0);
+            $sheet->setCellValue("P$iRow", 0);
+            $sheet->setCellValue("Q$iRow", 0);
 
             $iRow++;
         }

@@ -118,6 +118,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
+                            <label for="select-standardVendor" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
+                            <div class="col-md-4">
+                                <select id="select-standardVendor" class="form-control" name="fin_standard_vendor_id"></select>
+                            </div>
+
+                            <label for="select-optionalVendor" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
+                            <div class="col-md-4">
+                                <select id="select-optionalVendor" class="form-control" name="fin_optional_vendor_id"></select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
                             <div class="col-md-10" style="left: 20px;">				
                                 <label for="fdc_scale_for_bom" class="col-md-2 control-label"><?= lang("Scale For BOM") ?>:</label>
                                 <div class="col-md-5">
@@ -469,7 +482,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 var PriceList = numeral($("#fdc_price_list").val());
                 var conversion = $("#fdc_conv_to_basic_unit").val();
                 if (conversion == null || conversion == "") {
-                    $("#fdc_conv_to_basic_unit_error").html("minimal 1");
+                    $("#fdc_conv_to_basic_unit_error").html("minimum value 1");
                     $("#fdc_conv_to_basic_unit_error").show();
                     addRow = false;
                     return;
@@ -1046,48 +1059,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
         
         $("#btnSubmitAjax").click(function(event) {
             event.preventDefault();
-            //data = $("#frmItem").serializeArray();
-            data = new FormData($("#frmItem")[0]);
-            detail = new Array();
             t = $('#tbl_unit_details').DataTable();
-            datas = t.data();
-            $.each(datas, function(i, v) {
-                detail.push(v);
-            });
-            /*data.push({
-                name: "detail",
-                value: JSON.stringify(detail)
-            });*/
-            data.append("detail",JSON.stringify(detail));
-            // save BOM
-            detailBOM = new Array();
-            b = $('#tbl_bom_details').DataTable();
-            datas = b.data();
-            $.each(datas, function(i, v) {
-                detailBOM.push(v);
-            });
-            /*data.push({
-                name: "detailBOM",
-                value: JSON.stringify(detailBOM)
-            });*/
-            data.append("detailBOM",JSON.stringify(detailBOM));
-            // save Special pricing
-            specialprice = new Array();
-            p = $('#tbl_special_pricing').DataTable();
-            datas = p.data();
-            $.each(datas, function(i, v) {
-                specialprice.push(v);
-            });
-            /*data.push({
-                name: "specialprice",
-                value: JSON.stringify(specialprice)
-            });*/
-            data.append("specialprice",JSON.stringify(specialprice));
-            mode = $("#frm-mode").val();
-            if (mode == "ADD") {
-                url = "<?= site_url() ?>master/item/ajx_add_save";
-            } else {
-                url = "<?= site_url() ?>master/item/ajx_edit_save";
+            if ( ! t.data().any()){
+                alert("Unit Details is empty");
+            }else{
+                saveAjax();
             }
             console.log(data);
             //var formData = new FormData($('form')[0])
@@ -1108,7 +1084,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        window.location.href = "<?= site_url() ?>master/item/lizt";
+                                        window.location.href = "<?= site_url() ?>master/item";
                                         return;
                                     }
                                 },
@@ -1238,6 +1214,52 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         });
 
+        $("#select-standardVendor").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_relationVendor',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fin_relation_id,
+                            "text": value.fst_relation_name
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+        });
+
+        $("#select-optionalVendor").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_relationVendor',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fin_relation_id,
+                            "text": value.fst_relation_name
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+        });
+
         $("#select-ItemCode").select2({
             width: '100%',
             ajax: {
@@ -1354,6 +1376,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 {column: "Sekolah/PO",hidden:true,id:"sellingPrice"},
                 {column: "MT Lokal",hidden:true,id:"sellingPrice"},
                 {column: "Group SMM/Internal",hidden:true,id:"sellingPrice"},
+                {column: "Online Shop",hidden:true,id:"sellingPrice"},
+                {column: "Enigma Tbk",hidden:true,id:"sellingPrice"},
+                {column: "Tourtuile",hidden:true,id:"sellingPrice"}
 			];
 			url = "<?= site_url() ?>master/item/get_printItem/" + $("#select-vendorName").val() + '/' + $("#select-groupItemName").val() + '/' + $("#select-ItemCode").val() + '/' + $("#select-CodeItem").val();
             MdlPrint.showPrint(layoutColumn,url);
@@ -1385,9 +1410,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
                 // menampilkan data di select2
-                var newOption = new Option(resp.ms_items.fst_item_maingroup_name, resp.ms_items.fin_item_maingroup_id, true, true);
-                // Append it to the select
-                $('#select-maingroupitem').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
                 // Append it to the select
                 $('#select-GroupItemId').append(newOption).trigger('change');
@@ -1397,8 +1419,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $('#select-vendorName').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
                 $('#select-groupItemName').append(newOption).trigger('change');
-                var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
-                /*$('#select-ItemCode').append(newOption).trigger('change');
+                var newOption = new Option(resp.ms_items.standardVendor, resp.ms_items.fin_relation_id, true, true);
+                $('#select-standardVendor').append(newOption).trigger('change');
+                var newOption = new Option(resp.ms_items.optionalVendor, resp.ms_items.fin_relation_id, true, true);
+                $('#select-optionalVendor').append(newOption).trigger('change');
+                /*var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
+                $('#select-ItemCode').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
                 $('#select-CodeItem').append(newOption).trigger('change');*/
 
@@ -1458,6 +1484,100 @@ defined('BASEPATH') or exit('No direct script access allowed');
             error: function(e) {
                 $("#result").text(e.responseText);
                 console.log("ERROR : ", e);
+            }
+        });
+    }
+
+    function saveAjax(){
+        data = new FormData($("#frmItem")[0]);
+
+        detail = new Array();
+        t = $('#tbl_unit_details').DataTable();
+        datas = t.data();
+        $.each(datas, function(i, v) {
+            detail.push(v);
+        });
+        /*data.push({
+            name: "detail",
+            value: JSON.stringify(detail)
+        });*/
+        data.append("detail",JSON.stringify(detail));
+        // save BOM
+        detailBOM = new Array();
+        b = $('#tbl_bom_details').DataTable();
+        datas = b.data();
+        $.each(datas, function(i, v) {
+            detailBOM.push(v);
+        });
+        /*data.push({
+            name: "detailBOM",
+            value: JSON.stringify(detailBOM)
+        });*/
+        data.append("detailBOM",JSON.stringify(detailBOM));
+        // save Special pricing
+        specialprice = new Array();
+        p = $('#tbl_special_pricing').DataTable();
+        datas = p.data();
+        $.each(datas, function(i, v) {
+            specialprice.push(v);
+        });
+        /*data.push({
+            name: "specialprice",
+            value: JSON.stringify(specialprice)
+        });*/
+        data.append("specialprice",JSON.stringify(specialprice));
+        mode = $("#frm-mode").val();
+        if (mode == "ADD") {
+            url = "<?= site_url() ?>master/item/ajx_add_save";
+        } else {
+            url = "<?= site_url() ?>master/item/ajx_edit_save";
+        }
+        console.log(data);
+        //var formData = new FormData($('form')[0])
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url: url,
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000,
+            success: function(resp) {
+                if (resp.message != "") {
+                    $.alert({
+                        title: 'Message',
+                        content: resp.message,
+                        buttons: {
+                            OK: function() {
+                                if (resp.status == "SUCCESS") {
+                                    window.location.href = "<?= site_url() ?>master/item/lizt";
+                                    return;
+                                }
+                            },
+                        }
+                    });
+                }
+                if (resp.status == "VALIDATION_FORM_FAILED") {
+                    //Show Error
+                    errors = resp.data;
+                    for (key in errors) {
+                        $("#" + key + "_err").html(errors[key]);
+                    }
+                } else if (resp.status == "SUCCESS") {
+                    data = resp.data;
+                    $("#fin_item_id").val(data.insert_id);
+                    //Clear all previous error
+                    $(".text-danger").html("");
+                    // Change to Edit mode
+                    $("#frm-mode").val("EDIT"); //ADD|EDIT
+                    $('#fst_item_name').prop('readonly', true);
+                }
+            },
+            error: function(e) {
+                $("#result").text(e.responseText);
+                console.log("ERROR : ", e);
+                $("#btnSubmit").prop("disabled", false);
             }
         });
     }

@@ -103,21 +103,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-maingroupitem" class="col-md-2 control-label"><?= lang("Item Main group") ?> </label>
-                            <div class="col-md-4">
-                                <select id="select-maingroupitem" class="form-control" name="fin_item_maingroup_id"></select>
-                            </div>
-
                             <label for="select-GroupItemId" class="col-md-2 control-label"><?= lang("Item group") ?> </label>
                             <div class="col-md-4">
                                 <select id="select-GroupItemId" class="form-control" name="fin_item_group_id"></select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="select-SubGroupItemId" class="col-md-2 control-label"><?= lang("Item Sub group") ?> </label>
-                            <div class="col-md-4">
-                                <select id="select-SubGroupItemId" class="form-control" name="fin_item_subgroup_id"></select>
-                                <div id="fin_item_subgroup_id_err" class="text-danger"></div>
                             </div>
                             <label for="select-Currency" class="col-md-2 control-label"><?= lang("Curr Code") ?> :</label>
                             <div class="col-md-4">
@@ -139,10 +127,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="select-ItemId" class="col-md-2 control-label"><?= lang("Item Name") ?></label>
+                            <!--<label for="select-ItemId" class="col-md-2 control-label"><?= lang("Item Name") ?></label>
                             <div class="col-md-4">
                                 <select id="select-ItemId" class="form-control" name="fin_item_id"></select>
                                 <div id="fin_item_id_id_err" class="text-danger"></div>
+                            </div>-->
+                            <label for="fst_item_name" class="col-md-2 control-label"><?= lang("Item Name") ?> </label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="fst_item_name" placeholder="<?= lang("Item Name") ?>" name="fst_item_name">
+                                <div id="fst_item_name_err" class="text-danger"></div>
                             </div>
 
                             <label for="fdt_eta_date" class="col-md-2 control-label"><?= lang("Estimasi") ?> </label>
@@ -315,6 +308,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </script>
 </div>
 
+<?php
+    echo $mdlItemGroups;
+?>
+
 <script type="text/javascript">
     $(function() {
         <?php if ($mode == "EDIT") { ?>
@@ -391,29 +388,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         });
 
-        $("#select-maingroupitem").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>tr/sales_preorder/get_data_ItemMainGroupId',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value) {
-                        data2.push({
-                            "id": value.fin_item_maingroup_id,
-                            "text": value.fst_item_maingroup_name
-                        });
-                    });
-                    console.log(data2);
-                    return {
-                        results: data2
-                    };
-                },
-                cache: true,
-            }
-        });
-        $("#select-GroupItemId").select2({
+        /*$("#select-GroupItemId").select2({
             width: '100%',
             ajax: {
                 url: '<?= site_url() ?>tr/sales_preorder/get_data_ItemGroupId',
@@ -434,33 +409,44 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 },
                 cache: true,
             }
-        });
-        $("#select-GroupItemId").change(function(event) {
-            event.preventDefault();
-            $('#select-SubGroupItemId').val(null).trigger('change');
-            $("#select-SubGroupItemId").select2({
-                width: '100%',
-                ajax: {
-                    url: '<?= site_url() ?>tr/sales_preorder/get_data_ItemSubGroupId/' + $("#select-GroupItemId").val(),
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function(data) {
-                        data2 = [];
-                        $.each(data, function(index, value) {
-                            data2.push({
-                                "id": value.fin_item_subgroup_id,
-                                "text": value.fst_item_subgroup_name
-                            });
+        });*/
+
+        $("#select-GroupItemId").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_ItemGroupId',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value) {
+                        data2.push({
+                            "id": value.fin_item_group_id,
+                            "text": value.fst_item_group_name
                         });
-                        console.log(data2);
-                        return {
-                            results: data2
-                        };
-                    },
-                    cache: true,
-                }
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+        }).on("select2:open",function(e){
+            e.preventDefault();
+
+            $(this).select2("close");
+
+            showItemGroup(true,function(node){
+                //consoleLog(node);
+                $("#select-GroupItemId").empty();
+                var newOption = new Option(node.text, node.id, false, false);
+                $('#select-GroupItemId').append(newOption).trigger('change');
+
+                //$("#select-GroupItemId").val(node.id).trigger("change");
             });
-        })
+
+        });
 
         $("#select-Currency").select2({
             width: '100%',
@@ -479,29 +465,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     console.log(items);
                     return {
                         results: items
-                    };
-                },
-                cache: true,
-            }
-        });
-
-        $("#select-ItemId").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>tr/sales_preorder/get_data_Item',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value) {
-                        data2.push({
-                            "id": value.fin_item_id,
-                            "text": value.fst_item_name
-                        });
-                    });
-                    console.log(data2);
-                    return {
-                        results: data2
                     };
                 },
                 cache: true,
@@ -599,15 +562,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 var newOption = new Option(resp.preOrder.fst_item_group_name, resp.preOrder.fin_item_group_id, true, true);
                 // Append it to the select
                 $('#select-GroupItemId').append(newOption).trigger('change');
-                var newOption = new Option(resp.preOrder.fst_item_subgroup_name, resp.preOrder.fin_item_subgroup_id, true, true);
-                // Append it to the select
-                $('#select-SubGroupItemId').append(newOption).trigger('change');
+
                 var newOption = new Option(resp.preOrder.fst_curr_name, resp.preOrder.fst_curr_code, true, true);
                 // Append it to the select
                 $('#select-Currency').append(newOption).trigger('change');
-                var newOption = new Option(resp.preOrder.fst_item_name, resp.preOrder.fin_item_id, true, true);
-                // Append it to the select
-                $('#select-ItemId').append(newOption).trigger('change');
+
                 //populate Pre-Order branch Detail
                 $.each(resp.preorderDetail, function(name, val) {
                     console.log(val);

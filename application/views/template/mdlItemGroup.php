@@ -170,8 +170,8 @@
                                 $node["<?=$this->security->get_csrf_token_name()?>"] = "<?=$this->security->get_csrf_hash()?>";
                                 
                                 $.ajax({
-                                    url:"<?=site_url() ?>master/group_item/delete_data_tree",
-                                    method:"POST",
+                                    url:"<?=site_url() ?>master/Group_item/delete_data_tree",
+                                    //method:"POST",
                                     data:$node,
                                 }).done(function(resp){
                                     if (resp.message != ""){
@@ -214,7 +214,7 @@
         
         $("#jstree_group").on('changed.jstree', function (e, data) {            
             //consoleLog(data);
-           // consoleLog($('#jstree_group').jstree(true).is_leaf(data.node));
+            //consoleLog($('#jstree_group').jstree(true).is_leaf(data.node));
         });
 
         $("#jstree_group").on('rename_node.jstree', function (e, data) {            

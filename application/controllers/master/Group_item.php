@@ -290,8 +290,13 @@ class Group_item extends MY_Controller
 
     public function delete_data_tree(){
         $this->load->model("msgroupitems_model");
-        $post = $this->input->post();
+
+
+        $post = $this->input->get();
+        //var_dump($post);
+    
         $id =  $post["id"];
+        //$id = 41;
         try {
             $deleted = $this->msgroupitems_model->delete($id);
             
