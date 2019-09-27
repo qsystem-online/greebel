@@ -52,5 +52,27 @@ class Mscurrencies_model extends MY_Model{
         return $rules;
     }
 
-    
+    public function getRate($fst_curr_code,$date=""){
+        /*
+        $ssql = "select * from mscurrencies where fst_curr_code = ?";
+        $qr = $this->db->query($ssql,[$fst_curr_code]);
+        $rw = $qr->row();
+        if($rw->)
+        */
+        if ($fst_curr_code == "IDR"){
+            return 1;
+        }
+
+        $date = $date =="" ? date("Y-m-d") : $date;
+        $ssql ="select * from mscurrenciesratedetails where fst_curr_code = ? and fdt_date = ? ";
+        $qr = $this->db->query($ssql,[$fst_curr_code,$date]);
+        $rw = $qr->row();
+        if(!$rw){
+            return 0;
+        }else{
+            return $rw->fdc_exchange_rate_to_idr;
+        }
+        return $date; 
+
+    }
 }

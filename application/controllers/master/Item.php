@@ -68,7 +68,10 @@ class Item extends MY_Controller
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Master Items" : "Update Master Items";
         $data["fin_item_id"] = $fin_item_id;
-        $data["mdlItemGroups"] =$this->parser->parse('template/mdlItemGroup', [], true);
+
+        $dataGroup = ["readOnly"=>1];
+
+        $data["mdlItemGroups"] =$this->parser->parse('template/mdlItemGroup', $dataGroup, true);
         $data["mdlPrint"] = $mdlPrint;
 
         $page_content = $this->parser->parse('pages/master/msitems/form', $data, true);

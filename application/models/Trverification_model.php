@@ -27,7 +27,7 @@ class Trverification_model extends MY_Model {
         $arrVerify = $this->msverification_model->getData($controller,$module);
         foreach($arrVerify as $verify){
             $dataVerify =[
-                "fin_branch_id"=>$verify->fin_branch_id,
+                "fin_branch_id"=>$this->aauth->get_active_branch_id(),
                 "fst_controller"=>$controller,
                 "fst_verification_type"=>$verify->fst_verification_type,
                 "fin_transaction_id"=>$transactionId,
@@ -187,4 +187,16 @@ class Trverification_model extends MY_Model {
         }
     
     }
+
+    public function haveAprrovalRecord($controller,$verificationType,$transactionId){
+        $ssql = "select  * from ". $this->tableName ." WHERE fst_controller = ? and fst_verification_type =? and fin_transaction_id = ? and fst_verification_status in ('VF','RJ','VD')";
+        $qr = $this->db->query($ssql,[$controller,$verificationType,$transactionId]);
+        $rw = $qr->row();
+        if(!$rw){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
 }

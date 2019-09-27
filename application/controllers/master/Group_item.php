@@ -281,6 +281,10 @@ class Group_item extends MY_Controller
             $this->msgroupitems_model->update($data);
             $this->db->trans_complete();
         }
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["message"] = "";
+        $this->ajxResp["data"] = ["id"=>$id];
+        $this->json_output();
 
     }
 

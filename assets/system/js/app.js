@@ -90,8 +90,46 @@ var App = {
 		return parseFloat(value);
 	
 		
-	}
+	},
+	getValueAjax : function(obj){		
+		//url,model,func,params,callback
 
+		blockUIOnAjaxRequest();
+		$.ajax({
+			url:obj.url,
+			method:"POST",
+			data:{
+				model:obj.model,
+				function:obj.func,
+				params:obj.params
+			}
+		}).done(function(resp){
+			obj.callback(resp.data);
+		});
+			
+	
+	},
+	blockUIOnAjaxRequest: function(message){
+		$(document).ajaxStart(function() {
+			$.blockUI({ message:message});
+		});
+	
+		$(document).ajaxStop(function() {
+			$.unblockUI();
+			$(document).unbind('ajaxStart');
+		});
+	},
+	dateFormat: function(strDate){
+		var result = moment(strDate,'YYYY-MM-DD').format(DATEPICKER_FORMAT_MOMENT);
+		return result;
+	},	
+	dateTimeFormat:function(strDateTime){
+		var result = moment(strDateTime,'YYYY-MM-DD HH:mm:ss').format(DATETIMEPICKER_FORMAT_MOMENT);
+		return result;
+	},
+	consoleLog:function(obj){
+		console.log(obj);	
+	}
 
 }
 

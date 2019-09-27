@@ -1171,11 +1171,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         }).on("select2:open",function(e){
             e.preventDefault();
-
             $(this).select2("close");
-
             showItemGroup(true,function(node){
-                //consoleLog(node);
+                //consoleLog(node);                
                 $("#select-GroupItemId").empty();
                 var newOption = new Option(node.text, node.id, false, false);
                 $('#select-GroupItemId').append(newOption).trigger('change');
@@ -1233,7 +1231,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
             $(this).select2("close");
 
-            showItemGroup(true,function(node){
+            showItemGroup(true,true,function(node){
                 $("#select-groupItemName").empty();
                 var newOption = new Option(node.text,node.id, false,false);
                 $('#select-groupItemName').append(newOption).trigger('change');
