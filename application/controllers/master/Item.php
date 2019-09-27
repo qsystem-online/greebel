@@ -631,7 +631,7 @@ class Item extends MY_Controller
             $i = $i + 1;
             $col = $this->phpspreadsheet->getNameFromNumber($i);
             $sheet->setCellValue($col."7", $rw->fst_cust_pricing_group_name);
-            $sheet->getColumnDimension($col)->setAutoSize ( true );
+            $sheet->getColumnDimension($col)->setAutoSize (true);
         }
 
         //TITLE
@@ -679,7 +679,18 @@ class Item extends MY_Controller
         $sheet->mergeCells('F4:'.$col.'4');
 
         foreach ($printItem as $rw) {
-
+            $sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id);
+            $ssql = "select a.fdc_selling_price,a.fst_unit,b.fst_cust_pricing_group_name,c.fin_item_id from msitemspecialpricinggroupdetails a
+                    left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id
+                    left join msitems c on a.fin_item_id = c.fin_item_id where c.fin_item_id = ? and a.fst_unit = ? 
+                    and b.fin_cust_pricing_group_id = ? and a.fst_active = 'A' ";
+            $query = $this->db->query($ssql,[$rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id]);
+            echo $this->db->last_query();
+            die();
+            $rs = $query->result();
+            
+            foreach ($sellingPrice as $ro){
+                
                 $sheet->setCellValue("B$iRow1", $rw->fst_vendor_item_name);
                 $sheet->setCellValue("B$iRow2", $rw->fst_item_group);
                 $sheet->setCellValue("A$iRow", $no++);
@@ -687,30 +698,29 @@ class Item extends MY_Controller
                 $sheet->setCellValue("C$iRow", $rw->fst_item_code);
                 $sheet->setCellValue("D$iRow", $rw->fst_item_name);
                 $sheet->setCellValue("E$iRow", 0);
-                $sheet->setCellValue("F$iRow", $rw->fst_unit_selling);
+                $sheet->setCellValue("F$iRow", $ro->fst_unit);
                 $sheet->setCellValue("G$iRow", $rw->fdc_price_list);
                 $sheet->setCellValue("H$iRow", $rw->fst_unit);
                 $sheet->setCellValue("I$iRow", $rw->fdc_selling_price);
-                $sheet->setCellValue("J$iRow", 0);
-                $sheet->setCellValue("K$iRow", 0);
-                $sheet->setCellValue("L$iRow", 0);
-                $sheet->setCellValue("M$iRow", $rw->fdc_selling_price);
-                $sheet->setCellValue("N$iRow", 0);
-                $sheet->setCellValue("O$iRow", 0);
-                $sheet->setCellValue("P$iRow", $rw->fdc_selling_price);
-                $sheet->setCellValue("Q$iRow", 0);
-                $sheet->setCellValue("R$iRow", 0);
-
+                $sheet->setCellValue("J$iRow", $rw->fdc_selling_price);
+                $sheet->setCellValue("K$iRow", $ro->fdc_selling_price);
+                $sheet->setCellValue("L$iRow", $ro->fdc_selling_price);
+                $sheet->setCellValue("M$iRow", $ro->fdc_selling_price);
+                $sheet->setCellValue("N$iRow", $ro->fdc_selling_price);
+                $sheet->setCellValue("O$iRow", $ro->fdc_selling_price);
+                $sheet->setCellValue("P$iRow", $ro->fdc_selling_price);
+                $sheet->setCellValue("Q$iRow", $ro->fdc_selling_price);
+                $sheet->setCellValue("R$iRow", $ro->fdc_selling_price);
+                
                 $iRow++;
-
-            //}
+            }
         }
 
         //BORDER
         $styleArray = [
             'borders' => [
                 'allBorders' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DASHED,
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DASHED
                 ],
             ],
         ];

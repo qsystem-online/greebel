@@ -144,8 +144,8 @@ class Msitems_model extends MY_Model
         return 0;
     }
 
-    public function getSellingPriceByPricingGroup($fin_item_id,$fst_unit,$pricingGroupId) {                 
-        $fin_cust_pricing_group_id = $pricingGroupId;
+    public function getSellingPriceByPricingGroup($fin_item_id,$fst_unit,$fin_cust_pricing_group_id) {                 
+        //$fin_cust_pricing_group_id = $pricingGroupId;
         // cek Special item
         $ssql = "select * from msitemspecialpricinggroupdetails where fin_item_id = ? and fst_unit = ? and fin_cust_pricing_group_id = ? and fst_active = 'A'";
         $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit,$fin_cust_pricing_group_id]);
@@ -194,7 +194,7 @@ class Msitems_model extends MY_Model
     public function getPrintItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir){
         $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fst_vendor_item_name,
                 CONCAT(a.fin_item_group_id,'  -  ',b.fst_item_group_name) as fst_item_group,
-                c.fdc_price_list,c.fst_unit,d.fdc_selling_price,d.fst_unit as fst_unit_selling FROM msitems a
+                c.fdc_price_list,c.fst_unit,d.fdc_selling_price,d.fst_unit as unitSelling FROM msitems a
                 LEFT JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
                 LEFT JOIN msitemunitdetails c on a.fin_item_id = c.fin_item_id
                 LEFT JOIN msitemspecialpricinggroupdetails d on a.fin_item_id = d.fin_item_id
