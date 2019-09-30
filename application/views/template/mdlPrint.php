@@ -162,14 +162,4 @@
 
         });
     });
-
-	function showItemGroup(leafOnly,callback){
-		$("#mdlItemGroup").modal({
-			backdrop:"static",
-		});
-		g_LeafOnly = leafOnly;
-		selected_callback = callback;
-    }
-    
-   
 </script>

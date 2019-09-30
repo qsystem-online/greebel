@@ -45,7 +45,7 @@ class Msgroupitems_model extends MY_Model
         $parent = $this->getDataById($data["fin_parent_item_group_id"]);
         $parent = $parent["groupitems"];        
         if($parent == false){
-            $parent_tree_id = $parent->fin_item_group_id;
+            $parent_tree_id = null;
         }else{
             $parent_tree_id = $parent->fst_tree_id;
         }

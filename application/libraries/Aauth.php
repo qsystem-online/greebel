@@ -77,6 +77,10 @@ class Aauth {
 
 	public function get_active_branch_id(){
 		return (int) $this->CI->session->userdata('active_branch_id');
-
+	}
+	
+	public function get_active_branch(){
+		$this->CI->load->model("msbranches_model");
+		return $this->CI->msbranches_model->getBranchById($this->get_active_branch_id());
 	}
 }

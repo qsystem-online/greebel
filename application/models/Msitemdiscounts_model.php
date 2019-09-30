@@ -34,4 +34,11 @@ class Msitemdiscounts_model extends MY_Model {
 
         return $rules;
     }
+
+    public function getItemDiscountList(){
+        $ssql ="select * from " . $this->tableName ." where fst_active ='A'";
+        $qr = $this->db->query($ssql,[]);
+        $rs = $qr->result();
+        return $rs;
+    }
 }

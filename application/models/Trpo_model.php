@@ -85,26 +85,21 @@ class Trpo_model extends MY_Model {
         return $purchaseOrder;
     }
 
-    public function getDataById($fin_salesorder_id){
-        $ssql = "select a.*,
-            b.fst_relation_name,b.fin_sales_id,a.fin_shipping_address_id,b.fin_cust_pricing_group_id,
-            c.fst_fullname as fst_sales_name 
-            from trsalesorder a
-            inner join msrelations b on a.fin_relation_id  = b.fin_relation_id 
-            inner join users c on a.fin_sales_id  = c.fin_user_id             
-            where a.fin_salesorder_id = ?";
-        $qr = $this->db->query($ssql, [$fin_salesorder_id]);
-        $rwSalesOrder = $qr->row();
+    public function getDataById($fin_po_id){
+        $ssql = "select * from " .$this->tableName. " WHERE fin_po_id = ? and fst_active != 'D'";
 
-        $ssql = "select a.*,b.fst_item_name,b.fst_item_code,b.fst_max_item_discount from trsalesorderdetails a 
-        left join msitems b on a.fin_item_id = b.fin_item_id
-        where a.fin_salesorder_id = ?";
-		$qr = $this->db->query($ssql,[$fin_salesorder_id]);
-		$rsSODetails = $qr->result();
+        $qr = $this->db->query($ssql, [$fin_po_id]);
+        $rwPO = $qr->row();
+
+        $ssql = "select a.*,b.fst_item_code as ItemCode from trpodetails a 
+            inner join msitems b on a.fin_item_id = b.fin_item_id 
+            where a.fin_po_id = ?";
+		$qr = $this->db->query($ssql,[$fin_po_id]);
+		$rsPODetails = $qr->result();
 
 		$data = [
-            "sales_order" => $rwSalesOrder,
-            "so_details" => $rsSODetails
+            "po" => $rwPO,
+            "po_details" => $rsPODetails
 		];
 
 		return $data;
@@ -112,14 +107,24 @@ class Trpo_model extends MY_Model {
 
     public function GeneratePONo($trDate = null) {
         $trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
-        $tahun = date("ym", strtotime ($trDate));
-        $prefix = getDbConfig("purchaseorder_prefix");
+        $tahun = date("Y/m", strtotime ($trDate));
+        $activeBranch = $this->aauth->get_active_branch();
+        $branchCode = "";
+        if($activeBranch){
+            $branchCode = $activeBranch->fst_branch_code;
+        }
+        $prefix = getDbConfig("purchaseorder_prefix") . "/" . $branchCode ."/";
         $query = $this->db->query("SELECT MAX(fst_po_no) as max_id FROM trpo where fst_po_no like '".$prefix.$tahun."%'");
         $row = $query->row_array();
+
         $max_id = $row['max_id']; 
-        $max_id1 =(int) substr($max_id,8,5);
+        
+        $max_id1 =(int) substr($max_id,strlen($max_id)-5);
+        
         $fst_tr_no = $max_id1 +1;
+        
         $max_tr_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_tr_no);
+        
         return $max_tr_no;
     }
 
@@ -141,22 +146,19 @@ class Trpo_model extends MY_Model {
         ];
     }
     
-    private function isOnPromoItemRules($rules,$fin_item_id,$fin_item_subgroup_id){
-        foreach($rules as $rule){
-            if($rule->fst_item_type == 'SUB GROUP'){
-                if ($fin_item_subgroup_id == $fin_item_id){
-                    return true;
-                }
-            }else if ($rule->fst_item_type == 'ITEM') {
-                if ($rule->fin_item_id == $fin_item_id){
-                    return true;
-                }
-            }
+    
+    public function getLastBuyPrice($fin_item_id,$fst_unit){
+        $ssql = "select * from trpodetails where fin_item_id = ? and fst_unit = ? order by fin_po_detail_id desc limit 1";
+        $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit]);
+        $rw = $qr->row();
+        if(!$rw){
+            return 7500;
+        }else{
+            return $rw->fdc_price;
         }
-        return false;
     }
 
-    
+
     public function posting($fin_salesorder_id){
         //Bila terdapat DP jurnal DP tersebut
         
@@ -239,6 +241,28 @@ class Trpo_model extends MY_Model {
         if ($rw == false){
             $this->posting($finSalesOrderId);
         }
+    }
+
+    public function delete($finPOId,$softDelete=true){
+        //cek jika sudah ada penerimaan barang
+        $ssql  = "select * from trpodetails where fin_po_id = ? and fdb_qty_lpb > 0";
+        $qr = $this->db->query($ssql,[$finPOId]);
+        if ($qr->row()){
+            return [
+                "status"=>false,
+                "message"=>lang("PO tidak dapat dihapus, sudah ada penerimaan barang !"),
+            ];
+        }
+        parent::delete($finPOId,$softDelete);
+        if(!$softDelete){
+            $this->db->delete("trpodetails",array("fin_po_id"=>$finPOId));
+        }
+        
+
+        return [
+            "status"=>true,
+            "message"=>"",
+        ];
     }
 
 

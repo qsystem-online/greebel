@@ -146,21 +146,21 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
                         <div class='form-group'>
                             <label for="fbl_promo_gabungan" class="col-md-2 control-label"><?= lang("") ?></label>
-                            <div class="checkbox">
+                            <div class="checkbox col-sm-2">
                                 <div>
-                                    <input type="checkbox" class="minimal form-control" id="fbl_promo_gabungan" name="fbl_promo_gabungan"> &nbsp;
+                                    <input type="checkbox" id="fbl_promo_gabungan" name="fbl_promo_gabungan"> &nbsp;
                                     <label for="fbl_promo_gabungan" class=""> <?= lang("Allow other promo")?></label>
                                 </div>
                             </div>
-                            <div class="checkbox">
+                            <div class="checkbox col-sm-2">
                                 <div>
-                                    <input type="checkbox" class="minimal form-control" id="fbl_is_multiples_prize" name="fbl_is_multiples_prize"> &nbsp;
+                                    <input type="checkbox"  id="fbl_is_multiples_prize" name="fbl_is_multiples_prize"> &nbsp;
                                     <label for="fbl_is_multiples_prize" class=""> <?= lang("Multiple prize")?></label>
                                 </div>
                             </div>
-                            <div class="checkbox">
+                            <div class="checkbox col-sm-2">
                                 <div>
-                                    <input type="checkbox" class="minimal form-control " id="fbl_disc_per_item" name="fbl_disc_per_item"> &nbsp;
+                                    <input type="checkbox" id="fbl_disc_per_item" name="fbl_disc_per_item"> &nbsp;
                                     <label for="fbl_disc_per_item" class=""> <?= lang("Disc per item")?></label>
                                 </div>
                             </div>
