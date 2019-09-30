@@ -621,7 +621,7 @@ class Item extends MY_Controller
         $sheet->setCellValue("D7", "Item Name");
         $sheet->setCellValue("E7", "Harga Beli");
         $sheet->setCellValue("F7", "Satuan");
-        $sheet->setCellValue("G7", "Price List");
+        $sheet->setCellValue("G7", "Harga Jual");
         $sheet->setCellValue("H7", "Satuan");
         $ssql = "Select * from mscustpricinggroups where fst_active = 'A' ";
         $qr = $this->db->query($ssql,[]);
@@ -679,30 +679,27 @@ class Item extends MY_Controller
         $sheet->mergeCells('F4:'.$col.'4');
 
         foreach ($printItem as $rw) {
-            $sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id);
-            $ssql = "select a.fdc_selling_price,a.fst_unit,b.fst_cust_pricing_group_name,c.fin_item_id from msitemspecialpricinggroupdetails a
-                    left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id
-                    left join msitems c on a.fin_item_id = c.fin_item_id where c.fin_item_id = ? and a.fst_unit = ? 
-                    and b.fin_cust_pricing_group_id = ? and a.fst_active = 'A' ";
-            $query = $this->db->query($ssql,[$rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id]);
+            //$sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id);
+            $ssql = "select * from msitemspecialpricinggroupdetails where fin_item_id = ? and fst_unit = ? and fst_active = 'A' ";
+            $qr = $this->db->query($ssql,[$rw->fin_item_id,$rw->fst_unit]);
             echo $this->db->last_query();
             die();
-            $rs = $query->result();
+            $rs = $qr->result();
             
-            foreach ($sellingPrice as $ro){
-                
+            foreach ($rs as $ro){
+
                 $sheet->setCellValue("B$iRow1", $rw->fst_vendor_item_name);
                 $sheet->setCellValue("B$iRow2", $rw->fst_item_group);
                 $sheet->setCellValue("A$iRow", $no++);
                 $sheet->setCellValue("B$iRow", $rw->fin_item_id);
                 $sheet->setCellValue("C$iRow", $rw->fst_item_code);
                 $sheet->setCellValue("D$iRow", $rw->fst_item_name);
-                $sheet->setCellValue("E$iRow", 0);
-                $sheet->setCellValue("F$iRow", $ro->fst_unit);
-                $sheet->setCellValue("G$iRow", $rw->fdc_price_list);
+                $sheet->setCellValue("E$iRow", $rw->fdc_price_list);
+                $sheet->setCellValue("F$iRow", $rw->fst_unit);
+                $sheet->setCellValue("G$iRow", 0);
                 $sheet->setCellValue("H$iRow", $rw->fst_unit);
-                $sheet->setCellValue("I$iRow", $rw->fdc_selling_price);
-                $sheet->setCellValue("J$iRow", $rw->fdc_selling_price);
+                $sheet->setCellValue("I$iRow", $ro->fdc_selling_price);
+                $sheet->setCellValue("J$iRow", $ro->fdc_selling_price);
                 $sheet->setCellValue("K$iRow", $ro->fdc_selling_price);
                 $sheet->setCellValue("L$iRow", $ro->fdc_selling_price);
                 $sheet->setCellValue("M$iRow", $ro->fdc_selling_price);

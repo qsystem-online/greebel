@@ -1346,19 +1346,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 {column: "Item ID",hidden:false,id:"fin_item_id"},
 				{column: "Item Code",hidden:false,id:"fst_item_code"},
                 {column: "Item Name",hidden:false,id:"fst_item_name"},
-				{column: "Harga Beli",hidden:false,id:"fdc_selling_price"},
+				{column: "Harga Beli",hidden:false,id:"fdc_price_list"},
 				{column: "Satuan",hidden:false,id:"fst_unit"},
-				{column: "Price List",hidden:false,id:"fdc_price_list"},
+				{column: "Harga Jual",hidden:false,id:"fdc_selling_price"},
 				{column: "Satuan",hidden:false,id:"fst_unit"},
-                {column: "Retail",hidden:true,id:"fdc_selling_price"},
-                {column: "Hypermart",hidden:true,id:"fdc_selling_price"},
-                {column: "Grosir",hidden:true,id:"fdc_selling_price"},
-                {column: "Sekolah/PO",hidden:true,id:"fdc_selling_price"},
-                {column: "MT Lokal",hidden:true,id:"fdc_selling_price"},
-                {column: "Group SMM/Internal",hidden:true,id:"fdc_selling_price"},
-                {column: "Online Shop",hidden:true,id:"fdc_selling_price"},
-                {column: "Tous Les Jours",hidden:true,id:"fdc_selling_price"},
-                {column: "Tourtuile",hidden:true,id:"fdc_selling_price"}
+                {column: "Retail",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Hypermart",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Grosir",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Sekolah/PO",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "MT Lokal",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Group SMM/Internal",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Online Shop",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Tous Les Jours",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Tourtuile",hidden:true,id:"fin_cust_pricing_group_id"}
 			];
 			url = "<?= site_url() ?>master/item/get_printItem/" + $("#select-vendorName").val() + '/' + $("#select-groupItemName").val() + '/' + $("#select-ItemCode").val() + '/' + $("#select-CodeItem").val();
             MdlPrint.showPrint(layoutColumn,url);
