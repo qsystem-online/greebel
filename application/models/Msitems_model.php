@@ -146,11 +146,11 @@ class Msitems_model extends MY_Model
         return 0;
     }
 
-    public function getSellingPriceByPricingGroup($fin_item_id,$fst_unit,$fin_cust_pricing_group_id) {                 
-        //$fin_cust_pricing_group_id = $pricingGroupId;
+    public function getSellingPriceByPricingGroup($fin_item_id,$fst_unit,$pricingGroupId) {                 
+        $fin_cust_pricing_group_id = $pricingGroupId;
         // cek Special item
-        $ssql = "select * from msitemspecialpricinggroupdetails where fin_item_id = ? and fst_unit = ? and fin_cust_pricing_group_id = ? and fst_active = 'A'";
-        $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit,$fin_cust_pricing_group_id]);
+        $ssql = "select * from msitemspecialpricinggroupdetails where fin_item_id = ? and fst_unit = ? and fin_cust_pricing_group_id = '$pricingGroupId' and fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit,$pricingGroupId]);
         $rwPrice = $qr->row();
         if($rwPrice){
             return $rwPrice->fdc_selling_price;
@@ -196,10 +196,13 @@ class Msitems_model extends MY_Model
     public function getPrintItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir){
         $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fst_vendor_item_name,
                 CONCAT(a.fin_item_group_id,'  -  ',b.fst_item_group_name) as fst_item_group,
-                c.fdc_price_list,c.fst_unit FROM msitems a LEFT JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
+                c.fdc_price_list,c.fst_unit,d.fin_cust_pricing_group_id,d.fdc_selling_price,d.fst_unit,e.fst_cust_pricing_group_name 
+                FROM msitems a LEFT JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
                 LEFT JOIN msitemunitdetails c on a.fin_item_id = c.fin_item_id
+                LEFT JOIN msitemspecialpricinggroupdetails d on a.fin_item_id = d.fin_item_id
+                LEFT JOIN mscustpricinggroups e on d.fin_cust_pricing_group_id = e.fin_cust_pricing_group_id
                 WHERE a.fst_vendor_item_name like '$vendorName' AND a.fin_item_group_id like '$groupItem'
-                AND a.fst_item_code >= '$itemCode_awal' AND a.fst_item_code <= '$itemCode_akhir' ORDER BY a.fin_item_id";
+                AND a.fst_item_code >= '$itemCode_awal' AND a.fst_item_code <= '$itemCode_akhir' ";
 
         $query = $this->db->query($ssql,[$vendorName,$groupItem,$itemCode_awal,$itemCode_akhir]);
         //echo $this->db->last_query();

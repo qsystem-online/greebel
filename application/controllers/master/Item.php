@@ -569,20 +569,19 @@ class Item extends MY_Controller
         $layout = $this->input->post("layoutColumn");
         $arrLayout = json_decode($layout);
         
-        /*
-        var_dump($arrLayout);
-        echo "PRINT......";
+        /*var_dump($arrLayout);
+        echo "PRINT......";*/
         
         foreach($arrLayout as $layout){
-            if($layout->column == "Retail"){
+            if($layout->column == "fin_cust_pricing_group_id"){
                 if($layout->hidden == true){
-                    echo "sembunyikan";
+                    echo $hidden;
                 }else{
-                    echo "tampilkan";
+                    echo $show;
                 }
             }
         }
-        die();*/
+        //die();
         
         $this->load->model("msitems_model");
         $this->load->library("phpspreadsheet");
@@ -621,7 +620,7 @@ class Item extends MY_Controller
         $sheet->setCellValue("D7", "Item Name");
         $sheet->setCellValue("E7", "Harga Beli");
         $sheet->setCellValue("F7", "Satuan");
-        $sheet->setCellValue("G7", "Price List");
+        $sheet->setCellValue("G7", "Harga Jual");
         $sheet->setCellValue("H7", "Satuan");
         $ssql = "Select * from mscustpricinggroups where fst_active = 'A' ";
         $qr = $this->db->query($ssql,[]);
@@ -640,7 +639,7 @@ class Item extends MY_Controller
         $sheet->setCellValue("A1", "Daftar Barang");
 
         //FORMAT NUMBER
-        $sheet->getStyle('E8:'.$col.'500')->getNumberFormat()->setFormatCode('#,##0.00');
+        $spreadsheet->getActiveSheet()->getStyle('E8:'.$col.'500')->getNumberFormat()->setFormatCode('#,##0.00');
         
         //COLOR HEADER COLUMN
         $spreadsheet->getActiveSheet()->getStyle('A7:'.$col.'7')
@@ -679,39 +678,38 @@ class Item extends MY_Controller
         $sheet->mergeCells('F4:'.$col.'4');
 
         foreach ($printItem as $rw) {
-            $sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id);
-            $ssql = "select a.fdc_selling_price,a.fst_unit,b.fst_cust_pricing_group_name,c.fin_item_id from msitemspecialpricinggroupdetails a
-                    left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id
-                    left join msitems c on a.fin_item_id = c.fin_item_id where c.fin_item_id = ? and a.fst_unit = ? 
-                    and b.fin_cust_pricing_group_id = ? and a.fst_active = 'A' ";
+            //$sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->pricingGroupId);
+            $ssql = "select a.fst_unit,a.fdc_selling_price,b.fst_cust_pricing_group_name,c.fin_item_id from msitemspecialpricinggroupdetails a
+                left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id
+                left join msitems c on a.fin_item_id = c.fin_item_id where a.fin_item_id = ? and a.fst_unit = ? and a.fin_cust_pricing_group_id = ? and a.fst_active = 'A' ";
             $query = $this->db->query($ssql,[$rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id]);
-            echo $this->db->last_query();
-            die();
+            //echo $this->db->last_query();
+            //die();
             $rs = $query->result();
             
-            foreach ($sellingPrice as $ro){
-                
+            foreach ($rs as $ro){
+
                 $sheet->setCellValue("B$iRow1", $rw->fst_vendor_item_name);
                 $sheet->setCellValue("B$iRow2", $rw->fst_item_group);
                 $sheet->setCellValue("A$iRow", $no++);
                 $sheet->setCellValue("B$iRow", $rw->fin_item_id);
                 $sheet->setCellValue("C$iRow", $rw->fst_item_code);
                 $sheet->setCellValue("D$iRow", $rw->fst_item_name);
-                $sheet->setCellValue("E$iRow", 0);
-                $sheet->setCellValue("F$iRow", $ro->fst_unit);
-                $sheet->setCellValue("G$iRow", $rw->fdc_price_list);
-                $sheet->setCellValue("H$iRow", $rw->fst_unit);
-                $sheet->setCellValue("I$iRow", $rw->fdc_selling_price);
-                $sheet->setCellValue("J$iRow", $rw->fdc_selling_price);
-                $sheet->setCellValue("K$iRow", $ro->fdc_selling_price);
-                $sheet->setCellValue("L$iRow", $ro->fdc_selling_price);
-                $sheet->setCellValue("M$iRow", $ro->fdc_selling_price);
-                $sheet->setCellValue("N$iRow", $ro->fdc_selling_price);
-                $sheet->setCellValue("O$iRow", $ro->fdc_selling_price);
-                $sheet->setCellValue("P$iRow", $ro->fdc_selling_price);
-                $sheet->setCellValue("Q$iRow", $ro->fdc_selling_price);
-                $sheet->setCellValue("R$iRow", $ro->fdc_selling_price);
-                
+                $sheet->setCellValue("E$iRow", $rw->fdc_price_list);
+                $sheet->setCellValue("F$iRow", $rw->fst_unit);
+                $sheet->setCellValue("G$iRow", 0);
+                $sheet->setCellValue("H$iRow", $ro->fst_unit);
+                $ssql = "select a.*,b.fst_cust_pricing_group_name from msitemspecialpricinggroupdetails a
+                        left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id 
+                        where a.fin_item_id = ? and a.fst_active = 'A' ";
+                $qr = $this->db->query($ssql,[$ro->fin_item_id]);
+                //echo $this->db->last_query();
+                //die();
+                $rs = $qr->result();
+                foreach ($rs as $rw){
+                    $sheet->setCellValue($col.$iRow, $rw->fdc_selling_price);
+                }
+
                 $iRow++;
             }
         }
