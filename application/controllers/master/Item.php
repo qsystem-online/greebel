@@ -678,13 +678,13 @@ class Item extends MY_Controller
         $sheet->mergeCells('F4:'.$col.'4');
 
         foreach ($printItem as $rw) {
-            //$sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->pricingGroupId);
+            $sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id);
             $ssql = "select a.fst_unit,a.fdc_selling_price,b.fst_cust_pricing_group_name,c.fin_item_id from msitemspecialpricinggroupdetails a
                 left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id
                 left join msitems c on a.fin_item_id = c.fin_item_id where a.fin_item_id = ? and a.fst_unit = ? and a.fin_cust_pricing_group_id = ? and a.fst_active = 'A' ";
             $query = $this->db->query($ssql,[$rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id]);
-            //echo $this->db->last_query();
-            //die();
+            /*echo $this->db->last_query();
+            die();*/
             $rs = $query->result();
             
             foreach ($rs as $ro){
@@ -699,15 +699,9 @@ class Item extends MY_Controller
                 $sheet->setCellValue("F$iRow", $rw->fst_unit);
                 $sheet->setCellValue("G$iRow", 0);
                 $sheet->setCellValue("H$iRow", $ro->fst_unit);
-                $ssql = "select a.*,b.fst_cust_pricing_group_name from msitemspecialpricinggroupdetails a
-                        left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id 
-                        where a.fin_item_id = ? and a.fst_active = 'A' ";
-                $qr = $this->db->query($ssql,[$ro->fin_item_id]);
-                //echo $this->db->last_query();
-                //die();
-                $rs = $qr->result();
-                foreach ($rs as $rw){
-                    $sheet->setCellValue($col.$iRow, $rw->fdc_selling_price);
+
+                foreach ($ro as $sp){
+                    $sheet->setCellValue($col.$iRow, $sellingPrice);
                 }
 
                 $iRow++;
