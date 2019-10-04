@@ -614,7 +614,7 @@ class Item extends MY_Controller
         $sheet->mergeCells('B3:D3');
 
         //HEADER COLUMN
-        $sheet->setCellValue("A7", "No");
+        $sheet->setCellValue("A7", "No.");
         $sheet->setCellValue("B7", "Item ID");
         $sheet->setCellValue("C7", "Item Code");
         $sheet->setCellValue("D7", "Item Name");
