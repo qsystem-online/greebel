@@ -699,9 +699,6 @@ class Item extends MY_Controller
                 $sheet->setCellValue("F$iRow", $rw->fst_unit);
                 $sheet->setCellValue("G$iRow", 0);
                 $sheet->setCellValue("H$iRow", $ro->fst_unit);
-                /*$sheet->setCellValue("I$iRow", $sellingPrice);
-                $sheet->setCellValue("J$iRow", $sellingPrice);
-                $sheet->setCellValue("K$iRow", $sellingPrice);*/
 
                 foreach ($ro as $sp){
                     $sheet->setCellValue($col.$iRow, $sellingPrice);
