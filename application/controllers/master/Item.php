@@ -186,6 +186,28 @@ class Item extends MY_Controller
                 return;
             }
         }
+        //Save Bom Detail
+        $this->load->model("msitembomdetails_model");
+        //$this->msitembomdetails_model->deleteByHeaderId($fin_item_id);
+        $details = $this->input->post("detailBOM");
+        $details = json_decode($details);
+        foreach ($details as $item) {
+            $data = [
+                "fin_item_id" => $insertId,
+                "fin_item_id_bom" => $item->fin_item_id_bom,
+                "fst_unit" => $item->fst_unit
+            ];
+            $this->msitembomdetails_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
         $this->db->trans_complete();
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";

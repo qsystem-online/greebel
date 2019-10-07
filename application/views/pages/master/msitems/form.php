@@ -118,12 +118,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-standardVendor" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
+                            <label for="select-standardVendor" class="col-md-2 control-label"><?= lang("Standard Vendor") ?> :</label>
                             <div class="col-md-4">
                                 <select id="select-standardVendor" class="form-control" name="fin_standard_vendor_id"></select>
                             </div>
 
-                            <label for="select-optionalVendor" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
+                            <label for="select-optionalVendor" class="col-md-2 control-label"><?= lang("Optional Vendor") ?> :</label>
                             <div class="col-md-4">
                                 <select id="select-optionalVendor" class="form-control" name="fin_optional_vendor_id"></select>
                             </div>
@@ -131,7 +131,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 
                         <div class="form-group">
-                            <div class="col-md-10" style="left: 20px;">				
+                            <div class="col-md-10" style="left: 18px;">				
                                 <label for="fdc_scale_for_bom" class="col-md-2 control-label"><?= lang("Scale For BOM") ?>:</label>
                                 <div class="col-md-5">
                                     <input type="text" class="form-control" id="fdc_scale_for_bom" placeholder="<?= lang(" 1 : ") ?>" name="fdc_scale_for_bom">
@@ -146,7 +146,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
                         </div>
                         <div class="form-group">
-                            <div class="col-md-10" style="left: 20px;">				
+                            <div class="col-md-10" style="left: 18px;">				
                                 <label for="fst_storage_rack_info" class="col-md-2 control-label"><?= lang("Storage Rack Info") ?>:</label>
                                 <div class="col-md-5">
                                     <input type="text" class="form-control" id="fst_storage_rack_info" placeholder="<?= lang("Storage Rack Info") ?>" name="fst_storage_rack_info">
@@ -489,6 +489,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 } else {
                     $("#fdc_conv_to_basic_unit_error").hide();
                 }
+
                 var unit = $("#fst_unit").val();
                 if (unit == null || unit == "") {
                     $("#fst_unit_error").html("Please select Unit");
@@ -496,7 +497,25 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     addRow = false;
                     return;
                 } else {
-                    $("#fst_unit_error").hide();
+                    //$("#fst_unit_error").hide();
+                    data = t.rows().data();
+                    console.log(data);
+                    var valid = true;
+                    $.each(data, function(i, v) {
+                        if (v.fst_unit == unit) {
+                            $("#fst_unit_error").html("Unit is already exist!");
+                            $("#fst_unit_error").show();
+                            addRow = false;
+                            valid = false;
+                            return false;
+                        } else {
+                            $("#fst_unit_error").hide();
+                        }
+                    });
+
+                    if (valid == false){
+                        return;
+                    }
                 }
                 var priceList = $("#fdc_price_list").val();
                 if (priceList == null || priceList == "") {
@@ -516,12 +535,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 } else {
                     $("#fdc_het_error").hide();
                 }
+
                 if ($("#fbl_is_basic_unit").is(":checked")) {
                     data = t.rows().data();
                     console.log(data);
                     $.each(data, function(i, v) {
                         if (v.fbl_is_basic_unit == "1") {
-                            if (confirm("Basic unit telah didefinisikan untuk " + v.Unit + ", tambah data ?")) {
+                            if (confirm("Basic unit telah didefinisikan untuk " + v.fst_unit + ", ganti basic unit ?")) {
                                 v.fbl_is_basic_unit = false;
                                 console.log(data);
                                 t.row(i).data(v).draw(false);
@@ -532,13 +552,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         }
                     });
                 }
-                if ($("#isProductionOutput").is(":checked")) {
+                if ($("#fbl_is_production_output").is(":checked")) {
                     data = t.rows().data();
                     console.log(data);
                     $.each(data, function(i, v) {
-                        if (v.isProductionOutput == "1") {
-                            if (confirm("Production unit telah didefinisikan untuk " + v.Unit + ", tambah data ?")) {
-                                v.isProductionOutput = false;
+                        if (v.fbl_is_production_output == "1") {
+                            if (confirm("Production unit telah didefinisikan untuk " + v.fst_unit + ", ganti production unit ?")) {
+                                v.fbl_is_production_output = false;
                                 console.log(data);
                                 t.row(i).data(v).draw(false);
                             } else {
@@ -1067,7 +1087,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
             console.log(data);
             //var formData = new FormData($('form')[0])
-            $.ajax({
+            /*$.ajax({
                 type: "POST",
                 enctype: 'multipart/form-data',
                 url: url,
@@ -1112,7 +1132,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     console.log("ERROR : ", e);
                     $("#btnSubmit").prop("disabled", false);
                 }
-            });
+            });*/
         });
 
         $("#fst_image").change(function(event) {
@@ -1421,9 +1441,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $('#select-vendorName').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
                 $('#select-groupItemName').append(newOption).trigger('change');
-                var newOption = new Option(resp.ms_items.standardVendor, resp.ms_items.fin_relation_id, true, true);
+
+                var newOption = new Option(resp.ms_items.standardVendor, resp.ms_items.fin_standard_vendor_id, true, true);
                 $('#select-standardVendor').append(newOption).trigger('change');
-                var newOption = new Option(resp.ms_items.optionalVendor, resp.ms_items.fin_relation_id, true, true);
+                var newOption = new Option(resp.ms_items.optionalVendor, resp.ms_items.fin_optional_vendor_id, true, true);
                 $('#select-optionalVendor').append(newOption).trigger('change');
                 /*var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
                 $('#select-ItemCode').append(newOption).trigger('change');
