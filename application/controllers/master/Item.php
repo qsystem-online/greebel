@@ -702,8 +702,8 @@ class Item extends MY_Controller
                 left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id
                 where a.fin_item_id = ? and a.fst_unit = ? and a.fin_cust_pricing_group_id = ? and a.fst_active = 'A' ";
             $query = $this->db->query($ssql,[$rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id]);
-            //echo $this->db->last_query();
-            //die();
+            echo $this->db->last_query();
+            die();
             $rs = $query->result();
             
             foreach ($rs as $ro){

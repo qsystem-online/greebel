@@ -203,7 +203,7 @@ class Msitems_model extends MY_Model
                 LEFT JOIN msitemspecialpricinggroupdetails d on a.fin_item_id = d.fin_item_id
                 LEFT JOIN mscustpricinggroups e on d.fin_cust_pricing_group_id = e.fin_cust_pricing_group_id
                 WHERE a.fst_vendor_item_name like '$vendorName' AND a.fin_item_group_id like '$groupItem'
-                AND a.fst_item_code >= '$itemCode_awal' AND a.fst_item_code <= '$itemCode_akhir' ";
+                AND a.fst_item_code >= '$itemCode_awal' AND a.fst_item_code <= '$itemCode_akhir' Order By a.fin_item_id ";
 
         $query = $this->db->query($ssql,[$vendorName,$groupItem,$itemCode_awal,$itemCode_akhir]);
         //echo $this->db->last_query();
