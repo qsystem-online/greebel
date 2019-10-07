@@ -68,7 +68,7 @@ class Item extends MY_Controller
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Master Items" : "Update Master Items";
         $data["fin_item_id"] = $fin_item_id;
-        $data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', [], true);
+        $data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>true], true);
         $data["mdlPrint"] = $mdlPrint;
 
         $page_content = $this->parser->parse('pages/master/msitems/form', $data, true);
@@ -695,7 +695,7 @@ class Item extends MY_Controller
                 $sheet->setCellValue("E$iRow", $rw->fst_unit);
                 $sheet->setCellValue("F$iRow", 0);
                 $sheet->setCellValue("G$iRow", $ro->fst_unit);
-
+                
                 foreach ($ro as $sp){
                     $sheet->setCellValue($col.$iRow, $sellingPrice);
                 }

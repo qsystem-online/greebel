@@ -1205,7 +1205,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             $(this).select2("close");
             showItemGroup(true,true,function(node){
                 $("#select-groupItemName").empty();
-                var newOption = new Option(node.text,node.id, false,false);
+                var newOption = new Option(node.text,node.id,false,false);
                 $('#select-groupItemName').append(newOption).trigger('change');
             });
         });
@@ -1379,6 +1379,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			url = "<?= site_url() ?>master/item/get_printItem/" + $("#select-vendorName").val() + '/' + $("#select-groupItemName").val() + '/' + $("#select-ItemCode").val() + '/' + $("#select-CodeItem").val();
             MdlPrint.showPrint(layoutColumn,url);
         });
+
+
     });
 
     function init_form(fin_item_id) {
@@ -1419,10 +1421,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $('#select-standardVendor').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.optionalVendor, resp.ms_items.fin_relation_id, true, true);
                 $('#select-optionalVendor').append(newOption).trigger('change');
-                /*var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
+                var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
                 $('#select-ItemCode').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
-                $('#select-CodeItem').append(newOption).trigger('change');*/
+                $('#select-CodeItem').append(newOption).trigger('change');
 
                 // Append it to the select
                 $('#select-SubgItemId').append(newOption).trigger('change');
