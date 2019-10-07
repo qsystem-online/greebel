@@ -161,7 +161,7 @@ $config['composer_autoload'] = "./vendor/autoload.php";
 | DO NOT CHANGE THIS UNLESS YOU FULLY UNDERSTAND THE REPERCUSSIONS!!
 |
 */
-$config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
+$config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-,';
 
 /*
 |--------------------------------------------------------------------------
@@ -456,7 +456,7 @@ $config['csrf_token_name'] = '__c9da2c3066cf64f25a59677d1666d7ac';
 $config['csrf_cookie_name'] = '__c9da2c3066cf64f25a59677d1666d7ac';
 $config['csrf_expire'] = 10800;
 $config['csrf_regenerate'] = FALSE;
-$config['csrf_exclude_uris'] = array();
+$config['csrf_exclude_uris'] = array('api/get_value');
 
 /*
 |--------------------------------------------------------------------------

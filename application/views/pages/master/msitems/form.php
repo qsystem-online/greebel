@@ -1011,7 +1011,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <label for="select-vendorName" class="col-md-3 control-label"><?= lang("Vendor Item Name") ?> :</label>
                                     <div class="col-md-7">
                                         <select id="select-vendorName" class="form-control" name="fst_vendor_item_name">
-                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                            
                                         </select>
                                         <div id="fst_vendor_item_name_err" class="text-danger"></div>
                                     </div>
@@ -1029,14 +1029,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <label for="select-ItemCode" class="col-md-3 control-label"><?= lang("Item Code") ?> :</label>
                                     <div class="col-md-3">
                                         <select id="select-ItemCode" class="form-control" name="fst_item_code">
-                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                            <option value="0">--  <?= lang("select") ?>  --</option>
                                         </select>
                                         <div id="fst_item_code_err" class="text-danger"></div>
                                     </div>
                                     <label for="select-CodeItem" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
                                     <div class="col-md-3">
                                         <select id="select-CodeItem" class="form-control" name="fst_item_code">
-                                            <option value="0">-- <?= lang("select") ?> --</option>
+                                            <option value="0">--  <?= lang("select") ?>  --</option>
                                         </select>
                                         <div id="fst_item_code_err" class="text-danger"></div>
                                     </div>
@@ -1064,7 +1064,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </div>
 
 <?php
-    echo $mdlItemGroups;
+    echo $mdlItemGroup;
 ?>
 
 <?php
@@ -1167,17 +1167,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         }).on("select2:open",function(e){
             e.preventDefault();
-
             $(this).select2("close");
-
-            showItemGroup(true,function(node){
-                //consoleLog(node);
+            showItemGroup(true,true,function(node){
+                //consoleLog(node);                
                 $("#select-GroupItemId").empty();
-                var newOption = new Option(node.text, node.id, false, false);
+                var newOption = new Option(node.text,node.id, false, false);
                 $('#select-GroupItemId').append(newOption).trigger('change');
-
             });
-
         });
 
         $("#select-vendorName").select2({
@@ -1226,12 +1222,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         }).on("select2:open",function(e){
             e.preventDefault();
-
             $(this).select2("close");
-
-            showItemGroup(true,function(node){
+            showItemGroup(true,true,function(node){
                 $("#select-groupItemName").empty();
-                var newOption = new Option(node.text,node.id, false,false);
+                var newOption = new Option(node.text,node.id,false,false);
                 $('#select-groupItemName').append(newOption).trigger('change');
             });
         });
@@ -1385,26 +1379,28 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#btnPrint").click(function(e){
             layoutColumn = [
-                {column: "Item ID",hidden:false,id:"fin_item_id"},
 				{column: "Item Code",hidden:false,id:"fst_item_code"},
                 {column: "Item Name",hidden:false,id:"fst_item_name"},
-				{column: "Harga Beli",hidden:false,id:0},
+				{column: "Harga Beli",hidden:false,id:"fdc_price_list"},
 				{column: "Satuan",hidden:false,id:"fst_unit"},
-				{column: "Price List",hidden:false,id:"fdc_price_list"},
+				{column: "Harga Jual",hidden:false,id:"fdc_selling_price"},
 				{column: "Satuan",hidden:false,id:"fst_unit"},
-                {column: "Retail",hidden:true,id:"sellingPrice"},
-                {column: "Hypermart",hidden:true,id:"sellingPrice"},
-                {column: "Grosir",hidden:true,id:"sellingPrice"},
-                {column: "Sekolah/PO",hidden:true,id:"sellingPrice"},
-                {column: "MT Lokal",hidden:true,id:"sellingPrice"},
-                {column: "Group SMM/Internal",hidden:true,id:"sellingPrice"},
-                {column: "Online Shop",hidden:true,id:"sellingPrice"},
-                {column: "Enigma Tbk",hidden:true,id:"sellingPrice"},
-                {column: "Tourtuile",hidden:true,id:"sellingPrice"}
+                {column: "Retail",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Hypermart",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Grosir",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Sekolah/PO",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "MT Lokal",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Group SMM/Internal",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Online Shop",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Tous Les Jours",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Tourtuile",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Bazar",hidden:true,id:"fin_cust_pricing_group_id"}
 			];
 			url = "<?= site_url() ?>master/item/get_printItem/" + $("#select-vendorName").val() + '/' + $("#select-groupItemName").val() + '/' + $("#select-ItemCode").val() + '/' + $("#select-CodeItem").val();
             MdlPrint.showPrint(layoutColumn,url);
         });
+
+
     });
 
     function init_form(fin_item_id) {
@@ -1446,10 +1442,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $('#select-standardVendor').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.optionalVendor, resp.ms_items.fin_optional_vendor_id, true, true);
                 $('#select-optionalVendor').append(newOption).trigger('change');
-                /*var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
+                var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
                 $('#select-ItemCode').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
-                $('#select-CodeItem').append(newOption).trigger('change');*/
+                $('#select-CodeItem').append(newOption).trigger('change');
 
                 // Append it to the select
                 $('#select-SubgItemId').append(newOption).trigger('change');

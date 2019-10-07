@@ -31,4 +31,44 @@ class Api extends MY_Controller{
     }
 
 
+    public function get_value1($model,$function,$params){
+
+        $model = strtolower($model);
+        $this->load->model(ucfirst($model),'model');
+
+        //$result = $this->model->getRate("USD");
+        $params = explode(",",$params);
+
+        $result = call_user_func_array(array($this->model, $function), $params);
+        $resp =[
+            "status"=>"success",
+            "message"=>"",
+            "data"=>$result
+        ];
+        $this->json_output($resp);
+
+
+    }
+    public function get_value(){
+
+        $model = strtolower($this->input->post("model"));
+        $function = $this->input->post("function");
+        $params = $this->input->post("params");
+        
+
+        $this->load->model(ucfirst($model),'model');
+
+        //$result = $this->model->getRate("USD");
+        //$params = explode(",",$params);
+
+        $result = call_user_func_array(array($this->model, $function), $params);
+        $resp =[
+            "status"=>"success",
+            "message"=>"",
+            "data"=>$result
+        ];
+        $this->json_output($resp);
+
+
+    }
 }

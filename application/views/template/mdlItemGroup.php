@@ -28,9 +28,14 @@
 </div>
 <script type="text/javascript">
 	var selected_callback;
-	var g_LeafOnly;
+	var g_LeafOnly;    
+    var g_ReadOnly = <?= $readOnly ?>;
+    var g_ContextMenu = "";
 
     $(function () {
+        if (g_ReadOnly == 0){
+            g_ContextMenu ="contextmenu";
+        }
         $.ajax({
             url:"<?=site_url() ?>master/group_item/data_tree",
 
@@ -74,6 +79,10 @@
 
         $("#btnCreateRoot").click(function(e){
             e.preventDefault();
+
+            if (g_ReadOnly == 1){
+                return alert("Tidak dapat add");
+            }           
            
             /*
             $('#jstree_group').jstree(true).create_node ({
@@ -98,7 +107,9 @@
                 
                  "check_callback" : true,
              },
-             plugins:['search','contextmenu','wholerow'],
+
+
+             plugins:['search',g_ContextMenu,'wholerow'],
              contextmenu:{
                  items:function($node){
                     var tree = $("#jstree_group").jstree(true);
@@ -156,6 +167,8 @@
                             "label": "Remove",
                             "action": function (obj) { 
                                 consoleLog($node);
+                                $node["<?=$this->security->get_csrf_token_name()?>"] = "<?=$this->security->get_csrf_hash()?>";
+                                
                                 $.ajax({
                                     url:"<?=site_url() ?>master/Group_item/delete_data_tree",
                                     //method:"POST",
@@ -216,9 +229,8 @@
                 data:data,
             }).done(function(resp){
                 consoleLog(resp);
-                //data.id = resp.data.id;
-                $('#jstree_group').jstree(true).set_id(data.id = resp.data.id);
-                //$('#jstree_group').jstree(true).redraw(true);
+                $('#jstree_group').jstree(true).set_id(data,resp.data.id);
+
             });
         });
         /*
@@ -248,11 +260,12 @@
     });
 
 	function showItemGroup(leafOnly,callback){
+       
 		$("#mdlItemGroup").modal({
 			backdrop:"static",
-		});
+		});    
 		g_LeafOnly = leafOnly;
-		selected_callback = callback;
+    	selected_callback = callback;
 	}
 		
 </script>

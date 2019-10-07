@@ -151,4 +151,12 @@ clASs Msrelations_model extends MY_Model {
             return (float) $rw->fdc_credit_limit;
         }
     }
+
+    public function getSupplierList(){
+        $ssql = "select * from msrelations where fst_relation_type = 2 and fin_branch_id = ?";
+        $query = $this->db->query($ssql, [$this->aauth->get_active_branch_id()]);
+        $rs = $query->result();
+        return $rs;
+
+    }
 }

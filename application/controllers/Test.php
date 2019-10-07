@@ -16,19 +16,9 @@ class Test extends CI_Controller {
 
 
 	public function index(){
-		$this->load->library('unit_test');
-		$test = dBDateFormat("20-04-2019");
-		$expected_result = "2019-04-20";
-		$test_name = 'Test dBdateFormat';
-		$this->unit->run($test, $expected_result, $test_name,$test);
-		
-
-		$test = parseNumber("200.000.000,15",",");
-		$expected_result = (float) 200000000.15;
-		$test_name = 'Test parseNumber';
-		$this->unit->run($test, $expected_result, $test_name,$test ." vs " .$expected_result);
-		
-		echo $this->unit->report();
+		$this->load->model("trverification_model");
+		$message = "Purchase Order xxxxxxxx Need Approval";
+		$this->trverification_model->createAuthorize("PO","default",1,$message);
 
 	}
 
@@ -96,4 +86,7 @@ class Test extends CI_Controller {
 			echo "FALSE";
 		}
 	}
+
+
+	
 }

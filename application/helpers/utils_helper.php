@@ -135,3 +135,11 @@
         return date('Y-m-d', $tsTgl); 
     }
 
+    function getDataTable($table,$fields="*",$where=""){
+        $ci =& get_instance();
+        $ci->db->select($fields);
+        $ci->db->where($where);
+        $query = $ci->db->get($table);
+        return $query->result();
+    }
+

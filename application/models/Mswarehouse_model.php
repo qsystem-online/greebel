@@ -76,4 +76,14 @@ class Mswarehouse_model extends MY_Model
         $rs = $qr->result();
         return $rs;
     }
+
+    
+    public function getWarehouseList(){
+
+        $branchId = $this->aauth->get_active_branch_id();
+        $ssql = "select * from " . $this->tableName . " where fst_active = 'A' and fin_branch_id = ?";
+        $qr = $this->db->query($ssql, [$branchId]);
+        $rs = $qr->result();
+        return $rs;
+    }
 }

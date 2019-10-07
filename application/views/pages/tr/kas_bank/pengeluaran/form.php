@@ -97,14 +97,12 @@
 							</div>						
 						</div>
                         
-                        <div class="form-group">
-                            
+                        <div class="form-group">                            
                             <label for="fin_vendor_id" class="col-md-2 control-label"><?=lang("Info")?> </label>							
                             <div class="col-sm-10">
                                 <textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="3" style="resize:none"></textarea>
                                 <div id="fst_memo_err" class="text-danger"></div>
-                            </div>
-                        
+                            </div>                        
                         </div>
 
 
@@ -118,8 +116,7 @@
 								</button>
 							</div>
 						</div>
-
-						<table id="tblSODetails" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+						<table id="tblcbpaymentitems" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
 						<br>
 						<div class="form-group">
 							
@@ -130,16 +127,7 @@
 										<input type="text" class="form-control text-right" id="sub-total" value="0" readonly>
 									</div>
 								</div>
-								<div class="form-group">
-									<label for="sub-total" class="col-md-6 control-label">%<?=lang("PPn")?></label>
-									<div class="col-md-2" style='text-align:right'>
-										<input type="text" class="form-control text-right" id="fdc_vat_percent" name="fdc_vat_percent" value="<?=$percent_ppn?>" >
-									</div>
-									<div class="col-md-4" style='text-align:right'>
-										<input type="text" class="form-control text-right" id="fdc_vat_amount" name="fdc_vat_amount" value="0" readonly>	
-									</div>
-								</div>
-
+								
 								<div class="form-group">
 									<label for="total" class="col-md-8 control-label"><?=lang("Total")?></label>
 									<div class="col-md-4" style='text-align:right'>
