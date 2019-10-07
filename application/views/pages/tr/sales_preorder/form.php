@@ -434,18 +434,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         }).on("select2:open",function(e){
             e.preventDefault();
-
             $(this).select2("close");
 
-            showItemGroup(true,function(node){
+            showItemGroup(true,true,function(node){
                 //consoleLog(node);
                 $("#select-GroupItemId").empty();
                 var newOption = new Option(node.text, node.id, false, false);
                 $('#select-GroupItemId').append(newOption).trigger('change');
-
-                //$("#select-GroupItemId").val(node.id).trigger("change");
             });
-
         });
 
         $("#select-Currency").select2({
