@@ -1044,7 +1044,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </div>
 
 <?php
-    echo $mdlItemGroups;
+    echo $mdlItemGroup;
 ?>
 
 <?php
@@ -1148,14 +1148,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
         }).on("select2:open",function(e){
             e.preventDefault();
             $(this).select2("close");
-            showItemGroup(true,function(node){
+            showItemGroup(true,true,function(node){
                 //consoleLog(node);                
                 $("#select-GroupItemId").empty();
-                var newOption = new Option(node.text, node.id, false, false);
+                var newOption = new Option(node.text,node.id, false, false);
                 $('#select-GroupItemId').append(newOption).trigger('change');
-
             });
-
         });
 
         $("#select-vendorName").select2({
@@ -1204,9 +1202,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         }).on("select2:open",function(e){
             e.preventDefault();
-
             $(this).select2("close");
-
             showItemGroup(true,true,function(node){
                 $("#select-groupItemName").empty();
                 var newOption = new Option(node.text,node.id, false,false);
@@ -1363,7 +1359,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#btnPrint").click(function(e){
             layoutColumn = [
-                {column: "Item ID",hidden:false,id:"fin_item_id"},
 				{column: "Item Code",hidden:false,id:"fst_item_code"},
                 {column: "Item Name",hidden:false,id:"fst_item_name"},
 				{column: "Harga Beli",hidden:false,id:"fdc_price_list"},
@@ -1378,7 +1373,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 {column: "Group SMM/Internal",hidden:true,id:"fin_cust_pricing_group_id"},
                 {column: "Online Shop",hidden:true,id:"fin_cust_pricing_group_id"},
                 {column: "Tous Les Jours",hidden:true,id:"fin_cust_pricing_group_id"},
-                {column: "Tourtuile",hidden:true,id:"fin_cust_pricing_group_id"}
+                {column: "Tourtuile",hidden:true,id:"fin_cust_pricing_group_id"},
+                {column: "Bazar",hidden:true,id:"fin_cust_pricing_group_id"}
 			];
 			url = "<?= site_url() ?>master/item/get_printItem/" + $("#select-vendorName").val() + '/' + $("#select-groupItemName").val() + '/' + $("#select-ItemCode").val() + '/' + $("#select-CodeItem").val();
             MdlPrint.showPrint(layoutColumn,url);

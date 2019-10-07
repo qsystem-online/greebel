@@ -195,6 +195,7 @@ class Msitems_model extends MY_Model
 
     public function getPrintItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir){
         $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fst_vendor_item_name,
+                CONCAT(a.fin_item_id,'  -  ',a.fst_vendor_item_name) as fst_vendId,
                 CONCAT(a.fin_item_group_id,'  -  ',b.fst_item_group_name) as fst_item_group,
                 c.fdc_price_list,c.fst_unit,d.fin_cust_pricing_group_id,e.fst_cust_pricing_group_name 
                 FROM msitems a LEFT JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
