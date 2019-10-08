@@ -988,18 +988,18 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label for="select-vendorName" class="col-md-3 control-label"><?= lang("Vendor Item Name") ?> :</label>
+                                    <label for="select-VendorName" class="col-md-3 control-label"><?= lang("Vendor") ?> :</label>
                                     <div class="col-md-7">
-                                        <select id="select-vendorName" class="form-control" name="fst_vendor_item_name">
-                                            
+                                        <select id="select-VendorName" class="form-control" name="fst_vendor_item_name">
+                                            <option value="0">-- <?= lang("select") ?> --</option>
                                         </select>
                                         <div id="fst_vendor_item_name_err" class="text-danger"></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="select-groupItemName" class="col-md-3 control-label"><?= lang("Group") ?> :</label>
+                                    <label for="select-GroupName" class="col-md-3 control-label"><?= lang("Group") ?> :</label>
                                     <div class="col-md-7">
-                                        <select id="select-groupItemName" class="form-control" name="fin_item_group_id">
+                                        <select id="select-GroupName" class="form-control" name="fin_item_group_id">
                                             <option value="0">-- <?= lang("select") ?> --</option>
                                         </select>
                                         <div id="fst_item_group_name_err" class="text-danger"></div>
@@ -1156,7 +1156,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         });
 
-        $("#select-vendorName").select2({
+        $("#select-VendorName").select2({
             width: '100%',
             ajax: {
                 url: '<?= site_url() ?>master/item/get_data_vendorName',
@@ -1179,10 +1179,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
         });
 
-        $("#select-groupItemName").select2({
+        $("#select-GroupName").select2({
             width: '100%',
             ajax: {
-                url: '<?= site_url() ?>master/item/get_data_groupItemName',
+                url: '<?= site_url() ?>master/item/get_data_ItemGroupId',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
@@ -1204,9 +1204,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
             e.preventDefault();
             $(this).select2("close");
             showItemGroup(true,true,function(node){
-                $("#select-groupItemName").empty();
+                $("#select-GroupName").empty();
                 var newOption = new Option(node.text,node.id,false,false);
-                $('#select-groupItemName').append(newOption).trigger('change');
+                $('#select-GroupName').append(newOption).trigger('change');
             });
         });
 
@@ -1374,9 +1374,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 {column: "Online Shop",hidden:true,id:"fin_cust_pricing_group_id"},
                 {column: "Tous Les Jours",hidden:true,id:"fin_cust_pricing_group_id"},
                 {column: "Tourtuile",hidden:true,id:"fin_cust_pricing_group_id"},
-                {column: "Bazar",hidden:true,id:"fin_cust_pricing_group_id"}
+                {column: "Bazar",hidden:true,id:"fin_cust_pricing_group_id"},
 			];
-			url = "<?= site_url() ?>master/item/get_printItem/" + $("#select-vendorName").val() + '/' + $("#select-groupItemName").val() + '/' + $("#select-ItemCode").val() + '/' + $("#select-CodeItem").val();
+			url = "<?= site_url() ?>master/item/get_printItem/" + $("#select-VendorName").val() + '/' + $("#select-GroupName").val() + '/' + $("#select-ItemCode").val() + '/' + $("#select-CodeItem").val();
             MdlPrint.showPrint(layoutColumn,url);
         });
 
@@ -1414,9 +1414,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 var newOption = new Option(resp.ms_items.fst_item_subgroup_name, resp.ms_items.fin_item_subgroup_id, true, true);
 
                 var newOption = new Option(resp.ms_items.fst_vendor_item_name, resp.ms_items.fst_vendor_item_name, true, true);
-                $('#select-vendorName').append(newOption).trigger('change');
+                $('#select-VendorName').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
-                $('#select-groupItemName').append(newOption).trigger('change');
+                $('#select-GroupName').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.standardVendor, resp.ms_items.fin_relation_id, true, true);
                 $('#select-standardVendor').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.optionalVendor, resp.ms_items.fin_relation_id, true, true);

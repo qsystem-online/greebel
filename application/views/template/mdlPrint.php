@@ -106,8 +106,6 @@
                 $("#tblLayout").DataTable().destroy();
             }
 
-            
-
             $("#tblLayout").DataTable({
                 columns: [
                     { title: "Kolom",width:"80%",data:"column" },
