@@ -309,7 +309,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </div>
 
 <?php
-    echo $mdlItemGroups;
+    echo $mdlItemGroup;
 ?>
 
 <script type="text/javascript">
@@ -435,11 +435,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
         }).on("select2:open",function(e){
             e.preventDefault();
             $(this).select2("close");
-
-            showItemGroup(true,true,function(node){
-                //consoleLog(node);
+            showItemGroup(true,function(node){
                 $("#select-GroupItemId").empty();
-                var newOption = new Option(node.text, node.id, false, false);
+                var newOption = new Option(node.text,node.id, false, false);
                 $('#select-GroupItemId').append(newOption).trigger('change');
             });
         });
