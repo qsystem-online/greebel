@@ -1168,7 +1168,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         }).on("select2:open",function(e){
             e.preventDefault();
             $(this).select2("close");
-            showItemGroup(true,true,function(node){
+            showItemGroup(true,function(node){
                 //consoleLog(node);                
                 $("#select-GroupItemId").empty();
                 var newOption = new Option(node.text,node.id, false, false);
@@ -1178,16 +1178,18 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#select-vendorName").select2({
             width: '100%',
+            allowClear: true,           
+            placeholder: 'select.....',
             ajax: {
-                url: '<?= site_url() ?>master/item/get_data_vendorName',
+                url: '<?= site_url() ?>master/item/get_data_relationVendor',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
                     data2 = [];
                     $.each(data, function(index, value){
                         data2.push({
-                            "id": value.fst_vendor_item_name,
-                            "text": value.fst_vendor_item_name
+                            "id": value.fin_relation_id,
+                            "text": value.fst_relation_name
                         });
                     });
                     console.log(data2);
@@ -1201,6 +1203,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#select-groupItemName").select2({
             width: '100%',
+            allowClear: true,           
+            placeholder: 'select.....',
             ajax: {
                 url: '<?= site_url() ?>master/item/get_data_groupItemName',
                 dataType: 'json',
@@ -1223,7 +1227,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         }).on("select2:open",function(e){
             e.preventDefault();
             $(this).select2("close");
-            showItemGroup(true,true,function(node){
+            showItemGroup(true,function(node){
                 $("#select-groupItemName").empty();
                 var newOption = new Option(node.text,node.id,false,false);
                 $('#select-groupItemName').append(newOption).trigger('change');
@@ -1433,10 +1437,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $('#select-GroupItemId').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_subgroup_name, resp.ms_items.fin_item_subgroup_id, true, true);
 
-                var newOption = new Option(resp.ms_items.fst_vendor_item_name, resp.ms_items.fst_vendor_item_name, true, true);
-                $('#select-vendorName').append(newOption).trigger('change');
-                var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
-                $('#select-groupItemName').append(newOption).trigger('change');
+                //----select2 for modal report
+                //var newOption = new Option(resp.ms_items.standardVendor, resp.ms_items.fin_standard_vendor_id, true, true);
+                //$('#select-vendorName').append(newOption).trigger('change');
+                //var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
+                //$('#select-groupItemName').append(newOption).trigger('change');
 
                 var newOption = new Option(resp.ms_items.standardVendor, resp.ms_items.fin_standard_vendor_id, true, true);
                 $('#select-standardVendor').append(newOption).trigger('change');

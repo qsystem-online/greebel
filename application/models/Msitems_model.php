@@ -193,19 +193,24 @@ class Msitems_model extends MY_Model
 
     }
 
-    public function getPrintItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir){
-        $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fst_vendor_item_name,
-                CONCAT(a.fin_item_id,'  -  ',a.fst_vendor_item_name) as fst_vendId,
-                CONCAT(a.fin_item_group_id,'  -  ',b.fst_item_group_name) as fst_item_group,
-                c.fdc_price_list,c.fst_unit,d.fin_cust_pricing_group_id,e.fst_cust_pricing_group_name 
+    public function getPrintItem($vendorName,$groupName,$itemCode_awal,$itemCode_akhir){
+        if ($vendorName == 'null'){
+            $vendorName ="";
+        }
+        if ($groupName == 'null'){
+            $groupName ="";
+        }
+        $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,
+                CONCAT(a.fin_standard_vendor_id,'  -  ',d.fst_relation_name) as vendorName1,
+                CONCAT(a.fin_optional_vendor_id,'  -  ',d.fst_relation_name) as vendorName2,
+                CONCAT(a.fin_item_group_id,'  -  ',b.fst_item_group_name) as itemGroup,
+                c.fdc_price_list,c.fst_unit 
                 FROM msitems a LEFT JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
                 LEFT JOIN msitemunitdetails c on a.fin_item_id = c.fin_item_id
-                LEFT JOIN msitemspecialpricinggroupdetails d on a.fin_item_id = d.fin_item_id
-                LEFT JOIN mscustpricinggroups e on d.fin_cust_pricing_group_id = e.fin_cust_pricing_group_id
-                WHERE a.fst_vendor_item_name like '$vendorName' AND a.fin_item_group_id like '$groupItem'
-                AND a.fst_item_code >= '$itemCode_awal' AND a.fst_item_code <= '$itemCode_akhir' Order By a.fin_item_id ";
-
-        $query = $this->db->query($ssql,[$vendorName,$groupItem,$itemCode_awal,$itemCode_akhir]);
+                LEFT JOIN msrelations d on a.fin_standard_vendor_id = d.fin_relation_id
+                WHERE (a.fin_standard_vendor_id like ? OR a.fin_optional_vendor_id like ?) AND a.fin_item_group_id like ?
+                AND a.fst_item_code >= '$itemCode_awal' AND a.fst_item_code <= '$itemCode_akhir' ORDER BY a.fst_item_name ";
+        $query = $this->db->query($ssql,['%'.$vendorName.'%','%'.$vendorName.'%','%'.$groupName.'%']);
         //echo $this->db->last_query();
         //die();
         $rs = $query->result();
