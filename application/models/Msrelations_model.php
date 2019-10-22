@@ -159,4 +159,24 @@ clASs Msrelations_model extends MY_Model {
         return $rs;
 
     }
+
+    public function getPrintRelation($type,$relationId_start,$relationId_end){
+        if ($type == 'ALL'){
+            $type ="";
+        }
+        if ($relationId_start == 'null'){
+            $relationId_start ="";
+        }
+        if ($relationId_end == 'null'){
+            $relationId_end ="";
+        }
+        $ssql = "SELECT * FROM msrelations WHERE fin_branch_id = ? AND fst_relation_type like ?
+                AND fin_relation_id >= '$relationId_start' AND fin_relation_id <= '$relationId_end' ORDER BY fst_relation_name ";
+        $query = $this->db->query($ssql,[$this->aauth->get_active_branch_id(),'%'.$type.'%']);
+        //echo $this->db->last_query();
+        //die();
+        $rs = $query->result();
+
+        return $rs;
+    }
 }

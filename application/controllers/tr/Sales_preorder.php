@@ -70,7 +70,7 @@ class Sales_preorder extends MY_Controller
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Sales Pre-order" : "Update Sales Pre-order";
         $data["fin_preorder_id"] = $fin_preorder_id;
-        $data["mdlItemGroups"] =$this->parser->parse('template/mdlItemGroup', [], true);
+        $data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>1], true);
 
         $page_content = $this->parser->parse('pages/tr/sales_preorder/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);

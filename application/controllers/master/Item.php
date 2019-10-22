@@ -68,10 +68,7 @@ class Item extends MY_Controller
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Master Items" : "Update Master Items";
         $data["fin_item_id"] = $fin_item_id;
-
-        $dataGroup = ["readOnly"=>1];
-
-        $data["mdlItemGroups"] =$this->parser->parse('template/mdlItemGroup', $dataGroup, true);
+        $data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>true], true);
         $data["mdlPrint"] = $mdlPrint;
 
         $page_content = $this->parser->parse('pages/master/msitems/form', $data, true);
@@ -179,6 +176,28 @@ class Item extends MY_Controller
                 "fdc_het" => $item->fdc_het
             ];
             $this->msitemunitdetails_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
+        //Save Bom Detail
+        $this->load->model("msitembomdetails_model");
+        //$this->msitembomdetails_model->deleteByHeaderId($fin_item_id);
+        $details = $this->input->post("detailBOM");
+        $details = json_decode($details);
+        foreach ($details as $item) {
+            $data = [
+                "fin_item_id" => $insertId,
+                "fin_item_id_bom" => $item->fin_item_id_bom,
+                "fst_unit" => $item->fst_unit
+            ];
+            $this->msitembomdetails_model->insert($data);
             $dbError  = $this->db->error();
             if ($dbError["code"] != 0) {
                 $this->ajxResp["status"] = "DB_FAILED";
@@ -437,19 +456,9 @@ class Item extends MY_Controller
 
     public function get_data_relationVendor(){
         $term = $this->input->get("term");
-        $ssql = "select * from msrelations where fst_relation_name like ? and fst_relation_type =2 order by fst_relation_name";
+        $ssql = "select * from msrelations where fst_relation_name like ? and fst_relation_type = 2 order by fst_relation_name";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
         $rs = $qr->result();
-
-        $this->json_output($rs);
-    }
-
-    public function get_data_groupItemName(){
-        $term = $this->input->get("term");
-        $ssql = "select * from msgroupitems where fst_item_group_name like ? order by fst_item_group_name";
-        $qr = $this->db->query($ssql, ['%' . $term . '%']);
-        $rs = $qr->result();
-
         $this->json_output($rs);
     }
 
@@ -569,29 +578,28 @@ class Item extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
-    public function get_printItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir) {
+    public function get_printItem($vendorName,$groupName,$itemCode_awal,$itemCode_akhir) {
         $layout = $this->input->post("layoutColumn");
         $arrLayout = json_decode($layout);
+        $vendorName = urldecode($vendorName);
         
         /*var_dump($arrLayout);
-        echo "PRINT......";*/
+        echo "PRINT......";
         
         foreach($arrLayout as $layout){
-            if($layout->column == "Retail"){
+            if($layout->column == "fin_cust_pricing_group_id"){
                 if($layout->hidden == true){
-                    echo "sembunyikan";
+                    echo $hidden;
                 }else{
-                    echo "tampilkan";
+                    echo $show;
                 }
             }
         }
-        die();
+        //die();*/
         
         $this->load->model("msitems_model");
-        $printItem = $this->msitems_model->getPrintItem($vendorName,$groupItem,$itemCode_awal,$itemCode_akhir);
-        
         $this->load->library("phpspreadsheet");
-
+        
         $spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_items_log.xlsx");
         $sheet = $spreadsheet->getActiveSheet();
         
@@ -603,13 +611,13 @@ class Item extends MY_Controller
         $sheet->getPageMargins()->setBottom(1);
 
         //AUTO SIZE COLUMN
-        $sheet->getColumnDimension("A")->setAutoSize ( true );
-        $sheet->getColumnDimension("B")->setAutoSize ( true );
-        $sheet->getColumnDimension("C")->setAutoSize ( true );
-        $sheet->getColumnDimension("D")->setAutoSize ( true );
-        $sheet->getColumnDimension("E")->setAutoSize ( true );
-        $sheet->getColumnDimension("F")->setAutoSize ( true );
-        $sheet->getColumnDimension("G")->setAutoSize ( true );
+        $sheet->getColumnDimension("A")->setAutoSize(true);
+        $sheet->getColumnDimension("B")->setAutoSize(true);
+        $sheet->getColumnDimension("C")->setAutoSize(true);
+        $sheet->getColumnDimension("D")->setAutoSize(true);
+        $sheet->getColumnDimension("E")->setAutoSize(true);
+        $sheet->getColumnDimension("F")->setAutoSize(true);
+        $sheet->getColumnDimension("G")->setAutoSize(true);
 
         // SUBTITLE
         $sheet->mergeCells('B4:D4');
@@ -617,32 +625,30 @@ class Item extends MY_Controller
         $sheet->mergeCells('B3:D3');
 
         //HEADER COLUMN
-        $sheet->setCellValue("A7", "No");
-        $sheet->setCellValue("B7", "Item ID");
-        $sheet->setCellValue("C7", "Item Code");
-        $sheet->setCellValue("D7", "Item Name");
-        $sheet->setCellValue("E7", "Harga Beli");
-        $sheet->setCellValue("F7", "Satuan");
-        $sheet->setCellValue("G7", "Price List");
-        $sheet->setCellValue("H7", "Satuan");
+        $sheet->setCellValue("A7", "No.");
+        $sheet->setCellValue("B7", "Item Code");
+        $sheet->setCellValue("C7", "Item Name");
+        $sheet->setCellValue("D7", "Harga Beli");
+        $sheet->setCellValue("E7", "Satuan");
+        $sheet->setCellValue("F7", "Harga Jual");
+        $sheet->setCellValue("G7", "Satuan");
         $ssql = "Select * from mscustpricinggroups where fst_active = 'A' ";
         $qr = $this->db->query($ssql,[]);
         $rs = $qr->result();
-        $i = 7;
+        $i = 6;
         foreach($rs as $rw){
             $i = $i + 1;
             $col = $this->phpspreadsheet->getNameFromNumber($i);
             $sheet->setCellValue($col."7", $rw->fst_cust_pricing_group_name);
-            $sheet->getColumnDimension($col)->setAutoSize ( true );
+            $sheet->getColumnDimension($col)->setAutoSize (true);
         }
 
         //TITLE
-        $col = $this->phpspreadsheet->getNameFromNumber($i);
         $sheet->mergeCells('A1:'.$col.'1');
         $sheet->setCellValue("A1", "Daftar Barang");
 
         //FORMAT NUMBER
-        $sheet->getStyle('E8:'.$col.'10')->getNumberFormat()->setFormatCode('#,##0.00');
+        $spreadsheet->getActiveSheet()->getStyle('D8:'.$col.'500')->getNumberFormat()->setFormatCode('#,##0.00');
         
         //COLOR HEADER COLUMN
         $spreadsheet->getActiveSheet()->getStyle('A7:'.$col.'7')
@@ -652,6 +658,13 @@ class Item extends MY_Controller
         //FONT HEADER CENTER
         $spreadsheet->getActiveSheet()->getStyle('A7:'.$col.'7')
             ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        //FONT ITALIC
+        $italycArray = [
+            'font' => [
+                'italic' => true,
+            ],
+        ];
 
         //FONT BOLD
         $styleArray = [
@@ -668,7 +681,6 @@ class Item extends MY_Controller
         $spreadsheet->getActiveSheet()->getStyle("A1")->getFont()->setSize(18);
         $spreadsheet->getActiveSheet()->getStyle("A3:".$col."5")->getFont()->setSize(12);
         $spreadsheet->getActiveSheet()->getStyle("A7:".$col."7")->getFont()->setSize(12);
-
         $iRow1 = 4;
         $iRow2 = 5;
         $iRow = 8;
@@ -679,31 +691,77 @@ class Item extends MY_Controller
         $sheet->mergeCells('F3:'.$col.'3');
         $sheet->setCellValue('F4', '=NOW()');
         $sheet->mergeCells('F4:'.$col.'4');
-
+        $printItem = $this->msitems_model->getPrintItem($vendorName,$groupName,$itemCode_awal,$itemCode_akhir);
+        $prevItemid ="";
         foreach ($printItem as $rw) {
-            //$sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->pricingGroupId);
-            //$ssql = "select * from msitem where fin_item_id and fst_active = 'A'";
+            $ssql = "select * from mscustpricinggroups where fst_active ='A'";
+            /*
+            $sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id);
+            $ssql = "select a.*,b.fst_cust_pricing_group_name from msitemspecialpricinggroupdetails a
+                left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id
+                where a.fin_item_id = ? and a.fst_unit = ? and a.fin_cust_pricing_group_id = ? and a.fst_active = 'A' ";
+            $qr = $this->db->query($ssql,[$rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id]);
+            */
+            $qr = $this->db->query($ssql,[]);
+            $rs = $qr->result();
+            $i = 7;
+            $nb = 1;
+            //$sheet->setCellValue("A$iRow", $no++);
+            //$prevItemid ="";
+            if ($prevItemid != $rw->fin_item_id ){
+                if ($prevItemid != ""){
+                    $ssql = "select a.*,b.fst_item_name from msitembomdetails a left join msitems b on a.fin_item_id_bom = b.fin_item_id  where a.fin_item_id = ?";
+                    $qr = $this->db->query($ssql, [$prevItemid]);
+                    $rsBomDetail = $qr->result();
 
-            $sheet->setCellValue("B$iRow1", $rw->fst_vendor_item_name);
-            $sheet->setCellValue("B$iRow2", $rw->fst_item_group);
-            $sheet->setCellValue("A$iRow", $no++);
-            $sheet->setCellValue("B$iRow", $rw->fin_item_id);
-            $sheet->setCellValue("C$iRow", $rw->fst_item_code);
-            $sheet->setCellValue("D$iRow", $rw->fst_item_name);
-            $sheet->setCellValue("E$iRow", 0);
-            $sheet->setCellValue("F$iRow", $rw->fst_unit);
-            $sheet->setCellValue("G$iRow", $rw->fdc_price_list);
-            $sheet->setCellValue("H$iRow", $rw->fst_unit);
-            $sheet->setCellValue("I$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("J$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("K$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("L$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("M$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("N$iRow", $rw->fdc_selling_price);
-            $sheet->setCellValue("O$iRow", 0);
-            $sheet->setCellValue("P$iRow", 0);
-            $sheet->setCellValue("Q$iRow", 0);
+                    foreach ($rsBomDetail as $roBomDetail){
+                        //
+                        //$sheet->setCellValue("B$iRow", "BOM");
+                        $sheet->getStyle("C$iRow:E$iRow")->applyFromArray($italycArray);
+                        $spreadsheet->getActiveSheet()->getStyle("C$iRow:E$iRow")->getFont()->getColor()->setRGB('0000FF');
+                        $sheet->setCellValue("C$iRow", $roBomDetail->fst_item_name);
+                        $sheet->setCellValue("E$iRow", $roBomDetail->fst_unit);
+                        $iRow++;
+                    }
+                }
+                $sheet->setCellValue("A$iRow", $no++);
+                $sheet->setCellValue("B$iRow1", $rw->vendorName1); //fin_item_id & fst_vendor_item_name
+                $sheet->setCellValue("B$iRow2", $rw->itemGroup); //fin_item_group_id & fst_item_group_name
+                //$sheet->setCellValue("A$iRow", $no++);
+                $sheet->setCellValue("B$iRow", $rw->fst_item_code);
+                $sheet->setCellValue("C$iRow", $rw->fst_item_name);
+                $sheet->setCellValue("D$iRow", 0);
+                $sheet->setCellValue("E$iRow", $rw->fst_unit);
+                $sheet->setCellValue("F$iRow", $rw->fdc_price_list);
+                $sheet->setCellValue("G$iRow", $rw->fst_unit);
+                $prevItemid = $rw->fin_item_id;
+            }
+            $sheet->setCellValue("G$iRow", $rw->fst_unit);
+            foreach ($rs as $ro){
+                
+                $sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$ro->fin_cust_pricing_group_id);
+                
+                $col = $this->phpspreadsheet->getNameFromNumber($i);
+                $sheet->setCellValue($col.$iRow, $sellingPrice);
+                $i = $i + 1;
+               
+            }
+            $iRow++;
 
+            
+            $iRow++;
+            
+        }
+        $ssql = "select a.*,b.fst_item_name from msitembomdetails a left join msitems b on a.fin_item_id_bom = b.fin_item_id  where a.fin_item_id = ?";
+        $qr = $this->db->query($ssql, [$prevItemid]);
+        $rsBomDetail = $qr->result();
+
+        foreach ($rsBomDetail as $roBomDetail){
+            //$sheet->setCellValue("B$iRow", "BOM");
+            $sheet->getStyle("C$iRow:E$iRow")->applyFromArray($italycArray);
+            $spreadsheet->getActiveSheet()->getStyle("C$iRow:E$iRow")->getFont()->getColor()->setRGB('0000FF');
+            $sheet->setCellValue("C$iRow", $roBomDetail->fst_item_name);
+            $sheet->setCellValue("E$iRow", $roBomDetail->fst_unit);
             $iRow++;
         }
 
@@ -711,7 +769,7 @@ class Item extends MY_Controller
         $styleArray = [
             'borders' => [
                 'allBorders' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DASHED,
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DASHED
                 ],
             ],
         ];
@@ -720,6 +778,5 @@ class Item extends MY_Controller
         
         //FILE NAME WITH DATE
         $this->phpspreadsheet->save("item_report_" . date("Ymd") . ".xls" ,$spreadsheet);
-
     }
 }
