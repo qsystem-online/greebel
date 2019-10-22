@@ -186,6 +186,28 @@ class Item extends MY_Controller
                 return;
             }
         }
+        //Save Bom Detail
+        $this->load->model("msitembomdetails_model");
+        //$this->msitembomdetails_model->deleteByHeaderId($fin_item_id);
+        $details = $this->input->post("detailBOM");
+        $details = json_decode($details);
+        foreach ($details as $item) {
+            $data = [
+                "fin_item_id" => $insertId,
+                "fin_item_id_bom" => $item->fin_item_id_bom,
+                "fst_unit" => $item->fst_unit
+            ];
+            $this->msitembomdetails_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
         $this->db->trans_complete();
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = "Data Saved !";
@@ -671,16 +693,7 @@ class Item extends MY_Controller
         $sheet->mergeCells('F4:'.$col.'4');
         $printItem = $this->msitems_model->getPrintItem($vendorName,$groupName,$itemCode_awal,$itemCode_akhir);
         $prevItemid ="";
-
         foreach ($printItem as $rw) {
-            $sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id);
-            $ssql = "select a.*,b.fst_cust_pricing_group_name from msitemspecialpricinggroupdetails a
-                left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id
-                where a.fin_item_id = ? and a.fst_unit = ? and a.fin_cust_pricing_group_id = ? and a.fst_active = 'A' ";
-            $qr = $this->db->query($ssql,[$rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id]);
-            $rs = $qr->result();
-            
-            foreach ($printItem as $rw) {
             $ssql = "select * from mscustpricinggroups where fst_active ='A'";
             /*
             $sellingPrice = $this->msitems_model->getSellingPriceByPricingGroup($rw->fin_item_id,$rw->fst_unit,$rw->fin_cust_pricing_group_id);
@@ -700,6 +713,7 @@ class Item extends MY_Controller
                     $ssql = "select a.*,b.fst_item_name from msitembomdetails a left join msitems b on a.fin_item_id_bom = b.fin_item_id  where a.fin_item_id = ?";
                     $qr = $this->db->query($ssql, [$prevItemid]);
                     $rsBomDetail = $qr->result();
+
                     foreach ($rsBomDetail as $roBomDetail){
                         //
                         //$sheet->setCellValue("B$iRow", "BOM");
@@ -735,11 +749,15 @@ class Item extends MY_Controller
                
             }
             $iRow++;
+
+            
+            $iRow++;
             
         }
         $ssql = "select a.*,b.fst_item_name from msitembomdetails a left join msitems b on a.fin_item_id_bom = b.fin_item_id  where a.fin_item_id = ?";
         $qr = $this->db->query($ssql, [$prevItemid]);
         $rsBomDetail = $qr->result();
+
         foreach ($rsBomDetail as $roBomDetail){
             //$sheet->setCellValue("B$iRow", "BOM");
             $sheet->getStyle("C$iRow:E$iRow")->applyFromArray($italycArray);
@@ -750,6 +768,7 @@ class Item extends MY_Controller
             $sheet->setCellValue("E$iRow", $roBomDetail->fst_unit);
             $iRow++;
         }
+
         //BORDER
         $styleArray = [
             'borders' => [
