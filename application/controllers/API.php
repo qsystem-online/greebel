@@ -54,7 +54,9 @@ class Api extends MY_Controller{
         $model = strtolower($this->input->post("model"));
         $function = $this->input->post("function");
         $params = $this->input->post("params");
-        
+        if($params == null) {
+            $params =[];
+        }       
 
         $this->load->model(ucfirst($model),'model');
 

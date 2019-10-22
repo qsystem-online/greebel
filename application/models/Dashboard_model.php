@@ -16,6 +16,12 @@ class Dashboard_model extends CI_Model {
     }
 
     public function getTtlNeedApproval(){
+        $user = $this->aauth->user();
+
+        $ssql = "select count(*) as ttl_need_approval from trverification where fst_verification_status = 'RV' and fin_department_id =? and fin_user_group_id = ?";
+        $qr = $this->db->query($ssql,[$user->fin_department_id,$user->fin_group_id]);
+        $rw = $qr->row();
+        return $rw->ttl_need_approval;
 
     }
 

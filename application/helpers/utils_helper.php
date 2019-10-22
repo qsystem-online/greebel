@@ -143,3 +143,63 @@
         return $query->result();
     }
 
+    function getAutoNumber($prefixKey,$table,$field,$trDate=null){
+        $trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
+        $tahun = date("Y/m", strtotime ($trDate));
+
+        $activeBranch = $this->aauth->get_active_branch();
+
+        $branchCode = "";
+
+        if($activeBranch){
+            $branchCode = $activeBranch->fst_branch_code;
+        }
+
+
+        //$prefix = getDbConfig($prefixKey) . "/" . $branchCode ."/";
+        $prefix = getDbConfig($prefixKey);
+
+
+        //$query = $this->db->query("SELECT MAX(fst_po_no) as max_id FROM $table where $field like '".$prefix.$tahun."%'");
+        $query = $this->db->query("SELECT MAX($field) as max_id FROM $table where $field like '".$prefix."/%/".$tahun."%'");
+
+        $row = $query->row_array();
+
+        $max_id = $row['max_id']; 
+        
+        $max_id1 =(int) substr($max_id,strlen($max_id)-5);
+        
+        $fst_tr_no = $max_id1 +1;
+        
+        $max_tr_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_tr_no);
+        
+        return $max_tr_no;
+
+    }
+
+    function dateIsLock($tgl){
+        //'11', 'lock_transaction_date', '2019-05-01', 'Setiap transaksi dibawah tgl lock tidak dapat ditambah, rubah ataupun di hapus', '1'
+        $lockDate = getDbConfig("lock_transaction_date");
+        $lockDate = strtotime($lockDate);
+        $tgl = strtotime($tgl);
+        if ($tgl < $lockDate){
+            return [
+                "status"=>"VALIDATION_FORM_FAILED",
+                "message"=>"Transaction date is locked ! "
+            ];
+        }else{
+            return [
+                "status"=>"SUCCESS",
+                "message"=>""
+            ];
+        }
+    }
+
+
+    function error_handle($errno, $errstr, $errfile, $errline){
+        echo "Error No :$errno <br>";
+        echo "Error message :$errstr <br>";
+        echo "File Name :$errfile <br>";
+        echo "Line :$errline <br>";
+        die();
+	}

@@ -71,11 +71,12 @@ class Purchase_order extends MY_Controller{
 		if($mode == 'ADD'){
 			$data["fin_po_id"] = 0;
 			$data["fst_po_no"] = $this->trpo_model->GeneratePONo();			
-			$data["default_currency"] = getDefaultCurrency();	
-		}else{
+		}else if($mode=="EDIT"){
 			$data["fin_po_id"] = $fin_po_id;
 			$data["fst_po_no"] = "";			
-			$data["default_currency"] = getDefaultCurrency();
+		}else if($mode == "VIEW"){
+			$data["fin_po_id"] = $fin_po_id;
+			$data["fst_po_no"] = "";			
 		}
 		
 		$page_content = $this->parser->parse('pages/tr/purchase_order/form', $data, true);
@@ -91,19 +92,21 @@ class Purchase_order extends MY_Controller{
 	public function add(){
 		$this->openForm("ADD", 0);
 	}
-	public function Edit($fin_po_id){
+	public function edit($fin_po_id){
 		$this->openForm("EDIT", $fin_po_id);
 	}
-	public function ajx_add_save(){
-		
-		
+	public function view($finPOId){
+		$this->openForm("VIEW", $finPOId);
+	}
+
+	public function ajx_add_save(){	
 		$this->form_validation->set_rules($this->trpo_model->getRules("ADD", 0));
 
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
 			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Error Validation Forms 1";
+			$this->ajxResp["message"] = "Invalid data input !";
 			$this->ajxResp["data"] = $this->form_validation->error_array();
 			$this->ajxResp["request_data"] = $_POST;
 			$this->json_output();
@@ -112,9 +115,12 @@ class Purchase_order extends MY_Controller{
 		
 		$fdt_po_datetime = dBDateTimeFormat($this->input->post("fdt_po_datetime"));
 		$fst_po_no = $this->trpo_model->GeneratePONo();
+		$fblDPIncPPN = $this->input->post("fbl_dp_inc_ppn");
+		$fblDPIncPPN =  ($fblDPIncPPN == null) ? 0 : 1;
 
 		$dataH = [
 			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
+			"fbl_is_import"=>$this->input->post("fbl_is_import"),
             "fst_po_no" => $fst_po_no,
 			"fdt_po_datetime" => $fdt_po_datetime,
 			"fst_curr_code"=>$this->input->post("fst_curr_code"),
@@ -132,9 +138,16 @@ class Purchase_order extends MY_Controller{
 			"fdc_ppn_amount"=>0,
 			"fdc_downpayment"=>$this->input->post("fdc_downpayment"),
 			"fdc_downpayment_paid"=>0,
+			"fbl_dp_inc_ppn" => $fblDPIncPPN,
 			"fbl_is_closed"=>0,
 			"fst_active" => 'S'
 		];
+
+		if ($dataH["fbl_is_import"]){
+			$dataH["fdc_ppn_percent"] = 0;
+			$dataH["fdc_ppn_amount"] = 0;
+			$dataH["fbl_dp_inc_ppn"] = 0;			
+		}
 
 		$this->form_validation->set_rules($this->trpodetails_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -170,6 +183,15 @@ class Purchase_order extends MY_Controller{
 		$dataH["fdc_subttl"] = $total - $discAmount;
 		$dataH["fdc_disc_amount"] = $discAmount;
 		$dataH["fdc_ppn_amount"] = $dataH["fdc_subttl"] * ($dataH["fdc_ppn_percent"] / 100);
+
+		if($dataH["fdc_subttl"] <= 0){
+			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+			$this->ajxResp["message"] = "Total transaction is zero !";
+			$this->ajxResp["data"] = $this->form_validation->error_array();
+			$this->ajxResp["request_data"] = $_POST;
+			$this->json_output();
+			return;
+		}
 
 		
 		$this->db->trans_start();
@@ -250,14 +272,25 @@ class Purchase_order extends MY_Controller{
 			$this->json_output();
 			return;
 		}
-
+		
 		$dataH = $this->input->post();		
+
 		unset($dataH["fst_po_no"]);
 		$fdt_po_datetime = dBDateTimeFormat($this->input->post("fdt_po_datetime"));
+		$fblDPIncPPN = $this->input->post("fbl_dp_inc_ppn");
+		$fblDPIncPPN =  ($fblDPIncPPN == null) ? 0 : 1;
+
 		$dataH["fdt_po_datetime"] = $fdt_po_datetime;
-		$dataH["fdc_subttl"] = 0;
+		$dataH["fbl_dp_inc_ppn"] = $fblDPIncPPN;		
+		$dataH["fdc_subttl"] = 0;		
 		$dataH["fdc_disc_amount"] = 0;
 		$dataH["fdc_ppn_amount"] = 0;
+
+		if ($dataH["fbl_is_import"]){
+			$dataH["fdc_ppn_percent"] = 0;
+			$dataH["fdc_ppn_amount"] = 0;
+			$dataH["fbl_dp_inc_ppn"] = 0;			
+		}
 
 		$this->form_validation->set_rules($this->trpodetails_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');

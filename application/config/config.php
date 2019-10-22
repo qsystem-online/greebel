@@ -2,6 +2,32 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 date_default_timezone_set("Asia/Jakarta");
+
+
+set_error_handler(function($errno, $errstr, $errfile, $errline){
+	//echo "<!--";
+	$exceptions =[
+		"ini_set(): Use of mbstring.internal_encoding is deprecated",
+		"ini_set(): Use of iconv.internal_encoding is deprecated",
+	];
+	foreach($exceptions as $exception){
+
+		if ($errstr == $exception){
+			return true;
+		}
+	}
+
+	echo "<h1>PHP ERROR !</h1>";
+	echo "Error No :$errno <br>";
+	echo "Error message :$errstr <br>";
+	echo "File Name :$errfile <br>";
+	echo "Line :$errline <br>";
+	//echo "-->";
+	
+	die();
+});
+
+
 ini_set('max_execution_time', 300); //300 seconds = 5 minutes
 
 /*

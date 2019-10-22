@@ -62,14 +62,15 @@ class Approval extends MY_Controller{
     
     public function doApproval($finRecId){
         $this->load->model('trverification_model');
+		$fstNotes = $this->input->post("fst_notes");
+		$isApproved = $this->input->post("isApproved");
 
         $this->db->trans_start();
-        $this->trverification_model->approve($finRecId);
+        $result = $this->trverification_model->approve($finRecId,$fstNotes,$isApproved);
         $this->db->trans_complete();
-        
-        $this->ajxResp["status"] = "SUCCESS";
-        $this->ajxResp["message"] = "";
-        $this->ajxResp["data"]=[];
+		
+		$this->ajxResp["status"] = $result["status"];
+        $this->ajxResp["message"] = $result["message"];
         $this->json_output();
 	}
 	

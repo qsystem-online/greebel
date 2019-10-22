@@ -16,10 +16,12 @@ class Test extends CI_Controller {
 
 
 	public function index(){
-		$this->load->model("trverification_model");
-		$message = "Purchase Order xxxxxxxx Need Approval";
-		$this->trverification_model->createAuthorize("PO","default",1,$message);
-
+		//set_error_handler("error_handle");
+		$arr = [
+			"param1"=>"testparam1",
+		];
+		echo $arr["param1"];
+		var_dump($arr);
 	}
 
 

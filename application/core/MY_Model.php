@@ -21,7 +21,7 @@ class MY_Model extends CI_Model
 			$data["fin_insert_id"] = $this->aauth->get_user_id();
 		}
 
-		$data = $this->cleanupData($data);		
+		$data = $this->cleanupData($data);	
 		$this->db->insert($this->tableName, $data);
 		$insertId = $this->db->insert_id();
 		$error = $this->db->error();
@@ -39,13 +39,49 @@ class MY_Model extends CI_Model
 		$data["fdt_update_datetime"] = date("Y-m-d H:i:s");
 		$data["fin_update_id"] = $this->aauth->get_user_id();
 		//}
+
+		if ( isset($data["fin_user_id_request_by"]) ){
+			$finUserIdReqEdit = $data["fin_user_id_request_by"];
+			$fstNotesEdit =  isset($data["fst_edit_notes"]) ? $data["fst_edit_notes"] : null;
+			$dataLog = [
+				"fst_mode"=>"EDIT",
+				"fst_module"=>$this->router->fetch_class(),
+				"fst_table_name"=>$this->tableName,
+				"fst_trans_id"=> $data[$this->pkey],
+				"fst_notes"=>$fstNotesEdit, 
+				"fin_request_by_id"=>$finUserIdReqEdit, 
+				"fin_insert_id"=>$data["fin_insert_id"] = $this->aauth->get_user_id(),
+				"fdt_insert_datetime"=>date("Y-m-d H:i:s"), 
+				"fin_update_id"=>$data["fin_insert_id"] = $this->aauth->get_user_id(), 
+				"fdt_update_datetime"=>date("Y-m-d H:i:s")
+			];
+			$this->db->insert("log_table_transaction",$dataLog);
+		}
 		$data = $this->cleanupData($data);
 		$this->db->where($this->pkey, $data[$this->pkey]);
 		$this->db->update($this->tableName, $data);
 	}
 
-	public function delete($key, $softdelete = TRUE)
+	public function delete($key, $softdelete = TRUE,$data=null)
 	{
+		if ($data !=null){
+			$finUserIdReqEdit = $data["fin_user_id_request_by"];
+			$fstNotesEdit =  isset($data["fst_edit_notes"]) ? $data["fst_edit_notes"] : null;
+			$dataLog = [
+				"fst_mode"=>"DELETE",
+				"fst_module"=>$this->router->fetch_class(),
+				"fst_table_name"=>$this->tableName,
+				"fst_trans_id"=> $key,
+				"fst_notes"=>$fstNotesEdit, 
+				"fin_request_by_id"=>$finUserIdReqEdit, 
+				"fin_insert_id"=>$data["fin_insert_id"] = $this->aauth->get_user_id(),
+				"fdt_insert_datetime"=>date("Y-m-d H:i:s"), 
+				"fin_update_id"=>$data["fin_insert_id"] = $this->aauth->get_user_id(), 
+				"fdt_update_datetime"=>date("Y-m-d H:i:s")
+			];
+			$this->db->insert("log_table_transaction",$dataLog);
+		}
+
 		if ($softdelete) {
 			$this->db->where($this->pkey, $key);
 			$this->db->update($this->tableName, ["fst_active" => "D"]);

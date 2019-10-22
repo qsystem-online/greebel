@@ -96,7 +96,7 @@ var App = {
 
 		blockUIOnAjaxRequest();
 		$.ajax({
-			url:obj.url,
+			url:obj.site_url + 'api/get_value',
 			method:"POST",
 			data:{
 				model:obj.model,
@@ -110,6 +110,11 @@ var App = {
 	
 	},
 	blockUIOnAjaxRequest: function(message){
+		
+		if (typeof message == "undefined"){
+			message = "<h5><img src='../../assets/system/images/loading.gif'> Please wait ... !</h5>";
+		}
+
 		$(document).ajaxStart(function() {
 			$.blockUI({ message:message});
 		});
@@ -122,15 +127,62 @@ var App = {
 	dateFormat: function(strDate){
 		var result = moment(strDate,'YYYY-MM-DD').format(DATEPICKER_FORMAT_MOMENT);
 		return result;
-	},	
+	},
+	dateParse: function(strDate){
+		var result = moment(strDate,DATEPICKER_FORMAT_MOMENT).format('YYYY-MM-DD');
+		return result;
+	},
+
 	dateTimeFormat:function(strDateTime){
 		var result = moment(strDateTime,'YYYY-MM-DD HH:mm:ss').format(DATETIMEPICKER_FORMAT_MOMENT);
 		return result;
 	},
+	dateTimeParse:function(strDateTime){
+		var result = moment(strDateTime,DATETIMEPICKER_FORMAT_MOMENT).format('YYYY-MM-DD HH:mm:ss');
+		return result;
+	},
+
 	consoleLog:function(obj){
 		console.log(obj);	
-	}
+	},
 
+	autoFillForm:function(data){
+		$.each(data, function(name, val){
+			var $el = $('[name="'+name+'"]'),
+			type = $el.attr('type');
+			switch(type){
+				case 'checkbox':
+					$el.filter('[value="' + val + '"]').attr('checked', 'checked');
+					break;
+				case 'radio':
+					$el.filter('[value="' + val + '"]').attr('checked', 'checked');
+					break;
+				default:
+					$el.val(val);
+			}
+		});
+	},
+
+	addOptionIfNotExist:function(option,selectId){
+		value = $(option).val();		
+		if (! $("#" + selectId + "option[value='"+ value +"']").length){
+			$("#" + selectId).append(option);
+		}
+	},
+
+	fixedSelect2: function(){
+		$(".select2-container").addClass("form-control"); 
+		$(".select2-selection--single , .select2-selection--multiple").css({
+			"border":"0px solid #000",
+			"padding":"0px 0px 0px 0px"
+		});         
+		$(".select2-selection--multiple").css({
+			"margin-top" : "-5px",
+			"background-color":"unset"
+		});
+		
+	}
+	
 }
 
 
@@ -210,5 +262,6 @@ function fixedSelect2(){
 		"margin-top" : "-5px",
 		"background-color":"unset"
 	});
+	
 };
 

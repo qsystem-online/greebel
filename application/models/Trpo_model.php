@@ -5,7 +5,7 @@ class PurchaseOrder{
     private $CI;
     public function __construct($CI,$fin_salesorder_id){
         $this->CI = $CI;
-        $ssql = "Select * from trsalesorder where fin_salesorder_id = ?";
+        $ssql = "Select * from trpo where fin_po_id = ?";
         $qr = $this->CI->db->query($ssql,[$fin_salesorder_id]);
         $this->rw  = $qr->row();
 
@@ -74,6 +74,24 @@ class Trpo_model extends MY_Model {
                 'required' => '%s tidak boleh kosong',
             )
         ];
+        $rules[] = [
+            'field' => 'fin_supplier_id',
+            'label' => 'Supplier',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong',
+            )
+        ];
+        $rules[] = [
+            'field' => 'fin_warehouse_id',
+            'label' => 'Gudang',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong',
+            )
+        ];
+
+        
 
 
         return $rules;
@@ -104,6 +122,11 @@ class Trpo_model extends MY_Model {
 
 		return $data;
     }
+
+    
+
+
+
 
     public function GeneratePONo($trDate = null) {
         $trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
@@ -159,54 +182,103 @@ class Trpo_model extends MY_Model {
     }
 
 
-    public function posting($fin_salesorder_id){
+    public function posting($finPOId){
         //Bila terdapat DP jurnal DP tersebut
-        
-
-        $ssql ="select * from trsalesorder where fin_salesorder_id = ?";
-        $qr = $this->db->query($ssql,[$fin_salesorder_id]);
+        $ssql ="select * from trpo where fin_po_id = ?";
+        $qr = $this->db->query($ssql,[$finPOId]);
         $dataH = $qr->row_array();
-
         if ($dataH["fdc_downpayment"] > 0 && $dataH["fst_active"] == "A"){
             $this->load->model("glledger_model");
-            $dataJurnal = [
-                [
+
+            $dataJurnal = [];
+            $dp =0;
+            $dpPpn =0;
+
+            if ($dataH["fbl_dp_inc_ppn"] == 1){
+                $dp = $dataH["fdc_downpayment"] / ( (100 + $dataH["fdc_ppn_percent"]) / 100) ;
+                $dpPpn =$dp * ($dataH["fdc_ppn_percent"] / 100);
+            }else{
+                $dp = $dataH["fdc_downpayment"] ;
+                $dpPpn =0;
+            }
+
+            $fstAccountCode = getGLConfig("DP_OUT_LOKAL");
+            if ($rw->fst_is_import == 1){
+                $fstAccountCode = getGLConfig("DP_OUT_IMPORT");
+            }
+            
+
+            $dataJurnal[] =[
+                "fin_branch_id"=>$dataH["fin_branch_id"],
+                "fst_account_code"=>$fstAccountCode,
+                "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
+                "fst_trx_sourcecode"=>"PO",
+                "fin_trx_id"=>$dataH["fin_po_id"],
+                "fst_reference"=>null,
+                "fdc_debit"=> $dp * $dataH["fdc_exchange_rate_idr"],
+                "fdc_origin_debit"=>$dp,
+                "fdc_credit"=>0,
+                "fdc_origin_credit"=>0,
+                "fst_orgi_curr_code"=>$dataH["fst_curr_code"],
+                "fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
+                "fst_no_ref_bank"=>null,
+                "fst_profit_cost_center_code"=>null,
+                "fin_relation_id"=>null,
+                "fst_active"=>"A"
+            ];
+
+            if ($dpPpn > 0){
+                $dataJurnal[] =[
                     "fin_branch_id"=>$dataH["fin_branch_id"],
-                    "fst_account_code"=>getGLConfig("SO_PIUTANG"),
-                    "fdt_trx_datetime"=>$dataH["fdt_salesorder_date"],
-                    "fst_trx_sourcecode"=>JURNAL_TRX_SC_SO,
-                    "fin_trx_id"=>$dataH["fin_salesorder_id"],
+                    "fst_account_code"=>getGLConfig("PPN_MASUKAN"),
+                    "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
+                    "fst_trx_sourcecode"=>"PO",
+                    "fin_trx_id"=>$dataH["fin_po_id"],
                     "fst_reference"=>null,
-                    "fdc_debit"=>$dataH["fdc_downpayment"],
+                    "fdc_debit"=> $dpPpn * $dataH["fdc_exchange_rate_idr"],
+                    "fdc_origin_debit"=>$dpPpn,
                     "fdc_credit"=>0,
+                    "fdc_origin_credit"=>0,
                     "fst_orgi_curr_code"=>$dataH["fst_curr_code"],
                     "fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
                     "fst_no_ref_bank"=>null,
                     "fst_profit_cost_center_code"=>null,
-                    "fin_relation_id"=>$dataH["fin_relation_id"],
+                    "fin_relation_id"=>null,
                     "fst_active"=>"A"
-                ],
-                [
-                    "fin_branch_id"=>$dataH["fin_branch_id"],
-                    "fst_account_code"=>getGLConfig("SO_DP"),
-                    "fdt_trx_datetime"=>$dataH["fdt_salesorder_date"],
-                    "fst_trx_sourcecode"=>JURNAL_TRX_SC_SO,
-                    "fin_trx_id"=>$dataH["fin_salesorder_id"],
-                    "fst_reference"=>null,
-                    "fdc_debit"=>0,
-                    "fdc_credit"=>$dataH["fdc_downpayment"],
-                    "fst_orgi_curr_code"=>$dataH["fst_curr_code"],
-                    "fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
-                    "fst_no_ref_bank"=>null,
-                    "fst_profit_cost_center_code"=>null,
-                    "fin_relation_id"=>$dataH["fin_relation_id"],
-                    "fst_active"=>"A"
-                ],
+                ];
+            }
+
+            $fstAccountCode = getGLConfig("AP_DAGANG_LOKAL");
+            if ($rw->fst_is_import == 1){
+                $fstAccountCode = getGLConfig("AP_DAGANG_IMPORT");
+            }
+
+            $dataJurnal[] = [
+                "fin_branch_id"=>$dataH["fin_branch_id"],
+                "fst_account_code"=>$fstAccountCode,
+                "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
+                "fst_trx_sourcecode"=>"PO",
+                "fin_trx_id"=>$dataH["fin_po_id"],
+                "fst_reference"=>null,
+                "fdc_debit"=>0,
+                "fdc_origin_debit"=>0,
+                "fdc_credit"=>$dataH["fdc_downpayment"] * $dataH["fdc_exchange_rate_idr"],
+                "fdc_origin_credit"=>$dataH["fdc_downpayment"],
+                "fst_orgi_curr_code"=>$dataH["fst_curr_code"],
+                "fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
+                "fst_no_ref_bank"=>null,
+                "fst_profit_cost_center_code"=>null,
+                "fin_relation_id"=>$dataH["fin_supplier_id"],
+                "fst_active"=>"A"
             ];
             
-            if($this->glledger_model->createJurnal($dataJurnal) === false){
-                throw new Exception("Error Create Jurnal !", EXCEPTION_JURNAL);
+
+            $result = $this->glledger_model->createJurnal($dataJurnal);
+
+            if( $result["status"] != "SUCCESS"){
+                throw new Exception($result["message"], EXCEPTION_JURNAL);
             }
+            return $result;
         }
 
 
@@ -219,31 +291,16 @@ class Trpo_model extends MY_Model {
         parent::update($data);        
     }
 
-    public function approved($finSalesOrderId,$approved = true){
-
+    public function approved($finPOId,$approved = true){
         $data = [
-            "fin_salesorder_id"=>$finSalesOrderId,
+            "fin_po_id"=>$finPOId,
             "fst_active"=>"A"
         ];
         parent::update($data);
-        
-
-        //Cek kalau semua proses verification sudah selesai
-        $ssql = "select * from trverification 
-        where fst_controller ='SO' 
-        and fin_transaction_id = ? 
-        and fst_verification_status != 'VF' 
-        and fst_active='A'" ;
-
-        $qr = $this->db->query($ssql,[$finSalesOrderId]);
-
-        $rw = $qr->row();
-        if ($rw == false){
-            $this->posting($finSalesOrderId);
-        }
+        $this->posting($finPOId);        
     }
 
-    public function delete($finPOId,$softDelete=true){
+    public function delete($finPOId,$softDelete=true,$data=null){
         //cek jika sudah ada penerimaan barang
         $ssql  = "select * from trpodetails where fin_po_id = ? and fdb_qty_lpb > 0";
         $qr = $this->db->query($ssql,[$finPOId]);
@@ -282,6 +339,22 @@ class Trpo_model extends MY_Model {
 
         parent::update($data);
        
+    }
+
+    public function show_transaction($finPOId){
+        redirect(site_url()."tr/purchase_order/view/$finPOId", 'refresh');
+    }
+
+    public function getUnpaidDPList($finSupplierId = "",$fstCurrCode=""){
+        if ($finSupplierId == "" ){
+            $ssql ="select fin_po_id,fst_po_no,fdc_downpayment,fdc_downpayment_paid,fdc_ppn_percent from trpo where fdc_downpayment > fdc_downpayment_paid and fst_active ='A'";
+            $qr = $this->db->query($ssql,[]);
+        }else{
+            $ssql ="select fin_po_id,fst_po_no,fdc_downpayment,fdc_downpayment_paid,fdc_ppn_percent from trpo where   fdc_downpayment  > fdc_downpayment_paid and fst_active ='A' and fin_supplier_id = ? and fst_curr_code = ?";
+            $qr = $this->db->query($ssql,[$finSupplierId,$fstCurrCode]);
+        }
+        
+        return $qr->result();
     }
 }
 

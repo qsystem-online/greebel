@@ -38,7 +38,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <label for="select-MainGL" class="col-md-2 control-label"><?= lang("Main Group") ?> :</label>
                             <div class="col-md-4">
                                 <select id="select-MainGL" class="form-control" name="fin_glaccount_maingroup_id">
-                                    <option value="0">-- <?=lang("select")?> --</option>
+                                    <?php 
+                                        $mainGroups = getDataTable("glaccountmaingroups","*","fst_active ='A'");
+                                        foreach($mainGroups as $mainGroup){
+											echo "<option value='$mainGroup->fin_glaccount_maingroup_id' data-prefix='$mainGroup->fst_glaccount_main_prefix'>$mainGroup->fst_glaccount_maingroup_name</option>";
+                                        }
+                                        
+                                    ?>
                                 </select>
                                 <div id="fin_glaccount_maingroup_id_err" class="text-danger"></div>
                             </div>
@@ -135,27 +141,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 <script type="text/javascript">
 
-        var ajaxManiGL =  {
-            url: '<?= site_url() ?>gl/glaccount/get_MainGL',
-            dataType: 'json',
-            delay: 250,
-            processResults: function(data) {
-                items = [];
-                $.each(data, function(index, value) {
-                    items.push({
-                        "id": value.fin_glaccount_maingroup_id,
-                        "text": value.fst_glaccount_maingroup_name,
-                        "prefix" : value.fst_glaccount_main_prefix
-                    });
-                });
-                console.log(items);
-                return {
-                    results: items
-                };
-            },
-            cache: true,
-        }
-
 
     $(function() {
 
@@ -226,49 +211,23 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         });
 
-        $("#select-MainGL").select2({
-            width: '100%',
-            ajax: ajaxManiGL,
-        });
-
+        
+        $("#select-MainGL").val(null);
+        $("#select-ParentGL").val(null);
         $("#select-MainGL").change(function(event) {
             event.preventDefault();
-            mainGL = $("#select-MainGL").select2("data")[0];
-            console.log(mainGL);
-            $("#fst_glaccount_code").inputmask({
-                mask: mainGL.prefix,//replace(/9/g,"\\9") + "<?= $mainGLSeparator ?>" + "[9][9][9][9][9][9]",
-                greedy:true,
-            });
-            $("#fst_glaccount_code").attr("placeholder",mainGL.prefix);
+            fillParent($("#select-MainGL").val());
+            $("#fst_glaccount_code").val(generateAccountCode());
 
-            //$('#select-ParentGL').val(null).trigger('change');
-            $("#select-ParentGL").select2({
-                width: '100%',
-                ajax: {
-                    url: '<?= site_url() ?>gl/glaccount/get_ParentGL/' + $("#select-MainGL").val(),
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function(data) {
-                        items = [];
-                        $.each(data, function(index, value) {
-                            items.push({
-                                "id": value.fst_glaccount_code,
-                                "text": value.fst_glaccount_name
-                            });
-                        });
-                        console.log(items);
-                        return {
-                            results: items
-                        };
-                    },
-                    cache: true,
-                }
-            });
         })
 
 
         $("#select-ParentGL").change(function(event) {
             event.preventDefault();
+            $("#fst_glaccount_code").val(generateAccountCode());
+           
+
+            /*
             parentGL = $("#select-ParentGL").select2("data")[0];
             if(typeof parentGL === 'undefined'){
                 return;
@@ -276,12 +235,32 @@ defined('BASEPATH') or exit('No direct script access allowed');
             console.log(parentGL);
             //alert(parentGL.id.replace(/9/g,'\\9'));
             $("#fst_glaccount_code").inputmask({
-                mask: parentGL.id.replace(/9/g,"\\9") + "<?= $parentGLSeparator ?>" + "[9][9][9][9][9][9]",
+                mask: parentGL.id.replace(/9/g,"\\9") + "<asdasd= $parentGLSeparator ?>" + "[9][9][9][9][9][9]",
                 greedy:true,
+                //autoUnmask: true,
             });
             $("#fst_glaccount_code").attr("placeholder",parentGL.id);
+            */
             
         });
+
+        $("#fst_glaccount_code").keyup(function(e){
+            e.preventDefault();
+            var code = $("#fst_glaccount_code").val();
+
+            var prefix = generateAccountCode();
+
+            if (code.startsWith(prefix) ){
+
+            }else{
+                $("#fst_glaccount_code").val(prefix);
+                $("#fst_glaccount_code").focus();
+            }
+            
+            
+            
+            
+		});
 
         $("#select-Currency").select2({
             width: '100%',
@@ -372,16 +351,69 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		});
     });
 
+
+    function fillParent(mainGLId,callback){
+        
+        App.blockUIOnAjaxRequest();
+
+        $.ajax({
+            url: '<?= site_url() ?>gl/glaccount/get_ParentGL/' + mainGLId,
+            dataType: 'json',
+            delay: 250,
+            cache: true,
+        }).done(function(data){
+            items = [];
+            $("#select-ParentGL").empty();
+
+            $.each(data, function(index, value) {
+                $("#select-ParentGL").append("<option value='"+value.fst_glaccount_code+"'>"+ value.fst_glaccount_name +"</option>");
+                $("#select-ParentGL").val(null);
+            });
+
+            if (typeof callback === "function") {
+                callback(data);
+            }
+
+        });
+
+
+
+
+
+    }
+
+    function generateAccountCode(){
+        var mainGLPrefix =  $("#select-MainGL option:selected").data("prefix");
+        var parentPrefix = $("#select-ParentGL").val()  == null ? "" : $("#select-ParentGL").val();
+        var parentSeparator = parentPrefix == "" ? "" : "<?=$parentGLSeparator?>";
+
+        return mainGLPrefix + "<?= $mainGLSeparator ?>" + parentPrefix + parentSeparator ;
+    }
+
+
     function init_form(fst_glaccount_code) {
         //alert("Init Form");
         //alert(fst_glaccount_code);
         var url = "<?= site_url() ?>gl/glaccount/fetch_data/" + fst_glaccount_code;
+        $("#select-MainGL").prop("disabled",true);
+        $("#select-ParentGL").prop("disabled",true);
+
+        App.blockUIOnAjaxRequest();
         $.ajax({
             type: "GET",
             url: url,
             success: function(resp) {
                 console.log(resp.gl_Account);
                 
+                $("#select-MainGL").val(resp.gl_Account.fin_glaccount_maingroup_id);
+               
+
+                fillParent(resp.gl_Account.fin_glaccount_maingroup_id,function(data){
+                    $("#select-ParentGL").val(resp.gl_Account.fst_parent_glaccount_code);
+                   
+                });
+
+
                 $.each(resp.gl_Account, function(name, val) {
                     var $el = $('[name="' + name + '"]'),
                         type = $el.attr('type');
@@ -405,49 +437,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 // menampilkan data di select2, menu edit/update
                 var newOption = new Option(resp.gl_Account.fst_curr_name, resp.gl_Account.fst_curr_code, true, true);
                 $('#select-Currency').append(newOption).trigger('change');
-               
-                var newOption = new Option(resp.gl_Account.fst_glaccount_maingroup_name, resp.gl_Account.fin_glaccount_maingroup_id, true, true);
-                
-                //$('#select-MainGL').val(resp.gl_Account.fin_glaccount_maingroup_id).trigger('change');
-                var data = [{
-                    id:0,
-                    text:"select",
-                    prefix: "0"
-                }];
-                /*
-                var option = new Option("Asset", 1, true, true);
-                $('#select-MainGL').append(option);
-                $('#select-MainGL').trigger({
-                    type: 'select2:select',
-                    params: {
-                        data: data
-                    }
-                });
-                */
-                $('#select-MainGL').select2({
-                    data:[{
-                        id:0,
-                        text:"select",
-                        prefix: "0"
-                    }],
-                    ajax: ajaxManiGL,
-                });
-                //$('#select-MainGL').val(1).trigger('change');
-                $('#select-MainGL').append(newOption).trigger('change');
-                
-                $("#select-MainGL").select2();
-                $("#select-ParentGL").select2();
-                $("#select-MainGL,#select-ParentGL,#fst_glaccount_level").select2("enable", false);
-
-                var newOption = new Option(resp.gl_Account.GLParentName, resp.gl_Account.fst_parent_glaccount_code, true, true);
-                $('#select-ParentGL').append(newOption);
-                $("#select-ParentGL").val(resp.gl_Account.fst_parent_glaccount_code).trigger('change');
-
-                $("#fst_glaccount_code").inputmask("setvalue", resp.gl_Account.fst_glaccount_code);
                 $("#fst_glaccount_level").val(resp.gl_Account.fst_glaccount_level);
-
-                console.log(resp.parents);
-                
+        
                 if (resp.parents == null && resp.isUsed == false){
                     $("#fst_glaccount_level").select2("enable");
                 }else{

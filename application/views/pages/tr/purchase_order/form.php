@@ -52,6 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="box box-info">
 				<div class="box-header with-border">
 					<h3 class="box-title title pull-left"><?=$title?></h3>
+					<?php if ($mode != "VIEW") { ?>
 					<div class="btn-group btn-group-sm  pull-right">					
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
@@ -59,6 +60,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
+					<?php } ?>
+
 				</div>
 				<!-- end box header -->
 				<!-- form start -->
@@ -68,6 +71,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<input type="hidden" id="frm-mode" value="<?=$mode?>">
 						<input type="hidden" class="form-control" id="fin_po_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_po_id" value="<?=$fin_po_id?>" readonly>
 						
+						<div class="form-group">
+							<label for="fst_delivery_address" class="col-md-2 control-label"></label>
+							<div class="col-md-10">								
+								<label class="radio-inline"><input type="radio" id="fblIsImportFalse" class="fbl_is_import" name="fbl_is_import" value="0" checked>Lokal</label>
+								<label class="radio-inline"><input type="radio" id="fblIsImportTrue" class="fbl_is_import" name="fbl_is_import" value="1" >Import</label>
+							</div>
+						</div>
+
 						<div class="form-group">
 							<label for="fst_po_no" class="col-md-2 control-label"><?=lang("Purchase Order No")?> #</label>
 							<div class="col-md-4">
@@ -91,15 +102,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="form-group">						
 							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> </label>
 							<div class="col-md-4">
-								<select id="fst_curr_code" class="form-control" name="fst_curr_code">
+								<select id="fst_curr_code" class="form-control" name="fst_curr_code" disabled>
 									<?php
+
 										$currencies = getDataTable("mscurrencies","*","fst_active ='A'");
 										foreach($currencies as $currency){
 											$selected = $currency->fst_curr_code == "IDR" ? "SELECTED" : "";
 											echo "<option value='$currency->fst_curr_code' $selected>$currency->fst_curr_name</option>";
 										}
 									?>
-									<option value="<?=$default_currency['CurrCode']?>"><?=$default_currency['CurrName']?></option>
 								</select>
 								<div id="fst_curr_code_err" class="text-danger"></div>
 							</div>
@@ -209,7 +220,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 								</div>
 								<div class="form-group">
-									<label for="sub-total" class="col-md-6 control-label">%<?=lang("PPn")?></label>
+									<label for="sub-total" class="col-md-6 control-label">%<?=lang("Ppn")?></label>
 									<div class="col-md-2" style='text-align:right'>
 										<input type="number" class="form-control text-right" id="fdc_ppn_percent" name="fdc_ppn_percent" value="10" >
 									</div>
@@ -225,8 +236,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 								</div>	
 								<div class="form-group">
-									<label for="total" class="col-md-8 control-label">Uang Muka</label>
+									<label for="total" class="col-md-6 control-label">Uang Muka</label>
+									<label class="col-md-2 control-label checkbox-inline" style="font-weight:700"><input type="checkbox" name="fbl_dp_inc_ppn" id="fbl_dp_inc_ppn" value="1" checked>Include PPN</label>
 									<div class="col-md-4" style="text-align:right">
+										
 										<input type="text" class="money form-control text-right" id="fdc_downpayment" name="fdc_downpayment" value="0" style="text-align: right;">
 									</div>
 								</div>							
@@ -357,6 +370,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		initVarForm();
 		
+		$(".fbl_is_import").change(function(e){
+			if($(this).val() == "1"){
+				$("#fst_curr_code").prop("disabled",false);
+				$("#fdc_ppn_percent").val(0);
+				$("#fdc_ppn_percent").prop("readonly",true);
+				$("#fdc_ppn_amount").val(0);
+				$("#fbl_dp_inc_ppn").prop("checked",false);
+				$("#fbl_dp_inc_ppn").prop("disabled",true);
+				
+			}else{
+				
+				$("#fdc_ppn_percent").prop("readonly",false);
+				$("#fbl_dp_inc_ppn").prop("disabled",false);
+				$("#fdc_ppn_percent").val(10);
+				
+				
+				$("#fst_curr_code").val("IDR").trigger("change.select2");
+				$("#fdc_exchange_rate_idr").val(App.money_format(1));
+				$("#fst_curr_code").prop("disabled",true);
+			}
+			calculateTotal();
+		});
 		
 		$("#btnPrint").click(function(e){
 			layoutColumn = [
@@ -648,7 +683,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				data:{
 					"model": "mscurrencies_model",
 					"function": "getRate",
-					"params": [$("#fst_curr_code").val(),"2019-08-16"], // $("#fst_curr_code").val(),  //KRW,2019-07-23"
+					"params": [$("#fst_curr_code").val()], // $("#fst_curr_code").val(),  //KRW,2019-07-23"
 				},
 			}).done(function(resp){
 				$("#fdc_exchange_rate_idr").val(App.money_format(resp.data));
@@ -709,7 +744,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 
 			App.getValueAjax({
-				url: "<?=site_url()?>api/get_value",
+				site_url: "<?=site_url()?>",
 				model:"trpo_model",
 				func:"getLastBuyPrice",
 				params:[
@@ -792,6 +827,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$el.val(val);
 				}
 			});
+
+			
+			
+
+			if(dataH.fbl_is_import == 1){
+				$("#fblIsImportTrue").prop("checked",true);
+			}else{
+				$("#fblIsImportFalse").prop("checked",true);
+			}
 
 			$("#fin_supplier_id").val(dataH.fin_supplier_id).trigger("change.select2");
 			$("#fin_supplier_id").val(dataH.fin_supplier_id).trigger("change");

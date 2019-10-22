@@ -52,6 +52,18 @@ class Mscurrencies_model extends MY_Model{
         return $rules;
     }
 
+    public function getArrRate($date=""){
+        $ssql ="select * from mscurrencies where fst_active ='A'";
+        $qr = $this->db->query($ssql,[]);
+        $rs = $qr->result();
+        $result = [];
+        foreach($rs as $rw){
+            $result[$rw->fst_curr_code] = $this->getRate($rw->fst_curr_code,$date);            
+        }
+        return $result;
+
+    }
+
     public function getRate($fst_curr_code,$date=""){
         /*
         $ssql = "select * from mscurrencies where fst_curr_code = ?";
@@ -62,8 +74,8 @@ class Mscurrencies_model extends MY_Model{
         if ($fst_curr_code == "IDR"){
             return 1;
         }
-
         $date = $date =="" ? date("Y-m-d") : $date;
+
         $ssql ="select * from mscurrenciesratedetails where fst_curr_code = ? and fdt_date = ? ";
         $qr = $this->db->query($ssql,[$fst_curr_code,$date]);
         $rw = $qr->row();
@@ -75,4 +87,10 @@ class Mscurrencies_model extends MY_Model{
         return $date; 
 
     }
+
+    public function getDefaultCurrencyCode(){
+        return $this->db->query("select * from mscurrencies where fbl_is_default= 1").row()->fst_curr_code;
+    }
+
+    
 }

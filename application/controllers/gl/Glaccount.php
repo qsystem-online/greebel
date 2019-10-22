@@ -56,7 +56,7 @@ class Glaccount extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
-    private function openForm($mode = "ADD", $fst_glaccount_code = 0)
+    private function openForm($mode = "ADD", $fst_glaccount_code = "")
     {
         $this->load->library("menus");
 
@@ -88,7 +88,7 @@ class Glaccount extends MY_Controller
 
     public function add()
     {
-        $this->openForm("ADD", 0);
+        $this->openForm("ADD", "");
     }
 
     public function Edit($fst_glaccount_code)

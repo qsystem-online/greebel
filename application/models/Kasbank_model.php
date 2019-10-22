@@ -11,7 +11,8 @@ class Kasbank_model extends MY_Model{
     }
 
     public function getDataById($fin_kasbank_id){
-        $ssql = "SELECT a.*,b.fst_glaccount_code FROM mskasbank a LEFT JOIN glaccounts b ON a.fst_gl_account_code = b.fst_glaccount_code
+        $ssql = "SELECT a.*,b.fst_glaccount_code FROM mskasbank a 
+                LEFT JOIN glaccounts b ON a.fst_gl_account_code = b.fst_glaccount_code
                 where a.fin_kasbank_id = ? AND a.fst_active = 'A' ";
         $qr = $this->db->query($ssql, [$fin_kasbank_id]);
         $rwKasbank = $qr->row();
@@ -78,6 +79,13 @@ class Kasbank_model extends MY_Model{
     public function getAllList(){
         $ssql = "select fin_kasbank_id,fst_kasbank_name from " . $this->tableName . " where fst_active = 'A' order by fst_kasbank_name";
         $qr = $this->db->query($ssql, []);
+        $rs = $qr->result();
+        return $rs;
+    }
+
+    public function getListByType($typeKasbank){
+        $ssql = "select * from " . $this->tableName . " where fst_active = 'A' and fst_type = ? order by fst_kasbank_name";        
+        $qr = $this->db->query($ssql, [$typeKasbank]);
         $rs = $qr->result();
         return $rs;
     }

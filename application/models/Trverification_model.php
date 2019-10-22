@@ -26,6 +26,7 @@ class Trverification_model extends MY_Model {
         $this->load->model("msverification_model");
         $arrVerify = $this->msverification_model->getData($controller,$module);
         foreach($arrVerify as $verify){
+            $status = ($verify->fin_seqno == 0 ? "RV" : "NV");
             $dataVerify =[
                 "fin_branch_id"=>$this->aauth->get_active_branch_id(),
                 "fst_controller"=>$controller,
@@ -35,10 +36,11 @@ class Trverification_model extends MY_Model {
                 "fst_message"=>$message,
                 "fin_department_id"=>$verify->fin_department_id,
                 "fin_user_group_id"=>$verify->fin_user_group_id,
-                "fst_verification_status"=>"NV",
+                "fst_verification_status"=>$status,
                 "fst_notes"=>$notes,
                 "fst_model"=>$verify->fst_model,
                 "fst_method"=>$verify->fst_method,
+                "fst_show_record_method"=>$verify->fst_show_record_method,
                 "fst_active"=>"A",
             ];				
             parent::insert($dataVerify);
@@ -46,7 +48,7 @@ class Trverification_model extends MY_Model {
 
     }
 
-    public function approve($finRecId){
+    public function approve($finRecId,$fstNotes,$isApproved){
         $ssql = "select * from " . $this->tableName . " where fin_rec_id = ?";
         $qr = $this->db->query($ssql,[$finRecId]);
         $rw = $qr->row();
@@ -54,42 +56,31 @@ class Trverification_model extends MY_Model {
         $activeUser = $this->aauth->user();
         //di approved oleh orang dr departemen dan group sesuai ketentuan
         if ($rw->fin_department_id == $activeUser->fin_department_id && $rw->fin_user_group_id == $activeUser->fin_group_id){
-            $data=[
-                "fin_rec_id"=>$finRecId,
-                "fst_verification_status"=>"VF" //Verified
-            ];
+            if ($isApproved){
+                $data=[
+                    "fin_rec_id"=>$finRecId,
+                    "fst_verification_status"=>"VF", //Verified
+                    "fst_notes"=>$fstNotes
+                ];
+            }else{
+                $data = [
+                    "fin_rec_id"=>$finRecId,
+                    "fst_verification_status"=>"RJ", //Verified
+                    "fst_notes"=>$fstNotes
+                ];
+            }
             parent::update($data);
 
-            
-            //Cek if all row in same seqno allready approved
-            $ssql = "select * from " . $this->tableName . " where fst_controller = ? 
-                and fst_verification_type = ?
-                and fin_transaction_id =? 
-                and fin_branch_id =? 
-                and fin_seqno = ?
-                and fst_verification_status != 'VF' 
-                and fst_active = 'A' 
-                limit 1";
-            
-            $qr = $this->db->query($ssql,[
-                $rw->fst_controller,
-                $rw->fst_verification_type,
-                $rw->fin_transaction_id,
-                $rw->fin_branch_id,
-                $rw->fin_seqno
-            ]);
-            $rwCek = $qr->row();
-            
-            if ($rwCek == false){
-                //Semua pada seqno ini telah mengverifikasi
-                //Update next seq No
-                $ssql = "select fin_seqno from " . $this->tableName . " where fst_controller = ? 
-                and fst_verification_type = ?
-                and fin_transaction_id =? 
-                and fin_branch_id =? 
-                and fin_seqno > ? 
-                and fst_active = 'A' 
-                order by fin_seqno limit 1";
+            if ($isApproved){
+                //Cek if all row in same seqno allready approved
+                $ssql = "select * from " . $this->tableName . " where fst_controller = ? 
+                    and fst_verification_type = ?
+                    and fin_transaction_id =? 
+                    and fin_branch_id =? 
+                    and fin_seqno = ?
+                    and fst_verification_status != 'VF' 
+                    and fst_active = 'A' 
+                    limit 1";
                 
                 $qr = $this->db->query($ssql,[
                     $rw->fst_controller,
@@ -98,40 +89,88 @@ class Trverification_model extends MY_Model {
                     $rw->fin_branch_id,
                     $rw->fin_seqno
                 ]);
-                
                 $rwCek = $qr->row();
+                
                 if ($rwCek == false){
-                    //Proses Verifikasi selesai
-                    $this->load->model($rw->fst_model,'model');
-                    $action = $rw->fst_method;
-
-                    if(is_callable(array($this->model, $action))){
-                        $this->model->$action($rw->fin_transaction_id);
-                    }
-
-                }else{
-                    $nextSeqno  = $rw->fin_seqno;
-                    $ssql = "update " . $this->tableName . " set fst_verification_status = 'RV' where 
-                    fst_controller = ? 
-                    and fst_verification_type = ? 
+                    //Semua pada seqno ini telah mengverifikasi
+                    //Update next seq No
+                    $ssql = "select fin_seqno from " . $this->tableName . " where fst_controller = ? 
+                    and fst_verification_type = ?
                     and fin_transaction_id =? 
                     and fin_branch_id =? 
-                    and fin_seqno = ? 
-                    and fst_active = 'A' ";
-
+                    and fin_seqno > ? 
+                    and fst_active = 'A' 
+                    order by fin_seqno limit 1";
+                    
                     $qr = $this->db->query($ssql,[
                         $rw->fst_controller,
                         $rw->fst_verification_type,
                         $rw->fin_transaction_id,
                         $rw->fin_branch_id,
-                        $nextSeqno
+                        $rw->fin_seqno
                     ]);
                     
+                    $rwCek = $qr->row();
+                    if ($rwCek == false){
+                        //Proses Verifikasi selesai
+                        $this->load->model($rw->fst_model,'model');
+                        $action = $rw->fst_method;
+
+                        if(is_callable(array($this->model, $action))){
+                            $this->model->$action($rw->fin_transaction_id,true);
+                        }
+
+                    }else{
+                        $nextSeqno  = $rw->fin_seqno;
+                        $ssql = "update " . $this->tableName . " set fst_verification_status = 'RV' where 
+                        fst_controller = ? 
+                        and fst_verification_type = ? 
+                        and fin_transaction_id =? 
+                        and fin_branch_id =? 
+                        and fin_seqno = ? 
+                        and fst_active = 'A' ";
+
+                        $qr = $this->db->query($ssql,[
+                            $rw->fst_controller,
+                            $rw->fst_verification_type,
+                            $rw->fin_transaction_id,
+                            $rw->fin_branch_id,
+                            $nextSeqno
+                        ]);
+                        
+                    }
+
+                }
+            }else{
+                //Rubah semua seq_no (yang sama dan belum VF) dan seq_no diatasnya menjadi rejected
+                $ssql ="update " . $this->tableName . " set fst_verification_status = 'RJ' 
+                    where fst_controller = ? 
+                    and fst_verification_type = ? 
+                    and fin_transaction_id = ?
+                    and fin_seqno >= ? 
+                    and fst_verification_status != 'VF'";
+
+                $this->db->query($ssql,array($rw->fst_controller,$rw->fst_verification_type,$rw->fin_transaction_id,$rw->fin_seqno));
+                $this->load->model($rw->fst_model,'model');
+                $action = $rw->fst_method;
+
+                if(is_callable(array($this->model, $action))){
+                    $this->model->$action($rw->fin_transaction_id,false);
                 }
 
             }
+            $result =[
+                "status"=>"SUCCESS",
+                "message"=>"",
+            ];
+            return $result;
+
         }else{
-            return false;
+            $result =[
+                "status"=>"FAILED",
+                "message"=>lang("Anda tidak memiliki autorisasi untuk melakukan approval !")
+            ];
+            return $result;
         }
         
 
