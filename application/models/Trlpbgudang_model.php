@@ -142,7 +142,7 @@ class Trlpbgudang_model extends MY_Model {
         //Delete itemdetails
         $ssql ="delete from msitemdetails where fst_trans_type = 'PPB' and fin_trans_id = ?";
         $this->db->query($ssql,[$finLPBGudangId]);
-        
+
         $dbError  = $this->db->error();
 		if ($dbError["code"] != 0){	
             $result["status"]= "FAILED";
@@ -293,6 +293,7 @@ class Trlpbgudang_model extends MY_Model {
         }
 
         $resp = $this->unposting($finLPBGudangId);       
+        
         if($resp["status"] != "SUCCESS"){
             return $resp;
         }
@@ -324,8 +325,26 @@ class Trlpbgudang_model extends MY_Model {
    }
 
    public function isEditable($finLPBGudangId){
-       $resp =["status"=>"SUCCESS","message"=>""];
-       return $resp;
+       /**
+        * FAILED CONDITION
+        * 1. Sudah terbit faktur
+        */
+
+        /** 1. Sudahh terbit faktur */
+        $ssql = "select a.*,b.fst_lpbpurchase_no from trlpbgudang a
+            inner join trlpbpurchase b on a.fin_lpbpurchase_id = b.fin_lpbpurchase_id
+            where a.fin_lpbgudang_id = ?";
+        $qr = $this->db->query($ssql,[$finLPBGudangId]);
+        $rw = $qr->row();
+        if($rw != null){
+            $resp =["status"=>"FAILED","message"=>sprintf(lang("Transaksi ini telah memiliki faktur %s" ),$rw->fst_lpbpurchase_no)];
+            return $resp;
+        }
+        
+
+
+        $resp =["status"=>"SUCCESS","message"=>""];
+        return $resp;
    }
 }
 

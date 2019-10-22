@@ -103,14 +103,7 @@
 						<div class="form-group">
                             <label for="fin_lpbgudang_id" class="col-md-2 control-label"><?=lang("LPB Gudang")?> </label>							
                             <div class="col-sm-10">
-								<select id="fin_lpbgudang_id" class="form-control" name="fin_lpbgudang_id[]" multiple="multiple" style="width:100%">	
-								<?php
-										$poList = $this->trlpbgudang_model->getPOList();
-										foreach($poList as $po){
-											echo "<option value='$po->fin_po_id'>$po->fst_po_no</option>";
-										}
-									?>								
-								</select>                                
+								<select id="fin_lpbgudang_id" class="form-control" name="fin_lpbgudang_id[]" multiple="multiple" style="width:100%"></select>                                
 							</div>							                    
 						</div>
 						<div class="form-group">
@@ -121,11 +114,11 @@
 							<label class="col-md-1 control-label" style="text-align:left;padding-left:0px"><?=lang("Hari")?> </label>
 						</div>
 						<div class="form-group">
-						<label for="fin_lpbgudang_id" class="col-md-2 control-label"><?=lang("Mata Uang")?> </label>
+						<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> </label>
                             <div class="col-sm-2">
 								<input id="fst_curr_code" type="TEXT" class="form-control" readonly/>
 							</div>										                    
-							<label for="fin_lpbgudang_id" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> </label>
+							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> </label>
                             <div class="col-sm-2">
 								<input type="TEXT" id="fdc_exchange_rate_idr"  name="fdc_exchange_rate_idr" class="form-control money"/>
 								<div id="fdc_exchange_rate_idr_err" class="text-danger"></div>

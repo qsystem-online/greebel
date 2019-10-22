@@ -90,5 +90,23 @@ class Test extends CI_Controller {
 	}
 
 
+	public function testExcel(){
+
+		$this->load->library("phpspreadsheet");
+		$spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/coba.xlsm");
+		/*
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->setCellValue("A1", "No.");
+
+		for( $i = 0; $i < 10 ; $i++){
+			//
+			$baris = $i + 2;
+			$sheet->setCellValue("A". $baris, $i);
+		}
+		*/
+		//FILE NAME WITH DATE
+		$this->phpspreadsheet->save("tesss",$spreadsheet);
+        //$this->phpspreadsheet->save("item_report_" . date("Ymd") . ".xlsm" ,$spreadsheet);
+	}
 	
 }

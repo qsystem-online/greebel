@@ -454,7 +454,9 @@ class Penerimaan_pembelian extends MY_Controller{
 			"fin_user_id_request_by"=>$this->input->post("fin_user_id_request_by"),
 			"fst_edit_notes"=>$this->input->post("fst_edit_notes"),
 		];
+		
 		$resp = $this->trlpbgudang_model->delete($finLPBGudangId,true,$data);	
+
 		if ($resp["status"] != "SUCCESS"){
 			$this->db->trans_rollback();
 			$this->ajxResp["status"] = $resp["status"];
