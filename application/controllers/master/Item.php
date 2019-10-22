@@ -720,9 +720,7 @@ class Item extends MY_Controller
                         //
                         //$sheet->setCellValue("B$iRow", "BOM");
                         $sheet->getStyle("C$iRow:E$iRow")->applyFromArray($italycArray);
-                        $spreadsheet->getActiveSheet()->getStyle("C$iRow:E$iRow")
-                        ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                        ->getStartColor()->setRGB('99FFFF');
+                        $spreadsheet->getActiveSheet()->getStyle("C$iRow:E$iRow")->getFont()->getColor()->setRGB('0000FF');
                         $sheet->setCellValue("C$iRow", $roBomDetail->fst_item_name);
                         $sheet->setCellValue("E$iRow", $roBomDetail->fst_unit);
                         $iRow++;
@@ -761,9 +759,7 @@ class Item extends MY_Controller
         foreach ($rsBomDetail as $roBomDetail){
             //$sheet->setCellValue("B$iRow", "BOM");
             $sheet->getStyle("C$iRow:E$iRow")->applyFromArray($italycArray);
-            $spreadsheet->getActiveSheet()->getStyle("C$iRow:E$iRow")
-            ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setRGB('99FFFF');
+            $spreadsheet->getActiveSheet()->getStyle("C$iRow:E$iRow")->getFont()->getColor()->setRGB('0000FF');
             $sheet->setCellValue("C$iRow", $roBomDetail->fst_item_name);
             $sheet->setCellValue("E$iRow", $roBomDetail->fst_unit);
             $iRow++;
