@@ -71,9 +71,13 @@ class Relation extends MY_Controller{
 		}
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+		$mdlPrint = $this->parser->parse('template/mdlPrint.php', [], true);
+
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Master Relations" : "Update Master Relations";
 		$data["fin_relation_id"] = $fin_relation_id;
+		$data["mdlPrint"] = $mdlPrint;
+
 		$page_content = $this->parser->parse('pages/pr/msrelations/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 		$control_sidebar = NULL;
@@ -502,4 +506,177 @@ class Relation extends MY_Controller{
         $this->ajxResp["data"] = $result;
         $this->json_output();
 	}
+
+	public function get_relationsPrinted(){
+		$term = $this->input->get("term");
+		$ssql = "select fin_relation_id, fst_relation_name from msrelations where fin_branch_id = ? and fst_relation_name like ?";
+		$qr = $this->db->query($ssql,[$this->aauth->get_active_branch_id(),'%'.$term.'%']);
+		//lastQuery();
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_printRelation($type,$relationId_start,$relationId_end) {
+        //$layout = $this->input->post("layoutColumn");
+        //$arrLayout = json_decode($layout);
+        //$vendorName = urldecode($vendorName);
+        
+        $this->load->model("msrelations_model");
+        $this->load->library("phpspreadsheet");
+        
+        $spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_relations_log.xlsx");
+        $sheet = $spreadsheet->getActiveSheet();
+        
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+        $sheet->getPageMargins()->setBottom(1);
+
+        //AUTO SIZE COLUMN
+        $sheet->getColumnDimension("A")->setAutoSize(true);
+        $sheet->getColumnDimension("B")->setAutoSize(true);
+        $sheet->getColumnDimension("C")->setAutoSize(true);
+        $sheet->getColumnDimension("D")->setAutoSize(true);
+        $sheet->getColumnDimension("E")->setAutoSize(true);
+        $sheet->getColumnDimension("F")->setAutoSize(true);
+		$sheet->getColumnDimension("G")->setAutoSize(true);
+		$sheet->getColumnDimension("H")->setAutoSize(true);
+		$sheet->getColumnDimension("I")->setAutoSize(true);
+		$sheet->getColumnDimension("J")->setAutoSize(true);
+		$sheet->getColumnDimension("K")->setAutoSize(true);
+		$sheet->getColumnDimension("L")->setAutoSize(true);
+		$sheet->getColumnDimension("M")->setAutoSize(true);
+
+        // SUBTITLE
+        $sheet->mergeCells('B4:D4');
+        $sheet->mergeCells('B5:D5');
+        $sheet->mergeCells('B3:D3');
+
+        //HEADER COLUMN
+        $sheet->setCellValue("A7", "No.");
+        $sheet->setCellValue("B7", "Relation ID");
+        $sheet->setCellValue("C7", "Relation Name");
+        $sheet->setCellValue("D7", "Address");
+        $sheet->setCellValue("E7", "City");
+        $sheet->setCellValue("F7", "Postal Code");
+		$sheet->setCellValue("G7", "Contact Person");
+		$sheet->setCellValue("H7", "Phone Number");
+		$sheet->setCellValue("I7", "Email");
+		$sheet->setCellValue("J7", "Terms");
+		$sheet->setCellValue("K7", "Plafon");
+		$sheet->setCellValue("L7", "Pricing Group");
+		$sheet->setCellValue("M7", "Relation Notes");
+
+		$i = 12;
+		$col = $this->phpspreadsheet->getNameFromNumber($i);
+
+        //TITLE
+        $sheet->mergeCells('A1:'.$col.'1');
+        $sheet->setCellValue("A1", "RELATION LIST");
+
+        //FORMAT NUMBER
+        $spreadsheet->getActiveSheet()->getStyle('K8:'.$col.'500')->getNumberFormat()->setFormatCode('#,##0.00');
+        
+        //COLOR HEADER COLUMN
+        $spreadsheet->getActiveSheet()->getStyle('A7:'.$col.'7')
+            ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('99FFFF');
+
+        //FONT HEADER CENTER
+        $spreadsheet->getActiveSheet()->getStyle('A7:'.$col.'7')
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        //FONT ITALIC
+        $italycArray = [
+            'font' => [
+                'italic' => true,
+            ],
+        ];
+
+        //FONT BOLD
+        $styleArray = [
+            'font' => [
+                'bold' => true,
+            ],
+        ];
+        $sheet->getStyle('A7:'.$col.'7')->applyFromArray($styleArray);
+        $sheet->getStyle('B3:M3')->applyFromArray($styleArray);
+        $sheet->getStyle('B4:M4')->applyFromArray($styleArray);
+        $sheet->getStyle('B5:M5')->applyFromArray($styleArray);
+
+        //FONT SIZE
+        $spreadsheet->getActiveSheet()->getStyle("A1")->getFont()->setSize(18);
+        $spreadsheet->getActiveSheet()->getStyle("A3:".$col."5")->getFont()->setSize(12);
+        $spreadsheet->getActiveSheet()->getStyle("A7:".$col."7")->getFont()->setSize(12);
+
+		$iRow0 = 3;
+        $iRow1 = 4;
+        $iRow2 = 5;
+        $iRow = 8;
+        $no = 1;
+
+        //DATE & TIME
+        $sheet->setCellValue('F3', '=NOW()');
+        $sheet->mergeCells('F3:'.$col.'3');
+        $sheet->setCellValue('F4', '=NOW()');
+        $sheet->mergeCells('F4:'.$col.'4');
+
+        $printRelation = $this->msrelations_model->getPrintRelation($type,$relationId_start,$relationId_end);
+        foreach ($printRelation as $rw) {
+			switch($type){
+				case 1:
+					$type = "Customer";
+					break;
+				case 2:
+					$type = "Supplier/Vendor";
+					break;
+				case 3:
+					$type = "Expedisi";
+					break;
+				case 'ALL':
+					$type = "ALL";
+					break;
+			}
+			$sheet->setCellValue("A$iRow", $no++);
+			$sheet->setCellValue("B$iRow0", $relationId_start." s/d ".$relationId_end);
+			$sheet->setCellValue("B$iRow1", $type); //fin_item_id & fst_vendor_item_name
+			$sheet->setCellValue("B$iRow2", $type); //fin_item_group_id & fst_item_group_name
+			//$sheet->setCellValue("A$iRow", $no++);
+			$sheet->setCellValue("B$iRow", $rw->fin_relation_id);
+			$sheet->setCellValue("C$iRow", $rw->fst_relation_name);
+			$sheet->setCellValue("D$iRow", $rw->fst_address);
+			$sheet->setCellValue("E$iRow", $rw->fst_postal_code);
+			$sheet->setCellValue("F$iRow", $rw->fst_postal_code);
+			$sheet->setCellValue("G$iRow", $rw->fst_relation_name);
+			$sheet->setCellValue("H$iRow", $rw->fst_phone);
+			$sheet->setCellValue("I$iRow", $rw->fst_fax);
+			$sheet->setCellValue("J$iRow", $rw->fin_terms_payment);
+			$sheet->setCellValue("K$iRow", $rw->fdc_credit_limit);
+			$sheet->setCellValue("L$iRow", $rw->fin_cust_pricing_group_id);
+			$sheet->setCellValue("M$iRow", $rw->fst_relation_notes);
+            $iRow++;
+
+            
+        }
+
+        //BORDER
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DASHED
+                ],
+            ],
+        ];
+        $iRow = $iRow - 1;
+        $sheet->getStyle('A7:'.$col.$iRow)->applyFromArray($styleArray);
+        
+        //FILE NAME WITH DATE
+        $this->phpspreadsheet->save("relations_report_" . date("Ymd") . ".xls" ,$spreadsheet);
+
+    }
 }

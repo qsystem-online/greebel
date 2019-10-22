@@ -77,4 +77,23 @@ class Glaccounts_model extends MY_Model
     public function isUsed($fst_glaccount_code){
         return true;
     }
+
+    public function getPrintGLAccount($mainGroupGL_start,$mainGroupGL_end){
+        if ($mainGroupGL_start == 'null'){
+            $mainGroupGL_start ="";
+        }
+        if ($mainGroupGL_end == 'null'){
+            $mainGroupGL_end ="";
+        }
+        $ssql = "SELECT a.*,b.fst_glaccount_maingroup_name FROM glaccounts
+        left join glaccountmaingroups b on a.fin_glaccount_maingroup_id = b.fin_glaccount_maingroup_id
+        WHERE a.fin_glaccount_maingroup_id >= '$mainGroupGL_start' AND a.fin_glaccount_maingroup_id <= '$mainGroupGL_end' 
+        ORDER BY a.fst_glaccount_code ";
+        $query = $this->db->query($ssql,[]);
+        //echo $this->db->last_query();
+        //die();
+        $rs = $query->result();
+
+        return $rs;
+    }
 }

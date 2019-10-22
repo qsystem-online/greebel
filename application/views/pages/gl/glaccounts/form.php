@@ -21,7 +21,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     <div class="btn-group btn-group-sm pull-right">
                         <a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<a id="btnPrinted" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
@@ -132,6 +132,57 @@ defined('BASEPATH') or exit('No direct script access allowed');
             </div>
         </div>
 </section>
+</div>
+
+<div id="modal_Printed" class="modal fade in" role="dialog" style="display: none">
+    <div class="modal-dialog" style="display:table;width:60%;min-width:600px;max-width:100%">
+        <!-- modal content -->
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><?= lang("GL Account List") ?></h4>
+			</div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="select-mainGLStart" class="col-md-3 control-label"><?= lang("Main Group GL") ?> :</label>
+                                    <div class="col-md-3">
+                                        <select id="select-mainGLStart" class="form-control" name="fin_glaccount_maingroup_id">
+                                            <option value="0">--  <?= lang("select") ?>  --</option>
+                                        </select>
+                                    </div>
+                                    <label for="select-mainGLEnd" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
+                                    <div class="col-md-3">
+                                        <select id="select-mainGLEnd" class="form-control" name="fin_glaccount_maingroup_id">
+                                            <option value="0">--  <?= lang("select") ?>  --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="modal-footer" style="width:100%;padding:10px" class="text-center">
+                                <button id="btnPrint" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Print")?></button>
+                                <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+                            </div>
+
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+    echo $mdlPrint;
+?>
 
 <script type="text/javascript">
 
@@ -224,6 +275,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     $("#btnSubmit").prop("disabled", false);
                 }
             });
+        });
+
+        $("#select-mainGLStart").select2({
+            width: '100%',
+            ajax: ajaxManiGL,
+        });
+        $("#select-mainGLEnd").select2({
+            width: '100%',
+            ajax: ajaxManiGL,
         });
 
         $("#select-MainGL").select2({
@@ -364,7 +424,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					$('#fst_glaccount_name').prop('readonly', true);
 				}
 			});
+        });
+        
+        $("#btnPrinted").click(function(e){
+			$("#modal_Printed").modal("toggle");
 		});
+
+		$("#btnPrint").click(function(e){
+            layoutColumn = [];
+			url = "<?= site_url() ?>gl/glaccount/get_printGLAccount/" + $("#select-mainGLStart").val() + '/' + $("#select-mainGLEnd").val();
+            MdlPrint.showPrint(layoutColumn,url);
+        });
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
