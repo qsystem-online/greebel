@@ -68,13 +68,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
 					<div class="form-group">						
-						<label for="fin_salesorder_id" class="col-md-2 control-label"><?=lang("Sales Order")?> </label>
+						<label for="fin_salesorder_id" class="col-md-2 control-label"><?=lang("Sales Order")?> :</label>
 						<div class="col-md-4">
 							<select id="fin_salesorder_id" class="form-control" name="fin_salesorder_id"></select>
 							<div id="fin_salesorder_id_err" class="text-danger"></div>
 						</div>
 					
-						<label for="" class="col-md-2 control-label"><?=lang("Tanggal SO")?> </label>
+						<label for="" class="col-md-2 control-label"><?=lang("Tanggal SO")?> :</label>
 						<div class="col-md-4">
                             <div class="input-group date">
 								<div class="input-group-addon">
@@ -86,14 +86,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">						
-						<label for="select-relations" class="col-md-2 control-label"><?=lang("Customer")?> </label>
+						<label for="select-relations" class="col-md-2 control-label"><?=lang("Customer")?> :</label>
 						<div class="col-md-4">
 							<input type="TEXT" class="form-control unfocus" id="fst_relation_name" />
 							<div id="fin_relation_id_err" class="text-danger"></div>
 						</div>
 					</div>
                     <div class="form-group">
-                        <label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?> </label>
+                        <label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?> :</label>
 						<div class="col-md-10">
 							<select class="select2 form-control" name="fin_shipping_address_id" id="fin_shipping_address_id" style="width:100%"></select>
 							<div id="fst_shipping_address_err" class="text-danger"></div>
@@ -111,14 +111,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     <div class="form-group">
 						
-						<label for="fin_driver_id" class="col-md-2 control-label"><?=lang("Sopir")?> </label>
+						<label for="fin_driver_id" class="col-md-2 control-label"><?=lang("Sopir")?> :</label>
 						<div class="col-md-4">
 							<select id="fin_driver_id" class="form-control" name="fin_driver_id">
 								<option value="">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="fin_driver_id_err" class="text-danger"></div>
 						</div>
-                        <label for="fst_no_polisi" class="col-md-2 control-label"><?=lang("No. Polisi")?> </label>
+                        <label for="fst_no_polisi" class="col-md-2 control-label"><?=lang("No. Polisi")?> :</label>
                         <div class="col-md-4">
 							<input type="text" class="form-control" id="fst_no_polisi" name="fst_no_polisi" style="width:100%"/>							
 							<div id="fst_no_polisi_err" class="text-danger"></div>
@@ -126,7 +126,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-                        <label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Warehouse")?> </label>
+                        <label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Warehouse")?> :</label>
 						<div class="col-md-4">
 							<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id">
 								<option value="0">-- <?=lang("select")?> --</option>
