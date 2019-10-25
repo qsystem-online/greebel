@@ -257,7 +257,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <form class="form-horizontal ">
                                     <div class="form-group">
                                         <label for="fst_item_type" class="col-sm-3 control-label"><?= lang("Type") ?> :</label>
-                                        <div class="col-sm-7">
+                                        <div class="col-sm-8">
                                             <select class="form-control" id="fst_item_type" name="fst_item_type">
                                                 <option value="0">-- <?=lang("select")?> --</option>
                                                 <option value="ITEM"><?= lang("ITEM") ?></option>
@@ -267,21 +267,21 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     </div>
                                     <div class="form-group">
                                         <label for="fin_item_id" class="col-md-3 control-label"><?= lang("Item terms") ?> :</label>
-                                        <div class="col-md-7">
+                                        <div class="col-md-8">
                                             <select class="select2 form-control" id="fin_item_id" style="width:100%"></select>
                                             <span id="fin_item_id_err" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="fst_unit" class="col-md-3 control-label"><?= lang("Unit") ?> :</label>
-                                        <div class="col-md-7">
+                                        <div class="col-md-8">
                                             <select id="fst_unit" class="form-control" name="fst_unit" style="width:100%"></select>
                                             <span id="fst_unit_err" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?> :</label>
-                                        <div class="col-md-7">
+                                        <div class="col-md-8">
                                             <input type="number" class="form-control text-right numeric" id="fdb_qty" value="0">
                                             <div id="fdb_qty_err" class="text-danger"></div>
                                         </div>
@@ -575,7 +575,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </div>
 
 <div id="mdlCustomerPromo" class="modal fade in" role="dialog" style="display: none">
-    <div class="modal-dialog" style="display:table;width:50%;min-width:500px;max-width:100%">
+    <div class="modal-dialog" style="display:table;width:40%;min-width:400px;max-width:100%">
         <!-- Modal content-->
         <div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
             <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
@@ -590,8 +590,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <fieldset style="padding:10px">
                                 <form class="form-horizontal ">
                                     <div class="form-group">
-                                        <label for="fst_participant_type" class="col-sm-3 control-label"><?= lang("Type") ?></label>
-                                        <div class="col-sm-7">
+                                        <label for="fst_participant_type" class="col-sm-3 control-label"><?= lang("Type") ?> :</label>
+                                        <div class="col-sm-8">
                                             <select class="form-control" id="fst_participant_type" name="fst_participant_type">
                                                 <option value="0">-- <?=lang("select")?> --</option>
                                                 <option value="RELATION"><?= lang("RELATION") ?></option>
@@ -601,8 +601,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="fin_customer_id" class="col-md-3 control-label"><?= lang("Customer") ?></label>
-                                        <div class="col-md-7">
+                                        <label for="fin_customer_id" class="col-md-3 control-label"><?= lang("Customer") ?> :</label>
+                                        <div class="col-md-8">
                                             <select class="select2 form-control" id="fin_customer_id" style="width:100%"></select>
                                             <span id="fin_customer_id_err" class="text-danger"></span>
                                         </div>
@@ -789,59 +789,68 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </div>
 
 <div id="mdlDiscountDetails" class="modal fade in" role="dialog" style="display: none">
-    <div class="modal-dialog" style="display:table;width:50%;min-width:350px;max-width:100%">
+    <div class="modal-dialog" style="display:table;width:40%;min-width:350px;max-width:100%">
         <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
                 <button type="button" class="close" data-dismiss="modal">×</button>
                 <h4 class="modal-title"><?= lang("Add discount item") ?></h4>
             </div>
 
             <div class="modal-body">
-                <form class="form-horizontal ">
-                    <div class="form-group">
-                        <label for="select-item-disc" class="col-md-3 control-label"><?= lang("Item") ?></label>
-                        <div class="col-md-9">
-                            <select id="select-item-disc" class="form-control" name="fin_item_id" style="width:100%"></select>
-                            <span id="fin_item_id_err" class="text-danger"></span>
+                <div class="row">
+					<div class="col-md-12" >
+						<div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+							<fieldset style="padding:10px">
+                                <form class="form-horizontal ">
+                                    <div class="form-group">
+                                        <label for="select-item-disc" class="col-md-3 control-label"><?= lang("Item") ?> :</label>
+                                        <div class="col-md-8">
+                                            <select id="select-item-disc" class="form-control" name="fin_item_id" style="width:100%"></select>
+                                            <span id="fin_item_id_err" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="select-unit-disc" class="col-md-3 control-label"><?= lang("Unit") ?> :</label>
+                                        <div class="col-md-8">
+                                            <select id="select-unit-disc" class="form-control" name="fst_unit" style="width:100%"></select>
+                                            <span id="fst_unit_err" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="fin_qty" class="col-md-3 control-label"><?=lang("Qty")?> :</label>
+                                        <div class="col-md-8">
+                                            <input type="number" class="form-control text-right numeric" id="fin_qty" value="0">
+                                            <div id="fin_qty_err" class="text-danger"></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fdc_disc_persen" class="col-md-3 control-label"><?=lang("Disc %")?> :</label>
+                                        <div class="col-md-8">
+                                            <input type="text" class="form-control text-right numeric" id="fdc_disc_persen" value="0">
+                                            <div id="fdc_disc_persen_err" class="text-danger"></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fdc_disc_value" class="col-md-3 control-label"><?=lang("Disc Amount")?> :</label>
+                                        <div class="col-md-8">
+                                            <input type="text" class="form-control text-right money" id="fdc_disc_value" value="0">
+                                            <div id="fdc_disc_value_err" class="text-danger"></div>
+                                        </div>
+                                    </div>
+
+                                </form>
+                           
+                                <div class="modal-footer">
+                                    <button id="btn-add-item-disc" type="button" class="btn btn-primary btn-sm text-center" style="width:15%">Add</button>
+                                    <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal">Close</button>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="select-unit-disc" class="col-md-3 control-label"><?= lang("Unit") ?></label>
-                        <div class="col-md-4">
-                            <select id="select-unit-disc" class="form-control" name="fst_unit" style="width:100%"></select>
-                            <span id="fst_unit_err" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-						<label for="fin_qty" class="col-md-3 control-label"><?=lang("Qty")?></label>
-						<div class="col-md-4">
-							<input type="number" class="form-control text-right numeric" id="fin_qty" value="0">
-							<div id="fin_qty_err" class="text-danger"></div>
-						</div>
-					</div>
-                    <div class="form-group">
-						<label for="fdc_disc_persen" class="col-md-3 control-label"><?=lang("Disc %")?></label>
-						<div class="col-md-4">
-							<input type="text" class="form-control text-right numeric" id="fdc_disc_persen" value="0">
-							<div id="fdc_disc_persen_err" class="text-danger"></div>
-						</div>
-					</div>
-                    <div class="form-group">
-						<label for="fdc_disc_value" class="col-md-3 control-label"><?=lang("Disc Amount")?></label>
-						<div class="col-md-4">
-							<input type="text" class="form-control text-right money" id="fdc_disc_value" value="0">
-							<div id="fdc_disc_value_err" class="text-danger"></div>
-						</div>
-					</div>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="btn-add-item-disc" type="button" class="btn btn-primary">Add</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
