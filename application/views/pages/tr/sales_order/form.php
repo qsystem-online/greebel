@@ -320,8 +320,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</form>
 
 							<div class="modal-footer">
-								<button id="btn-add-so-detail" type="button" class="btn btn-primary" ><?=lang("Add")?></button>
-								<button type="button" class="btn btn-default" data-dismiss="modal"><?=lang("Close")?></button>
+								<button id="btn-add-so-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+								<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
 							</div>
 							<div id="dialog-info" class="alert alert-info">
 								<a href="#" class="close" onclick="$('#dialog-info').hide()" aria-label="close">&times;</a>
