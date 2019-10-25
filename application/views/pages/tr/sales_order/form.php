@@ -245,98 +245,98 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-body">
-			<div class="row">
-				<div class="col-md-12" >
-					<div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
-						<fieldset style="padding:10px">
-			
-							<form id="form-detail" class="form-horizontal">
-							<input type='hidden' id='fin_rec_id'/>
-								<div class="form-group">
-									<label for="select-items" class="col-md-3 control-label"><?=lang("Items")?> :</label>
-									<div class="col-md-9">
-										<select id="select-items" class="form-control"></select>
-										<div id="ItemId_err" class="text-danger"></div>
+				<div class="row">
+					<div class="col-md-12" >
+						<div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+							<fieldset style="padding:10px">
+				
+								<form id="form-detail" class="form-horizontal">
+								<input type='hidden' id='fin_rec_id'/>
+									<div class="form-group">
+										<label for="select-items" class="col-md-3 control-label"><?=lang("Items")?> :</label>
+										<div class="col-md-9">
+											<select id="select-items" class="form-control"></select>
+											<div id="ItemId_err" class="text-danger"></div>
+										</div>
 									</div>
-								</div>
-								<div class="form-group">
-									<label for="fst_custom_item_name" class="col-md-3 control-label"><?=lang("Custom Name")?> :</label>
-									<div class="col-md-9">
-										<input id="fst_custom_item_name" class="form-control"></select>
-										<div id="fst_custom_item_name_err" class="text-danger"></div>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label for="select-unit" class="col-md-3 control-label"><?=lang("Unit")?> :</label>
-									<div class="col-md-9">
-										<select id="select-unit" name="fst_unit" class="form-control" style="width:100%"></select>
-										<div id="fst_unit_err" class="text-danger"></div>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?> :</label>
-									<div class="col-md-2">
-										<input type="number" class="form-control text-right numeric" id="so-qty" value="1">
-										<div id="fdb_qty_err" class="text-danger"></div>
+									<div class="form-group">
+										<label for="fst_custom_item_name" class="col-md-3 control-label"><?=lang("Custom Name")?> :</label>
+										<div class="col-md-9">
+											<input id="fst_custom_item_name" class="form-control"></select>
+											<div id="fst_custom_item_name_err" class="text-danger"></div>
+										</div>
 									</div>
 
-									<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?> :</label>
-									<div class="col-md-5">
-										<input type="text" class="form-control text-right money" id="so-price" value="0">
-										<div id="fdc_price_err" class="text-danger"></div>
+									<div class="form-group">
+										<label for="select-unit" class="col-md-3 control-label"><?=lang("Unit")?> :</label>
+										<div class="col-md-9">
+											<select id="select-unit" name="fst_unit" class="form-control" style="width:100%"></select>
+											<div id="fst_unit_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?> :</label>
+										<div class="col-md-2">
+											<input type="number" class="form-control text-right numeric" id="so-qty" value="1">
+											<div id="fdb_qty_err" class="text-danger"></div>
+										</div>
+
+										<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?> :</label>
+										<div class="col-md-5">
+											<input type="text" class="form-control text-right money" id="so-price" value="0">
+											<div id="fdc_price_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									
+
+									<div class="form-group">
+										<label for="select-disc" class="col-md-3 control-label"><?=lang("Disc ++")?> :</label>
+										<div class="col-md-9">
+											<select id="select-disc" class="form-control text-right" name="fst_disc_item">
+												<option value="0">0</option>							
+											</select>
+											<div id="fst_disc_item_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fdc_disc_amount" class="col-md-3 control-label"><?=lang("Disc Amt")?> :</label>
+										<div class="col-md-9">
+											<input type="text" class="form-control text-right" id="fdc_disc_amount" readonly>
+											<div id="fdc_disc_amount_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fst_memo_item" class="col-md-3 control-label"><?=lang("Memo")?> :</label>
+										<div class="col-md-9">
+											<textarea type="text" class="form-control" id="fst_memo_item" rows="3"></textarea>
+											<div id="fst_memo_item_err" class="text-danger"></div>
+										</div>
+									</div>
+
+								</form>
+
+								<div class="modal-footer">
+									<button id="btn-add-so-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+									<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+								</div>
+								<div id="dialog-info" class="alert alert-info">
+									<a href="#" class="close" onclick="$('#dialog-info').hide()" aria-label="close">&times;</a>
+									<div class="info-message">
+										<strong>Info!</strong> Indicates a neutral informative change or action.
 									</div>
 								</div>
-
-								
-
-								<div class="form-group">
-									<label for="select-disc" class="col-md-3 control-label"><?=lang("Disc ++")?> :</label>
-									<div class="col-md-9">
-										<select id="select-disc" class="form-control text-right" name="fst_disc_item">
-											<option value="0">0</option>							
-										</select>
-										<div id="fst_disc_item_err" class="text-danger"></div>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label for="fdc_disc_amount" class="col-md-3 control-label"><?=lang("Disc Amt")?> :</label>
-									<div class="col-md-9">
-										<input type="text" class="form-control text-right" id="fdc_disc_amount" readonly>
-										<div id="fdc_disc_amount_err" class="text-danger"></div>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label for="fst_memo_item" class="col-md-3 control-label"><?=lang("Memo")?> :</label>
-									<div class="col-md-9">
-										<textarea type="text" class="form-control" id="fst_memo_item" rows="3"></textarea>
-										<div id="fst_memo_item_err" class="text-danger"></div>
-									</div>
-								</div>
-
-							</form>
-
-							<div class="modal-footer">
-								<button id="btn-add-so-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
-								<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
-							</div>
-							<div id="dialog-info" class="alert alert-info">
-								<a href="#" class="close" onclick="$('#dialog-info').hide()" aria-label="close">&times;</a>
-								<div class="info-message">
-									<strong>Info!</strong> Indicates a neutral informative change or action.
-								</div>
-							</div>
-						</fieldset>
+							</fieldset>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
 <?php
 	echo $mdlJurnal;
 ?>
