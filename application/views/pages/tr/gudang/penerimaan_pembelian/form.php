@@ -152,70 +152,75 @@
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="mdlDetail" class="modal fade" role="dialog" >
+<div id="mdlDetail" class="modal fade in" role="dialog" style="display: none">
 	<div class="modal-dialog" style="display:table;width:600px">
 		<!-- modal content -->
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><?=lang("Add ")?></h4>
+			</div>
+
 			<div class="modal-body">
 				<div class="row">
                     <div class="col-md-12" >
-                        <div style="border:0 px inset #f0f0f0;border-radius:10px;padding:5px">
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
                             <fieldset style="padding:10px">
 								<form id="form-detail" class="form-horizontal">
 									<input type='hidden' id='fin_rec_id_items'/>
 									<div class="form-group">
-										<label class="col-md-4 control-label"><?=lang("Item")?> : </label>
-										<div class="col-md-8">											
+										<label class="col-md-3 control-label"><?=lang("Item")?> :</label>
+										<div class="col-md-9">											
 											<select id="fstItem" class="form-control" style="width:100%"> </select>
 										</div>										
 									</div>
 									<div class="form-group">
-										<label class="col-md-4 control-label"><?=lang("Unit")?> :</label>
-										<div class="col-md-8">
+										<label class="col-md-3 control-label"><?=lang("Unit")?> :</label>
+										<div class="col-md-9">
 											<label id="fstUnit" class="control-label"><?=lang("Unit")?></label>
 										</div>										
 									</div>
 
 									<div class="form-group">
-										<label for="fdbQty" class="col-md-4 control-label"><?=lang("Qty")?>:</label>
-										<div class="col-md-8">
+										<label for="fdbQty" class="col-md-3 control-label"><?=lang("Qty")?> :</label>
+										<div class="col-md-9">
 											<input type='TEXT' id="fdbQty" class="money form-control" value="1"/>
 										</div>
 									</div>
 
 									<div class="form-group">
-										<label for="" class="col-md-4 control-label"><?=lang("M3")?>:</label>
-										<div class="col-md-8">
+										<label for="" class="col-md-3 control-label"><?=lang("M3")?> :</label>
+										<div class="col-md-9">
 											<input type='TEXT' id="fdcM3" class="money form-control" value="0"/>
 										</div>
 									</div>	
 
 									<div class="form-group batchNoBlock">
-										<label for="" class="col-md-4 control-label"><?=lang("Batch Number")?>:</label>
-										<div class="col-md-8">
+										<label for="" class="col-md-3 control-label"><?=lang("Batch Number")?> :</label>
+										<div class="col-md-9">
 											<input type='TEXT' id="fstBatchNo" class="form-control" />
 										</div>
 									</div>
 									<div class="form-group serialNoBlock">
-										<label for="" class="col-md-4 control-label"><?=lang("Serial Number")?>:</label>
-										<div class="col-md-8">
+										<label for="" class="col-md-3 control-label"><?=lang("Serial Number")?> :</label>
+										<div class="col-md-9">
 											<input type='TEXT' id="fstSerialNo" class="form-control" />
 										</div>										
 									</div>
 									<div class="form-group serialNoBlock" >
-										<label for="" class="col-md-4 control-label"></label>
-										<div class="col-md-8">
+										<label for="" class="col-md-3 control-label"></label>
+										<div class="col-md-9">
 											<select multiple="multiple" id="fstSerialNoList" class="form-control"></select>
 										</div>
 									</div>
 									<div class="form-group serialNoBlock">
-										<label for="" class="col-md-4 control-label"></label>
+										<label for="" class="col-md-3 control-label"></label>
 										<div class="col-md-4" >
-											<label for="" class=""><?=lang("Total Serial")?>:</label>
+											<label for="" class=""><?=lang("Total Serial")?> :</label>
 											<label id="ttlSerial" class="">0</label>
 
 										</div>
-										<div class="col-md-4 text-right" >
+										<div class="col-md-5 text-right" >
 											<button id="btn-delete-serial" class="btn btn-primary btn-xs">Delete Selected Serial</button>
 										</div>
 									</div>
@@ -330,7 +335,7 @@
 		
 		$("#btnNew").click(function(e){
 			e.preventDefault();
-			window.location.href = "<?=site_url()?>tr/gudang/Penerimaan_pembelian/add";
+			window.location.href = "<?=site_url()?>tr/gudang/penerimaan_pembelian/add";
 		});
 
 		$("#btnSubmitAjax").click(function(e){
@@ -345,7 +350,7 @@
 		
 		$("#btnClose").click(function(e){
 			e.preventDefault();
-			window.location.href = "<?=site_url()?>tr/gudang/Penerimaan_pembelian/";
+			window.location.href = "<?=site_url()?>tr/gudang/penerimaan_pembelian/";
 		});
 
 		$("#fin_po_id").change(function(e){
@@ -561,7 +566,7 @@
 		var mode = $("#fin_lpbgudang_id").val() == "0" ? "ADD" : "EDIT";	
 
 		if (mode == "ADD"){
-			url =  "<?= site_url() ?>tr/gudang/Penerimaan_pembelian/ajx_add_save/";
+			url =  "<?= site_url() ?>tr/gudang/penerimaan_pembelian/ajx_add_save/";
 		}else{
 			dataSubmit.push({
 				name : "fin_user_id_request_by",
@@ -572,7 +577,7 @@
 				value: MdlEditForm.notes
 			});
 
-			url =  "<?= site_url() ?>tr/gudang/Penerimaan_pembelian/ajx_edit_save/";
+			url =  "<?= site_url() ?>tr/gudang/penerimaan_pembelian/ajx_edit_save/";
 		}
 
 		if (confirmEdit == 0 && mode != "ADD"){
@@ -636,7 +641,7 @@
 			//get data from server;
 			App.blockUIOnAjaxRequest("Loading data, please wait..!");
 			$.ajax({
-				url:"<?=site_url()?>tr/gudang/Penerimaan_pembelian/fetch_data/" + finLPBGudangId,
+				url:"<?=site_url()?>tr/gudang/penerimaan_pembelian/fetch_data/" + finLPBGudangId,
 				method:"GET",								
 			}).done(function(resp){
 
@@ -802,7 +807,7 @@
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/gudang/Penerimaan_pembelian/delete/" + $("#fin_lpbgudang_id").val();
+		var url =  "<?= site_url() ?>tr/gudang/penerimaan_pembelian/delete/" + $("#fin_lpbgudang_id").val();
 		$.ajax({
 			url:url,
 			method:"POST",

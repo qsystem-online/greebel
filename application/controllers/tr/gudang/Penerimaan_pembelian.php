@@ -15,11 +15,11 @@ class Penerimaan_pembelian extends MY_Controller{
         $this->list['page_name'] = "Gudang - Penerimaan Pembelian";
         $this->list['list_name'] = "Penerimaan Pembelian List";
         $this->list['boxTools'] = [
-			"<a id='btnNew'  href='".site_url()."tr/gudang/Penerimaan_pembelian/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
-			"<a id='btnPrint'  href='".site_url()."tr/gudang/Penerimaan_pembelian/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> Print </a>"
+			"<a id='btnNew'  href='".site_url()."tr/gudang/penerimaan_pembelian/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
+			"<a id='btnPrint'  href='".site_url()."tr/gudang/penerimaan_pembelian/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> Print </a>"
 		];
         $this->list['pKey'] = "id";
-        $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/gudang/Penerimaan_pembelian/fetch_list_data';
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/gudang/penerimaan_pembelian/fetch_list_data';
         $this->list['arrSearch'] = [
             'fst_lpbgudang_no' => 'No LPB Pembelian'
         ];
@@ -41,7 +41,7 @@ class Penerimaan_pembelian extends MY_Controller{
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
-					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/gudang/Penerimaan_pembelian/edit/' + row.fin_lpbgudang_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
+					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/gudang/penerimaan_pembelian/edit/' + row.fin_lpbgudang_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
 					action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
 					action += '<div>';
 					return action;
