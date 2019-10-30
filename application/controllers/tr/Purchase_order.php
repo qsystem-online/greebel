@@ -35,9 +35,9 @@ class Purchase_order extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Sales Order ID', 'width' => '20%', 'data' => 'fin_salesorder_id'],
-			['title' => 'Sales Order No', 'width' => '20%', 'data' => 'fst_salesorder_no'],
-			['title' => 'Sales Order Date', 'width' => '20%', 'data' => 'fdt_salesorder_date'],
+			['title' => 'Purchase Order ID', 'width' => '20%', 'data' => 'fin_po_id'],
+			['title' => 'Purchase Order No', 'width' => '20%', 'data' => 'fst_po_no'],
+			['title' => 'Purchase Order Date', 'width' => '20%', 'data' => 'fdt_po_datetime'],
             ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_memo'],
 			['title' => 'Action', 'width' => '15%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
@@ -381,8 +381,8 @@ class Purchase_order extends MY_Controller{
 	
 	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("trsalesorder");
-		$selectFields = "fin_salesorder_id,fst_salesorder_no,fdt_salesorder_date,fst_memo,'action' as action";
+		$this->datatables->setTableName("trpo");
+		$selectFields = "fin_po_id,fst_po_no,fdt_po_datetime,fst_memo,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 		$searchFields =[];
 		$searchFields[] = $this->input->get('optionSearch'); //["fin_salesorder_id","fst_salesorder_no"];
@@ -393,12 +393,12 @@ class Purchase_order extends MY_Controller{
 		$arrData = $datasources["data"];
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
-			$insertDate = strtotime($data["fdt_salesorder_date"]);						
-			$data["fdt_salesorder_date"] = date("d-M-Y",$insertDate);
+			$insertDate = strtotime($data["fdt_po_datetime"]);						
+			$data["fdt_po_datetime"] = date("d-M-Y",$insertDate);
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
-					<a class='btn-edit' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-trash'></i></a>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_po_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["fin_po_id"] . "'><i class='fa fa-trash'></i></a>
 				</div>";
 			$arrDataFormated[] = $data;
 		}
