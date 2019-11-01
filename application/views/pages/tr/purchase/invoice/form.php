@@ -1,4 +1,3 @@
-
 <?php
 	defined('BASEPATH') OR exit('No direct script access allowed');
 	
@@ -191,7 +190,6 @@
 			e.preventDefault();
 			window.location.href = "<?=site_url()?>tr/purchase/invoice/add";
 		});
-
 		$("#btnSubmitAjax").click(function(e){
 			e.preventDefault();
 			submitAjax(0);
@@ -206,7 +204,6 @@
 			e.preventDefault();
 			window.location.href = "<?=site_url()?>tr/purchase/invoice/";
 		});
-
 		$("#fin_po_id").change(function(e){
 			e.preventDefault();
 			getPOInfo($("#fin_po_id").val(),function(resp){
@@ -214,15 +211,12 @@
 				$("#fdt_po_datetime").val(dateTimeFormat(header.fdt_po_datetime)).datetimepicker("update");
 				$("#fst_supplier_name").val(header.fst_supplier_name);
 				//$("#fin_warehouse_id").val(header.fin_warehouse_id);
-
 				listLPBGudang = resp.lpbgudang_list;
 				
 				$("#fin_lpbgudang_id").empty();
-
 				$.each(listLPBGudang,function(i,lpbGudang){
 					$("#fin_lpbgudang_id").append("<option value='"+ lpbGudang.fin_lpbgudang_id +"'>"+lpbGudang.fst_lpbgudang_no+"</option>");
 				});
-
 				$("#ppnPercent").text(header.fdc_ppn_percent);
 				$("#fin_term").val(header.fin_term);
 				$("#fst_curr_code").val(header.fst_curr_code);
@@ -230,20 +224,14 @@
 				var claimDP = parseFloat(header.fdc_downpayment_paid) - parseFloat(header.fdc_downpayment_claimed);
 				$("#fdc_downpayment_claim").val(App.money_format(claimDP));
 				calculateTotal();
-
 			});
 		});
-
-
 		$("#fin_lpbgudang_id").change(function(e){
 			e.preventDefault();
 			var arrLPBGudangId = $("#fin_lpbgudang_id").val();
 			getDetailLPBGudang(arrLPBGudangId,function(resp){
-
 			});
-
 		});
-
 		$("#btn-save-detail").click(function(e){
 			e.preventDefault();
 			t = $("#tbldetails").DataTable();
@@ -251,11 +239,9 @@
 			console.log(data);
 			data.fdb_qty = $("#fdbQty").val();
 			data.fdc_m3 = $("#fdcM3").val();
-
 			t.row(rowDetail).data(data).draw(false);
 			calculateTotal();
 			$("#mdlDetail").modal("hide");
-
 		})
 	
 	});
@@ -267,14 +253,11 @@
 	<?php foreach($arrExchangeRate as $key=>$value){ ?>
 		arrExchangeRate["<?=$key?>"] = "<?= $value ?>";
 	<?php }	?>
-
 	$(function(){
 		console.log(arrExchangeRate);
 		$("#fin_po_id").select2({});
 		$("#fin_lpbgudang_id").select2({});
-
 		App.fixedSelect2();
-
 		$('#tbldetails').on('preXhr.dt', function ( e, settings, data ) {
 			//add aditional data post on ajax call
 			data.sessionId = "TEST SESSION ID";
@@ -324,13 +307,11 @@
 			var trRow = $(this).parents('tr');
 			rowDetail = trRow;
 			var data = t.row(trRow).data();
-
 			$("#fstItem").text(data.fst_custom_item_name);
 			$("#fstUnit").text(data.fst_unit);
 			$("#fdbQty").val(data.fdb_qty);
 			$("#fdcM3").val(data.fdc_m3);
 			
-
 			$("#mdlDetail").modal("show");
 			
 		}).on('click','.btn-delete',function(e){
@@ -339,8 +320,6 @@
 			var trRow = $(this).parents('tr');
 			t.row(trRow).remove().draw();
 			calculateTotal();
-
-
 		});
 	});
 </script>
@@ -352,7 +331,6 @@
 		$("#fin_warehouse_id").val(null);
 		initForm();
 	});
-
 </script>
 
 <script type="text/javascript" info="function">
@@ -365,7 +343,6 @@
 			callback:callback
 		});
 	}
-
 	function calculateTotal(){
 		t= $('#tbldetails').DataTable();
 		var datas = t.rows().data();
@@ -378,20 +355,15 @@
 			total += subttl;
 			totalDisc += discAmount;			
 		});
-
 		$("#ttlSubTotal").text(App.money_format(total));
 		$("#ttlDisc").text(App.money_format(totalDisc));
-
 		var ppnPercent = $("#ppnPercent").text();
 		var ttlBeforePPn = total - totalDisc
 		var ppnAmount = ttlBeforePPn * ppnPercent / 100;
 		var totalAfterPPn = ttlBeforePPn + ppnAmount;
-
 		$("#ppnAmount").text(App.money_format(ppnAmount));
 		$("#ttlAmount").text(App.money_format(totalAfterPPn));
-
 	}
-
 	function getDetailLPBGudang(arrLPBGudangId,callback){
 		//params = JSON.stringify(arrLPBGudangId);
 		if (arrLPBGudangId.length <= 0){
@@ -401,7 +373,6 @@
 			return;
 		}
 		params = [arrLPBGudangId];
-
 		App.getValueAjax({			
 			site_url:"<?= site_url()?>",
 			model:"trlpbpurchase_model",
@@ -410,7 +381,6 @@
 			callback:function(resp){
 				details = resp;				
 				t = $("#tbldetails").DataTable();
-
 				t.rows().remove();
 				$.each(details,function(i,detail){
 					t.row.add(detail);
@@ -420,12 +390,10 @@
 			}
 		});
 	}
-
 	function submitAjax(confirmEdit){
 		var dataSubmit = $("#frmLPBPurchase").serializeArray();
 		
 		var mode = $("#fin_lpbpurchase_id").val() == "0" ? "ADD" : "EDIT";	
-
 		if (mode == "ADD"){
 			url =  "<?= site_url() ?>tr/purchase/invoice/ajx_add_save/";
 		}else{
@@ -437,10 +405,8 @@
 				name : "fst_edit_notes",
 				value: MdlEditForm.notes
 			});
-
 			url =  "<?= site_url() ?>tr/purchase/invoice/ajx_edit_save/";
 		}
-
 		if (confirmEdit == 0 && mode != "ADD"){
 			MdlEditForm.saveCallBack = function(){
 				submitAjax(1);
@@ -448,9 +414,6 @@
 			MdlEditForm.show();
 			return;
 		}
-
-
-
 		App.blockUIOnAjaxRequest("Please wait while saving data.....");
 		$.ajax({
 			type: "POST",
@@ -494,7 +457,6 @@
 			
 		});
 	}
-
 	function initForm(){
 		
 		var finLPBPurchaseId = $("#fin_lpbpurchase_id").val();
@@ -504,22 +466,18 @@
 				url:"<?=site_url()?>tr/purchase/invoice/fetch_data/" + finLPBPurchaseId,
 				method:"GET",								
 			}).done(function(resp){
-
 				if(resp.message != ""){
 					alert(resp.message);
 					//return;
 				}
-
 				if (resp.status == "SUCCESS"){				
 					dataH = resp.data.lpbPurchase;
 					dataD = resp.data.lpbPurchaseItems;
-
 					App.autoFillForm(dataH);
 					
 					$("#fdt_lpbpurchase_datetime").val(App.dateTimeFormat(dataH.fdt_lpbpurchase_datetime)).datetimepicker("update");
 					
 					App.addOptionIfNotExist("<option value='"+ dataH.fin_po_id +"' selected>" + dataH.fst_po_no +" - "+ dataH.fst_supplier_name +"</option>","fin_po_id");
-
 					$("#fdt_po_datetime").val(App.dateTimeFormat(dataH.fdt_po_datetime)).datetimepicker("update");
 					$("#fst_supplier_name").val(dataH.fst_supplier_name);
 					
@@ -528,7 +486,6 @@
 						finLPBGudangIds.push(value.fin_lpbgudang_id);
 						App.addOptionIfNotExist("<option value='"+ value.fin_lpbgudang_id +"' selected>" + value.fst_lpbgudang_no +"</option>","fin_lpbgudang_id");
 					});
-
 					$("#fin_lpbgudang_id").val(finLPBGudangIds).trigger("change");
 					$("#fin_term").val(dataH.fin_term);
 					$("#fst_curr_code").val(dataH.fst_curr_code);
@@ -538,7 +495,6 @@
 			});
 		}
 	}
-
 	function deleteAjax(confirmDelete){
 		
 		if (confirmDelete == 0){
@@ -548,7 +504,6 @@
 			MdlEditForm.show();
 			return;
 		}
-
 		var dataSubmit = [];		
 		dataSubmit.push({
 			name : "<?=$this->security->get_csrf_token_name()?>",
@@ -562,7 +517,6 @@
 			name : "fst_edit_notes",
 			value: MdlEditForm.notes
 		});
-
 		var url =  "<?= site_url() ?>tr/purchase/invoice/delete/" + $("#fin_lpbpurchase_id").val();
 		$.ajax({
 			url:url,
@@ -572,15 +526,11 @@
 			if (resp.message != ""){
 				alert(resp.message);
 			}
-
 			if(resp.status == "SUCCESS"){
 				$("#btnClose").trigger("click");			
 			}
-
 		});
 		
-
-
 	}
 </script>
 
