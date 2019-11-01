@@ -463,7 +463,7 @@ $(function(){
             }).on("change",function(e){
                 data = $("#fin_shipping_address_id").select2("data")[0];
 				//consoleLog(data);
-                //$("#fst_shipping_address").val(data.fst_shipping_address);
+                $("#fst_shipping_address").val(data.fst_shipping_address);
             });
             if (defaultValue != 0){
                 $("#fin_shipping_address_id").val(defaultValue).trigger("change");
