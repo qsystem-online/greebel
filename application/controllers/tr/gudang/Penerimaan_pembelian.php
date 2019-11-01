@@ -37,7 +37,7 @@ class Penerimaan_pembelian extends MY_Controller{
             ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_lpbgudang_datetime'],
             ['title' => 'PO. NO', 'width' => '100px', 'data' => 'fst_po_no'],
 			['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
-			['title' => 'fst_memo', 'width' => '200px', 'data' => 'fst_memo'],
+			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
