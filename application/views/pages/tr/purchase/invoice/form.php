@@ -283,7 +283,7 @@
 						return App.money_format(discAmount);
 					}
 				},
-				{"title" : "Total qty","width": "100px",sortable:false,data:"fdb_qty_total",className:'text-right'},
+				{"title" : "Total Qty","width": "100px",sortable:false,data:"fdb_qty_total",className:'text-right'},
 				{"title" : "Total","width": "100px",sortable:false,className:'text-right',
 					render:function(data,type,row){
 						var total = row.fdb_qty_total * row.fdc_price;
