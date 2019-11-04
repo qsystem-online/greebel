@@ -321,7 +321,7 @@ $(function(){
 						return row.fst_item_code + "-" + row.fst_custom_item_name;
 					}
 				},
-				{"title" : "Custom Name","width": "32%",data:"fst_custom_item_name",visible:false,orderable:false},
+				{"title" : "Custom Name","width": "32%",data:"fst_custom_item_name",visible:true,orderable:false},
 				{"title" : "Qty","width": "5%",data:"fdb_qty",className:'text-right',orderable:false,},
 				{"title" : "Unit","width": "10%",data:"fst_unit",orderable:false,},
 				{"title" : "Memo","width": "20%",data:"fst_memo_item",orderable:false,},
