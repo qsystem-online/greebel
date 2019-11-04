@@ -33,8 +33,8 @@ class Sales_order extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Sales Order ID', 'width' => '20%', 'data' => 'fin_salesorder_id'],
-			['title' => 'Sales Order No', 'width' => '20%', 'data' => 'fst_salesorder_no'],
+			['title' => 'Sales Order ID.', 'width' => '20%', 'data' => 'fin_salesorder_id'],
+			['title' => 'Sales Order No.', 'width' => '20%', 'data' => 'fst_salesorder_no'],
 			['title' => 'Sales Order Date', 'width' => '20%', 'data' => 'fdt_salesorder_date'],
             ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_memo'],
 			['title' => 'Action', 'width' => '15%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']

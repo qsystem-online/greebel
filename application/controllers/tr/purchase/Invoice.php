@@ -38,7 +38,7 @@ class Invoice extends MY_Controller{
 			['title' => 'ID. LPB Pembelian', 'width' => '10px','visible'=>'false', 'data' => 'fin_lpbpurchase_id'],
             ['title' => 'No. LPB Pembelian', 'width' => '100px', 'data' => 'fst_lpbpurchase_no'],
             ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_lpbpurchase_datetime'],
-            ['title' => 'No. Purchase Order', 'width' => '100px', 'data' => 'fst_po_no'],
+            ['title' => 'Purchase Order No.', 'width' => '100px', 'data' => 'fst_po_no'],
 			['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
 			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',

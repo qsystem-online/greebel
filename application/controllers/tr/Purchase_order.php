@@ -35,8 +35,8 @@ class Purchase_order extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Purchase Order ID', 'width' => '20%', 'data' => 'fin_po_id'],
-			['title' => 'Purchase Order No', 'width' => '20%', 'data' => 'fst_po_no'],
+			['title' => 'Purchase Order ID.', 'width' => '20%', 'data' => 'fin_po_id'],
+			['title' => 'Purchase Order No.', 'width' => '20%', 'data' => 'fst_po_no'],
 			['title' => 'Purchase Order Date', 'width' => '20%', 'data' => 'fdt_po_datetime'],
             ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_memo'],
 			['title' => 'Action', 'width' => '15%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
