@@ -31,11 +31,11 @@ class Delivery_order extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Sales Order ID', 'width' => '20%', 'data' => 'fin_sj_id'],
-			['title' => 'Sales Order No', 'width' => '20%', 'data' => 'fst_sj_no'],
-			['title' => 'Sales Order Date', 'width' => '20%', 'data' => 'fdt_sj_date'],
-            ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_sj_memo'],
-            ['title' => 'Action', 'width' => '15%', 'sortable' => false, 'className' => 'dt-body-center text-center',
+			['title' => 'Sales Order ID.', 'width' => '5%', 'data' => 'fin_sj_id'],
+			['title' => 'Sales Order No.', 'width' => '13%', 'data' => 'fst_sj_no'],
+			['title' => 'Sales Order Date', 'width' => '12%', 'data' => 'fdt_sj_date'],
+            ['title' => 'Memo', 'width' => '13%', 'data' => 'fst_sj_memo'],
+            ['title' => 'Action', 'width' => '7%', 'sortable' => false, 'className' => 'dt-body-center text-center',
                 'render'=>'function( data, type, row, meta ) {
                     return "<div style=\'font-size:16px\'><a data-id=\'" + row.fin_sj_id + "\' class=\'btn-edit\' href=\'#\'><i class=\'fa fa-pencil\'></i></a><a class=\'btn-delete\' href=\'#\'><i class=\'fa fa-trash\'></i></a></div>";
                 }',

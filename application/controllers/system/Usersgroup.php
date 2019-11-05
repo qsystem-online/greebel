@@ -15,7 +15,7 @@ class Usersgroup extends MY_Controller {
     public function lizt(){
         $this->load->library('menus');
         $this->list['page_name']="Master Groups";
-        $this->list['list_name']="Group List";
+        $this->list['list_name']="Users Group List";
         $this->list['addnew_ajax_url']=site_url().'system/usersgroup/add';
         $this->list['pKey']="id";
 		$this->list['fetch_list_data_ajax_url']=site_url().'system/usersgroup/fetch_list_data';

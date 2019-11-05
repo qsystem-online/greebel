@@ -1,4 +1,3 @@
-
 <?php
 	defined('BASEPATH') OR exit('No direct script access allowed');
 	
@@ -48,7 +47,7 @@
 
 
                         <div class="form-group">
-							<label for="fst_lpbpurchase_no" class="col-md-2 control-label"><?=lang("No. Faktur")?></label>	
+							<label for="fst_lpbpurchase_no" class="col-md-2 control-label"><?=lang("No. Faktur")?> :</label>	
 							<div class="col-md-4">				
 								<input type="TEXT" id="fst_lpbpurchase_no" name="fst_lpbpurchase_no" class="form-control"  value="<?=$fst_lpbpurchase_no?>" placeholder="PREFIX/BRANCH/YEAR/MONTH/99999" /> 
 							</div>
@@ -70,7 +69,7 @@
 						
 
 						<div class="form-group">
-							<label for="fin_po_id" class="col-md-2 control-label"><?=lang("PO Number")?> </label>
+							<label for="fin_po_id" class="col-md-2 control-label"><?=lang("PO Number")?> :</label>
 							<div class="col-md-4">
 								<select id="fin_po_id" class="form-control non-editable" name="fin_po_id">
 									<?php
@@ -82,7 +81,7 @@
 								</select>
 								<div id="fin_po_id_err" class="text-danger"></div>
 							</div>
-							<label for="fin_po_id" class="col-md-2 control-label"><?=lang("PO Date")?> </label>
+							<label for="fin_po_id" class="col-md-2 control-label"><?=lang("PO Date")?> :</label>
 							<div class="col-md-4">
 								<div class="input-group date">
 									<div class="input-group-addon">
@@ -95,31 +94,31 @@
 						</div>
 
 						<div class="form-group">
-                            <label for="fin_vendor_id" class="col-md-2 control-label"><?=lang("Supplier")?> </label>							
+                            <label for="fin_vendor_id" class="col-md-2 control-label"><?=lang("Supplier")?> :</label>							
                             <div class="col-sm-10">
                                 <input type='TEXT' class="form-control" id="fst_supplier_name" readonly />
                             </div>                        
                         </div>
 						
 						<div class="form-group">
-                            <label for="fin_lpbgudang_id" class="col-md-2 control-label"><?=lang("LPB Gudang")?> </label>							
+                            <label for="fin_lpbgudang_id" class="col-md-2 control-label"><?=lang("LPB Gudang")?> :</label>							
                             <div class="col-sm-10">
 								<select id="fin_lpbgudang_id" class="form-control" name="fin_lpbgudang_id[]" multiple="multiple" style="width:100%"></select>                                
 							</div>							                    
 						</div>
 						<div class="form-group">
-                            <label class="col-md-2 control-label"><?=lang("Term")?> </label>
+                            <label class="col-md-2 control-label"><?=lang("Term")?> :</label>
                             <div class="col-md-1">
 								<input id="fin_term" type="TEXT" class="form-control" readonly />
 							</div>	                    
 							<label class="col-md-1 control-label" style="text-align:left;padding-left:0px"><?=lang("Hari")?> </label>
 						</div>
 						<div class="form-group">
-						<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> </label>
+						<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> :</label>
                             <div class="col-sm-2">
 								<input id="fst_curr_code" type="TEXT" class="form-control" readonly/>
 							</div>										                    
-							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> </label>
+							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> :</label>
                             <div class="col-sm-2">
 								<input type="TEXT" id="fdc_exchange_rate_idr"  name="fdc_exchange_rate_idr" class="form-control money"/>
 								<div id="fdc_exchange_rate_idr_err" class="text-danger"></div>
@@ -193,7 +192,6 @@
 			e.preventDefault();
 			window.location.href = "<?=site_url()?>tr/purchase/invoice/add";
 		});
-
 		$("#btnSubmitAjax").click(function(e){
 			e.preventDefault();
 			submitAjax(0);
@@ -213,7 +211,6 @@
 			e.preventDefault();
 			window.location.href = "<?=site_url()?>tr/purchase/invoice/";
 		});
-
 		$("#fin_po_id").change(function(e){
 			e.preventDefault();
 			getPOInfo($("#fin_po_id").val(),function(resp){
@@ -221,15 +218,12 @@
 				$("#fdt_po_datetime").val(dateTimeFormat(header.fdt_po_datetime)).datetimepicker("update");
 				$("#fst_supplier_name").val(header.fst_supplier_name);
 				//$("#fin_warehouse_id").val(header.fin_warehouse_id);
-
 				listLPBGudang = resp.lpbgudang_list;
 				
 				$("#fin_lpbgudang_id").empty();
-
 				$.each(listLPBGudang,function(i,lpbGudang){
 					$("#fin_lpbgudang_id").append("<option value='"+ lpbGudang.fin_lpbgudang_id +"'>"+lpbGudang.fst_lpbgudang_no+"</option>");
 				});
-
 				$("#ppnPercent").text(header.fdc_ppn_percent);
 				$("#fin_term").val(header.fin_term);
 				$("#fst_curr_code").val(header.fst_curr_code);
@@ -237,20 +231,14 @@
 				var claimDP = parseFloat(header.fdc_downpayment_paid) - parseFloat(header.fdc_downpayment_claimed);
 				$("#fdc_downpayment_claim").val(App.money_format(claimDP));
 				calculateTotal();
-
 			});
 		});
-
-
 		$("#fin_lpbgudang_id").change(function(e){
 			e.preventDefault();
 			var arrLPBGudangId = $("#fin_lpbgudang_id").val();
 			getDetailLPBGudang(arrLPBGudangId,function(resp){
-
 			});
-
 		});
-
 		$("#btn-save-detail").click(function(e){
 			e.preventDefault();
 			t = $("#tbldetails").DataTable();
@@ -258,11 +246,9 @@
 			console.log(data);
 			data.fdb_qty = $("#fdbQty").val();
 			data.fdc_m3 = $("#fdcM3").val();
-
 			t.row(rowDetail).data(data).draw(false);
 			calculateTotal();
 			$("#mdlDetail").modal("hide");
-
 		})
 	
 	});
@@ -274,14 +260,11 @@
 	<?php foreach($arrExchangeRate as $key=>$value){ ?>
 		arrExchangeRate["<?=$key?>"] = "<?= $value ?>";
 	<?php }	?>
-
 	$(function(){
 		console.log(arrExchangeRate);
 		$("#fin_po_id").select2({});
 		$("#fin_lpbgudang_id").select2({});
-
 		App.fixedSelect2();
-
 		$('#tbldetails').on('preXhr.dt', function ( e, settings, data ) {
 			//add aditional data post on ajax call
 			data.sessionId = "TEST SESSION ID";
@@ -307,7 +290,7 @@
 						return App.money_format(discAmount);
 					}
 				},
-				{"title" : "Total qty","width": "100px",sortable:false,data:"fdb_qty_total",className:'text-right'},
+				{"title" : "Total Qty","width": "100px",sortable:false,data:"fdb_qty_total",className:'text-right'},
 				{"title" : "Total","width": "100px",sortable:false,className:'text-right',
 					render:function(data,type,row){
 						var total = row.fdb_qty_total * row.fdc_price;
@@ -331,13 +314,11 @@
 			var trRow = $(this).parents('tr');
 			rowDetail = trRow;
 			var data = t.row(trRow).data();
-
 			$("#fstItem").text(data.fst_custom_item_name);
 			$("#fstUnit").text(data.fst_unit);
 			$("#fdbQty").val(data.fdb_qty);
 			$("#fdcM3").val(data.fdc_m3);
 			
-
 			$("#mdlDetail").modal("show");
 			
 		}).on('click','.btn-delete',function(e){
@@ -346,8 +327,6 @@
 			var trRow = $(this).parents('tr');
 			t.row(trRow).remove().draw();
 			calculateTotal();
-
-
 		});
 	});
 </script>
@@ -359,7 +338,6 @@
 		$("#fin_warehouse_id").val(null);
 		initForm();
 	});
-
 </script>
 
 <script type="text/javascript" info="function">
@@ -372,7 +350,6 @@
 			callback:callback
 		});
 	}
-
 	function calculateTotal(){
 		t= $('#tbldetails').DataTable();
 		var datas = t.rows().data();
@@ -385,20 +362,15 @@
 			total += subttl;
 			totalDisc += discAmount;			
 		});
-
 		$("#ttlSubTotal").text(App.money_format(total));
 		$("#ttlDisc").text(App.money_format(totalDisc));
-
 		var ppnPercent = $("#ppnPercent").text();
 		var ttlBeforePPn = total - totalDisc
 		var ppnAmount = ttlBeforePPn * ppnPercent / 100;
 		var totalAfterPPn = ttlBeforePPn + ppnAmount;
-
 		$("#ppnAmount").text(App.money_format(ppnAmount));
 		$("#ttlAmount").text(App.money_format(totalAfterPPn));
-
 	}
-
 	function getDetailLPBGudang(arrLPBGudangId,callback){
 		//params = JSON.stringify(arrLPBGudangId);
 		if (arrLPBGudangId.length <= 0){
@@ -408,7 +380,6 @@
 			return;
 		}
 		params = [arrLPBGudangId];
-
 		App.getValueAjax({			
 			site_url:"<?= site_url()?>",
 			model:"trlpbpurchase_model",
@@ -417,7 +388,6 @@
 			callback:function(resp){
 				details = resp;				
 				t = $("#tbldetails").DataTable();
-
 				t.rows().remove();
 				$.each(details,function(i,detail){
 					t.row.add(detail);
@@ -427,12 +397,10 @@
 			}
 		});
 	}
-
 	function submitAjax(confirmEdit){
 		var dataSubmit = $("#frmLPBPurchase").serializeArray();
 		
 		var mode = $("#fin_lpbpurchase_id").val() == "0" ? "ADD" : "EDIT";	
-
 		if (mode == "ADD"){
 			url =  "<?= site_url() ?>tr/purchase/invoice/ajx_add_save/";
 		}else{
@@ -444,10 +412,8 @@
 				name : "fst_edit_notes",
 				value: MdlEditForm.notes
 			});
-
 			url =  "<?= site_url() ?>tr/purchase/invoice/ajx_edit_save/";
 		}
-
 		if (confirmEdit == 0 && mode != "ADD"){
 			MdlEditForm.saveCallBack = function(){
 				submitAjax(1);
@@ -455,9 +421,6 @@
 			MdlEditForm.show();
 			return;
 		}
-
-
-
 		App.blockUIOnAjaxRequest("Please wait while saving data.....");
 		$.ajax({
 			type: "POST",
@@ -501,7 +464,6 @@
 			
 		});
 	}
-
 	function initForm(){
 		
 		var finLPBPurchaseId = $("#fin_lpbpurchase_id").val();
@@ -511,22 +473,18 @@
 				url:"<?=site_url()?>tr/purchase/invoice/fetch_data/" + finLPBPurchaseId,
 				method:"GET",								
 			}).done(function(resp){
-
 				if(resp.message != ""){
 					alert(resp.message);
 					//return;
 				}
-
 				if (resp.status == "SUCCESS"){				
 					dataH = resp.data.lpbPurchase;
 					dataD = resp.data.lpbPurchaseItems;
-
 					App.autoFillForm(dataH);
 					
 					$("#fdt_lpbpurchase_datetime").val(App.dateTimeFormat(dataH.fdt_lpbpurchase_datetime)).datetimepicker("update");
 					
 					App.addOptionIfNotExist("<option value='"+ dataH.fin_po_id +"' selected>" + dataH.fst_po_no +" - "+ dataH.fst_supplier_name +"</option>","fin_po_id");
-
 					$("#fdt_po_datetime").val(App.dateTimeFormat(dataH.fdt_po_datetime)).datetimepicker("update");
 					$("#fst_supplier_name").val(dataH.fst_supplier_name);
 					
@@ -535,7 +493,6 @@
 						finLPBGudangIds.push(value.fin_lpbgudang_id);
 						App.addOptionIfNotExist("<option value='"+ value.fin_lpbgudang_id +"' selected>" + value.fst_lpbgudang_no +"</option>","fin_lpbgudang_id");
 					});
-
 					$("#fin_lpbgudang_id").val(finLPBGudangIds).trigger("change");
 					$("#fin_term").val(dataH.fin_term);
 					$("#fst_curr_code").val(dataH.fst_curr_code);
@@ -545,7 +502,6 @@
 			});
 		}
 	}
-
 	function deleteAjax(confirmDelete){
 		
 		if (confirmDelete == 0){
@@ -555,7 +511,6 @@
 			MdlEditForm.show();
 			return;
 		}
-
 		var dataSubmit = [];		
 		dataSubmit.push({
 			name : "<?=$this->security->get_csrf_token_name()?>",
@@ -569,7 +524,6 @@
 			name : "fst_edit_notes",
 			value: MdlEditForm.notes
 		});
-
 		var url =  "<?= site_url() ?>tr/purchase/invoice/delete/" + $("#fin_lpbpurchase_id").val();
 		$.ajax({
 			url:url,
@@ -579,15 +533,11 @@
 			if (resp.message != ""){
 				alert(resp.message);
 			}
-
 			if(resp.status == "SUCCESS"){
 				$("#btnClose").trigger("click");			
 			}
-
 		});
 		
-
-
 	}
 </script>
 

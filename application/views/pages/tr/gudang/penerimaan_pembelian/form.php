@@ -116,7 +116,7 @@
 
 						<div class="form-group" style="margin-bottom:0px">
 							<div class="col-md-12" style="text-align:right">
-								<button id="btn-add-items" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>Tambah Item</button>
+								<button id="btn-add-items" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;Tambah Item</button>
 							</div>
 						</div>
 
@@ -152,70 +152,75 @@
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="mdlDetail" class="modal fade" role="dialog" >
+<div id="mdlDetail" class="modal fade in" role="dialog" style="display: none">
 	<div class="modal-dialog" style="display:table;width:600px">
 		<!-- modal content -->
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><?=lang("Add ")?></h4>
+			</div>
+
 			<div class="modal-body">
 				<div class="row">
                     <div class="col-md-12" >
-                        <div style="border:0 px inset #f0f0f0;border-radius:10px;padding:5px">
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
                             <fieldset style="padding:10px">
 								<form id="form-detail" class="form-horizontal">
 									<input type='hidden' id='fin_rec_id_items'/>
 									<div class="form-group">
-										<label class="col-md-4 control-label"><?=lang("Item")?> : </label>
-										<div class="col-md-8">											
+										<label class="col-md-3 control-label"><?=lang("Item")?> :</label>
+										<div class="col-md-9">											
 											<select id="fstItem" class="form-control" style="width:100%"> </select>
 										</div>										
 									</div>
 									<div class="form-group">
-										<label class="col-md-4 control-label"><?=lang("Unit")?> :</label>
-										<div class="col-md-8">
+										<label class="col-md-3 control-label"><?=lang("Unit")?> :</label>
+										<div class="col-md-9">
 											<label id="fstUnit" class="control-label"><?=lang("Unit")?></label>
 										</div>										
 									</div>
 
 									<div class="form-group">
-										<label for="fdbQty" class="col-md-4 control-label"><?=lang("Qty")?>:</label>
-										<div class="col-md-8">
+										<label for="fdbQty" class="col-md-3 control-label"><?=lang("Qty")?> :</label>
+										<div class="col-md-9">
 											<input type='TEXT' id="fdbQty" class="money form-control" value="1"/>
 										</div>
 									</div>
 
 									<div class="form-group">
-										<label for="" class="col-md-4 control-label"><?=lang("M3")?>:</label>
-										<div class="col-md-8">
+										<label for="" class="col-md-3 control-label"><?=lang("M3")?> :</label>
+										<div class="col-md-9">
 											<input type='TEXT' id="fdcM3" class="money form-control" value="0"/>
 										</div>
 									</div>	
 
 									<div class="form-group batchNoBlock">
-										<label for="" class="col-md-4 control-label"><?=lang("Batch Number")?>:</label>
-										<div class="col-md-8">
+										<label for="" class="col-md-3 control-label"><?=lang("Batch Number")?> :</label>
+										<div class="col-md-9">
 											<input type='TEXT' id="fstBatchNo" class="form-control" />
 										</div>
 									</div>
 									<div class="form-group serialNoBlock">
-										<label for="" class="col-md-4 control-label"><?=lang("Serial Number")?>:</label>
-										<div class="col-md-8">
+										<label for="" class="col-md-3 control-label"><?=lang("Serial Number")?> :</label>
+										<div class="col-md-9">
 											<input type='TEXT' id="fstSerialNo" class="form-control" />
 										</div>										
 									</div>
 									<div class="form-group serialNoBlock" >
-										<label for="" class="col-md-4 control-label"></label>
-										<div class="col-md-8">
+										<label for="" class="col-md-3 control-label"></label>
+										<div class="col-md-9">
 											<select multiple="multiple" id="fstSerialNoList" class="form-control"></select>
 										</div>
 									</div>
 									<div class="form-group serialNoBlock">
-										<label for="" class="col-md-4 control-label"></label>
+										<label for="" class="col-md-3 control-label"></label>
 										<div class="col-md-4" >
-											<label for="" class=""><?=lang("Total Serial")?>:</label>
+											<label for="" class=""><?=lang("Total Serial")?> :</label>
 											<label id="ttlSerial" class="">0</label>
 
 										</div>
-										<div class="col-md-4 text-right" >
+										<div class="col-md-5 text-right" >
 											<button id="btn-delete-serial" class="btn btn-primary btn-xs">Delete Selected Serial</button>
 										</div>
 									</div>
@@ -269,8 +274,8 @@
 				{"title" : "Item Code","width": "100px",sortable:false,data:"fst_item_code"},
 				{"title" : "Item Name","width": "100px",sortable:false,data:"fst_custom_item_name"},
 				{"title" : "Satuan","width": "100px",sortable:false,data:"fst_unit"},
-				{"title" : "Total qty PO","width": "100px",sortable:false,data:"fdb_qty_po",className:'text-right'},
-				{"title" : "Total qty Received","width": "100px",sortable:false,data:"fdb_qty_po_received",className:'text-right'},
+				{"title" : "Total Qty PO","width": "100px",sortable:false,data:"fdb_qty_po",className:'text-right'},
+				{"title" : "Total Qty Received","width": "100px",sortable:false,data:"fdb_qty_po_received",className:'text-right'},
 				{"title" : "Qty","width": "100px",sortable:false,data:"fdb_qty",className:'text-right'},
 				{"title" : "M3","width": "100px",sortable:false,data:"fdc_m3",className:'text-right'},
 				{"title" : "Action","width": "40px",sortable:false,className:'dt-body-center text-center',
