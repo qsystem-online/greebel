@@ -273,6 +273,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#select-MainGL").change(function(event) {
             event.preventDefault();
+            $("#select-ParentGL").val(null);
             fillParent($("#select-MainGL").val());
             $("#fst_glaccount_code").val(generateAccountCode());
 
@@ -295,11 +296,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }else{
                 $("#fst_glaccount_code").val(prefix);
                 $("#fst_glaccount_code").focus();
-            }
-            
-            
-            
-            
+            }                        
 		});
 
        
@@ -416,8 +413,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
         var mainGLPrefix =  $("#select-MainGL option:selected").data("prefix");
         var parentPrefix = $("#select-ParentGL").val()  == null ? "" : $("#select-ParentGL").val();
         var parentSeparator = parentPrefix == "" ? "" : "<?=$parentGLSeparator?>";
-
-        return mainGLPrefix + "<?= $mainGLSeparator ?>" + parentPrefix + parentSeparator ;
+        if (parentPrefix != ""){
+            return parentPrefix + parentSeparator ;
+        }else{
+            return mainGLPrefix + "<?= $mainGLSeparator ?>" + parentPrefix + parentSeparator ;
+        }
+        
     }
 
 

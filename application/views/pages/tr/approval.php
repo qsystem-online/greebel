@@ -200,7 +200,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         });
       
         $("#tblNeedApproval").on("click",".btn-view",function(e){    
-            showTransaction($(this));
+            showTransaction($(this),false);
         });
 
 
@@ -239,7 +239,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
       
         $("#tblHistApproval").on("click",".btn-view",function(e){    
-            showTransaction($(this));
+            showTransaction($(this),true);
         });
 
     }
@@ -281,9 +281,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         });
     }
 
-    function showTransaction(element){
+    function showTransaction(element,isHist){
         //alert("Show");
-        t = $('#tblNeedApproval').DataTable();
+        if(isHist){
+            t = $('#tblHistApproval').DataTable();
+        }else{
+            t = $('#tblNeedApproval').DataTable();
+        }
+        
         var trRow = element.parents('tr');
         data = t.row(trRow).data(); 
 
