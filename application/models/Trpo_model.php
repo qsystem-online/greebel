@@ -123,9 +123,12 @@ class Trpo_model extends MY_Model {
 		return $data;
     }
 
-    
+    public function getDataHeaderById($finPOId){
+        $ssql = "select * from " .$this->tableName. " WHERE fin_po_id = ? and fst_active != 'D'";
+        $qr = $this->db->query($ssql, [$finPOId]);
+        return $qr->row();
 
-
+    }
 
 
     public function GeneratePONo($trDate = null) {
@@ -292,12 +295,25 @@ class Trpo_model extends MY_Model {
     }
 
     public function approved($finPOId,$approved = true){
-        $data = [
-            "fin_po_id"=>$finPOId,
-            "fst_active"=>"A"
-        ];
-        parent::update($data);
-        $this->posting($finPOId);        
+        if($approved){
+            $data = [
+                "fin_po_id"=>$finPOId,
+                "fst_active"=>"A"
+            ];        
+            parent::update($data);            
+            $this->posting($finPOId);
+        }else{
+            $data = [
+                "fin_po_id"=>$finPOId,
+                "fst_active"=>"R"
+            ];        
+            parent::update($data);            
+        }
+
+        return [
+            "status"=>"SUCCESS",
+            "message"=>""
+        ] ;      
     }
 
     public function delete($finPOId,$softDelete=true,$data=null){
@@ -323,24 +339,6 @@ class Trpo_model extends MY_Model {
     }
 
 
-    //==== UNHOLD ===============================\\
-    public function unhold($finSalesOrderId){
-        
-        $activeUser = $this->aauth->user();
-        //print_r($activeUser);
-    
-        $data = [
-            "fin_salesorder_id" => $finSalesOrderId,
-            "fbl_is_hold" => "0", //Unhold Success
-            "fin_unhold_id" => $activeUser->fin_user_id,
-            //"fdt_unhold_datetime" => dBDateFormat("fdt_unhold_datetime")
-            "fdt_unhold_datetime" => date("Y-m-d H:i:s")
-        ];
-
-        parent::update($data);
-       
-    }
-
     public function show_transaction($finPOId){
         redirect(site_url()."tr/purchase_order/view/$finPOId", 'refresh');
     }
@@ -355,6 +353,47 @@ class Trpo_model extends MY_Model {
         }
         
         return $qr->result();
+    }
+
+    public function isEditable($finPOId){
+        /**
+         * FALSE CONDITION
+         * *. PO yang sudah ada status approve tidak bisa di edit lagi (apabila edit, semua transaksi approval akan di hapus dan diinsert baru sehingga butuh approval ulang)
+         * #sudah terima dp tidak boleh dirubah lagi
+         * #sudah ada penerimaan barang tidak boleh dirubah
+         *        
+        */
+
+        /*
+        $this->load->model("trverification_model");
+		if($this->trverification_model->haveAprrovalRecord("PO","default",$finPOId)){
+			$resp["status"] = "FAILED";
+			$resp["message"] = "Can't edit !, This transaction is approved or rejected !";
+			return $resp;
+        }
+        */
+
+        //Cek DP
+        $ssql = "select * from trpo where fin_po_id = ? and fdc_downpayment_paid > 0";
+        $qr = $this->db->query($ssql,[$finPOId]);
+        $rw = $qr->row();
+        if ($rw != null){
+            $resp =["status"=>"FAILED","message"=>lang("PO tidak dapat dirubah karena sudah ada pembayaran DP !")];
+            return $resp;    
+        }
+
+        //Cek bila sudah ada penerimaan barang
+        $ssql = "select * from trpodetails where fin_po_id = ? and fdb_qty_lpb > 0";
+        $qr = $this->db->query($ssql,[$finPOId]);
+        $rw = $qr->row();
+        if ($rw != null){
+            $resp =["status"=>"FAILED","message"=>lang("PO tidak dapat dirubah karena sudah ada penerimaan barang di gudang !")];
+            return $resp;    
+        }
+
+
+        $resp =["status"=>"SUCCESS","message"=>""];
+        return $resp;
     }
 }
 

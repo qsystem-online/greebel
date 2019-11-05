@@ -115,7 +115,7 @@ class User extends MY_Controller
 
 		$data = [
 			"fst_username" => $this->input->post("fst_username"),
-			"fst_password" => md5("inipassword"),
+			"fst_password" => md5("password"),
 			"fst_fullname" => $this->input->post("fst_fullname"),
 			"fdt_birthdate" => dBDateFormat($this->input->post("fdt_birthdate")),
 			"fst_gender" => $this->input->post("fst_gender"),
@@ -204,7 +204,7 @@ class User extends MY_Controller
 		$data = [
 			"fin_user_id" => $fin_user_id,
 			"fst_username" => $this->input->post("fst_username"),
-			"fst_password" => md5("defaultpassword"), //$this->input->post("fst_password"),
+			//"fst_password" => md5("defaultpassword"), //$this->input->post("fst_password"),
 			"fst_fullname" => $this->input->post("fst_fullname"),
 			"fdt_birthdate" => dBDateFormat($this->input->post("fdt_birthdate")),
 			"fst_gender" => $this->input->post("fst_gender"),
@@ -390,6 +390,76 @@ class User extends MY_Controller
 		redirect($reqURL);
 	}
 
+	public function changepassword(){
+		$this->load->library("menus");
+
+		$main_header = $this->parser->parse('inc/main_header', [], true);
+		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+
+		$data["title"] = "Change password";
+		//$data["fin_user_id"] = $fin_user_id;
+
+		$page_content = $this->parser->parse('pages/user/changepassword', $data, true);
+		$main_footer = $this->parser->parse('inc/main_footer', [], true);
+
+		$control_sidebar = NULL;
+		$this->data["MAIN_HEADER"] = $main_header;
+		$this->data["MAIN_SIDEBAR"] = $main_sidebar;
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$this->data["MAIN_FOOTER"] = $main_footer;
+		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
+		$this->parser->parse('template/main', $this->data);
+	}
+
+	public function change_password(){
+
+		$activeUser = $this->aauth->user();
+		$fin_user_id = $activeUser->fin_user_id;
+
+		$this->load->model('users_model');
+		$data = $this->users_model->getDataById($fin_user_id);
+		$user = $data["user"];
+
+		$this->form_validation->set_rules($this->users_model->getRulesCp($fin_user_id));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+		if ($this->form_validation->run() == FALSE) {
+			//print_r($this->form_validation->error_array());
+			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+			$this->ajxResp["message"] = "Error Validation Forms";
+			$this->ajxResp["data"] = $this->form_validation->error_array();
+			$this->json_output();
+			return;
+		}
+
+		$data = [
+			"fin_user_id" => $fin_user_id,
+			"fst_password" => md5($this->input->post("new_password1"))
+		];
+		$this->db->trans_start();
+
+		$this->users_model->update($data);
+		$dbError  = $this->db->error();
+		if ($dbError["code"] != 0) {
+			$this->ajxResp["status"] = "DB_FAILED";
+			$this->ajxResp["message"] = "Insert Failed";
+			$this->ajxResp["data"] = $this->db->error();
+			$this->json_output();
+			$this->db->trans_rollback();
+			return;
+		}
+
+
+		$this->db->trans_complete();
+
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = "Password updated !";
+		//$this->ajxResp["data"]["insert_id"] = $fin_user_id;
+		$this->json_output();
+		
+	}
+
+
+
 	public function report_users()
 	{
 		$this->load->library('pdf');
@@ -408,4 +478,5 @@ class User extends MY_Controller
 		$this->Cell(30, 10, 'Percobaan Header Dan Footer With Page Number', 0, 0, 'C');
 		$this->Cell(0, 10, 'Halaman ' . $this->PageNo() . ' dari {nb}', 0, 0, 'R');
 	}
+
 }

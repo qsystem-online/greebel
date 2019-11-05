@@ -212,36 +212,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</div>
 		
 							</div>
-							<div class="col-sm-6">	
+							<div class="col-sm-6">
 								<div class="form-group">
-									<label for="sub-total" class="col-md-8 control-label"><?=lang("Sub total")?></label>
-									<div class="col-md-4" style='text-align:right'>
-										<input type="text" class="form-control text-right" id="sub-total" value="0" readonly>
+									<label for="sub-total" class="col-md-8 control-label"><?=lang("Sub total")?> :</label>
+									<label id="sub-total" class="col-md-4 control-label" style='text-align:right'>0.00</label>
+								
+									<label for="sub-total" class="col-md-6 control-label"><?=lang("Ppn")?></label>																			
+									<label for="sub-total" class="col-md-2 control-label">
+										<input type="text" class="text-right" id="fdc_ppn_percent" name="fdc_ppn_percent" value="10" style="width:40px">% :
+									</label>
+									<label class="col-md-4 control-label" style='text-align:right' id="fdc_ppn_amount">0.00</label>	
+																
+									<label for="total" class="col-md-8 control-label"><?=lang("Total")?>:</label>
+									<label class="col-md-4 control-label" style='text-align:right' id="total">0.00</label>
+								
+									<label for="total" class="col-md-5 control-label">Uang Muka :</label>
+									<label class="col-md-3 control-label checkbox-inline" style="font-weight:700"><input type="checkbox" name="fbl_dp_inc_ppn" id="fbl_dp_inc_ppn" value="1" checked>Include PPN :</label>
+									<div class="col-md-4 control-label" style="text-align:right">										
+										<input type="text" class="money form-control text-right" id="fdc_downpayment" name="fdc_downpayment" value="0.00" style="text-align: right;">
 									</div>
-								</div>
-								<div class="form-group">
-									<label for="sub-total" class="col-md-6 control-label">%<?=lang("Ppn")?></label>
-									<div class="col-md-2" style='text-align:right'>
-										<input type="number" class="form-control text-right" id="fdc_ppn_percent" name="fdc_ppn_percent" value="10" >
-									</div>
-									<div class="col-md-4" style='text-align:right'>
-										<input type="text" class="form-control text-right" id="fdc_ppn_amount" name="fdc_ppn_amount" value="0" readonly>	
-									</div>
-								</div>
 
-								<div class="form-group">
-									<label for="total" class="col-md-8 control-label"><?=lang("Total")?></label>
-									<div class="col-md-4" style='text-align:right'>
-										<input type="text" class="form-control text-right" id="total" value="0" readonly>
-									</div>
-								</div>	
-								<div class="form-group">
-									<label for="total" class="col-md-6 control-label">Uang Muka</label>
-									<label class="col-md-2 control-label checkbox-inline" style="font-weight:700"><input type="checkbox" name="fbl_dp_inc_ppn" id="fbl_dp_inc_ppn" value="1" checked>Include PPN</label>
-									<div class="col-md-4" style="text-align:right">
-										
-										<input type="text" class="money form-control text-right" id="fdc_downpayment" name="fdc_downpayment" value="0" style="text-align: right;">
-									</div>
+									<label for="total" class="col-md-8 control-label">Uang Muka Terbayar :</label>
+									<label class="col-md-4 control-label" style='text-align:right' id="fdc_downpayment_paid">0.00</label>								
 								</div>							
 							</div>
 							
@@ -665,7 +657,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		
 		$("#btnClose").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/purchase_order/lizt");
+			window.location.replace("<?=site_url()?>tr/purchase_order/");
 		});
 		
 		if( $("#fin_po_id").val() != 0 ){
@@ -791,9 +783,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		vat_amount = subTotal * (vat_persen/100)
 		total = subTotal + vat_amount;
 
-		$("#sub-total").val(money_format(subTotal));	
-		$("#fdc_ppn_amount").val(money_format(vat_amount));
-		$("#total").val(money_format(total));		
+		$("#sub-total").text(money_format(subTotal));	
+		$("#fdc_ppn_amount").text(money_format(vat_amount));
+		$("#total").text(money_format(total));		
 	}
 
 
@@ -830,23 +822,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			
 			
-
+			/*
 			if(dataH.fbl_is_import == 1){
 				$("#fblIsImportTrue").prop("checked",true);
 			}else{
 				$("#fblIsImportFalse").prop("checked",true);
 			}
+			*/
+
+			$(".fbl_is_import [value='" + dataH.fbl_is_import +"']").prop("checked",true);
+
 
 			$("#fin_supplier_id").val(dataH.fin_supplier_id).trigger("change.select2");
 			$("#fin_supplier_id").val(dataH.fin_supplier_id).trigger("change");
+			$("#fdc_downpayment_paid").text(App.money_format(dataH.fdc_downpayment_paid));
 
 			$("#fin_warehouse_id").val(dataH.fin_warehouse_id).trigger("change.select2");
 			$("#fdt_po_datetime").val(App.dateTimeFormat(dataH.fdt_po_datetime)).datetimepicker('update');			
 
 			t = $('#tblPODetails').DataTable();
 			$.each(dataD,function(i,row){				
-				t.row.add(row).draw(false);
+				t.row.add(row);
 			});
+			t.draw(false);
 			calculateTotal();
 		});
 

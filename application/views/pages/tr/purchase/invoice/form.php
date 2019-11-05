@@ -32,6 +32,7 @@
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
 						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<a id="btnJurnal" class="btn btn-primary" href="#" title="Jurnal" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
@@ -183,6 +184,7 @@
 </section>
 
 <?php echo $mdlEditForm ?>
+<?php echo $mdlJurnal ?>
 
 <script type="text/javascript" info="event">
 	$(function(){
@@ -195,6 +197,11 @@
 		$("#btnSubmitAjax").click(function(e){
 			e.preventDefault();
 			submitAjax(0);
+		});
+
+		$("#btnJurnal").click(function(e){
+			e.preventDefault();
+			MdlJurnal.showJurnalByRef("PINV",$("#fin_lpbpurchase_id").val());
 		});
 		
 		$("#btnDelete").click(function(e){

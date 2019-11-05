@@ -42,6 +42,19 @@ $(function(){
 			showMeridian: 0
 		});	
 	};
+
+	if (typeof $(".daterangepicker").daterangepicker === "function"){
+		$('.daterangepicker').daterangepicker({
+			startDate: "01-01-2019",
+			locale: {
+				format: DATERANGEPICKER_FORMAT,
+				
+			  }
+		},function(start, end, label){
+			this.element.trigger('daterangepicker.change', this);
+			//$("#daterange_needapproval").trigger("afterchange");
+		});
+	}
 });
 
 var App = {
@@ -112,7 +125,7 @@ var App = {
 	blockUIOnAjaxRequest: function(message){
 		
 		if (typeof message == "undefined"){
-			message = "<h5><img src='../../assets/system/images/loading.gif'> Please wait ... !</h5>";
+			message = "<h5><img src='" + SITE_URL + "assets/system/images/loading.gif'> Please wait ... !</h5>";
 		}
 
 		$(document).ajaxStart(function() {
@@ -165,7 +178,7 @@ var App = {
 
 	addOptionIfNotExist:function(option,selectId){
 		value = $(option).val();		
-		if (! $("#" + selectId + "option[value='"+ value +"']").length){
+		if (! $("#" + selectId + " option[value='"+ value +"']").length){
 			$("#" + selectId).append(option);
 		}
 	},
@@ -174,7 +187,10 @@ var App = {
 		$(".select2-container").addClass("form-control"); 
 		$(".select2-selection--single , .select2-selection--multiple").css({
 			"border":"0px solid #000",
-			"padding":"0px 0px 0px 0px"
+			"padding":"0px 0px 0px 0px",
+			"cursor":"unset",
+			"user-select":"unset",
+			"-webkit-user-select":"unset"
 		});         
 		$(".select2-selection--multiple").css({
 			"margin-top" : "-5px",
@@ -182,6 +198,7 @@ var App = {
 		});
 		
 	}
+
 	
 }
 

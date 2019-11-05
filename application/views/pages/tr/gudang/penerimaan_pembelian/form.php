@@ -320,7 +320,6 @@
 
 
 		});
-
 		initForm();
 	});
 </script>
@@ -330,7 +329,7 @@
 		
 		$("#btnNew").click(function(e){
 			e.preventDefault();
-			window.location.href = "<?=site_url()?>tr/gudang/Penerimaan_pembelian/add";
+			window.location.href = "<?=site_url()?>tr/gudang/penerimaan_pembelian/add";
 		});
 
 		$("#btnSubmitAjax").click(function(e){
@@ -345,7 +344,7 @@
 		
 		$("#btnClose").click(function(e){
 			e.preventDefault();
-			window.location.href = "<?=site_url()?>tr/gudang/Penerimaan_pembelian/";
+			window.location.href = "<?=site_url()?>tr/gudang/penerimaan_pembelian/";
 		});
 
 		$("#fin_po_id").change(function(e){
@@ -561,7 +560,7 @@
 		var mode = $("#fin_lpbgudang_id").val() == "0" ? "ADD" : "EDIT";	
 
 		if (mode == "ADD"){
-			url =  "<?= site_url() ?>tr/gudang/Penerimaan_pembelian/ajx_add_save/";
+			url =  "<?= site_url() ?>tr/gudang/penerimaan_pembelian/ajx_add_save/";
 		}else{
 			dataSubmit.push({
 				name : "fin_user_id_request_by",
@@ -572,7 +571,7 @@
 				value: MdlEditForm.notes
 			});
 
-			url =  "<?= site_url() ?>tr/gudang/Penerimaan_pembelian/ajx_edit_save/";
+			url =  "<?= site_url() ?>tr/gudang/penerimaan_pembelian/ajx_edit_save/";
 		}
 
 		if (confirmEdit == 0 && mode != "ADD"){
@@ -636,7 +635,7 @@
 			//get data from server;
 			App.blockUIOnAjaxRequest("Loading data, please wait..!");
 			$.ajax({
-				url:"<?=site_url()?>tr/gudang/Penerimaan_pembelian/fetch_data/" + finLPBGudangId,
+				url:"<?=site_url()?>tr/gudang/penerimaan_pembelian/fetch_data/" + finLPBGudangId,
 				method:"GET",								
 			}).done(function(resp){
 
@@ -802,7 +801,7 @@
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/gudang/Penerimaan_pembelian/delete/" + $("#fin_lpbgudang_id").val();
+		var url =  "<?= site_url() ?>tr/gudang/penerimaan_pembelian/delete/" + $("#fin_lpbgudang_id").val();
 		$.ajax({
 			url:url,
 			method:"POST",

@@ -119,5 +119,15 @@ class Glledger_model extends MY_Model{
         }
     }
 
+    public function getJurnal($trxSourcecode,$trxId){
+        $ssql ="select a.*,b.fst_glaccount_name from glledger a 
+            inner join glaccounts b on a.fst_account_code = b.fst_glaccount_code 
+            where fst_trx_sourcecode = ? and fin_trx_id = ? and a.fbl_is_flip = 0 and a.fst_active = 'A'";
+
+        $qr= $this->db->query($ssql,[$trxSourcecode,(int) $trxId]);
+        $rs = $qr->result();
+        return $rs;
+    }
+
     
 }

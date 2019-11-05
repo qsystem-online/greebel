@@ -22,7 +22,7 @@ class Trverification_model extends MY_Model {
 
     }
     
-    public function createAuthorize($controller,$module,$transactionId,$message,$notes = null){
+    public function createAuthorize($controller,$module,$transactionId,$message,$notes = null,$transactionNo = null){
         $this->load->model("msverification_model");
         $arrVerify = $this->msverification_model->getData($controller,$module);
         foreach($arrVerify as $verify){
@@ -32,6 +32,7 @@ class Trverification_model extends MY_Model {
                 "fst_controller"=>$controller,
                 "fst_verification_type"=>$verify->fst_verification_type,
                 "fin_transaction_id"=>$transactionId,
+                "fst_transaction_no"=>$transactionNo,
                 "fin_seqno"=>$verify->fin_seqno,
                 "fst_message"=>$message,
                 "fin_department_id"=>$verify->fin_department_id,
@@ -42,11 +43,18 @@ class Trverification_model extends MY_Model {
                 "fst_method"=>$verify->fst_method,
                 "fst_show_record_method"=>$verify->fst_show_record_method,
                 "fst_active"=>"A",
-            ];				
+            ];			
             parent::insert($dataVerify);
         }
 
     }
+
+    public function cancelAuthorize($controller,$transactionId){
+        $ssql = "delete from trverification where fst_controller = ? and fin_transaction_id = ? ";
+        $this->db->query($ssql,[$controller,$transactionId]);
+        $this->load->model("msverification_model");       
+    }
+
 
     public function approve($finRecId,$fstNotes,$isApproved){
         $ssql = "select * from " . $this->tableName . " where fin_rec_id = ?";
@@ -65,7 +73,7 @@ class Trverification_model extends MY_Model {
             }else{
                 $data = [
                     "fin_rec_id"=>$finRecId,
-                    "fst_verification_status"=>"RJ", //Verified
+                    "fst_verification_status"=>"RJ", //REJECT
                     "fst_notes"=>$fstNotes
                 ];
             }
@@ -91,7 +99,7 @@ class Trverification_model extends MY_Model {
                 ]);
                 $rwCek = $qr->row();
                 
-                if ($rwCek == false){
+                if ($rwCek == null){
                     //Semua pada seqno ini telah mengverifikasi
                     //Update next seq No
                     $ssql = "select fin_seqno from " . $this->tableName . " where fst_controller = ? 
@@ -111,13 +119,14 @@ class Trverification_model extends MY_Model {
                     ]);
                     
                     $rwCek = $qr->row();
-                    if ($rwCek == false){
+                    if ($rwCek == null){
                         //Proses Verifikasi selesai
                         $this->load->model($rw->fst_model,'model');
                         $action = $rw->fst_method;
 
                         if(is_callable(array($this->model, $action))){
-                            $this->model->$action($rw->fin_transaction_id,true);
+                            $result = $this->model->$action($rw->fin_transaction_id,true);
+                            return $result;
                         }
 
                     }else{
@@ -155,7 +164,8 @@ class Trverification_model extends MY_Model {
                 $action = $rw->fst_method;
 
                 if(is_callable(array($this->model, $action))){
-                    $this->model->$action($rw->fin_transaction_id,false);
+                    $result = $this->model->$action($rw->fin_transaction_id,false);
+                    return $result;
                 }
 
             }

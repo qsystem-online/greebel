@@ -17,8 +17,13 @@ class MY_Controller extends CI_Controller
 		$this->lang->load("general", "english");
 
 		// Check User Login and Session expired
-		if (!$this->aauth->user()) {
+		if (!$this->aauth->user()) {			
 			redirect(site_url() . 'login', 'refresh');
+		}else{
+			$user = $this->aauth->user();
+			if(!isset($user->fbl_is_hq)){
+				redirect(site_url() . 'login', 'refresh');
+			}
 		}
 
 		

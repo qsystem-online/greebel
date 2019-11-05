@@ -114,6 +114,7 @@ class Invoice extends MY_Controller{
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		$jurnal_modal = $this->parser->parse('template/mdlJurnal', [], true);
 
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Faktur Pembelian") : lang("Update Faktur Pembelian");
@@ -124,8 +125,10 @@ class Invoice extends MY_Controller{
 		
 		if($mode == 'ADD'){
 			$data["fst_lpbpurchase_no"]=$this->trlpbpurchase_model->generateLPBPurchaseNo(); 
+			$data["mdlJurnal"] = "";
 		}else if($mode == 'EDIT'){
 			$data["fst_lpbpurchase_no"]="";	
+			$data["mdlJurnal"] = $jurnal_modal;
 
 			/*
 			$cbPayment = $this->trcbpayment_model->getDataById($finCBPaymentId);	

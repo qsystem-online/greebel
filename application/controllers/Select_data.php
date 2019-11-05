@@ -33,4 +33,21 @@ class Select_data extends MY_Controller {
         $this->json_output();
 
     }
+
+    public function get_items_by_supplier(){
+        $finSupplierId = $this->input->get("finSupplierId");
+        $term = $this->input->get("term");
+
+        $ssql = "select fin_item_id,fst_item_code,fst_item_name from msitems  where (fin_standard_vendor_id = ? OR fin_optional_vendor_id = ?) 
+            and (fst_item_name like ? OR fst_item_code like ?)
+            and fst_active ='A'";
+
+        $qr = $this->db->query($ssql,[$finSupplierId,$finSupplierId,"%$term%","%$term%"]);
+
+        $rs = $qr->result();		
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["data"] = $rs;
+        $this->json_output();
+        
+    }
 }

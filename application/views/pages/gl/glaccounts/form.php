@@ -110,7 +110,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <div class="form-group">
                             <label for="select-Currency" class="col-md-2 control-label"><?= lang("Curr Code") ?> :</label>
                             <div class="col-md-4">
-                                <select id="select-Currency" class="form-control" name="fst_curr_code"></select>
+                                <select id="select-Currency" class="form-control" name="fst_curr_code">
+                                    <?php 
+                                        $currencies = getDataTable("mscurrencies","*","fst_active ='A'");
+                                        foreach($currencies as $currency){
+											echo "<option value='$$currency->fst_curr_code'>$currency->fst_curr_name</option>";
+                                        }
+                                        
+                                    ?>
+                                </select>
                                 <!--<div id="fst_curr_code_err" class="text-danger"></div>-->
                             </div>
                         </div>
@@ -194,6 +202,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 
     $(function() {
+        $("#select-MainGL").val(null);
 
         <?php if ($mode == "EDIT") { ?>
             init_form($("#fst_glaccount_code").val());
@@ -262,20 +271,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         });
 
-        $("#select-mainGLStart").select2({
-            width: '100%',
-            ajax: ajaxManiGL,
-        });
-        $("#select-mainGLEnd").select2({
-            width: '100%',
-            ajax: ajaxManiGL,
-        });
-
-        $("#select-MainGL").select2({
-            width: '100%',
-            ajax: ajaxManiGL,
-        });
-
         $("#select-MainGL").change(function(event) {
             event.preventDefault();
             fillParent($("#select-MainGL").val());
@@ -286,24 +281,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#select-ParentGL").change(function(event) {
             event.preventDefault();
-            $("#fst_glaccount_code").val(generateAccountCode());
-           
-
-            /*
-            parentGL = $("#select-ParentGL").select2("data")[0];
-            if(typeof parentGL === 'undefined'){
-                return;
-            }
-            console.log(parentGL);
-            //alert(parentGL.id.replace(/9/g,'\\9'));
-            $("#fst_glaccount_code").inputmask({
-                mask: parentGL.id.replace(/9/g,"\\9") + "<asdasd= $parentGLSeparator ?>" + "[9][9][9][9][9][9]",
-                greedy:true,
-                //autoUnmask: true,
-            });
-            $("#fst_glaccount_code").attr("placeholder",parentGL.id);
-            */
-            
+            $("#fst_glaccount_code").val(generateAccountCode());            
         });
 
         $("#fst_glaccount_code").keyup(function(e){
@@ -324,28 +302,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             
 		});
 
-        $("#select-Currency").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>gl/glaccount/get_Currency',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    items = [];
-                    $.each(data, function(index, value) {
-                        items.push({
-                            "id": value.fst_curr_code,
-                            "text": value.fst_curr_name
-                        });
-                    });
-                    console.log(items);
-                    return {
-                        results: items
-                    };
-                },
-                cache: true,
-            }
-        });
+       
 
 		$("#fst_glaccount_level").change(function(event){
             //alert("fst_glaccount_level");
@@ -370,7 +327,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			title:"<?=lang("Hapus data ini ?")?>",
 			rootSelector: '#btnDelete',
 			placement: 'left',
-		});
+        });
+        
 		$("#btnDelete").click(function(e){
 			e.preventDefault();
 			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
@@ -504,7 +462,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     $("#fst_glaccount_code").attr('readonly', 'readonly');
                 });
 
-                $("#fst_glaccount_level").select2();
+                //$("#fst_glaccount_level").select2();
                 
                 // menampilkan data di select2, menu edit/update
                 var newOption = new Option(resp.gl_Account.fst_curr_name, resp.gl_Account.fst_curr_code, true, true);
@@ -512,9 +470,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 $("#fst_glaccount_level").val(resp.gl_Account.fst_glaccount_level);
         
                 if (resp.parents == null && resp.isUsed == false){
-                    $("#fst_glaccount_level").select2("enable");
+                    $("#fst_glaccount_level").prop("disabled",false);
                 }else{
-                    $("#fst_glaccount_level").select2("enable", false);
+                    $("#fst_glaccount_level").prop("disabled",true);
                 }
                
             },

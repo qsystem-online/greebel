@@ -19,6 +19,7 @@ class Welcome extends MY_Controller {
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
 	public function index(){
+
 		$this->load->library("menus");
 
 		$main_header = $this->parser->parse('inc/main_header',[],true);

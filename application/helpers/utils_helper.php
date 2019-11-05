@@ -202,4 +202,18 @@
         echo "File Name :$errfile <br>";
         echo "Line :$errline <br>";
         die();
-	}
+    }
+    
+    function parseDateRange($dateRange){
+        if ($dateRange == null){
+            return [
+                "from"=>"2019-01-01",
+                "to"=>date("Y-m-d")
+            ];
+        }
+        $arr = explode(" - ",$dateRange);
+        return [
+            "from"=>dBDateFormat($arr[0]),
+            "to"=>dBDateFormat($arr[1]),
+        ];
+    }

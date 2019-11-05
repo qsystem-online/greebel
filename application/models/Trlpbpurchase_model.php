@@ -393,7 +393,7 @@ class Trlpbpurchase_model extends MY_Model {
             $ssql ="update trlpbpurchaseitems set fst_active ='D' where fin_lpbpurchase_id = ?";
             $this->db->query($ssql,[$finLPBPurchaseId]);
         }else{
-            $ssql ="delete from trlpbgudangitems where fin_lpbgudang_id = ?";
+            $ssql ="delete from trlpbpurchaseitems where fin_lpbpurchase_id = ?";
             $this->db->query($ssql,[$finLPBGudangId]);            
         }
         parent::delete($finLPBPurchaseId,$softDelete,$data);

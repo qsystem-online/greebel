@@ -49,6 +49,7 @@ class Api extends MY_Controller{
 
 
     }
+    
     public function get_value(){
 
         $model = strtolower($this->input->post("model"));
@@ -72,5 +73,13 @@ class Api extends MY_Controller{
         $this->json_output($resp);
 
 
+    }
+
+    public function get_jurnal($trxSource,$trxId){
+        $this->load->model("glledger_model");
+        $dataJurnal = $this->glledger_model->getJurnal($trxSource,$trxId);
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["data"] = $dataJurnal;        
+		$this->json_output();
     }
 }

@@ -223,4 +223,6 @@ class Msitems_model extends MY_Model
         $qr=$this->db->query($ssql,[$fin_item_id]);
         return $qr->row();
     }
+
+    
 }

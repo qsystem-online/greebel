@@ -42,6 +42,12 @@ class Trpodetails_model extends MY_Model {
     public function getQtyPLB($fin_po_detail_id){
         return 0;
     }
+
+    public function getDataById($finPODetailId){
+        $ssql = "select * from trpodetails where fin_po_detail_id = ?";
+        $qr = $this->db->query($ssql,[$finPODetailId]);
+        return $qr->row();
+    }
     
 }
 

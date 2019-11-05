@@ -108,5 +108,40 @@ class Test extends CI_Controller {
 		$this->phpspreadsheet->save("tesss",$spreadsheet);
         //$this->phpspreadsheet->save("item_report_" . date("Ymd") . ".xlsm" ,$spreadsheet);
 	}
+
+	public function testimg(){
+		/*
+		//$newImage="D:\\xampp\\htdocs\\comextra\\uploads\\cm_ereservation\\catalog\\26\\thumb\\2019-10-27cm_eres_catalog200440.jpg";
+		$src="D:\\xampp\\htdocs\\comextra\\uploads\\cm_ereservation\\catalog\\26\\2019-10-27cm_eres_catalog200440.jpg";
+		list($srcWidth, $srcHeight) = getimagesize($src);
+		$width = 150;
+		$height = 80;
+
+		$thumb = imagecreatetruecolor($width, $height);
+
+		$oldImage = imagecreatefromstring(file_get_contents($src));
+
+
+		imagecopyresized($thumb, $oldImage, 0, 0, 0, 0, $width, $height, $srcWidth, $srcHeight);
+		// Content type
+		header('Content-Type: image/jpeg');
+		imagejpeg($thumb);
+		*/
+
+		$this->load->library("image_lib");
+		$config['image_library'] = 'gd2';
+		$config['source_image'] = "D:\\xampp\\htdocs\\comextra\\uploads\\cm_ereservation\\catalog\\26\\2019-10-27cm_eres_catalog200440.jpg";
+		$config['new_image'] = "D:\\xampp\\htdocs\\comextra\\uploads\\cm_ereservation\\catalog\\26\\thumb\\2019-10-27cm_eres_catalog200440.jpg";		
+		$config['create_thumb'] = FALSE;
+		$config['maintain_ratio'] = TRUE;
+		$config['width']         = 75;
+		$config['height']       = 50;
+
+		//$this->load->library('image_lib', $config);
+		$this->image_lib->initialize($config);
+		
+		$this->image_lib->resize();
+	}
+	
 	
 }
