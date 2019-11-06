@@ -5,6 +5,7 @@ class Project extends MY_Controller {
     public function __construct(){
         parent:: __construct();
         $this->load->library('form_validation');
+        $this->load->model('msprojects_model');
     }
 
     public function index(){
@@ -13,29 +14,29 @@ class Project extends MY_Controller {
 
     public function lizt(){
         $this->load->library('menus');
-        $this->list['page_name']="Master Projects";
-        $this->list['list_name']="Master Pojects List";
-        $this->list['addnew_ajax_url']=site_url().'master/project/add';
+        $this->list['page_name'] = "Master Projects";
+        $this->list['list_name'] = "Project List";
+        $this->list['addnew_ajax_url'] = site_url().'master/project/add';
         $this->list['pkey']="id";
-        $this->list['fetch_list_data_ajax_url']=site_url().'master/project/fetch_list_data';
-        $this->list['delete_ajax_url']=site_url().'master/project/delete/';
-        $this->list['edit_ajax_url']=site_url().'master/project/edit/';
-        $this->list['arrSearch']=[
+        $this->list['fetch_list_data_ajax_url'] = site_url().'master/project/fetch_list_data';
+        $this->list['delete_ajax_url'] = site_url().'master/project/delete/';
+        $this->list['edit_ajax_url'] = site_url().'master/project/edit/';
+        $this->list['arrSearch'] = [
             'fin_project_id' => 'Project ID',
             'fst_project_name' => 'Project Name'
         ];
         $this->list['breadcrumbs']=[
-            ['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
-            ['title'=>'Master Projects','link'=>'#','icon'=>''],
-            ['title'=>'List','link'=>NULL,'icon'=>''],
+            ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
+            ['title' => 'Projects', 'link' => '#', 'icon'=>''],
+            ['title' => 'List', 'link' => NULL, 'icon'=>''],
         ];
         $this->list['columns']=[
-            ['title'=>'Project ID','width'=>'20%','data'=>'fin_project_id'],
-            ['title'=>'Project Name','width'=>'20%','data'=>'fst_project_name'],
-            ['title'=>'Project Start Date','width'=>'10%','data'=>'fdt_project_start'],
-            ['title'=>'Project End Date','width'=>'10%','data'=>'fdt_project_end'],
-            ['title'=>'Memo','width'=>'20%','data'=>'fst_memo'],
-            ['title'=>'Action','width'=>'10%','data'=>'action','sortable'=>false,'className'=>'dt-body-center text-center']
+            ['title' => 'Project ID', 'width' => '20%', 'data' => 'fin_project_id'],
+            ['title' => 'Project Name', 'width' => '20%', 'data' => 'fst_project_name'],
+            ['title' => 'Project Start Date', 'width' => '10%', 'data' => 'fdt_project_start'],
+            ['title' => 'Project End Date', 'width' => '10%', 'data' => 'fdt_project_end'],
+            ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_memo'],
+            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header',[],true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
