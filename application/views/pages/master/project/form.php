@@ -240,7 +240,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 console.log(resp.ms_Projects);
 
                 $.each(resp.ms_Projects, function(name, val){
-                    var $el = $('[name="'+name'"]'),
+                    var $el = $('[name="'+name+'"]'),
                         type = $el.attr('type');
                     switch(type){
                         case 'checkbox':
@@ -249,7 +249,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         case 'radio':
                             $el.filter('[value="' + val + '"]').attr('checked', 'checked');
                             break;
-                        default;
+                        default:
                             $el.val(val);
                             console.log(val);
                     }
