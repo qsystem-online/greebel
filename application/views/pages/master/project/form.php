@@ -3,13 +3,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 ?>
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/select2/dist/css/select2.min.css">
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/datatables.min.css">
+<link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.css">
 
 <style type="text/css">
     .border-0 {
         border: 0px;
     }
     td {
-        padding: 2px; !important
+        padding: 2px; 
+            !important
     }
     .nav-tabs-custom>.nav-tabs>li.active>a {
         font-weight: bold;
@@ -226,7 +228,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#btnList").click(function(e){
             e.preventDefault();
-            window.location.replace(" <?= site_url() ?>master/project/lizt");
+            window.location.replace(" <?= site_url() ?>master/project");
         });
     });
 
@@ -240,7 +242,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 console.log(resp.ms_Projects);
 
                 $.each(resp.ms_Projects, function(name, val){
-                    var $el = $('[name="'+name+'"]'),
+                    var $el = $('[name="'+ name +'"]'),
                         type = $el.attr('type');
                     switch(type){
                         case 'checkbox':
