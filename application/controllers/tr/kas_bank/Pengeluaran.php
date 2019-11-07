@@ -7,7 +7,91 @@ class Pengeluaran extends MY_Controller{
 		$this->load->library('form_validation');		
 		$this->load->model('msrelations_model');	
 		$this->load->model('trcbpayment_model');
-    }
+	}
+	
+	public function index(){
+
+		$this->load->library('menus');
+        $this->list['page_name'] = "Cash Bank - Paymnet";
+        $this->list['list_name'] = "Cash & Bank Payment List";
+        $this->list['boxTools'] = [
+			"<a id='btnNew'  href='".site_url()."tr/kas_bank/pengeluaran/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
+		];
+        $this->list['pKey'] = "id";
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/kas_bank/pengeluaran/fetch_list_data';
+        $this->list['arrSearch'] = [
+			'fst_purchasereturn_no' => 'No Pengeluaran',
+			'fst_supplier_name' => 'Supplier'
+        ];
+
+        $this->list['breadcrumbs'] = [
+            ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
+            ['title' => 'Cash & Bank', 'link' => '#', 'icon' => ''],
+            ['title' => 'Payment', 'link' => NULL, 'icon' => ''],
+		];
+		
+
+        $this->list['columns'] = [
+			['title' => 'ID. ', 'width' => '10px','visible'=>'false', 'data' => 'fin_cbpayment_id'],
+            ['title' => 'Payment No.', 'width' => '100px', 'data' => 'fst_cbpayment_no'],
+            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_cbpayment_datetime'],
+            ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],		
+			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
+			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
+				'render'=>"function(data,type,row){
+					action = '<div style=\"font-size:16px\">';
+					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/purchase/purchase_return/edit/' + row.fin_purchasereturn_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
+					action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
+					action += '<div>';
+					return action;
+				}"
+			]
+		];
+
+		$this->list['jsfile'] = $this->parser->parse('pages/tr/kas_bank/pengeluaran/listjs', [], true);
+
+		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		$this->list['mdlEditForm'] = $edit_modal;
+
+        $main_header = $this->parser->parse('inc/main_header', [], true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+        $page_content = $this->parser->parse('template/standardList_v2_0_0', $this->list, true);
+        $main_footer = $this->parser->parse('inc/main_footer', [], true);
+        $control_sidebar = null;
+        $this->data['ACCESS_RIGHT'] = "A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR'] = $main_sidebar;
+        $this->data['PAGE_CONTENT'] = $page_content;
+        $this->data['MAIN_FOOTER'] = $main_footer;
+        $this->parser->parse('template/main', $this->data);
+	}
+
+	public function fetch_list_data(){
+		$this->load->library("datatables");
+        $this->datatables->setTableName("(
+			SELECT a.*,b.fst_relation_name as fst_supplier_name FROM trcbpayment a 
+			INNER JOIN msrelations b on a.fin_supplier_id = b.fin_relation_id 
+			) a");
+
+        $selectFields = "a.fin_cbpayment_id,a.fst_cbpayment_no,a.fdt_cbpayment_datetime,a.fst_supplier_name,a.fst_memo";
+        $this->datatables->setSelectFields($selectFields);
+
+        $Fields = $this->input->get('optionSearch');
+        $searchFields = [$Fields];
+        $this->datatables->setSearchFields($searchFields);
+        
+        // Format Data
+        $datasources = $this->datatables->getData();
+        $arrData = $datasources["data"];
+        $arrDataFormated = [];
+        foreach ($arrData as $data) {        
+            $arrDataFormated[] = $data;
+        }
+        $datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+		
+	}
+
 
     public function add(){
         $this->openForm("ADD", 0);

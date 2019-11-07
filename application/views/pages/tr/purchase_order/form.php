@@ -1,6 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-		
+defined('BASEPATH') OR exit('No direct script access allowed');		
 ?>
 <link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
@@ -105,10 +104,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<select id="fst_curr_code" class="form-control" name="fst_curr_code" disabled>
 									<?php
 
-										$currencies = getDataTable("mscurrencies","*","fst_active ='A'");
-										foreach($currencies as $currency){
+										$currencies = $this->mscurrencies_model->getArrRate();									
+										foreach($currencies as $key=>$currency){
 											$selected = $currency->fst_curr_code == "IDR" ? "SELECTED" : "";
-											echo "<option value='$currency->fst_curr_code' $selected>$currency->fst_curr_name</option>";
+											echo "<option value='$currency->fst_curr_code' data-rate='$currency->fdc_rate' $selected >$currency->fst_curr_name</option>";
 										}
 									?>
 								</select>
@@ -117,7 +116,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						
 							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> :</label>
 							<div class="col-md-2">
-								<input type="text" class="text-right form-control" id="fdc_exchange_rate_idr" name="fdc_exchange_rate_idr" style="width:100%" value="" readonly/>
+								<input type="text" class="text-right form-control" id="fdc_exchange_rate_idr" name="fdc_exchange_rate_idr" style="width:100%" value=""/>
 							</div>
 							<label class="col-md-2 control-label" style="text-align:left;padding-left:0px"><?=lang("Rupiah")?> </label>
 						</div>
@@ -369,16 +368,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#fdc_ppn_percent").prop("readonly",true);
 				$("#fdc_ppn_amount").val(0);
 				$("#fbl_dp_inc_ppn").prop("checked",false);
-				$("#fbl_dp_inc_ppn").prop("disabled",true);
-				
-			}else{
-				
+				$("#fbl_dp_inc_ppn").prop("disabled",true);				
+			}else{				
 				$("#fdc_ppn_percent").prop("readonly",false);
 				$("#fbl_dp_inc_ppn").prop("disabled",false);
-				$("#fdc_ppn_percent").val(10);
-				
-				
-				$("#fst_curr_code").val("IDR").trigger("change.select2");
+				$("#fdc_ppn_percent").val(10);				
+				$("#fst_curr_code").val("<?=getDefaultCurrency()["CurrCode"]?>").trigger("change.select2");
 				$("#fdc_exchange_rate_idr").val(App.money_format(1));
 				$("#fst_curr_code").prop("disabled",true);
 			}
@@ -663,23 +658,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if( $("#fin_po_id").val() != 0 ){
 			fillForm();
 		}
+
+
 	});
 
 	
 	function initVarForm(){		
 		$("#fst_curr_code").change(function(e){
 			e.preventDefault();
-			$.ajax({
-				url: "<?=site_url()?>api/get_value",
-				method:"POST",
-				data:{
-					"model": "mscurrencies_model",
-					"function": "getRate",
-					"params": [$("#fst_curr_code").val()], // $("#fst_curr_code").val(),  //KRW,2019-07-23"
-				},
-			}).done(function(resp){
-				$("#fdc_exchange_rate_idr").val(App.money_format(resp.data));
-			});
+			var rate = $("#fst_curr_code option:selected").data("rate");
+			$("#fdc_exchange_rate_idr").val(App.money_format(rate));
 		});
 
 		$("#fdc_exchange_rate_idr").val(App.money_format(1));

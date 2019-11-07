@@ -62,7 +62,7 @@ class Msgroupitems_model extends MY_Model
         return $id;
     }
 
-    public function delete($id, $softdelete = true){
+    public function delete($id, $softdelete = true,$data=null){
         //Cek if data in used
         $ssql = "select * from msitems where fin_item_group_id = ? and fst_active ='A' limit 1";
         $qr = $this->db->query($ssql,[$id]);

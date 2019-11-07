@@ -192,7 +192,7 @@ class Trcbpayment_model extends MY_Model {
 
             }else if ($dataItem->fst_trans_type == "DP_PO"){
                 //DP Purcahase
-                $tmpArr = $this->getDataJurnalPostingDPPO($dataItem);                
+                $tmpArr = $this->getDataJurnalPostingDPPO($dataItem,$dataH);                
                 foreach($tmpArr as $tmp){
                     $dataJurnal[] = $tmp;
                 }
@@ -306,12 +306,10 @@ class Trcbpayment_model extends MY_Model {
             "fdc_orgi_rate"=>$rw->fdc_exchange_rate_idr,
             "fst_no_ref_bank"=>null,
             "fst_profit_cost_center_code"=>null,
-            "fin_relation_id"=>$dataH->fin_supplier_id,
+            "fin_relation_id"=>$rw->fin_supplier_id,
             "fst_active"=>"A"
         ];
 
-
-    
         //Cek selisih Kurs        
         if ($dataH->fdc_exchange_rate_idr  != $rw->fdc_exchange_rate_idr){
             

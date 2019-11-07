@@ -58,11 +58,12 @@ class Mscurrencies_model extends MY_Model{
         $rs = $qr->result();
         $result = [];
         foreach($rs as $rw){
-            $result[$rw->fst_curr_code] = $this->getRate($rw->fst_curr_code,$date);            
+            $rw->fdc_rate = $this->getRate($rw->fst_curr_code,$date);
+            $result[$rw->fst_curr_code] = $rw;                        
         }
         return $result;
-
     }
+
 
     public function getRate($fst_curr_code,$date=""){
         /*
@@ -76,7 +77,7 @@ class Mscurrencies_model extends MY_Model{
         }
         $date = $date =="" ? date("Y-m-d") : $date;
 
-        $ssql ="select * from mscurrenciesratedetails where fst_curr_code = ? and fdt_date = ? ";
+        $ssql ="select * from mscurrenciesratedetails where fst_curr_code = ? and fdt_date <= ?  order by fin_rec_id desc";
         $qr = $this->db->query($ssql,[$fst_curr_code,$date]);
         $rw = $qr->row();
         if(!$rw){
@@ -84,12 +85,19 @@ class Mscurrencies_model extends MY_Model{
         }else{
             return $rw->fdc_exchange_rate_to_idr;
         }
-        return $date; 
+        return 0; 
 
     }
 
     public function getDefaultCurrencyCode(){
-        return $this->db->query("select * from mscurrencies where fbl_is_default= 1").row()->fst_curr_code;
+        $qr = $this->db->query("select * from mscurrencies where fbl_is_default= 1",[]);
+        $rw = $qr->row();
+        if ($rw == null){
+            return "IDR";
+        }else{
+            return $rw->fst_curr_code;
+        }
+        
     }
 
     

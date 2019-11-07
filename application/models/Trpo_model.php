@@ -190,6 +190,7 @@ class Trpo_model extends MY_Model {
         $ssql ="select * from trpo where fin_po_id = ?";
         $qr = $this->db->query($ssql,[$finPOId]);
         $dataH = $qr->row_array();
+
         if ($dataH["fdc_downpayment"] > 0 && $dataH["fst_active"] == "A"){
             $this->load->model("glledger_model");
 
@@ -206,7 +207,7 @@ class Trpo_model extends MY_Model {
             }
 
             $fstAccountCode = getGLConfig("DP_OUT_LOKAL");
-            if ($rw->fst_is_import == 1){
+            if ($dataH["fbl_is_import"] == 1){
                 $fstAccountCode = getGLConfig("DP_OUT_IMPORT");
             }
             
@@ -252,7 +253,7 @@ class Trpo_model extends MY_Model {
             }
 
             $fstAccountCode = getGLConfig("AP_DAGANG_LOKAL");
-            if ($rw->fst_is_import == 1){
+            if ($dataH["fbl_is_import"] == 1){
                 $fstAccountCode = getGLConfig("AP_DAGANG_IMPORT");
             }
 
@@ -283,7 +284,10 @@ class Trpo_model extends MY_Model {
             }
             return $result;
         }
-
+        return [
+            "status"=>"SUCCESS",
+            "message"=>""
+        ];
 
     }
 
@@ -295,13 +299,18 @@ class Trpo_model extends MY_Model {
     }
 
     public function approved($finPOId,$approved = true){
+        $this->db->trans_start();
         if($approved){
             $data = [
                 "fin_po_id"=>$finPOId,
                 "fst_active"=>"A"
             ];        
             parent::update($data);            
-            $this->posting($finPOId);
+            $result = $this->posting($finPOId);
+            if ($result["status"] != "SUCCESS"){
+                $this->db->trans_rollback();
+                return $result;
+            }
         }else{
             $data = [
                 "fin_po_id"=>$finPOId,
@@ -309,6 +318,7 @@ class Trpo_model extends MY_Model {
             ];        
             parent::update($data);            
         }
+        $this->db->trans_complete();
 
         return [
             "status"=>"SUCCESS",

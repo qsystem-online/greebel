@@ -256,7 +256,7 @@
 									<div class="form-group">
 										<label for="fdc_return_amount" class="col-md-2 control-label"><?=lang("Total Return")?></label>
 										<div class="col-md-10">
-											<input type="TEXT" id="fdc_return_amount" name="fdc_return_amount" value= "0" class="money form-control text-right"/>
+											<input type="TEXT" id="fdc_return_amount" name="fdc_return_amount" value= "0" class="money form-control text-right" readonly/>
 										</div>
 									</div>
 
@@ -285,9 +285,7 @@
 <div id="mdlPaymentType" class="modal fade" role="dialog" >
 	<div class="modal-dialog" style="display:table;width:800px">
 		<!-- modal content -->
-		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
-			
-
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">			
 			<div class="modal-body">
 				<div class="row">
                     <div class="col-md-12" >
@@ -308,7 +306,7 @@
 										</div>
 									</div>
 									
-									<div class="form-group">
+									<div class="form-group" id="divGLAccount" style="display:none">
 										<label for="fst_glaccount_code_pd" class="col-md-2 control-label"><?=lang("GL Account")?></label>
 										<div class="col-md-10">
 											<select  id="fst_glaccount_code_pd"   class="form-control" style="width:100%">											
@@ -316,7 +314,7 @@
 										</div>										
 									</div>
 
-									<div class="form-group">
+									<div class="form-group" id="divPCC" style="display:none">
 										<label for="fin_pcc_id" class="col-md-2 control-label"><?=lang("Profit / Cost Center")?></label>
 										<div class="col-md-10">
 											<select  id="fin_pcc_id" class="form-control">
@@ -349,7 +347,7 @@
 										</div>
 									</div>
 
-									<div class="form-group" id="divGiro">
+									<div class="form-group" id="divGiro" style="display:none">
 										<label for="fst_bilyet_no" class="col-md-2 control-label"><?=lang("No Bilyet")?></label>
 										<div class="col-md-4">
 											<input type="TEXT" id="fst_bilyet_no" class="form-control"/>
@@ -359,9 +357,6 @@
 											<input type="TEXT" id="fdt_clear_date"  class="form-control text-right datepicker" />
 										</div>
 									</div>
-
-
-
 								</form>
 								
 								<div class="modal-footer">
@@ -375,6 +370,35 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+		$(function(){
+			$("#fst_trans_type_pt").change(function(e){
+				var type = $("#fst_trans_type_pt").val();
+				switch (type){
+					case "TUNAI":
+						$("#divGLAccount").hide("fast");
+						$("#divPCC").hide("fast");
+						$("#divGiro").hide("fast");						
+						break;
+					case "TRANSFER":
+						$("#divGLAccount").hide("fast");
+						$("#divPCC").hide("fast");
+						$("#divGiro").hide("fast");						
+						break;
+					case "GIRO":
+						$("#divGLAccount").hide("fast");
+						$("#divPCC").hide("fast");
+						$("#divGiro").show("fast");						
+						break;
+					case "GLACCOUNT":
+						$("#divGLAccount").show("fast");
+						$("#divPCC").hide("fast");
+						$("#divGiro").hide("fast");						
+						break;
+				};
+			});
+		});
+	</script>
 </div>
 
 <?php echo $mdlEditForm ?>
@@ -735,10 +759,8 @@
 
 				$("#fst_glaccount_code_pd").empty();
 				$("#fst_glaccount_code_pd").append("<option value='"+acc+"'>"+ $("#fin_kasbank_id option:selected").data("glaccount") + " - " + $("#fin_kasbank_id option:selected").text() +"</option>")
+				$("#fst_glaccount_code_pd").val(null);
 
-				//$("#fst_glaccount_code_pd").val(acc).trigger("change.select2");				
-				//$("#fst_glaccount_code_pd").prop("disabled",true);
-				//fixedSelect2();
 			}else if($("#fst_trans_type_pt").val() == "GIRO"){
 				$("#fst_glaccount_code_pd").empty();
 				<?php					
@@ -750,13 +772,21 @@
 				<?php
 				$accounts = getDataTable("glaccounts","*","fst_active ='A' and fst_glaccount_level != 'HD' and fbl_is_allow_in_cash_bank_module = 1");
 				foreach($accounts as $account){ ?>
-					$("#fst_glaccount_code_pd").append("<option value='"+"<?=$account->fst_glaccount_code?>"+"'>"+"<?=$account->fst_glaccount_code . " - " . $account->fst_glaccount_name?>"+"</option>");
+					$("#fst_glaccount_code_pd").append("<option value='"+"<?=$account->fst_glaccount_code?>"+"' data-is_pc='" + <?= $account->fbl_pc ?> +"'>"+"<?=$account->fst_glaccount_code . " - " . $account->fst_glaccount_name?>"+"</option>");
 					//$selected = $currency->fst_curr_code == "IDR" ? "SELECTED" : "";						
 				<?php } ?>
 			}
-
-
 		});
+
+		$("#fst_glaccount_code_pd").change(function(e){
+			if ($("#fst_glaccount_code_pd option:selected").data("is_pc") == 0){
+				$("#divPCC").hide("fast");
+				
+			}else{
+				$("#divPCC").show("fast");
+			}
+		});
+
 
 		$("#fdc_exchange_rate_idr_payment_detail").change(function(e){
 			e.preventDefault();

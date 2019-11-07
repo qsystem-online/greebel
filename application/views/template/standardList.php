@@ -81,6 +81,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <?php if(isset($col['render'])){?>
                                 ,"render":<?php echo $col['render'] ?>
                             <?php } ?>
+							<?php if(isset($col['visible'])){?>
+                                ,"visible":<?php echo $col['visible'] ?>
+                            <?php } ?>
                             <?php if(isset($col['sortable'])){
                                 if ($col['sortable']){ ?>
                                     ,"sortable": true

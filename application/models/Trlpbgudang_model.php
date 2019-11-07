@@ -83,9 +83,14 @@ class Trlpbgudang_model extends MY_Model {
     }
 
     public function getPOList(){
+
         $ssql = "select distinct a.fin_po_id,b.fst_po_no from trpodetails a 
             INNER JOIN trpo b on a.fin_po_id = b.fin_po_id 
-            WHERE a.fdb_qty > a.fdb_qty_lpb";
+            WHERE a.fdb_qty > a.fdb_qty_lpb 
+            and b.fst_active ='A' 
+            and b.fbl_is_closed = 0 
+            and b.fdc_downpayment <= b.fdc_downpayment_paid";
+
         $qr = $this->db->query($ssql,[]);
         $rs = $qr->result();
         return $rs;

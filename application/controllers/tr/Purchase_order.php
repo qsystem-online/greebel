@@ -155,12 +155,15 @@ class Purchase_order extends MY_Controller{
 		$fst_po_no = $this->trpo_model->GeneratePONo();
 		$fblDPIncPPN = $this->input->post("fbl_dp_inc_ppn");
 		$fblDPIncPPN =  ($fblDPIncPPN == null) ? 0 : 1;
+		$fstCurrCode =  $this->input->post("fst_curr_code");
+		$fstCurrCode = $fstCurrCode == null ? $this->mscurrencies_model->getDefaultCurrencyCode() : $fstCurrCode;
+
 		$dataH = [
 			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
 			"fbl_is_import"=>$this->input->post("fbl_is_import"),
             "fst_po_no" => $fst_po_no,
 			"fdt_po_datetime" => $fdt_po_datetime,
-			"fst_curr_code"=>$this->input->post("fst_curr_code"),
+			"fst_curr_code"=>$fstCurrCode,
 			"fdc_exchange_rate_idr"=>$this->input->post("fdc_exchange_rate_idr"),
 			"fin_supplier_id" => $this->input->post("fin_supplier_id"),
 			"fin_term"=>$this->input->post("fin_term"),
@@ -354,7 +357,11 @@ class Purchase_order extends MY_Controller{
 		$fdt_po_datetime = dBDateTimeFormat($this->input->post("fdt_po_datetime"));
 		$fblDPIncPPN = $this->input->post("fbl_dp_inc_ppn");
 		$fblDPIncPPN =  ($fblDPIncPPN == null) ? 0 : 1;
+		
+		$fstCurrCode =  $this->input->post("fst_curr_code");
+		$fstCurrCode = $fstCurrCode == null ? $this->mscurrencies_model->getDefaultCurrencyCode() : $fstCurrCode;
 
+		$dataH["fst_curr_code"] = $fstCurrCode;
 		$dataH["fdt_po_datetime"] = $fdt_po_datetime;
 		$dataH["fbl_dp_inc_ppn"] = $fblDPIncPPN;		
 		$dataH["fdc_subttl"] = 0;		

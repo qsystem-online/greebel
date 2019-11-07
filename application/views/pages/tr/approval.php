@@ -276,6 +276,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             if(resp.status == "SUCCESS") {
                 //remove row
                 selectedRecord.remove();
+                $("#mdlapproval").modal("hide");
                 //trRow.remove();
             }
         });

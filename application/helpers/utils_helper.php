@@ -208,12 +208,12 @@
         if ($dateRange == null){
             return [
                 "from"=>"2019-01-01",
-                "to"=>date("Y-m-d")
+                "to"=>date("Y-m-d") ." 23:59:59"
             ];
         }
         $arr = explode(" - ",$dateRange);
         return [
             "from"=>dBDateFormat($arr[0]),
-            "to"=>dBDateFormat($arr[1]),
+            "to"=>dBDateFormat($arr[1]) . " 23:59:59",
         ];
     }
