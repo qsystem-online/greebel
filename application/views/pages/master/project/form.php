@@ -129,7 +129,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 url = "<?= site_url() ?>master/project/ajx_edit_save";
             }
 
-            //var formData = new FormData($('form')[0])
             $.ajax({
                 type: "POST",
                 enctype: 'multipart/form-data',
@@ -238,14 +237,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
             typr: "GET",
             url: url,
             success: function (resp){
-                console.log(resp.ms_Projects);
+                console.log(resp.ms_projects);
 
-                $.each(resp.ms_Projects, function(name, val){
+                $.each(resp.ms_projects, function(name, val){
                     var $el = $('[name="'+ name +'"]'),
                         type = $el.attr('type');
                     switch(type){
                         case 'checkbox':
-                            $el.filter('[value="' + val + '"]').attr('checked', 'checked');
+                            $el.filter('checked', 'checked');
                             break;
                         case 'radio':
                             $el.filter('[value="' + val + '"]').attr('checked', 'checked');
@@ -256,8 +255,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
 
-                $("#fdt_project_start").datepicker('update', dateFormat(resp.ms_Projects.fdt_project_start));
-                $("#fdt_project_end").datepicker('update', dateFormat(resp.ms_Projects.fdt_project_end));
+                $("#fdt_project_start").datepicker('update', dateFormat(resp.ms_projects.fdt_project_start));
+                $("#fdt_project_end").datepicker('update', dateFormat(resp.ms_projects.fdt_project_end));
             },
             error: function(e){
                 $("#result").text(e.responseText);

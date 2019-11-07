@@ -152,10 +152,10 @@ class Project extends MY_Controller {
 
         $data = [
             "fin_project_id" => $fin_project_id,
-            "fst_project_name" => $fst_project_name,
-            "fdt_project_start" => $fdt_project_start,
-            "fdt_project_end" => $fdt_project_end,
-            "fst_memo" => $fst_memo,
+            "fst_project_name" => $this->input->post("fst_project_name"),
+            "fdt_project_start" => dBDateFormat($this->input->post("fdt_project_start")),
+            "fdt_project_end" => dBDateFormat($this->input->post("fdt_project_end")),
+            "fst_memo" => $this->input->post("fst_memo"),
             "fst_active" =>'A'
         ];
 
