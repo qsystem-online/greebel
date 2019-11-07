@@ -209,7 +209,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 </div>
 
-<!------- MONITORING ------>
+<!-------    MONITORING    ----------------------------------------------------------------------------------------------------------------------------------->
 <script type="text/javascript">
 	$(function(){
 		$(".filterData").change(function(event){
@@ -318,7 +318,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	}
 </script>
 
-<!----------- HISTORY MONITORING ---------->
+<!-----------  HISTORY MONITORING  ---------------------------------------------------------------------------------------------------------------------------->
 <script type="text/javascript">
 	$(function(){
 		$(".filterData").change(function(event){

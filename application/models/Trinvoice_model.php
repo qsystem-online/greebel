@@ -228,7 +228,7 @@ class Trinvoice_model extends MY_Model {
         $ssql ="delete from trinvoicedetails where fin_inv_id = ?";
         $this->db->query($ssql,[$invId]);
     }
-    public function delete($invId,$softdelete = true){
+    /*public function delete($invId,$softdelete = true){
         $this->load->model("trinvoicedetails_model");
         $this->unposting($invId);
         
@@ -242,5 +242,5 @@ class Trinvoice_model extends MY_Model {
         }
         $ssql = "update trsuratjalan set fin_inv_id = null where fin_inv_id =?";
         $this->db->query($ssql,[$invId]);
-    }
+    }*/
 }

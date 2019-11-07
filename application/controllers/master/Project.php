@@ -23,7 +23,7 @@ class Project extends MY_Controller {
 		$this->list['edit_ajax_url'] = site_url() . 'master/project/edit/';
 		$this->list['arrSearch'] = [
 			'fin_project_id' => 'Project ID',
-			'fst_project_name' => 'Project No'
+			'fst_project_name' => 'Project Name'
 		];
         $this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
@@ -32,7 +32,7 @@ class Project extends MY_Controller {
 		];
 		$this->list['columns'] = [
 			['title' => 'Project ID.', 'width' => '15%', 'data' => 'fin_project_id'],
-			['title' => 'Project No.', 'width' => '15%', 'data' => 'fst_project_name'],
+			['title' => 'Project Name', 'width' => '15%', 'data' => 'fst_project_name'],
             ['title' => 'Start Date', 'width' => '15%', 'data' => 'fdt_project_start'],
             ['title' => 'End Date', 'width' => '15%', 'data' => 'fdt_project_end'],
             ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_memo'],

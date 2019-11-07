@@ -101,7 +101,7 @@ class Monitoring_sj extends MY_Controller{
 		$this->json_output();
 	}
 
-	//============================ HISTORIES ==========================\\
+	//============================ HISTORIES =================================================================================================================\\
 
 	public function fetch_histmonitoring_list(){
 		$this->load->library("datatables");
