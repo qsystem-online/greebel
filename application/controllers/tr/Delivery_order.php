@@ -16,7 +16,7 @@ class Delivery_order extends MY_Controller{
 		$this->list['page_name'] = "Surat Jalan";
 		$this->list['list_name'] = "Surat Jalan List";
 		$this->list['addnew_ajax_url'] = site_url() . 'tr/delivery_order/add';
-		$this->list['pKey'] = "id";
+		$this->list['pKey'] = "fin_sj_id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/delivery_order/fetch_list_data';
 		$this->list['delete_ajax_url'] = site_url() . 'tr/delivery_order/ajx_delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'tr/delivery_order/edit/';
