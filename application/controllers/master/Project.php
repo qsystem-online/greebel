@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 class Project extends MY_Controller {
     public function __construct(){
@@ -14,30 +14,30 @@ class Project extends MY_Controller {
 
     public function lizt(){
         $this->load->library('menus');
-        $this->list['page_name'] = "Master Projects";
-        $this->list['list_name'] = "Project List";
-        $this->list['addnew_ajax_url'] = site_url().'master/project/add';
-        $this->list['pkey']="id";
-        $this->list['fetch_list_data_ajax_url'] = site_url().'master/project/fetch_list_data';
-        $this->list['delete_ajax_url'] = site_url().'master/project/delete/';
-        $this->list['edit_ajax_url'] = site_url().'master/project/edit/';
-        $this->list['arrSearch'] = [
-            'fin_project_id' => 'Project ID',
-            'fst_project_name' => 'Project Name'
-        ];
-        $this->list['breadcrumbs']=[
-            ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-            ['title' => 'Projects', 'link' => '#', 'icon'=>''],
-            ['title' => 'List', 'link' => NULL, 'icon'=>''],
-        ];
-        $this->list['columns']=[
-            ['title' => 'Project ID', 'width' => '20%', 'data' => 'fin_project_id'],
-            ['title' => 'Project Name', 'width' => '20%', 'data' => 'fst_project_name'],
-            ['title' => 'Project Start Date', 'width' => '10%', 'data' => 'fdt_project_start'],
-            ['title' => 'Project End Date', 'width' => '10%', 'data' => 'fdt_project_end'],
+		$this->list['page_name'] = "Master Project";
+		$this->list['list_name'] = "Project List";
+		$this->list['addnew_ajax_url'] = site_url() . 'master/project/add';
+		$this->list['pKey'] = "id";
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'master/project/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'master/project/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'master/project/edit/';
+		$this->list['arrSearch'] = [
+			'fin_project_id' => 'Project ID',
+			'fst_project_name' => 'Project No'
+		];
+        $this->list['breadcrumbs'] = [
+			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
+			['title' => 'Project', 'link' => '#', 'icon' => ''],
+			['title' => 'List', 'link' => NULL, 'icon' => ''],
+		];
+		$this->list['columns'] = [
+			['title' => 'Project ID.', 'width' => '15%', 'data' => 'fin_project_id'],
+			['title' => 'Project No.', 'width' => '15%', 'data' => 'fst_project_name'],
+            ['title' => 'Start Date', 'width' => '15%', 'data' => 'fdt_project_start'],
+            ['title' => 'End Date', 'width' => '15%', 'data' => 'fdt_project_end'],
             ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_memo'],
-            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
-        ];
+			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
+		];
         $main_header = $this->parser->parse('inc/main_header',[],true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
         $page_content = $this->parser->parse('template/standardList',$this->list,true);
@@ -51,7 +51,7 @@ class Project extends MY_Controller {
         $this->parser->parse('template/main',$this->data);
     }
 
-    private function openForm($mode="ADD",$fin_project_id=0){
+    private function openForm($mode = "ADD", $fin_project_id = 0){
         $this->load->library("menus");
 
         if($this->input->post("submit") != ""){
@@ -62,7 +62,7 @@ class Project extends MY_Controller {
         $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
 
         $data["mode"] = $mode;
-        $data["title"] = $mode == "ADD" ? "Add Master Projects" : "Update Master Projects";
+        $data["title"] = $mode == "ADD" ? "Add Master Project" : "Update Master Project";
         $data["fin_project_id"] = $fin_project_id;
 
         $page_content = $this->parser->parse('pages/master/project/form',$data,true);
@@ -130,7 +130,7 @@ class Project extends MY_Controller {
         $this->load->model('msprojects_model');
         $fin_project_id = $this->input->post("fin_project_id");
         $data = $this->msprojects_model->getDataById($fin_project_id);
-        $msprojects = $data["ms_Projects"];
+        $msprojects = $data["ms_projects"];
         if (!$msprojects){
             $this->ajxResp["status"] = "DATA_NOT_FOUND";
             $this->ajxResp["message"] = "Data id $fin_project_id Not Found";
@@ -201,7 +201,7 @@ class Project extends MY_Controller {
                     <a class='btn-delete' href='#' data-id='" . $data["fin_project_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
                 </div>";
             
-            $arrDataFormated[] = $dataa;
+            $arrDataFormated[] = $data;
         }
         $datasources["data"] = $arrDataFormated;
         $this->json_output($datasources);
@@ -223,6 +223,13 @@ class Project extends MY_Controller {
         $this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["message"] = lang("Data dihapus !");
         //$this->ajxResp["data"]["insert_id"] = $insertId;
+        $this->json_output();
+    }
+
+    public function getAllList(){
+        $this->load->model('msprojects_model');
+        $result = $this->msprojects_model->getAllList();
+        $this->ajxResp["data"] = $result;
         $this->json_output();
     }
 }

@@ -3,7 +3,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 ?>
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/select2/dist/css/select2.min.css">
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/datatables.min.css">
-<link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.css">
 
 <style type="text/css">
     .border-0 {
@@ -267,3 +266,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
         });
     }
 </script>
+
+
+<!-- Select2 -->
+<script src="<?= base_url() ?>bower_components/select2/dist/js/select2.full.js"></script>
+<!-- DataTables -->
+<script src="<?= base_url() ?>bower_components/datatables.net/datatables.min.js"></script>
