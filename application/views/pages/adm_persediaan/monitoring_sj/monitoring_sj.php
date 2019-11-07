@@ -29,12 +29,42 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab_1">
-						
+						<div align="right">						
+							<span>Search on:</span>
+							<span>
+								<select id="selectSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
+									<?php
+										foreach($arrSearch as $key => $value){ ?>
+											<option value=<?=$key?>><?=$value?></option>
+										<?php
+										}
+									?>
+									<option value="a.fst_relation_name">Customer</option>
+									<option value="a.fst_sj_no">Surat Jalan No.</option>
+								</select>
+							</span>
+						</div>
                             <table id="tblMonitoring" class="display nowrap" style="width:100%"></table>
                         </div> <!-- /.tab-pane -->
 
                         <div class="tab-pane fade" id="tab_2">
-							
+							<div align="right">						
+								<span>Search on:</span>
+								<span>
+									<select id="pilihSearch" class="filterData" name="pilihSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
+										<?php
+											foreach($arrSearch as $key => $value){ ?>
+												<option value=<?=$key?>><?=$value?></option>
+											<?php
+											}
+										?>
+										<option value="a.fst_relation_name">Customer</option>
+										<option value="a.fst_sj_no">Surat Jalan No.</option>
+										<option value="a.fdt_sj_date">S/J DateTime</option>
+										<option value="a.fst_sj_return_resi_no">S/J Return Resi No.</option>
+									</select>
+								</span>
+							</div>
                             <table id="tblHistMonitoring" class="display nowrap" style="width:100%"></table>
                         </div><!-- /.tab-pane -->
                                             

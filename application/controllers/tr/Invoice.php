@@ -114,7 +114,7 @@ class Invoice extends MY_Controller{
         $mdlJurnal =$this->parser->parse('template/mdlJUrnal.php', [], true);
         $data["mdlJurnal"] = $mdlJurnal;
 
-        /*$piutangAcc = $this->glaccounts_model->getDataById(getGLConfig("SO_PIUTANG"))["gl_Account"];
+        $piutangAcc = $this->glaccounts_model->getDataById(getGLConfig("SO_PIUTANG"))["gl_Account"];
         $discAcc = $this->glaccounts_model->getDataById(getGLConfig("INV_DISC"))["gl_Account"];
         $uangMukaAcc= $this->glaccounts_model->getDataById(getGLConfig("SO_DP"))["gl_Account"];
         $salesAcc = $this->glaccounts_model->getDataById(getGLConfig("INV_SALES"))["gl_Account"];
@@ -127,7 +127,7 @@ class Invoice extends MY_Controller{
             "ppn"=>["code"=>$ppnAcc->fst_glaccount_code,"name"=>$ppnAcc->fst_glaccount_name,"pos"=>"C"],
         ];
 
-        $data["jurnalAcc"] = $jurnalAcc;*/
+        $data["jurnalAcc"] = $jurnalAcc;
         
 		if($mode == 'ADD'){
 			$data["fin_inv_id"] = 0;
