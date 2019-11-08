@@ -37,7 +37,7 @@ class Msprojects_model extends MY_Model{
     }
 
     public function getAllList(){
-        $ssql = "select fin_project_id,fst_project_name, from msprojects where fst_active = 'A' order by fst_project_name";
+        $ssql = "select * from msprojects where fst_active = 'A' order by fst_project_name";
         $qr = $this->db->query($ssql,[]);
         $rs = $qr->result();
         return $rs;

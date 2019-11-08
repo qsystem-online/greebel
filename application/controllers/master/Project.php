@@ -31,11 +31,11 @@ class Project extends MY_Controller {
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Project ID.', 'width' => '15%', 'data' => 'fin_project_id'],
+			['title' => 'Project ID.', 'width' => '10%', 'data' => 'fin_project_id'],
 			['title' => 'Project Name', 'width' => '15%', 'data' => 'fst_project_name'],
             ['title' => 'Start Date', 'width' => '15%', 'data' => 'fdt_project_start'],
             ['title' => 'End Date', 'width' => '15%', 'data' => 'fdt_project_end'],
-            ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_memo'],
+            ['title' => 'Memo', 'width' => '15%', 'data' => 'fst_memo'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
         $main_header = $this->parser->parse('inc/main_header',[],true);
