@@ -42,8 +42,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 <div class="btn-group btn-group-sm  pull-right">					
                     <a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
                     <a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+                    <a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Print")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
                     <a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                    <a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+                    <a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
                 </div>
 			</div>
             <!-- end box header -->
@@ -71,7 +72,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-                        <label for="fdt_project_start" class="col-sm-2 control-label"><?=lang("Start Date")?></label>
+                        <label for="fdt_project_start" class="col-sm-2 control-label"><?=lang("Start Date")?> :</label>
                         <div class="col-sm-4">
                             <div class="input-group date">
                                 <div class="input-group-addon">
@@ -83,7 +84,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <!-- /.input group -->
                         </div>
 
-                        <label for="fdt_project_end" class="col-sm-2 control-label"><?=lang("End Date")?></label>
+                        <label for="fdt_project_end" class="col-sm-2 control-label"><?=lang("End Date")?> :</label>
                         <div class="col-sm-4">
                             <div class="input-group date">
                                 <div class="input-group-addon">
@@ -97,7 +98,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-                        <label for="fst_memo" class="col-sm-2 control-label"><?=lang("Memo")?></label>
+                        <label for="fst_memo" class="col-sm-2 control-label"><?=lang("Memo")?> :</label>
                         <div class="col-sm-10">
                             <textarea rows="4" style="width:100%" class="form-control" id="fst_memo" placeholder="<?=lang("Memo")?>" name="fst_memo"></textarea>
                         </div>
@@ -224,9 +225,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         });
 
-        $("#btnList").click(function(e){
+        $("#btnClose").click(function(e){
             e.preventDefault();
-            window.location.replace(" <?= site_url() ?>master/project");
+            window.location.replace(" <?= site_url() ?>master/project/lizt");
         });
     });
 
