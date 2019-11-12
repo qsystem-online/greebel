@@ -178,7 +178,7 @@ class Trpo_model extends MY_Model {
         $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit]);
         $rw = $qr->row();
         if(!$rw){
-            return 7500;
+            return 0;
         }else{
             return $rw->fdc_price;
         }
