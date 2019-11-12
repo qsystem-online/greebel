@@ -258,7 +258,7 @@
 	var rowDetail;
 	var arrExchangeRate =  new Array();;
 	<?php foreach($arrExchangeRate as $key=>$value){ ?>
-		arrExchangeRate["<?=$key?>"] = "<?= $value ?>";
+		arrExchangeRate["<?=$key?>"] = "<?= $value->fdc_rate ?>";
 	<?php }	?>
 	$(function(){
 		console.log(arrExchangeRate);

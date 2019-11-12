@@ -1,5 +1,5 @@
 <?php
-	defined('BASEPATH') OR exit('No direct script access allowed');	
+	defined('BASEPATH') OR exit('No direct script access allowed');		
 ?>
 
 <link rel="stylesheet" href="<?=base_url()?>bower_components/select2/dist/css/select2.min.css">
@@ -12,7 +12,7 @@
 </style>
 
 <section class="content-header">
-	<h1><?=lang("Pembelian - Retur")?><small><?=lang("form")?></small></h1>
+	<h1><?=lang("Pembelian - Biaya")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
 		<li><a href="#"><?= lang("Pembelian") ?></a></li>
@@ -41,7 +41,7 @@
 				<form id="frmTransaction" class="form-horizontal"  method="POST" enctype="multipart/form-data">			
 					<div class="box-body">
 						<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">	
-						<input type="hidden" class="form-control" id="fin_purchasereturn_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_purchasereturn_id" value="<?=$fin_purchasereturn_id?>" readonly>
+						<input type="hidden" class="form-control" id="fin_purchasecost_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_purchasecost_id" value="<?=$fin_purchasecost_id?>" readonly>
 
 						<div class="form-group">
 							<label for="fst_delivery_address" class="col-md-2 control-label"></label>
@@ -52,25 +52,33 @@
 						</div>
 
                         <div class="form-group">
-							<label for="fst_purchasereturn_no" class="col-md-2 control-label"><?=lang("No. Retur")?></label>	
+							<label for="fst_purchasecost_no" class="col-md-2 control-label"><?=lang("No. Memo Biaya")?></label>	
 							<div class="col-md-4">				
-								<input type="TEXT" id="fst_purchasereturn_no" name="fst_purchasereturn_no" class="form-control"  value="<?=$fst_purchasereturn_no?>" placeholder="PREFIX/BRANCH/YEAR/MONTH/99999" /> 
+								<input type="TEXT" id="fst_purchasecost_no" name="fst_purchasecost_no" class="form-control"  value="<?=$fst_purchasecost_no?>" placeholder="PREFIX/BRANCH/YEAR/MONTH/99999" /> 
 							</div>
 
-							<label for="fdt_purchasereturn_datetime" class="col-md-2 control-label text-right"><?=lang("Tanggal Retur")?> *</label>
+							<label for="fdt_purchasecost_datetime" class="col-md-2 control-label text-right"><?=lang("Tanggal")?> *</label>
 							<div class="col-md-4">
 								<div class="input-group date">
 									<div class="input-group-addon">
 										<i class="fa fa-calendar"></i>
 									</div>
-									<input type="text" class="form-control text-right datetimepicker" id="fdt_purchasereturn_datetime" name="fdt_purchasereturn_datetime" value=""/>
+									<input type="text" class="form-control text-right datetimepicker" id="fdt_purchasecost_datetime" name="fdt_purchasecost_datetime" value=""/>
 								</div>
-								<div id="fdt_purchasereturn_datetime_err" class="text-danger"></div>
+								<div id="fdt_purchasecost_datetime_err" class="text-danger"></div>
 								<!-- /.input group -->
 							</div>
 
 						</div>
-												
+						
+						<div id="divPO" class="form-group">
+                            <label for="fin_po_id" class="col-md-2 control-label"><?=lang("Purchase Order")?> </label>							
+                            <div class="col-sm-10">
+								<select id="fin_po_id" class="form-control" name="fin_po_id" style="width:100%"></select>                                
+							</div>							                    
+						</div>
+
+
 						<div class="form-group">
                             <label for="fin_vendor_id" class="col-md-2 control-label"><?=lang("Supplier")?> </label>							
                             <div class="col-sm-10">
@@ -84,20 +92,8 @@
 								</select>
                             </div>                        
                         </div>
-
-						<div class="form-group">							
-							<div class="col-md-10 col-md-offset-2">
-								<label class="checkbox-inline"><input id="fbl_non_faktur" name='fbl_non_faktur' type="checkbox" value="1">Non Faktur</label>
-							</div>
-						</div>
 						
-						<div id="divLPBPurchase" class="form-group">
-                            <label for="fin_lpbpurchase_id" class="col-md-2 control-label"><?=lang("Faktur Pembelian")?> </label>							
-                            <div class="col-sm-10">
-								<select id="fin_lpbpurchase_id" class="form-control" name="fin_lpbpurchase_id" style="width:100%"></select>                                
-							</div>							                    
-						</div>
-
+												
 						<div class="form-group">
 							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> </label>
                             <div class="col-sm-2">
@@ -115,32 +111,18 @@
 							</div>										                    							
 						</div>
 						
-						<div class="form-group">
-                            <label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Gudang")?> </label>							
-                            <div class="col-sm-10">
-								<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id" style="width:100%">
-									<?php
-										$warehouseList = $this->mswarehouse_model->getWarehouseList();
-										foreach($warehouseList as $warehouse){
-											
-											echo "<option value='$warehouse->fin_warehouse_id'>$warehouse->fst_warehouse_name</option>";
-										}
-									?>
-								</select>                                
-							</div>							                    
-						</div>
-						
+					
 
 
 						<div class="form-group" style="margin-bottom:0px">
 							<div class="col-md-12" style="text-align:right">
-								<button id="btn-add-detail" class="btn btn-primary btn-sm" style="display:none"><i class="fa fa-cart-plus" aria-hidden="true"></i>Tambah Item</button>
+								<button id="btn-add-detail" class="btn btn-primary btn-sm" style="display:none"><i class="fa fa-cart-plus" aria-hidden="true"></i>Tambah Biaya</button>
 							</div>
 						</div>
 
 						<div class="form-group">
 							<div class="col-sm-12">
-								<table id="tbldetails" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+								<table id="tbldetails" class="table table-bordered table-hover table-striped row-border compact nowarp " style="min-width:100%"></table>
 							</div>
 							<div id="details_err" class="text-danger"></div>
 						</div>
@@ -148,25 +130,18 @@
                         <div class="form-group">
                             							
                             <div class="col-sm-6">
-								<label for="fin_vendor_id" class=""><?=lang("Memo :")?> </label>
+								<label for="fst_memo" class=""><?=lang("Memo :")?> </label>
                                 <textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="3" style="resize:none;width:100%"></textarea>
                                 <div id="fst_memo_err" class="text-danger"></div>
 							</div> 
-							<div class="col-sm-6" style="padding-right:0px">
-								<label class="col-md-8 control-label" style="padding-top:0px"><?=lang("Sub Total")?> : </label>
-								<label id="ttlSubTotal" class="col-md-4 control-label" style="padding-top:0px">0.00</label>
-								
-								<label class="col-md-8 control-label" style="padding-top:0px"><?=lang("Total Disc")?> : </label>
-								<label id="ttlDisc" class="col-md-4 control-label" style="padding-top:0px">0.00</label>
-								
-								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Ppn")?> 
-									<input id="fdc_ppn_percent" name="fdc_ppn_percent" style="width:40px" class="text-right"  value="10" /> 
-									% :
-								</label>								
-								<label id="ppnAmount" class="col-md-4 control-label"  style="padding-top:0px">0.00</label>
 
-								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Total")?> : </label>
-								<label id="ttlAmount" class="col-md-4 control-label" style="padding-top:0px" >0.00</label>
+							<div class="col-sm-6" style="padding-right:0px">
+								<label class="col-md-8 control-label" style="padding-top:0px"><?=lang("Total")?> : </label>
+								<label id="totalAmount" class="col-md-4 control-label" style="padding-top:0px">0.00</label>
+								
+								
+								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Total IDR")?> : </label>
+								<label id="ttlAmountIdr" class="col-md-4 control-label" style="padding-top:0px" >0.00</label>
 							</div>
 							
 						</div>
@@ -230,19 +205,7 @@
 										</div>
 									</div>
 
-									<div class="form-group">
-										<label for="fst_disc_item" class=" col-md-3 control-label">Disc ++</label>
-										<div class="col-md-9">
-											<select id="fst_disc_item" class="ele-disc form-control text-right" style="width:100%">
-												<?php 
-													$discList = $this->msitemdiscounts_model->getItemDiscountList();
-													foreach($discList as $disc){
-														echo "<option value='$disc->fst_item_discount'>$disc->fst_item_discount</option>";
-													}
-												?>
-											</select>											
-										</div>
-									</div>
+									
 
 									<div class="form-group">
 										<label for="fdc_disc_amount" class="col-md-3 control-label">Disc Amount</label>
@@ -289,7 +252,7 @@
 
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
-			MdlJurnal.showJurnalByRef("PRT",$("#fin_purchasereturn_id").val());
+			MdlJurnal.showJurnalByRef("PRT",$("#fin_purchasecost_id").val());
 		});
 		
 		$("#btnDelete").click(function(e){
@@ -301,41 +264,10 @@
 			e.preventDefault();
 			window.location.href = "<?=site_url()?>tr/purchase/purchase_return/";
 		});
-
-		$("#fbl_non_faktur").change(function(e){
-			nonFaktur = $("#fbl_non_faktur").prop("checked");
-			if(nonFaktur){
-				$("#divLPBPurchase").fadeOut("slow");
-				
-				$("#fin_lpbpurchase_id").val(null).trigger("change.select2");
-				$("#fst_curr_code").prop("disabled",false);
-				$("#btn-add-detail").show();
-			}else{
-				$("#divLPBPurchase").fadeIn("slow");
-				$("#fst_curr_code").prop("disabled",true);
-				$("#btn-add-detail").hide();
-			}
-			$("#tbldetails").DataTable().clear().draw(false);		
-		});
-
+	
 		$(".fbl_is_import").change(function(e){
 			e.preventDefault();
-			$("#fin_supplier_id").trigger("change");
-
-		});
-
-		$("#fin_supplier_id").change(function(e){
-			e.preventDefault();
-			//console.log($("#fin_supplier_id").val());
-			getLPBPurchase(function(resp){
-				$("#tbldetails").DataTable().clear().draw(false);
-			});			
-		});
-
-		$("#fin_lpbpurchase_id").change(function(e){
-			e.preventDefault();
-			getDetailLPBPurchase(function(resp){
-
+			getPOList(function(resp){
 			});
 
 		});
@@ -345,6 +277,11 @@
 			var exchangeRate = arrExchangeRate[$("#fst_curr_code").val()];
 			$("#fdc_exchange_rate_idr").val(App.money_format(exchangeRate));
 		});
+
+
+
+
+
 
 		$("#btn-add-detail").click(function(e){
 			e.preventDefault();
@@ -420,8 +357,7 @@
 	var rowDetail = null;
 	var selectedItem;
 	var arrExchangeRate =  new Array();
-
-	<?php foreach($arrExchangeRate as $key=>$value){ ?>
+	<?php foreach($arrExchangeRate as $key=>$value){ ?>		
 		arrExchangeRate["<?=$key?>"] = "<?= $value->fdc_rate ?>";
 	<?php }	?>
 	
@@ -436,33 +372,13 @@
 			order: [],
 			columns:[
 				{"title" : "fin_rec_id","width": "0px",sortable:false,data:"fin_rec_id",visible:false},
-				{"title" : "fin_po_detail_id","width": "0px",sortable:false,data:"fin_po_detail_id",visible:false},				
-				{"title" : "Item id","width": "0px",sortable:false,data:"fin_item_id",visible:false},
-				{"title" : "Item Code","width": "80px",sortable:false,data:"fst_item_code"},
-				{"title" : "Item Name","width": "100px",sortable:false,data:"fst_custom_item_name"},
-				{"title" : "Satuan","width": "100px",sortable:false,data:"fst_unit"},
-				{"title" : "Price","width": "100px",sortable:false,data:"fdc_price",className:'text-right',
-					render:function(data,type,row){
-						return App.money_format(data);
-					}
-				},
-				{"title" : "Discount","width": "100px",sortable:false,data:"fst_disc_item",className:'text-center'},
-				{"title" : "Disc Amount","width": "100px",sortable:false,className:'text-right',
-					render:function(data,type,row){
-						discAmount = App.calculateDisc((row.fdc_price * row.fdb_qty_return), row.fst_disc_item);
-						return App.money_format(discAmount);
-					}
-				},
-				{"title" : "Max Return","width": "100px",sortable:false,data:"fdb_qty_total",className:'text-right'},
-				{"title" : "Return","width": "100px",sortable:false,data:"fdb_qty_return",className:'text-right'},
-				{"title" : "Total","width": "100px",sortable:false,className:'text-right',
-					render:function(data,type,row){
-						var total = row.fdb_qty_return * row.fdc_price;
-						var discAmount = App.calculateDisc((row.fdc_price * row.fdb_qty_return), row.fst_disc_item);
-						return App.money_format(total - discAmount);
-					}
-				},
-				{"title" : "Action","width": "75px",sortable:false,className:'text-center',
+				{"title" : "fin_purchasecost_id","width": "0px",sortable:false,data:"fin_purchasecost_id",visible:false},				
+				{"title" : "fst_glaccount_code","width": "0px",sortable:false,data:"fst_glaccount_code",visible:false},
+				{"title" : "Notes","width": "",sortable:false,data:"fst_notes"},
+				{"title" : "Profit & Cost Center","width": "250px",sortable:false,data:"fin_pcc_id"},
+				{"title" : "Debet","width": "125px",sortable:false,data:"fdc_debet",className:"text-right" },
+				{"title" : "Credit","width": "125px",sortable:false,data:"fdc_credit",className:"text-right"},
+				{"title" : "Action","width": "100px",sortable:false,className:'text-center',
 					render:function(data,type,row){
 						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>';
 						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
@@ -479,6 +395,10 @@
 		}).on('draw',function(){
 			$(".dataTables_scrollHeadInner").css("min-width","100%");
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+			$(".dataTables_scrollBody").css("position","static");
+
+
+
 		}).on('click','.btn-edit',function(e){
 			e.preventDefault();
 			t = $("#tbldetails").DataTable();
@@ -518,7 +438,7 @@
 	}
 
 	$(function(){
-		$("#fdt_purchasereturn_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
+		$("#fdt_purchasecost_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		$("#fin_supplier_id").select2({templateResult:testSelec});
 		$("#fin_supplier_id").val(null).trigger("change.select2");		
 		$("#fin_lpbpurchase_id").select2();	
@@ -558,7 +478,53 @@
 </script>
 
 <script type="text/javascript" info="function">
-	
+	function getPOList(callback){
+		var isImport = $(".fbl_is_import:checked").val();
+		App.getValueAjax({
+			site_url:"<?=site_url()?>",
+			model:"trpurchasecost_model",
+			func:"getListPO",
+			params:[isImport],
+			callback:function(resp){
+				var poList = resp;
+				$("#fin_po_id").empty();
+				$.each(poList ,function(i,v){
+					$("#fin_po_id").append("<option value='"+v.fin_po_id+"'>"+ v.fst_po_no +"</option>")
+				});
+				$("#fin_po_id").val(null);
+				callback(resp);
+			}
+		});
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	function calculateTotal(){
 
@@ -567,7 +533,7 @@
 		console.log(datas);
 		var total = 0;
 		var totalDisc = 0;
-		
+
 		$.each(datas,function(i,data){
 			var subttl =  parseFloat(data.fdb_qty_return * data.fdc_price);
 			var discAmount =  App.calculateDisc(subttl,data.fst_disc_item);
@@ -588,29 +554,6 @@
 
 	}
 
-	function getLPBPurchase(callback){
-		if ($("#fin_supplier_id").val() == null){
-			return;
-		}
-
-		var isImport = $(".fbl_is_import:checked").val();
-		App.getValueAjax({
-			site_url:"<?=site_url()?>",
-			model:"trpurchasereturn_model",
-			func:"getListPurchaseFaktur",
-			params:[$("#fin_supplier_id").val(),isImport],
-			callback:function(resp){
-				var lPBPurchaseList = resp;
-				$("#fin_lpbpurchase_id").empty();
-				$.each(lPBPurchaseList ,function(i,v){
-					$("#fin_lpbpurchase_id").append("<option value='"+v.fin_lpbpurchase_id+"'>"+ v.fst_lpbpurchase_no +"</option>")
-				});
-				$("#fin_lpbpurchase_id").val(null);
-				//$("#tbldetails").DataTable().clear().draw(false);				
-				callback(resp);
-			}
-		});
-	}
 	function getDetailLPBPurchase(callback){
 		//params = JSON.stringify(arrLPBGudangId);
 		
@@ -687,7 +630,7 @@
 
 		var dataSubmit = $("#frmTransaction").serializeArray();
 		
-		var mode = $("#fin_purchasereturn_id").val() == "0" ? "ADD" : "EDIT";	
+		var mode = $("#fin_purchasecost_id").val() == "0" ? "ADD" : "EDIT";	
 
 		if (mode == "ADD"){
 			url =  "<?= site_url() ?>tr/purchase/purchase_return/ajx_add_save/";
@@ -769,8 +712,8 @@
 
 	function initForm(){
 			
-		var finPurchaseReturnId = $("#fin_purchasereturn_id").val();
-		if (finPurchaseReturnId != 0){
+		var finPurchaseCostId = $("#fin_purchasecost_id").val();
+		if (finPurchaseCostId != 0){
 			//get data from server;
 			App.blockUIOnAjaxRequest();
 			$.ajax({
@@ -789,7 +732,7 @@
 					App.autoFillForm(dataH);
 
 					$(".fbl_is_import [value='" + dataH.fbl_is_import +"']").prop("checked",true);
-					$("#fdt_purchasereturn_datetime").val(App.dateTimeFormat(dataH.fdt_purchasereturn_datetime)).datetimepicker("update");
+					$("#fdt_purchasecost_datetime").val(App.dateTimeFormat(dataH.fdt_purchasecost_datetime)).datetimepicker("update");
 					$("#fin_supplier_id").val(dataH.fin_supplier_id).trigger("change.select2");
 					
 					getLPBPurchase(function(resp){
@@ -848,7 +791,7 @@
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/purchase/purchase_return/delete/" + $("#fin_purchasereturn_id").val();
+		var url =  "<?= site_url() ?>tr/purchase/purchase_return/delete/" + $("#fin_purchasecost_id").val();
 		$.ajax({
 			url:url,
 			method:"POST",
