@@ -10,7 +10,7 @@ class Msprojects_model extends MY_Model{
     }
 
     public function getDataById($fin_project_id){
-        $ssql = "SELECT fin_project_id,fst_project_name FROM msprojects where and fst_active = 'A'";
+        $ssql = "SELECT * FROM msprojects where fin_project_id = ? and fst_active = 'A'";
         $qr = $this->db->query($ssql, [$fin_project_id]);
         $rwProjects = $qr->row();
 
@@ -37,7 +37,7 @@ class Msprojects_model extends MY_Model{
     }
 
     public function getAllList(){
-        $ssql = "select fin_project_id,fst_project_name, from msprojects where fst_active = 'A' order by fst_project_name";
+        $ssql = "select * from msprojects where fst_active = 'A' order by fst_project_name";
         $qr = $this->db->query($ssql,[]);
         $rs = $qr->result();
         return $rs;

@@ -71,7 +71,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-                        <label for="fdt_project_start" class="col-sm-2 control-label"><?=lang("Start Date")?></label>
+                        <label for="fdt_project_start" class="col-sm-2 control-label"><?=lang("Start Date")?> :</label>
                         <div class="col-sm-4">
                             <div class="input-group date">
                                 <div class="input-group-addon">
@@ -83,7 +83,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <!-- /.input group -->
                         </div>
 
-                        <label for="fdt_project_end" class="col-sm-2 control-label"><?=lang("End Date")?></label>
+                        <label for="fdt_project_end" class="col-sm-2 control-label"><?=lang("End Date")?> :</label>
                         <div class="col-sm-4">
                             <div class="input-group date">
                                 <div class="input-group-addon">
@@ -97,7 +97,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-                        <label for="fst_memo" class="col-sm-2 control-label"><?=lang("Memo")?></label>
+                        <label for="fst_memo" class="col-sm-2 control-label"><?=lang("Memo")?> :</label>
                         <div class="col-sm-10">
                             <textarea rows="4" style="width:100%" class="form-control" id="fst_memo" placeholder="<?=lang("Memo")?>" name="fst_memo"></textarea>
                         </div>
@@ -129,7 +129,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 url = "<?= site_url() ?>master/project/ajx_edit_save";
             }
 
-            //var formData = new FormData($('form')[0])
             $.ajax({
                 type: "POST",
                 enctype: 'multipart/form-data',
@@ -227,7 +226,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
         $("#btnList").click(function(e){
             e.preventDefault();
-            window.location.replace(" <?= site_url() ?>master/project");
+            window.location.replace(" <?= site_url() ?>master/project/lizt");
         });
     });
 
@@ -238,14 +237,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
             typr: "GET",
             url: url,
             success: function (resp){
-                console.log(resp.ms_Projects);
+                console.log(resp.ms_projects);
 
-                $.each(resp.ms_Projects, function(name, val){
+                $.each(resp.ms_projects, function(name, val){
                     var $el = $('[name="'+ name +'"]'),
                         type = $el.attr('type');
                     switch(type){
                         case 'checkbox':
-                            $el.filter('[value="' + val + '"]').attr('checked', 'checked');
+                            $el.filter('checked', 'checked');
                             break;
                         case 'radio':
                             $el.filter('[value="' + val + '"]').attr('checked', 'checked');
@@ -256,8 +255,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 });
 
-                $("#fdt_project_start").datepicker('update', dateFormat(resp.ms_Projects.fdt_project_start));
-                $("#fdt_project_end").datepicker('update', dateFormat(resp.ms_Projects.fdt_project_end));
+                $("#fdt_project_start").datepicker('update', dateFormat(resp.ms_projects.fdt_project_start));
+                $("#fdt_project_end").datepicker('update', dateFormat(resp.ms_projects.fdt_project_end));
             },
             error: function(e){
                 $("#result").text(e.responseText);
