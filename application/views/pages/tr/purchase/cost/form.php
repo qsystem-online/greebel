@@ -97,7 +97,7 @@
 						<div class="form-group">
 							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> </label>
                             <div class="col-sm-2">
-								<select id="fst_curr_code" type="TEXT" class="form-control" name="fst_curr_code" disabled>
+								<select id="fst_curr_code" type="TEXT" class="form-control" name="fst_curr_code">
 									<?php foreach($arrExchangeRate as $key=>$value){
 										echo "<option value='$key'>$key</option>";  
 									}
@@ -270,6 +270,15 @@
 			getPOList(function(resp){
 			});
 
+			var isImport = $(".fbl_is_import:checked").val();
+			if (isImport == 1){
+				$("#fst_curr_code").prop("disabled",false);
+			}else{
+				$("#fst_curr_code").prop("disabled",true);
+				$("#fst_curr_code").val("IDR");
+				$("#fdc_exchange_rate_idr").val(App.money_parse(1));
+			}
+
 		});
 
 		$("#fst_curr_code").change(function(e){
@@ -365,6 +374,10 @@
 		$('#tbldetails').on('preXhr.dt', function ( e, settings, data ) {
 			//add aditional data post on ajax call
 			data.sessionId = "TEST SESSION ID";
+		}).on('init.dt',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+			$(".dataTables_scrollBody").css("position","static");
 		}).DataTable({
 			scrollY: "300px",
 			scrollX: true,			
@@ -391,13 +404,10 @@
 			searching: false,
 			lengthChange: false,
 			paging: false,
-			info:false,				
+			info:false,								
 		}).on('draw',function(){
-			$(".dataTables_scrollHeadInner").css("min-width","100%");
-			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
-			$(".dataTables_scrollBody").css("position","static");
-
-
+			
+			
 
 		}).on('click','.btn-edit',function(e){
 			e.preventDefault();
@@ -433,17 +443,15 @@
 
 <script type="text/javascript" info="init">
 	function testSelec(val){		
-		return $('<label style="width:200px">'+ val.text +'</label>');
-		//return '<span>'+val+'</span>';
+		return $('<label style="width:100%">'+ val.text +'</label>');
 	}
 
 	$(function(){
 		$("#fdt_purchasecost_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		$("#fin_supplier_id").select2({templateResult:testSelec});
 		$("#fin_supplier_id").val(null).trigger("change.select2");		
-		$("#fin_lpbpurchase_id").select2();	
-		$("#fst_curr_code").val(null);
-		$("#fin_warehouse_id").val(null);
+		$(".fbl_is_import").trigger("change");
+
 
 		//Form Detail
 		$("#fin_item_id").select2({
@@ -554,47 +562,7 @@
 
 	}
 
-	function getDetailLPBPurchase(callback){
-		//params = JSON.stringify(arrLPBGudangId);
-		
-		
-		App.getValueAjax({			
-			site_url:"<?= site_url()?>",
-			model:"trpurchasereturn_model",
-			func:"getLPBPurchase",
-			params:[$("#fin_lpbpurchase_id").val()],
-			callback:function(resp){
-				lPBPurchase = resp.lPBPurchase;
-				lPBPurchaseDetails = resp.lPBPurchaseDetails;
-				if(lPBPurchase == null){
-					alert('<?=lang("Faktur Pembelian tidak ditemukan")?>');
-				}
-
-				$("#fst_curr_code").val(lPBPurchase.fst_curr_code).trigger("change");
-				$("#fin_warehouse_id").val(lPBPurchase.fin_warehouse_id);
-
-				var t =  $("#tbldetails").DataTable();
-				t.clear();
-				$.each(lPBPurchaseDetails,function(i,detail){
-					var data ={
-						fin_rec_id:0,
-						fin_po_detail_id:detail.fin_po_detail_id,
-						fin_item_id:detail.fin_item_id,
-						fst_item_code:detail.fst_item_code,
-						fst_custom_item_name:detail.fst_custom_item_name,
-						fst_unit:detail.fst_unit,
-						fdc_price:detail.fdc_price,
-						fst_disc_item:detail.fst_disc_item,
-						fdb_qty_total:detail.fdb_qty_lpb - detail.fdb_qty_return,
-						fdb_qty_return:0
-					}
-					t.row.add(data);
-				});
-				t.draw(false);
-				calculateTotal();
-			}
-		});
-	}
+	
 
 	function getItemBuyUnit(defaultValue){
 		App.getValueAjax({

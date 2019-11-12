@@ -620,6 +620,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>tr/purchase_order/add")
 		});
+
 		$("#btnDelete").confirmation({
 			title:"<?=lang("Hapus data ini ?")?>",
 			rootSelector: '#btnDelete',
@@ -967,13 +968,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						buttons : {
 							OK : function(){
 								if(resp.status == "SUCCESS"){
-									//window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
+									$("#btnNew").trigger("click");
 									return;
 								}
 							},
 						}
 					});
 				}
+
 				if(resp.status == "VALIDATION_FORM_FAILED" ){
 					//Show Error
 					errors = resp.data;

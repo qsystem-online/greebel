@@ -61,14 +61,13 @@ class Trpurchasecost_model extends MY_Model {
         
         return $max_tr_no;
     }
-
     
     public function getListPO($isImport){
-        $ssql = "select * from trpo and fbl_is_import = ? and fbl_cost_completed =  false";
+        $isImport = (int) $isImport;
+        $ssql = "select * from trpo where fbl_is_import = ? and fbl_cost_completed =  false";
         $qr = $this->db->query($ssql,[$isImport]);
         $rs = $qr->result();
-        return $rs;
-        
+        return $rs;        
     }
 
     
