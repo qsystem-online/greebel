@@ -117,8 +117,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-                                        //location.reload();
-										window.location.href = "<?= site_url() ?>gl/profit_cost_center/add";
+										$("#btnNew").trigger("click");
 										return;
 									}
 								},

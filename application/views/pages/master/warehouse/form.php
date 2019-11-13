@@ -127,8 +127,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        //location.reload();
-                                        window.location.href = "<?= site_url() ?>master/warehouse/add";
+                                        $("#btnNew").trigger("click");
                                         return;
                                     }
                                 },

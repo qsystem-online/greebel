@@ -147,7 +147,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             buttons : {
                                 OK : function(){
                                     if(resp.status == "SUCCESS"){
-                                        window.location.href = "<?= site_url() ?>master/project/add";
+                                        $("#btnNew").trigger("click");
                                         return;
                                     }
                                 },

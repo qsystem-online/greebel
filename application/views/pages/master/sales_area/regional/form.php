@@ -137,8 +137,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        //location.reload();
-                                        window.location.href = "<?= site_url() ?>master/sales_area/add_regional";
+                                        $("#btnNew").trigger("click");
                                         return;
                                     }
                                 },
