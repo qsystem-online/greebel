@@ -130,7 +130,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				url =  "<?= site_url() ?>gl/config/prefix_cash_bank/ajx_edit_save";
 			}
 
-			//var formData = new FormData($('form')[0])
+			App.blockUIOnAjaxRequest("Please wait while saving data.....");
 			$.ajax({
 				type: "POST",
                 url: url,

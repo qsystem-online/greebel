@@ -129,6 +129,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 url = "<?= site_url() ?>master/project/ajx_edit_save";
             }
 
+            App.blockUIOnAjaxRequest("Please wait while saving data.....");
             $.ajax({
                 type: "POST",
                 enctype: 'multipart/form-data',
@@ -146,7 +147,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             buttons : {
                                 OK : function(){
                                     if(resp.status == "SUCCESS"){
-                                        window.location.href = "<?= site_url() ?>master/project/";
+                                        window.location.href = "<?= site_url() ?>master/project/add";
                                         return;
                                     }
                                 },
