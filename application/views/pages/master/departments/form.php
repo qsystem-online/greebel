@@ -42,7 +42,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="btn-group btn-group-sm  pull-right">					
 					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 				</div>
@@ -99,7 +98,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				url =  "<?= site_url() ?>master/department/ajx_edit_save";
 			}
 
-			//var formData = new FormData($('form')[0])
+			App.blockUIOnAjaxRequest("Please wait while saving data.....");
 			$.ajax({
 				type: "POST",
 				enctype: 'multipart/form-data',
@@ -117,7 +116,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>master/department/lizt";
+										$("#btnNew").trigger("click");
 										return;
 									}
 								},

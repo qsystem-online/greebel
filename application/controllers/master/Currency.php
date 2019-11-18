@@ -26,7 +26,7 @@ class Currency extends MY_Controller {
 		];
 		$this->list['breadcrumbs']=[
 			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
-			['title'=>'master Currencies','link'=>'#','icon'=>''],
+			['title'=>'Master Currencies','link'=>'#','icon'=>''],
 			['title'=>'List','link'=> NULL ,'icon'=>''],
 		];
 		$this->list['columns']=[

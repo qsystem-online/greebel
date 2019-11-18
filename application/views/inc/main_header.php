@@ -41,7 +41,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</li>
 						<!-- Menu Footer-->
 						<li class="user-footer">
-							<div class="pull-left"><a href="#" class="btn btn-default btn-flat">Change Password</a></div>
+							<div class="pull-left"><a href="<?=site_url()?>user/changepassword" class="btn btn-default btn-flat">Change Password</a></div>
 							<div class="pull-right"><a href="<?= site_url() ?>signout" class="btn btn-default btn-flat">Sign out</a></div>
 						</li>
 					</ul>

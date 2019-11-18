@@ -50,12 +50,17 @@ class Glledger_model extends MY_Model{
         //Cek Balance
         $ttlDebet = 0;
         $ttlCredit = 0;
+        $epsilon = 0.00001;
+
         foreach($datas as $data){            
             $ttlDebet += (float) $data["fdc_debit"];
             $ttlCredit += (float) $data["fdc_credit"];
         }
-        if($ttlDebet != $ttlCredit){
-            return false;          
+        if(abs($ttlDebet - $ttlCredit) > $epsilon ){          
+            return [
+                "status"=>"FAILED",
+                "message"=>"Debet and Credit not balance! ($ttlDebet vs $ttlCredit)"
+            ];          
         }
         $ids=[];
         foreach($datas as $data){
@@ -64,8 +69,23 @@ class Glledger_model extends MY_Model{
             }
             $ids[]= parent::insert($data);
         }
-        return $ids;
+
+        $error = $this->db->error();
+        if($error["code"] != 0){
+            return [
+                "status"=>"FAILED",
+                "message"=>$error["message"]
+            ];    
+        }
+
+        return [
+            "status"=>"SUCCESS",
+            "message"=>"",
+            "ids"=>$ids
+        ];  
+        
     }
+
     public function cancelJurnal($trxSourcecode,$trxId,$newTrxDate=""){
         $ssql ="select * from glledger where fst_trx_sourcecode =? and fin_trx_id = ?";
         $qr = $this->db->query($ssql,[$trxSourcecode,$trxId]);
@@ -98,4 +118,16 @@ class Glledger_model extends MY_Model{
             }
         }
     }
+
+    public function getJurnal($trxSourcecode,$trxId){
+        $ssql ="select a.*,b.fst_glaccount_name from glledger a 
+            inner join glaccounts b on a.fst_account_code = b.fst_glaccount_code 
+            where fst_trx_sourcecode = ? and fin_trx_id = ? and a.fbl_is_flip = 0 and a.fst_active = 'A'";
+
+        $qr= $this->db->query($ssql,[$trxSourcecode,(int) $trxId]);
+        $rs = $qr->result();
+        return $rs;
+    }
+
+    
 }

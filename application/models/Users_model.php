@@ -46,8 +46,7 @@ class Users_model extends MY_Model
 		return $data;
 	}
 
-	public function getRules($mode = "ADD", $id = 0)
-	{
+	public function getRules($mode = "ADD", $id = 0){
 
 		$rules = [];
 
@@ -100,6 +99,51 @@ class Users_model extends MY_Model
 				'required' => '%s tidak boleh kosong'
 			)
 		];*/
+
+		return $rules;
+	}
+
+	public function getRulesCp(){
+		$activeUser = $this->aauth->user();
+		$password = $activeUser->fst_password;
+		$CurrentPassword = $this->input->post("current_password");
+
+		$rules = [];
+
+		if (md5($CurrentPassword) != $password) {
+
+			$rules[] =
+				[
+					'field' => 'current_password',
+					'label' => 'Current Password',
+					'rules' => 'matches[' . $password . ']',
+					'errors' => array(
+						'matches' => 'Wrong password'
+					)
+				];
+		} else { }
+
+		$rules[] = [
+			'field' => 'new_password1',
+			'label' => 'New Password',
+			'rules' => 'required|min_length[3]|matches[new_password2]',
+			'errors' => array(
+				'required' => '%s tidak boleh kosong',
+				'min_length' => 'Panjang %s paling sedikit 3 character',
+				'matches' => 'not matches with Repeat password'
+			)
+		];
+
+		$rules[] = [
+			'field' => 'new_password2',
+			'label' => 'Repeat Password',
+			'rules' => 'required|min_length[3]',
+			'errors' => array(
+				'required' => '%s tidak boleh kosong',
+				'min_length' => 'Panjang %s paling sedikit 3 character'
+			)
+		];
+
 
 		return $rules;
 	}

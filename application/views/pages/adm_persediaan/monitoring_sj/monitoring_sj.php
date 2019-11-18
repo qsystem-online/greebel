@@ -4,10 +4,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <link rel="stylesheet" href="<?=base_url()?>bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 
 <section class="content-header">
-<h1><?=lang("Delivery Order")?><small><?=lang("form")?></small></h1>
+<h1><?=lang("Delivery Order Monitoring")?><small><?=lang("list")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
-		<li><a href="#"><?= lang("Tools") ?></a></li>
+		<li><a href="#"><?= lang("Monitoring") ?></a></li>
 		<li class="active title"><?=$title?></li>
 	</ol>
 </section>
@@ -23,47 +23,37 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="box-body">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#tab_1" data-toggle="tab" aria-expanded="false"><label>Delivery Order Monitoring</label></a></li>
-                        <li class=""><a href="#tab_2" data-toggle="tab" aria-expanded="false"><label>Histories</label></a></li>
+                        <li class="nav-item nav-link active"><a href="#tab_1" data-toggle="tab" aria-expanded="false"><label>Monitoring Surat Jalan</label></a></li>
+                        <li class="nav-item nav-link"><a href="#tab_2" data-toggle="tab" aria-expanded="false"><label>Histories</label></a></li>
                     </ul>
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab_1">
-						<div align="right">						
-							<span>Search on:</span>
-							<span>
-								<select id="selectSearch" class="filterData" name="selectSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
-									<?php
-										foreach($arrSearch as $key => $value){ ?>
-											<option value=<?=$key?>><?=$value?></option>
-										<?php
-										}
-									?>
-									<option value="a.fst_relation_name">Customer</option>
-									<option value="a.fst_sj_no">Surat Jalan No.</option>
+						<div style="margin-bottom:5px;margin-top:20px">						
+							<div style="float:right">
+								<label class="control-label">Search by :</label>
+								<select id="selectSearch" class="form-control" style="display:inline;width:148px">
+									<option value='a.fst_relation_name'>Customer</option>
+									<option value='a.fst_sj_no'>Surat Jalan No.</option>
 								</select>
-							</span>
+							</div>
+							<div style="clear:both"></div>
 						</div>
                             <table id="tblMonitoring" class="display nowrap" style="width:100%"></table>
                         </div> <!-- /.tab-pane -->
 
-                        <div class="tab-pane" id="tab_2">
-							<div align="right">						
-								<span>Search on:</span>
-								<span>
-									<select id="pilihSearch" class="filterData" name="pilihSearch" style="width: 148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
-										<?php
-											foreach($arrSearch as $key => $value){ ?>
-												<option value=<?=$key?>><?=$value?></option>
-											<?php
-											}
-										?>
-										<option value="a.fst_relation_name">Customer</option>
-										<option value="a.fst_sj_no">Surat Jalan No.</option>
-										<option value="a.fdt_sj_date">S/J DateTime</option>
-										<option value="a.fst_sj_return_resi_no">S/J Return Resi No.</option>
+                        <div class="tab-pane fade" id="tab_2">
+							<div style="margin-bottom:5px;margin-top:20px">
+								<div style="float:right">						
+									<label class="control-label">Search by :</label>
+									<select id="selectSearch" class="form-control" style="display:inline;width:148px">
+										<option value='a.fst_relation_name'>Customer</option>
+										<option value='a.fst_sj_no'>Surat Jalan No.</option>
+										<option value='a.fdt_sj_date'>S/J DateTime</option>
+										<option value='a.fst_sj_return_resi_no'>S/J Return Resi No.</option>
 									</select>
-								</span>
+								</div>
+								<div style="clear:both"></div>
 							</div>
                             <table id="tblHistMonitoring" class="display nowrap" style="width:100%"></table>
                         </div><!-- /.tab-pane -->

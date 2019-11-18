@@ -11,7 +11,7 @@ class Monitoring_sj extends MY_Controller{
 	
         $main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);		
-		$data["title"] = lang("Monitoring Surat Jalan");
+		$data["title"] = lang("Monitoring List");
 		
 		$page_content = $this->parser->parse('pages/adm_persediaan/monitoring_sj/monitoring_sj', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);

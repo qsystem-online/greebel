@@ -37,42 +37,42 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="fin_warehouse_id" class="col-sm-2 control-label"><?= lang("Warehouse ID") ?> :</label>
-                            <div class="col-sm-4">
+                            <label for="fin_warehouse_id" class="col-sm-4 control-label"><?= lang("Warehouse ID") ?> :</label>
+                            <div class="col-sm-5">
                                 <input type="text" class="form-control" id="fin_warehouse_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_warehouse_id" value="<?= $fin_warehouse_id ?>" readonly>
                                 <div id="fin_warehouse_id_err" class="text-danger"></div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_warehouse_name" class="col-sm-2 control-label"><?= lang("Warehouse Name") ?> :</label>
-                            <div class="col-sm-4">
+                            <label for="fst_warehouse_name" class="col-sm-4 control-label"><?= lang("Warehouse Name") ?> :</label>
+                            <div class="col-sm-5">
                                 <input type="text" class="form-control" id="fst_warehouse_name" placeholder="<?= lang("Warehouse Name") ?>" name="fst_warehouse_name">
                                 <div id="fst_warehouse_name_err" class="text-danger"></div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="select-Branch" class="col-md-2 control-label"><?= lang("Branch") ?> :</label>
-                            <div class="col-md-4">
+                            <label for="select-Branch" class="col-md-4 control-label"><?= lang("Branch") ?> :</label>
+                            <div class="col-md-5">
                                 <select id="select-Branch" class="form-control" name="fin_branch_id"></select>
                                 <div id="fin_branch_id_err" class="text-danger"></div>
                             </div>
                         </div>
 						<div class="form-group">
-							<label for="fst_delivery_address" class="col-md-2 control-label"><?= lang("Deliver ") ?> :</label>
-							<div class="col-sm-4">
+							<label for="fst_delivery_address" class="col-md-4 control-label"><?= lang("Deliver ") ?> :</label>
+							<div class="col-sm-5">
 								<textarea class="form-control" id="fst_delivery_address" name="fst_delivery_address"></textarea>
 								<div id="fst_delivery_address_err" class="text-danger"></div>
 							</div>
 						</div>
                         <div class="form-group">
-                            <label for="fbl_is_external" class="col-sm-2 control-label"><?= lang("External") ?> :</label>
+                            <label for="fbl_is_external" class="col-sm-4 control-label"><?= lang("External") ?> :</label>
                             <div class="checkbox col-sm-2">
                                 <label><input id="fbl_is_external" type="checkbox" name="fbl_is_external" value="1"><?= lang("External") ?></label><br>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="fbl_is_main" class="col-sm-2 control-label"><?= lang("Main") ?> :</label>
+                            <label for="fbl_is_main" class="col-sm-4 control-label"><?= lang("Main") ?> :</label>
                             <div class="checkbox col-sm-2">
                                 <label><input id="fbl_is_main" type="checkbox" name="fbl_is_main" value="1"><?= lang("Main Warehouse") ?></label><br>
                                 <div id="fbl_is_main_err" class="text-danger" style="padding-left:200px"></div>
@@ -109,6 +109,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }
             console.log(data);
 
+            App.blockUIOnAjaxRequest("Please wait while saving data.....");
             $.ajax({
                 type: "POST",
                 //enctype: 'multipart/form-data',
@@ -126,8 +127,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        //location.reload();
-                                        window.location.href = "<?= site_url() ?>master/warehouse/lizt";
+                                        $("#btnNew").trigger("click");
                                         return;
                                     }
                                 },

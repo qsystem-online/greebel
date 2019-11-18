@@ -99,7 +99,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				url =  "<?= site_url() ?>pr/member_group/ajx_edit_save";
 			}
 
-			//var formData = new FormData($('form')[0])
+			App.blockUIOnAjaxRequest("Please wait while saving data.....");
 			$.ajax({
 				type: "POST",
 				enctype: 'multipart/form-data',
@@ -117,7 +117,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>pr/member_group/lizt";
+										$("#btnNew").trigger("click");
 										return;
 									}
 								},

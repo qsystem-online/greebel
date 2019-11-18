@@ -7,6 +7,9 @@
 		<title>AdminLTE 2 | Dashboard</title>
 		<!-- Tell the browser to be responsive to screen width -->
 		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+		<!-- JQUERY-UI -->
+		<link rel="stylesheet" href="<?=base_url()?>bower_components/jquery-ui/jquery-ui.min.css">
+		
 		<!-- Bootstrap 3.3.7 -->
 		<link rel="stylesheet" href="<?=base_url()?>bower_components/bootstrap/dist/css/bootstrap.min.css">
 		<!-- Font Awesome -->
@@ -53,6 +56,11 @@
 		<link rel="stylesheet" href="<?=base_url()?>dist/css/skins/_all-skins.min.css">
 		
 	</head>
+	<script type="text/javascript">
+		var SECURITY_NAME = "<?=$this->security->get_csrf_token_name()?>";
+		var SECURITY_VALUE = "<?=$this->security->get_csrf_hash()?>";	
+		var SITE_URL = "<?=site_url()?>";
+	</script>
 	<?php
 		$sidebarCollapse = ($this->session->userdata('sidebar_collapse') == 1) ? "sidebar-collapse" : "";
 	?>

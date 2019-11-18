@@ -217,4 +217,12 @@ class Msitems_model extends MY_Model
 
         return $rs;
     }
+
+    public function geSimpletDataById($fin_item_id){
+        $ssql ="select * from msitems where fin_item_id = ?";
+        $qr=$this->db->query($ssql,[$fin_item_id]);
+        return $qr->row();
+    }
+
+    
 }

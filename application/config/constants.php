@@ -97,7 +97,6 @@ defined('EXCEPTION_JURNAL') OR define ('EXCEPTION_JURNAL',2000);
 
 defined('JURNAL_TRX_SC_SO') OR define ('JURNAL_TRX_SC_SO','SO');
 
-
 include_once 'host_const.php';
 
 

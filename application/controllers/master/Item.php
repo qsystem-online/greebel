@@ -681,7 +681,6 @@ class Item extends MY_Controller
         $spreadsheet->getActiveSheet()->getStyle("A1")->getFont()->setSize(18);
         $spreadsheet->getActiveSheet()->getStyle("A3:".$col."5")->getFont()->setSize(12);
         $spreadsheet->getActiveSheet()->getStyle("A7:".$col."7")->getFont()->setSize(12);
-
         $iRow1 = 4;
         $iRow2 = 5;
         $iRow = 8;
@@ -692,7 +691,6 @@ class Item extends MY_Controller
         $sheet->mergeCells('F3:'.$col.'3');
         $sheet->setCellValue('F4', '=NOW()');
         $sheet->mergeCells('F4:'.$col.'4');
-
         $printItem = $this->msitems_model->getPrintItem($vendorName,$groupName,$itemCode_awal,$itemCode_akhir);
         $prevItemid ="";
         foreach ($printItem as $rw) {
@@ -751,6 +749,8 @@ class Item extends MY_Controller
             $iRow++;
 
             
+            $iRow++;
+            
         }
         $ssql = "select a.*,b.fst_item_name from msitembomdetails a left join msitems b on a.fin_item_id_bom = b.fin_item_id  where a.fin_item_id = ?";
         $qr = $this->db->query($ssql, [$prevItemid]);
@@ -778,6 +778,5 @@ class Item extends MY_Controller
         
         //FILE NAME WITH DATE
         $this->phpspreadsheet->save("item_report_" . date("Ymd") . ".xls" ,$spreadsheet);
-
     }
 }

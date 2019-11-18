@@ -122,6 +122,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             }
             console.log(data);
 
+            App.blockUIOnAjaxRequest("Please wait while saving data.....");
             $.ajax({
                 type: "POST",
                 enctype: 'multipart/form-data',
@@ -136,8 +137,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        //location.reload();
-                                        window.location.href = "<?= site_url() ?>master/sales_area/regional/lizt";
+                                        $("#btnNew").trigger("click");
                                         return;
                                     }
                                 },

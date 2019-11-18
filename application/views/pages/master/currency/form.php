@@ -191,10 +191,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				url =  "<?= site_url() ?>master/currency/ajx_edit_save";
 			}
 
-			//var formData = new FormData($('form')[0])
+			App.blockUIOnAjaxRequest("Please wait while saving data.....");
 			$.ajax({
 				type: 'POST',
-				enctype: 'multipart/form-data',
+				//enctype: 'multipart/form-data',
 				url: url,
 				data: data,
 				timeout: 600000,
@@ -206,7 +206,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>master/currency";
+										$("#btnNew").trigger("click");
 										return;
 									}
 								},
