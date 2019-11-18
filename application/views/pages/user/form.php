@@ -41,7 +41,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="btn-group btn-group-sm  pull-right">					
 					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+					<a id="btnPrinted" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 				</div>
@@ -185,6 +185,74 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 </section>
 
+<div id="modal_Printed" class="modal fade in" role="dialog" style="display: none">
+    <div class="modal-dialog" style="display:table;width:60%;min-width:600px;max-width:100%">
+        <!-- modal content -->
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><?= lang("User List") ?></h4>
+			</div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="select-branch_R" class="col-md-3 control-label"><?= lang("Branch") ?> :</label>
+                                    <div class="col-md-7">
+                                        <select id="select-branch_R" class="form-control" name="fin_branch_id">
+                                        </select>
+                                        <div id="fin_branch_id_err" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="select-department_R" class="col-md-3 control-label"><?= lang("Department") ?> :</label>
+                                    <div class="col-md-7">
+                                        <select id="select-department_R" class="form-control" name="fin_department_id">
+                                        </select>
+                                        <div id="fin_department_id_err" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="select-userId_start" class="col-md-3 control-label"><?= lang("User ID") ?> :</label>
+                                    <div class="col-md-3">
+                                        <select id="select-userId_start" class="form-control" name="fin_user_id">
+                                            <option value="0">--  <?= lang("select") ?>  --</option>
+                                        </select>
+                                        <div id="fin_user_id_err" class="text-danger"></div>
+                                    </div>
+                                    <label for="select-userId_end" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
+                                    <div class="col-md-3">
+                                        <select id="select-userId_end" class="form-control" name="fin_user_id">
+                                            <option value="0">--  <?= lang("select") ?>  --</option>
+                                        </select>
+                                        <div id="fin_user_id_err" class="text-danger"></div>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="modal-footer" style="width:100%;padding:10px" class="text-center">
+                                <button id="btnPrint" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Print")?></button>
+                                <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+                            </div>
+
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+    echo $mdlPrint;
+?>
+
 <script type="text/javascript">
     $(function() {
         branchList = [];
@@ -200,6 +268,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             groupList.push({
                 "id":"<?= $group->fin_group_id ?>",
                 "text":"<?= $group->fst_group_name ?>"
+            });  
+        <?php } ?>
+
+		userList_R = [];
+        <?php foreach($arrUser_R as $user_R){ ?>
+            userList_R.push({
+                "id":"<?= $user_R->fin_user_id ?>",
+                "text":"<?= $user_R->fst_username ?>"
             });  
         <?php } ?>
 		<?php if($mode == "EDIT"){?>
@@ -318,6 +394,48 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             data: groupList
         });
 
+		$("#select-branch_R").select2({
+            width: '100%',
+			allowClear: true,           
+            placeholder: 'ALL',
+            data: branchList
+        });
+
+		$("#select-department_R").select2({
+			width: '100%',
+			allowClear: true,           
+            placeholder: 'ALL',
+			ajax: {
+				url: '<?=site_url()?>user/get_department',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data) {
+					data2 = [];
+					$.each(data,function(index,value){
+						data2.push({
+							"id" : value.fin_department_id,
+							"text" : value.fst_department_name
+						});	
+					});
+					console.log(data2);
+					return {
+						results: data2
+					};
+				},
+				cache: true,
+			}
+		});
+
+		$("#select-userId_start").select2({
+            width: '100%',
+            data: userList_R
+        });
+
+		$("#select-userId_end").select2({
+            width: '100%',
+            data: userList_R
+        });
+
 		$("#btnNew").click(function(e){
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>user/add")
@@ -363,6 +481,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 			});
 		});
+
+		$("#btnPrinted").click(function(e){
+			$("#modal_Printed").modal("toggle");
+		});
+
+		$("#btnPrint").click(function(e){
+			layoutColumn = [
+				{column: "Birth date",hidden:false,id:"fdt_birthdate"},
+                {column: "Birth place",hidden:false,id:"fst_birthplace"},
+				{column: "Address",hidden:false,id:"fst_address"},
+				{column: "Phone",hidden:false,id:"fst_phone"},
+				{column: "Email",hidden:false,id:"fst_email"},
+			];
+			url = "<?= site_url() ?>user/get_printUser/" + $("#select-branch_R").val() + '/' + $("#select-department_R").val() + '/' + $("#select-userId_start").val() + '/' + $("#select-userId_end").val();
+            MdlPrint.showPrint(layoutColumn,url);
+        });
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
@@ -432,3 +566,5 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
+<!-- DataTables -->
+<script src="<?= base_url() ?>bower_components/datatables.net/datatables.min.js"></script>

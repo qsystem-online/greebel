@@ -533,3 +533,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
         });
     }
 </script>
+<!-- DataTables -->
+<script src="<?= base_url() ?>bower_components/datatables.net/datatables.min.js"></script>
+<script src="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.min.js"></script>

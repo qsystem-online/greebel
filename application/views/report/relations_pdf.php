@@ -129,7 +129,7 @@
         <?php $no=0;$no<=100;$no++; ?>
         <?php foreach($datas as $data): ?>
         <?php
-            switch ($data["RelationType"]) {
+            switch ($data["fst_relation_type"]) {
               case '1';
                 $relationType = "Customer";
                 break;
@@ -176,13 +176,13 @@
                 $relationType = "Expedisi, Supplier/Vendor, Customer";
                 break;
             }
-            $data['RelationType'] = $relationType;
+            $data["fst_relation_type"] = $relationType;
         ?>
           <tr>
             <td><?php echo $no; ?></td>
-            <td><?php echo $data['RelationId']; ?></td>
-            <td><?php echo $data['RelationName']; ?></td>
-            <td><?php echo $data['RelationType']; ?></td>
+            <td><?php echo $data['fin_relation_id']; ?></td>
+            <td><?php echo $data['fst_relation_name']; ?></td>
+            <td><?php echo $data['fst_relation_type']; ?></td>
           </tr>
         <?php $no++; ?>
         <?php endforeach; ?>

@@ -62,6 +62,7 @@ class User extends MY_Controller
 	{
 		$this->load->library("menus");
 		$this->load->model("usersgroup_model");
+		$this->load->model("users_model");
 
 		if ($this->input->post("submit") != "") {
 			$this->add_save();
@@ -69,10 +70,13 @@ class User extends MY_Controller
 
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+		$mdlPrint = $this->parser->parse('template/mdlPrint.php', [], true);
 
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add User" : "Update User";
 		$data["fin_user_id"] = $fin_user_id;
+		$data["mdlPrint"] = $mdlPrint;
+		$data["arrUser_R"] = $this->users_model->getUserList_R();
 		$data["arrBranch"] = $this->msbranches_model->getAllList();
 		$data["arrGroup"] = $this->usersgroup_model->getAllList();
 
@@ -408,4 +412,161 @@ class User extends MY_Controller
 		$this->Cell(30, 10, 'Percobaan Header Dan Footer With Page Number', 0, 0, 'C');
 		$this->Cell(0, 10, 'Halaman ' . $this->PageNo() . ' dari {nb}', 0, 0, 'R');
 	}
+
+	public function get_printUser($branchName,$departmentName,$userId_awal,$userId_akhir) {
+        $layout = $this->input->post("layoutColumn");
+        $arrLayout = json_decode($layout);
+        
+        $this->load->model("users_model");
+        $this->load->library("phpspreadsheet");
+        
+        $spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/unlock/template_users_log.xlsx");
+        $sheet = $spreadsheet->getActiveSheet();
+        
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+        $sheet->getPageMargins()->setBottom(1);
+
+        //AUTO SIZE COLUMN
+        $sheet->getColumnDimension("A")->setAutoSize(true);
+        $sheet->getColumnDimension("B")->setAutoSize(true);
+        $sheet->getColumnDimension("C")->setAutoSize(true);
+        $sheet->getColumnDimension("D")->setAutoSize(true);
+        $sheet->getColumnDimension("E")->setAutoSize(true);
+        $sheet->getColumnDimension("F")->setAutoSize(true);
+		$sheet->getColumnDimension("G")->setAutoSize(true);
+		$sheet->getColumnDimension("H")->setAutoSize(true);
+        $sheet->getColumnDimension("I")->setAutoSize(true);
+        $sheet->getColumnDimension("J")->setAutoSize(true);
+        $sheet->getColumnDimension("K")->setAutoSize(true);
+        $sheet->getColumnDimension("L")->setAutoSize(true);
+        $sheet->getColumnDimension("M")->setAutoSize(true);
+		$sheet->getColumnDimension("N")->setAutoSize(true);
+
+        // SUBTITLE
+        $sheet->mergeCells('B4:D4');
+        $sheet->mergeCells('B5:D5');
+        $sheet->mergeCells('B3:D3');
+
+        //HEADER COLUMN
+        $sheet->setCellValue("A7", "No.");
+        $sheet->setCellValue("B7", "ID");
+        $sheet->setCellValue("C7", "User Name");
+        $sheet->setCellValue("D7", "Full Name");
+        $sheet->setCellValue("E7", "Gender");
+        $sheet->setCellValue("F7", "Birth date");
+		$sheet->setCellValue("G7", "Birth place");
+		$sheet->setCellValue("H7", "Address");
+		$sheet->setCellValue("I7", "Phone");
+		$sheet->setCellValue("J7", "Email");
+		$sheet->setCellValue("K7", "Branch Name");
+		$sheet->setCellValue("L7", "Department");
+		$sheet->setCellValue("M7", "Group");
+		$sheet->setCellValue("N7", "Admin");
+		$i = 13;
+        $col = $this->phpspreadsheet->getNameFromNumber($i);
+        //TITLE
+        $sheet->mergeCells('A1:N1');
+        $sheet->setCellValue("A1", "USER LIST");
+
+        //FORMAT NUMBER
+        //$spreadsheet->getActiveSheet()->getStyle('D8:'.$col.'500')->getNumberFormat()->setFormatCode('#,##0.00');
+        
+        //COLOR HEADER COLUMN
+        $spreadsheet->getActiveSheet()->getStyle('A7:N7')
+            ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('99FFFF');
+
+        //FONT HEADER CENTER
+        $spreadsheet->getActiveSheet()->getStyle('A7:N7')
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        //FONT ITALIC
+        $italycArray = [
+            'font' => [
+                'italic' => true,
+            ],
+        ];
+
+        //FONT BOLD
+        $styleArray = [
+            'font' => [
+                'bold' => true,
+            ],
+        ];
+        $sheet->getStyle('A7:N7')->applyFromArray($styleArray);
+        $sheet->getStyle('B3:N3')->applyFromArray($styleArray);
+        $sheet->getStyle('B4:N4')->applyFromArray($styleArray);
+        $sheet->getStyle('B5:N5')->applyFromArray($styleArray);
+
+        //FONT SIZE
+        $spreadsheet->getActiveSheet()->getStyle("A1")->getFont()->setSize(18);
+        $spreadsheet->getActiveSheet()->getStyle("A3:N5")->getFont()->setSize(12);
+        $spreadsheet->getActiveSheet()->getStyle("A7:N7")->getFont()->setSize(12);
+
+        $iRow1 = 4;
+        $iRow2 = 5;
+        $iRow = 8;
+        $no = 1;
+
+        //DATE & TIME
+        $sheet->setCellValue('K3', '=NOW()');
+        $sheet->mergeCells('K3:N3');
+        $sheet->setCellValue('K4', '=NOW()');
+        $sheet->mergeCells('K4:N4');
+
+        $printUser = $this->users_model->getPrintUser($branchName,$departmentName,$userId_awal,$userId_akhir);
+        foreach ($printUser as $rw) {
+			$fbl_admin = $rw->fbl_admin;
+            switch($fbl_admin){
+				case 0:
+                    $fbl_admin = "FALSE";
+					break;
+				case 1:
+					$fbl_admin = "TRUE";
+					break;
+			}
+			$sheet->setCellValue("A$iRow", $no++);
+			$sheet->setCellValue("B$iRow1", $rw->fst_branch_name); //fin_item_id & fst_vendor_item_name
+			$sheet->setCellValue("B$iRow2", $rw->fst_department_name); //fin_item_group_id & fst_item_group_name
+			//$sheet->setCellValue("A$iRow", $no++);
+			$sheet->setCellValue("B$iRow", $rw->fin_user_id);
+			$sheet->setCellValue("C$iRow", $rw->fst_username);
+			$sheet->setCellValue("D$iRow", $rw->fst_fullname);
+			$sheet->setCellValue("E$iRow", $rw->fst_gender);
+			$sheet->setCellValue("F$iRow", $rw->fdt_birthdate);
+			$sheet->setCellValue("G$iRow", $rw->fst_birthplace);
+			$sheet->setCellValue("H$iRow", $rw->fst_address);
+			$sheet->setCellValue("I$iRow", $rw->fst_phone);
+			$sheet->setCellValue("J$iRow", $rw->fst_email);
+			$sheet->setCellValue("K$iRow", $rw->fst_branch_name);
+			$sheet->setCellValue("L$iRow", $rw->fst_department_name);
+			$sheet->setCellValue("M$iRow", $rw->fst_group_name);
+			$sheet->setCellValue("N$iRow", $fbl_admin);
+			if ($fbl_admin =="FALSE"){
+				$spreadsheet->getActiveSheet()->getStyle("N$iRow")->getFont()->getColor()->setRGB('0000FF');
+			}
+            $iRow++;
+
+            
+        }
+
+        //BORDER
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DASHED
+                ],
+            ],
+        ];
+        $iRow = $iRow - 1;
+        $sheet->getStyle('A7:'.$col.$iRow)->applyFromArray($styleArray);
+        
+        //FILE NAME WITH DATE
+        $this->phpspreadsheet->save("userlist_report_" . date("Ymd") . ".xls" ,$spreadsheet);
+
+    }
 }

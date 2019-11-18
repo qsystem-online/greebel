@@ -1195,6 +1195,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			});
 		});
 
+        $("#btnPrint").click(function(e){
+            e.preventDefault();
+			window.open("<?= site_url() ?>master/promotion/form_promotion_pdf/" + $("#fin_promo_id").val());
+        });
+
 		$("#btnList").click(function(e){
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>master/promotion/lizt");
