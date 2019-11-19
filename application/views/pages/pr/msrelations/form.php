@@ -789,9 +789,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#fst_linebusiness_id").select2({
 			width: '100%',
-			tokenSeparators: [",", " "],
+			multiple: true,
+			tokenSeparators: [","," "],
 			ajax: {
-				url: '<?=site_url()?>pr/relation/get_linebisiness_id',
+				url: '<?=site_url()?>pr/relation/get_linebusiness_id',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -1348,11 +1349,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					} 
 				});
 
-				var fst_linebusiness_id = resp.ms_relations.fst_linebusiness_id.split(",");
-				//console.log(fst_linebusiness_name);
+				/*var fst_linebusiness_id = resp.ms_relations.fst_linebusiness_id.split(",");
+				console.log(fst_linebusiness_id);
+				$("#fst_linebusiness_id").val(fst_linebusiness_id).trigger('change');*/
+				
 				var newOption = new Option(resp.ms_relations.fst_linebusiness_name, resp.ms_relations.fin_linebusiness_id, true, true);
-				$('#fst_linebusiness_id').append(newOption);
-				$("#fst_linebusiness_id").val(resp.ms_relations.fst_linebusiness_name).trigger('change');
+				$('#fst_linebusiness_id').append(newOption).trigger('change');
 
 				$("#fdt_birth_date").datepicker('update', dateFormat(resp.ms_relations.fdt_birth_date));
 
