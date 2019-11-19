@@ -93,7 +93,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                         <div class="form-group">
                             <label for="fst_name_on_pos" class="col-md-2 control-label"><?= lang("Item Name on POS") ?> *</label>
-                            <div class="col-md-5">
+                            <div class="col-md-10">
                                 <input type="text" class="form-control" id="fst_name_on_pos" placeholder="<?= lang("Item Name on POS") ?>" name="fst_name_on_pos">
                                 <div id="fst_name_on_pos_err" class="text-danger"></div>
                             </div>
@@ -119,7 +119,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                         <div class="form-group">
                         <label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Line Of Business")?> :</label>
-                            <div class="col-md-4">
+                            <div class="col-md-10">
                                 <select class="form-control select2" id="select-lineBusiness" name="fst_linebusiness_id[]"  multiple="multiple">
                                 <?php foreach ($linebusinessList as $linebusiness) {    ?>
                                             <option value='<?= $linebusiness->fin_linebusiness_id ?>'><?= $linebusiness->fst_linebusiness_name ?> </option>
@@ -1403,10 +1403,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 var arrLinebusiness = (resp.ms_items.fst_linebusiness_id.split(","));
                 $('#select-lineBusiness').val(arrLinebusiness).trigger("change.select2");
 
-                //var newOption = new Option(resp.ms_items.standardVendor, resp.ms_items.fin_standard_vendor_id, true, true);
-               //$('#select-standardVendor').append(newOption).trigger('change');
-                //var newOption = new Option(resp.ms_items.optionalVendor, resp.ms_items.fin_optional_vendor_id, true, true);
-                //$('#select-optionalVendor').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
                 $('#select-ItemCode').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
