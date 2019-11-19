@@ -534,4 +534,28 @@ class Promotion extends MY_Controller
 
         //$this->json_output($rs);
     }
+
+    public function form_promotion_pdf($fin_promo_id){
+        $this->load->library('pdf');
+        //$customPaper = array(0,0,381.89,595.28);
+        $customPaper = array(0,0,612,396);
+        $this->pdf->setPaper($customPaper, 'portrait');
+        //$this->pdf->setPaper('Letter', 'portrait');
+		//$this->pdf->setPaper('Letter', 'landscape');
+		
+		$this->load->model("mspromo_model");
+		$formPromotion = $this->mspromo_model->getDataById($fin_promo_id);
+        $data = [
+			"datas" => $formPromotion['mspromo']
+        ];
+        
+        //var_dump($data);
+        //die();
+			
+        //$this->pdf->load_view('pages/master/promotion/promotionForm_pdf.php', $formPromotion);
+        $this->load->view('pages/master/promotion/promotionForm_pdf.php', $formPromotion);
+        //$this->parser->parse('pages/master/promotion/promotionForm.php',$formPromotion);
+        //$this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
+		//$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+	}
 }

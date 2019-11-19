@@ -156,6 +156,14 @@ class Users_model extends MY_Model
 		return $rs;
 	}
 
+	public function getUserList_R()
+	{
+		$ssql = "select fin_user_id,fst_username from " . $this->tableName . " where fst_active != 'D' order by fin_user_id";
+		$qr = $this->db->query($ssql, []);
+		$rs = $qr->result();
+		return $rs;
+	}
+
 	public function get_Users()
 	{
 		$query = $this->db->get('users');
@@ -171,4 +179,25 @@ class Users_model extends MY_Model
 		$rs = $qr->result();
 		return $rs;
 	}
+
+	public function getPrintUser($branchName,$departmentName,$userId_awal,$userId_akhir){
+        if ($branchName == 'null'){
+            $branchName ="";
+        }
+        if ($departmentName == 'null'){
+            $departmentName ="";
+        }
+        $ssql = "SELECT a.*,b.fst_department_name,c.fst_group_name,c.fin_level,d.fst_branch_name,d.fbl_is_hq FROM users a 
+				LEFT JOIN departments b on a.fin_department_id = b.fin_department_id 
+				LEFT JOIN  usersgroup c on a.fin_group_id = c.fin_group_id 
+				LEFT JOIN  msbranches d on a.fin_branch_id = d.fin_branch_id 
+                WHERE a.fin_branch_id like ?  AND a.fin_department_id like ?
+                AND a.fin_user_id >= '$userId_awal' AND a.fin_user_id <= '$userId_akhir' ORDER BY a.fst_fullname ";
+        $query = $this->db->query($ssql,['%'.$branchName.'%','%'.$departmentName.'%']);
+        //echo $this->db->last_query();
+        //die();
+        $rs = $query->result();
+
+        return $rs;
+    }
 }

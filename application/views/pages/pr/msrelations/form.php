@@ -723,7 +723,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 			console.log(data);
 
-			//var formData = new FormData($('form')[0])
+			App.blockUIOnAjaxRequest("Please wait while saving data.....");
 			$.ajax({
 				type: "POST",
 				//enctype: 'multipart/form-data',
@@ -741,7 +741,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-										window.location.href = "<?= site_url() ?>pr/relation/add";
+										$("#btnNew").trigger("click");
 										return;
 									}
 								},

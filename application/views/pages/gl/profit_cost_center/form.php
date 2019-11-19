@@ -99,7 +99,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				url =  "<?= site_url() ?>gl/profit_cost_center/ajx_edit_save";
 			}
 
-			//var formData = new FormData($('form')[0])
+			App.blockUIOnAjaxRequest("Please wait while saving data.....");
 			$.ajax({
 				type: "POST",
                 enctype: 'multipart/form-data',
@@ -117,8 +117,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							buttons : {
 								OK : function(){
 									if(resp.status == "SUCCESS"){
-                                        //location.reload();
-										window.location.href = "<?= site_url() ?>gl/profit_cost_center";
+										$("#btnNew").trigger("click");
 										return;
 									}
 								},

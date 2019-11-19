@@ -388,12 +388,28 @@ class Glaccount extends MY_Controller
 
         $printGLAccount = $this->glaccounts_model->getPrintGLAccount($mainGroupGL_start,$mainGroupGL_end);
         foreach ($printGLAccount as $rw) {
+            $level_name = $rw->fst_glaccount_level;
+            switch($level_name){
+				case "HD":
+                    $level_name = "Header";
+					break;
+				case "DT":
+					$level_name = "Detail";
+					break;
+				case "DK":
+					$level_name = "Detail Kas";
+					break;
+				case "DB":
+					$level_name = "Detail Bank";
+					break;
+			}
+			//$rw->fst_glaccount_level = $level_name;
 			$sheet->setCellValue("A$iRow", $no++);
 			$sheet->setCellValue("B$iRow0", $mainGroupGL_start." s/d ".$mainGroupGL_end);
 			//$sheet->setCellValue("A$iRow", $no++);
 			$sheet->setCellValue("B$iRow", $rw->fst_glaccount_code);
 			$sheet->setCellValue("C$iRow", $rw->fst_glaccount_name);
-			$sheet->setCellValue("D$iRow", $rw->fst_level_name);
+			$sheet->setCellValue("D$iRow", $level_name);
             $iRow++;
 
             

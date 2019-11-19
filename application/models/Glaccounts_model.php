@@ -94,7 +94,7 @@ class Glaccounts_model extends MY_Model
         if ($mainGroupGL_end == 'null'){
             $mainGroupGL_end ="";
         }
-        $ssql = "SELECT a.*,b.fst_glaccount_maingroup_name FROM glaccounts
+        $ssql = "SELECT a.*,b.fst_glaccount_maingroup_name FROM glaccounts a
         left join glaccountmaingroups b on a.fin_glaccount_maingroup_id = b.fin_glaccount_maingroup_id
         WHERE a.fin_glaccount_maingroup_id >= '$mainGroupGL_start' AND a.fin_glaccount_maingroup_id <= '$mainGroupGL_end' 
         ORDER BY a.fst_glaccount_code ";

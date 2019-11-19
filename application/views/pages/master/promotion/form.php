@@ -1065,7 +1065,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 url = "<?= site_url() ?>master/promotion/ajx_edit_save";
             }
             console.log(data);
-            //var formData = new FormData($('form')[0])
+
+            App.blockUIOnAjaxRequest("Please wait while saving data.....");
             $.ajax({
                 type: "POST",
                 //enctype: 'multipart/form-data',
@@ -1083,7 +1084,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        window.location.href = "<?= site_url() ?>master/promotion";
+                                        $("#btnNew").trigger("click");
                                         return;
                                     }
                                 },
@@ -1212,6 +1213,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 				}
 			});
 		});
+
+        $("#btnPrint").click(function(e){
+            e.preventDefault();
+			window.open("<?= site_url() ?>master/promotion/form_promotion_pdf/" + $("#fin_promo_id").val());
+        });
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
