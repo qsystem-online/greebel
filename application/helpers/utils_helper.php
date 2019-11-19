@@ -138,7 +138,9 @@
     function getDataTable($table,$fields="*",$where=""){
         $ci =& get_instance();
         $ci->db->select($fields);
-        $ci->db->where($where);
+        if ($where != ""){
+            $ci->db->where($where);
+        }        
         $query = $ci->db->get($table);
         return $query->result();
     }
@@ -185,7 +187,7 @@
         if ($tgl < $lockDate){
             return [
                 "status"=>"VALIDATION_FORM_FAILED",
-                "message"=>"Transaction date is locked ! "
+                "message"=>sprintf(lang("Tanggal transaksi telah dikunci %s"),gmdate(DATEPICKER_FORMAT_ALIAS,$lockDate))
             ];
         }else{
             return [

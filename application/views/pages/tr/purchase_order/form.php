@@ -56,6 +56,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
 						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
@@ -103,7 +104,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div class="col-md-4">
 								<select id="fst_curr_code" class="form-control" name="fst_curr_code" disabled>
 									<?php
-
 										$currencies = $this->mscurrencies_model->getArrRate();									
 										foreach($currencies as $key=>$currency){
 											$selected = $currency->fst_curr_code == "IDR" ? "SELECTED" : "";
@@ -226,7 +226,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									<label class="col-md-4 control-label" style='text-align:right' id="total">0.00</label>
 								
 									<label for="total" class="col-md-5 control-label">Uang Muka :</label>
-									<label class="col-md-3 control-label checkbox-inline" style="font-weight:700"><input type="checkbox" name="fbl_dp_inc_ppn" id="fbl_dp_inc_ppn" value="1" checked>Include PPN :</label>
+									<label class="col-md-3 control-label checkbox-inline" style="font-weight:700">
+									<input type="checkbox" name="fbl_dp_inc_ppn" id="fbl_dp_inc_ppn" value="1" checked>Include PPN :</label>
 									<div class="col-md-4 control-label" style="text-align:right">										
 										<input type="text" class="money form-control text-right" id="fdc_downpayment" name="fdc_downpayment" value="0.00" style="text-align: right;">
 									</div>
@@ -362,7 +363,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		initVarForm();
 		
 		$(".fbl_is_import").change(function(e){
-			if($(this).val() == "1"){
+
+			if( $(".fbl_is_import:checked").val() == "1"){
 				$("#fst_curr_code").prop("disabled",false);
 				$("#fdc_ppn_percent").val(0);
 				$("#fdc_ppn_percent").prop("readonly",true);
@@ -372,7 +374,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}else{				
 				$("#fdc_ppn_percent").prop("readonly",false);
 				$("#fbl_dp_inc_ppn").prop("disabled",false);
-				$("#fdc_ppn_percent").val(10);				
+				//$("#fdc_ppn_percent").val(10);				
 				$("#fst_curr_code").val("<?=getDefaultCurrency()["CurrCode"]?>").trigger("change.select2");
 				$("#fdc_exchange_rate_idr").val(App.money_format(1));
 				$("#fst_curr_code").prop("disabled",true);
@@ -395,9 +397,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
-			$("#mdlJurnal").modal({
-				backdrop:"static",
-			});
+			MdlJurnal.showJurnalByRef("PO",$("#fin_po_id").val());
 		});
 
 		$("#btnSubmitAjax").click(function(event){
@@ -793,34 +793,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				return;
 			}
 
-
-			$.each(dataH, function(name, val){
-				var $el = $('[name="'+name+'"]'),
-				type = $el.attr('type');
-				switch(type){
-					case 'checkbox':
-						$el.filter('[value="' + val + '"]').attr('checked', 'checked');
-						break;
-					case 'radio':
-						$el.filter('[value="' + val + '"]').attr('checked', 'checked');
-						break;
-					default:
-						$el.val(val);
-				}
-			});
-
+			App.autoFillForm(dataH);
 			
-			
-			/*
-			if(dataH.fbl_is_import == 1){
-				$("#fblIsImportTrue").prop("checked",true);
-			}else{
-				$("#fblIsImportFalse").prop("checked",true);
-			}
-			*/
-
+			$("#fdc_ppn_percent").val(dataH.fdc_ppn_percent);
 			$(".fbl_is_import [value='" + dataH.fbl_is_import +"']").prop("checked",true);
-
+			$(".fbl_is_import").trigger("change");
+			$("#fst_curr_code").val(dataH.fst_curr_code);
+			$("#fdc_exchange_rate_idr").val(App.money_format(dataH.fdc_exchange_rate_idr));
+			if (dataH.fbl_dp_inc_ppn == 1){
+				$("#fbl_dp_inc_ppn").prop("checked",true);
+			}else{
+				$("#fbl_dp_inc_ppn").prop("checked",false);
+			}			
 
 			$("#fin_supplier_id").val(dataH.fin_supplier_id).trigger("change.select2");
 			$("#fin_supplier_id").val(dataH.fin_supplier_id).trigger("change");
@@ -953,7 +937,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}
 		
 
-		App.blockUIOnAjaxRequest("Please wait while saving data.....");
+		App.blockUIOnAjaxRequest("<?=lang("Please wait while saving data.....")?>");
 		$.ajax({
 			type: "POST",
 			//enctype: 'multipart/form-data',

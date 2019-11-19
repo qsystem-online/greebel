@@ -11,7 +11,7 @@
 	}
 </style>
 <div id="mdlJurnal" class="modal fade" role="dialog">
-	<div class="modal-dialog" style="width:800px">
+	<div class="modal-dialog" style="width:900px">
 		<!-- Modal content-->
 		<div class="modal-content" style="border-top-left-radius:10px;border-top-right-radius:10px;border-bottom-left-radius:5px;border-bottom-right-radius:5px;">
 			<div class="modal-header" style="padding:5px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 5px;border-top-right-radius: 10px;">
@@ -23,9 +23,11 @@
 				<table id="tblJurnal" style="width:100%" class="table table-bordered table-hover table-striped dataTable">					
 					<thead>
 						<tr>
-							<th style="width:60%">Account</th>
-							<th style="width:20%" class="text-right">Debet</th>
-							<th style="width:20%" class="text-right">Credit</th>
+							<th style="width:50%">Account</th>
+							<th style="width:20%">Profit / Cost Center</th>
+							<th style="width:15%" class="text-right">Debet (IDR)</th>
+							<th style="width:15%" class="text-right">Credit (IDR)</th>
+							
 						</tr>
 					</thead>
 					<tbody>
@@ -54,11 +56,11 @@
 				ttlDebet += v.debet;
 				ttlCredit += v.credit;
 
-				$("#tblJurnal > tbody").append("<tr><td class='"+ v.pos + "'>" + v.code + " - " + v.name + "</td><td class='text-right'>"+money_format(v.debet)+"</td><td class='text-right'>"+money_format(v.credit)+"</td></tr>");
+				$("#tblJurnal > tbody").append("<tr><td class='"+ v.pos + "'>" + v.code + " - " + v.name + "</td><td>"+v.pccName+"</td><td class='text-right'>"+money_format(v.debet)+"</td><td class='text-right'>"+money_format(v.credit)+"</td></tr>");
 			});
 			$("#fstTrxNo").text(fstTrxNo);
 
-			$("#tblJurnal > tfoot").append("<tr><td class='text-right'>Total</td><td class='text-right'>"+money_format(ttlDebet)+"</td><td class='text-right'>"+money_format(ttlCredit)+"</td></tr>");
+			$("#tblJurnal > tfoot").append("<tr><td class='text-right' colspan='2'>Total</td><td class='text-right'>"+money_format(ttlDebet)+"</td><td class='text-right'>"+money_format(ttlCredit)+"</td></tr>");
 			$("#mdlJurnal").modal({
 				backdrop:"static",
 			});
@@ -81,7 +83,8 @@
 						name: data.fst_glaccount_name,
 						pos: pos,
 						debet: parseFloat(data.fdc_debit),
-						credit:	parseFloat(data.fdc_credit)			
+						credit:	parseFloat(data.fdc_credit),
+						pccName: (data.fst_pcc_name) == null ? " - " : data.fst_pcc_name
 					});					
 				});
 				MdlJurnal.showJurnal(arrDataNormalisasi,trxNo);

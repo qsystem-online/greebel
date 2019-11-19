@@ -56,7 +56,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 </div>
                                 <div style="float:right">
                                     <label class="control-label">Search by :</label>
-                                    <select id="selectSearch" class="form-control"  style="display:inline;width:148px">
+                                    <select id="selectSearchHist" class="form-control"  style="display:inline;width:148px">
                                         <option value='fst_transaction_no'>Transaction No</option>
                                         <option value='fst_message'>Message</option>
                                         <option value='fst_user_name'>Request by</option>
@@ -162,8 +162,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 {"title" : "Request By","width": "10%",sortable:false,data:"fst_user_name",visible:true},
                 {"title" : "Action","width": "10%",sortable:false,className:'dt-body-center text-center',
                     render: function(data,type,row){
-                        action = "<a class='btn-approve' href='#'><i style='font-size:14pt;margin-right:10px' class='fa fa-check-circle-o'></i></a>";
-                        action += "<a class='btn-view' href='#'><i style='font-size:14pt;color:lime' class='fa fa-bars'></i></a>";                        
+                        action = "<a class='btn-approve' href='#' title='<?=lang("Approve")?>'><i style='font-size:14pt;margin-right:10px' class='fa fa-check-circle-o'></i></a>";
+                        action += "<a class='btn-view' href='#' title='<?=lang("Transaksi")?>'><i style='font-size:14pt;color:lime' class='fa fa-bars'></i></a>";                        
                         return action;                        
                     }
                 },
@@ -225,7 +225,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 {"title" : "Request By","width": "10%",sortable:false,data:"fst_user_name",visible:true},
                 {"title" : "Action","width": "10%",sortable:false,className:'dt-body-center text-center',
                     render: function(data,type,row){
-                        action = "<a class='btn-view' href='#'><i style='font-size:14pt;color:lime' class='fa fa-bars'></i></a>";                        
+                        action = "<a class='btn-cancel need-confirm' href='#' title='<?=lang("Batal")?>'><i style='font-size:14pt;margin-right:10px;color:red' class='fa fa-ban'></i></a>";    
+                        action += "<a class='btn-view' href='#' title='<?=lang("Transaksi")?>'><i style='font-size:14pt;color:lime' class='fa fa-bars'></i></a>";                        
                         return action;                        
                     }
                 },
@@ -235,11 +236,59 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			serverSide: true,
         }).on('preXhr.dt', function ( e, settings, data ) {
             data.dateRange = $('#daterange_historyapproval').val();
-            data.optionSearch = $('#selectSearch').val();
-		});
+            data.optionSearch = $('#selectSearchHist').val();
+		}).on('draw',function(){
+            $('.need-confirm').confirmation({
+				//rootSelector: '[data-toggle=confirmation]',
+				title: "<?=lang('Hapus data ini ?')?>",
+				rootSelector: '.need-confirm',
+				// other options
+			});	
+        });
       
         $("#tblHistApproval").on("click",".btn-view",function(e){    
             showTransaction($(this),true);
+        });
+
+        $("#tblHistApproval").on("click",".btn-cancel",function(e){    
+            cancelApproval($(this));
+        });
+    }
+
+    function cancelApproval(element){
+        t = $('#tblHistApproval').DataTable();
+        var trRow = element.parents('tr');
+        data = t.row(trRow).data(); 
+        
+        dataPost = {
+            <?=$this->security->get_csrf_token_name()?> : "<?=$this->security->get_csrf_hash()?>",
+            fin_rec_id: data.fin_rec_id,
+        };
+
+        App.blockUIOnAjaxRequest("<?=lang("Please wait .....")?>");
+        $.ajax({
+            url:"<?= site_url() ?>tr/approval/cancelApproval/",
+            data:dataPost,
+            method:"POST"
+        }).done(function(resp){
+            if (resp.message != "")	{
+                $.alert({
+                    title: 'Message',
+                    content: resp.message,
+                    buttons : {
+                        OK : function(){
+                            if(resp.status == "SUCCESS"){
+                                //window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
+                                return;
+                            }
+                        },
+                    }
+                });
+            }
+            if(resp.status == "SUCCESS") {
+                //remove row
+                t.row(trRow).remove().draw();                
+            }
         });
 
     }
@@ -253,6 +302,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             isApproved :isApproved,
         };
 
+        App.blockUIOnAjaxRequest("<?=lang("Please wait .....")?>");
         $.ajax({
             url:"<?= site_url() ?>tr/approval/doApproval/" + $("#fin_rec_id").val(),
             data:data,

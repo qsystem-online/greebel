@@ -44,7 +44,6 @@ class Msdepartments_model extends MY_Model {
         $qr = $this->db->query($ssql,[]);		
         $rs = $qr->result();		
 		return $rs;
-
     }
 
     public function get_departments(){

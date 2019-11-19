@@ -30,9 +30,9 @@
 					<div class="btn-group btn-group-sm  pull-right">					
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
-						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
+						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
 				</div>
@@ -215,9 +215,7 @@
 <div id="mdlAddItem" class="modal fade" role="dialog" >
 	<div class="modal-dialog" style="display:table;width:800px">
 		<!-- modal content -->
-		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
-			
-
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">			
 			<div class="modal-body">
 				<div class="row">
                     <div class="col-md-12" >
@@ -280,20 +278,50 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+		$(function(){
+			$("#btn-add-rincian").click(function(e){
+				data = {
+					fin_rec_id:$("#fin_rec_id_items").val(),
+					fst_trans_type:$("#fst_trans_type").val(),
+					fst_trans_type_name: $("#fst_trans_type option:selected").text(),
+					fin_trans_id:$("#fin_trans_id").val(),
+					fst_trans_no:$("#fin_trans_id option:selected").text(),
+					fdc_trans_amount: App.money_parse($("#fdc_trans_amount").val()),
+					fdc_return_amount: App.money_parse($("#fdc_return_amount").val()),
+					fdc_payment:App.money_parse($("#fdc_payment").val())
+				};			
+				t = $("#tblcbpaymentitems").DataTable();
+				if (rowPaymentItem != null){
+					t.row(rowPaymentItem).data(data).draw(false);
+				}else{
+					if (isDuplicateItem(data.fst_trans_type,data.fin_trans_id)){
+						alert(data.fst_trans_type_name + " : " + data.fst_trans_no + ", sudah ada !");
+						return;	
+					}
+					t.row.add(data).draw(false);
+				}
+
+				clearFormDetail();
+				calculateRincianTransaksi();
+				$("#mdlAddItem").modal("hide");
+			});			
+		})	
+	</script>
 </div>
 
 <div id="mdlPaymentType" class="modal fade" role="dialog" >
-	<div class="modal-dialog" style="display:table;width:800px">
+	<div class="modal-dialog" style="display:table;width:900px">
 		<!-- modal content -->
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">			
 			<div class="modal-body">
 				<div class="row">
                     <div class="col-md-12" >
                         <div style="border:0 px inset #f0f0f0;border-radius:10px;padding:5px">
-                            <fieldset style="padding:10px">
-				
+                            <fieldset style="padding:10px">				
 								<form id="form-detail" class="form-horizontal">
 									<input type='hidden' id='fin_rec_id_item_type'/>
+
 									<div class="form-group">
 										<label for="fst_trans_type_pt" class="col-md-2 control-label"><?=lang("Trans type")?></label>
 										<div class="col-md-10">
@@ -306,7 +334,7 @@
 										</div>
 									</div>
 									
-									<div class="form-group" id="divGLAccount" style="display:none">
+									<div class="form-group divGLAccount"  style="display:none">
 										<label for="fst_glaccount_code_pd" class="col-md-2 control-label"><?=lang("GL Account")?></label>
 										<div class="col-md-10">
 											<select  id="fst_glaccount_code_pd"   class="form-control" style="width:100%">											
@@ -314,20 +342,66 @@
 										</div>										
 									</div>
 
-									<div class="form-group" id="divPCC" style="display:none">
-										<label for="fin_pcc_id" class="col-md-2 control-label"><?=lang("Profit / Cost Center")?></label>
-										<div class="col-md-10">
-											<select  id="fin_pcc_id" class="form-control">
+									<div class="form-group divGLAccount"  style="display:none">
+										<div>
+											<label for="fin_pcc_id" class="col-md-2 control-label"><?=lang("Profit / Cost Center")?></label>
+											<div class="col-md-4">
+												<select  id="fin_pcc_id" class="form-control pcgroup" disabled>
+													<option value='' selected></option>
+													<?php
+														$pcCenters = getDataTable("msprofitcostcenter","*","fst_active ='A'");
+														foreach($pcCenters as $center){
+															//$selected = $currency->fst_curr_code == "IDR" ? "SELECTED" : "";
+															echo "<option value='$center->fin_pcc_id'>$center->fst_pcc_name</option>";
+														}
+													?>
+												</select>
+											</div>
+											<label for="fin_pcc_id" class="col-md-2 control-label"><?=lang("Analisa Divisi")?></label>
+											<div class="col-md-4">
+												<select  id="fin_pc_divisi_id" class="form-control pcgroup">
+													<option value='' selected></option>
+													<?php
+														$deparmentList = getDataTable("departments","*","fst_active ='A'");
+														foreach($deparmentList as $department){
+															//$selected = $currency->fst_curr_code == "IDR" ? "SELECTED" : "";
+															$isDisabled = $department->fst_active == 'D' ? "disabled" :"";
+															echo "<option value='$department->fin_department_id' $isDisabled>$department->fst_department_name</option>";
+														}
+													?>
+												</select>
+											</div>
+										</div>
+									</div>									
+
+									<div class="form-group divGLAccount"  style="display:none">
+										<label for="fin_pc_customer_id" class="col-md-2 control-label"><?=lang("Analisa Customer")?></label>
+										<div class="col-md-4">
+											<select  id="fin_pc_customer_id" class="form-control pcgroup" style="width:100%">
+												<option value='' selected></option>												
 												<?php
-													$pcCenters = getDataTable("msprofitcostcenter","*","fst_active ='A'");
-													foreach($pcCenters as $center){
+													$customerList = getDataTable("msrelations","*","fst_active ='A' and find_in_set('1',fst_relation_type)");
+													foreach($customerList as $customer){
 														//$selected = $currency->fst_curr_code == "IDR" ? "SELECTED" : "";
-														echo "<option value='$center->fin_pcc_id'>$center->fst_pcc_name</option>";
+														echo "<option value='$customer->fin_relation_id'>$customer->fst_relation_name</option>";
 													}
 												?>
 											</select>
 										</div>
-									</div>
+										<label for="fin_pc_project_id" class="col-md-2 control-label"><?=lang("Analisa Project")?></label>
+										<div class="col-md-4">
+											<select  id="fin_pc_project_id" class="form-control pcgroup">
+												<option value='' selected></option>
+												<?php
+													$projectList = getDataTable("msprojects","*","fst_active ='A'");
+													foreach($projectList as $project){
+														//$selected = $currency->fst_curr_code == "IDR" ? "SELECTED" : "";
+														echo "<option value='$project->fin_project_id'>$project->fst_project_name</option>";
+													}
+												?>
+											</select>
+										</div>
+									</div>								
 
 									<div class="form-group">
 										<label for="fdc_amount" class="col-md-2 control-label"><?=lang("Nominal")?></label>
@@ -372,43 +446,194 @@
 	</div>
 	<script type="text/javascript">
 		$(function(){
+			$("#fst_trans_type_pt").val(null);
+
 			$("#fst_trans_type_pt").change(function(e){
-				var type = $("#fst_trans_type_pt").val();
-				switch (type){
-					case "TUNAI":
-						$("#divGLAccount").hide("fast");
-						$("#divPCC").hide("fast");
-						$("#divGiro").hide("fast");						
-						break;
-					case "TRANSFER":
-						$("#divGLAccount").hide("fast");
-						$("#divPCC").hide("fast");
-						$("#divGiro").hide("fast");						
-						break;
-					case "GIRO":
-						$("#divGLAccount").hide("fast");
-						$("#divPCC").hide("fast");
-						$("#divGiro").show("fast");						
-						break;
-					case "GLACCOUNT":
-						$("#divGLAccount").show("fast");
-						$("#divPCC").hide("fast");
-						$("#divGiro").hide("fast");						
-						break;
-				};
+				e.preventDefault();
+				$("#fst_glaccount_code_pd").prop("disabled",false);
+				if ($("#fst_trans_type_pt").val() == "TUNAI" ||$("#fst_trans_type_pt").val() == "TRANSFER"){
+					var acc  = $("#fin_kasbank_id option:selected").data("glaccount");
+					$("#fst_glaccount_code_pd").empty();
+					$("#fst_glaccount_code_pd").append("<option value='"+acc+"' selected>"+ $("#fin_kasbank_id option:selected").data("glaccount") + " - " + $("#fin_kasbank_id option:selected").text() +"</option>")
+					//$("#fst_glaccount_code_pd").val(null);
+					$(".pcgroup").val(null);
+					$(".divGLAccount").hide("fast");
+					$("#divGiro").hide("fast");	
+					
+					$("#fst_bilyet_no").val(null);
+					$("fdt_clear_date").val(null);
+
+					$("#fin_pcc_id").val(null);
+					$("#fin_pc_divisi_id").val(null);
+					$("#fin_pc_customer_id").val(null).trigger("change.select2");
+					$("#fin_pc_project_id").val(null);
+
+				}else if($("#fst_trans_type_pt").val() == "GIRO"){
+					$("#fst_glaccount_code_pd").empty();
+					<?php					
+					$accGiroMundur = $this->trcbpayment_model->getOutGiroAccount();				
+					if($accGiroMundur){ ?>				
+						$("#fst_glaccount_code_pd").append("<option value='<?=$accGiroMundur->fst_glaccount_code?>' selected><?= $accGiroMundur->fst_glaccount_code ." - " .$accGiroMundur->fst_glaccount_name ?></option>")
+					<?php } ?>
+					$(".pcgroup").val(null);
+					$(".divGLAccount").hide("fast");
+					$("#divGiro").show("fast");
+					$("#fin_pcc_id").val(null);
+					$("#fin_pc_divisi_id").val(null);
+					$("#fin_pc_customer_id").val(null).trigger("change.select2");
+					$("#fin_pc_project_id").val(null);
+					
+									
+				}else if($("#fst_trans_type_pt").val() == "GLACCOUNT"){
+					$("#fst_glaccount_code_pd").empty();
+					<?php
+					//$accounts = getDataTable("glaccounts","*","fst_active ='A' and fst_glaccount_level != 'HD' and fbl_is_allow_in_cash_bank_module = 1");
+					$accounts = $this->trcbpayment_model->getAccountList();
+					foreach($accounts as $account){ 
+						$isProfitLost = $account->fst_glaccount_type == "PROFIT_LOST" ? 1 : 0;					
+						$isAnalisaDivisi = $account->fbl_pc_divisi;
+						$isAnalisaCustomer = $account->fbl_pc_customer;
+						$isAnalisaProject = $account->fbl_pc_project; ?>
+						$("#fst_glaccount_code_pd").append("<option value='"+"<?=$account->fst_glaccount_code?>"+"' data-is_pc='" + <?= $isProfitLost ?> +"' data-is_pc_divisi='<?=$account->fbl_pc_divisi?>' data-is_pc_customer='<?=$account->fbl_pc_customer?>' data-is_pc_project='<?=$account->fbl_pc_project?>' >"+"<?=$account->fst_glaccount_code . " - " . $account->fst_glaccount_name?>"+"</option>");
+						//$selected = $currency->fst_curr_code == "IDR" ? "SELECTED" : "";						
+					<?php } ?>
+					$(".divGLAccount").show("fast");
+					$("#divGiro").hide("fast");
+					$("#fst_bilyet_no").val(null);
+					$("fdt_clear_date").val(null);				
+				}
 			});
+
+			$("#btn-add-type-pengeluaran").click(function(e){
+				e.preventDefault();
+
+				//VALIDASI
+				if ($("#fst_trans_type_pt").val() == null){
+					alert("<?=lang("Type transaksi kosong !")?>");
+					return;
+				}
+				if ($("#fdc_amount").val() == 0){
+					alert("<?=lang("Nominal 0.00 !")?>");
+					return;
+				}
+
+				if ($("#fst_trans_type_pt").val() == "GLACCOUNT"){
+					var isPCC = $("#fst_glaccount_code_pd option:selected").data("is_pc");
+					var isPCDivisi = $("#fst_glaccount_code_pd option:selected").data("is_pc_divisi");
+					var isPCCustomer = $("#fst_glaccount_code_pd option:selected").data("is_pc_customer");
+					var isPCProject = $("#fst_glaccount_code_pd option:selected").data("is_pc_project");
+					if (isPCC ==  1){
+						if ($("#fin_pcc_id").val() == ""){
+							alert("<?= lang("Profit & Cost Center harus diisi !")?>");
+							return;
+						};
+					}
+					if (isPCDivisi ==  1){
+						if ($("#fin_pc_divisi_id").val() == ""){
+							alert("<?= lang("Analisa divisi harus diisi !")?>");
+							return;
+						};
+					}
+					if (isPCCustomer ==  1){
+						if ($("#fin_pc_customer_id").val() == ""){
+							alert("<?= lang("Analisa customer harus diisi !")?>");
+							return;
+						};
+					}
+					if (isPCProject ==  1){
+						if ($("#fin_pc_project_id").val() == ""){
+							alert("<?= lang("Analisa project harus diisi !")?>");
+							return;
+						};
+					}					 
+				}
+
+				t = $("#tblcbpaymentpengeluaran").DataTable();
+				data = {
+					fin_rec_id:$("#fin_rec_id_item_type").val(),
+					fst_cbpayment_type:$("#fst_trans_type_pt").val(),
+					fst_cbpayment_type_name:$("#fst_trans_type_pt option:selected").text(),
+					fst_glaccount_code:$("#fst_glaccount_code_pd").val(),
+					fst_glaccount_code_name:$("#fst_glaccount_code_pd option:selected").text(),
+					fin_pcc_id:$("#fin_pcc_id").val(),
+					fst_pcc_name:$("#fin_pcc_id option:selected").text(),
+					fin_pc_divisi_id:$("#fin_pc_divisi_id").val(),
+					fst_pc_divisi_name:$("#fin_pc_divisi_id option:selected").text(),
+					
+					fin_pc_customer_id:$("#fin_pc_customer_id").val(),
+					fst_pc_customer_name:$("#fin_pc_customer_id option:selected").text(),
+					
+					fin_pc_project_id:$("#fin_pc_project_id").val(),
+					fst_pc_project_name:$("#fin_pc_project_id option:selected").text(),
+					
+					fdc_amount:$("#fdc_amount").val(),
+					fst_referensi:$("#fst_referensi").val(),
+					fst_bilyet_no:$("#fst_bilyet_no").val(),
+					fdt_clear_date:$("#fdt_clear_date").val(),
+				};
+
+				if (rowPaymentItemType == null){
+					t.row.add(data).draw(false);
+				}else{
+					t.row(rowPaymentItemType).data(data).draw(false);
+				}
+				
+				calculateRincianPembayaran();
+				$("#mdlPaymentType").modal("hide");
+
+
+			});
+
+			$("#fst_glaccount_code_pd").select2();
+			$("#fst_glaccount_code_pd").change(function(e){
+				if ($("#fst_glaccount_code_pd option:selected").data("is_pc") == 0){
+					$("#fin_pcc_id").val(null);
+					$("#fin_pcc_id").prop("disabled",true);
+				}else{
+					$("#fin_pcc_id").prop("disabled",false);
+				}
+			});
+
+			$("#fin_pc_customer_id").select2();
+
 		});
 	</script>
 </div>
 
 <?php echo $mdlEditForm ?>
+<?php echo $mdlJurnal ?>
 
 
 <script type="text/javascript">
+	var rowPaymentItem;
+	var rowPaymentItemType;
+
 	$(function(){
 		//$("#fin_kasbank_id").select2();
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.href = "<?=site_url()?>tr/kas_bank/pengeluaran/add";
+		});
+
 		$("#btnSubmitAjax").click(function(e){
 			submitAjax(0);
+		});
+		$("#btnPrint").click(function(e){
+			e.preventDefault();
+		});
+		$("#btnJurnal").click(function(e){
+			e.preventDefault();
+			MdlJurnal.showJurnalByRef("CBOUT",$("#fin_cbpayment_id").val());
+		});
+
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			deleteAjax(0);
+		});
+
+		$("#btnClose").click(function(e){
+			e.preventDefault();
+			window.location.href = "<?=site_url()?>tr/kas_bank/pengeluaran/";
 		});
 
 		$("#fdt_cbpayment_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
@@ -416,7 +641,10 @@
 		$("#fin_kasbank_id").change(function(e){
 			e.preventDefault();
 			getTransactionNumber($("#fin_kasbank_id").val(),$("#fdt_cbpayment_datetime").val());
+			t = $("#tblcbpaymentpengeluaran").DataTable();
+			t.clear().draw(false);
 		})
+
 		$("#fst_curr_code").change(function(e){
 			e.preventDefault();
 			cleanRincianTransaksi();
@@ -462,7 +690,7 @@
 			$("#mdlPaymentType").modal("show");
 		});
 
-		var rowPaymentItem;
+		
 		$('#tblcbpaymentitems').on('preXhr.dt', function ( e, settings, data ) {
 			//add aditional data post on ajax call
 			data.sessionId = "TEST SESSION ID";
@@ -581,37 +809,12 @@
 			t.row(trRow).remove().draw();
 			calculateRincianTransaksi();
 		});
-
-		$("#btn-add-rincian").click(function(e){
-			data = {
-				fin_rec_id:$("#fin_rec_id_items").val(),
-				fst_trans_type:$("#fst_trans_type").val(),
-				fst_trans_type_name: $("#fst_trans_type option:selected").text(),
-				fin_trans_id:$("#fin_trans_id").val(),
-				fst_trans_no:$("#fin_trans_id option:selected").text(),
-				fdc_trans_amount: App.money_parse($("#fdc_trans_amount").val()),
-				fdc_return_amount: App.money_parse($("#fdc_return_amount").val()),
-				fdc_payment:App.money_parse($("#fdc_payment").val())
-			};
-
-			
-			t = $("#tblcbpaymentitems").DataTable();
-			if (rowPaymentItem != null){
-				t.row(rowPaymentItem).data(data).draw(false);
-			}else{
-				if (isDuplicateItem(data.fst_trans_type,data.fin_trans_id)){
-					alert(data.fst_trans_type_name + " : " + data.fst_trans_no + ", sudah ada !");
-					return;	
-				}
-				t.row.add(data).draw(false);
-			}
-			calculateRincianTransaksi();
-
-		});
-		
+				
 		$(".type-pengeluaran").change(function(e){
 			e.preventDefault();
 			getKasBankList($(".type-pengeluaran:checked").val());
+			t = $("#tblcbpaymentpengeluaran").DataTable();
+			t.clear().draw(false);
 		});
 
 		$("#fst_trans_type").change(function(e){
@@ -630,7 +833,7 @@
 			$("#fdc_payment").val(App.money_format(ttlAmount - ttlPaid));
 		});
 
-		var rowPaymentItemType;
+		
 		$('#tblcbpaymentpengeluaran').on('preXhr.dt', function ( e, settings, data ) {
 			//add aditional data post on ajax call
 			data.sessionId = "TEST SESSION ID";
@@ -664,18 +867,35 @@
 						return row.fst_glaccount_code_name;
 					}
 				},
-				{"title" : "Profit / Cost Center",width:"150px",data:"fin_pcc_id",
-					render: function(data,type,row){
-						return row.fst_pcc_name;
-					},
-				},
 				{"title" : "Nominal",width:"100px",data:"fdc_amount",
 					render:function(data,type,row){
 						return App.money_format(row.fdc_amount);
 					},
 					//render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
-				},				
+				},	
+				{"title" : "Profit / Cost Center",width:"150px",data:"fin_pcc_id",
+					render: function(data,type,row){
+						return row.fst_pcc_name;
+					},
+				},
+				{"title" : "Analisa Divisi",width:"150px",data:"fin_pc_divisi_id",
+					render: function(data,type,row){
+						return row.fst_pc_divisi_name;
+					},
+				},
+				{"title" : "Analisa Customer",width:"150px",data:"fin_pc_customer_id",
+					render: function(data,type,row){
+						return row.fst_pc_customer_name;
+					},
+				},
+				{"title" : "Analisa Project",width:"150px",data:"fin_pc_project_id",
+					render: function(data,type,row){
+						return row.fst_pc_project_name;
+					},
+				},
+				
+							
 				{"title" : "Referensi",width:"200px",data:"fst_referensi"},
 				{"title" : "No. Bilyet",width:"100px",data:"fst_bilyet_no"},
 				{"title" : "Tanggal Kliring",width:"100px",data:"fdt_clear_date"},
@@ -731,7 +951,7 @@
 
 		});
 
-		$("#fst_glaccount_code_pd").select2();
+		
 		$("#fst_curr_code_payment_detail").change(function(e){
 			e.preventDefault();
 			$.ajax({
@@ -747,47 +967,6 @@
 			});
 		});
 
-		$("#fst_trans_type_pt").val(null);
-		$("#fst_trans_type_pt").change(function(e){
-			e.preventDefault();
-			$("#fst_glaccount_code_pd").prop("disabled",false);
-
-
-			if ($("#fst_trans_type_pt").val() == "TUNAI" ||$("#fst_trans_type_pt").val() == "TRANSFER"){
-
-				var acc  = $("#fin_kasbank_id option:selected").data("glaccount");
-
-				$("#fst_glaccount_code_pd").empty();
-				$("#fst_glaccount_code_pd").append("<option value='"+acc+"'>"+ $("#fin_kasbank_id option:selected").data("glaccount") + " - " + $("#fin_kasbank_id option:selected").text() +"</option>")
-				$("#fst_glaccount_code_pd").val(null);
-
-			}else if($("#fst_trans_type_pt").val() == "GIRO"){
-				$("#fst_glaccount_code_pd").empty();
-				<?php					
-				$accGiroMundur = $this->trcbpayment_model->getOutGiroAccount();				
-				if($accGiroMundur){ ?>				
-					$("#fst_glaccount_code_pd").append("<option value='<?=$accGiroMundur->fst_glaccount_code?>'><?= $accGiroMundur->fst_glaccount_code ." - " .$accGiroMundur->fst_glaccount_name ?></option>")
-				<?php } ?>				
-			}else if($("#fst_trans_type_pt").val() == "GLACCOUNT"){
-				<?php
-				$accounts = getDataTable("glaccounts","*","fst_active ='A' and fst_glaccount_level != 'HD' and fbl_is_allow_in_cash_bank_module = 1");
-				foreach($accounts as $account){ ?>
-					$("#fst_glaccount_code_pd").append("<option value='"+"<?=$account->fst_glaccount_code?>"+"' data-is_pc='" + <?= $account->fbl_pc ?> +"'>"+"<?=$account->fst_glaccount_code . " - " . $account->fst_glaccount_name?>"+"</option>");
-					//$selected = $currency->fst_curr_code == "IDR" ? "SELECTED" : "";						
-				<?php } ?>
-			}
-		});
-
-		$("#fst_glaccount_code_pd").change(function(e){
-			if ($("#fst_glaccount_code_pd option:selected").data("is_pc") == 0){
-				$("#divPCC").hide("fast");
-				
-			}else{
-				$("#divPCC").show("fast");
-			}
-		});
-
-
 		$("#fdc_exchange_rate_idr_payment_detail").change(function(e){
 			e.preventDefault();
 			$("#fdc_amount").trigger("change");
@@ -800,33 +979,7 @@
 			$("#fdc_amount_idr").val( amount * exchangeRate );
 		});
 
-		$("#btn-add-type-pengeluaran").click(function(e){
-			e.preventDefault();
-			t = $("#tblcbpaymentpengeluaran").DataTable();
-
-			data = {
-				fin_rec_id:$("#fin_rec_id_item_type").val(),
-				fst_cbpayment_type:$("#fst_trans_type_pt").val(),
-				fst_cbpayment_type_name:$("#fst_trans_type_pt option:selected").text(),
-				fst_glaccount_code:$("#fst_glaccount_code_pd").val(),
-				fst_glaccount_code_name:$("#fst_glaccount_code_pd option:selected").text(),
-				fin_pcc_id:$("#fin_pcc_id").val(),
-				fst_pcc_name:$("#fin_pcc_id option:selected").text(),
-				fdc_amount:$("#fdc_amount").val(),
-				fst_referensi:$("#fst_referensi").val(),
-				fst_bilyet_no:$("#fst_bilyet_no").val(),
-				fdt_clear_date:$("#fdt_clear_date").val(),
-			};
-			if (rowPaymentItemType == null){
-				t.row.add(data).draw(false);
-			}else{
-				t.row(rowPaymentItemType).data(data).draw(false);
-			}
-			
-			calculateRincianPembayaran();
-
-
-		});
+		
 
 		fixedSelect2();
 		initForm();
@@ -891,11 +1044,18 @@
 								fst_glaccount_code_name:v.fst_glaccount_code + " - " + v.fst_glaccount_name,
 								fin_pcc_id:v.fin_pcc_id,
 								fst_pcc_name:v.fst_pcc_name,
+								fin_pc_divisi_id:v.fin_pc_divisi_id,
+								fst_pc_divisi_name:v.fst_pc_divisi_name,
+								fin_pc_customer_id:v.fin_pc_customer_id,
+								fst_pc_customer_name:v.fst_pc_customer_name,
+								fin_pc_project_id:v.fin_pc_project_id,
+								fst_pc_project_name:v.fst_pc_project_name,
 								fdc_amount:v.fdc_amount,
 								fst_referensi:v.fst_referensi,
 								fst_bilyet_no:v.fst_bilyet_no,
 								fdt_clear_date:v.fdt_clear_date
 							};
+							console.log(data);
 							t.row.add(data);							
 						});
 						t.draw(false);
@@ -904,6 +1064,8 @@
 					});
 					
 
+				}else{
+					$("#btnNew").trigger("click");
 				}
 
 			});
@@ -925,14 +1087,23 @@
 		$("#fdc_return_amount").val(App.money_format(0));
 		$("#fdc_payment").val(App.money_format(0));
 		$("#fst_trans_type").focus();
-
-
 		rowPaymentItem = null;
 
 	}
 
 	function clearFormPaymentDetail(){
 		$("#fin_rec_id_item_type").val(0);
+		$("#fst_trans_type_pt").val(null);
+		$("#fst_glaccount_code_pd").val(null).trigger("change.select2");
+		$("#fin_pcc_id").val(null);
+		$("#fin_pc_divisi_id").val(null);
+		$("#fin_pc_customer_id").val(null).trigger("change.select2");
+		$("#fin_pc_project_id").val(null);
+		$("#fdc_amount").val(App.money_format(0));
+		$("#fdc_amount_idr").val(App.money_format(0));
+		$("#fst_referensi").val("");
+		$("#fst_bilyet_no").val("");
+		$("#fdt_clear_date").val("");
 		rowPaymentItemType = null;
 	}
 
@@ -1150,7 +1321,7 @@
 						buttons : {
 							OK : function(){
 								if(resp.status == "SUCCESS"){
-									//window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
+									$("#btnNew").trigger("click");
 									return;
 								}
 							},
@@ -1165,7 +1336,7 @@
 					}
 				}else if(resp.status == "SUCCESS") {
 					data = resp.data;
-					$("#fin_po_id").val(data.insert_id);
+					$("#fin_cbpayment_id").val(data.insert_id);
 					//Clear all previous error
 					$(".text-danger").html("");					
 				}
@@ -1177,6 +1348,46 @@
 		}).always(function(){
 			
 		});
+
+	}
+
+	function deleteAjax(confirmDelete){
+		
+		if (confirmDelete == 0){
+			MdlEditForm.saveCallBack = function(){
+				deleteAjax(1);
+			};		
+			MdlEditForm.show();
+			return;
+		}
+
+		var dataSubmit = [];		
+		dataSubmit.push({
+			name : "<?=$this->security->get_csrf_token_name()?>",
+			value: "<?=$this->security->get_csrf_hash()?>",
+		});
+		dataSubmit.push({
+			name : "fin_user_id_request_by",
+			value: MdlEditForm.user
+		});
+		dataSubmit.push({
+			name : "fst_edit_notes",
+			value: MdlEditForm.notes
+		});
+
+		var url =  "<?= site_url() ?>tr/kas_bank/pengeluaran/delete/" + $("#fin_cbpayment_id").val();
+		$.ajax({
+			url:url,
+			method:"POST",
+			data:dataSubmit,
+		}).done(function(resp){
+			if (resp.message != ""){
+				alert(resp.message);
+			}
+			if(resp.status == "SUCCESS"){
+				$("#btnClose").trigger("click");			
+			}
+		});	
 
 	}
 

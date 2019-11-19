@@ -45,9 +45,17 @@ class Trcbpayment_model extends MY_Model {
             $rsCBPaymentItems[$i]->fst_trans_no = $this->getTransactionNo( $rsCBPaymentItems[$i]->fst_trans_type,$rsCBPaymentItems[$i]->fin_trans_id);
         }
         
-        $ssql = "select a.*,b.fst_glaccount_name,c.fst_pcc_name from trcbpaymentitemstype a 
+        $ssql = "select a.*,b.fst_glaccount_name,c.fst_pcc_name,
+            d.fst_department_name as fst_pc_divisi_name,
+            e.fst_relation_name as fst_pc_customer_name,
+            f.fst_project_name as fst_pc_project_name 
+            from trcbpaymentitemstype a 
             INNER JOIN glaccounts b on a.fst_glaccount_code = b.fst_glaccount_code 
-            INNER JOIN msprofitcostcenter c on a.fin_pcc_id = c.fin_pcc_id  
+            LEFT JOIN msprofitcostcenter c on a.fin_pcc_id = c.fin_pcc_id  
+            LEFT JOIN departments d on a.fin_pc_divisi_id = d.fin_department_id  
+            LEFT JOIN msrelations e on a.fin_pc_customer_id = e.fin_relation_id  
+            LEFT JOIN msprojects f on a.fin_pc_project_id = f.fin_project_id  
+
             WHERE a.fin_cbpayment_id = ?";
 
 		$qr = $this->db->query($ssql,[$finCBPaymentId]);
@@ -61,6 +69,14 @@ class Trcbpayment_model extends MY_Model {
 		];
 
 		return $data;
+    }
+
+    public function getDataHeaderById($finCBPaymentId){
+        $ssql = "select * from trcbpayment where fin_cbpayment_id = ?";
+        $qr = $this->db->query($ssql,[$finCBPaymentId]);
+        $rw = $qr->row();
+        return $rw;
+        
     }
 
 
@@ -135,8 +151,7 @@ class Trcbpayment_model extends MY_Model {
     }
 
     public function unposting($finCBPaymentId,$unpostingDateTime =""){
-        //$this->load->model("kasbank_model");
-        //$this->load->model("glledger_model");
+        $this->load->model("glledger_model");
         $unpostingDateTime = $unpostingDateTime == "" ? date("Y-m-d H:i:s") : $unpostingDateTime;
 
         $ssql ="select * from trcbpayment where fin_cbpayment_id = ?";        
@@ -156,8 +171,9 @@ class Trcbpayment_model extends MY_Model {
                 $this->db->query($ssql,[$dataItem->fdc_payment,$dataItem->fin_trans_id]);
             }             
         }
-
         $this->glledger_model->cancelJurnal("CBOUT",$dataH->fin_cbpayment_id,$unpostingDateTime);
+
+        return ["status"=>"SUCCESS","message"=>""];
     }
 
     public function posting($finCBPaymentId){
@@ -198,6 +214,19 @@ class Trcbpayment_model extends MY_Model {
                 }
                 $ssql = "update trpo set fdc_downpayment_paid = fdc_downpayment_paid +  ? where fin_po_id = ?";
                 $this->db->query($ssql,[$dataItem->fdc_payment,$dataItem->fin_trans_id]);
+
+                //Cek bila terjadi kelebihan pembayaran downpayment;
+                $ssql = "select * from trpo where fin_po_id = ?";
+                $qr = $this->db->query($ssql,[$dataItem->fin_trans_id]);
+                $rw = $qr->row();
+                if($rw != null){
+                    if ($rw->fdc_downpayment_paid > $rw->fdc_downpayment){
+                        $result["status"] ="FAILED";
+                        $result["message"] = sprintf(lang("Nilai pembayaran DP untuk PO %s melebihi nilai DP !"),$rw->fst_po_no);
+                        $result["data"] = $rw;
+                        return $result;
+                    }
+                }
             } 
         }
 
@@ -228,7 +257,10 @@ class Trcbpayment_model extends MY_Model {
                 "fst_orgi_curr_code"=>$dataH->fst_curr_code,
                 "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
                 "fst_no_ref_bank"=>null,
-                "fst_profit_cost_center_code"=>null,
+                "fin_pcc_id"=>$payment->fin_pcc_id,
+                "fin_pc_divisi_id"=>$payment->fin_pc_divisi_id,
+                "fin_pc_customer_id"=>$payment->fin_pc_customer_id,
+                "fin_pc_project_id"=>$payment->fin_pc_project_id,
                 "fin_relation_id"=>null,
                 "fst_active"=>"A"
             ];  
@@ -386,7 +418,7 @@ class Trcbpayment_model extends MY_Model {
             "fst_orgi_curr_code"=>$dataD->fst_curr_code,
             "fdc_orgi_rate"=>$dataD->fdc_exchange_rate_idr,
             "fst_no_ref_bank"=>null,
-            "fst_profit_cost_center_code"=>null,
+            "fin_pcc_id"=>null,
             "fin_relation_id"=>$dataH->fin_supplier_id,
             "fst_active"=>"A",
             "fst_info"=>$glAccountInfo,
@@ -424,7 +456,7 @@ class Trcbpayment_model extends MY_Model {
                 "fst_orgi_curr_code"=>"IDR",
                 "fdc_orgi_rate"=>1,
                 "fst_no_ref_bank"=>null,
-                "fst_profit_cost_center_code"=>null,
+                "fin_pcc_id"=>null,
                 "fin_relation_id"=>null,
                 "fst_active"=>"A",
                 "fst_info"=>$glAccountInfo
@@ -446,7 +478,39 @@ class Trcbpayment_model extends MY_Model {
     }
 
 
-   
+    public function getAccountList(){
+        //$accounts = getDataTable("glaccounts","*","fst_active ='A' and fst_glaccount_level != 'HD' and fbl_is_allow_in_cash_bank_module = 1");
+        $ssql ="SELECT a.*,b.fst_glaccount_type FROM glaccounts a 
+            INNER JOIN glaccountmaingroups b on a.fin_glaccount_maingroup_id = b.fin_glaccount_maingroup_id 
+            WHERE a.fst_active = 'A' 
+            AND a.fst_glaccount_level != 'HD' 
+            AND a.fbl_is_allow_in_cash_bank_module = 1";
+        $qr = $this->db->query($ssql,[]);
+        return $qr->result();
+
+    }
+
+    public function isEditable($finCBPaymentId){
+        //$ssql = "Select * from trcbpa";
+
+        return ["status"=>"SUCCESS","message"=>""];
+    }
+
+    public function delete($finCBPaymentId,$softDelete=TRUE,$data=null){
+        $this->load->model("trcbpaymentitems_model");
+        $this->load->model("trcbpaymentitemstype_model");
+        
+        $this->trcbpaymentitems_model->deleteByHeaderId($finCBPaymentId,$softDelete);
+        $this->trcbpaymentitemstype_model->deleteByHeaderId($finCBPaymentId,$softDelete);
+        parent::delete($finCBPaymentId,$softDelete,$data);
+        
+        $result = parent::getDBErrors();
+        if($result["status"] != "SUCCESS"){
+            return $result;
+        }
+
+        return ["status"=>"SUCCESS","message"=>""];
+    }
 
 
 

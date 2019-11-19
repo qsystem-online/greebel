@@ -40,7 +40,7 @@ class Trinventory_model extends MY_Model
         $ssql ="select * from trinventory a 
             where fin_warehouse_id =? 
             and fin_item_id = ?
-            and fst_unit = ? 
+            and fst_basic_unit = ? 
             order by fdt_trx_datetime desc , fin_rec_id desc limit 1";
         $qr = $this->db->query($ssql,[$fin_warehouse_id,$fin_item_id,$fst_unit]);
         $rw = $qr->row();
@@ -66,25 +66,50 @@ class Trinventory_model extends MY_Model
 
     public function insert($data){
 
-        $ssql ="select * from msitems where fin_item_id = ?";
-        $qr = $this->db->query($ssql,[$data["fin_item_id"]]);
+        $convToBasicUnit = 1;
+        $basicUnit = "";
+        $pricePerBasicUnit = 0.00;
+        $qtyInBasicUnit = 0.00;
+        $qtyOutBasicUnit = 0.00;
+        
+
+        
+        $ssql ="select a.*,b.fdc_conv_to_basic_unit from msitems a 
+            inner join msitemunitdetails b on (a.fin_item_id = b.fin_item_id and b.fst_unit = ?)
+            where a.fin_item_id = ?";
+
+        $qr = $this->db->query($ssql,[$data["fst_unit"],$data["fin_item_id"]]);
         $rw = $qr->row();
-        if(!$rw){
-            return;
+        if($rw == null){
+            return ["status"=>"FAILED","message"=>lang("Item dan unit tidak ditemukan !")];
         }else{
             if ($rw->fbl_stock == false){
-                return;
+                return ["status"=>"SUCCESS","message"=>""];
             }
+        }        
+        $convToBasicUnit = floatval($rw->fdc_conv_to_basic_unit);
+    
+
+        $ssql ="select * from msitemunitdetails where fin_item_id = ? and fbl_is_basic_unit = 1";
+        $qr = $this->db->query($ssql,[$data["fin_item_id"]]);
+        $rw  = $qr->row();
+        if($rw == null){
+            return ["status"=>"FAILED","message"=>lang("Basic unit item tidak ditemukan !")];
         }
+        $basicUnit = $rw->fst_unit;        
+        $pricePerBasicUnit = floatval($data["fdc_price_in"]) / $convToBasicUnit;
+        $qtyInBasicUnit = (float) $data["fdb_qty_in"] * $convToBasicUnit;
+        $qtyOutBasicUnit = (float) $data["fdb_qty_out"] * $convToBasicUnit;
+
 
         //get last record
         $ssql ="select * from trinventory 
         where fin_warehouse_id = ?
         and fin_item_id = ?
-        and fst_unit = ?        
+        and fst_basic_unit = ?        
         and fdt_trx_datetime <= ? order by fdt_trx_datetime desc , fin_rec_id desc limit 1";
 
-        $qr = $this->db->query($ssql,[$data["fin_warehouse_id"],$data["fin_item_id"],$data["fst_unit"],$data["fdt_trx_datetime"]]);
+        $qr = $this->db->query($ssql,[$data["fin_warehouse_id"],$data["fin_item_id"],$basicUnit,$data["fdt_trx_datetime"]]);
         $rw = $qr->row();
 
         $qtyBalanceBefore = 0;
@@ -94,16 +119,20 @@ class Trinventory_model extends MY_Model
             $avgCostBefore = (float) $rw->fdc_avg_cost;
         }
 
-        $data["fdb_qty_balance_after"] = $qtyBalanceBefore  + (float) $data["fdb_qty_in"] - (float) $data["fdb_qty_out"];
+        $data["fdb_qty_balance_after"] = $qtyBalanceBefore  + $qtyInBasicUnit - $qtyOutBasicUnit;
 
-        if ($data["fdb_qty_in"] > 0){
-            $newAvgCost = ($qtyBalanceBefore * $avgCostBefore) + ((float) $data["fdb_qty_in"] * (float) $data["fdc_price_in"]);
-            $newAvgCost = $newAvgCost / ($qtyBalanceBefore + (float) $data["fdb_qty_in"]);
+        if ($qtyInBasicUnit > 0){
+            $newAvgCost = ($qtyBalanceBefore * $avgCostBefore) + ($qtyInBasicUnit * $pricePerBasicUnit);
+            $newAvgCost = $newAvgCost / ($qtyBalanceBefore + $qtyInBasicUnit);
             $data["fdc_avg_cost"] =  $newAvgCost;
         }else{
             $data["fdc_avg_cost"] = $avgCostBefore;
         }
 
+        $data["fst_basic_unit"] = $basicUnit;
+        $data["fdb_qty_in"]=$qtyInBasicUnit; 
+        $data["fdb_qty_out"]=$qtyOutBasicUnit;
+        $data["fdc_price_in"]=$pricePerBasicUnit; 
 
         parent::insert($data);
 
@@ -112,15 +141,15 @@ class Trinventory_model extends MY_Model
         $ssql ="select * from trinventory 
         where fin_warehouse_id = ?
         and fin_item_id = ?
-        and fst_unit = ?        
+        and fst_basic_unit = ?        
         and fdt_trx_datetime > ? order by fdt_trx_datetime ,fin_rec_id";
 
-        $qr = $this->db->query($ssql,[$data["fin_warehouse_id"],$data["fin_item_id"],$data["fst_unit"],$datetime]);
+        $qr = $this->db->query($ssql,[$data["fin_warehouse_id"],$data["fin_item_id"],$basicUnit,$datetime]);
         $rs = $qr->result();
         $currentData = $data;
         foreach($rs as $rw){
             $rw = (array) $rw;
-            $rw["fdb_qty_balance_after"] = $currentData["fdb_qty_balance_after"] + $rw["fdb_qty_in"] - + $rw["fdb_qty_out"];
+            $rw["fdb_qty_balance_after"] = $currentData["fdb_qty_balance_after"] + $rw["fdb_qty_in"] -  $rw["fdb_qty_out"];
             
             if($rw["fdb_qty_in"] > 0){
                 $newAvgCost = ($currentData["fdb_qty_balance_after"] * $currentData["fdc_avg_cost"]) + ((float) $rw["fdb_qty_in"] * (float) $rw["fdc_price_in"]);
@@ -154,9 +183,9 @@ class Trinventory_model extends MY_Model
             $ssql ="select * from trinventory
                 where fin_warehouse_id = ?
                 and fin_item_id = ?
-                and fst_unit = ?
+                and fst_basic_unit = ?
                 and fdt_trx_datetime <= ? order by fdt_trx_datetime desc , fin_rec_id desc limit 1";
-            $qr = $this->db->query($ssql,[$rw->fin_warehouse_id,$rw->fin_item_id,$rw->fst_unit,$rw->fdt_trx_datetime]);
+            $qr = $this->db->query($ssql,[$rw->fin_warehouse_id,$rw->fin_item_id,$rw->fst_basic_unit,$rw->fdt_trx_datetime]);
             $currentData = $qr->row();
 
             if ($currentData){
@@ -172,9 +201,9 @@ class Trinventory_model extends MY_Model
             $ssql ="select * from trinventory
                 where fin_warehouse_id = ?
                 and fin_item_id = ?
-                and fst_unit = ?
+                and fst_basic_unit = ?
                 and fdt_trx_datetime >= ? order by fdt_trx_datetime,fin_rec_id";
-            $qr = $this->db->query($ssql,[$rw->fin_warehouse_id,$rw->fin_item_id,$rw->fst_unit,$rw->fdt_trx_datetime]);
+            $qr = $this->db->query($ssql,[$rw->fin_warehouse_id,$rw->fin_item_id,$rw->fst_basic_unit,$rw->fdt_trx_datetime]);
             $rs = $qr->result();    
             foreach($rs as $rw2){
                 $rw2->fdb_qty_balance_after = $currentData["fdb_qty_balance_after"] + (float) $rw2->fdb_qty_in -  (float) $rw2->fdb_qty_out;

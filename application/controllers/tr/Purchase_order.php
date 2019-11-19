@@ -142,7 +142,7 @@ class Purchase_order extends MY_Controller{
 	}
 
 	public function ajx_add_save(){
-		//Prepare Data
+		//Prepare Data	
 		$fdt_po_datetime = dBDateTimeFormat($this->input->post("fdt_po_datetime"));
 		$resp = dateIsLock($fdt_po_datetime);
 		if ($resp["status"] != "SUCCESS" ){
@@ -156,7 +156,14 @@ class Purchase_order extends MY_Controller{
 		$fblDPIncPPN = $this->input->post("fbl_dp_inc_ppn");
 		$fblDPIncPPN =  ($fblDPIncPPN == null) ? 0 : 1;
 		$fstCurrCode =  $this->input->post("fst_curr_code");
-		$fstCurrCode = $fstCurrCode == null ? $this->mscurrencies_model->getDefaultCurrencyCode() : $fstCurrCode;
+		$fdcExchangeRateIdr = $this->input->post("fdc_exchange_rate_idr");
+
+		if($fstCurrCode == null){
+			$defaultCurr = getDefaultCurrency();
+			$fstCurrCode = $defaultCurr["CurrCode"];
+			$fdcExchangeRateIdr = 1;
+		}		
+		$fdcExchangeRateIdr = parseNumber($fdcExchangeRateIdr);
 
 		$dataH = [
 			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
@@ -164,7 +171,7 @@ class Purchase_order extends MY_Controller{
             "fst_po_no" => $fst_po_no,
 			"fdt_po_datetime" => $fdt_po_datetime,
 			"fst_curr_code"=>$fstCurrCode,
-			"fdc_exchange_rate_idr"=>$this->input->post("fdc_exchange_rate_idr"),
+			"fdc_exchange_rate_idr"=>$fdcExchangeRateIdr,
 			"fin_supplier_id" => $this->input->post("fin_supplier_id"),
 			"fin_term"=>$this->input->post("fin_term"),
 			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),	
@@ -359,9 +366,18 @@ class Purchase_order extends MY_Controller{
 		$fblDPIncPPN =  ($fblDPIncPPN == null) ? 0 : 1;
 		
 		$fstCurrCode =  $this->input->post("fst_curr_code");
-		$fstCurrCode = $fstCurrCode == null ? $this->mscurrencies_model->getDefaultCurrencyCode() : $fstCurrCode;
+		$fdcExchangeRateIdr = $this->input->post("fdc_exchange_rate_idr");
+
+		if($fstCurrCode == null){
+			$defaultCurr = getDefaultCurrency();
+			$fstCurrCode = $defaultCurr["CurrCode"];
+			$fdcExchangeRateIdr = 1;
+		}		
+		$fdcExchangeRateIdr = parseNumber($fdcExchangeRateIdr);
+
 
 		$dataH["fst_curr_code"] = $fstCurrCode;
+		$dataH["fdc_exchange_rate_idr"] = $fdcExchangeRateIdr;
 		$dataH["fdt_po_datetime"] = $fdt_po_datetime;
 		$dataH["fbl_dp_inc_ppn"] = $fblDPIncPPN;		
 		$dataH["fdc_subttl"] = 0;		

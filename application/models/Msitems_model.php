@@ -225,4 +225,48 @@ class Msitems_model extends MY_Model
     }
 
     
+
+    public function getQtyConvertUnit($itemId,$qtyToConvert,$fromUnit,$toUnit){
+        $conversion = $this->getConversionUnit($itemId,$fromUnit,$toUnit);        
+        return (float) $qtyToConvert * $conversion;
+    }
+
+    public function getQtyConvertToBasicUnit($itemId,$qtyToConvert,$unitToConvert){
+        $basicUnit = $this->getBasicUnit($itemId);
+        $conversion = $this->getConversionUnit($itemId,$unitToConvert,$basicUnit);        
+        return (float) $qtyToConvert * $conversion;
+    }
+
+    public function getBasicUnit($finItemId){
+        $ssql = "select * from msitemunitdetails where fin_item_id = ? and fbl_is_basic_unit = 1";
+        $qr = $this->db->query($ssql,[$finItemId]);
+        $rw  = $qr->row();
+        if($rw == null){
+            return null;
+        }else{
+            return $rw->fst_unit;
+        }
+    }
+    public function getConversionUnit($itemId,$fromUnit,$toUnit){
+        $ssql = "select * from msitemunitdetails where fin_item_id = ? and fst_unit = ?";
+        $qr = $this->db->query($ssql,[$itemId,$fromUnit]);
+        $rw = $qr->row();
+        if($rw == null){
+            throw new Exception("Conversion Unit error : unit $fromUnit not defined !");                        
+        }
+        $fromConversion = (float) $rw->fdc_conv_to_basic_unit;
+        $ssql = "select * from msitemunitdetails where fin_item_id = ? and fst_unit = ?";
+        $qr = $this->db->query($ssql,[$itemId,$toUnit]);
+        $rw = $qr->row();
+        if($rw == null){
+            throw new Exception("Conversion Unit error : unit $fromUnit not defined !");                        
+        }
+
+        $toConversion = (float) $rw->fdc_conv_to_basic_unit;
+        
+        return $fromConversion/$toConversion;
+
+    }
+
+    
 }

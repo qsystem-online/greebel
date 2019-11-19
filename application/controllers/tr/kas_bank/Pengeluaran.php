@@ -40,7 +40,7 @@ class Pengeluaran extends MY_Controller{
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
-					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/purchase/purchase_return/edit/' + row.fin_purchasereturn_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
+					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/kas_bank/pengeluaran/edit/' + row.fin_cbpayment_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
 					action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
 					action += '<div>';
 					return action;
@@ -103,7 +103,6 @@ class Pengeluaran extends MY_Controller{
 
     }
 
-
     private function openForm($mode = "ADD", $finCBPaymentId = 0){
         $this->load->library("menus");		
         $this->load->model("glaccounts_model");
@@ -114,6 +113,7 @@ class Pengeluaran extends MY_Controller{
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		
 
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Pengeluaran") : lang("Update Pengeluaran");
@@ -121,18 +121,10 @@ class Pengeluaran extends MY_Controller{
 		$data["mdlEditForm"] = $edit_modal;
 		
 		if($mode == 'ADD'){
-			
+			$data["mdlJurnal"] = "";
 		}else if($mode == 'EDIT'){
-			
-			/*
-			$cbPayment = $this->trcbpayment_model->getDataById($finCBPaymentId);	
-			
-			$data["initData"] = $this->trcbpayment_model->getDataById($finCBPaymentId);	
-			if ($cbPayment == null){
-				show_404();
-			}		
-			$data["initData"] = $cbPayment;
-			*/
+			$jurnal_modal = $this->parser->parse('template/mdlJurnal', [], true);
+			$data["mdlJurnal"] = $jurnal_modal;
         }        
 		
 		$page_content = $this->parser->parse('pages/tr/kas_bank/pengeluaran/form', $data, true);
@@ -151,6 +143,8 @@ class Pengeluaran extends MY_Controller{
 		$this->load->model('trcbpaymentitems_model');
 		$this->load->model('trcbpaymentitemstype_model');
 		$this->load->model('kasbank_model');
+		$this->load->model('glaccounts_model');
+
 		/*
 		_c9da2c3066cf64f25a59677d1666d7ac: 9e6ac86fd396250f7e536cab28e6d27b
 		fin_cbpayment_id: 0
@@ -168,15 +162,32 @@ class Pengeluaran extends MY_Controller{
 
 		//PREPARE DATA
 		$fdt_cbpayment_datetime = dBDateTimeFormat($this->input->post("fdt_cbpayment_datetime"));
+		$resp = dateIsLock($fdt_cbpayment_datetime);
+		if ($resp["status"] != "SUCCESS" ){
+			$this->ajxResp["status"] = $resp["status"];
+			$this->ajxResp["message"] = $resp["message"];
+			$this->json_output();
+			return;
+		}
+
 		$fst_cbpayment_no = $this->trcbpayment_model->generateCBPaymentNo($this->input->post("fin_kasbank_id"),$fdt_cbpayment_datetime);
+
+		$fstCurrCode = $this->input->post("fst_curr_code");
+		$fdcExchangeRateIdr = parseNumber($this->input->post("fdc_exchange_rate_idr"));
+		if($fstCurrCode ==  null){
+			$defaultCurr = getDefaultCurrency();
+			$fstCurrCode = $defaultCurr["CurrCode"];
+			$fdcExchangeRateIdr = 1;
+		}
+
 		$dataH = [
 			//"fin_cbpayment_id"=>
 			"fst_cbpayment_no"=>$fst_cbpayment_no,
 			"fin_kasbank_id"=>$this->input->post("fin_kasbank_id"),
 			"fdt_cbpayment_datetime"=>$fdt_cbpayment_datetime,
 			"fin_supplier_id"=>$this->input->post("fin_supplier_id"),
-			"fst_curr_code"=>$this->input->post("fst_curr_code"),
-			"fdc_exchange_rate_idr"=>$this->input->post("fdc_exchange_rate_idr"),
+			"fst_curr_code"=>$fstCurrCode,
+			"fdc_exchange_rate_idr"=>$fdcExchangeRateIdr,
 			"fst_memo"=>$this->input->post("fst_memo"),
 			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
 			"fst_active"=>'A',			
@@ -226,6 +237,7 @@ class Pengeluaran extends MY_Controller{
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');		
 		for($i = 0; $i < sizeof($detailsPayment) ; $i++){
 			$item = $detailsPayment[$i];
+			$detailsPayment[$i]->fdt_clear_date = dBDateFormat($item->fdt_clear_date);
 			// Validate itemType Details
 			if ($detailsPayment[$i]->fst_cbpayment_type == "TUNAI" ||$detailsPayment[$i]->fst_cbpayment_type == "TRANSFER"){
 				$acc = $this->kasbank_model->getDataById($dataH["fin_kasbank_id"]);
@@ -234,6 +246,65 @@ class Pengeluaran extends MY_Controller{
 				$acc = $this->trcbpayment_model->getOutGiroAccount();
 			}else if($detailsPayment[$i]->fst_cbpayment_type == "GLACCOUNT"){
 				$acc = (object) ["fst_glaccount_code" => $detailsPayment[$i]->fst_glaccount_code];
+				//Check if account id Profit Cost Center, Analisa Divisi, Analisa Customer, Analisa Project
+				$glAccount = $this->glaccounts_model->getSimpleDataHeader($detailsPayment[$i]->fst_glaccount_code);
+
+				if ($glAccount->fst_glaccount_type == "PROFIT_LOST"){
+					if(empty($detailsPayment[$i]->fin_pcc_id)){
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = lang("Invalid Request");
+						$this->ajxResp["request_data"] = $dataH;
+						$error = [
+							"detail"=> sprintf(lang("%s membutuhkan profit & cost center !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						$this->ajxResp["data"] = $error;
+						$this->json_output();
+						return;
+					}
+				}
+
+				if ($glAccount->fbl_pc_divisi){
+					if(empty($detailsPayment[$i]->fin_pc_divisi_id)){
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = lang("Invalid Request");
+						$this->ajxResp["request_data"] = $dataH;
+						$error = [
+							"detail"=> sprintf(lang("%s membutuhkan analisa divisi !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						$this->ajxResp["data"] = $error;
+						$this->json_output();
+						return;
+					}
+				}
+
+				if ($glAccount->fbl_pc_customer){
+					if(empty($detailsPayment[$i]->fin_pc_customer_id)){
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = lang("Invalid Request");
+						$this->ajxResp["request_data"] = $dataH;
+						$error = [
+							"detail"=> sprintf(lang("%s membutuhkan analisa customer !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						$this->ajxResp["data"] = $error;
+						$this->json_output();
+						return;
+					}
+				}
+
+				if ($glAccount->fbl_pc_project){
+					if(empty($detailsPayment[$i]->fin_pc_project_id)){
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = lang("Invalid Request");
+						$this->ajxResp["request_data"] = $dataH;
+						$error = [
+							"detail"=> sprintf(lang("%s membutuhkan analisa project !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						$this->ajxResp["data"] = $error;
+						$this->json_output();
+						return;
+					}
+				}
+
 			}
 
 			if ($acc){
@@ -278,7 +349,6 @@ class Pengeluaran extends MY_Controller{
 				$this->json_output();
 				return;
 		}
-
 		
 		//INSERT DATA
 		$this->db->trans_start();
@@ -293,7 +363,7 @@ class Pengeluaran extends MY_Controller{
 			$this->trcbpaymentitems_model->insert($dataTransaksi);			
 		}
 
-		//Insert Data Detail Payment
+		//Insert Data Detail Payment		
 		foreach ($detailsPayment as $transaksi) {
 			$dataPayment = (array) $transaksi;
 			$dataPayment["fin_cbpayment_id"] = $insertId;
@@ -312,8 +382,7 @@ class Pengeluaran extends MY_Controller{
 			return;
 		}
 
-		//var_dump($resp);
-		//die();
+		
 
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0){			
@@ -334,32 +403,31 @@ class Pengeluaran extends MY_Controller{
 		$this->json_output();		
 	}
 
-	public function ajx_edit_save(){	
+	public function ajx_edit_save(){
 		$this->load->model('trcbpaymentitems_model');
 		$this->load->model('trcbpaymentitemstype_model');
 		$this->load->model('kasbank_model');
 		$this->load->model('glledger_model');
 
+		//IS EDITABLE
+		$dataHOld = $this->trcbpayment_model->getDataHeaderById($this->input->post("fin_cbpayment_id"));
+		if($dataHOld == null){
+			$this->ajxResp["status"] = "FAILED";
+			$this->ajxResp["message"] = lang("ID transaksi tidak ditemukan");			
+			$this->json_output();
+			return;
+		}
 
-		/*
-		_c9da2c3066cf64f25a59677d1666d7ac: 9e6ac86fd396250f7e536cab28e6d27b
-		fin_cbpayment_id: 0
-		type-pengeluaran: Cash
-		fin_kasbank_id: 1
-		fdt_cbpayment_datetime: 04-10-2019 13:54:06
-		fst_cbpayment_no: ADJ/JKT/2019/10/00001
-		fst_curr_code: IDR
-		fdc_exchange_rate_idr: 1.00
-		fin_supplier_id: 142
-		fst_memo: 
-		fin_user_id_request_by:
-		fst_edit_notes:
-		detailTrans: [{"fin_rec_id":0,"fst_trans_type":"DP_PO","fst_trans_type_name":"DP LPB Pembelian","fin_trans_id":"6","fst_trans_no":"PO/JKT/2019/09/00005","fdc_trans_amount":50000,"ttl_paid":0,"fdc_return_amount":0,"fdc_payment":50000}]
-		detailPayment: [{"fin_rec_id":0,"fst_cbpayment_type":"TUNAI","fst_cbpayment_type_name":"Tunai","fst_curr_code":"IDR","fdc_exchange_rate_idr":"1","fst_glaccount_code":"111.111.002","fst_glaccount_code_name":"111.111.002 - ADJUSMENT","fin_ppc_id":"1","fin_ppc_id_name":"Divisi Accounting","fdc_amount":"50000","fst_referensi":"","fst_bilyet_no":"","fdt_clear_date":""}]
-		*/
+		$resp = dateIsLock($dataHOld->fdt_cbpayment_datetime);
+		if ($resp["status"] != "SUCCESS" ){
+			$this->ajxResp["status"] = $resp["status"];
+			$this->ajxResp["message"] = $resp["message"];
+			$this->json_output();
+			return;
+		}
 
-		$fdt_cbpayment_datetime = dBDateTimeFormat($this->input->post("fdt_cbpayment_datetime"));
-				
+
+		$fdt_cbpayment_datetime = dBDateTimeFormat($this->input->post("fdt_cbpayment_datetime"));				
 		$resp = dateIsLock($fdt_cbpayment_datetime);
 		if ($resp["status"] != "SUCCESS" ){
 			$this->ajxResp["status"] = $resp["status"];
@@ -383,14 +451,20 @@ class Pengeluaran extends MY_Controller{
 		}
 
 		//$fst_cbpayment_no = $this->trcbpayment_model->generateCBPaymentNo($this->input->post("fin_kasbank_id"),$fdt_cbpayment_datetime);
-
+		$fstCurrCode = $this->input->post("fst_curr_code");
+		$fdcExchangeRateIdr = parseNumber($this->input->post("fdc_exchange_rate_idr"));
+		if($fstCurrCode ==  null){
+			$defaultCurr = getDefaultCurrency();
+			$fstCurrCode = $defaultCurr["CurrCode"];
+			$fdcExchangeRateIdr = 1;
+		}
 		$dataH = [
 			"fin_cbpayment_id"=>$this->input->post("fin_cbpayment_id"),
 			"fin_kasbank_id"=>$this->input->post("fin_kasbank_id"),
 			"fdt_cbpayment_datetime"=>$fdt_cbpayment_datetime,
 			"fin_supplier_id"=>$this->input->post("fin_supplier_id"),
-			"fst_curr_code"=>$this->input->post("fst_curr_code"),
-			"fdc_exchange_rate_idr"=>$this->input->post("fdc_exchange_rate_idr"),
+			"fst_curr_code"=>$fstCurrCode,
+			"fdc_exchange_rate_idr"=>$fdcExchangeRateIdr,
 			"fst_memo"=>$this->input->post("fst_memo"),
 			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
 			"fst_active"=>'A',	
@@ -429,6 +503,7 @@ class Pengeluaran extends MY_Controller{
 		for($i = 0; $i < sizeof($detailsPayment) ; $i++){
 			$item = $detailsPayment[$i];
 			// Validate itemType Details
+			$detailsPayment[$i]->fdt_clear_date = dBDateFormat($item->fdt_clear_date);
 			if ($detailsPayment[$i]->fst_cbpayment_type == "TUNAI" ||$detailsPayment[$i]->fst_cbpayment_type == "TRANSFER"){
 				$acc = $this->kasbank_model->getDataById($dataH["fin_kasbank_id"]);
 				$acc = $acc["ms_kasbank"];
@@ -437,6 +512,65 @@ class Pengeluaran extends MY_Controller{
 				$acc = $this->trcbpayment_model->getOutGiroAccount();
 			}else if($detailsPayment[$i]->fst_cbpayment_type == "GLACCOUNT"){
 				$acc = (object) ["fst_glaccount_code" => $detailsPayment[$i]->fst_glaccount_code];
+
+				//Check if account id Profit Cost Center, Analisa Divisi, Analisa Customer, Analisa Project
+				$glAccount = $this->glaccounts_model->getSimpleDataHeader($detailsPayment[$i]->fst_glaccount_code);
+
+				if ($glAccount->fst_glaccount_type == "PROFIT_LOST"){
+					if(empty($detailsPayment[$i]->fin_pcc_id)){
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = lang("Invalid Request");
+						$this->ajxResp["request_data"] = $dataH;
+						$error = [
+							"detail"=> sprintf(lang("%s membutuhkan profit & cost center !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						$this->ajxResp["data"] = $error;
+						$this->json_output();
+						return;
+					}
+				}
+
+				if ($glAccount->fbl_pc_divisi){
+					if(empty($detailsPayment[$i]->fin_pc_divisi_id)){
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = lang("Invalid Request");
+						$this->ajxResp["request_data"] = $dataH;
+						$error = [
+							"detail"=> sprintf(lang("%s membutuhkan analisa divisi !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						$this->ajxResp["data"] = $error;
+						$this->json_output();
+						return;
+					}
+				}
+
+				if ($glAccount->fbl_pc_customer){
+					if(empty($detailsPayment[$i]->fin_pc_customer_id)){
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = lang("Invalid Request");
+						$this->ajxResp["request_data"] = $dataH;
+						$error = [
+							"detail"=> sprintf(lang("%s membutuhkan analisa customer !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						$this->ajxResp["data"] = $error;
+						$this->json_output();
+						return;
+					}
+				}
+
+				if ($glAccount->fbl_pc_project){
+					if(empty($detailsPayment[$i]->fin_pc_project_id)){
+						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+						$this->ajxResp["message"] = lang("Invalid Request");
+						$this->ajxResp["request_data"] = $dataH;
+						$error = [
+							"detail"=> sprintf(lang("%s membutuhkan analisa project !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						$this->ajxResp["data"] = $error;
+						$this->json_output();
+						return;
+					}
+				}
 			}
 
 			if ($acc){
@@ -502,7 +636,8 @@ class Pengeluaran extends MY_Controller{
 			$dataTransaksi["fst_active"] = "A";					
 			$this->trcbpaymentitems_model->insert($dataTransaksi);			
 		}
-
+		
+		
 		//Insert Data Detail Payment
 		foreach ($detailsPayment as $transaksi) {
 			$dataPayment = (array) $transaksi;
@@ -550,6 +685,62 @@ class Pengeluaran extends MY_Controller{
 			$data["message"] = "";
 		}		
 		$this->json_output($data);
+	}
+
+	public function delete($finCBPaymentId){
+		//IS EDITABLE
+		$dataHOld = $this->trcbpayment_model->getDataHeaderById($finCBPaymentId);
+		if($dataHOld == null){
+			$this->ajxResp["status"] = "FAILED";
+			$this->ajxResp["message"] = lang("ID transaksi tidak ditemukan");			
+			$this->json_output();
+			return;
+		}
+		$resp = dateIsLock($dataHOld->fdt_cbpayment_datetime);
+		if ($resp["status"] != "SUCCESS" ){
+			$this->ajxResp["status"] = $resp["status"];
+			$this->ajxResp["message"] = $resp["message"];
+			$this->json_output();
+			return;
+		}
+
+		$result = $this->trcbpayment_model->isEditable($finCBPaymentId);
+		if ($resp["status"] != "SUCCESS" ){
+			$this->ajxResp["status"] = $resp["status"];
+			$this->ajxResp["message"] = $resp["message"];
+			$this->json_output();
+			return;
+		}
+
+		$this->db->trans_start();
+		//UNPOSTING
+		$result = $this->trcbpayment_model->unposting($finCBPaymentId);
+		if ($resp["status"] != "SUCCESS" ){
+			$this->ajxResp["status"] = $resp["status"];
+			$this->ajxResp["message"] = $resp["message"];
+			$this->json_output();
+			$this->db->trans_rollback();
+			return;
+		}
+
+		//DELETE RECORD
+		$result = $this->trcbpayment_model->delete($finCBPaymentId);
+		if ($resp["status"] != "SUCCESS" ){
+			$this->ajxResp["status"] = $resp["status"];
+			$this->ajxResp["message"] = $resp["message"];
+			$this->json_output();
+			$this->db->trans_rollback();
+			return;
+		}
+
+		$this->db->trans_complete();
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = "Data Saved !";
+		$this->json_output();
+
+
+
+
 	}
 
 

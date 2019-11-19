@@ -111,7 +111,6 @@ class Approval extends MY_Controller{
         $this->load->model('trverification_model');
 		$fstNotes = $this->input->post("fst_notes");
 		$isApproved = $this->input->post("isApproved");
-
         $this->db->trans_start();
 		$result = $this->trverification_model->approve($finRecId,$fstNotes,$isApproved);
 		if( $result["status"] != "SUCCESS"){
@@ -121,7 +120,26 @@ class Approval extends MY_Controller{
 			$this->db->trans_rollback();
 			return;
 		}
+        $this->db->trans_complete();		
+		$this->ajxResp["status"] = $result["status"];
+        $this->ajxResp["message"] = $result["message"];
+        $this->json_output();
+	}
 
+	public function cancelApproval(){
+		$this->load->model('trverification_model');
+		$this->db->trans_start();
+		$finRecId = $this->input->post("fin_rec_id");
+
+		$result = $this->trverification_model->cancelApprove($finRecId);
+
+		if( $result["status"] != "SUCCESS"){
+			$this->ajxResp["status"] = $result["status"];
+        	$this->ajxResp["message"] = $result["message"];
+			$this->json_output();
+			$this->db->trans_rollback();
+			return;
+		}
         $this->db->trans_complete();		
 		$this->ajxResp["status"] = $result["status"];
         $this->ajxResp["message"] = $result["message"];

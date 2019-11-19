@@ -262,44 +262,41 @@ class Invoice extends MY_Controller{
 		$dataH["fdc_total"]=$dataH["fdc_subttl"] + $dataH["fdc_ppn_amount"] - $dataH["fdc_disc_amount"] - $dataH["fdc_downpayment_claim"];
 
 	
+		try{
+			$this->db->trans_start();
 
-		$this->db->trans_start();
-		$insertId = $this->trlpbpurchase_model->insert($dataH);
+			$insertId = $this->trlpbpurchase_model->insert($dataH);
 
-		//Insert Data Detail Transaksi
-		foreach ($this->input->post("fin_lpbgudang_id") as $finLPBGudangId) {		
+			//Insert Data Detail Transaksi
+			foreach ($this->input->post("fin_lpbgudang_id") as $finLPBGudangId) {		
+				
+				$dataD =[
+					"fin_lpbpurchase_id"=>$insertId,
+					"fin_lpbgudang_id"=>$finLPBGudangId,
+					"fst_active"=> "A"
+				];
+				$this->trlpbpurchaseitems_model->insert($dataD);			
+			}
 			
-			$dataD =[
-				"fin_lpbpurchase_id"=>$insertId,
-				"fin_lpbgudang_id"=>$finLPBGudangId,
-				"fst_active"=> "A"
-			];
-			$this->trlpbpurchaseitems_model->insert($dataD);			
-		}
+			$result = $this->trlpbpurchase_model->posting($insertId);
 
-		
-		$result = $this->trlpbpurchase_model->posting($insertId);
+			if ($result["status"] != "SUCCESS"){
+				$this->ajxResp["status"] = "FAILED";
+				$this->ajxResp["message"] = $result["message"];
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
 
-		if ($result["status"] != "SUCCESS"){
-			$this->ajxResp["status"] = "FAILED";
-			$this->ajxResp["message"] = $result["message"];
-			$this->json_output();
-			$this->db->trans_rollback();
-			return;
-		}
-
-		$dbError  = $this->db->error();
-		if ($dbError["code"] != 0){			
+			$this->db->trans_complete();
+		}catch(Exception $e){
 			$this->ajxResp["status"] = "DB_FAILED";
-			$this->ajxResp["message"] = "Insert Failed";
-			$this->ajxResp["data"] = $this->db->error();
+			$this->ajxResp["message"] = $e->message;
+			$this->ajxResp["data"] = $e;
 			$this->json_output();
 			$this->db->trans_rollback();
 			return;
 		}
-
-		$this->db->trans_complete();
-
 
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";

@@ -29,9 +29,9 @@
 					<div class="btn-group btn-group-sm  pull-right">					
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-						<a id="btnJurnal" class="btn btn-primary" href="#" title="Jurnal" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
-						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
+						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
 				</div>
@@ -46,8 +46,8 @@
 						<div class="form-group">
 							<label for="fst_delivery_address" class="col-md-2 control-label"></label>
 							<div class="col-md-10">								
-								<label class="radio-inline"><input type="radio" id="fblIsImportFalse" class="fbl_is_import" name="fbl_is_import" value="0" checked="">Lokal</label>
-								<label class="radio-inline"><input type="radio" id="fblIsImportTrue" class="fbl_is_import" name="fbl_is_import" value="1">Import</label>
+								<label class="radio-inline"><input type="radio" id="fblIsImportFalse" class="calc_ttl fbl_is_import" name="fbl_is_import" value="0" checked="">Lokal</label>
+								<label class="radio-inline"><input type="radio" id="fblIsImportTrue" class="calc_ttl fbl_is_import" name="fbl_is_import" value="1">Import</label>
 							</div>
 						</div>
 
@@ -97,7 +97,7 @@
 						<div class="form-group">
 							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> </label>
                             <div class="col-sm-2">
-								<select id="fst_curr_code" type="TEXT" class="form-control" name="fst_curr_code">
+								<select id="fst_curr_code" type="TEXT" class="calc_ttl form-control" name="fst_curr_code">
 									<?php foreach($arrExchangeRate as $key=>$value){
 										echo "<option value='$key'>$key</option>";  
 									}
@@ -106,7 +106,7 @@
 							</div>										                    
 							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> </label>
                             <div class="col-sm-2">
-								<input type="TEXT" id="fdc_exchange_rate_idr"  name="fdc_exchange_rate_idr" class="form-control money"/>
+								<input type="TEXT" id="fdc_exchange_rate_idr"  name="fdc_exchange_rate_idr" class="calc_ttl form-control money"/>
 								<div id="fdc_exchange_rate_idr_err" class="text-danger"></div>
 							</div>										                    							
 						</div>
@@ -116,7 +116,7 @@
 
 						<div class="form-group" style="margin-bottom:0px">
 							<div class="col-md-12" style="text-align:right">
-								<button id="btn-add-detail" class="btn btn-primary btn-sm" style="display:none"><i class="fa fa-cart-plus" aria-hidden="true"></i>Tambah Biaya</button>
+								<button id="btn-add-detail" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>Tambah Biaya</button>
 							</div>
 						</div>
 
@@ -141,7 +141,7 @@
 								
 								
 								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Total IDR")?> : </label>
-								<label id="ttlAmountIdr" class="col-md-4 control-label" style="padding-top:0px" >0.00</label>
+								<label id="totalAmountIdr" class="col-md-4 control-label" style="padding-top:0px" >0.00</label>
 							</div>
 							
 						</div>
@@ -162,7 +162,7 @@
 </section>
 
 <div id="mdlDetail" class="modal fade" role="dialog">
-	<div class="modal-dialog" style="display:table;width:700px">
+	<div class="modal-dialog" style="display:table;width:850px">
 		<!-- modal content -->
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">			
 			<div class="modal-body">
@@ -174,51 +174,86 @@
 							<form id="form-detail" class="form-horizontal">
 									<input type="hidden" id="fin_po_detail_id" value="0">
 									<div class="form-group">
-										<label for="fin_item_id" class="col-md-3 control-label">Items</label>
+										<label for="fst_glaccount_code" class="col-md-3 control-label">GL Account</label>
 										<div class="col-md-9">
-											<select id="fin_item_id" class="form-control " style="width:100%"></select>
+											<select id="fst_glaccount_code" class="form-control " style="width:100%">
+											<?php
+												$costList = $this->glaccounts_model->getAccountRabaRugi();
+												foreach($costList as $cost){
+													echo "<option value='".$cost->fst_glaccount_code ."' data-pcdiv='$cost->fbl_pc_divisi' data-pccust='$cost->fbl_pc_customer' data-pcproj='$cost->fbl_pc_project' >". $cost->fst_glaccount_code . " - " . $cost->fst_glaccount_name . "</option>";
+												}
+											?>
+											</select>
 										</div>
 									</div>
 									<div class="form-group">
-										<label for="fst_custom_item_name" class="col-md-3 control-label">Custom Name</label>
+										<label for="fst_notes" class="col-md-3 control-label">Notes</label>
 										<div class="col-md-9">
-											<input id="fst_custom_item_name" class="form-control">
+											<textarea id="fst_notes" class="form-control" style="resize:none"></textarea>
 										</div>
 									</div>
 
 									<div class="form-group">
-										<label for="fst_unit" class="col-md-3 control-label">Unit</label>
-										<div class="col-md-9">
-											<select id="fst_unit" class="form-control" style="width:100%"></select>
+										<label for="fin_pcc_id" class="col-md-3 control-label"><?=lang("Profit & Cost Center")?></label>
+										<div class="col-md-3">
+											<select id="fin_pcc_id" class="form-control" style="width:100%">
+												<?php
+													$pccList = $this->profitcostcenter_model->getAllList();
+													foreach($pccList as $pcc){
+														echo "<option value='".$pcc->fin_pcc_id ."'>". $pcc->fst_pcc_name . "</option>";
+													}
+												?>
+											</select>
+										</div>
+										<label for="fin_pc_divisi_id" class="col-md-3 control-label"><?=lang("Analisa Department")?></label>
+										<div class="col-md-3">
+											<select id="fin_pc_divisi_id" class="form-control" style="width:100%">
+												<?php
+													$departmentList = $this->msdepartments_model->getAllList();
+													foreach($departmentList as $department){
+														echo "<option value='".$department->fin_department_id ."'>". $department->fst_department_name . "</option>";
+													}
+												?>
+											</select>
 										</div>
 									</div>
-
 									<div class="form-group">
-										<label for="fdb_qty" class="col-md-3 control-label">Qty</label>
-										<div class="col-md-2">
-											<input type="number" class="ele-disc form-control text-right numeric" id="fdb_qty" value="1" min="1">
+										<label for="fin_pc_customer_id" class="col-md-3 control-label"><?=lang("Analisa Customer")?></label>
+										<div class="col-md-3">
+											<select id="fin_pc_customer_id" class="form-control" style="width:100%">
+												<?php
+													$customerList = $this->msrelations_model->getCustomerListByBranch();
+													foreach($customerList as $customer){
+														echo "<option value='".$customer->fin_relation_id ."'>". $customer->fst_relation_name . "</option>";
+													}
+												?>
+											</select>
 										</div>
-
-										<label for="fdc_price" class="col-md-2 control-label">Price</label>
-										<div class="col-md-5">
-											<input type="text" class="ele-disc form-control text-right money" id="fdc_price" value="0" style="text-align: right;">
+										<label for="fin_pc_project_id" class="col-md-3 control-label"><?=lang("Analisa Project")?></label>
+										<div class="col-md-3">
+											<select id="fin_pc_project_id" class="form-control" style="width:100%">
+												<?php
+													$projectList = $this->msprojects_model->getAllList();
+													foreach($projectList as $project){
+														echo "<option value='".$project->fin_project_id ."'>". $project->fst_project_name . "</option>";
+													}
+												?>
+											</select>
 										</div>
 									</div>
-
 									
 
 									<div class="form-group">
-										<label for="fdc_disc_amount" class="col-md-3 control-label">Disc Amount</label>
-										<div class="col-md-9">
-											<input type="text" class="form-control text-right" id="fdc_disc_amount" readonly />
+										<label for="fdc_debet" class="col-md-3 control-label">Debet</label>
+										<div class="col-md-3">
+											<input type="text" class="form-control text-right money" id="fdc_debet" value="0">
 										</div>
-									</div>
-									<div class="form-group">
-										<label for="fdc_disc_amount" class="col-md-3 control-label">Sub total</label>
-										<div class="col-md-9">
-											<input type="text" class="form-control text-right" id="fdc_subtotal" readonly />
+
+										<label for="fdc_credit" class="col-md-3 control-label">Credit</label>
+										<div class="col-md-3">
+											<input type="text" class="form-control text-right money" id="fdc_credit" value="0">
 										</div>
-									</div>
+									</div>									
 								</form>
 
 								<div class="modal-footer">
@@ -232,6 +267,99 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+		$(function(){
+			$("#fst_glaccount_code").select2();
+			$("#fdc_debet").change(function(e){
+				e.preventDefault();
+				$("#fdc_credit").val(App.money_format(0));
+			});
+			$("#fdc_credit").change(function(e){
+				e.preventDefault();
+				$("#fdc_debet").val(App.money_format(0));
+			});
+
+			$("#btn-add-detail-save").click(function(e){
+				e.preventDefault();
+				var error = false;
+
+				//Validasi data
+				var selectedGL = $("#fst_glaccount_code option:selected");
+				
+				if ($("#fst_glaccount_code").val() == null){
+					alert("<?=lang("GL Account tidak boleh kosong !")?>");
+					error = true;
+				};
+
+				if ($("#fin_pcc_id").val() == null){
+					alert("<?=lang("Profit Cost Center harus diisi untuk GL Account code ini ")?>");
+					error = true;
+				}
+				
+				var isPCDiv = selectedGL.data("pcdiv");
+				var isPCCust = selectedGL.data("pccust");
+				var isPCProj = selectedGL.data("pcproj");
+				
+				if(isPCDiv == 1){
+					if ($("#fin_pc_divisi_id").val() == null){
+						alert("<?=lang("Analisa Divisi harus diisi untuk GL Account code ini ")?>");
+						error = true;
+					}
+				}
+				if(isPCCust == 1){
+					if ($("#fin_pc_customer_id").val() == null){
+						alert("<?=lang("Analisa Customer harus diisi untuk GL Account code ini ")?>")
+						error = true;
+					}
+
+				}
+				if(isPCProj == 1){ 
+					if ($("#fin_pc_project_id").val() == null){
+						alert("<?=lang("Analisa Project harus diisi untuk GL Account code ini ")?>")
+						error = true;
+					}
+				}
+
+				if ($("#fdc_debet").val() == 0 && $("#fdc_credit").val() == 0){
+					alert("<?=lang("Nilai Debet dan Kredit tidak boleh kosong !")?>")
+					error = true;
+				}
+
+				if (error){
+					return;
+				}
+
+				t = $("#tbldetails").DataTable();
+				var data ={
+					fin_rec_id:0,
+					fst_glaccount_code:$("#fst_glaccount_code").val(),
+					fst_glaccount_title:$("#fst_glaccount_code option:selected").text(),
+					fst_notes:$("#fst_notes").val(),
+					fin_pcc_id:$("#fin_pcc_id").val(),
+					fst_pcc_title:$("#fin_pcc_id option:selected").text(),
+					fin_pc_divisi_id:$("#fin_pc_divisi_id").val(),
+					fst_pc_divisi_title:$("#fin_pc_divisi_id option:selected").text(),
+					fin_pc_customer_id:$("#fin_pc_customer_id").val(),
+					fst_pc_customer_name:$("#fin_pc_customer_id option:selected").text(),
+					fin_pc_project_id:$("#fin_pc_project_id").val(),
+					fst_pc_project_title:$("#fin_pc_project_id option:selected").text(),
+					fdc_debet:$("#fdc_debet").val(),
+					fdc_credit:$("#fdc_credit").val(),
+				};
+				if (rowDetail == null){
+					t.row.add(data).draw(false);
+				}else{
+					var tmpData = t.row(rowDetail).data();
+					data.fin_rec_id = tmpData.fin_rec_id;					
+					t.row(rowDetail).data(data).draw(false);
+				}				
+				calculateTotal();
+				$("#mdlDetail").modal("hide");				
+				rowDetail = null;
+			})
+		})
+	
+	</script>
 </div>
 
 <?php echo $mdlEditForm ?>
@@ -242,7 +370,7 @@
 		
 		$("#btnNew").click(function(e){
 			e.preventDefault();
-			window.location.href = "<?=site_url()?>tr/purchase/purchase_return/add";
+			window.location.href = "<?=site_url()?>tr/purchase/cost/add";
 		});
 
 		$("#btnSubmitAjax").click(function(e){
@@ -252,7 +380,7 @@
 
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
-			MdlJurnal.showJurnalByRef("PRT",$("#fin_purchasecost_id").val());
+			MdlJurnal.showJurnalByRef("PCS",$("#fin_purchasecost_id").val());
 		});
 		
 		$("#btnDelete").click(function(e){
@@ -262,7 +390,7 @@
 		
 		$("#btnClose").click(function(e){
 			e.preventDefault();
-			window.location.href = "<?=site_url()?>tr/purchase/purchase_return/";
+			window.location.href = "<?=site_url()?>tr/purchase/cost/";
 		});
 	
 		$(".fbl_is_import").change(function(e){
@@ -287,9 +415,9 @@
 			$("#fdc_exchange_rate_idr").val(App.money_format(exchangeRate));
 		});
 
-
-
-
+		$(".calc_ttl").change(function(e){
+			calculateTotal();
+		});
 
 
 		$("#btn-add-detail").click(function(e){
@@ -297,74 +425,12 @@
 			clearDetailForm();
 			$("#mdlDetail").modal("show");
 		});
-
-		$('#fin_item_id').on('select2:select', function (e) {
-			selectedItem =  e.params.data;
-			$("#fst_custom_item_name").val(selectedItem.fst_item_name);
-			getItemBuyUnit(null);
-		});
-		
-		$(".ele-disc").change(function(e){
-			var qty = $("#fdb_qty").val();
-			var price = $("#fdc_price").val();
-			var strDisc = $("#fst_disc_item").val();
-			var ttlBfDisc = qty * price;
-			var discAmount = App.calculateDisc(ttlBfDisc, strDisc);
-			var ttlAfDisc = ttlBfDisc - discAmount;
-			$("#fdc_disc_amount").val(App.money_format(discAmount));
-			$("#fdc_subtotal").val(App.money_format(ttlAfDisc));			
-		});
-
-		$("#btn-add-detail-save").click(function(e){
-			e.preventDefault();
-			t = $("#tbldetails").DataTable();
-			//var selectedItem = $("#fin_item_id").select2("data")[0];
-			var data ={
-				fin_rec_id:0,
-				fin_po_detail_id:0,
-				fin_item_id: $("#fin_item_id").val(),
-				fst_item_code:selectedItem.fst_item_code,
-				fst_custom_item_name:$("#fst_custom_item_name").val(),
-				fst_unit:$("#fst_unit").val(),
-				fdc_price:$("#fdc_price").val(),
-				fst_disc_item:$("#fst_disc_item").val(),
-				fdb_qty_total:0,
-				fdb_qty_return:$("#fdb_qty").val()
-			}
-
-			if(rowDetail == null){
-				//new data
-				t.row.add(data);
-			}else{
-				//edit data
-				dataTbl = t.row(rowDetail).data();
-				if(dataTbl.fin_po_detail_id == 0){
-					t.row(rowDetail).data(data);
-				}else{	
-					//Hanya bisa merubah Qty Return
-					dataTbl.fdb_qty_return = $("#fdb_qty").val();
-					t.row(rowDetail).data(dataTbl);				
-				}
-			}
-			t.draw(false);
-			calculateTotal();
-			clearDetailForm();
-			$("#mdlDetail").modal("hide");
-
-		})
-
-		$("#fdc_ppn_percent").change(function(e){
-			e.preventDefault();
-			calculateTotal();
-		})
-	
 	});
 </script>
 
 <script type="text/javascript" info="define">
 	var nonFaktur;
 	var rowDetail = null;
-	var selectedItem;
 	var arrExchangeRate =  new Array();
 	<?php foreach($arrExchangeRate as $key=>$value){ ?>		
 		arrExchangeRate["<?=$key?>"] = "<?= $value->fdc_rate ?>";
@@ -383,14 +449,44 @@
 			scrollX: true,			
 			scrollCollapse: true,	
 			order: [],
-			columns:[
+			columns:[				
 				{"title" : "fin_rec_id","width": "0px",sortable:false,data:"fin_rec_id",visible:false},
-				{"title" : "fin_purchasecost_id","width": "0px",sortable:false,data:"fin_purchasecost_id",visible:false},				
-				{"title" : "fst_glaccount_code","width": "0px",sortable:false,data:"fst_glaccount_code",visible:false},
-				{"title" : "Notes","width": "",sortable:false,data:"fst_notes"},
-				{"title" : "Profit & Cost Center","width": "250px",sortable:false,data:"fin_pcc_id"},
-				{"title" : "Debet","width": "125px",sortable:false,data:"fdc_debet",className:"text-right" },
-				{"title" : "Credit","width": "125px",sortable:false,data:"fdc_credit",className:"text-right"},
+				{"title" : "GL Account","width": "300px",sortable:false,data:"fst_glaccount_code",
+					render:function(data,type,row){
+						return row.fst_glaccount_title
+					}
+				},
+				{"title" : "Notes","width": "300px",sortable:false,data:"fst_notes"},
+				{"title" : "Profit & Cost Center","width": "250px",sortable:false,data:"fin_pcc_id",visible:false,
+					render:function(data,type,row){
+						return row.fst_pcc_title
+					}
+				},
+				{"title" : "Analisa Divisi","width": "250px",sortable:false,data:"fin_pc_divisi_id",visible:false,
+					render:function(data,type,row){
+						return row.fst_pc_divisi_title
+					}
+				},
+				{"title" : "Analisa Customer","width": "250px",sortable:false,data:"fin_pc_customer_id",visible:false,
+					render:function(data,type,row){
+						return row.fst_pc_customer_name
+					}
+				},
+				{"title" : "Analisa Project","width": "250px",sortable:false,data:"fin_pc_project_id",visible:false,
+					render:function(data,type,row){
+						return row.fst_pc_project_title
+					}
+				},
+				{"title" : "Debet","width": "125px",sortable:false,data:"fdc_debet",className:"text-right",
+					render:function(data,type,row){
+						return App.money_format(data);
+					}
+				},
+				{"title" : "Credit","width": "125px",sortable:false,data:"fdc_credit",className:"text-right",
+					render:function(data,type,row){
+						return App.money_format(data);
+					}
+				},
 				{"title" : "Action","width": "100px",sortable:false,className:'text-center',
 					render:function(data,type,row){
 						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>';
@@ -404,30 +500,25 @@
 			searching: false,
 			lengthChange: false,
 			paging: false,
-			info:false,								
-		}).on('draw',function(){
-			
-			
-
+			info:false,
 		}).on('click','.btn-edit',function(e){
 			e.preventDefault();
+			clearDetailForm();
+
 			t = $("#tbldetails").DataTable();
-			var trRow = $(this).parents('tr');
-			rowDetail = trRow;
-			var data = t.row(trRow).data();
-			selectedItem = data;
+			rowDetail = $(this).parents('tr');			 
+			var data = t.row(rowDetail).data();
 
-			$("#fin_item_id").empty();
-			$("#fin_item_id").append("<option value='"+data.fin_item_id+"'>"+data.fst_item_code + " - " + data.fst_custom_item_name +"</option>");
-			$("#fst_custom_item_name").val(data.fst_custom_item_name);
-			$("#fst_unit").empty();
-			$("#fst_unit").append("<option value='"+data.fst_unit+"'>"+data.fst_unit+"</option>" );
-			$("#fdb_qty").val(data.fdb_qty_return);
-			$("#fdc_price").val(data.fdc_price);
-			$("#fst_disc_item").val(data.fst_disc_item);
-			//$("#fdc_disc_amount").val(App.calculateDisc(data.fdb_qty_return * data.fdc_price,data.fst_disc_item) );
-			$(".ele-disc").trigger("change");
 
+			$("#fst_glaccount_code").val(data.fst_glaccount_code).trigger("change.select2");
+			$("#fst_notes").val(data.fst_notes);
+			$("#fin_pcc_id").val(data.fin_pcc_id);
+			$("#fin_pc_divisi_id").val(data.fin_pc_divisi_id);
+			$("#fin_pc_customer_id").val(data.fin_pc_customer_id);
+			$("#fin_pc_project_id").val(data.fin_pc_project_id);
+
+			$("#fdc_debet").val(data.fdc_debet);
+			$("#fdc_credit").val(data.fdc_credit);
 			$("#mdlDetail").modal("show");
 			
 		}).on('click','.btn-delete',function(e){
@@ -451,33 +542,6 @@
 		$("#fin_supplier_id").select2({templateResult:testSelec});
 		$("#fin_supplier_id").val(null).trigger("change.select2");		
 		$(".fbl_is_import").trigger("change");
-
-
-		//Form Detail
-		$("#fin_item_id").select2({
-			ajax: {
-				url: '<?=site_url()?>/select_data/get_items_by_supplier',
-				delay: 250, //milliseconds
-				data: function(params){
-					params.finSupplierId = $("#fin_supplier_id").val();
-					return params;
-				},
-				processResults: function (resp) {
-					// Transforms the top-level key of the response object from 'items' to 'results'
-					var data = resp.data;
-					//$("#fin_item_id").empty();
-					return {
-						results: $.map(data,function(obj){
-							obj.id = obj.fin_item_id;
-							obj.text = obj.fst_item_code + " - " + obj.fst_item_name;
-							//$("#fin_item_id").append("<option value='"+obj.id+"' data-code='"+obj.fst_item_code+"' data-name='"+obj.fst_item_name +"'>"+ obj.text +"</option>");
-							return obj;
-						})
-					};
-				}
-			}
-		});
-		
 		App.fixedSelect2();
 		initForm();
 	});
@@ -504,104 +568,44 @@
 			}
 		});
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	function calculateTotal(){
 
 		t= $('#tbldetails').DataTable();
 		var datas = t.rows().data();
-		console.log(datas);
-		var total = 0;
-		var totalDisc = 0;
+		var totalDebet = 0;
+		var totalCredit = 0;
+		
+		var totalIDR = 0;
 
 		$.each(datas,function(i,data){
-			var subttl =  parseFloat(data.fdb_qty_return * data.fdc_price);
-			var discAmount =  App.calculateDisc(subttl,data.fst_disc_item);
-			total += subttl;
-			totalDisc += discAmount;			
+			totalDebet +=  parseFloat(data.fdc_debet);
+			totalCredit +=  parseFloat(data.fdc_credit);
 		});
-
-		$("#ttlSubTotal").text(App.money_format(total));
-		$("#ttlDisc").text(App.money_format(totalDisc));
-
-		var ppnPercent = $("#fdc_ppn_percent").val();
-		var ttlBeforePPn = total - totalDisc
-		var ppnAmount = ttlBeforePPn * ppnPercent / 100;
-		var totalAfterPPn = ttlBeforePPn + ppnAmount;
-
-		$("#ppnAmount").text(App.money_format(ppnAmount));
-		$("#ttlAmount").text(App.money_format(totalAfterPPn));
+		var total = totalDebet - totalCredit;
+		$("#totalAmount").text(App.money_format(total));
+		$("#totalAmountIdr").text(App.money_format(total * $("#fdc_exchange_rate_idr").val() ));
 
 	}
-
-	
-
-	function getItemBuyUnit(defaultValue){
-		App.getValueAjax({
-			site_url:"<?= site_url()?>",
-			model:"msitemunitdetails_model",
-			func:"getBuyingListUnit",
-			params:[$("#fin_item_id").val()],
-			callback:function(units){
-				$("#fst_unit").empty();
-				$.each(units,function(i,unit){
-					$("#fst_unit").append("<option value='" +unit.fst_unit + "' data-price='"+ unit.fdc_last_buy_price+"'>"+unit.fst_unit+"</option>");
-				});
-				$("#fst_unit").val(defaultValue).trigger("change");				
-			}
-		});
-
-	}
-
 	function clearDetailForm(){
-		$("#fin_item_id").empty();
-		//$("#fin_item_id").append("<option value='"+data.fin_item_id+"'>"+data.fst_item_code + " - " + data.fst_custom_item_name +"</option>");
-		$("#fst_custom_item_name").val("");
-		$("#fst_unit").empty();
-		//$("#fst_unit").append("<option value='"+data.fst_unit+"'>"+data.fst_unit+"</option>" );
-		$("#fdb_qty").val(1);
-		$("#fdc_price").val(App.money_format(0));
-		$("#fst_disc_item").val(null);
-		$("#fdc_disc_amount").val(App.money_format(0));
-		rowDetail = null;
+		$("#fst_glaccount_code").val(null).trigger("change.select2");
+		$("#fst_notes").val(null);
+		$("#fin_pcc_id").val(null);
+		$("#fin_pc_divisi_id").val(null);
+		$("#fin_pc_customer_id").val(null);
+		$("#fin_pc_project_id").val(null);
+
+		$("#fdc_debet").val(App.money_format(0));
+		$("#fdc_credit").val(App.money_format(0));
 	}
 
 	function submitAjax(confirmEdit){
 
 		var dataSubmit = $("#frmTransaction").serializeArray();
-		
+
 		var mode = $("#fin_purchasecost_id").val() == "0" ? "ADD" : "EDIT";	
 
 		if (mode == "ADD"){
-			url =  "<?= site_url() ?>tr/purchase/purchase_return/ajx_add_save/";
+			url =  "<?= site_url() ?>tr/purchase/cost/ajx_add_save/";
 		}else{
 			dataSubmit.push({
 				name : "fin_user_id_request_by",
@@ -612,7 +616,7 @@
 				value: MdlEditForm.notes
 			});
 
-			url =  "<?= site_url() ?>tr/purchase/purchase_return/ajx_edit_save/";
+			url =  "<?= site_url() ?>tr/purchase/cost/ajx_edit_save/";
 		}
 
 		if (confirmEdit == 0 && mode != "ADD"){
@@ -637,91 +641,95 @@
 		App.blockUIOnAjaxRequest("Please wait while saving data.....");
 		$.ajax({
 			type: "POST",
-			//enctype: 'multipart/form-data',
 			url: url,
 			data: dataSubmit,
-			timeout: 600000,
-			success: function (resp) {				
-				if (resp.message != "")	{
-					$.alert({
-						title: 'Message',
-						content: resp.message,
-						buttons : {
-							OK : function(){
-								if(resp.status == "SUCCESS"){
-									//window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
-									return;
-								}
-							},
-						}
-					});
-				}
-				if(resp.status == "VALIDATION_FORM_FAILED" ){
-					//Show Error
-					errors = resp.data;
-					for (key in errors) {
-						$("#"+key+"_err").html(errors[key]);
-					}
-				}else if(resp.status == "SUCCESS") {
-					data = resp.data;
-					$("#fin_po_id").val(data.insert_id);
-					//Clear all previous error
-					$(".text-danger").html("");					
-				}
-			},
+			timeout: 600000,			
 			error: function (e) {
 				$("#result").text(e.responseText);
 				$("#btnSubmit").prop("disabled", false);
 			},
+		}).done(function (resp) {				
+			if (resp.message != "")	{
+				$.alert({
+					title: 'Message',
+					content: resp.message,
+					buttons : {
+						OK : function(){
+							if(resp.status == "SUCCESS"){
+								$("btnNew").trigger("click");
+								return;
+							}
+						},
+					}
+				});
+			}
+			if(resp.status == "VALIDATION_FORM_FAILED" ){
+				//Show Error
+				errors = resp.data;
+				for (key in errors) {
+					$("#"+key+"_err").html(errors[key]);
+				}
+			}else if(resp.status == "SUCCESS") {
+				data = resp.data;
+				$("#fin_purchasecost_id").val(data.insert_id);
+				//Clear all previous error
+				$(".text-danger").html("");					
+			}
 		}).always(function(){
 			
 		});
 	}
 
 	function initForm(){
-			
 		var finPurchaseCostId = $("#fin_purchasecost_id").val();
 		if (finPurchaseCostId != 0){
 			//get data from server;
 			App.blockUIOnAjaxRequest();
 			$.ajax({
-				url:"<?=site_url()?>tr/purchase/purchase_return/fetch_data/" + finPurchaseReturnId,
+				url:"<?=site_url()?>tr/purchase/cost/fetch_data/" + finPurchaseCostId,
 				method:"GET",								
 			}).done(function(resp){
 				if(resp.message != ""){
 					alert(resp.message);
 				}
 
-				if (resp.status == "SUCCESS"){	
-					
-					dataH = resp.data.purchasereturn;
-					detailData = resp.data.purchasereturn_details;
+				if (resp.status == "SUCCESS"){						
+					dataH = resp.data.dataH;					
+					detailList = resp.data.detailList;
 					
 					App.autoFillForm(dataH);
 
+					
 					$(".fbl_is_import [value='" + dataH.fbl_is_import +"']").prop("checked",true);
 					$("#fdt_purchasecost_datetime").val(App.dateTimeFormat(dataH.fdt_purchasecost_datetime)).datetimepicker("update");
 					$("#fin_supplier_id").val(dataH.fin_supplier_id).trigger("change.select2");
-					
-					getLPBPurchase(function(resp){
-						//console.log($("#fin_lpbpurchase_id option[value='"+ dataH.fin_lpbpurchase_id +"']").length);
-						App.addOptionIfNotExist("<option value='"+ dataH.fin_lpbpurchase_id +"'>" + dataH.fst_lpbpurchase_no + "</option>","fin_lpbpurchase_id");
-						$("#fin_lpbpurchase_id").val(dataH.fin_lpbpurchase_id).trigger("change.select2");
+
+
+					getPOList(function(resp){											
+						App.addOptionIfNotExist("<option value='"+dataH.fin_po_id+"'>"+dataH.fst_po_no+"</option>","fin_po_id");
+						$("#fin_po_id").val(dataH.fin_po_id).trigger("change.select2");
 					});
+					
+
+
 					t = $("#tbldetails").DataTable();					
-					$.each(detailData , function(i,dataD){
-						data = {
+					$.each(detailList , function(i,dataD){
+						var data ={
 							fin_rec_id:dataD.fin_rec_id,
-							fin_po_detail_id:dataD.fin_po_detail_id,
-							fin_item_id:dataD.fin_item_id,
-							fst_item_code:dataD.fst_item_code,
-							fst_custom_item_name:dataD.fst_custom_item_name,
-							fst_unit:dataD.fst_unit,
-							fdc_price:dataD.fdc_price,
-							fst_disc_item:dataD.fst_disc_item,
-							fdb_qty_total:dataD.fdb_total_lpb - dataD.fdb_qty_return,
-							fdb_qty_return:dataD.fdb_qty
-						}
+							fst_glaccount_code: dataD.fst_glaccount_code,
+							fst_glaccount_title: dataD.fst_glaccount_code + " - " + dataD.fst_glaccount_name,
+							fst_notes:dataD.fst_notes,
+							fin_pcc_id:dataD.fin_pcc_id,
+							fst_pcc_title:dataD.fst_pcc_name,
+							fin_pc_divisi_id:dataD.fin_pc_divisi_id,
+							fst_pc_divisi_title:"",
+							fin_pc_customer_id:dataD.fin_pc_customer_id,
+							fst_pc_customer_name:"",
+							fin_pc_project_id:dataD.fin_pc_project_id,
+							fst_pc_project_title:"",
+							fdc_debet:dataD.fdc_debet,
+							fdc_credit:dataD.fdc_credit,
+						};
 						t.row.add(data);						
 					});									
 					t.draw(false);
@@ -732,8 +740,6 @@
 			});
 		}
 	}
-	
-
 
 	function deleteAjax(confirmDelete){
 		
@@ -759,7 +765,7 @@
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/purchase/purchase_return/delete/" + $("#fin_purchasecost_id").val();
+		var url =  "<?= site_url() ?>tr/purchase/cost/delete/" + $("#fin_purchasecost_id").val();
 		$.ajax({
 			url:url,
 			method:"POST",
@@ -768,16 +774,14 @@
 			if (resp.message != ""){
 				alert(resp.message);
 			}
-
 			if(resp.status == "SUCCESS"){
-				$("#btnClose").trigger("click");			
+				//$("#btnClose").trigger("click");			
 			}
 
-		});
-		
-
+		});	
 
 	}
+
 </script>
 
 <!-- Select2 -->

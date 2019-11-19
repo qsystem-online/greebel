@@ -33,7 +33,7 @@ class Trlpbpurchase_model extends MY_Model {
     }
 
     public function getDataById($finLPBPurchaseId){
-        $ssql = "SELECT a.*,b.fst_po_no,b.fdt_po_datetime,b.fin_term,c.fst_relation_name as fst_supplier_name FROM trlpbpurchase a 
+        $ssql = "SELECT a.*,b.fst_po_no,b.fdt_po_datetime,b.fin_term,fdc_downpayment_paid,fdc_downpayment_claimed,c.fst_relation_name as fst_supplier_name FROM trlpbpurchase a 
             INNER JOIN trpo b ON a.fin_po_id = b.fin_po_id 
             INNER JOIN msrelations  c ON a.fin_supplier_id = c.fin_relation_id 
             WHERE fin_lpbpurchase_id = ? and a.fst_active != 'D'";
@@ -165,9 +165,7 @@ class Trlpbpurchase_model extends MY_Model {
         //Update claimed downpayment di PO
         $ssql = "update trpo set fdc_downpayment_claimed = fdc_downpayment_claimed + " . $dataH->fdc_downpayment_claim . " where fin_po_id = ?";
         $this->db->query($ssql,[$dataH->fin_po_id]);
-        
-
-        
+                
 
         //JURNAL 
         $dataJurnal= [];
@@ -181,28 +179,84 @@ class Trlpbpurchase_model extends MY_Model {
             $dpGlAccount = getGLConfig("DP_OUT_LOKAL");
             $apGlAccount = getGLConfig("AP_DAGANG_LOKAL");
         }
-        
-        //PEMBELIAN
-        $dataJurnal[] =[
-            "fin_branch_id"=>$dataH->fin_branch_id,
-            "fst_account_code"=>$glAccount,
-            "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
-            "fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
-            "fin_trx_id"=>$finLPBPurchaseId,
-            "fst_reference"=>null,
-            "fdc_debit"=> $dataH->fdc_subttl * $dataH->fdc_exchange_rate_idr,
-            "fdc_origin_debit"=>$dataH->fdc_subttl,
-            "fdc_credit"=>0,
-            "fdc_origin_credit"=>0,
-            "fst_orgi_curr_code"=>$dataH->fst_curr_code,
-            "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
-            "fst_no_ref_bank"=>null,
-            "fst_profit_cost_center_code"=>null,
-            "fin_relation_id"=>null,
-            "fst_active"=>"A",
-            "fst_info"=>"PEMBELIAN"
-        ]; 
 
+        
+        $ssql = "CREATE TEMPORARY TABLE tmp_result  
+            SELECT c.fin_po_detail_id,f.fin_pcc_id, b.fdb_qty, c.fdc_price,c.fst_disc_item,fdc_disc_amount FROM trlpbpurchaseitems a 
+            INNER JOIN trlpbgudangitems b ON a.fin_lpbgudang_id = b.fin_lpbgudang_id
+            INNER JOIN trpodetails c ON b.fin_po_detail_id = c.fin_po_detail_id
+            INNER JOIN msitems d ON c.fin_item_id = d.fin_item_id
+            INNER JOIN msgroupitems e ON d.fin_item_group_id = e.fin_item_group_id
+            INNER JOIN msgroupitems f ON f.fin_item_group_id = SUBSTRING(e.fst_tree_id,1,INSTR(e.fst_tree_id,'.')-1)
+            WHERE a.fin_lpbpurchase_id = ? 
+            ORDER BY f.fin_pcc_id";
+        $qr = $this->db->query($ssql,[$finLPBPurchaseId]);
+
+        $ssql = "update tmp_result   set fdc_disc_amount = 0" ;
+        $qr = $this->db->query($ssql);
+
+        $ssql = "select * from tmp_result";
+        $qr = $this->db->query($ssql,[]);
+        $rs = $qr->result();
+        foreach($rs as $rw ){
+            $ttlDisc = calculateDisc($rw->fst_disc_item,($rw->fdb_qty * $rw->fdc_price));
+            $ssql = "update tmp_result set fdc_disc_amount = ? where fin_po_detail_id = ?";    
+            $this->db->query($ssql,[$ttlDisc,$rw->fin_po_detail_id]);
+        }
+
+        $ssql = "select fin_pcc_id,sum(fdb_qty * fdc_price) as fdc_total,sum(fdc_disc_amount) as fdc_ttl_disc_amount  from tmp_result group by fin_pcc_id";
+        $qr = $this->db->query($ssql,[]);
+        $rs = $qr->result();
+
+        foreach($rs as $rw){                    
+            //PEMBELIAN
+            $dataJurnal[] =[
+                "fin_branch_id"=>$dataH->fin_branch_id,
+                "fst_account_code"=>$glAccount,
+                "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
+                "fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
+                "fin_trx_id"=>$finLPBPurchaseId,
+                "fst_reference"=>null,
+                "fdc_debit"=> $rw->fdc_total * $dataH->fdc_exchange_rate_idr, //$dataH->fdc_subttl * $dataH->fdc_exchange_rate_idr,
+                "fdc_origin_debit"=> $rw->fdc_total, //$dataH->fdc_subttl,
+                "fdc_credit"=>0,
+                "fdc_origin_credit"=>0,
+                "fst_orgi_curr_code"=>$dataH->fst_curr_code,
+                "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
+                "fst_no_ref_bank"=>null,
+                "fin_pcc_id"=>$rw->fin_pcc_id,
+                "fin_relation_id"=>null,
+                "fst_active"=>"A",
+                "fst_info"=>"PEMBELIAN"
+            ];
+            //DISC
+            $dataJurnal[] =[
+                "fin_branch_id"=>$dataH->fin_branch_id,
+                "fst_account_code"=>getGLConfig("PURCHASE_DISC"),
+                "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
+                "fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
+                "fin_trx_id"=>$finLPBPurchaseId,
+                "fst_reference"=>null,
+                "fdc_debit"=> 0,
+                "fdc_origin_debit"=>0,
+                "fdc_credit"=> $rw->fdc_ttl_disc_amount * $dataH->fdc_exchange_rate_idr, //$dataH->fdc_disc_amount * $dataH->fdc_exchange_rate_idr ,
+                "fdc_origin_credit"=> $rw->fdc_ttl_disc_amount, //$dataH->fdc_disc_amount,
+                "fst_orgi_curr_code"=>$dataH->fst_curr_code,
+                "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
+                "fst_no_ref_bank"=>null,
+                "fin_pcc_id"=>$rw->fin_pcc_id,
+                "fin_relation_id"=>null,
+                "fst_active"=>"A",
+                "fst_info"=>"DISC"
+            ];                          
+        }
+
+        $ssql = "DROP TEMPORARY TABLE IF EXISTS tmp_result";
+        $qr = $this->db->query($ssql,[]);
+        
+
+
+        
         //PPN
         //APAKAH DP SUDAH ADA UNSUR PPN ATAU TIDAK
         if ($dataH->fbl_dp_inc_ppn){
@@ -229,7 +283,7 @@ class Trlpbpurchase_model extends MY_Model {
             "fst_orgi_curr_code"=>$dataH->fst_curr_code,
             "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
             "fst_no_ref_bank"=>null,
-            "fst_profit_cost_center_code"=>null,
+            "fin_pcc_id"=>null,
             "fin_relation_id"=>null,
             "fst_active"=>"A",
             "fst_info"=>"PPN"
@@ -250,33 +304,13 @@ class Trlpbpurchase_model extends MY_Model {
             "fst_orgi_curr_code"=>$dataH->fst_curr_code,
             "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
             "fst_no_ref_bank"=>null,
-            "fst_profit_cost_center_code"=>null,
+            "fin_pcc_id"=>null,
             "fin_relation_id"=>null,
             "fst_active"=>"A",
             "fst_info"=>"UANG MUKA DI KLAIM"
         ]; 
 
-        //DISC
-        $dataJurnal[] =[
-            "fin_branch_id"=>$dataH->fin_branch_id,
-            "fst_account_code"=>getGLConfig("PURCHASE_DISC"),
-            "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
-            "fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
-            "fin_trx_id"=>$finLPBPurchaseId,
-            "fst_reference"=>null,
-            "fdc_debit"=> 0,
-            "fdc_origin_debit"=>0,
-            "fdc_credit"=>$dataH->fdc_disc_amount * $dataH->fdc_exchange_rate_idr ,
-            "fdc_origin_credit"=>$dataH->fdc_disc_amount,
-            "fst_orgi_curr_code"=>$dataH->fst_curr_code,
-            "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
-            "fst_no_ref_bank"=>null,
-            "fst_profit_cost_center_code"=>null,
-            "fin_relation_id"=>null,
-            "fst_active"=>"A",
-            "fst_info"=>"DISC"
-        ]; 
-
+        
         //HUTANG (AP)
         $ttlHutang = ($dataH->fdc_subttl + $ttlPpn) - ($dpClaim + $dataH->fdc_disc_amount );
         $dataJurnal[] =[
@@ -293,12 +327,11 @@ class Trlpbpurchase_model extends MY_Model {
             "fst_orgi_curr_code"=>$dataH->fst_curr_code,
             "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
             "fst_no_ref_bank"=>null,
-            "fst_profit_cost_center_code"=>null,
+            "fin_pcc_id"=>null,
             "fin_relation_id"=>null,
             "fst_active"=>"A",
             "fst_info"=>"HUTANG DAGANG"
-        ];
-        
+        ];                
         $result = $this->glledger_model->createJurnal($dataJurnal);
         if ($result["status"] != "SUCCESS"){
             return $result;
