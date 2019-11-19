@@ -7,6 +7,7 @@ class Item extends MY_Controller
         parent::__construct();
         $this->load->library('form_validation');
         $this->load->model('msitems_model');
+        $this->load->model('mslinebusiness_model');
     }
 
     public function index()
@@ -70,6 +71,7 @@ class Item extends MY_Controller
         $data["fin_item_id"] = $fin_item_id;
         $data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>true], true);
         $data["mdlPrint"] = $mdlPrint;
+        $data["linebusinessList"] =$this->mslinebusiness_model->get_data_linebusiness();
 
         $page_content = $this->parser->parse('pages/master/msitems/form', $data, true);
         $main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -112,8 +114,7 @@ class Item extends MY_Controller
             "fst_name_on_pos" => $this->input->post("fst_name_on_pos"),
             "fin_item_group_id" => $this->input->post("fin_item_group_id"),
             "fin_item_type_id" => $this->input->post("fin_item_type_id"),
-            "fin_standard_vendor_id" => $this->input->post("fin_standard_vendor_id"),
-            "fin_optional_vendor_id" => $this->input->post("fin_optional_vendor_id"),
+            "fst_linebusiness_id" => implode(",",$this->input->post("fst_linebusiness_id")),
             "fbl_is_batch_number" => ($this->input->post("fbl_is_batch_number") == null) ? 0 : 1,
             "fbl_is_serial_number" => ($this->input->post("fbl_is_serial_number") == null) ? 0 : 1,
             "fdc_scale_for_bom" => $this->input->post("fdc_scale_for_bom"),
@@ -246,8 +247,7 @@ class Item extends MY_Controller
             "fst_name_on_pos" => $this->input->post("fst_name_on_pos"),
             "fin_item_group_id" => $this->input->post("fin_item_group_id"),
             "fin_item_type_id" => $this->input->post("fin_item_type_id"),
-            "fin_standard_vendor_id" => $this->input->post("fin_standard_vendor_id"),
-            "fin_optional_vendor_id" => $this->input->post("fin_optional_vendor_id"),
+            "fst_linebusiness_id" => implode(",",$this->input->post("fst_linebusiness_id")),
             "fbl_is_batch_number" => ($this->input->post("fbl_is_batch_number") == null) ? 0 : 1,
             "fbl_is_serial_number" => ($this->input->post("fbl_is_serial_number") == null) ? 0 : 1,
             "fdc_scale_for_bom" => $this->input->post("fdc_scale_for_bom"),
@@ -444,7 +444,6 @@ class Item extends MY_Controller
         $rs = $qr->result();
         $this->json_output($rs);
     }
-
     public function get_data_vendorName(){
         $term = $this->input->get("term");
         $ssql = "select * from msitems where fst_vendor_item_name like ? order by fst_vendor_item_name";

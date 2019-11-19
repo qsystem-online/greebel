@@ -585,7 +585,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
     /*function createJurnal(){
         var arrJurnal = [];
-        <?php foreach($jurnalAcc as $key=>$jurnal){ ?>
+        <?php /*foreach($jurnalAcc as $key=>$jurnal)*/{ ?>
             var obj = {}
         <?php } ?>
 
