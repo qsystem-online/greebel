@@ -115,6 +115,7 @@ class Relation extends MY_Controller{
 			"fin_branch_id" => $this->input->post("fin_branch_id"),
 			"fin_parent_id" => $this->input->post("fin_parent_id"),
 			"fst_business_type" => $this->input->post("fst_business_type"),
+			"fst_linebusiness_id" => implode(",",$this->input->post("fst_linebusiness_id")),
 			"fst_relation_name" => $this->input->post("fst_relation_name"),
 			"fst_gender" => $this->input->post("fst_gender"),
 			"fdt_birth_date" => dBDateFormat($this->input->post("fdt_birth_date")),
@@ -209,6 +210,7 @@ class Relation extends MY_Controller{
 			"fin_branch_id" => $this->input->post("fin_branch_id"),
 			"fin_parent_id" => $this->input->post("fin_parent_id"),
 			"fst_business_type" => $this->input->post("fst_business_type"),
+			"fst_linebusiness_id" => implode(",",$this->input->post("fst_linebusiness_id")),
 			"fst_relation_name" => $this->input->post("fst_relation_name"),
 			"fst_gender" => $this->input->post("fst_gender"),
 			"fdt_birth_date" => dBDateFormat($this->input->post("fdt_birth_date")),
@@ -324,6 +326,16 @@ class Relation extends MY_Controller{
 	public function get_branch(){
 		$term = $this->input->get("term");
 		$ssql = "SELECT fin_branch_id, fst_branch_name from msbranches where fst_branch_name like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_linebisiness_id(){
+		$term = $this->input->get("term");
+		$ssql = "SELECT fin_linebusiness_id, fst_linebusiness_name FROM mslinebusiness where fst_linebusiness_name LIKE ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		$this->ajxResp["status"] = "SUCCESS";

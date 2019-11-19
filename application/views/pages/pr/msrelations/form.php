@@ -65,20 +65,48 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">
 					<label for="fst_relation_type" class="col-md-2 control-label"><?=lang("Relation Type")?> :</label>
-						<div class="col-md-4">
+						<div class="col-md-10">
 							<select class="form-control select2" id="fst_relation_type" name="fst_relation_type[]"  multiple="multiple">
 								<option value="1"><?=lang("Customer")?></option>
 								<option value="2"><?=lang("Supplier/Vendor")?></option>
 								<option value="3"><?=lang("Expedisi")?></option>
 							</select>
 						</div>
+					</div>
 
+					<div class="form-group">
+					<label for="fst_linebusiness_id" class="col-md-2 control-label"><?=lang("Line Business")?> :</label>
+						<div class="col-md-10">
+							<select class="form-control select2" id= "fst_linebusiness_id" name="fst_linebusiness_id[]" multiple="multiple">
+								<option value="0">-- <?=lang("select")?> --</option>
+							</select>
+							<div id="fst_linebusiness_id_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+                    <label for="fst_relation_name" class="col-md-2 control-label"><?=lang("Relation Name")?> :</label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="fst_relation_name" placeholder="<?=lang("Relation Name")?>" name="fst_relation_name">
+							<div id="fst_relation_name_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
 					<label for="fin_branch_id" class="col-md-2 control-label"><?=lang("Branch Name")?> :</label>
 						<div class="col-md-4">
 							<select id="select-branch" class="form-control" name="fin_branch_id">
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="fin_branch_id_err" class="text-danger"></div>
+						</div>
+
+					<label for="fst_business_type" class="col-md-2 control-label"><?=lang("Business Type")?> :</label>
+						<div class="col-md-4">
+							<select class="form-control" id="fst_business_type" name="fst_business_type">
+								<option value='P'><?=lang("Personal")?></option>
+								<option value='C'><?=lang("Corporate")?></option>
+							</select>
 						</div>
 					</div>
 
@@ -100,24 +128,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 
-					<div class="form-group">
-                    <label for="fst_relation_name" class="col-md-2 control-label"><?=lang("Relation Name")?> :</label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_relation_name" placeholder="<?=lang("Relation Name")?>" name="fst_relation_name">
-							<div id="fst_relation_name_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="fst_business_type" class="col-md-2 control-label"><?=lang("Business Type")?> :</label>
-						<div class="col-md-4">
-							<select class="form-control" id="fst_business_type" name="fst_business_type">
-								<option value='P'><?=lang("Personal")?></option>
-								<option value='C'><?=lang("Corporate")?></option>
-							</select>
-						</div>
-
-					<label for="fst_gender" class="col-md-2 control-label personal-info"><?=lang("Gender")?> :</label>
+					<div class="form-group personal-info">
+					<label for="fst_gender" class="col-md-2 control-label"><?=lang("Gender")?> :</label>
 						<div class="col-md-4 personal-info">
 							<select class="form-control" id="fst_gender" name="fst_gender">
 								<option value="0">-- <?=lang("select")?> --</option>
@@ -125,9 +137,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<option value="F"><?=lang("Female")?></option>
 							</select>
 						</div>
-					</div>
 
-					<div class="form-group personal-info">
 					<label for="fdt_birth_date" class="col-md-2 control-label"><?=lang("Birth Date")?> :</label>
 						<div class="col-md-4">
 							<div class="input-group date">
@@ -139,19 +149,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fdt_birth_date_err" class="text-danger"></div>
 							<!-- /.input group -->
 						</div>
+					</div>
+
+					<div class="form-group personal-info">
+					<label for="fst_nik" class="col-md-2 control-label"><?=lang("NIK")?> :</label>
+						<div class="col-md-4">
+							<input type="text" class="form-control" id="fst_nik" placeholder="<?=lang("NIK")?>" name="fst_nik">
+							<div id="fst_nik_err" class="text-danger"></div>
+						</div>
 
 						<label for="fst_birth_place" class="col-md-2 control-label"><?=lang("Birth Place")?> :</label>
 						<div class="col-md-4">
 							<input type="text" class="form-control" id="fst_birth_place" placeholder="<?=lang("Birth Place")?>" name="fst_birth_place">
 							<div id="fst_birth_place_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group personal-info">
-						<label for="fst_nik" class="col-md-2 control-label"><?=lang("NIK")?> :</label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_nik" placeholder="<?=lang("NIK")?>" name="fst_nik">
-							<div id="fst_nik_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -777,6 +787,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$(".select2").select2();
 
+		$("#fst_linebusiness_id").select2({
+			width: '100%',
+			tokenSeparators: [",", " "],
+			ajax: {
+				url: '<?=site_url()?>pr/relation/get_linebisiness_id',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					items = [];
+					data = data.data;
+					$.each(data,function(index,value){
+						items.push({
+							"id" : value.fin_linebusiness_id,
+							"text" : value.fst_linebusiness_name
+						});
+					});
+					console.log(items);
+					return {
+						results: items
+					};
+				},
+				cache: true,
+			}
+		});
+
 		$("#select-parentId").select2({
 			width: '100%',
 			ajax: {
@@ -1312,6 +1347,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						$(".relation-info").show();
 					} 
 				});
+
+				var fst_linebusiness_id = resp.ms_relations.fst_linebusiness_id.split(",");
+				//console.log(fst_linebusiness_name);
+				var newOption = new Option(resp.ms_relations.fst_linebusiness_name, resp.ms_relations.fin_linebusiness_id, true, true);
+				$('#fst_linebusiness_id').append(newOption);
+				$("#fst_linebusiness_id").val(resp.ms_relations.fst_linebusiness_name).trigger('change');
 
 				$("#fdt_birth_date").datepicker('update', dateFormat(resp.ms_relations.fdt_birth_date));
 
