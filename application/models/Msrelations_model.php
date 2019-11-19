@@ -10,9 +10,10 @@ clASs Msrelations_model extends MY_Model {
     }
 
     public function getDataById($fin_relation_id){
-        $ssql = "SELECT a.*,MID(a.fst_area_code, 1, 2) AS provinces,MID(a.fst_area_code, 1, 5) AS district,MID(a.fst_area_code, 1, 8) AS subdistrict,MID(a.fst_area_code, 1, 13) AS village,b.fst_country_name,
-        c.fst_nama AS fst_province_name,d.fst_nama AS fst_district_name,e.fst_nama AS fst_subdistrict_name,f.fst_nama AS fst_village_name,g.fst_relation_group_name,h.fst_cust_pricing_group_name,i.fst_notes,j.fst_username AS SalesName,
-        k.fst_warehouse_name,l.fst_name,m.fst_branch_name,n.fst_relation_name AS ParentName from msrelations a 
+        $ssql = "SELECT a.*,MID(a.fst_area_code, 1, 2) AS provinces,MID(a.fst_area_code, 1, 5) AS district,MID(a.fst_area_code, 1, 8) AS subdistrict,MID(a.fst_area_code, 1, 13) AS village,
+        b.fst_country_name,c.fst_nama AS fst_province_name,d.fst_nama AS fst_district_name,e.fst_nama AS fst_subdistrict_name,f.fst_nama AS fst_village_name,g.fst_relation_group_name,
+        h.fst_cust_pricing_group_name,i.fst_notes,j.fst_username AS SalesName,k.fst_warehouse_name,l.fst_name,m.fst_branch_name,n.fst_relation_name AS ParentName,o.fst_linebusiness_name 
+        FROM msrelations a 
         LEFT JOIN mscountries b ON a.fin_country_id = b.fin_country_id 
         LEFT JOIN msarea c ON MID(a.fst_area_code, 1, 2) = c.fst_kode
         LEFT JOIN msarea d ON MID(a.fst_area_code, 1, 5) = d.fst_kode
@@ -26,6 +27,7 @@ clASs Msrelations_model extends MY_Model {
         LEFT JOIN mssalesarea l ON a.fin_sales_area_id = l.fin_sales_area_id
         LEFT JOIN msbranches m ON a.fin_branch_id = m.fin_branch_id
         LEFT JOIN msrelations n ON a.fin_parent_id = n.fin_relation_id
+        LEFT JOIN mslinebusiness o ON a.fst_linebusiness_id = o.fin_linebusiness_id
         WHERE a.fin_relation_id = ? order by fin_relation_id ";
 		$qr = $this->db->query($ssql, [$fin_relation_id]);
         $rwRelation = $qr->row();

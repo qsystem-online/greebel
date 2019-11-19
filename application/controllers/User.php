@@ -483,7 +483,6 @@ class User extends MY_Controller
 		$this->Cell(0, 10, 'Halaman ' . $this->PageNo() . ' dari {nb}', 0, 0, 'R');
 	}
 
-<<<<<<< HEAD
 	public function get_printUser($branchName,$departmentName,$userId_awal,$userId_akhir) {
         $layout = $this->input->post("layoutColumn");
         $arrLayout = json_decode($layout);
@@ -640,6 +639,4 @@ class User extends MY_Controller
         $this->phpspreadsheet->save("userlist_report_" . date("Ymd") . ".xls" ,$spreadsheet);
 
     }
-=======
->>>>>>> 42ecf00a8395e8bd7f89c7123bbfa097cb3b521c
 }

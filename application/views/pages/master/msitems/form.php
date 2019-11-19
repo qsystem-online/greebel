@@ -118,14 +118,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-standardVendor" class="col-md-2 control-label"><?= lang("Standard Vendor") ?> :</label>
+                        <label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Line Of Business")?> :</label>
                             <div class="col-md-4">
-                                <select id="select-standardVendor" class="form-control" name="fin_standard_vendor_id"></select>
-                            </div>
-
-                            <label for="select-optionalVendor" class="col-md-2 control-label"><?= lang("Optional Vendor") ?> :</label>
-                            <div class="col-md-4">
-                                <select id="select-optionalVendor" class="form-control" name="fin_optional_vendor_id"></select>
+                                <select class="form-control select2" id="select-lineBusiness" name="fst_linebusiness_id[]"  multiple="multiple">
+                                <?php foreach ($linebusinessList as $linebusiness) {    ?>
+                                            <option value='<?= $linebusiness->fin_linebusiness_id ?>'><?= $linebusiness->fst_linebusiness_name ?> </option>
+                                        <?php
+                                    } ?>
+                                </select>
                             </div>
                         </div>
 
@@ -1234,51 +1234,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         });
 
-        $("#select-standardVendor").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>master/item/get_data_relationVendor',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value){
-                        data2.push({
-                            "id": value.fin_relation_id,
-                            "text": value.fst_relation_name
-                        });
-                    });
-                    console.log(data2);
-                    return {
-                        results: data2
-                    };
-                },
-                cache: true,
-            }
-        });
-
-        $("#select-optionalVendor").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>master/item/get_data_relationVendor',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value){
-                        data2.push({
-                            "id": value.fin_relation_id,
-                            "text": value.fst_relation_name
-                        });
-                    });
-                    console.log(data2);
-                    return {
-                        results: data2
-                    };
-                },
-                cache: true,
-            }
-        });
+        $("#select-lineBusiness").select2();
 
         $("#select-ItemCode").select2({
             width: '100%',
@@ -1435,7 +1391,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
                 // Append it to the select
                 $('#select-GroupItemId').append(newOption).trigger('change');
-                var newOption = new Option(resp.ms_items.fst_item_subgroup_name, resp.ms_items.fin_item_subgroup_id, true, true);
+                //var newOption = new Option(resp.ms_items.fst_item_subgroup_name, resp.ms_items.fin_item_subgroup_id, true, true);
 
                 //----select2 for modal report
                 //var newOption = new Option(resp.ms_items.standardVendor, resp.ms_items.fin_standard_vendor_id, true, true);
@@ -1443,10 +1399,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 //var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
                 //$('#select-groupItemName').append(newOption).trigger('change');
 
-                var newOption = new Option(resp.ms_items.standardVendor, resp.ms_items.fin_standard_vendor_id, true, true);
-                $('#select-standardVendor').append(newOption).trigger('change');
-                var newOption = new Option(resp.ms_items.optionalVendor, resp.ms_items.fin_optional_vendor_id, true, true);
-                $('#select-optionalVendor').append(newOption).trigger('change');
+                //populate Linebusiness (select2)
+                var arrLinebusiness = (resp.ms_items.fst_linebusiness_id.split(","));
+                $('#select-lineBusiness').val(arrLinebusiness).trigger("change.select2");
+
+                //var newOption = new Option(resp.ms_items.standardVendor, resp.ms_items.fin_standard_vendor_id, true, true);
+               //$('#select-standardVendor').append(newOption).trigger('change');
+                //var newOption = new Option(resp.ms_items.optionalVendor, resp.ms_items.fin_optional_vendor_id, true, true);
+                //$('#select-optionalVendor').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
                 $('#select-ItemCode').append(newOption).trigger('change');
                 var newOption = new Option(resp.ms_items.fst_item_code, resp.ms_items.fst_item_code, true, true);
