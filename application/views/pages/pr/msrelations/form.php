@@ -78,9 +78,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<label for="fst_linebusiness_id" class="col-md-2 control-label"><?=lang("Line Business")?> :</label>
 						<div class="col-md-10">
 							<select class="form-control select2" id= "fst_linebusiness_id" name="fst_linebusiness_id[]" multiple="multiple">
-								<option value="0">-- <?=lang("select")?> --</option>
+								<?php foreach ($linebusinessList as $linebusiness) {    ?>
+										<option value='<?= $linebusiness->fin_linebusiness_id ?>'><?= $linebusiness->fst_linebusiness_name ?> </option>
+									<?php
+								} ?>
 							</select>
-							<div id="fst_linebusiness_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -787,31 +789,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$(".select2").select2();
 
-		/*$("#fst_linebusiness_id").select2({
-			width: '100%',
-			multiple: true,
-			tokenSeparators: [","," "],
-			ajax: {
-				url: '<?=site_url()?>pr/relation/get_linebusiness_id',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data){
-					items = [];
-					data = data.data;
-					$.each(data,function(index,value){
-						items.push({
-							"id" : value.fin_linebusiness_id,
-							"text" : value.fst_linebusiness_name
-						});
-					});
-					console.log(items);
-					return {
-						results: items
-					};
-				},
-				cache: true,
-			}
-		});*/
+		$("#fst_linebusiness_id").select2();
 
 		$("#select-parentId").select2({
 			width: '100%',
@@ -1349,9 +1327,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					} 
 				});
 
-				var fst_linebusiness_id = resp.ms_relations.fst_linebusiness_id.split(",");
-				console.log(fst_linebusiness_name);
-				$("#fst_linebusiness_id").val(fst_linebusiness_id).trigger('change');
+				var fst_linebusiness_id = (resp.ms_relations.fst_linebusiness_id.split(","));
+				console.log(fst_linebusiness_id);
+				$("#fst_linebusiness_id").val(fst_linebusiness_id).trigger("change.select2");
 
 				$("#fdt_birth_date").datepicker('update', dateFormat(resp.ms_relations.fdt_birth_date));
 

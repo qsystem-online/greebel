@@ -5,6 +5,7 @@ class Relation extends MY_Controller{
 		parent::__construct();
 		$this->load->library('form_validation');
 		$this->load->model('msrelations_model');
+		$this->load->model('mslinebusiness_model');
 	}
 
 	public function index(){
@@ -77,6 +78,7 @@ class Relation extends MY_Controller{
 		$data["title"] = $mode == "ADD" ? "Add Master Relations" : "Update Master Relations";
 		$data["fin_relation_id"] = $fin_relation_id;
 		$data["mdlPrint"] = $mdlPrint;
+		$data["linebusinessList"] =$this->mslinebusiness_model->get_data_linebusiness();
 
 		$page_content = $this->parser->parse('pages/pr/msrelations/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
