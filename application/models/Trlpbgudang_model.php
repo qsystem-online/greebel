@@ -38,13 +38,18 @@ class Trlpbgudang_model extends MY_Model {
             return null;
         }
 
-        $ssql = "SELECT a.*,b.fin_item_id,b.fst_custom_item_name,b.fst_unit,c.fst_item_code,c.fbl_is_batch_number,c.fbl_is_serial_number,b.fdb_qty as fdb_qty_po,b.fdb_qty_lpb 
+        $ssql = "SELECT a.*,b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdb_qty as fdb_qty_po,b.fdb_qty_lpb,
+            c.fst_item_code,c.fbl_is_batch_number,c.fbl_is_serial_number,d.fdc_conv_to_basic_unit,e.fst_unit as fst_basic_unit 
             FROM trlpbgudangitems a
             INNER JOIN trpodetails b ON a.fin_po_detail_id = b.fin_po_detail_id
             INNER JOIN msitems c ON b.fin_item_id = c.fin_item_id 
+            INNER JOIN msitemunitdetails d ON (b.fin_item_id = d.fin_item_id and a.fst_unit = d.fst_unit)  
+            INNER JOIN msitemunitdetails e ON (b.fin_item_id = e.fin_item_id and e.fbl_is_basic_unit = 1)   
             WHERE fin_lpbgudang_id = ?";
 
-        $qr = $this->db->query($ssql,[$finLPBGudangId]);        
+        $qr = $this->db->query($ssql,[$finLPBGudangId]);
+
+
         $rsLPBGudangItems = $qr->result();
 
         $data = [
@@ -104,9 +109,15 @@ class Trlpbgudang_model extends MY_Model {
         $po=$qr->row();
 
 
-        $ssql = "SELECT a.*,b.fst_item_code,b.fst_item_name,b.fbl_is_batch_number,b.fbl_is_serial_number FROM trpodetails a
+        $ssql = "SELECT a.*,
+            b.fst_item_code,b.fst_item_name,b.fbl_is_batch_number,b.fbl_is_serial_number, 
+            c.fdc_conv_to_basic_unit, d.fst_unit AS fst_basic_unit
+            FROM trpodetails a
             INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
-            WHERE fdb_qty > fdb_qty_lpb AND fin_po_id =?";
+            INNER JOIN msitemunitdetails c on (a.fin_item_id = c.fin_item_id and a.fst_unit = c.fst_unit) 
+            INNER JOIN msitemunitdetails d on (a.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1)  
+            WHERE a.fdb_qty > a.fdb_qty_lpb AND a.fin_po_id = ?";
+
         $qr = $this->db->query($ssql,[$finPOId]);
         $poDetails=$qr->result();
 
@@ -254,7 +265,15 @@ class Trlpbgudang_model extends MY_Model {
                     if ($strBatchNo != "" && $strBatchNo != null){
                         $data["fst_batch_no"] = $strBatchNo;
                     }
+
                     $this->db->insert("msitemdetails",$data);
+                    $result = parent::getDBErrors();
+                    if ($result["status"] != "SUCCESS"){
+                        return ["status"=>"FAILED",
+                            "message"=>sprintf(lang("Nomor serial %s tidak bisa disimpan!"),$serial),
+                            "data"=>$result
+                        ];
+                    }
                 }
             }else{
                 if ($strBatchNo != "" && $strBatchNo != null){
@@ -267,7 +286,14 @@ class Trlpbgudang_model extends MY_Model {
                         "fst_active"=>"A",
                         "fdt_insert_datetime"=>date("Y-m-d H:i:s")
                     ];
-                    $this->db->insert("msitemdetails",$data);
+                    try {
+                        $this->db->insert("msitemdetails",$data);
+                    }catch(Exception $e){
+                        return ["status"=>"FAILED",
+                            "message"=>$e->message,
+                            "data"=>$e
+                        ];
+                    }
                 }
             }
         }

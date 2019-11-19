@@ -36,7 +36,7 @@ class Profitcostcenter_model extends MY_Model {
     }
     
     public function getAllList(){
-        $ssql = "select fin_pcc_id,fst_pcc_name from msprofitcostcenter where fst_pcc_name";
+        $ssql = "select fin_pcc_id,fst_pcc_name from msprofitcostcenter where fst_active ='A'";
         $qr = $this->db->query($ssql,[]);		
         $rs = $qr->result();		
 		return $rs;

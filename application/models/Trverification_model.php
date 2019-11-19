@@ -185,6 +185,78 @@ class Trverification_model extends MY_Model {
         
 
     }
+
+    public function cancelApprove($finRecId){
+        /**
+         * Rules :
+         * 1. Hanya user yang sama atau user dr departement sama dan group yang sama
+         * 2. Hanya bisa di cancel bila tingkatan approval diatasnya belum melakukan approval ataupun rejec
+         * 
+         */          
+        $activeUser = $this->aauth->user();
+        $ssql = "select * from " . $this->tableName . " where fin_rec_id = ?";
+        $qr = $this->db->query($ssql,[$finRecId]);        
+        $rw = $qr->row();
+        if($rw==null){
+            return["status"=>"FAILED","message"=>lang("Id transaksi tidak ditemukan !")];
+        }
+
+        if ($rw->fin_department_id == $activeUser->fin_department_id && $rw->fin_user_group_id == $activeUser->fin_group_id){
+            //Cek status diatasnya
+            //NV = Need Verification, RV = Ready to verification, VF=Verified, RJ= Rejected, VD= Void
+
+            $ssql ="SELECT * FROM trverification 
+                WHERE fin_branch_id = ? AND fst_controller = ? AND fst_verification_type = ? AND fin_transaction_id = ? 
+                AND fin_seqno > ? AND fst_verification_status IN ?";
+
+            $qr = $this->db->query($ssql,[
+                $rw->fin_branch_id,
+                $rw->fst_controller,
+                $rw->fst_verification_type,
+                $rw->fin_transaction_id,                
+                $rw->fin_seqno,
+                ['VF','RJ','VD']
+            ]);
+            $rs = $qr->result();
+            if (sizeof($rs) > 0){
+                return["status"=>"FAILED","message"=>lang("Transaksi ini telah diapprove oleh level yang lebih tinggi !")];    
+            }
+
+            $this->load->model($rw->fst_model,'model');
+            $action = "cancelApproval";
+            if(is_callable(array($this->model, $action))){
+                $result = $this->model->$action($rw->fin_transaction_id);
+                if ($result["status"] == "SUCCESS"){
+                    //Update status diatasnya menjadi NV dan Status ini menjadi RV
+                    $ssql = "UPDATE trverification SET fst_verification_status = 'NV' 
+                        WHERE fin_branch_id = ? AND fst_controller = ? AND fst_verification_type = ? AND fin_transaction_id = ? 
+                        AND fin_seqno > ?";
+
+                    $qr = $this->db->query($ssql,[
+                        $rw->fin_branch_id,
+                        $rw->fst_controller,
+                        $rw->fst_verification_type,
+                        $rw->fin_transaction_id,                
+                        $rw->fin_seqno
+                    ]);
+
+                    $ssql = "UPDATE trverification SET fst_verification_status = 'RV' WHERE fin_rec_id = ?";
+                    $qr = $this->db->query($ssql,[$finRecId]);
+                }
+                return $result;                            
+            }else{
+                return["status"=>"FAILED","message"=>lang("Cancel Approval Method Not Found in Model")];    
+            }
+
+        }else{
+            return["status"=>"FAILED","message"=>lang("Anda tidak memiliki autorisasi untuk membatalkan status approval !")];
+        }
+
+
+
+
+    }
+
     public function reject($finRecId){
         $ssql = "select * from " . $this->tableName . " where fin_rec_id = ?";
         $qr = $this->db->query($ssql,[$finRecId]);

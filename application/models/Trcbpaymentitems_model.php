@@ -13,6 +13,15 @@ class Trcbpaymentitems_model extends MY_Model {
         return $rules;
     }
 
+    public function deleteByHeaderId($finCBPayemntId,$softDelete = true){
+        if ($softDelete == true){            
+            $ssql ="update trcbpaymentitems set fst_active ='D' where fin_cbpayment_id = ?";
+        }else{
+            $ssql ="delete from trcbpaymentitems where fin_cbpayment_id = ?";
+        }
+        $this->db->query($ssql,$finCBPayemntId); 
+    }
+
   
 }
 

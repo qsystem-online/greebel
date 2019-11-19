@@ -136,8 +136,7 @@
 							</div>
 						</div>
 
-                        <div class="form-group">
-                            							
+                        <div class="form-group">                            							
                             <div class="col-sm-6">
 								<label for="fin_vendor_id" class=""><?=lang("Memo :")?> </label>
                                 <textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="3" style="resize:none;width:100%"></textarea>
@@ -155,6 +154,9 @@
 
 								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Total")?> : </label>
 								<label id="ttlAmount" class="col-md-4 control-label" style="padding-top:0px" >0.00</label>
+
+								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Sisa DP")?> : </label>
+								<label id="ttlRemainingDP" class="col-md-4 control-label" style="padding-top:0px" >0.00</label>
 								
 								<label class="col-md-8 control-label"  style=""><?=lang("Klaim DP")?> : </label>
 								<div class="col-md-4">
@@ -228,8 +230,10 @@
 				$("#fin_term").val(header.fin_term);
 				$("#fst_curr_code").val(header.fst_curr_code);
 				$("#fdc_exchange_rate_idr").val(App.money_format(arrExchangeRate[header.fst_curr_code]));
+
 				var claimDP = parseFloat(header.fdc_downpayment_paid) - parseFloat(header.fdc_downpayment_claimed);
-				$("#fdc_downpayment_claim").val(App.money_format(claimDP));
+				$("#ttlRemainingDP").text(App.money_format(claimDP));
+				$("#fdc_downpayment_claim").val(App.money_format(0));
 				calculateTotal();
 			});
 		});
@@ -435,9 +439,8 @@
 						content: resp.message,
 						buttons : {
 							OK : function(){
-								if(resp.status == "SUCCESS"){
-									//window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
-									return;
+								if(resp.status == "SUCCESS"){									
+									$("#btnNew").trigger("click");
 								}
 							},
 						}
@@ -451,7 +454,7 @@
 					}
 				}else if(resp.status == "SUCCESS") {
 					data = resp.data;
-					$("#fin_po_id").val(data.insert_id);
+					$("#fin_lpbpurchase_id").val(data.insert_id);
 					//Clear all previous error
 					$(".text-danger").html("");					
 				}
@@ -495,6 +498,7 @@
 					});
 					$("#fin_lpbgudang_id").val(finLPBGudangIds).trigger("change");
 					$("#fin_term").val(dataH.fin_term);
+					$("#ttlRemainingDP").text( App.money_format(parseFloat(dataH.fdc_downpayment_paid) - parseFloat(dataH.fdc_downpayment_claimed)));
 					$("#fst_curr_code").val(dataH.fst_curr_code);
 				}else{
 					$("#btnNew").trigger("click");

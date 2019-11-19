@@ -15,21 +15,18 @@ class MY_Model extends CI_Model
 
 	public function insert($data)
 	{
-
 		if (!isset($data["fdt_insert_datetime"])) {
 			$data["fdt_insert_datetime"] = date("Y-m-d H:i:s");
 			$data["fin_insert_id"] = $this->aauth->get_user_id();
 		}
-
 		$data = $this->cleanupData($data);	
 		$this->db->insert($this->tableName, $data);
 		$insertId = $this->db->insert_id();
 		$error = $this->db->error();
 		if ($error["code"] != 0) {
-			throw new Exception("Database Error !!!", EXCEPTION_DB);
+			throw new Exception("Insert Database Error ! : " . $error["message"], EXCEPTION_DB);
 			//echo "TEST throw, never call statement";
 		}
-
 		return $insertId;
 	}
 
@@ -61,10 +58,10 @@ class MY_Model extends CI_Model
 			$finUserIdReqEdit = $this->input->post("fin_user_id_request_by");
 			$fstNotesEdit =  $this->input->post("fst_edit_notes");
 			$dataLog = [
-				"fst_mode"=>"DELETE",
+				"fst_mode"=>"UPDATE",
 				"fst_module"=>$this->router->fetch_class(),
 				"fst_table_name"=>$this->tableName,
-				"fst_trans_id"=> $key,
+				"fst_trans_id"=> $data[$this->pkey],
 				"fst_notes"=>$fstNotesEdit, 
 				"fin_request_by_id"=>$finUserIdReqEdit, 
 				"fin_insert_id"=>$data["fin_insert_id"] = $this->aauth->get_user_id(),
@@ -78,6 +75,12 @@ class MY_Model extends CI_Model
 		$data = $this->cleanupData($data);
 		$this->db->where($this->pkey, $data[$this->pkey]);
 		$this->db->update($this->tableName, $data);
+		$error = $this->db->error();
+		if ($error["code"] != 0) {
+			throw new Exception("Update Database Error ! : " . $error["message"], EXCEPTION_DB);
+			//echo "TEST throw, never call statement";
+		}
+
 	}
 
 	public function delete($key, $softdelete = TRUE,$data=null){
@@ -129,7 +132,7 @@ class MY_Model extends CI_Model
 		}
 		$error = $this->db->error();
 		if ($error["code"] != 0) {
-			throw new Exception("Delete Database Error !!!", EXCEPTION_DB);
+			throw new Exception("Delete Database Error ! : " . $error["message"], EXCEPTION_DB);
 		}
 	}
 
@@ -165,5 +168,19 @@ class MY_Model extends CI_Model
 			$columns[] = $rw->Field;
 		}
 		return $columns;
+	}
+
+	public function getDBErrors(){
+		$dbError  = $this->db->error();
+		if ($dbError["code"] != 0){			
+			return [
+				"status"=>"DB_FAILED",
+				"message"=> $dbError["code"] . " - " . $dbError["message"]
+			];
+		}
+		return [
+			"status"=>"SUCCESS",
+			"message"=> ""
+		];
 	}
 }

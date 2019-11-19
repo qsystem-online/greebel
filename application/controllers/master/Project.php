@@ -104,6 +104,7 @@ class Project extends MY_Controller {
             "fdt_project_start" => dBDateFormat($this->input->post("fdt_project_start")),
             "fdt_project_end" => dBDateFormat($this->input->post("fdt_project_end")),
             "fst_memo" => $this->input->post("fst_memo"),
+            "fin_branch_id" => $this->aauth->get_active_branch_id(),
             "fst_active" => 'A'
         ];
 
@@ -156,6 +157,7 @@ class Project extends MY_Controller {
             "fdt_project_start" => dBDateFormat($this->input->post("fdt_project_start")),
             "fdt_project_end" => dBDateFormat($this->input->post("fdt_project_end")),
             "fst_memo" => $this->input->post("fst_memo"),
+            "fin_branch_id" => $this->aauth->get_active_branch_id(),
             "fst_active" =>'A'
         ];
 

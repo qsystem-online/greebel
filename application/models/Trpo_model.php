@@ -178,7 +178,7 @@ class Trpo_model extends MY_Model {
         $qr = $this->db->query($ssql,[$fin_item_id,$fst_unit]);
         $rw = $qr->row();
         if(!$rw){
-            return 7500;
+            return 0;
         }else{
             return $rw->fdc_price;
         }
@@ -226,7 +226,10 @@ class Trpo_model extends MY_Model {
                 "fst_orgi_curr_code"=>$dataH["fst_curr_code"],
                 "fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
                 "fst_no_ref_bank"=>null,
-                "fst_profit_cost_center_code"=>null,
+                "fin_pcc_id"=>null,
+                "fin_pc_divisi_id"=>null,
+                "fin_pc_customer_id"=>null,
+                "fin_pc_project_id"=>null,
                 "fin_relation_id"=>null,
                 "fst_active"=>"A"
             ];
@@ -246,7 +249,10 @@ class Trpo_model extends MY_Model {
                     "fst_orgi_curr_code"=>$dataH["fst_curr_code"],
                     "fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
                     "fst_no_ref_bank"=>null,
-                    "fst_profit_cost_center_code"=>null,
+                    "fin_pcc_id"=>null,
+                    "fin_pc_divisi_id"=>null,
+                    "fin_pc_customer_id"=>null,
+                    "fin_pc_project_id"=>null,
                     "fin_relation_id"=>null,
                     "fst_active"=>"A"
                 ];
@@ -271,7 +277,10 @@ class Trpo_model extends MY_Model {
                 "fst_orgi_curr_code"=>$dataH["fst_curr_code"],
                 "fdc_orgi_rate"=>$dataH["fdc_exchange_rate_idr"],
                 "fst_no_ref_bank"=>null,
-                "fst_profit_cost_center_code"=>null,
+                "fin_pcc_id"=>null,
+                "fin_pc_divisi_id"=>null,
+                "fin_pc_customer_id"=>null,
+                "fin_pc_project_id"=>null,
                 "fin_relation_id"=>$dataH["fin_supplier_id"],
                 "fst_active"=>"A"
             ];
@@ -299,18 +308,14 @@ class Trpo_model extends MY_Model {
     }
 
     public function approved($finPOId,$approved = true){
-        $this->db->trans_start();
+        
         if($approved){
             $data = [
                 "fin_po_id"=>$finPOId,
                 "fst_active"=>"A"
             ];        
             parent::update($data);            
-            $result = $this->posting($finPOId);
-            if ($result["status"] != "SUCCESS"){
-                $this->db->trans_rollback();
-                return $result;
-            }
+            $result = $this->posting($finPOId);            
         }else{
             $data = [
                 "fin_po_id"=>$finPOId,
@@ -318,12 +323,47 @@ class Trpo_model extends MY_Model {
             ];        
             parent::update($data);            
         }
-        $this->db->trans_complete();
+        
 
         return [
             "status"=>"SUCCESS",
             "message"=>""
         ] ;      
+    }
+
+    public function cancelApproval($finPOId){
+        $ssql = "select * from trpo where fin_po_id = ? and fst_active = 'A' ";
+        $qr = $this->db->query($ssql,[$finPOId]);
+        $rw = $qr->row();
+        
+        if ($rw != null){
+
+            //Cek DP
+            if ($rw->fdc_downpayment_paid > 0 ) {                
+                $resp =["status"=>"FAILED","message"=>lang("Status approval PO tidak dapat dirubah karena sudah ada pembayaran DP !")];
+                return $resp;    
+            }
+            
+            //Cek bila sudah ada penerimaan barang
+            $ssql = "select * from trpodetails where fin_po_id = ? and fdb_qty_lpb > 0";
+            $qr = $this->db->query($ssql,[$finPOId]);
+            $rw = $qr->row();
+            if ($rw != null){
+                $resp =["status"=>"FAILED","message"=>lang("Status approval PO tidak dapat dirubah karena sudah terjadi penerimaan barang !")];
+                return $resp;    
+            }
+
+            $this->load->model("glledger_model");
+            $result = $this->glledger_model->cancelJurnal("PO",$finPOId);
+            if ($result["status"] != "SUCCESS"){
+                return $result;    
+            }
+           
+            $ssql = "UPDATE trpo SET fst_active ='S' where fin_po_id = ?";
+            $this->db->query($ssql,[$finPOId]);
+            return $result;
+        }
+        return ["status"=>"SUCCESS",""];
     }
 
     public function delete($finPOId,$softDelete=true,$data=null){
@@ -368,20 +408,27 @@ class Trpo_model extends MY_Model {
     public function isEditable($finPOId){
         /**
          * FALSE CONDITION
-         * *. PO yang sudah ada status approve tidak bisa di edit lagi (apabila edit, semua transaksi approval akan di hapus dan diinsert baru sehingga butuh approval ulang)
-         * #sudah terima dp tidak boleh dirubah lagi
-         * #sudah ada penerimaan barang tidak boleh dirubah
+         * + PO yang sudah ada status approve tidak bisa di edit lagi
+         * + sudah terima dp tidak boleh dirubah lagi
+         * + sudah ada penerimaan barang tidak boleh dirubah
          *        
         */
 
-        /*
-        $this->load->model("trverification_model");
-		if($this->trverification_model->haveAprrovalRecord("PO","default",$finPOId)){
-			$resp["status"] = "FAILED";
-			$resp["message"] = "Can't edit !, This transaction is approved or rejected !";
-			return $resp;
+        //Cek trverification
+        //NV = Need Verification, RV = Ready to verification, VF=Verified, RJ= Rejected, VD= Void
+        $ssql = "SELECT * FROM trverification WHERE 
+            fin_branch_id = ? and fst_controller ='PO' and fin_transaction_id = ? and fst_verification_status in ?";
+
+        $qr = $this->db->query($ssql,[
+            $this->aauth->get_active_branch_id(), 
+            $finPOId,
+            ['VF','RJ','VD'] 
+        ]);
+        if($qr->row() != null){
+            $resp =["status"=>"FAILED","message"=>lang("PO tidak dapat dirubah karena sudah terjadi proses approval !") ];
+            return $resp;
         }
-        */
+        
 
         //Cek DP
         $ssql = "select * from trpo where fin_po_id = ? and fdc_downpayment_paid > 0";
@@ -406,5 +453,3 @@ class Trpo_model extends MY_Model {
         return $resp;
     }
 }
-
-

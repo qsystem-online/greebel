@@ -175,10 +175,14 @@
 										</div>										
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label"><?=lang("Unit")?> :</label>
-										<div class="col-md-9">
+										<label class="col-md-3 control-label"><?=lang("Unit")?> :</label>	
+										<div class="col-md-9">									
 											<label id="fstUnit" class="control-label"><?=lang("Unit")?></label>
-										</div>										
+											<label class="control-label"> => </label>
+											<label id="fdcConvBasicUnit" class="control-label"><?=lang("Unit")?></label>
+											<label id="fstBasicUnit" class="control-label"><?=lang("Unit")?></label>
+										</div>
+										
 									</div>
 
 									<div class="form-group">
@@ -238,6 +242,130 @@
 			</div>
 		</div>
 	</div>
+
+	<script type="text/javascript" info="event">
+		$("#fstItem").change(function(e){
+			e.preventDefault();
+			//var data = $('#fstItem').find(':selected');
+			var data = $('#fstItem').select2('data');
+			data = data[0];	
+			console.log(data);					
+			$("#fstUnit").text(data.fst_unit);
+			$("#fdcConvBasicUnit").text(data.fdc_conv_to_basic_unit);
+			$("#fstBasicUnit").text(data.fst_basic_unit);
+
+			if (data.fbl_is_batch_number == 1){
+				$(".batchNoBlock").show();
+			}else{
+				$(".batchNoBlock").hide();
+			}
+			if (data.fbl_is_serial_number == 1){				
+				$(".serialNoBlock").show();
+			}else{				
+				$(".serialNoBlock").hide();
+			}
+		});
+
+		$("#fstSerialNo").keydown(function(e){
+			if (e.keyCode == 13){
+				e.preventDefault();
+				if (checkDuplicateSerialNo($("#fstSerialNo").val())){
+					alert("<?=lang("Serial no duplikat !")?>");
+					$("#fstSerialNo").select();
+					return;
+				}
+				$("#fstSerialNoList").prepend("<option value='"+$("#fstSerialNo").val()+"'>"+$("#fstSerialNo").val()+"</option>");
+				$("#fstSerialNo").val("");
+				calculateTotalSerialNo();
+			}
+		});
+
+		$("#btn-delete-serial").click(function(e){
+			e.preventDefault();
+			$("#fstSerialNoList option:selected").each(function () {
+				$(this).remove(); //or whatever else
+			});
+			calculateTotalSerialNo();
+		});
+		
+		$("#btn-save-detail").click(function(e){
+			e.preventDefault();
+
+			item = $("#fstItem").select2("data");
+			item = item[0];
+			console.log(item);
+
+			if (item.fbl_is_batch_number == 1){
+				if ($("#fstBatchNo").val() == "" ){
+					alert("Batch Number harus diisi !");
+					return;
+				}
+			}
+
+			if (item.fbl_is_serial_number == 1){
+				var convToBasic = parseFloat($("#fdcConvBasicUnit").text());
+				var qtyInUnit = parseFloat($("#fdbQty").val());
+				var qtyInBasicUnit = qtyInUnit * convToBasic;
+
+
+				if ($("#fstSerialNoList option").length != qtyInBasicUnit){
+					alert("<?= lang("Total Serial Number harus sesuai dengan qty dalam basic unit")?>("+ qtyInBasicUnit +")");
+					return;
+				}
+			}
+			
+			var arrSerial = [];
+			$.each($("#fstSerialNoList option"),function(i,serial){
+				console.log(serial);
+				arrSerial.push($(serial).val());
+			});
+
+
+			t = $("#tbldetails").DataTable();
+
+			var data;
+			if (rowDetail == null){
+				item = $("#fstItem").select2("data");
+				item = item[0];	
+
+				data = {
+					fin_rec_id: 0,					
+					fin_po_detail_id: item.fin_po_detail_id,
+					fin_item_id: item.id,
+					fst_item_code: item.fst_item_code,
+					fst_custom_item_name: item.text,
+					fst_unit: item.fst_unit,
+					fdb_qty_po: item.fdb_qty_po,
+					fdb_qty_po_received:item.fdb_qty_po_received,
+					fdb_qty: 0,
+					fdc_m3: 0,
+					fst_batch_no: "",
+					arr_serial: [],
+				};
+			}else{
+				data = t.row(rowDetail).data();				
+			}
+
+			data.fdb_qty = $("#fdbQty").val();
+			data.fdc_m3 = $("#fdcM3").val();
+			data.fst_batch_no = $("#fstBatchNo").val();
+			data.arr_serial = arrSerial;
+			
+
+			if (rowDetail == null){
+				console.log(data);
+				t.row.add(data).draw(false);
+			}else{
+				t.row(rowDetail).data(data).draw(false);
+			}
+			
+			calculateTotalQty();
+			$("#mdlDetail").modal("hide");
+
+		})
+
+	</script>
+
 </div>
 
 <?php echo $mdlEditForm ?>
@@ -364,8 +492,8 @@
 				
 				t= $('#tbldetails').DataTable();
 				t.rows().remove();
-
 				$("#fstItem").empty();
+				
 				arrItems =[];
 				$.each(details,function(i,detail){
 					var data = {
@@ -383,16 +511,23 @@
 						arr_serial: []
 					}
 					arrItems.push({
+						fin_po_detail_id:detail.fin_po_detail_id,
+						id: detail.fin_item_id,						
+						fst_item_code: detail.fst_item_code,
+						text:detail.fst_custom_item_name,
 						fst_unit:detail.fst_unit,
+						fdb_qty_po: detail.fdb_qty,
+						fdb_qty_po_received: detail.fdb_qty_lpb,						
 						fbl_is_batch_number:detail.fbl_is_batch_number,
 						fbl_is_serial_number:detail.fbl_is_serial_number,
-						id: detail.fin_item_id,
-						text:detail.fst_custom_item_name
+						fdc_conv_to_basic_unit:detail.fdc_conv_to_basic_unit,
+						fst_basic_unit:detail.fst_basic_unit
 					});
 					t.row.add(data);
 				});
-
+				console.log(arrItems);
 				$("#fstItem").select2({data:arrItems});
+
 				App.fixedSelect2();
 				t.draw(false);
 				calculateTotalQty();
@@ -406,120 +541,6 @@
 			rowDetail = null;
 			$("#mdlDetail").modal("show");
 		});
-
-		$("#fstItem").change(function(e){
-			e.preventDefault();
-
-			//var data = $('#fstItem').find(':selected');
-			var data = $('#fstItem').select2('data');
-			data = data[0];
-
-			console.log(data);
-			
-			$("#fstUnit").text(data.fst_unit);
-
-			if (data.fbl_is_batch_number == 1){
-				$(".batchNoBlock").show();
-			}else{
-				$(".batchNoBlock").hide();
-			}
-			if (data.fbl_is_serial_number == 1){				
-				$(".serialNoBlock").show();
-			}else{				
-				$(".serialNoBlock").hide();
-			}
-		});
-
-		$("#fstSerialNo").keydown(function(e){
-			if (e.keyCode == 13){
-				e.preventDefault();
-				$("#fstSerialNoList").prepend("<option value='"+$("#fstSerialNo").val()+"'>"+$("#fstSerialNo").val()+"</option>");
-				$("#fstSerialNo").val("");
-				calculateTotalSerialNo();
-			}
-		});
-		$("#btn-delete-serial").click(function(e){
-			e.preventDefault();
-			$("#fstSerialNoList option:selected").each(function () {
-				$(this).remove(); //or whatever else
-			});
-			calculateTotalSerialNo();
-		});
-
-
-		$("#btn-save-detail").click(function(e){
-			e.preventDefault();
-
-			item = $("#fstItem").select2("data");
-			item = item[0];
-			if (item.fbl_is_batch_number == 1){
-				if ($("#fstBatchNo").val() == "" ){
-					alert("Batch Number harus diisi !");
-					return;
-				}
-			}
-
-			if (item.fbl_is_serial_number == 1){
-				if ($("#fstSerialNoList option").length != $("#fdbQty").val() ){
-					alert("Total Serial Number harus sesuai dengan qty (" + $("#fdbQty").val() + ") !");
-					return;
-				}
-			}
-			
-			var arrSerial = [];
-			$.each($("#fstSerialNoList option"),function(i,serial){
-				console.log(serial);
-				arrSerial.push($(serial).val());
-			});
-
-
-			t = $("#tbldetails").DataTable();
-
-			var data;
-			if (rowDetail == null){
-				item = $("#fstItem").select2("data");
-				item = item[0];
-
-				data = {					
-					fbl_is_batch_number: item.fbl_is_batch_number,
-					fbl_is_serial_number: item.fbl_is_serial_number,
-					fdb_qty: 0,
-					fdb_qty_po: item.fdb_qty_po,
-					fdb_qty_po_received: item.fdb_qty_po_received,
-					fdc_m3: 0,
-					fin_item_id: item.fin_item_id,
-					fin_po_detail_id: item.fin_po_detail_id,
-					fin_rec_id: 0,
-					fst_batch_no: "",
-					arr_serial: [],
-					fst_custom_item_name: item.fst_custom_item_name,
-					fst_item_code: item.fst_item_code,
-					fst_unit: item.fst_unit,
-					id:item.fin_item_id,
-					text:item.fst_custom_item_name,
-				};
-			}else{
-				data = t.row(rowDetail).data();				
-			}
-
-			data.fdb_qty = $("#fdbQty").val();
-			data.fdc_m3 = $("#fdcM3").val();
-			data.fst_batch_no = $("#fstBatchNo").val();
-			data.arr_serial = arrSerial;
-			
-
-			console.log(data);
-			if (rowDetail == null){
-				t.row.add(data).draw(false);
-			}else{
-				t.row(rowDetail).data(data).draw(false);
-			}
-			
-			calculateTotalQty();
-			$("#mdlDetail").modal("hide");
-
-		})
-	
 	});
 </script>
 
@@ -646,7 +667,6 @@
 
 				if(resp.message != ""){
 					alert(resp.message);
-					return;
 				}
 
 				if (resp.status == "SUCCESS"){				
@@ -686,8 +706,8 @@
 							fdc_m3:item.fdc_m3,
 							fst_batch_no: item.fst_batch_number,
 							arr_serial: JSON.parse(item.fst_serial_number_list),
-							id:item.fin_item_id,
-							text:item.fst_custom_item_name,
+							fdc_conv_to_basic_unit:item.fdc_conv_to_basic_unit,
+							fst_basic_unit:item.fst_basic_unit
 						}					
 						t.row.add(data);
 					});					
@@ -698,11 +718,17 @@
 						details = resp.po_details;
 						$.each(details,function(i,detail){
 							arrItems.push({
+								fin_po_detail_id:detail.fin_po_detail_id,
+								id: detail.fin_item_id,						
+								fst_item_code: detail.fst_item_code,
+								text:detail.fst_custom_item_name,
 								fst_unit:detail.fst_unit,
+								fdb_qty_po: detail.fdb_qty,
+								fdb_qty_po_received: detail.fdb_qty_lpb,						
 								fbl_is_batch_number:detail.fbl_is_batch_number,
 								fbl_is_serial_number:detail.fbl_is_serial_number,
-								id: detail.fin_item_id,
-								text:detail.fst_custom_item_name
+								fdc_conv_to_basic_unit:detail.fdc_conv_to_basic_unit,
+								fst_basic_unit:detail.fst_basic_unit																
 							});
 						});
 
@@ -716,19 +742,28 @@
 									return false;
 								}								
 							});
-							if(isExist == false){
+							if(isExist == false){							
 								arrItems.push({
+									fin_po_detail_id:v.fin_po_detail_id,
+									id: v.fin_item_id,						
+									fst_item_code: v.fst_item_code,
+									text:v.fst_custom_item_name,
 									fst_unit:v.fst_unit,
+									fdb_qty_po: v.fdb_qty_po,
+									fdb_qty_po_received: v.fdb_qty_po_received,						
+									fdb_qty: v.fdb_qty,
 									fbl_is_batch_number:v.fbl_is_batch_number,
 									fbl_is_serial_number:v.fbl_is_serial_number,
-									id: v.fin_item_id,
-									text:v.fst_custom_item_name
+									fdc_conv_to_basic_unit:v.fdc_conv_to_basic_unit,
+									fst_basic_unit:v.fst_basic_unit																
 								});
 							}
 						});						
 						$("#fstItem").select2({data:arrItems});
 						App.fixedSelect2();
 					});
+				}else{
+					$("#btnNew").trigger("click");
 				}
 			});
 
@@ -823,6 +858,18 @@
 		});
 		
 
+
+	}
+
+	function checkDuplicateSerialNo(serialNo){
+		isDuplicate = false;
+		$.each ($("#fstSerialNoList option"),function(i,v){
+			if ($(v).val() == serialNo){
+				isDuplicate = true;
+				return false;
+			};			
+		});
+		return isDuplicate;
 
 	}
 </script>

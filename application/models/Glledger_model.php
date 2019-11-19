@@ -47,16 +47,17 @@ class Glledger_model extends MY_Model{
     }  
     
     public function createJurnal($datas){
+        $this->load->model("glaccounts_model");
+        
         //Cek Balance
         $ttlDebet = 0;
         $ttlCredit = 0;
-        $epsilon = 0.00001;
-
-        foreach($datas as $data){            
+        $epsilon = 0.00001;        
+        foreach($datas as $data){
             $ttlDebet += (float) $data["fdc_debit"];
             $ttlCredit += (float) $data["fdc_credit"];
         }
-        if(abs($ttlDebet - $ttlCredit) > $epsilon ){          
+        if(abs($ttlDebet - $ttlCredit) > $epsilon ){
             return [
                 "status"=>"FAILED",
                 "message"=>"Debet and Credit not balance! ($ttlDebet vs $ttlCredit)"
@@ -64,9 +65,21 @@ class Glledger_model extends MY_Model{
         }
         $ids=[];
         foreach($datas as $data){
+            $account = $this->glaccounts_model->getSimpleDataHeader($data["fst_account_code"]);
+            $data["fst_account_name"] = $account->fst_glaccount_name;
+
+            
+            if ($data["fst_orgi_curr_code"]  == null){
+                $defaultCurr = getDefaultCurrency();
+                $data["fst_orgi_curr_code"] =$defaultCurr["CurrCode"];
+                $data["fdc_orgi_rate"] = 1;
+            }
+            
+            
             if ($data["fdc_debit"] == 0 && $data["fdc_credit"] == 0){
                 continue;
             }
+            //var_dump($data);
             $ids[]= parent::insert($data);
         }
 
@@ -117,12 +130,25 @@ class Glledger_model extends MY_Model{
                 */
             }
         }
+
+        $dbError  = $this->db->error();
+		if ($dbError["code"] != 0){	
+            $result["status"]= "FAILED";
+            $result["message"]= $dbError["message"];            
+			return $result;
+        }
+
+        return[
+            "status"=>"SUCCESS",
+            "message"=>""
+        ];
+
     }
 
     public function getJurnal($trxSourcecode,$trxId){
-        $ssql ="select a.*,b.fst_glaccount_name from glledger a 
-            inner join glaccounts b on a.fst_account_code = b.fst_glaccount_code 
-            where fst_trx_sourcecode = ? and fin_trx_id = ? and a.fbl_is_flip = 0 and a.fst_active = 'A'";
+        $ssql ="select a.fst_account_code,a.fst_account_name as fst_glaccount_name, a.fdc_debit, a.fdc_credit,a.fin_pcc_id,b.fst_pcc_name from glledger a 
+            LEFT JOIN msprofitcostcenter b on a.fin_pcc_id = b.fin_pcc_id 
+            where fst_trx_sourcecode = ? and fin_trx_id = ? and a.fbl_is_flip = 0 and a.fst_active = 'A' order by (fdc_debit > 0) desc ,fin_rec_id";
 
         $qr= $this->db->query($ssql,[$trxSourcecode,(int) $trxId]);
         $rs = $qr->result();

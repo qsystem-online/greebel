@@ -16,7 +16,7 @@ class Penerimaan_pembelian extends MY_Controller{
         $this->list['list_name'] = "Penerimaan Pembelian List";
         $this->list['boxTools'] = [
 			"<a id='btnNew'  href='".site_url()."tr/gudang/penerimaan_pembelian/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
-			"<a id='btnPrint'  href='".site_url()."tr/gudang/penerimaan_pembelian/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> Print </a>"
+			//"<a id='btnPrint'  href='".site_url()."tr/gudang/penerimaan_pembelian/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> Print </a>"
 		];
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/gudang/penerimaan_pembelian/fetch_list_data';
@@ -226,7 +226,7 @@ class Penerimaan_pembelian extends MY_Controller{
 					$this->json_output();
 					return;	
 				}
-				if (sizeof($arrSerial) != $item->fdb_qty){
+				if (sizeof($arrSerial) != $this->msitems_model->getQtyConvertToBasicUnit($item->fin_item_id,$item->fdb_qty,$item->fst_unit) ){
 					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
 					$this->ajxResp["message"] = sprintf("total serial %s harus sesuai dengan total qty (%u)",$item->fst_custom_item_name,$item->fdb_qty);
 					$this->json_output();
@@ -277,8 +277,6 @@ class Penerimaan_pembelian extends MY_Controller{
 
 
 		$this->db->trans_complete();
-
-
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["message"] = "Data Saved !";
 		$this->ajxResp["data"]["insert_id"] = $insertId;
@@ -369,7 +367,7 @@ class Penerimaan_pembelian extends MY_Controller{
 					$this->json_output();
 					return;	
 				}
-				if (sizeof($arrSerial) != $item->fdb_qty){
+				if (sizeof($arrSerial) != $this->msitems_model->getQtyConvertToBasicUnit($item->fin_item_id,$item->fdb_qty,$item->fst_unit) ){
 					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
 					$this->ajxResp["message"] = sprintf("total serial %s harus sesuai dengan total qty (%u)",$item->fst_custom_item_name,$item->fdb_qty);
 					$this->json_output();

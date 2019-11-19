@@ -179,4 +179,11 @@ clASs Msrelations_model extends MY_Model {
 
         return $rs;
     }
+
+    public function getCustomerListByBranch($finBranchId=null){
+        $finBranchId = $finBranchId ==  null ? $this->aauth->get_active_branch_id() : $finBranchId;
+        $ssql = "select * from msrelations where find_in_set('1',fst_relation_type) and fst_active ='A' and fin_branch_id = ?";
+        $qr = $this->db->query($ssql,[$finBranchId]);
+        return $qr->result();
+    }
 }
