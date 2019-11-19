@@ -124,6 +124,9 @@ class Glaccount extends MY_Controller
             "fst_curr_code" => $this->input->post("fst_curr_code"),
             "fin_seq_no" => $this->input->post("fin_seq_no"),
             "fbl_is_allow_in_cash_bank_module" => ($this->input->post("fbl_is_allow_in_cash_bank_module") == null) ? 0 : 1,
+            "fbl_pc_divisi" => ($this->input->post("fbl_pc_divisi") == null) ? 0 : 1,
+            "fbl_pc_customer" => ($this->input->post("fbl_pc_customer") == null) ? 0 : 1,
+            "fbl_pc_project" => ($this->input->post("fbl_pc_project") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
 
@@ -183,6 +186,9 @@ class Glaccount extends MY_Controller
             "fst_curr_code" => $this->input->post("fst_curr_code"),
             "fin_seq_no"=> $this->input->post("fin_seq_no"),
             "fbl_is_allow_in_cash_bank_module" => $this->input->post("fbl_is_allow_in_cash_bank_module"),
+            "fbl_pc_divisi" => $this->input->post("fbl_pc_divisi"),
+            "fbl_pc_customer" => $this->input->post("fbl_pc_customer"),
+            "fbl_pc_project" => $this->input->post("fbl_pc_project"),
             "fst_active" => 'A'
         ];
 

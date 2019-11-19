@@ -132,8 +132,26 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
                         <div class="form-group">
                             <label for="fbl_is_allow_in_cash_bank_module" class="col-sm-2 control-label"><?= lang("Allow") ?> :</label>
-                            <div class="checkbox col-sm-2">
+                            <div class="checkbox col-sm-5">
                                 <label><input id="fbl_is_allow_in_cash_bank_module" type="checkbox" name="fbl_is_allow_in_cash_bank_module" value="1"><?= lang("Allow In CashBank Module") ?></label><br>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fbl_pc_divisi" class="col-sm-2 control-label"><?= lang("Allow") ?> :</label>
+                            <div class="checkbox col-sm-5">
+                                <label><input id="fbl_pc_divisi" type="checkbox" name="fbl_pc_divisi" value="1"><?= lang("Analisa Divisi") ?></label><br>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fbl_pc_customer" class="col-sm-2 control-label"><?= lang("Allow") ?> :</label>
+                            <div class="checkbox col-sm-5">
+                                <label><input id="fbl_pc_customer" type="checkbox" name="fbl_pc_customer" value="1"><?= lang("Analisa Customer") ?></label><br>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fbl_pc_project" class="col-sm-2 control-label"><?= lang("Allow") ?> :</label>
+                            <div class="checkbox col-sm-5">
+                                <label><input id="fbl_pc_project" type="checkbox" name="fbl_pc_project" value="1"><?= lang("Analisa Project") ?></label><br>
                             </div>
                         </div>
                         <!-- end box body -->
