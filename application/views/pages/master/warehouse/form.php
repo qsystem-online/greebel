@@ -78,6 +78,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fbl_is_main_err" class="text-danger" style="padding-left:200px"></div>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="fbl_logistic" class="col-sm-4 control-label"><?= lang("Logistic") ?> :</label>
+                            <div class="checkbox col-sm-2">
+                                <label><input id="fbl_logistic" type="checkbox" name="fbl_logistic" value="1"><?= lang("Logistic") ?></label><br>
+                            </div>
+                        </div>
                         <!-- end box body -->
 
                         <div class="box-footer text-right">
