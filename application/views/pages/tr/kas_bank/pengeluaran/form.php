@@ -230,6 +230,7 @@
 											<select id="fst_trans_type" class="form-control" style="width:100%">
 												<option value="LPB_PO">LPB Pembelian</option>
 												<option value="DP_PO">DP LPB Pembelian</option>
+												<option value="LPB_RETURN">Return Pembelian Non Faktur</option>
 											</select>
 										</div>
 									</div>
@@ -281,6 +282,20 @@
 	<script type="text/javascript">
 		$(function(){
 			$("#btn-add-rincian").click(function(e){
+				
+				/*
+				ada transaksi minus return non faktur, jadi tidak tepat digunakan
+				var fdcTrans = parseFloat($("#fdc_trans_amount").val());
+				var fdcPaid = parseFloat($("#tl-paid").val());
+				var fdcReturn = parseFloat($("#fdc_return_amount").val());
+				var fdcPayment = parseFloat($("#fdc_payment").val());
+				
+				if(fdcTrans - (fdcPaid + fdcReturn) < fdcPayment ){
+					alert("<=lang("Pembayaran melebih")?>");
+					return;
+				}
+				*/
+
 				data = {
 					fin_rec_id:$("#fin_rec_id_items").val(),
 					fst_trans_type:$("#fst_trans_type").val(),
@@ -305,7 +320,27 @@
 				clearFormDetail();
 				calculateRincianTransaksi();
 				$("#mdlAddItem").modal("hide");
-			});			
+			});
+
+			$("#fst_trans_type").change(function(e){
+				e.preventDefault();
+				getTransactionList($(this).val());
+			});
+
+			$("#fin_trans_id").change(function(e){
+				e.preventDefault();
+				
+				ttlAmount = parseFloat($("#fin_trans_id").find(':selected').data('ttl_amount')) ;
+				ttlPaid = parseFloat($("#fin_trans_id").find(':selected').data('ttl_paid'));
+				ttlReturn = parseFloat($("#fin_trans_id").find(':selected').data('ttl_return'));
+
+				$("#fdc_trans_amount").val(App.money_format(ttlAmount) );
+				$("#ttl-paid").val(App.money_format(ttlPaid));
+				$("#fdc_return_amount").val(App.money_format(ttlReturn));
+
+				$("#fdc_payment").val(App.money_format(ttlAmount - ttlPaid - ttlReturn));
+			});
+
 		})	
 	</script>
 </div>
@@ -817,21 +852,9 @@
 			t.clear().draw(false);
 		});
 
-		$("#fst_trans_type").change(function(e){
-			e.preventDefault();
-			getTransactionList($(this).val());
-		});
+		
 
-		$("#fin_trans_id").change(function(e){
-			e.preventDefault();
-			
-			ttlAmount = parseFloat($("#fin_trans_id").find(':selected').data('ttl_amount')) ;
-			ttlPaid = parseFloat($("#fin_trans_id").find(':selected').data('ttl_paid'));
-
-			$("#fdc_trans_amount").val(App.money_format(ttlAmount) );
-			$("#ttl-paid").val(App.money_format(ttlPaid));
-			$("#fdc_payment").val(App.money_format(ttlAmount - ttlPaid));
-		});
+		
 
 		
 		$('#tblcbpaymentpengeluaran').on('preXhr.dt', function ( e, settings, data ) {
@@ -1190,7 +1213,7 @@
 						$("#fin_trans_id").empty();
 						$.each(lpbPurchaseList,function(i,lpbPurchase){
 							//var dp = parseFloat(lpbPurchase.fdc_downpayment);					
-							$("#fin_trans_id").append("<option value='"+lpbPurchase.fin_lpbpurchase_id+"' data-ttl_amount='"+ lpbPurchase.fdc_total  +"' data-ttl_paid='"+lpbPurchase.fdc_total_paid+ "'>"+lpbPurchase.fst_lpbpurchase_no+"</option>")
+							$("#fin_trans_id").append("<option value='"+lpbPurchase.fin_lpbpurchase_id+"' data-ttl_amount='"+ lpbPurchase.fdc_total  +"' data-ttl_paid='"+lpbPurchase.fdc_total_paid+ "' data-ttl_return='"+lpbPurchase.fdc_total_return+"' >"+lpbPurchase.fst_lpbpurchase_no+"</option>")
 						});
 						$("#fin_trans_id").val(null);
 
@@ -1211,7 +1234,7 @@
 						$("#fin_trans_id").empty();
 						$.each(poList,function(i,po){
 							var dp = parseFloat(po.fdc_downpayment);					
-							$("#fin_trans_id").append("<option value='"+po.fin_po_id+"' data-ttl_amount='"+ dp  +"' data-ttl_paid='"+po.fdc_downpayment_paid+ "'>"+po.fst_po_no+"</option>")
+							$("#fin_trans_id").append("<option value='"+po.fin_po_id+"' data-ttl_amount='"+ dp  +"' data-ttl_paid='"+po.fdc_downpayment_paid+ "' data-ttl_return='0'>"+po.fst_po_no+"</option>")
 						});
 						$("#fin_trans_id").val(null);
 

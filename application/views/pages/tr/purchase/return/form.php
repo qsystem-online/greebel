@@ -513,7 +513,7 @@
 
 <script type="text/javascript" info="init">
 	function testSelec(val){		
-		return $('<label style="width:200px">'+ val.text +'</label>');
+		return $('<label style="width:100%">'+ val.text +'</label>');
 		//return '<span>'+val+'</span>';
 	}
 
@@ -678,7 +678,8 @@
 		//$("#fst_unit").append("<option value='"+data.fst_unit+"'>"+data.fst_unit+"</option>" );
 		$("#fdb_qty").val(1);
 		$("#fdc_price").val(App.money_format(0));
-		$("#fst_disc_item").val(null);
+		//$("#fst_disc_item").val(null);
+		$("#fst_disc_item").val($("#fst_disc_item option:first").val());
 		$("#fdc_disc_amount").val(App.money_format(0));
 		rowDetail = null;
 	}
@@ -737,9 +738,8 @@
 						content: resp.message,
 						buttons : {
 							OK : function(){
-								if(resp.status == "SUCCESS"){
-									//window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
-									return;
+								if(resp.status == "SUCCESS"){									
+									$("#btnNew").trigger("click");
 								}
 							},
 						}

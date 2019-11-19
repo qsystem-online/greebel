@@ -38,11 +38,19 @@ class Select_data extends MY_Controller {
         $finSupplierId = $this->input->get("finSupplierId");
         $term = $this->input->get("term");
 
+        /*
         $ssql = "select fin_item_id,fst_item_code,fst_item_name from msitems  where (fin_standard_vendor_id = ? OR fin_optional_vendor_id = ?) 
             and (fst_item_name like ? OR fst_item_code like ?)
             and fst_active ='A'";
+        */
 
-        $qr = $this->db->query($ssql,[$finSupplierId,$finSupplierId,"%$term%","%$term%"]);
+        $ssql = "select fin_item_id,fst_item_code,fst_item_name from msitems a 
+        inner join msrelations b on replace(a.fst_linebusiness_id,',','|') REGEXP replace(b.fst_linebusiness_id,',','|')
+        where b.fin_relation_id = ? and (a.fst_item_name like ? OR a.fst_item_code like ?) and a.fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finSupplierId, "%$term%","%$term%"]);
+        //echo $this->db->last_query();
+
+        //$qr = $this->db->query($ssql,[$finSupplierId,$finSupplierId,"%$term%","%$term%"]);
 
         $rs = $qr->result();		
         $this->ajxResp["status"] = "SUCCESS";

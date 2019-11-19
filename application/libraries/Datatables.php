@@ -71,9 +71,7 @@ class Datatables
 
 		//Get Total Row 
 		$ssql = "select count(*) as ttl_records from " . $this->countTableName . " where " . $this->activeCondition;
-		$qr = $this->db->query($ssql, []);
-		//lastQuery();
-
+		$qr = $this->db->query($ssql, []);		
 		$rw = $qr->row();
 
 		$totalRows = $rw->ttl_records;

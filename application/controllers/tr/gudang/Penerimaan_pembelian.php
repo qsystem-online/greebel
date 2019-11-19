@@ -7,6 +7,7 @@ class Penerimaan_pembelian extends MY_Controller{
 		$this->load->library('form_validation');		
 		$this->load->model('msrelations_model');	
 		$this->load->model('trlpbgudang_model');
+		$this->load->model('mswarehouse_model');
     }
 
 	public function index(){

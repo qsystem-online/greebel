@@ -35,8 +35,12 @@ class Select2 {
     }
 
     public function get_itemBySupplier($supplierId){
-        $ssql = "select fin_item_id as id,concat(fst_item_code,' - ' ,fst_item_name) as text, fst_item_code,fst_item_name from msitems where (fin_standard_vendor_id = ?  or fin_optional_vendor_id = ?) and fst_active = 'A'";
-        $qr = $this->CI->db->query($ssql,[$supplierId,$supplierId]);
+        //$ssql = "select fin_item_id as id,concat(fst_item_code,' - ' ,fst_item_name) as text, fst_item_code,fst_item_name from msitems where (fin_standard_vendor_id = ?  or fin_optional_vendor_id = ?) and fst_active = 'A'";
+        $ssql = "SELECT a.fin_item_id as id,concat(a.fst_item_code,' - ' ,a.fst_item_name) as text, a.fst_item_code,a.fst_item_name FROM msitems a 
+        INNER JOIN msrelations b ON REPLACE(a.fst_linebusiness_id,',','|') REGEXP  REPLACE(b.fst_linebusiness_id,',','|')
+        WHERE b.fin_relation_id = ? and a.fst_active ='A'";
+        
+        $qr = $this->CI->db->query($ssql,[$supplierId]);
         $rs = $qr->result();
         return $rs;
     }

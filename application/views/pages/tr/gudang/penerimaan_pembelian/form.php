@@ -105,7 +105,8 @@
                             <div class="col-sm-10">
                                 <select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id" style="width:100%">
 									<?php
-										$warehouseList = getDataTable("mswarehouse","*","fin_branch_id = " . $this->aauth->get_active_branch_id() ." and fst_active ='A'");
+										//$warehouseList = getDataTable("mswarehouse","*","fin_branch_id = " . $this->aauth->get_active_branch_id() ." and fst_active ='A'");
+										$warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
 										foreach($warehouseList as $warehouse){
 											echo "<option value='$warehouse->fin_warehouse_id'>$warehouse->fst_warehouse_name - $warehouse->fst_delivery_address </option>";
 										}

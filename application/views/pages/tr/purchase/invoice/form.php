@@ -116,7 +116,13 @@
 						<div class="form-group">
 						<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> :</label>
                             <div class="col-sm-2">
-								<input id="fst_curr_code" type="TEXT" class="form-control" readonly/>
+								<select id="fst_curr_code" class="form-control" style="width:100%" disabled>
+									<?php
+										foreach ($arrExchangeRate as $curr){
+											echo "<option value='$curr->fst_curr_code'>$curr->fst_curr_name</option>";
+										}
+									?>
+								</select>								
 							</div>										                    
 							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> :</label>
                             <div class="col-sm-2">
@@ -133,6 +139,17 @@
 						<div class="form-group">
 							<div class="col-sm-12">
 								<table id="tbldetails" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+								<div>
+									<label class="colcontrol-label"  style="padding-top:0px"><?=lang("Sisa DP")?> : 
+										<label id="ttlRemainingDP" class="control-label" style="padding-top:0px" >0.00</label>
+									</label>
+									<span> | </span>
+
+									<label class="colcontrol-label"  style="padding-top:0px"><?=lang("Return")?> : 
+										<label id="ttlReturn" class="control-label" style="padding-top:0px" >0.00</label>
+									</label>
+									
+								</div>
 							</div>
 						</div>
 
@@ -155,8 +172,7 @@
 								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Total")?> : </label>
 								<label id="ttlAmount" class="col-md-4 control-label" style="padding-top:0px" >0.00</label>
 
-								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Sisa DP")?> : </label>
-								<label id="ttlRemainingDP" class="col-md-4 control-label" style="padding-top:0px" >0.00</label>
+								
 								
 								<label class="col-md-8 control-label"  style=""><?=lang("Klaim DP")?> : </label>
 								<div class="col-md-4">
@@ -219,7 +235,6 @@
 				header = resp.po;
 				$("#fdt_po_datetime").val(dateTimeFormat(header.fdt_po_datetime)).datetimepicker("update");
 				$("#fst_supplier_name").val(header.fst_supplier_name);
-				//$("#fin_warehouse_id").val(header.fin_warehouse_id);
 				listLPBGudang = resp.lpbgudang_list;
 				
 				$("#fin_lpbgudang_id").empty();
@@ -499,7 +514,10 @@
 					$("#fin_lpbgudang_id").val(finLPBGudangIds).trigger("change");
 					$("#fin_term").val(dataH.fin_term);
 					$("#ttlRemainingDP").text( App.money_format(parseFloat(dataH.fdc_downpayment_paid) - parseFloat(dataH.fdc_downpayment_claimed)));
+					$("#ttlReturn").text( App.money_format(parseFloat(dataH.fdc_total_return)));
+
 					$("#fst_curr_code").val(dataH.fst_curr_code);
+
 				}else{
 					$("#btnNew").trigger("click");
 				}

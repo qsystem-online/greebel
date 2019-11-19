@@ -69,6 +69,7 @@ class Trpurchasereturn_model extends MY_Model {
             where a.fdc_total > a.fdc_total_paid + a.fdc_total_return
             AND b.fbl_is_import = ? 
             AND a.fin_supplier_id = ? and a.fst_active != 'D' ";
+            
         $qr =$this->db->query($ssql,[(boolean) $isImport,(int) $fin_supplier_id]);
         //echo $this->db->last_query();
         $rs= $qr->result();

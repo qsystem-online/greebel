@@ -43,6 +43,11 @@ class Purchase_return extends MY_Controller{
             ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
 			['title' => 'No. Faktur', 'width' => '100px', 'data' => 'fst_lpbpurchase_no'],			
 			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
+			['title' => 'Total Amount', 'width' => '100px', 'data' => 'fdc_total','className'=>'text-right',
+				'render'=>"function(data,type,row){
+					return App.money_format(data);
+				}",
+			],
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
@@ -627,11 +632,11 @@ class Purchase_return extends MY_Controller{
 		$this->load->library("datatables");
         $this->datatables->setTableName("(
 			SELECT a.*,b.fst_lpbpurchase_no,c.fst_relation_name as fst_supplier_name FROM trpurchasereturn a 
-			INNER JOIN trlpbpurchase b on a.fin_lpbpurchase_id = b.fin_lpbpurchase_id  
-			INNER JOIN msrelations c on b.fin_supplier_id = c.fin_relation_id 
+			LEFT JOIN trlpbpurchase b on a.fin_lpbpurchase_id = b.fin_lpbpurchase_id  
+			INNER JOIN msrelations c on a.fin_supplier_id = c.fin_relation_id 
 			) a");
 
-        $selectFields = "a.fin_purchasereturn_id,a.fst_purchasereturn_no,a.fdt_purchasereturn_datetime,a.fst_lpbpurchase_no,a.fst_supplier_name,a.fst_memo";
+        $selectFields = "a.fin_purchasereturn_id,a.fst_purchasereturn_no,a.fdt_purchasereturn_datetime,a.fst_lpbpurchase_no,a.fst_supplier_name,a.fst_memo,a.fdc_total";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');

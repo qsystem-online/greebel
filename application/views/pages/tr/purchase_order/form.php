@@ -149,7 +149,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div class="pull-left" style="width:20%" >
 									<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id">
 									<?php
-										$warehouses = $this->mswarehouse_model->getWarehouseList();
+										$warehouses = $this->mswarehouse_model->getNonLogisticWarehouseList();
 										foreach($warehouses as $warehouse){
 											echo "<option value='$warehouse->fin_warehouse_id' data-address='$warehouse->fst_delivery_address'>$warehouse->fst_warehouse_name</option>";
 										}
@@ -821,93 +821,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			calculateTotal();
 		});
 
-		/*
-		resp = resp.data;
-
-		$.each(resp.sales_order, function(name, val){
-			var $el = $('[name="'+name+'"]'),
-				type = $el.attr('type');
-			switch(type){
-				case 'checkbox':
-					$el.filter('[value="' + val + '"]').attr('checked', 'checked');
-					break;
-				case 'radio':
-					$el.filter('[value="' + val + '"]').attr('checked', 'checked');
-					break;
-				default:
-					$el.val(val);
-			}
-		});
-
-
-		//Customer
-		var arrCust = [];
-		var currCust = {
-			"id" : resp.sales_order.fin_relation_id,
-			"text" : resp.sales_order.fst_relation_name,
-			"fin_sales_id" : resp.sales_order.fin_sales_id,
-			"fin_shipping_address_id":resp.sales_order.fin_shipping_address_id,
-			"fin_warehouse_id":resp.sales_order.fin_warehouse_id,
-			"fin_terms_payment":resp.sales_order.fin_terms_payment							
-		}
-		arrCust.push(currCust);
-		//var newOption = new Option(resp.sales_order.fst_relation_name, resp.sales_order.fin_relation_id, true, true);
-		//$('#select-relations').append(newOption).trigger('change');
-		//current_pricing_group_id = resp.sales_order.current_pricing_group_id;
-		$('#select-relations').empty();
-		$('#select-relations').select2({
-			minimumResultsForSearch: -1,
-			width: "100%",
-			data:arrCust
-		});
-
-		getShippingAddressList(currCust.id,currCust.fin_shipping_address_id);
-
-		$('#select-sales').val(resp.sales_order.fin_relation_id).trigger('change');
-		$('#select-sales').val(resp.sales_order.fin_sales_id).trigger('change');
-
-		SODetails = resp.so_details;
-
-		dataItem = [];
-		$.each(SODetails, function(idx, detail){
-			data = {
-				fin_rec_id:detail.fin_rec_id,
-				fin_promo_id:detail.fin_promo_id,
-				fin_item_id:detail.fin_item_id,
-				ItemCode:detail.fst_item_code,
-				ItemName:detail.fst_item_name,
-				fst_custom_item_name:detail.fst_custom_item_name,
-				fdb_qty:detail.fdb_qty,
-				fst_unit:detail.fst_unit,
-				fdc_price:detail.fdc_price,
-				fst_disc_item:detail.fst_disc_item,
-				fdc_disc_amount:detail.fdc_disc_amount,
-				fst_memo_item:detail.fst_memo_item,
-				total:detail.fdb_qty * detail.fdc_price - detail.fdc_disc_amount,
-				action: (detail.fin_promo_id == 0) ? action : ""
-			}
-
-			t = $('#tblPODetails').DataTable();			
-			t.row.add(data).draw(false);
-
-			//set Data Item select2		
-			tmp = {
-				"id" : detail.fin_item_id,
-				"text" : detail.fst_item_code + "-" + detail.fst_item_name,
-				"fst_item_name" : detail.fst_item_name,
-				"fst_item_code" : detail.fst_item_code,
-				"maxItemDiscount" : detail.fst_max_item_discount
-			}
-			dataItem.push(tmp);
-		});
-
-
-		fixedSelect2();
-		//$(".non-editable").prop('disabled', true);
-		calculateTotal();		
-		//$("#fdt_salesorder_date").datepicker('update', dateTimeFormat(resp.sales_order.fdt_salesorder_date));
-		$("#fdt_salesorder_date").val(dateTimeFormat(resp.sales_order.fdt_salesorder_date)).datetimepicker('update');
-		*/
+		
 	
 	}
 

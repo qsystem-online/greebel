@@ -37,6 +37,12 @@ class Pengeluaran extends MY_Controller{
             ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_cbpayment_datetime'],
             ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],		
 			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
+			['title' => 'Currency', 'width' => '50px', 'data' => 'fst_curr_code'],
+			['title' => 'Total Amount', 'width' => '100px', 'data' => 'fdc_total_payment','className'=>'text-right',
+				'render'=>"function(data,type,row){
+					return App.money_format(data);
+				}",
+			],
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
@@ -69,11 +75,13 @@ class Pengeluaran extends MY_Controller{
 	public function fetch_list_data(){
 		$this->load->library("datatables");
         $this->datatables->setTableName("(
-			SELECT a.*,b.fst_relation_name as fst_supplier_name FROM trcbpayment a 
+			SELECT a.fin_cbpayment_id,a.fst_cbpayment_no,a.fdt_cbpayment_datetime,a.fst_memo,b.fst_relation_name as fst_supplier_name,a.fst_curr_code,a.fst_active,sum(c.fdc_payment) as fdc_total_payment FROM trcbpayment a 
 			INNER JOIN msrelations b on a.fin_supplier_id = b.fin_relation_id 
+			INNER JOIN trcbpaymentitems c on a.fin_cbpayment_id = c.fin_cbpayment_id 
+			GROUP BY a.fin_cbpayment_id,a.fst_cbpayment_no,a.fdt_cbpayment_datetime,a.fst_memo,b.fst_relation_name,a.fst_curr_code 
 			) a");
 
-        $selectFields = "a.fin_cbpayment_id,a.fst_cbpayment_no,a.fdt_cbpayment_datetime,a.fst_supplier_name,a.fst_memo";
+        $selectFields = "a.fin_cbpayment_id,a.fst_cbpayment_no,a.fdt_cbpayment_datetime,a.fst_supplier_name,a.fst_memo,a.fst_curr_code,a.fdc_total_payment,a.fst_active";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');
@@ -81,7 +89,8 @@ class Pengeluaran extends MY_Controller{
         $this->datatables->setSearchFields($searchFields);
         
         // Format Data
-        $datasources = $this->datatables->getData();
+		$datasources = $this->datatables->getData();
+		
         $arrData = $datasources["data"];
         $arrDataFormated = [];
         foreach ($arrData as $data) {        
@@ -376,7 +385,7 @@ class Pengeluaran extends MY_Controller{
 		if($resp["status"] != "SUCCESS"){
 			$this->ajxResp["status"] = $resp["status"];
 			$this->ajxResp["message"] = $resp["message"];
-			$this->ajxResp["data"] = $resp["data"];
+			$this->ajxResp["data"] = isset($resp["data"]) ? $resp["data"] : null;
 			$this->json_output();
 			$this->db->trans_rollback();
 			return;
@@ -394,7 +403,7 @@ class Pengeluaran extends MY_Controller{
 			return;
 		}
 
-		$this->db->trans_complete();
+		//$this->db->trans_complete();
 
 		//OUTPUT SUCCESS
 		$this->ajxResp["status"] = "SUCCESS";
@@ -704,7 +713,7 @@ class Pengeluaran extends MY_Controller{
 			return;
 		}
 
-		$result = $this->trcbpayment_model->isEditable($finCBPaymentId);
+		$resp = $this->trcbpayment_model->isEditable($finCBPaymentId);
 		if ($resp["status"] != "SUCCESS" ){
 			$this->ajxResp["status"] = $resp["status"];
 			$this->ajxResp["message"] = $resp["message"];
@@ -714,7 +723,7 @@ class Pengeluaran extends MY_Controller{
 
 		$this->db->trans_start();
 		//UNPOSTING
-		$result = $this->trcbpayment_model->unposting($finCBPaymentId);
+		$resp = $this->trcbpayment_model->unposting($finCBPaymentId);
 		if ($resp["status"] != "SUCCESS" ){
 			$this->ajxResp["status"] = $resp["status"];
 			$this->ajxResp["message"] = $resp["message"];
@@ -724,7 +733,7 @@ class Pengeluaran extends MY_Controller{
 		}
 
 		//DELETE RECORD
-		$result = $this->trcbpayment_model->delete($finCBPaymentId);
+		$resp = $this->trcbpayment_model->delete($finCBPaymentId);
 		if ($resp["status"] != "SUCCESS" ){
 			$this->ajxResp["status"] = $resp["status"];
 			$this->ajxResp["message"] = $resp["message"];

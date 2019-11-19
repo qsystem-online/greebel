@@ -153,7 +153,7 @@ clASs Msrelations_model extends MY_Model {
     }
 
     public function getSupplierList(){
-        $ssql = "select * from msrelations where fst_relation_type = 2 and fin_branch_id = ?";
+        $ssql = "select * from msrelations where find_in_set('2',fst_relation_type) and fin_branch_id = ?";
         $query = $this->db->query($ssql, [$this->aauth->get_active_branch_id()]);
         $rs = $query->result();
         return $rs;

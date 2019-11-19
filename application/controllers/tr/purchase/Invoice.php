@@ -41,6 +41,11 @@ class Invoice extends MY_Controller{
             ['title' => 'Purchase Order No.', 'width' => '100px', 'data' => 'fst_po_no'],
 			['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
 			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
+			['title' => 'Total Amount', 'width' => '100px', 'data' => 'fdc_total','className'=>'text-right',
+				'render'=>"function(data,type,row){
+					return App.money_format(data);
+				}"
+			],
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
@@ -78,7 +83,7 @@ class Invoice extends MY_Controller{
 			INNER JOIN msrelations c on b.fin_supplier_id = c.fin_relation_id 
 			) a");
 
-        $selectFields = "a.fin_lpbpurchase_id,a.fst_lpbpurchase_no,a.fdt_lpbpurchase_datetime,a.fst_po_no,a.fst_supplier_name,a.fst_memo";
+        $selectFields = "a.fin_lpbpurchase_id,a.fst_lpbpurchase_no,a.fdt_lpbpurchase_datetime,a.fst_po_no,a.fst_supplier_name,a.fst_memo,a.fdc_total";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');
@@ -121,8 +126,7 @@ class Invoice extends MY_Controller{
 		$data["fin_lpbpurchase_id"] = $finLPBPurchaseId;
 		$data["mdlEditForm"] = $edit_modal;
 		$data["arrExchangeRate"] = $this->mscurrencies_model->getArrRate();
-		
-		
+			
 		if($mode == 'ADD'){
 			$data["fst_lpbpurchase_no"]=$this->trlpbpurchase_model->generateLPBPurchaseNo(); 
 			$data["mdlJurnal"] = "";
@@ -206,7 +210,7 @@ class Invoice extends MY_Controller{
 		}
 		
 		//CEK APAKAH OVER CLAIM DP
-		$dpClaim = $this->input->post("fdc_downpayment_claim");
+		$dpClaim = parseNumber($this->input->post("fdc_downpayment_claim"));
 		$availClaimDp = $po->fdc_downpayment_paid - $po->fdc_downpayment_claimed;
 		
 		if($dpClaim > $availClaimDp ){
@@ -218,14 +222,16 @@ class Invoice extends MY_Controller{
 			return;
 		}
 
-		$dataH = [			
+		
+
+		$dataH = [
 			"fst_lpbpurchase_no"=>$fst_lpbpurchase_no,
 			"fdt_lpbpurchase_datetime"=>$fdt_lpbpurchase_datetime,
 			"fin_po_id"=>$this->input->post("fin_po_id"),
 			"fin_supplier_id"=>$po->fin_supplier_id,
 			"fin_term"=>$po->fin_term,
 			"fst_curr_code"=> $po->fst_curr_code,
-			"fdc_exchange_rate_idr"=>$this->input->post("fdc_exchange_rate_idr"),
+			"fdc_exchange_rate_idr"=>parseNumber($this->input->post("fdc_exchange_rate_idr")),
 			"fdc_subttl"=>0,
 			"fdc_disc_amount"=>0,
 			"fdc_ppn_percent"=>$po->fdc_ppn_percent,
@@ -261,7 +267,14 @@ class Invoice extends MY_Controller{
 		$dataH["fdc_ppn_amount"]=$ttlPpnAmount;
 		$dataH["fdc_total"]=$dataH["fdc_subttl"] + $dataH["fdc_ppn_amount"] - $dataH["fdc_disc_amount"] - $dataH["fdc_downpayment_claim"];
 
-	
+		//CEK Claim DP lebih besar dari invoice
+		if ($dataH["fdc_total"] < 0 ){
+			$this->ajxResp["status"] = "FAILED";
+			$this->ajxResp["message"] = lang("Total invoice negatif !");
+			$this->json_output();
+			return;
+		}
+
 		try{
 			$this->db->trans_start();
 

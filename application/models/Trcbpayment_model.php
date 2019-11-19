@@ -169,6 +169,11 @@ class Trcbpayment_model extends MY_Model {
             }else if ($dataItem->fst_trans_type == "DP_PO"){
                 $ssql = "update trpo set fdc_downpayment_paid = fdc_downpayment_paid -  ? where fin_po_id = ?";
                 $this->db->query($ssql,[$dataItem->fdc_payment,$dataItem->fin_trans_id]);
+                //cek valid DP_PO
+                $result = $this->checkIsValidDPPO($dataItem->fin_trans_id);
+                if($result["status"] != "SUCCESS"){
+                    return $result;
+                }
             }             
         }
         $this->glledger_model->cancelJurnal("CBOUT",$dataH->fin_cbpayment_id,$unpostingDateTime);
@@ -205,7 +210,10 @@ class Trcbpayment_model extends MY_Model {
                 }
                 $ssql = "update trlpbpurchase set fdc_total_paid = fdc_total_paid +  ? where fin_lpbpurchase_id = ?";
                 $this->db->query($ssql,[$dataItem->fdc_payment,$dataItem->fin_trans_id]);
-
+                $result = $this->checkIsValidInvocePO($dataItem->fin_trans_id);
+                if($result["status"] != "SUCCESS"){
+                    return $result;
+                }
             }else if ($dataItem->fst_trans_type == "DP_PO"){
                 //DP Purcahase
                 $tmpArr = $this->getDataJurnalPostingDPPO($dataItem,$dataH);                
@@ -214,18 +222,10 @@ class Trcbpayment_model extends MY_Model {
                 }
                 $ssql = "update trpo set fdc_downpayment_paid = fdc_downpayment_paid +  ? where fin_po_id = ?";
                 $this->db->query($ssql,[$dataItem->fdc_payment,$dataItem->fin_trans_id]);
-
-                //Cek bila terjadi kelebihan pembayaran downpayment;
-                $ssql = "select * from trpo where fin_po_id = ?";
-                $qr = $this->db->query($ssql,[$dataItem->fin_trans_id]);
-                $rw = $qr->row();
-                if($rw != null){
-                    if ($rw->fdc_downpayment_paid > $rw->fdc_downpayment){
-                        $result["status"] ="FAILED";
-                        $result["message"] = sprintf(lang("Nilai pembayaran DP untuk PO %s melebihi nilai DP !"),$rw->fst_po_no);
-                        $result["data"] = $rw;
-                        return $result;
-                    }
+                //cek valid DP_PO
+                $result = $this->checkIsValidDPPO($dataItem->fin_trans_id);
+                if($result["status"] != "SUCCESS"){
+                    return $result;
                 }
             } 
         }
@@ -469,7 +469,7 @@ class Trcbpayment_model extends MY_Model {
     function getUnpaidPurchaseInvoiceList($finSupplierId,$fstCurrCode){
         $ssql = "SELECT * FROM trlpbpurchase 
             WHERE fin_supplier_id = ? AND fst_curr_code = ? 
-            AND (fdc_total > fdc_total_paid) 
+            AND (fdc_total > (fdc_total_paid + fdc_total_return) ) 
             AND fst_active != 'D' ";
         $qr = $this->db->query($ssql,[$finSupplierId,$fstCurrCode]);
         //echo $this->db->last_query();
@@ -491,7 +491,10 @@ class Trcbpayment_model extends MY_Model {
     }
 
     public function isEditable($finCBPaymentId){
-        //$ssql = "Select * from trcbpa";
+        /**
+         * 
+         */
+        //$ssql = "select ";
 
         return ["status"=>"SUCCESS","message"=>""];
     }
@@ -513,6 +516,50 @@ class Trcbpayment_model extends MY_Model {
     }
 
 
+    public function checkIsValidDPPO($finPOId){
+        //Cek DP 
+        $ssql = "select * from trpo where fin_po_id = ?";
+        $qr = $this->db->query($ssql,[$finPOId]);
+        $rw = $qr->row();
+        if($rw != null){
+            //Cek bila terjadi kelebihan pembayaran downpayment;
+            if ($rw->fdc_downpayment_paid > $rw->fdc_downpayment){
+                $result["status"] ="FAILED";
+                $result["message"] = sprintf(lang("Nilai pembayaran DP untuk PO %s melebihi nilai DP !"),$rw->fst_po_no);
+                $result["data"] = $rw;
+                return $result;
+            }
+            //Cek bila terjadi downpayment claim > downpayment paid
+            if ($rw->fdc_downpayment_paid < $rw->fdc_downpayment_claimed){
+                $result["status"] ="FAILED";
+                $result["message"] = sprintf(lang("Nilai DP yang dibayar kurang dari nilai DP yang telah di klaim, PO: %s  !"),$rw->fst_po_no);
+                $result["data"] = $rw;
+                return $result;
+            }
+            return ["status"=>"SUCCESS","message"=>""];
+        }else{
+            return ["status"=>"FAILED","message"=>lang("ID PO tidak dikenal !")];
+        }
+
+
+    }
+
+    public function checkIsValidInvocePO($finLPBPurchaseId){
+        $ssql = "select * from trlpbpurchase where fin_lpbpurchase_id = ?";
+        $qr = $this->db->query($ssql,[$finLPBPurchaseId]);
+        $rw = $qr->row();
+        if($rw == null){
+            return ["status"=>"FAILED",'message'=>lang("ID Invoice Pembelian tidak dikenal")];
+        }
+
+        //Pembayaran + Return melebihi jumlah tagihan
+        if(($rw->fdc_total_paid + $rw->fdc_total_return) > $rw->fdc_total){
+            return ["status"=>"FAILED","message"=>sprintf(lang("Total pembayaran dan retur Invoice %s melebih jumlah tagihan invoce !"),$rw->fst_lpbpurchase_no)];
+        }   
+
+        return ["status"=>"SUCCESS","message"=>""];
+
+    }
 
 }
 
