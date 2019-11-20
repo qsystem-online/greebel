@@ -333,6 +333,7 @@
 				ttlAmount = parseFloat($("#fin_trans_id").find(':selected').data('ttl_amount')) ;
 				ttlPaid = parseFloat($("#fin_trans_id").find(':selected').data('ttl_paid'));
 				ttlReturn = parseFloat($("#fin_trans_id").find(':selected').data('ttl_return'));
+				console.log(App.money_format(ttlAmount - ttlPaid - ttlReturn));
 
 				$("#fdc_trans_amount").val(App.money_format(ttlAmount) );
 				$("#ttl-paid").val(App.money_format(ttlPaid));
@@ -745,6 +746,9 @@
 								break;
 							case "DP_PO":
 								return "DP LPB Pembelian";
+								break;
+							case "LPB_RETURN":
+								return "Return Pembelian Non Faktur";
 								break;
 							default:
 								return "";
@@ -1240,6 +1244,29 @@
 
 						if(typeof callback !== "undefined"){
 							callback(poList);
+						}
+						
+					}
+				});
+				break;
+			
+			
+			case "LPB_RETURN":
+				App.getValueAjax({
+					site_url:"<?=site_url()?>",
+					model:"trcbpayment_model",
+					func:"getPurchaseReturnNonFakturList",
+					params:[$("#fin_supplier_id").val(),$("#fst_curr_code").val()],
+					callback:function(purchaseReturnNonFakturList){
+						$("#fin_trans_id").empty();
+						$.each(purchaseReturnNonFakturList,function(i,purchaseReturnNonFaktur){
+							//var dp = parseFloat(lpbPurchase.fdc_downpayment);					
+							$("#fin_trans_id").append("<option value='"+purchaseReturnNonFaktur.fin_purchasereturn_id+"' data-ttl_amount='"+ parseFloat(purchaseReturnNonFaktur.fdc_total) * -1  +"' data-ttl_paid='"+purchaseReturnNonFaktur.fdc_total_claimed+ "' data-ttl_return='0' >"+purchaseReturnNonFaktur.fst_purchasereturn_no+"</option>");
+						});
+						$("#fin_trans_id").val(null);
+
+						if(typeof callback !== "undefined"){
+							callback(lpbPurchaseList);
 						}
 						
 					}

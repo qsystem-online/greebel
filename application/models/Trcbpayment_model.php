@@ -470,11 +470,20 @@ class Trcbpayment_model extends MY_Model {
         $ssql = "SELECT * FROM trlpbpurchase 
             WHERE fin_supplier_id = ? AND fst_curr_code = ? 
             AND (fdc_total > (fdc_total_paid + fdc_total_return) ) 
-            AND fst_active != 'D' ";
+            AND fst_active = 'A' ";
         $qr = $this->db->query($ssql,[$finSupplierId,$fstCurrCode]);
         //echo $this->db->last_query();
         $rs = $qr->result();
         return $rs;
+    }
+
+    function getPurchaseReturnNonFakturList($finSupplierId,$fstCurrCode){
+        $ssql ="select * from trpurchasereturn 
+        where fin_supplier_id = ? and fst_curr_code = ?
+        and fbl_non_faktur = 1 and fdc_total_claimed < fdc_total
+        and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finSupplierId,$fstCurrCode]);
+        return $qr->result();
     }
 
 

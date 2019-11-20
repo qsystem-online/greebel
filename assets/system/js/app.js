@@ -23,7 +23,7 @@ $(function(){
 			autoGroup: true,
 			groupSeparator: ",",
 			radixPoint: ".",
-			allowMinus: false,
+			allowMinus: true,
 			autoUnmask: true,
 			digits: 2
 		});
