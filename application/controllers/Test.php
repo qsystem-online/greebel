@@ -165,6 +165,8 @@ class Test extends CI_Controller {
 
 		ignore_user_abort(true);
 		set_time_limit(0);
+		ini_set('max_execution_time', 0);
+		
 		$arrKeyInt =[1,2,3,4,5,6,7,8,9,10];
 		$arrKeyChar25 = ["AAAAAAAAAA","BBBBBBBBBB","CCCCCCCCCC","DDDDDDDDDD","EEEEEEEEEE"];
 		$arrKeyChar50 = ["AAAAAAAAAA","BBBBBBBBBB","CCCCCCCCCC","DDDDDDDDDD","EEEEEEEEEE"];
