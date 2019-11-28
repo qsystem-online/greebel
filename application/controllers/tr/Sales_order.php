@@ -69,7 +69,7 @@ class Sales_order extends MY_Controller{
 
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
-		$mdlJurnal = $this->parser->parse('template/mdlJUrnal.php', [], true);
+		$mdlJurnal = $this->parser->parse('template/mdlJurnal.php', [], true);
 		$mdlPrint = $this->parser->parse('template/mdlPrint.php', [], true);
 
 		$data["mode"] = $mode;
@@ -284,7 +284,7 @@ class Sales_order extends MY_Controller{
 			$authorizeCreditLimit = true;
 			$needAuthorize = true;
 		}
-		
+
 		//Invoce jatuh tempo yang telah melewati x Hari dan belum dibayar
         //???????
         

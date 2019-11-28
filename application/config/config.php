@@ -22,8 +22,7 @@ set_error_handler(function($errno, $errstr, $errfile, $errline){
 	echo "File Name :$errfile <br>";
 	echo "Line :$errline <br>";
 	//echo "-->";
-	var_dump(debug_backtrace());
-	
+	var_dump(debug_backtrace());	
 	die();
 });
 
