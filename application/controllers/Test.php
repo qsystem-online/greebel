@@ -166,17 +166,20 @@ class Test extends CI_Controller {
 		ignore_user_abort(true);
 		set_time_limit(0);
 		ini_set('max_execution_time', 0);
-		
+
 		$arrKeyInt =[1,2,3,4,5,6,7,8,9,10];
 		$arrKeyChar25 = ["AAAAAAAAAA","BBBBBBBBBB","CCCCCCCCCC","DDDDDDDDDD","EEEEEEEEEE"];
 		$arrKeyChar50 = ["AAAAAAAAAA","BBBBBBBBBB","CCCCCCCCCC","DDDDDDDDDD","EEEEEEEEEE"];
 		$arrKeyDate = ["2019-11-02","2019-11-03","2019-09-03","2019-01-02","2019-11-20"];
 		$arrKeyDatetime = ["2019-11-02 12:03:22","2019-11-03 14:20:32","2019-09-03 09:32:11","2019-01-02 02:23:43","2019-11-20 14:11:49"];
+		$datas = [];
 
-		for($y = 0 ; $y < 5000000 ; $y++){
+		$db2 = $this->load->database('default_local', TRUE);
+
+		for($y = 54000 ; $y < 5000000 ; $y++){
 			$data["key_int"] = random_element($arrKeyInt);
 			$data["key_char_25"] = random_element($arrKeyChar25);
-			$data["key_char_50"] = random_element($arrKeyChar50) . $y;
+			$data["key_char_50"] = random_element($arrKeyChar50);
 			$data["key_date"] = random_element($arrKeyDate);
 			$data["key_datetime"]= random_element($arrKeyDatetime);
 			$data["key_text"] = random_element($arrKeyChar50);
@@ -186,7 +189,19 @@ class Test extends CI_Controller {
 			$data["val_int"] = rand(10000,9999999);
 			$data["val_dec"] = $data["val_int"] / rand(2,9);
 			$data["val_double"] = (double) $data["val_int"] / rand(2,9);
-			$this->db->insert("tbl_test",$data);
+
+			if($y % 1000 == 0){
+				$db2->insert_batch("tbl_test",$datas);
+				$dbError  = $db2->error();
+				if ($dbError["code"] != 0){	
+					var_dump($dbError);				
+				}
+				$datas=[];
+			}else{
+				$datas[] = $data;
+			}
+			echo "Progress i :$y \n";
+    		flush();			
 		}		
 	}
 	
