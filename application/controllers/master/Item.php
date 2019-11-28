@@ -524,6 +524,8 @@ class Item extends MY_Controller
             $sellingPrice = $this->msitems_model->getSellingPrice($itemId,$unit->fst_unit,$custId);
             $result[] = (object) [
                 "fst_unit"=>$unit->fst_unit,
+                "fst_basic_unit"=>$this->msitemunitdetails_model->getBasicUnit($itemId),
+                "fdc_conv_to_basic_unit"=>$unit->fdc_conv_to_basic_unit,
                 "sellingPrice" => $sellingPrice,
                 "real_stock" => $this->trinventory_model->getStock($warehouseId,$itemId,$unit->fst_unit),
                 "marketing_stock" => $this->trinventory_model->getMarketingStock($warehouseId,$itemId,$unit->fst_unit)

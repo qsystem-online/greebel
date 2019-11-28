@@ -170,7 +170,6 @@ class Users_model extends MY_Model
 		return $query->result_array();
 	}
 
-
 	public function getSelect2Driver(){
 		$activeBranchId = $this->aauth->get_active_branch_id();
 		$driverDepartmentId = getDbConfig("driver_department_id");
@@ -199,5 +198,14 @@ class Users_model extends MY_Model
         $rs = $query->result();
 
         return $rs;
-    }
+	}
+	
+	public function getSalesList(){
+		$salesDeptId = getDbConfig("sales_department_id");
+		$activeBranchId = $this->aauth->get_active_branch_id();
+		
+		$ssql = "select fin_user_id, fst_username from users where  fin_branch_id =? and fin_department_id = $salesDeptId order by fst_username";
+		$qr = $this->db->query($ssql,[$activeBranchId]);
+		return $qr->result();
+	}
 }

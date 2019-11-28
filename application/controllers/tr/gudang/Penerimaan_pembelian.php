@@ -237,51 +237,61 @@ class Penerimaan_pembelian extends MY_Controller{
 			}
 		}
 
-		$this->db->trans_start();
-		$insertId = $this->trlpbgudang_model->insert($dataH);
+		try{
+			$this->db->trans_start();
+			$insertId = $this->trlpbgudang_model->insert($dataH);
 
-		//Insert Data Detail Transaksi
-		foreach ($details as $detail) {		
-			$detail = (array) $detail;
-			$detail["fin_lpbgudang_id"] = $insertId;
-			$detail["fst_batch_number"] = $detail["fst_batch_no"];
-			$detail["fst_serial_number_list"] = json_encode($detail["arr_serial"]);
-			$detail["fst_active"] = "A";					
-			$this->trlpbgudangitems_model->insert($detail);			
-		}
-
-		
-		$result = $this->trlpbgudang_model->posting($insertId);
-
-		if ($result["status"] != "SUCCESS"){
-			$this->ajxResp["status"] = "FAILED";
-			$this->ajxResp["message"] = $result["message"];
-			if (isset( $result["data"])){
-				$this->ajxResp["data"] = $result["data"];
+			//Insert Data Detail Transaksi
+			foreach ($details as $detail) {		
+				$detail = (array) $detail;
+				$detail["fin_lpbgudang_id"] = $insertId;
+				$detail["fst_batch_number"] = $detail["fst_batch_no"];
+				$detail["fst_serial_number_list"] = json_encode($detail["arr_serial"]);
+				$detail["fst_active"] = "A";					
+				$this->trlpbgudangitems_model->insert($detail);			
 			}
+
 			
-			
+			$result = $this->trlpbgudang_model->posting($insertId);
+
+			if ($result["status"] != "SUCCESS"){
+				$this->ajxResp["status"] = "FAILED";
+				$this->ajxResp["message"] = $result["message"];
+				if (isset( $result["data"])){
+					$this->ajxResp["data"] = $result["data"];
+				}
+				
+				
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
+
+			$dbError  = $this->db->error();
+			if ($dbError["code"] != 0){			
+				$this->ajxResp["status"] = "DB_FAILED";
+				$this->ajxResp["message"] = "Insert Failed";
+				$this->ajxResp["data"] = $this->db->error();
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
+
+
+			$this->db->trans_complete();
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $insertId;
 			$this->json_output();
+
+		}catch(CustomException $e){
 			$this->db->trans_rollback();
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();
 			return;
 		}
-
-		$dbError  = $this->db->error();
-		if ($dbError["code"] != 0){			
-			$this->ajxResp["status"] = "DB_FAILED";
-			$this->ajxResp["message"] = "Insert Failed";
-			$this->ajxResp["data"] = $this->db->error();
-			$this->json_output();
-			$this->db->trans_rollback();
-			return;
-		}
-
-
-		$this->db->trans_complete();
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $insertId;
-		$this->json_output();
 
 	}
 
@@ -316,7 +326,7 @@ class Penerimaan_pembelian extends MY_Controller{
 		}
 		
 		$fdt_lpbgudang_datetime = dBDateTimeFormat($this->input->post("fdt_lpbgudang_datetime"));
-		$fst_lpbgudang_no = $this->trlpbgudang_model->generateLPBGudangNo($fdt_lpbgudang_datetime);
+		$fst_lpbgudang_no = $this->input->post("fst_lpbgudang_no");
 
 		$dataH = [
 			"fin_lpbgudang_id"=>$this->input->post("fin_lpbgudang_id"),
@@ -379,57 +389,65 @@ class Penerimaan_pembelian extends MY_Controller{
 
 		}		
 
-		$this->db->trans_start();
+		try{
+			$this->db->trans_start();
 
-		$result = $this->trlpbgudang_model->unposting($dataH["fin_lpbgudang_id"]);
-		if ($result["status"] != "SUCCESS"){
-			return $result;
-		}
-
-		$this->trlpbgudang_model->update($dataH);
-
-		//Insert Data Detail Transaksi
-		foreach ($details as $detail) {		
-			$detail = (array) $detail;
-			$detail["fin_lpbgudang_id"] = $dataH["fin_lpbgudang_id"];
-			$detail["fst_batch_number"] = $detail["fst_batch_no"];
-			$detail["fst_serial_number_list"] = json_encode($detail["arr_serial"]);
-			$detail["fst_active"] = "A";					
-			$this->trlpbgudangitems_model->insert($detail);			
-		}
-
-		$result = $this->trlpbgudang_model->posting($dataH["fin_lpbgudang_id"]);
-
-		if ($result["status"] != "SUCCESS"){
-			$this->ajxResp["status"] = "FAILED";
-			$this->ajxResp["message"] = $result["message"];
-			if(isset($result["data"])){
-				$this->ajxResp["data"] = $result["data"];
+			$result = $this->trlpbgudang_model->unposting($dataH["fin_lpbgudang_id"]);
+			if ($result["status"] != "SUCCESS"){
+				return $result;
 			}
 
+			$this->trlpbgudang_model->update($dataH);
+
+			//Insert Data Detail Transaksi
+			foreach ($details as $detail) {		
+				$detail = (array) $detail;
+				$detail["fin_lpbgudang_id"] = $dataH["fin_lpbgudang_id"];
+				$detail["fst_batch_number"] = $detail["fst_batch_no"];
+				$detail["fst_serial_number_list"] = json_encode($detail["arr_serial"]);
+				$detail["fst_active"] = "A";					
+				$this->trlpbgudangitems_model->insert($detail);			
+			}
+
+			$result = $this->trlpbgudang_model->posting($dataH["fin_lpbgudang_id"]);
+
+			if ($result["status"] != "SUCCESS"){
+				$this->ajxResp["status"] = "FAILED";
+				$this->ajxResp["message"] = $result["message"];
+				if(isset($result["data"])){
+					$this->ajxResp["data"] = $result["data"];
+				}
+
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
+
+			$dbError  = $this->db->error();
+			if ($dbError["code"] != 0){			
+				$this->ajxResp["status"] = "DB_FAILED";
+				$this->ajxResp["message"] = "Insert Failed";
+				$this->ajxResp["data"] = $this->db->error();
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
+
+
+			$this->db->trans_complete();
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $dataH["fin_lpbgudang_id"];
 			$this->json_output();
+
+		}catch(CustomException $e){
 			$this->db->trans_rollback();
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();
 			return;
 		}
-
-		$dbError  = $this->db->error();
-		if ($dbError["code"] != 0){			
-			$this->ajxResp["status"] = "DB_FAILED";
-			$this->ajxResp["message"] = "Insert Failed";
-			$this->ajxResp["data"] = $this->db->error();
-			$this->json_output();
-			$this->db->trans_rollback();
-			return;
-		}
-
-
-		$this->db->trans_complete();
-
-
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $dataH["fin_lpbgudang_id"];
-		$this->json_output();
 
 	}
 
@@ -447,29 +465,36 @@ class Penerimaan_pembelian extends MY_Controller{
 	}
 
 	public function delete($finLPBGudangId){
+		try{
+			$this->db->trans_start();
+			$data =[
+				"fin_user_id_request_by"=>$this->input->post("fin_user_id_request_by"),
+				"fst_edit_notes"=>$this->input->post("fst_edit_notes"),
+			];
+			
+			$resp = $this->trlpbgudang_model->delete($finLPBGudangId,true,$data);	
 
-		$this->db->trans_start();
-		$data =[
-			"fin_user_id_request_by"=>$this->input->post("fin_user_id_request_by"),
-			"fst_edit_notes"=>$this->input->post("fst_edit_notes"),
-		];
-		
-		$resp = $this->trlpbgudang_model->delete($finLPBGudangId,true,$data);	
-
-		if ($resp["status"] != "SUCCESS"){
+			if ($resp["status"] != "SUCCESS"){
+				$this->db->trans_rollback();
+				$this->ajxResp["status"] = $resp["status"];
+				$this->ajxResp["message"] = $resp["message"];
+				$this->json_output();
+				return;
+			}
+			
+			$this->db->trans_complete();	
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "";
+			//$this->ajxResp["data"]["insert_id"] = $dataH["fin_lpbgudang_id"];
+			$this->json_output();
+		}catch(CustomException $e){
 			$this->db->trans_rollback();
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();			
 			$this->json_output();
 			return;
-		}else{
-			$this->db->trans_complete();
 		}
-
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "";
-		//$this->ajxResp["data"]["insert_id"] = $dataH["fin_lpbgudang_id"];
-		$this->json_output();
 	}
 
 

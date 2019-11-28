@@ -1261,12 +1261,12 @@
 						$("#fin_trans_id").empty();
 						$.each(purchaseReturnNonFakturList,function(i,purchaseReturnNonFaktur){
 							//var dp = parseFloat(lpbPurchase.fdc_downpayment);					
-							$("#fin_trans_id").append("<option value='"+purchaseReturnNonFaktur.fin_purchasereturn_id+"' data-ttl_amount='"+ parseFloat(purchaseReturnNonFaktur.fdc_total) * -1  +"' data-ttl_paid='"+purchaseReturnNonFaktur.fdc_total_claimed+ "' data-ttl_return='0' >"+purchaseReturnNonFaktur.fst_purchasereturn_no+"</option>");
+							$("#fin_trans_id").append("<option value='"+purchaseReturnNonFaktur.fin_purchasereturn_id+"' data-ttl_amount='"+ parseFloat(purchaseReturnNonFaktur.fdc_total) * -1  +"' data-ttl_paid='"+purchaseReturnNonFaktur.fdc_total_claimed * -1 + "' data-ttl_return='0' >"+purchaseReturnNonFaktur.fst_purchasereturn_no+"</option>");
 						});
 						$("#fin_trans_id").val(null);
 
 						if(typeof callback !== "undefined"){
-							callback(lpbPurchaseList);
+							callback(purchaseReturnNonFakturList);
 						}
 						
 					}

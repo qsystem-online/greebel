@@ -16,12 +16,28 @@ class Test extends CI_Controller {
 
 
 	public function index(){
-		//set_error_handler("error_handle");
-		$arr = [
-			"param1"=>"testparam1",
-		];
-		echo $arr["param1"];
-		var_dump($arr);
+		$this->my_model->throwIfDBError();
+		
+	}
+	public function testException(){
+		$this->load->model("trinvoice_model");	
+		
+		$this->db->trans_commit();
+
+		$this->trinvoice_model->test_exception();
+
+		/*
+		try{
+			echo "befor TEST";
+			$this->trinvoice_model->test_exception();
+			echo "after TEST";
+		}catch(CustomException $e){
+			//var_dump($e);
+			echo "KENA EXCEPTION ! :";
+			echo $e->getMessage();
+			var_dump($e->getData());
+		}
+		*/
 	}
 
 
@@ -142,6 +158,37 @@ class Test extends CI_Controller {
 		
 		$this->image_lib->resize();
 	}
+	
+	public function test_background(){
+		$this->load->helper('array');
+		$this->load->helper('string');
+
+		ignore_user_abort(true);
+		set_time_limit(0);
+		$arrKeyInt =[1,2,3,4,5,6,7,8,9,10];
+		$arrKeyChar25 = ["AAAAAAAAAA","BBBBBBBBBB","CCCCCCCCCC","DDDDDDDDDD","EEEEEEEEEE"];
+		$arrKeyChar50 = ["AAAAAAAAAA","BBBBBBBBBB","CCCCCCCCCC","DDDDDDDDDD","EEEEEEEEEE"];
+		$arrKeyDate = ["2019-11-02","2019-11-03","2019-09-03","2019-01-02","2019-11-20"];
+		$arrKeyDatetime = ["2019-11-02 12:03:22","2019-11-03 14:20:32","2019-09-03 09:32:11","2019-01-02 02:23:43","2019-11-20 14:11:49"];
+
+		for($y = 0 ; $y < 5000000 ; $y++){
+			$data["key_int"] = random_element($arrKeyInt);
+			$data["key_char_25"] = random_element($arrKeyChar25);
+			$data["key_char_50"] = random_element($arrKeyChar50) . $y;
+			$data["key_date"] = random_element($arrKeyDate);
+			$data["key_datetime"]= random_element($arrKeyDatetime);
+			$data["key_text"] = random_element($arrKeyChar50);
+			for($i = 1;$i <=20 ;$i++){
+				$data["val_col_$i"] = random_string('alnum', 100);
+			}
+			$data["val_int"] = rand(10000,9999999);
+			$data["val_dec"] = $data["val_int"] / rand(2,9);
+			$data["val_double"] = (double) $data["val_int"] / rand(2,9);
+			$this->db->insert("tbl_test",$data);
+		}		
+	}
+	
+	
 	
 	
 }

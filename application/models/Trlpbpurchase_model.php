@@ -182,14 +182,15 @@ class Trlpbpurchase_model extends MY_Model {
 
         
         $ssql = "CREATE TEMPORARY TABLE tmp_result  
-            SELECT c.fin_po_detail_id,f.fin_pcc_id, b.fdb_qty, c.fdc_price,c.fst_disc_item,fdc_disc_amount FROM trlpbpurchaseitems a 
+            SELECT c.fin_po_detail_id,f.fin_pcc_id, c.fdc_price,c.fst_disc_item,0 as fdc_disc_amount,sum(b.fdb_qty) as fdb_qty FROM trlpbpurchaseitems a 
             INNER JOIN trlpbgudangitems b ON a.fin_lpbgudang_id = b.fin_lpbgudang_id
             INNER JOIN trpodetails c ON b.fin_po_detail_id = c.fin_po_detail_id
             INNER JOIN msitems d ON c.fin_item_id = d.fin_item_id
             INNER JOIN msgroupitems e ON d.fin_item_group_id = e.fin_item_group_id
             INNER JOIN msgroupitems f ON f.fin_item_group_id = SUBSTRING(e.fst_tree_id,1,INSTR(e.fst_tree_id,'.')-1)
             WHERE a.fin_lpbpurchase_id = ? 
-            ORDER BY f.fin_pcc_id";
+            GROUP  BY c.fin_po_detail_id,f.fin_pcc_id, c.fdc_price,c.fst_disc_item";
+
         $qr = $this->db->query($ssql,[$finLPBPurchaseId]);
 
         $ssql = "update tmp_result   set fdc_disc_amount = 0" ;
@@ -198,11 +199,16 @@ class Trlpbpurchase_model extends MY_Model {
         $ssql = "select * from tmp_result";
         $qr = $this->db->query($ssql,[]);
         $rs = $qr->result();
+    
+
         foreach($rs as $rw ){
             $ttlDisc = calculateDisc($rw->fst_disc_item,($rw->fdb_qty * $rw->fdc_price));
-            $ssql = "update tmp_result set fdc_disc_amount = ? where fin_po_detail_id = ?";    
-            $this->db->query($ssql,[$ttlDisc,$rw->fin_po_detail_id]);
+            $ssql = "update tmp_result set fdc_disc_amount = ? where fin_po_detail_id = ? and fin_pcc_id = ?";    
+            $this->db->query($ssql,[$ttlDisc,$rw->fin_po_detail_id,$rw->fin_pcc_id]);
+    
         }
+        $ssql = "select * from tmp_result";
+        $qr = $this->db->query($ssql,[]);
 
         $ssql = "select fin_pcc_id,sum(fdb_qty * fdc_price) as fdc_total,sum(fdc_disc_amount) as fdc_ttl_disc_amount  from tmp_result group by fin_pcc_id";
         $qr = $this->db->query($ssql,[]);
@@ -229,6 +235,7 @@ class Trlpbpurchase_model extends MY_Model {
                 "fst_active"=>"A",
                 "fst_info"=>"PEMBELIAN"
             ];
+
             //DISC
             $dataJurnal[] =[
                 "fin_branch_id"=>$dataH->fin_branch_id,
@@ -331,7 +338,8 @@ class Trlpbpurchase_model extends MY_Model {
             "fin_relation_id"=>null,
             "fst_active"=>"A",
             "fst_info"=>"HUTANG DAGANG"
-        ];                
+        ];      
+        
         $result = $this->glledger_model->createJurnal($dataJurnal);
         if ($result["status"] != "SUCCESS"){
             return $result;

@@ -64,7 +64,10 @@ class Trpurchasecost_model extends MY_Model {
     
     public function getListPO($isImport){
         $isImport = (int) $isImport;
-        $ssql = "select * from trpo where fbl_is_import = ? and fbl_cost_completed =  false";
+        $ssql = "select a.*,b.fst_relation_name as fst_supplier_name from trpo a
+            inner join msrelations b on a.fin_supplier_id = b.fin_relation_id
+            where a.fbl_is_import = ? and a.fbl_cost_completed =  false and a.fst_active = 'A'";
+
         $qr = $this->db->query($ssql,[$isImport]);
         $rs = $qr->result();
         return $rs;        
@@ -122,8 +125,8 @@ class Trpurchasecost_model extends MY_Model {
             ];
         }
 
-        $fdcCredit = $dataH->fdc_total > 0 ? abs($dataH->fdc_total) : 0;
-        $fdcDebet = $dataH->fdc_total < 0 ? $dataH->fdc_total : 0;
+        $fdcCredit = $dataH->fdc_total > 0 ? $dataH->fdc_total : 0;
+        $fdcDebet = $dataH->fdc_total < 0 ? abs($dataH->fdc_total) : 0;
         
 
         $arrJurnal[] = [ //Hutang Biaya Pembelian 
@@ -147,7 +150,8 @@ class Trpurchasecost_model extends MY_Model {
             "fin_pc_project_id"=>null,
             "fin_relation_id"=>$dataH->fin_supplier_id,
             "fst_active"=>"A"
-        ];         
+        ];    
+        
         $result = $this->glledger_model->createJurnal($arrJurnal);
         return $result;
     }

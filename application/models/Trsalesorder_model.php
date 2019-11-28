@@ -110,7 +110,8 @@ class Trsalesorder_model extends MY_Model {
 		return $data;
     }
 
-    public function GenerateSONo($soDate = null) {
+    public function GenerateSONo($trDate = null) {
+        /*
         $soDate = ($soDate == null) ? date ("Y-m-d"): $soDate;
         $tahun = date("ym", strtotime ($soDate));
         $prefix = getDbConfig("salesorder_prefix");
@@ -121,6 +122,30 @@ class Trsalesorder_model extends MY_Model {
         $fst_salesorder_no = $max_id1 +1;
         $max_salesorder_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_salesorder_no);
         return $max_salesorder_no;
+        */
+
+        $trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
+        $tahun = date("Y/m", strtotime ($trDate));
+        $activeBranch = $this->aauth->get_active_branch();
+        $branchCode = "";
+        if($activeBranch){
+            $branchCode = $activeBranch->fst_branch_code;
+        }
+        $prefix = getDbConfig("salesorder_prefix") . "/" . $branchCode ."/";
+        $query = $this->db->query("SELECT MAX(fst_salesorder_no) as max_id FROM trsalesorder where fst_salesorder_no like '".$prefix.$tahun."%'");
+        $row = $query->row_array();
+
+        $max_id = $row['max_id']; 
+        
+        $max_id1 =(int) substr($max_id,strlen($max_id)-5);
+        
+        $fst_tr_no = $max_id1 +1;
+        
+        $max_tr_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_tr_no);
+        
+        return $max_tr_no;
+
+
     }
 
     public function getDataPromo($fin_customer_id,$details,$trxDate=null){
@@ -402,13 +427,30 @@ class Trsalesorder_model extends MY_Model {
         //return false;
     }
 
+    public function getPendingSOList($finCustomerId){
+        $ssql ="select * from trsalesorder a 
+        inner join (select fin_salesorder_id, sum(fdc_total) trinvoice where  group by fin_salesorder_id) b on ";
+    }
+
     public function getDataOutstanding($fin_customer_id,$fdc_credit_limit,$current_so_id = 0){
-        
+        $this->load->model("trchequeflow_model");
+        $this->load->model("glledger_model");
+
         $fdc_credit_limit = (float) $fdc_credit_limit;
-        $piutangOutstanding =0;
-        $soOutstanding = 10000000;
-        $billyetOutstanding = 0;
-        $totalOutstanding = ($piutangOutstanding + $soOutstanding + $billyetOutstanding);        
+        $piutangOutstanding = $this->glledger_model->getTotalPiutang($fin_customer_id);  //Total hutang, cek di jurnal;
+        $soPending = 10000000;
+        $chequePendingList  = $this->trchequeflow_model->getPendingChequeList($fin_customer_id,"IN");
+        $totalChequePending = 0;
+        foreach($chequePendingList as $chequePending){
+            $totalChequePending += $chequePending->fdc_amount;
+        }
+
+        $totalOutstanding = ($piutangOutstanding + $soPending + $totalChequePending);        
+        $batasToleranInvoiceJatuhTempo =  getDbConfig("invoice_duedate_tolerance_day"); //hari
+
+        $arrInvoiceJatuhTempoMelebihBatas = [];
+
+
         return [
             "maxCreditLimit"=>$fdc_credit_limit,
             "piutangOutstanding"=> $piutangOutstanding,
@@ -416,7 +458,7 @@ class Trsalesorder_model extends MY_Model {
             "billyetOutstanding"=>$billyetOutstanding,
             "totalOutstanding"=> $totalOutstanding,
             "sisaPlafon"=> $fdc_credit_limit - $totalOutstanding,
-            "dataFakturOutstanding"=>[],
+            "invoiceJatuhTempoMelebihBatas"=>[],
         ];
     }
     

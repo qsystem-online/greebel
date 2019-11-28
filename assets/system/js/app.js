@@ -106,16 +106,23 @@ var App = {
 	},
 	getValueAjax : function(obj){		
 		//url,model,func,params,callback
+		var async = true;
+		if (typeof obj.async != "undefined"){
+			async = obj.async;
+		}
+		console.log(async);
 
 		blockUIOnAjaxRequest();
 		$.ajax({
-			url:obj.site_url + 'api/get_value',
+			//url:obj.site_url + 'api/get_value',
+			url: SITE_URL + 'api/get_value',
 			method:"POST",
+			async:async,
 			data:{
 				model:obj.model,
 				function:obj.func,
 				params:obj.params
-			}
+			},
 		}).done(function(resp){
 			obj.callback(resp.data);
 		});
@@ -197,8 +204,14 @@ var App = {
 			"background-color":"unset"
 		});
 		
-	}
+	},
 
+	log:function(obj){		
+		console.log(obj);
+	},
+	consoleLog:function(obj){
+		App.log(obj);
+	}
 	
 }
 

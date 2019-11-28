@@ -133,51 +133,61 @@ class Trlpbgudang_model extends MY_Model {
 
     public function unposting($finLPBGudangId,$unpostingDateTime =""){
         $this->load->model("trinventory_model");
+        $this->load->model("trpo_model");
         //$this->load->model("glledger_model");
         $result=[
             "status"=>"SUCCESS",
             "message"=>""
         ];
 
-        $unpostingDateTime = $unpostingDateTime == "" ? date("Y-m-d H:i:s") : $unpostingDateTime;
+        try{
+            $unpostingDateTime = $unpostingDateTime == "" ? date("Y-m-d H:i:s") : $unpostingDateTime;
 
-        $ssql ="select * from trlpbgudang where fin_lpbgudang_id = ?";        
-        $qr = $this->db->query($ssql,[$finLPBGudangId]);        
-        $dataH = $qr->row();
+            $ssql ="select * from trlpbgudang where fin_lpbgudang_id = ?";        
+            $qr = $this->db->query($ssql,[$finLPBGudangId]);        
+            $dataH = $qr->row();
 
-        //get Detail Transaksi
-        $ssql ="select * from trlpbgudangitems where fin_lpbgudang_id = ?";        
-        $qr = $this->db->query($ssql,[$finLPBGudangId]);        
-        $listItems = $qr->result();        
-        foreach($listItems as $item){            
-            $ssql = "update trpodetails set fdb_qty_lpb = fdb_qty_lpb - ? where fin_po_detail_id = ?";
-            $this->db->query($ssql,[$item->fdb_qty,$item->fin_po_detail_id]);
-            $this->trinventory_model->deleteByCodeId("LPB",$finLPBGudangId);
+            //get Detail Transaksi
+            $ssql ="select * from trlpbgudangitems where fin_lpbgudang_id = ?";        
+            $qr = $this->db->query($ssql,[$finLPBGudangId]);        
+            $listItems = $qr->result();        
+            foreach($listItems as $item){            
+                $ssql = "update trpodetails set fdb_qty_lpb = fdb_qty_lpb - ? where fin_po_detail_id = ?";
+                $this->db->query($ssql,[$item->fdb_qty,$item->fin_po_detail_id]);
+                $this->trinventory_model->deleteByCodeId("LPB",$finLPBGudangId);
+            }
+
+            //Delete itemdetails
+            $ssql ="delete from msitemdetails where fst_trans_type = 'PPB' and fin_trans_id = ?";
+            $this->db->query($ssql,[$finLPBGudangId]);            
+            $this->my_model->throwIfDBError();
+            
+            //Update Status Closed PO
+            $this->trpo_model->updateClosedStatus($dataH->fin_po_id);
+        }catch(CustomException $e){           
+            $result["status"]= $e->getStatus();
+            $result["message"]= $e->getMessage();
+            $result["data"]= $e->getData();
+            return $result;
         }
-
-        //Delete itemdetails
-        $ssql ="delete from msitemdetails where fst_trans_type = 'PPB' and fin_trans_id = ?";
-        $this->db->query($ssql,[$finLPBGudangId]);
-
-        $dbError  = $this->db->error();
-		if ($dbError["code"] != 0){	
-            $result["status"]= "FAILED";
-            $result["message"]= $dbError["message"];            
-			return $result;
-        }
-        
         
         return $result;
     }
 
     public function posting($finLPBGudangId){
         $this->load->model("trinventory_model");
+        $this->load->model("trpo_model");
 
         $ssql = "select * from trlpbgudang where fin_lpbgudang_id = ?";
         $qr= $this->db->query($ssql,[$finLPBGudangId]);
         $dataH = $qr->row();
+        if ($dataH == null){
+            throw new CustomException(lang("ID Penerimaan Gudang tidak dikenal"),3003,"FAILED");
+        }
+        
+        $finPOId = $dataH->fin_po_id;
 
-        $ssql = "SELECT a.*,b.fin_item_id,b.fst_unit,b.fdc_price,b.fdb_qty as qty_po,b.fdb_qty_lpb as qty_lpb,b.fst_custom_item_name 
+        $ssql = "SELECT a.*,b.fin_item_id,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdb_qty as qty_po,b.fdb_qty_lpb as qty_lpb,b.fst_custom_item_name 
             FROM trlpbgudangitems a 
             LEFT JOIN trpodetails b on a.fin_po_detail_id = b.fin_po_detail_id
             WHERE fin_lpbgudang_id = ?";
@@ -210,14 +220,15 @@ class Trlpbgudang_model extends MY_Model {
                     "fin_warehouse_id"=>$dataH->fin_warehouse_id,
                     "fdt_trx_datetime"=>$dataH->fdt_lpbgudang_datetime,
                     "fst_trx_code"=>"LPB", 
-                    "fin_trx_id"=>$finLPBGudangId, 
+                    "fin_trx_id"=>$finLPBGudangId,
+                    "fin_trx_detail_id"=>$detail->fin_rec_id,
                     "fst_trx_no"=>$dataH->fst_lpbgudang_no, 
                     "fst_referensi"=>null, 
                     "fin_item_id"=>$detail->fin_item_id, 
                     "fst_unit"=>$detail->fst_unit, 
                     "fdb_qty_in"=>$detail->fdb_qty, 
                     "fdb_qty_out"=>0, 
-                    "fdc_price_in"=>$detail->fdc_price, 
+                    "fdc_price_in"=>(float) $detail->fdc_price - (float) calculateDisc($detail->fst_disc_item,$detail->fdc_price),
                     "fst_active"=>"A" 
                 ];
 
@@ -302,6 +313,10 @@ class Trlpbgudang_model extends MY_Model {
             var_dump($result); 
             throw new Exception($result["message"], EXCEPTION_JURNAL);
         }
+
+
+        //Update Status Closed PO
+        $this->trpo_model->updateClosedStatus($finPOId);
 
         return $result;
        

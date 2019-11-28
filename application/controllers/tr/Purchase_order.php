@@ -43,6 +43,12 @@ class Purchase_order extends MY_Controller{
             ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_po_datetime'],
             ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
 			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
+			['title' => 'Total', 'width' => '150px','className'=>'text-right',
+				'render'=>"function(data,type,row){
+					var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount) + parseFloat(row.fdc_ppn_amount);
+					return row.fst_curr_code + ':' + App.money_format(total);
+				}"
+			],
 			['title' => 'DP', 'width' => '80px', 'data' => 'fdc_downpayment','className' => 'text-right',
 				'render'=>"function(data,type,row){
 					return App.money_format(data);
@@ -66,6 +72,16 @@ class Purchase_order extends MY_Controller{
 					}
 				}"
 			],
+			['title' => 'Closed', 'width' => '50px', 'data' => 'fbl_is_closed','className'=>'text-center',
+				'render'=>"function(data,type,row){
+					if(data == 1){
+						return '<input class=\"isClosed\" type=\"checkbox\" value=\"1\" checked>';
+					}else{
+						return '<input class=\"isClosed\" type=\"checkbox\" value=\"0\" >';
+					}					
+				}"
+			],
+			
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
@@ -77,7 +93,8 @@ class Purchase_order extends MY_Controller{
 			]
 		];
 
-		$this->list['jsfile'] = $this->parser->parse('pages/tr/purchase_order/listjs', [], true);
+		$mdlPopupNotes = $this->parser->parse('template/mdlPopupNotes', [], true);
+		$this->list['jsfile'] = $this->parser->parse('pages/tr/purchase_order/listjs', ["mdlPopupNotes"=>$mdlPopupNotes], true);
 
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
 		$this->list['mdlEditForm'] = $edit_modal;
@@ -498,7 +515,7 @@ class Purchase_order extends MY_Controller{
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("(select a.*,b.fst_relation_name as fst_supplier_name from trpo a inner join msrelations b on a.fin_supplier_id = b.fin_relation_id ) a");
-		$selectFields = "a.fin_po_id,a.fst_po_no,a.fdt_po_datetime,a.fst_memo,a.fst_supplier_name,a.fst_active,a.fdc_downpayment,a.fdc_downpayment_paid,'action' as action";
+		$selectFields = "a.fin_po_id,a.fst_po_no,a.fdt_po_datetime,a.fst_memo,a.fst_supplier_name,a.fst_active,a.fdc_subttl,a.fdc_disc_amount,a.fdc_ppn_amount,a.fst_curr_code,a.fdc_downpayment,a.fdc_downpayment_paid,a.fbl_is_closed,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 		$searchFields =[];
 		$searchFields[] = $this->input->get('optionSearch'); //["fin_salesorder_id","fst_salesorder_no"];
@@ -686,4 +703,188 @@ class Purchase_order extends MY_Controller{
 		//echo "PRINT......";
 		*/
 	}
+
+	public function close_status_po($isClosed){
+		$fstClosedNotes = $this->input->post("fst_closed_notes");
+		$finPOId = $this->input->post("fin_po_id");
+		try{
+			
+			$this->trpo_model->updateManualClosedStatus($isClosed,$finPOId,$fstClosedNotes);
+
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "";
+			$this->ajxResp["data"] = [];
+			$this->json_output();
+			return;
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();
+			return;			
+		}
+		
+	}
+
+
+	public function close_po_cost_list(){
+		$this->load->library('menus');
+        $this->list['page_name'] = "Purchase - Order";
+        $this->list['list_name'] = "Order Pembelian List";
+        $this->list['boxTools'] = [
+			"<SELECT id='option-data'  style='margin-right:20px'><OPTION value='ALL'>ALL</OPTION><OPTION value='OPEN'>OPEN</OPTION><OPTION value='CLOSED'>CLOSED</OPTION></SELECT>"			
+		];
+        $this->list['pKey'] = "id";
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/purchase_order/fetch_close_cost_list_data';
+        $this->list['arrSearch'] = [
+			'fst_po_no' => 'No Order Pembelian',
+			'fst_supplier_name' => 'Supplier',
+        ];
+
+        $this->list['breadcrumbs'] = [
+            ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
+            ['title' => 'Purchase', 'link' => '#', 'icon' => ''],
+            ['title' => 'Order', 'link' => NULL, 'icon' => ''],
+		];
+		
+
+        $this->list['columns'] = [
+			['title' => 'ID. LPB Pembelian', 'width' => '10px','visible'=>'false', 'data' => 'fin_po_id'],
+            ['title' => 'No. Order Pembelian', 'width' => '100px', 'data' => 'fst_po_no'],
+            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_po_datetime'],
+            ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
+			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
+			['title' => 'Total', 'width' => '150px','className'=>'text-right',
+				'render'=>"function(data,type,row){
+					var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount) + parseFloat(row.fdc_ppn_amount);
+					return row.fst_curr_code + ':' + App.money_format(total);
+				}"
+			],
+		
+			['title' => 'Cost Completed', 'width' => '50px', 'data' => 'fbl_cost_completed','className'=>'text-center',
+				'render'=>"function(data,type,row){
+					if(data == 1){
+						return '<input class=\"isCostCompleted\" type=\"checkbox\" value=\"1\" checked>';
+					}else{
+						return '<input class=\"isCostCompleted\" type=\"checkbox\" value=\"0\" >';
+					}					
+				}"
+			],
+			['title' => 'Action', 'width' => '80px','className'=>'text-center',
+				'render'=>"function(data,type,row){
+					return '<a class=\'cost_detail\' href=\'#\'>Cost Detail</a>';
+				}"
+			],					
+		];
+
+		$mdlPopupNotes = $this->parser->parse('template/mdlPopupNotes', [], true);
+		$this->list['jsfile'] = $this->parser->parse('pages/tr/purchase_order/list_close_cost_js', ["mdlPopupNotes"=>$mdlPopupNotes], true);
+
+		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		$this->list['mdlEditForm'] = $edit_modal;
+
+        $main_header = $this->parser->parse('inc/main_header', [], true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+        $page_content = $this->parser->parse('template/standardList_v2_0_0', $this->list, true);
+        $main_footer = $this->parser->parse('inc/main_footer', [], true);
+        $control_sidebar = null;
+        $this->data['ACCESS_RIGHT'] = "A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR'] = $main_sidebar;
+        $this->data['PAGE_CONTENT'] = $page_content;
+        $this->data['MAIN_FOOTER'] = $main_footer;
+		$this->parser->parse('template/main', $this->data);
+	}
+
+	public function fetch_close_cost_list_data(){
+		$this->load->library("datatables");
+		$searchFields =[];
+		$searchFields[] = $this->input->get('optionSearch'); //["fin_salesorder_id","fst_salesorder_no"];
+		$optionData = $this->input->get('optionData');
+		
+		$tableName = "";
+		switch($optionData){
+			case "ALL":
+				$tableName = "(
+					select a.*,b.fst_relation_name as fst_supplier_name from trpo a 
+					inner join msrelations b on a.fin_supplier_id = b.fin_relation_id 
+					where a.fbl_is_closed = true and a.fst_active = 'A'
+				) a";
+				break;				
+			case "OPEN":
+				$tableName = "(
+					select a.*,b.fst_relation_name as fst_supplier_name from trpo a 
+					inner join msrelations b on a.fin_supplier_id = b.fin_relation_id
+					where a.fbl_is_closed = true and a.fst_active ='A' and a.fbl_cost_completed = false 
+				) a";
+				break;				
+			case "CLOSED":
+				$tableName = "(
+					select a.*,b.fst_relation_name as fst_supplier_name from trpo a 
+					inner join msrelations b on a.fin_supplier_id = b.fin_relation_id
+					where a.fbl_is_closed = true and a.fst_active ='A' and a.fbl_cost_completed = true
+				) a";
+				break;
+
+			default:
+				$tableName = "(
+					select a.*,b.fst_relation_name as fst_supplier_name from trpo a 
+					inner join msrelations b on a.fin_supplier_id = b.fin_relation_id 
+					where a.fbl_is_closed = true and a.fst_active ='A'
+				) a";
+		};
+
+		$this->datatables->setTableName($tableName);
+				
+		$selectFields = "a.fin_po_id,a.fst_po_no,a.fdt_po_datetime,a.fst_memo,a.fst_supplier_name,a.fst_active,a.fdc_subttl,a.fdc_disc_amount,a.fdc_ppn_amount,a.fst_curr_code,a.fdc_downpayment,a.fdc_downpayment_paid,a.fbl_is_closed,a.fbl_cost_completed";
+		$this->datatables->setSelectFields($selectFields);
+		
+		$this->datatables->setSearchFields($searchFields);
+		$this->datatables->activeCondition = "fst_active !='D'";
+		// Format Data	
+		$datasources = $this->datatables->getData();
+		
+		$arrData = $datasources["data"];
+		$arrDataFormated = [];
+		foreach ($arrData as $data) {
+			$insertDate = strtotime($data["fdt_po_datetime"]);						
+			$data["fdt_po_datetime"] = date("d-M-Y",$insertDate);
+			//action
+			$data["action"]	= "<div style='font-size:16px'>
+					<a class='btn-edit' href='#' data-id='" . $data["fin_po_id"] . "'><i class='fa fa-pencil'></i></a>
+					<a class='btn-delete' href='#' data-id='" . $data["fin_po_id"] . "'><i class='fa fa-trash'></i></a>
+				</div>";
+			$arrDataFormated[] = $data;
+		}
+		$datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+	}
+
+	public function process_closing_cost($isCompleted){	
+		$finPOId = $this->input->post("fin_po_id");
+		try{
+			if($isCompleted){
+				$this->db->trans_start();
+				$this->trpo_model->completedCost($finPOId);
+				$this->db->trans_complete();
+			}else{
+				$this->db->trans_start();
+				$this->trpo_model->cancelCompletedCost($finPOId);
+				$this->db->trans_complete();
+			}
+
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "";
+			$this->ajxResp["data"]= [];
+			$this->json_output();
+
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"]= $e->getData();
+			$this->json_output();
+		}
+	}
+
+
 }

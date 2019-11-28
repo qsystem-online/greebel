@@ -183,4 +183,16 @@ class MY_Model extends CI_Model
 			"message"=> ""
 		];
 	}
+
+	public function throwIfDBError(){
+		$dbError  = $this->db->error();
+		if ($dbError["code"] != 0){	
+
+			$data =[];
+			if (ENVIRONMENT !== 'production'){
+				$data["last_query"] = $this->db->last_query();
+			}			
+			throw new CustomException($dbError["message"],$dbError["code"],"DB_FAILED",$data);	
+		}		
+	}
 }

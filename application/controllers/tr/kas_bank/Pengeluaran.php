@@ -403,7 +403,7 @@ class Pengeluaran extends MY_Controller{
 			return;
 		}
 
-		//$this->db->trans_complete();
+		$this->db->trans_complete();
 
 		//OUTPUT SUCCESS
 		$this->ajxResp["status"] = "SUCCESS";

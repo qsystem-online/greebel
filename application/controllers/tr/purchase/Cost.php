@@ -27,7 +27,7 @@ class Cost extends MY_Controller{
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/purchase/cost/fetch_list_data';
         $this->list['arrSearch'] = [
-			'fst_purchasecost_no' => 'No Retur Pembelian',
+			'fst_purchasecost_no' => 'No Biaya Pembelian',
 			'fst_supplier_name' => 'Supplier'
         ];
 
@@ -363,6 +363,7 @@ class Cost extends MY_Controller{
 
         //CHECK DATA EDITABLE
         //CEK tgl lock dari transaksi yg di kirim
+
 		$fdt_purchasecost_datetime = dBDateTimeFormat($this->input->post("fdt_purchasecost_datetime"));		
 		$resp = dateIsLock($fdt_purchasecost_datetime);
 		if ($resp["status"] != "SUCCESS" ){
@@ -415,8 +416,8 @@ class Cost extends MY_Controller{
 
         //PREPARE DATA
         $fst_purchasecost_no = $tmpH->fst_purchasecost_no;
-        $fst_curr_code =  parseNumber($this->input->post("fst_curr_code"));
-        $fdc_exchange_rate_idr =  $this->input->post("fdc_exchange_rate_idr");
+        $fst_curr_code =  $this->input->post("fst_curr_code");
+        $fdc_exchange_rate_idr =  parseNumber($this->input->post("fdc_exchange_rate_idr"));
         if ($fst_curr_code == null){
             $defaultCurr = getDefaultCurrency();
             $fst_curr_code = $defaultCurr["CurrCode"];

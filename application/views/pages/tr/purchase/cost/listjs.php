@@ -53,7 +53,7 @@
 			}
 
 			if(resp.status == "SUCCESS"){
-                window.location.href = "<?=site_url()?>tr/gudang/Penerimaan_pembelian/";
+                window.location.href = "<?=site_url()?>tr/purchase/cost/";
 			}
 
         });

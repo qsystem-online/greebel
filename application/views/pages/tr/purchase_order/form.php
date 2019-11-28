@@ -558,22 +558,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).on('draw',function(){
 			$(".dataTables_scrollHeadInner").css("min-width","100%");
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
-
-			$('.xbtn-delete').confirmation({
-				//rootSelector: '[data-toggle=confirmation]',
-				rootSelector: '.btn-delete',
-				// other options
-			});	
-
-			$(".xbtn-delete").click(function(event){
-				t = $('#tblPODetails').DataTable();
-				var trRow = $(this).parents('tr');
-
-				t.row(trRow).remove().draw();
-				calculateTotal();
-			});
-
-			$(".xbtn-edit").click();
 		});
 
 

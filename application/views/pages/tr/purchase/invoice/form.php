@@ -65,12 +65,10 @@
 							</div>
 
 						</div>
-
-						
-
+					
 						<div class="form-group">
 							<label for="fin_po_id" class="col-md-2 control-label"><?=lang("PO Number")?> :</label>
-							<div class="col-md-4">
+							<div class="col-md-5">
 								<select id="fin_po_id" class="form-control non-editable" name="fin_po_id">
 									<?php
 										$poList = $this->trlpbpurchase_model->getPOList();
@@ -81,7 +79,7 @@
 								</select>
 								<div id="fin_po_id_err" class="text-danger"></div>
 							</div>
-							<label for="fin_po_id" class="col-md-2 control-label"><?=lang("PO Date")?> :</label>
+							<label for="fin_po_id" class="col-md-1 control-label"><?=lang("PO Date")?> :</label>
 							<div class="col-md-4">
 								<div class="input-group date">
 									<div class="input-group-addon">
@@ -139,7 +137,7 @@
 						<div class="form-group">
 							<div class="col-sm-12">
 								<table id="tbldetails" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
-								<div>
+								<div class="text-info">
 									<label class="colcontrol-label"  style="padding-top:0px"><?=lang("Sisa DP")?> : 
 										<label id="ttlRemainingDP" class="control-label" style="padding-top:0px" >0.00</label>
 									</label>
@@ -503,6 +501,8 @@
 					$("#fdt_lpbpurchase_datetime").val(App.dateTimeFormat(dataH.fdt_lpbpurchase_datetime)).datetimepicker("update");
 					
 					App.addOptionIfNotExist("<option value='"+ dataH.fin_po_id +"' selected>" + dataH.fst_po_no +" - "+ dataH.fst_supplier_name +"</option>","fin_po_id");
+					$("#fin_po_id").trigger("change.select2");
+
 					$("#fdt_po_datetime").val(App.dateTimeFormat(dataH.fdt_po_datetime)).datetimepicker("update");
 					$("#fst_supplier_name").val(dataH.fst_supplier_name);
 					

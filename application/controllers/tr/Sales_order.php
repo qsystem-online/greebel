@@ -7,6 +7,15 @@ class Sales_order extends MY_Controller{
 		parent::__construct();
 		$this->load->library('form_validation');
 		$this->load->model('trsalesorder_model');
+		$this->load->model("trsalesorderdetails_model");
+		$this->load->model('mscurrencies_model');
+		$this->load->model('mswarehouse_model');
+		$this->load->model('users_model');
+		$this->load->model('msitemdiscounts_model');
+		$this->load->model("trinventory_model");
+		$this->load->model("msitems_model");
+		$this->load->model("msrelations_model");
+
 	}
 
 	public function index(){
@@ -99,19 +108,84 @@ class Sales_order extends MY_Controller{
 	public function Edit($fin_salesorder_id){
 		$this->openForm("EDIT", $fin_salesorder_id);
 	}
-
-	public function ajx_add_save(){
-		$this->load->model('trsalesorder_model');
-		$this->load->model("trsalesorderdetails_model");
-		$this->load->model("trinventory_model");
-		$this->load->model("msitems_model");
-		$this->load->model("msrelations_model");
-
+	
+	public function ajx_add_save(){		
 		$cekPromo = $this->input->post("cekPromo");
 		$confirmAuthorize = $this->input->post("confirmAuthorize");
 
+		$fst_salesorder_no = $this->trsalesorder_model->GenerateSONo();
+		$fdt_salesorder_datetime = dBDateTimeFormat($this->input->post("fdt_salesorder_datetime"));
+		$fdc_downpayment = parseNumber($this->input->post("fdc_downpayment"));
+		$isHold = ($this->input->post("fbl_is_hold") == false) ? 0 : 1;
+		$exchangeRateIDR = parseNumber($this->input->post("fdc_exchange_rate_idr"));
+
+		//PREPARE DATA
+		$dataH = [
+			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
+            "fst_salesorder_no" => $fst_salesorder_no,
+			"fdt_salesorder_datetime" => $fdt_salesorder_datetime,
+			"fst_curr_code"=>$this->input->post("fst_curr_code"),
+			"fdc_exchange_rate_idr"=> $exchangeRateIDR,
+			"fin_relation_id" => $this->input->post("fin_relation_id"),
+			"fin_terms_payment"=>$this->input->post("fin_terms_payment"),
+			"fin_sales_id" => $this->input->post("fin_sales_id"),
+			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),			
+			"fbl_is_hold" => $isHold,
+			"fbl_is_vat_include" => ($this->input->post("fbl_is_vat_include") == false) ? 0 : 1,
+			"fin_shipping_address_id" =>$this->input->post("fin_shipping_address_id"),			
+			"fst_memo" =>$this->input->post("fst_memo"),
+			"fdc_dpp_amount" => 0, // calculate from detail
+			"fdc_vat_percent" => $this->input->post("fdc_vat_percent"),
+			"fdc_vat_amount" => 0, //total vat recalculate
+			"fdc_disc_amount" => 0, //get Total Disc recalculate
+			"fdc_downpayment" => $fdc_downpayment,
+			"fst_active" => 'A'
+		];
+
+		$details = $this->input->post("detail");
+		$details = json_decode($details);
+		$arrItem = $this->msitems_model->getDetailbyArray(array_column($details, 'fin_item_id'));
+		$ttlDPPAmount = 0;
+		$ttlVATAmount = 0;
+		$ttlDiscAmount = 0;
+
+		$ttlNoDisc = 0;
+
+		for($i = 0; $i < sizeof($details) ; $i++){
+			$item = $details[$i];
+			$objItem = $arrItem[$item->fin_item_id];
+
+			$details[$i]->fst_max_item_discount = $objItem->fst_max_item_discount;
+			//get Price from system
+			$price = $this->msitems_model->getSellingPrice($item->fin_item_id,$item->fst_unit,$dataH["fin_relation_id"]);
+			if ($price == 0 ){ // Bila dimaster harga 0, berarti user boleh menentukan harga sendiri				
+				$price = $item->fdc_price;
+			}
+			$details[$i]->fdc_price = $price;						
+			$subTotal += $price * $details[$i]->fdb_qty;
+			$details[$i]->fdc_disc_amount = calculateDisc($item->fst_disc_item,$subTotal);
+
+			$ttlNoDisc += $subTotal;
+			$ttlDiscAmount += $details[$i]->fdc_disc_amount;
+		}
+
+		if ($dataH["fbl_is_vat_include"] ==  1){
+			$ttlDPPAmount = ($ttlNoDisc - $ttlDiscAmount) / (1 + ($dataH["fdc_vat_percent"] / 100)) ;
+		}else{
+			$ttlDPPAmount = $ttlNoDisc - $ttlDiscAmount;			
+		}		
+		$ttlVATAmount  =  $ttlDPPAmount * ($dataH["fdc_vat_percent"] / 100);
+		$dataH["fdc_dpp_amount"] = $ttlDPPAmount;		
+		$dataH["fdc_vat_amount"] = $ttlVATAmount;
+		$dataH["fdc_disc_amount"] = $ttlDiscAmount;
+
+
+
+		//VALIDATION
 		$this->form_validation->set_rules($this->trsalesorder_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+		$this->form_validation->set_data($dataH);
+
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
 			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
@@ -121,67 +195,11 @@ class Sales_order extends MY_Controller{
 			$this->json_output();
 			return;
 		}
-		
-		$fst_salesorder_no = $this->trsalesorder_model->GenerateSONo();
-		
-		$dataH = [
-			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
-            "fst_salesorder_no" => $fst_salesorder_no,
-			"fdt_salesorder_date" => dBDateFormat($this->input->post("fdt_salesorder_date")),
-			"fst_curr_code"=>$this->input->post("fst_curr_code"),
-			"fdc_exchange_rate_idr"=>$this->input->post("fdc_exchange_rate_idr"),
-			"fin_relation_id" => $this->input->post("fin_relation_id"),
-			"fin_terms_payment"=>$this->input->post("fin_terms_payment"),
-			"fin_sales_id" => $this->input->post("fin_sales_id"),
-			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),			
-			"fbl_is_hold" => ($this->input->post("fbl_is_hold") == false) ? 0 : 1,
-			"fbl_is_vat_include" => ($this->input->post("fbl_is_vat_include") == false) ? 0 : 1,
-			"fin_shipping_address_id" =>$this->input->post("fin_shipping_address_id"),			
-			"fst_memo" =>$this->input->post("fst_memo"),
-			"fdc_dpp_amount" => 0, // calculate from detail
-			"fdc_vat_percent" => $this->input->post("fdc_vat_percent"),
-			"fdc_vat_amount" => 0, //total vat recalculate
-			"fdc_disc_amount" => 0, //get Total Disc recalculate
-			"fdc_downpayment" =>$this->input->post("fdc_downpayment"),
-			"fst_active" => 'A'
-		];
 
-		$this->form_validation->set_rules($this->trsalesorderdetails_model->getRules("ADD",0));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		$details = $this->input->post("detail");
-		$details = json_decode($details);
-		$arrItem = $this->msitems_model->getDetailbyArray(array_column($details, 'fin_item_id'));
-
-		for($i = 0; $i < sizeof($details) ; $i++){
-			$item = $details[$i];
-			$objItem = $arrItem[$item->fin_item_id];
-			$details[$i]->fdc_disc_amount = calculateDisc($item->fst_disc_item,$item->fdc_price);
-	
-			//get Price from system
-			$price = $this->msitems_model->getSellingPrice($item->fin_item_id,$item->fst_unit,$dataH["fin_relation_id"]);
-			if ($price == 0 ){
-				$price = $item->fdc_price;
-			}
-
-			$details[$i]->fdc_price = $price;
-			$details[$i]->fdc_disc_amount = calculateDisc($item->fst_disc_item,$price);			
-			
-			//calculate max disc
-			$maxDiscItemMoney = calculateDisc($objItem->fst_max_item_discount,$price);
-			if ($maxDiscItemMoney > 0 ){
-				if($details[$i]->fdc_disc_amount > $maxDiscItemMoney ){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = "";
-					$this->ajxResp["data"] = [
-						"detail"=>lang("Discount item melebih max disc yang di perbolehkan !")
-					];				
-					$this->json_output();
-					return;
-				}
-			}
-			
-			// Validate SO Details
-			$this->form_validation->set_data((array)$details[$i]);
+		foreach($details as $dataD){
+			$this->form_validation->set_rules($this->trsalesorderdetails_model->getRules("ADD",0));
+			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+			$this->form_validation->set_data((array)$dataD);
 			if ($this->form_validation->run() == FALSE){
 				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
 				$this->ajxResp["message"] = lang("Error Validation Forms");
@@ -189,13 +207,11 @@ class Sales_order extends MY_Controller{
 				$error = [
 					"detail"=> $this->form_validation->error_string(),
 				];
-				$this->ajxResp["data"] = $error;
-				
+				$this->ajxResp["data"] = $error;				
 				$this->json_output();
 				return;	
 			}
 		}
-		
 
 		//Get Promo Item
 		$rsPromoItem = $this->trsalesorder_model->getDataPromo($this->input->post("fin_relation_id"),$details);
@@ -211,13 +227,16 @@ class Sales_order extends MY_Controller{
 			}
 		}
 
-		//** Cek if this transaction need authorization */
+		//** Cek if this transaction need authorization */		
 		$needAuthorize = false;
+
 		//Cek Qty is Available, need authorization if qty not available
 		$arrOutofStock =[];
 		$authorizeOutofStock = false;
 		foreach ($details as $item){
-			$stock = $this->trinventory_model->getStock($item->fin_item_id,$item->fst_unit,$dataH["fin_warehouse_id"]);
+			//Yang dijadikan acuan adalah marketing stock
+			$stock = $this->trinventory_model->getMarketingStock($item->fin_item_id,$item->fst_unit,$dataH["fin_warehouse_id"]);
+			//$stock = $this->trinventory_model->getStock($item->fin_item_id,$item->fst_unit,$dataH["fin_warehouse_id"]);
 			if($item->fdb_qty > $stock){
 				$authorizeOutofStock = true;
 				$needAuthorize = true;
@@ -231,32 +250,46 @@ class Sales_order extends MY_Controller{
 			}
 		}
 		
-		//Cek Credit Limit, need authorization if credit limit is over
-		$grandTotal = 0;
+		//Cek max disc item
+		$authorizeMaxDisc = false;
+		$arrMaxDisc=[];
 		foreach ($details as $item){
-			$price = $item->fdc_price;
-			$total = ($item->fdb_qty * $price);
-
-			//cek max disc
-			$maxDiscPersen = $arrItem[$item->fin_item_id]->fst_max_item_discount;
-			$maxDiscValue = calculateDisc($maxDiscPersen,$total);
-			//get disc
-			$itemDiscValue = calculateDisc($item->fst_disc_item,$total);
-			if ($maxDiscValue < $itemDiscValue){
-				
+			$maxDiscAllowed = calculateDisc($item->fst_max_item_discount,$amount);			
+			if($maxDiscAllowed > $item->fdc_disc_amount){
+				$authorizeMaxDisc = true;
+				$needAuthorize = true;
+				$arrMaxDisc[] = [
+					"fin_item_id"=>$item->fin_item_id,
+					"fst_item_name"=>$item->fst_custom_item_name,
+					"fst_unit"=>$item->fst_unit,
+					"fdb_qty"=>$item->fdb_qty,
+					"fdc_price"=>$item->fdc_price,
+					"fst_disc_item"=>$item->fst_disc_item,
+					"fdc_disc_amount"=>$item->fdc_disc_amount,
+					"fdc_max_disc_amount"=>$maxDiscAllowed,
+				];
 			}
-			$grandTotal += $total;			
 		}
-		$maxCreditLimit = $this->msrelations_model->getCreditLimit($dataH["fin_relation_id"]);		
+
+
+		//Cek Credit Limit, need authorization if credit limit is over
+		$grandTotal = $dataH["fdc_dpp_amount"] - $dataH["fdc_disc_amount"] + $dataH["fdc_vat_amount"] - $dataH["fdc_downpayment"];
+		$maxCreditLimit = $this->msrelations_model->getCreditLimit($dataH["fin_relation_id"]);				
 		$arrOutstanding = $this->trsalesorder_model->getDataOutstanding($dataH["fin_relation_id"],$maxCreditLimit);
 		$totalOutstanding = $arrOutstanding["totalOutstanding"];
+
 		$authorizeCreditLimit = false;
 		if ($totalOutstanding + $grandTotal > $maxCreditLimit){
 			$arrOutstanding["maxCreditLimit"] = $maxCreditLimit;
 			$authorizeCreditLimit = true;
-
 			$needAuthorize = true;
 		}
+		
+		//Invoce jatuh tempo yang telah melewati x Hari dan belum dibayar
+        //???????
+        
+
+
 
 		if ($needAuthorize == true){
 			if ($confirmAuthorize == 0){								
@@ -271,6 +304,36 @@ class Sales_order extends MY_Controller{
 				return;
 			}
 		}
+
+
+
+
+		//SAVE
+
+		//POSTING
+
+
+
+
+
+		
+		
+		
+		
+		// Validate SO Details
+		
+		
+		
+
+		
+		
+		
+		
+		
+
+		
+
+		
 
 
 		//Competed data header before save
@@ -797,15 +860,10 @@ class Sales_order extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_msrelations(){
-		$term = $this->input->get("term");
-		$ssql = "select fin_relation_id, fst_relation_name,fin_sales_id,fin_warehouse_id,fin_terms_payment from msrelations where fin_branch_id = ? and fst_relation_name like ? and FIND_IN_SET(1,fst_relation_type)";
-		$qr = $this->db->query($ssql,[$this->aauth->get_active_branch_id(),'%'.$term.'%']);
-		//lastQuery();
-		$rs = $qr->result();
-		
+	public function get_customers(){
+		$this->load->model("msrelations_model");			
 		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["data"] = $rs;
+		$this->ajxResp["data"] = $this->msrelations_model->getCustomerList();
 		$this->json_output();
 	}
 
@@ -824,9 +882,7 @@ class Sales_order extends MY_Controller{
 		$salesDeptId = getDbConfig("sales_department_id");
 		$activeBranchId = $this->aauth->get_active_branch_id();
 
-		$ssql = "select fin_user_id, fst_username from users where  fin_branch_id =? and fin_department_id = $salesDeptId order by fst_username";
-		$qr = $this->db->query($ssql,[$activeBranchId]);
-		$rsSales = $qr->result();
+		
 		
 		$ssql = "select fin_warehouse_id, fst_warehouse_name from mswarehouse where fin_branch_id =?";
 		$qr = $this->db->query($ssql,[$activeBranchId]);
@@ -904,7 +960,7 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function get_data_item(){
-		$term = $this->input->get("term");
+		$term = $this->input->get("term");		
 		$ssql = "select fin_item_id, CONCAT(fst_item_code,' - ' ,fst_item_name) as ItemCodeName,fst_item_code,fst_item_name,fst_max_item_discount from msitems where CONCAT(fst_item_code,' - ' ,fst_item_name) like ? order by fst_item_name";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();

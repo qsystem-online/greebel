@@ -53,29 +53,37 @@ class Glledger_model extends MY_Model{
         $ttlDebet = 0;
         $ttlCredit = 0;
         $epsilon = 0.00001;        
-        foreach($datas as $data){
-            $ttlDebet += (float) $data["fdc_debit"];
-            $ttlCredit += (float) $data["fdc_credit"];
-        }
-        if(abs($ttlDebet - $ttlCredit) > $epsilon ){
-            return [
-                "status"=>"FAILED",
-                "message"=>"Debet and Credit not balance! ($ttlDebet vs $ttlCredit)"
-            ];          
-        }
-        $ids=[];
-        foreach($datas as $data){
+        
+        
+        //foreach($datas as $data){
+        for($i = 0; $i < sizeof($datas) ;$i++){
+            $data = $datas[$i];
+
             $account = $this->glaccounts_model->getSimpleDataHeader($data["fst_account_code"]);
             $data["fst_account_name"] = $account->fst_glaccount_name;
-
-            
             if ($data["fst_orgi_curr_code"]  == null){
                 $defaultCurr = getDefaultCurrency();
                 $data["fst_orgi_curr_code"] =$defaultCurr["CurrCode"];
                 $data["fdc_orgi_rate"] = 1;
             }
+            $datas[$i] = $data;
             
-            
+            $ttlDebet += (float) $data["fdc_debit"];
+            $ttlCredit += (float) $data["fdc_credit"];
+        }
+
+
+        //var_dump($datas);
+        //die();
+        if(abs($ttlDebet - $ttlCredit) > $epsilon ){
+            return [
+                "status"=>"FAILED",
+                "message"=>"Debet and Credit not balance! ($ttlDebet vs $ttlCredit)",
+                "data"=>$datas
+            ];          
+        }
+        $ids=[];        
+        foreach($datas as $data){            
             if ($data["fdc_debit"] == 0 && $data["fdc_credit"] == 0){
                 continue;
             }
@@ -155,5 +163,26 @@ class Glledger_model extends MY_Model{
         return $rs;
     }
 
-    
+    public function getTotalPiutang($finRelationId,$untilDatetime = null){
+
+        if ($untilDatetime == null){
+            $ssql = "select sum(fdc_debet) as ttl_debet,sum(fdc_creadit) as ttl_credit from glledger 
+                where fin_relation_id = ? and fst_active ='A'";
+            $qr = $this->db->query($ssql,[$finRelationId]);
+        }else{
+            $ssql = "select sum(fdc_debet) as ttl_debet,sum(fdc_creadit) as ttl_credit from glledger 
+                where fin_relation_id = ? and fdt_trx_datetime <= ? and fst_active ='A'";
+            $qr = $this->db->query($ssql,[$finRelationId,$untilDatetime]);
+        }
+        $rw = $qr->row();
+        if ($rw == null){
+            return 0;
+        }
+        $debet = $rw->ttl_debet;
+        $credit = $rw->ttl_credit;
+        return $debet -$credit;
+        
+    }
+
+
 }
