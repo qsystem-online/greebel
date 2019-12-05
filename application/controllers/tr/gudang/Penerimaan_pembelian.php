@@ -250,33 +250,8 @@ class Penerimaan_pembelian extends MY_Controller{
 				$detail["fst_active"] = "A";					
 				$this->trlpbgudangitems_model->insert($detail);			
 			}
-
 			
-			$result = $this->trlpbgudang_model->posting($insertId);
-
-			if ($result["status"] != "SUCCESS"){
-				$this->ajxResp["status"] = "FAILED";
-				$this->ajxResp["message"] = $result["message"];
-				if (isset( $result["data"])){
-					$this->ajxResp["data"] = $result["data"];
-				}
-				
-				
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}
-
-			$dbError  = $this->db->error();
-			if ($dbError["code"] != 0){			
-				$this->ajxResp["status"] = "DB_FAILED";
-				$this->ajxResp["message"] = "Insert Failed";
-				$this->ajxResp["data"] = $this->db->error();
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}
-
+			$this->trlpbgudang_model->posting($insertId);
 
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
@@ -285,10 +260,10 @@ class Penerimaan_pembelian extends MY_Controller{
 			$this->json_output();
 
 		}catch(CustomException $e){
-			$this->db->trans_rollback();
+			$this->db->trans_rollback();			
 			$this->ajxResp["status"] = $e->getStatus();
 			$this->ajxResp["message"] = $e->getMessage();
-			$this->ajxResp["data"] = $e->getData();
+			$this->ajxResp["data"] = $e->getData();			
 			$this->json_output();
 			return;
 		}

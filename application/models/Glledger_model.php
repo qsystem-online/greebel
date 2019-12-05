@@ -59,7 +59,7 @@ class Glledger_model extends MY_Model{
         for($i = 0; $i < sizeof($datas) ;$i++){
             $data = $datas[$i];
 
-            $account = $this->glaccounts_model->getSimpleDataHeader($data["fst_account_code"]);
+            $account = $this->glaccounts_model->getSimpleDataHeader($data["fst_account_code"]);            
             $data["fst_account_name"] = $account->fst_glaccount_name;
             if ($data["fst_orgi_curr_code"]  == null){
                 $defaultCurr = getDefaultCurrency();
@@ -72,38 +72,18 @@ class Glledger_model extends MY_Model{
             $ttlCredit += (float) $data["fdc_credit"];
         }
 
-
-        //var_dump($datas);
-        //die();
-        if(abs($ttlDebet - $ttlCredit) > $epsilon ){
-            return [
-                "status"=>"FAILED",
-                "message"=>"Debet and Credit not balance! ($ttlDebet vs $ttlCredit)",
-                "data"=>$datas
-            ];          
+        if(abs($ttlDebet - $ttlCredit) > $epsilon ){            
+            throw new CustomException(sprintf(lang("Debet and Credit not balance! (%s vs %s)"),$ttlDebet,$ttlCredit),3003,"FAILED",null );            
         }
-        $ids=[];        
+        $ids=[];
         foreach($datas as $data){            
             if ($data["fdc_debit"] == 0 && $data["fdc_credit"] == 0){
                 continue;
             }
             //var_dump($data);
             $ids[]= parent::insert($data);
-        }
-
-        $error = $this->db->error();
-        if($error["code"] != 0){
-            return [
-                "status"=>"FAILED",
-                "message"=>$error["message"]
-            ];    
-        }
-
-        return [
-            "status"=>"SUCCESS",
-            "message"=>"",
-            "ids"=>$ids
-        ];  
+        }        
+        return ["status"=>"SUCCESS","message"=>"","ids"=>$ids];
         
     }
 
@@ -122,31 +102,11 @@ class Glledger_model extends MY_Model{
             //Balik Jurnal
             for($i=0;$i<sizeof($rs);$i++){
                 $rw = $rs[$i];
-                parent::delete($rw->fin_rec_id,true);
-                /*
-                $debet =  $rs[$i]->fdc_debit;
-                $credit = $rs[$i]->fdc_credit;
-
-                $rs[$i]->fdc_debit = $credit;
-                $rs[$i]->fdc_credit = $debet;
-                $rs[$i]->fbl_is_flip = 1;            
-                unset($rs[$i]->fin_rec_id);
-                if ($newTrxDate != ""){
-                    $rs[$i]->fdt_trx_datetime = $newTrxDate;
-                }
-                parent::insert((array) $rs[$i]);
-                */
+                parent::delete($rw->fin_rec_id,true);               
             }
         }
-
-        $dbError  = $this->db->error();
-		if ($dbError["code"] != 0){	
-            $result["status"]= "FAILED";
-            $result["message"]= $dbError["message"];            
-			return $result;
-        }
-
-        return[
+        $this->my_model->throwIfDBError();        
+        return [
             "status"=>"SUCCESS",
             "message"=>""
         ];
@@ -166,14 +126,15 @@ class Glledger_model extends MY_Model{
     public function getTotalPiutang($finRelationId,$untilDatetime = null){
 
         if ($untilDatetime == null){
-            $ssql = "select sum(fdc_debet) as ttl_debet,sum(fdc_creadit) as ttl_credit from glledger 
+            $ssql = "select ifnull(sum(fdc_debit),0) as ttl_debet,ifnull(sum(fdc_credit),0) as ttl_credit from glledger 
                 where fin_relation_id = ? and fst_active ='A'";
             $qr = $this->db->query($ssql,[$finRelationId]);
         }else{
-            $ssql = "select sum(fdc_debet) as ttl_debet,sum(fdc_creadit) as ttl_credit from glledger 
+            $ssql = "select ifnull(sum(fdc_debit),0) as ttl_debet,ifnull(sum(fdc_credit),0) as ttl_credit from glledger 
                 where fin_relation_id = ? and fdt_trx_datetime <= ? and fst_active ='A'";
             $qr = $this->db->query($ssql,[$finRelationId,$untilDatetime]);
         }
+       
         $rw = $qr->row();
         if ($rw == null){
             return 0;

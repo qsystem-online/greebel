@@ -46,15 +46,15 @@ class Trsuratjalan_model extends MY_Model {
 
         $rules[] = [
             'field' => 'fin_salesorder_id',
-            'label' => 'Sales Order No',
+            'label' => 'Sales Order ID',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
             )
         ];
         $rules[] = [
-            'field' => 'fdt_sj_date',
-            'label' => 'Tgl Surat Jalan',
+            'field' => 'fdt_sj_datetime',
+            'label' => lang('Tgl Surat Jalan'),
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
@@ -117,51 +117,63 @@ class Trsuratjalan_model extends MY_Model {
 		return $data;
     }
 
-    public function GenerateSJNo($soDate = null) {
-        $soDate = ($soDate == null) ? date ("Y-m-d"): $soDate;
-        $tahun = date("ym", strtotime ($soDate));
-        $prefix = getDbConfig("deliveryorder_prefix");
+    public function GenerateSJNo($trDate = null) {
+        $trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
+        $tahun = date("Y/m", strtotime ($trDate));
+        $activeBranch = $this->aauth->get_active_branch();
+        $branchCode = "";
+        if($activeBranch){
+            $branchCode = $activeBranch->fst_branch_code;
+        }
+        $prefix = getDbConfig("deliveryorder_prefix") . "/" . $branchCode ."/";
         $query = $this->db->query("SELECT MAX(fst_sj_no) as max_id FROM trsuratjalan where fst_sj_no like '".$prefix.$tahun."%'");
         $row = $query->row_array();
+
         $max_id = $row['max_id']; 
-        $max_id1 =(int) substr($max_id,8,5);
-        $fst_salesorder_no = $max_id1 +1;
-        $max_salesorder_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_salesorder_no);
-        return $max_salesorder_no;
+        
+        $max_id1 =(int) substr($max_id,strlen($max_id)-5);
+        
+        $fst_tr_no = $max_id1 +1;
+        
+        $max_tr_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_tr_no);
+        
+        return $max_tr_no;
     }
 
     public function getPendingDetailSO($salesOrderId){
+        $this->load->model("msitems_model");
+
         $ssql = "select a.fin_rec_id as fin_salesorder_detail_id,a.fin_item_id,a.fst_custom_item_name,
-            a.fst_unit,a.fin_promo_id,
-            (a.fdb_qty - a.fdb_qty_out) as fdb_qty,
+            a.fst_unit,a.fin_promo_id,b.fbl_is_batch_number,b.fbl_is_serial_number,
+            (a.fdb_qty - (a.fdb_qty_out + a.fdb_qty_return)) as fdb_qty,
             b.fst_item_code,b.fst_item_name
             from trsalesorderdetails a
             inner join msitems b on a.fin_item_id = b.fin_item_id
-            where fin_salesorder_id = ? and fdb_qty > fdb_qty_out";
+            where fin_salesorder_id = ? and fdb_qty > (fdb_qty_out + fdb_qty_return)";
         $qr = $this->db->query($ssql,[$salesOrderId]);
-        return $qr->result();
+        
+        $rs = $qr->result();
+
+        for($i = 0;$i < sizeof($rs); $i++){
+            $rw = $rs[$i];
+            $fstBasicUnit = $this->msitems_model->getBasicUnit($rw->fin_item_id);
+            $rw->fst_basic_unit = $fstBasicUnit;
+            $rw->fdc_conv_to_basic_unit = $this->msitems_model->getQtyConvertToBasicUnit($rw->fin_item_id,1,$rw->fst_unit);            
+            $rs[$i] =  $rw;
+        }
+        return $rs;
     }
     
 
-    public function maxQtyItem($salesorderDetailId,$sjId = 0){
+    public function maxQtyItem($salesorderDetailId){
         $ssql = "select * from trsalesorderdetails where fin_rec_id = ?";
         $qr = $this->db->query($ssql,[$salesorderDetailId]);
         $rw = $qr->row();
 
-        $currentQty = 0;
-        if ($sjId != 0){
-            $ssql = "select sum(fdb_qty) as fdb_qty from trsuratjalandetails where fin_sj_id = ? and fin_salesorder_detail_id = ?";
-            $qr = $this->db->query($ssql,[$sjId,$salesorderDetailId]);
-            $rwSJ = $qr->row();
-            if($rwSJ){
-                $currentQty = $rwSJ->fdb_qty;
-            }
-        }
-
-        if(!$rw){
+        if($rw == null){
             return 0;
         }else{
-            return (float) $rw->fdb_qty  - (float) $rw->fdb_qty_out + $currentQty;
+            return (float) $rw->fdb_qty  - ((float) $rw->fdb_qty_out  + (float) $rw->fdb_qty_return);
         }
 
     }
@@ -191,30 +203,50 @@ class Trsuratjalan_model extends MY_Model {
     }
 
     public function posting($sjId){
-        $this->load->model("trinventory_model");        
-    
-        $ssql = "select a.*,b.fin_warehouse_id,b.fdt_sj_date from trsuratjalandetails a 
-            inner join trsuratjalan b on a.fin_sj_id = b.fin_sj_id 
-            where a.fin_sj_id = ?";
+        $this->load->model("trinventory_model");  
+        $this->load->model("msitems_model");
 
+        $ssql = "select * from trsuratjalan where fin_sj_id = ? and fst_active != 'D'";
         $qr = $this->db->query($ssql,[$sjId]);
-        $rs = $qr->result();
-        if(!$rs){
-            return false;
-        }
-        foreach($rs as $rw){
-            //update Sales Order
-            $finSalesorderDetailId = $rw->fin_salesorder_detail_id;
-            $ssql = "update trsalesorderdetails set fdb_qty_out = fdb_qty_out +  " . $rw->fdb_qty  ." where fin_rec_id = ?";
-            $query = $this->db->query($ssql,[$finSalesorderDetailId]);               
+        $dataH = $qr->row();
 
-            // Update Kartu Stock
+        if ($dataH == null){
+            throw new CustomException(lang("ID surat jalan tidak dikenal !"),3003,"FAILED",null);
+        }
+
+        $ssql = "SELECT * FROM trsuratjalandetails WHERE fin_sj_id = ?";
+        $qr = $this->db->query($ssql,[$sjId]);
+        $detailList = $qr->result();
+
+        foreach($detailList as $dataD){
+            //Update msitemdetails dan msitemdetailssummary
+            $strArrSerial  = $dataD["fst_serial_number_list"];
+            $arrSerial = json_decode($strArrSerial);
+            foreach($arrSerial as $serial){
+                $dataSerial = [
+                    "fin_warehouse_id"=>$dataH->fin_warehouse_id,
+                    "fin_item_id"=>$dataD->fin_item_id,
+                    "fst_serial_no"=>$serial,
+                    "fst_batch_no"=>$dataD->fst_batch_no,
+                    "fst_trans_type"=>"PPJ", 
+                    "fin_trans_id"=>$dataH->fin_sj_id,
+                    "fst_trans_no"=>$dataH->fst_sj_no,
+                    "fin_trans_detail_id"=>$dataD->fin_rec_id,
+                    "fdb_qty_in"=>0,
+                    "fdb_qty_out"=>1
+                ];
+                $this->trinventory_model->insertSerial($dataSerial);
+            }
+            
+            //Update kartu stock
             $data = [
-                "fin_warehouse_id"=>$rw->fin_warehouse_id,
-                "fdt_trx_datetime"=>$rw->fdt_sj_date,
+                "fin_warehouse_id"=>$dataH->fin_warehouse_id,
+                "fdt_trx_datetime"=>$dataH->fdt_sj_datetime,
                 "fst_trx_code"=>"DO",
                 "fin_trx_id"=>$sjId,
-                "fst_referensi"=>null,
+                "fst_trx_no"=>$dataH->fst_sj_no,
+                "fin_trx_detail_id"=>$dataD->fin_rec_id,
+                "fst_referensi"=>$dataH->fst_sj_memo,
                 "fin_item_id"=>$rw->fin_item_id,
                 "fst_unit"=>$rw->fst_unit,
                 "fdb_qty_in"=>0,
@@ -223,7 +255,22 @@ class Trsuratjalan_model extends MY_Model {
                 "fst_active"=>"A"
             ];
             $this->trinventory_model->insert($data);
+
+            //Update data SO detail 
+            $ssql = "UPDATE trsalesorderdetails SET fdb_qty_out = fdb_qty_out +  ? WHERE fin_rec_id = ?";
+            $query = $this->db->query($ssql,[$dataD->fdb_qty,$dataD->fin_salesorder_detail_id]);
+            throwIfDBError();
         }
+
+        //Cek All Data valid after Process
+        //Data SO detail  still valid
+        $ssql = "SELECT * FROM trsalesorderdetail WHERE fin_salesorder_id = ? AND fdb_qty < (fdb_qty_out + fdb_qty_return)";
+        $qr = $this->db->query($ssql,$dataH->fin_salesorder_id);
+        $rw = $qr->row();
+        if ($rw != null){
+            throw new CustomException(lang("Qty sales order detail not balance !"),3003,"FAILED",null);            
+        }
+
     }
 
     public function createObject($sjId){

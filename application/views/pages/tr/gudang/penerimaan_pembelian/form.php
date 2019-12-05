@@ -550,6 +550,7 @@
 		$("#btn-add-items").click(function(e){
 			e.preventDefault();
 			rowDetail = null;
+			$("#fstItem").val(null).trigger("change.select2");
 			$("#mdlDetail").modal("show");
 		});
 	});

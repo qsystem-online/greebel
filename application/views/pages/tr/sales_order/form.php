@@ -33,7 +33,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	}
 </style>
 <?php
-	echo $mdlPrint;
+	echo $mdlPrint;	
 ?>
 
 <section class="content-header">
@@ -232,7 +232,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 								</div>
 								<div class="form-group">
-									<label for="total" class="col-md-8 control-label"><?=lang("Uang Muka")?></label>
+									<label for="total" class="col-md-5 control-label"><?=lang("Uang Muka")?></label>
+									<label class="col-md-3 control-label checkbox-inline" style="font-weight:700">
+										<input type="checkbox" name="fbl_dp_inc_ppn" id="fbl_dp_inc_ppn" value="1" checked><?=lang("Termasuk Ppn")?>
+									</label>
 									<div class="col-md-4" style='text-align:right'>
 										<input type="text" class="money form-control text-right" id="fdc_downpayment" name="fdc_downpayment" value="0">
 									</div>
@@ -247,7 +250,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<!-- end box body -->
 
 					<div class="box-footer text-right">
-						<!-- <a id="btnSubmitAjaxOld" href="#" class="btn btn-primary"><=lang("Save Ajax")?></a> -->
+						
 					</div>
 					<!-- end box-footer -->
 				</form>
@@ -316,7 +319,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									<div class="form-group">
 										<label for="select-disc" class="col-md-3 control-label"><?=lang("Disc ++")?> :</label>
 										<div class="col-md-9">
-											<select id="select-disc" class="disc-group form-control text-right" name="fst_disc_item">
+											<select id="select-disc" class="form-control text-right" name="fst_disc_item">
 												<?php
 													$discList = $this->msitemdiscounts_model->getItemDiscountList();
 													foreach($discList as $disc){
@@ -329,10 +332,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="fdc_disc_amount" class="col-md-3 control-label"><?=lang("Disc Amt")?> :</label>
+										<label for="fdc_disc_amount_per_item" class="col-md-3 control-label"><?=lang("Nilai Disc / Barang ")?> :</label>
 										<div class="col-md-9">
-											<input type="text" class="form-control text-right" id="fdc_disc_amount" readonly>
-											<div id="fdc_disc_amount_err" class="text-danger"></div>
+											<input type="text" class="money disc-group form-control text-right" id="fdc_disc_amount_per_item">
+											<div id="fdc_disc_amount_per_item_err" class="text-danger"></div>
 										</div>
 									</div>
 
@@ -367,7 +370,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		var ajxSel2Item = {
 			url: '<?=site_url()?>tr/sales_order/get_data_item',
 			dataType: 'json',
-			delay: 250,
+			delay: 500,
 			data:function(params){
 				//params.add_data =1;
 				return params;
@@ -392,22 +395,45 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$(function(){
 			$("#select-items").select2({
-				width: '100%',
+				width: '100%',				
 				ajax: ajxSel2Item,
 				minimumInputLength:2,
 			}).on('select2:select', function(e){
 				itemOnSelect(e);
 			});	
 			
-			$(".disc-group").change(function(e){
-				var amount = $("#so-qty").val() * App.money_parse($("#so-price").val());
+			$("#select-disc").change(function(e){
+				e.preventDefault();
+				var amount = App.money_parse($("#so-price").val());
 				var strDisc = $("#select-disc").val();
 				var discAmount = App.calculateDisc(amount,strDisc);
-				$("#fdc_disc_amount").val(App.money_format(discAmount)); 
+				$("#fdc_disc_amount_per_item").val(App.money_format(discAmount));
+				//$("#fdc_disc_amount").val(App.money_format(discAmount)); 
+			});
+		
+			$(".disc-group").change(function(e){
+				var price = App.money_parse($("#so-price").val());
+				var discAmountPerItem = App.money_parse($("#fdc_disc_amount_per_item").val());
+
+				var discPersen = 0;
+				if (price >0){
+					discPersen = (discAmountPerItem / price) * 100;
+				} 
+				App.addOptionIfNotExist("<option value='"+ discPersen + "' selected>" + App.money_format(discPersen) + "</option>","select-disc");
+				$("#select-disc").trigger("change.select2");
+
+				//$("#select-disc").change
+
+				//var amount = $("#so-qty").val() * App.money_parse($("#so-price").val());
+				//var strDisc = $("#select-disc").val();
+				//var discAmount = App.calculateDisc(amount,strDisc);
+				//$("#fdc_disc_amount").val(App.money_format(discAmount)); 
+
+
 			});
 
 			$("#btn-add-so-detail").click(function(event){
-				event.preventDefault();		
+				event.preventDefault();					
 				price = money_parse($("#so-price").val());			
 				//selected_items = $("#select-items").select2('data')[0];
 				selected_disc = $("#select-disc").val();
@@ -415,14 +441,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				qty = $("#so-qty").val();
 				price = money_parse($("#so-price").val());
-				disc = money_parse($("#fdc_disc_amount").val());				
-				amount = price * qty;
-				maxDisc = App.calculateDisc(amount,selectedItem.fst_max_item_discount);
+				discPerItem = money_parse($("#fdc_disc_amount_per_item").val());
 
-				if (maxDisc < disc){
-					alert("<?= lang('Total discount melebih batas yang diperbolehkan !') ?>" + " (maxDisc:" +  maxDisc + ")");
+				if (discPerItem > price){
+					alert("<?=lang("Nilai disc melebih nilai harga !")?>");
 					return;
 				}
+
+				//amount = price * qty;
+				//maxDisc = App.calculateDisc(amount,selectedItem.fst_max_item_discount);
+				maxDisc = App.calculateDisc(price,selectedItem.fst_max_item_discount);
+
+				if (maxDisc < discPerItem){
+					var cfrm = confirm("<?= lang('Total discount melebih batas yang diperbolehkan !') ?>" + " (maxDisc:" +  maxDisc + "), tetap proses ?");
+					if (!cfrm){
+						return;
+					}
+					
+				}
+
+				
 
 				data = {
 					fin_rec_id:$("#fin_rec_id").val(),
@@ -436,14 +474,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					fst_unit: selectedUnits.id,
 					fdc_price : price,
 					fst_disc_item : selected_disc,
-					fdc_disc_amount: disc,
+					fdc_disc_amount_per_item: discPerItem,
 					fst_memo_item: $("#fst_memo_item").val(),
-					total: (qty * price)  - disc,
 					real_stock: selectedUnits.real_stock,
 					marketing_stock: selectedUnits.marketing_stock,
 					fdc_conv_to_basic_unit: selectedUnits.fdc_conv_to_basic_unit,
 					fst_basic_unit: selectedUnits.fst_basic_unit,
-					action: action
 				}
 
 				t = $('#tblSODetails').DataTable();
@@ -524,31 +560,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#select-unit").val(null).trigger("change.select2");				
 				}
 
-				/*
-				defaultUnit =  arrSel2[0];
-				if (selectedRow != null){
-					defaultUnit = $.grep(arrSel2,function(v,i){
-						return v.id == selectedRow.fst_unit;
-					})[0];
-					
-				}
-				$("#select-unit").val(defaultUnit.id).trigger("change");
-				$("#select-unit").trigger({
-					type: 'select2:select',
-					params: {
-						data: defaultUnit,
-					}
-				});
-				*/
+				
 
-				fixedSelect2();
+				App.fixedSelect2();
 			});				
+		}
+		function getPromoDisc(){
+			var finItemId = "";
+			var fstUnit  ="";
+			var fdbQty =0;
+			App.getValueAjax({
+				model:"mspromo_model",
+				func:"",
+				params:[]
+			});
 		}
 
 	</script>
 </div>
 <?php
 	echo $mdlJurnal;
+	echo $mdlConfirmAuthorize;
+	echo $mdlEditForm;
 ?>
 
 
@@ -565,9 +598,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
-			$("#mdlJurnal").modal({
-				backdrop:"static",
-			});
+			MdlJurnal.showJurnalByRef("SO",$("#fin_salesorder_id").val());
 		});
 
 		$("#btnPrint").click(function(e){
@@ -576,9 +607,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			var cekPromo = 1;
-			var confirmAuthorize = 0;
-			saveAjax(cekPromo,confirmAuthorize);
+			saveAjax(0);
 		});
 
 		$("#btnNew").click(function(e){
@@ -594,38 +623,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnDelete").click(function(e){
 			e.preventDefault();
-			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
-			$.ajax({
-				url:"<?= site_url() ?>tr/sales_order/delete/" + $("#fin_salesorder_id").val(),
-			}).done(function(resp){
-				//consoleLog(resp);
-				$.unblockUI();
-				if (resp.message != "")	{
-					$.alert({
-						title: 'Message',
-						content: resp.message,
-						buttons : {
-							OK : function() {
-								if (resp.status == "SUCCESS") {
-									window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
-									//return;
-								}
-							},
-						}
-					});
-				}
-
-				if(resp.status == "SUCCESS") {
-					data = resp.data;
-					$("#fin_salesorder_id").val(data.insert_id);
-
-					//Clear all previous error
-					$(".text-danger").html("");
-					// Change to Edit mode
-					$("#frm-mode").val("EDIT");  //ADD|EDIT
-					$('#fst_salesorder_name').prop('readonly', true);
-				}
-			});
+			deleteAjax(0);
 		});
 
 		$("#btnClose").click(function(e){
@@ -640,7 +638,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btn-add-detail").click(function(event){
 			event.preventDefault();
 			if ($("#select-relations").val() == "0"){
-				alert("invalid cust");
+				alert("<?=lang("Customer tidak boleh kosong !")?>");
 				return;
 			}
 			mode_so_detail = "ADD";			
@@ -662,8 +660,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 
 
-<script type="text/javascript" info="define">
-	var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+<script type="text/javascript" info="define">	
 	var edited_so_detail = null;
 	var mode_so_detail = "ADD";
 	var arrDetail;	
@@ -673,6 +670,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	var current_pricing_group_id = 0;
 	var selectedRow = null;
 	var selectedItem = null;
+	var cekPromo = 1;
+	var confirmAuthorize = 0;
 
 	
 </script>
@@ -750,23 +749,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
 				},
-				{"title" : "Disc ++",width:"50px",
+				{"title" : "Disc (%)",width:"50px",
 					data:"fst_disc_item",
 					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
 				},
-				{"title" : "Disc Amt",width:"80px",
-					data:"fdc_disc_amount",
+				{"title" : "Disc / Item",width:"80px",data:"fdc_disc_amount_per_item",
 					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
 				},				
-				{"title" : "Total",width:"80px",
-					data:"total",
-					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
-					className:'text-right'
+				{"title" : "Total",width:"80px",className:'text-right',
+					render: function(data,type,row){
+						return App.money_format((row.fdb_qty * row.fdc_price) - (row.fdb_qty * row.fdc_disc_amount_per_item));
+						//$.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
+					}
+					
 				},
 				{"title" : "Memo","width": "200px",data:"fst_memo_item"},
-				{"title" : "Action","width": "40px",data:"action",sortable:false,className:'dt-body-center text-center'},
+				{"title" : "Action","width": "40px",sortable:false,className:'dt-body-center text-center',
+					render:function(data,type,row){
+						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';
+						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+						if (row.fin_promo_id == 0){
+							return action;
+						}else{
+							return "";
+						}
+
+					}
+				},
 				
 			],
 			processing: true,
@@ -828,15 +839,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			
 			
 			$("#fst_custom_item_name").val(row.fst_custom_item_name);
-			$('#select-disc').val(row.fst_disc_item).trigger('change');			
+			
+			//$('#select-disc').val(row.fst_disc_item).trigger('change');	
+			App.addOptionIfNotExist("<option value='"+row.fst_disc_item+"' selected>"+ App.money_format(row.fst_disc_item) +"</option>","select-disc");
+			//$('#select-disc').val(row.fst_disc_item).trigger('change');
 			$("#so-qty").val(row.fdb_qty);
 			$("#so-price").val(money_format(row.fdc_price));
-			$("#fdc_disc_amount").val(money_format(row.fdc_disc_amount));
+			$("#fdc_disc_amount_per_item").val(money_format(row.fdc_disc_amount_per_item));
 			$("#fst_memo_item").val(row.fst_memo_item);				
 		});
 
-		init_form($("#fin_salesorder_id").val());
-		fixedSelect2();		
+		init_form();
+		App.fixedSelect2();		
 	});
 
 </script>
@@ -845,11 +859,45 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	
 
-	function saveAjax(cekPromo,confirmAuthorize){
-		alert("simpan");
-		return;
+	function saveAjax(confirmEdit){
+		
+		if (cekPromo == 1){
+			getPromoItem();
+			return;
+		}
+
+		if (confirmAuthorize == 0){
+			checkAuthorize();
+			return;
+		}
 
 		data = $("#frmSalesOrder").serializeArray();
+
+		mode = $("#fin_salesorder_id").val() == 0 ? "ADD" : "EDIT"; //$("#frm-mode").val();
+		if (mode == "ADD"){
+			url =  "<?= site_url() ?>tr/sales_order/ajx_add_save/";
+		}else{
+			url =  "<?= site_url() ?>tr/sales_order/ajx_edit_save/";			
+			if (confirmEdit == 0 && mode != "ADD"){
+				MdlEditForm.saveCallBack = function(){
+					saveAjax(1);
+				};		
+				MdlEditForm.show();
+				return;
+			}
+
+			data.push({
+				name : "fin_user_id_request_by",
+				value: MdlEditForm.user
+			});
+			data.push({
+				name : "fst_edit_notes",
+				value: MdlEditForm.notes
+			});
+
+		}
+
+		
 		detail = new Array();		
 
 		t = $('#tblSODetails').DataTable();
@@ -866,23 +914,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		data.push({
 			name:"detail",
 			value: JSON.stringify(detail)
-		});
-		data.push({
-			name:"cekPromo",
-			value: cekPromo
-		});
-		data.push({
-			name:"confirmAuthorize",
-			value: confirmAuthorize
-		});
+		});		
 
 
-		mode = $("#frm-mode").val();
-		if (mode == "ADD"){
-			url =  "<?= site_url() ?>tr/sales_order/ajx_add_save/";
-		}else{
-			url =  "<?= site_url() ?>tr/sales_order/ajx_edit_save/";
-		}
+		
 
 		//var formData = new FormData($('form')[0])
 		App.blockUIOnAjaxRequest("Please wait while saving data.....");
@@ -914,88 +949,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					for (key in errors) {
 						$("#"+key+"_err").html(errors[key]);
 					}
-				}else if (resp.status == "INFOPROMO"){					
-					if (confirm(resp.confirm_message)){
-						//var actionDelete = '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
-						$.each(resp.data,function(i,v){
-							if (v.modelPromotion == "ITEM" || v.modelPromotion == "OTHER ITEM"){
-								data = {
-									fin_rec_id:0,
-									fin_promo_id:v.fin_promo_id,
-									fin_item_id:v.fin_item_id,
-									ItemName:v.fst_item_name,
-									ItemCode:v.fst_item_code,								
-									fst_custom_item_name: v.fst_custom_item_name,
-									fdb_qty: money_parse(v.fdb_qty),
-									fst_unit: v.fst_unit,
-									fdc_price : 1,
-									fst_disc_item : 100,
-									fdc_disc_amount: 1,
-									fst_memo_item: "",
-									total: 0,
-									action: ""//actionDelete
-
-								}
-								t = $('#tblSODetails').DataTable();							
-								t.row.add(data).draw(false);
-							}
-						});
-					}else{
-						saveAjax(0,0);
-					}		
-				}else if( resp.status == "CONFIRM_AUTHORIZE"){
-					arrOutofStock = resp.data.arrOutofStock;
-					messageOutofStock = "";
-					$.each(arrOutofStock,function(i,v){
-						if (messageOutofStock == ""){
-							messageOutofStock = "";
-						}
-					});
-
-					arrOutstanding = resp.data.arrOutstanding;
-					messageOverlimit ="";
-					if (arrOutstanding.totalOutstanding > arrOutstanding.maxCreditLimit){
-						messageOverlimit = "<?= lang("Plafon tersedia") ?> :" + money_format(arrOutstanding.maxCreditLimit) + "<br>";
-						messageOverlimit += "<?= lang("Piutang Outstanding") ?> :" + money_format(arrOutstanding.piutangOutstanding) + "<br>";
-						messageOverlimit += "<?= lang("S/O Outstanding") ?> :" + money_format(arrOutstanding.soOutstanding) + "<br><br>";
-						messageOverlimit += "<?= lang("Billyet Outstanding") ?> :" + money_format(arrOutstanding.billyetOutstanding) + "<br><br>";
-						messageOverlimit += "<?= lang("Sisa Plafon Tersedia") ?> :" + money_format(arrOutstanding.sisaPlafon) + "<br>";
-						messageOverlimit += "<hr>";
-						messageOverlimit += "<?= lang("Info Outstanding Faktur") ?>";
-						messageOverlimit += "<hr>";
-					}
-					arrFakturOutstanding = arrOutstanding.dataFakturOutstanding;
-					$.each(arrFakturOutstanding,function(i,v){
-						if(messageOverlimit == ""){
-							
-						}
-					});
-					message = messageOutofStock + messageOverlimit;
-					message += "<br><br>";
-					message += "<?=lang("Transaksi memerlukan authorization, lanjutkan ?")?>";
-
-					$.confirm({
-						title: 'Authorization transaction',
-						content: message,
-						buttons: {
-							confirm: function () {																
-								saveAjax(0,1);
-							},
-							cancel: function () {
-							},
-						}						
-					});					
 				}else if(resp.status == "SUCCESS") {
 					data = resp.data;
 					$("#fin_salesorder_id").val(data.insert_id);
-
 					//Clear all previous error
 					$(".text-danger").html("");
-
-					// Change to Edit mode
-					$("#frm-mode").val("EDIT");  //ADD|EDIT
-					$('#fst_salesorder_no').prop('readonly', true);
-					$("#tabs-so-detail").show();
 				}
 			},
 			error: function (e) {
@@ -1006,6 +964,207 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			
 		});
 
+	}
+
+
+	function getPromoItem(){
+		var t = $('#tblSODetails').DataTable();
+		t.rows(function(idx,data,node){
+			return data.fin_promo_id != 0 ;
+		}).remove().draw();
+		datas = t.data();
+		detail = new Array();
+		$.each(datas,function(i,v){
+			detail.push(v);
+		});
+
+		dataPost = $("#frmSalesOrder").serializeArray();
+		dataPost.push({
+			name:"detail",
+			value: JSON.stringify(detail)
+		});
+		
+		
+		App.blockUIOnAjaxRequest();
+		$.ajax({
+			url:"<?=site_url()?>tr/sales_order/get_promo_item",
+			data:dataPost,
+			method:"POST",
+
+		}).done(function(resp){
+			if (resp.message != ""){
+				alert(resp.message);				
+			}
+			if (resp.status == "SUCCESS"){
+				cekPromo = 0;
+				var promotionList = resp.data;
+				if(promotionList.length == 0){
+					saveAjax(0);
+				}else{
+					periksa = confirm("<?=lang("Transaksi ini mendapatkan item promo, periksa promo ?")?>");
+					if (periksa){
+						$.each(promotionList,function (i,promotion){
+							if (promotion.fin_promo_item_id != null && promotion.fin_promo_item_id != ""){
+								var dataTbl = {
+									fin_rec_id:0,
+									fin_promo_id:promotion.fin_promo_id,
+									fin_item_id:promotion.fin_promo_item_id,
+									fst_item_name:promotion.fst_item_name,
+									fst_item_code:promotion.fst_item_code,
+									fst_custom_item_name: promotion.fst_item_name,
+									fst_max_item_discount:0,
+									fdb_qty: promotion.fdb_promo_qty,
+									fst_unit: promotion.fst_promo_unit,
+									fdc_price : 1,
+									fst_disc_item : "100",
+									fdc_disc_amount_per_item: 1,
+									fst_memo_item: promotion.fst_promo_name,
+									total: 0,
+									real_stock: 1,
+									marketing_stock: 1,
+									fdc_conv_to_basic_unit: 1,
+									fst_basic_unit: "",
+								}
+								t.row.add(dataTbl).draw(false);
+							}
+
+							if (promotion.fst_other_prize != null && promotion.fst_other_prize != ""){
+								var dataTbl = {
+									fin_rec_id:0,
+									fin_promo_id:promotion.fin_promo_id,
+									fin_item_id:0,
+									fst_item_name:promotion.fst_other_prize,
+									fst_item_code:"PRZ",
+									fst_custom_item_name: promotion.fst_other_prize,
+									fst_max_item_discount:100,
+									fdb_qty: 1,
+									fst_unit: "PCS",
+									fdc_price : 1,
+									fst_disc_item : "100",
+									fdc_disc_amount_per_item: 1,
+									fst_memo_item: promotion.fst_promo_name,
+									total: 0,
+									real_stock: 0,
+									marketing_stock: 0,
+									fdc_conv_to_basic_unit: 1,
+									fst_basic_unit: "",
+								}
+								t.row.add(dataTbl).draw(false);
+							}
+
+							if (promotion.fdc_cashback > 0 ){
+								var dataTbl = {
+									fin_rec_id:0,
+									fin_promo_id:promotion.fin_promo_id,
+									fin_item_id:1,
+									fst_item_name:"<?=lang("Voucher cashback promotion")?>" + "(" +  App.money_format(promotion.fdc_cashback) + ")",
+									fst_item_code:"VCR",
+									fst_custom_item_name: "<?=lang("Voucher cashback promotion")?>" + "(" +  App.money_format(promotion.fdc_cashback) + ")",
+									fst_max_item_discount:0,
+									fdb_qty: 1,
+									fst_unit: "LBR",
+									fdc_price : 1,
+									fst_disc_item : "100",
+									fdc_disc_amount_per_item: 1,
+									fst_memo_item: promotion.fst_promo_name,
+									total: 0,
+									real_stock: 0,
+									marketing_stock: 0,
+									fdc_conv_to_basic_unit: 1,
+									fst_basic_unit: "LBR",
+								}
+								t.row.add(dataTbl).draw(false);
+							}						
+						});
+
+					}else{
+						saveAjax(0);
+					}
+				}
+			}
+		});
+	}
+
+	function checkAuthorize(){
+		var t = $('#tblSODetails').DataTable();
+		t.rows(function(idx,data,node){
+			return data.fin_promo_id != 0 ;
+		}).remove().draw();
+		datas = t.data();
+		detail = new Array();
+		$.each(datas,function(i,v){
+			detail.push(v);
+		});
+
+		dataPost = $("#frmSalesOrder").serializeArray();
+		dataPost.push({
+			name:"detail",
+			value: JSON.stringify(detail)
+		});
+		
+		App.blockUIOnAjaxRequest();
+		$.ajax({
+			url:"<?=site_url()?>tr/sales_order/check_authorization",
+			data:dataPost,
+			method:"POST",
+		}).done(function(resp){
+			
+			if (resp.message != ""){
+				alert(resp.message);
+			}
+			
+			if (resp.status ="SUCCESS"){
+				data = resp.data;
+				if (data.need_authorize == true){
+					var authorizeList = data.authorize_list;
+					messageList = [];
+
+					//Default
+					$.each(authorizeList.default,function(i,item){
+						messageList.push("");
+					});
+
+					//OutOfStock
+					$.each(authorizeList.out_of_stock,function(i,item){
+						var strMessage = "Out Of Stock : " + item.fst_item_name + " ready :" + App.money_format(item.stock) + " request :" + item.fdb_qty + " " + item.fst_unit;
+						messageList.push(strMessage);						
+					});
+
+					//Over max Disc
+					$.each(authorizeList.over_max_disc,function(i,item){			
+						var strMessage = "Over Max Disc : " + item.fst_item_name + " " + item.fdb_qty + " " + item.fst_unit  + " | Max Disc :" + App.money_format(item.fdc_max_disc_amount) + " Current Disc :" + App.money_format(item.fdc_disc_amount_per_item);
+						messageList.push(strMessage);
+					});
+					
+
+					//over_credit_limit
+					if (authorizeList.over_credit_limit != null){
+						var limit = authorizeList.over_credit_limit;
+						var strMessage = "Total Credit Limit : " + App.money_format(limit.maxCreditLimit);
+						strMessage += " | Invoice Outstanding :" + App.money_format(limit.piutangOutstanding); 
+						strMessage += " | Check / Giro Pending :" + App.money_format(limit.totalChequePending);
+						strMessage += " | Sales Order Pending :" + App.money_format(limit.totalSOPending);						
+						strMessage += " | Current Plafon : " + App.money_format(limit.sisaPlafon);
+						strMessage += " | Current Order :" + App.money_format(limit.currentOrder);
+						messageList.push(strMessage);
+					}
+
+					//over_tolerance_invoice
+					$.each(authorizeList.over_tolerance_invoice,function(i,item){			
+						//messageList[] = "Over Max Disc : " + item.fst_item_name + " " + item.fdb_qty + " " + item.fst_unit  + " | Max Disc :" + App.money_format(item.fdc_max_disc_amount) + " Current Disc :" + App.money_format(item.fdc_disc_amount);
+					});
+
+					MdlConfirmAuthorize.show(messageList);
+					MdlConfirmAuthorize.authorizeCallback = function(){
+						confirmAuthorize = 1;
+						saveAjax(0);
+					};
+				}else{
+					confirmAuthorize = 1;
+					saveAjax(0);
+				}
+			}
+		});
 	}
 
 	function getShippingAddressList(customerId,selectedShippingAddressId){
@@ -1032,6 +1191,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 			});
 			if(arrSelect.length > 0){
+
+
+
 				defaultValue = (defaultValue == null) ? arrSelect[0] : defaultValue;
 				$("#fin_shipping_address_id").select2({
 					minimumResultsForSearch: -1,
@@ -1040,13 +1202,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data = e.params.data;
 					$("#fst_shipping_address").val(data.fst_shipping_address);
 				});
+
+				
+				
+				/*
 				$("#fin_shipping_address_id").val(defaultValue.id).trigger("change");
+				*/
 				$("#fin_shipping_address_id").trigger({
 					type: 'select2:select',
 					params: {
 						data: defaultValue
 					}
 				});
+				App.fixedSelect2();
+
+
 			}
 		});
 	}
@@ -1115,7 +1285,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				fdc_disc_amount:detail.fdc_disc_amount,
 				fst_memo_item:detail.fst_memo_item,
 				total:detail.fdb_qty * detail.fdc_price - detail.fdc_disc_amount,
-				action: (detail.fin_promo_id == 0) ? action : ""
 			}
 
 			t = $('#tblSODetails').DataTable();			
@@ -1138,7 +1307,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			ajax:ajxSel2Item
 		});
 
-		fixedSelect2();
+		App.fixedSelect2();
 		//$(".non-editable").prop('disabled', true);
 		calculateTotal();		
 		$("#fdt_salesorder_datetime").val(dateTimeFormat(resp.sales_order.fdt_salesorder_datetime)).datetimepicker('update');
@@ -1159,9 +1328,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#fst_memo_item").val("");
 		selectedRow = null;
 	}
-
 	
 	function calculateTotal(){
+		//Setiap terjadi perubahan total  harus cek promo lagi dan konfirmasi authorize lagi
+		cekPromo = 1; 
+		confirmAuthorize = 0;	
+
 		t = $('#tblSODetails').DataTable();
 		datas = t.data();
 		ttlBfDisc = 0;
@@ -1169,7 +1341,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$.each(datas,function(i,v){
 			ttlBfDisc += v.fdb_qty * v.fdc_price;
-			ttlDisc +=  v.fdc_disc_amount * 1;
+			ttlDisc +=  v.fdc_disc_amount_per_item * v.fdb_qty;
 		});
 
 		if ($("#fbl_is_vat_include").prop('checked')){
@@ -1189,47 +1361,126 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#total").val(money_format(total));		
 	}
 
-	function init_form(fin_salesorder_id){
-		$(document).ajaxStart(function() {
-			$.blockUI({ message:'<h1><?=lang("Please wait....")?></h1>'});
+	function init_form(){
+		if ( $("#fin_salesorder_id").val() != 0 ){
+			//fetch data
+			App.blockUIOnAjaxRequest();
+			$.ajax({
+				url:"<?=site_url()?>tr/sales_order/fetch_data/" + $("#fin_salesorder_id").val(),				
+			}).done(function(resp){
+				if(resp.message != ""){
+					alert(resp.message);
+				}
+				if (resp.status == "SUCCESS"){
+					//Fill Forms
+					dataH = resp.data.sales_order;
+					detailData = resp.data.so_details;					
+					App.autoFillForm(dataH);
+					$("#fdt_salesorder_datetime").val(dateTimeFormat(dataH.fdt_salesorder_datetime)).datetimepicker("update");	
+					App.addOptionIfNotExist("<option value='"+ dataH.fin_relation_id +"' selected>" + dataH.fst_relation_name + "</option>","select-relations");
+					$("#select-sales").trigger("change.select2");
+					getShippingAddressList(dataH.fin_relation_id,dataH.fin_shipping_address_id);
+
+					details = [];
+
+					$.each(detailData , function(i,detail){
+						data = {
+							fin_rec_id: detail.fin_rec_id,
+							fin_promo_id:detail.fin_promo_id,
+							fin_item_id:detail.fin_item_id,
+							fst_item_name:detail.fst_item_name,
+							fst_item_code:detail.fst_item_code,
+							fst_custom_item_name:detail.fst_custom_item_name,
+							fst_max_item_discount:detail.fst_max_item_discount,
+							fdb_qty: detail.fdb_qty,
+							fst_unit: detail.fst_unit,
+							fdc_price : detail.fdc_price,
+							fst_disc_item : detail.fst_disc_item,
+							fdc_disc_amount_per_item: detail.fdc_disc_amount_per_item,
+							fst_memo_item: detail.fst_memo_item,
+							real_stock: detail.real_stock,
+							marketing_stock: detail.marketing_stock,
+							fst_basic_unit: detail.fst_basic_unit,
+							fdc_conv_to_basic_unit: detail.fdc_conv_to_basic_unit,							
+						}
+						details.push(data);
+					});
+
+					t = $('#tblSODetails').DataTable();			
+					//t.data(details).draw(false);
+					t.rows.add(details).draw(false);
+					calculateTotal();
+					//App.addOptionIfNotExist("<option value='"+ dataH.fin_shipping_address_id +"' selected>" + dataH.fst_address_name + "</option>","fin_shipping_address_id");
+					//$("#fst_shipping_address").val(dataH.fst_shipping_address);
+
+					
+
+				}
+			})
+		}
+
+
+	}
+
+
+	function deleteAjax(confirmDelete){
+
+		if (confirmDelete == 0){
+			MdlEditForm.saveCallBack = function(){
+				deleteAjax(1);
+			};		
+			MdlEditForm.show();
+			return;
+		}
+		var dataSubmit = [];		
+		dataSubmit.push({
+			name : "<?=$this->security->get_csrf_token_name()?>",
+			value: "<?=$this->security->get_csrf_hash()?>",
+		});
+		dataSubmit.push({
+			name : "fin_user_id_request_by",
+			value: MdlEditForm.user
+		});
+		dataSubmit.push({
+			name : "fst_edit_notes",
+			value: MdlEditForm.notes
 		});
 
-		$(document).ajaxStop(function() {
-			$.unblockUI();
-			$(document).unbind('ajaxStart');			
-		});
 
+
+		App.blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
 		$.ajax({
-			url: '<?=site_url()?>tr/sales_order/getValueFormInit/' + fin_salesorder_id,
-		}).done(function(values){			
-			/*					
-			arrDisc = values.data.discounts;
-			sel2Disc = [];
-			$.each(arrDisc,function(i,v){
-				sel2Disc.push({
-					id:v.fst_item_discount,
-					text:v.fst_item_discount
+			url:"<?= site_url() ?>tr/sales_order/delete/" + $("#fin_salesorder_id").val(),
+			data:dataSubmit,
+			method:"POST",
+		}).done(function(resp){
+			//consoleLog(resp);
+			$.unblockUI();
+			if (resp.message != "")	{
+				$.alert({
+					title: 'Message',
+					content: resp.message,
+					buttons : {
+						OK : function() {
+							if (resp.status == "SUCCESS") {
+								window.location.href = "<?= site_url() ?>tr/sales_order/lizt";
+								//return;
+							}
+						},
+					}
 				});
-			});
-			$("#select-disc").select2({
-				dir: 'rtl',
-				width: '100%',
-				data: sel2Disc,
-			}).on('select2:select',function(e){
-				var data = e.params.data;
-				disc = data.id;
-				qty = $("#so-qty").val();
-				amount = money_parse($("#so-price").val());
-				amount = amount * qty;
-				$("#fdc_disc_amount").val( money_format(calculateDisc(amount,disc)) ); 
-			});
-			*/
+			}
 
-			<?php if($mode == "EDIT"){?>
-				fillForm(values);
-			<?php } ?>
-		}).always(function(resp){
-			fixedSelect2();
+			if(resp.status == "SUCCESS") {
+				data = resp.data;
+				$("#fin_salesorder_id").val(data.insert_id);
+
+				//Clear all previous error
+				$(".text-danger").html("");
+				// Change to Edit mode
+				$("#frm-mode").val("EDIT");  //ADD|EDIT
+				$('#fst_salesorder_name').prop('readonly', true);
+			}
 		});
 	}
 
@@ -1241,16 +1492,3 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
 <script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 
-<script type="text/javascript">
-   function fixedSelect2(){
-        $(".select2-container").addClass("form-control"); 
-        $(".select2-selection--single , .select2-selection--multiple").css({
-            "border":"0px solid #000",
-            "padding":"0px 0px 0px 0px"
-        });         
-        $(".select2-selection--multiple").css({
-            "margin-top" : "-5px",
-            "background-color":"unset"
-        });
-    };
-</script>

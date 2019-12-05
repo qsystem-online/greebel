@@ -109,10 +109,12 @@ var App = {
 		var async = true;
 		if (typeof obj.async != "undefined"){
 			async = obj.async;
-		}
-		console.log(async);
-
-		blockUIOnAjaxRequest();
+		}		
+		if (typeof obj.wait_message != "undefined"){
+			App.blockUIOnAjaxRequest(obj.wait_message);
+		}else{
+			App.blockUIOnAjaxRequest();
+		}		
 		$.ajax({
 			//url:obj.site_url + 'api/get_value',
 			url: SITE_URL + 'api/get_value',
@@ -187,6 +189,8 @@ var App = {
 		value = $(option).val();		
 		if (! $("#" + selectId + " option[value='"+ value +"']").length){
 			$("#" + selectId).append(option);
+		}else{
+			$("#" + selectId + " option[value='"+ value +"']").prop("selected",true);
 		}
 	},
 

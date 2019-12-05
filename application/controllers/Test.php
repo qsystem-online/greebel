@@ -176,7 +176,7 @@ class Test extends CI_Controller {
 
 		$db2 = $this->load->database('default_local', TRUE);
 
-		for($y = 54000 ; $y < 5000000 ; $y++){
+		for($y = 0 ; $y < 5000000 ; $y++){
 			$data["key_int"] = random_element($arrKeyInt);
 			$data["key_char_25"] = random_element($arrKeyChar25);
 			$data["key_char_50"] = random_element($arrKeyChar50);
@@ -196,6 +196,8 @@ class Test extends CI_Controller {
 				if ($dbError["code"] != 0){	
 					var_dump($dbError);				
 				}
+				$db2->close();
+				$db2 = $this->load->database('default_local', TRUE);
 				$datas=[];
 			}else{
 				$datas[] = $data;

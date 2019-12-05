@@ -22,11 +22,7 @@ class MY_Model extends CI_Model
 		$data = $this->cleanupData($data);	
 		$this->db->insert($this->tableName, $data);
 		$insertId = $this->db->insert_id();
-		$error = $this->db->error();
-		if ($error["code"] != 0) {
-			throw new Exception("Insert Database Error ! : " . $error["message"], EXCEPTION_DB);
-			//echo "TEST throw, never call statement";
-		}
+		$this->throwIfDBError();
 		return $insertId;
 	}
 
@@ -58,7 +54,7 @@ class MY_Model extends CI_Model
 			$finUserIdReqEdit = $this->input->post("fin_user_id_request_by");
 			$fstNotesEdit =  $this->input->post("fst_edit_notes");
 			$dataLog = [
-				"fst_mode"=>"UPDATE",
+				"fst_mode"=>"EDIT",
 				"fst_module"=>$this->router->fetch_class(),
 				"fst_table_name"=>$this->tableName,
 				"fst_trans_id"=> $data[$this->pkey],
@@ -75,12 +71,7 @@ class MY_Model extends CI_Model
 		$data = $this->cleanupData($data);
 		$this->db->where($this->pkey, $data[$this->pkey]);
 		$this->db->update($this->tableName, $data);
-		$error = $this->db->error();
-		if ($error["code"] != 0) {
-			throw new Exception("Update Database Error ! : " . $error["message"], EXCEPTION_DB);
-			//echo "TEST throw, never call statement";
-		}
-
+		$this->throwIfDBError();
 	}
 
 	public function delete($key, $softdelete = TRUE,$data=null){
@@ -130,10 +121,7 @@ class MY_Model extends CI_Model
 			$this->db->where($this->pkey, $key);
 			$this->db->delete($this->tableName);
 		}
-		$error = $this->db->error();
-		if ($error["code"] != 0) {
-			throw new Exception("Delete Database Error ! : " . $error["message"], EXCEPTION_DB);
-		}
+		$this->throwIfDBError();
 	}
 
 	public function getTableName()
@@ -184,8 +172,13 @@ class MY_Model extends CI_Model
 		];
 	}
 
-	public function throwIfDBError(){
-		$dbError  = $this->db->error();
+	public function throwIfDBError($db = null){
+		if ($db==null){
+			$dbError  = $this->db->error();
+		}else{
+			$dbError  = $db->error();
+		}
+
 		if ($dbError["code"] != 0){	
 
 			$data =[];

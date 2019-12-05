@@ -225,9 +225,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									<label for="total" class="col-md-8 control-label"><?=lang("Total")?>:</label>
 									<label class="col-md-4 control-label" style='text-align:right' id="total">0.00</label>
 								
-									<label for="total" class="col-md-5 control-label">Uang Muka :</label>
+									<label for="total" class="col-md-5 control-label"><?=lang("Uang Muka")?> :</label>
 									<label class="col-md-3 control-label checkbox-inline" style="font-weight:700">
-									<input type="checkbox" name="fbl_dp_inc_ppn" id="fbl_dp_inc_ppn" value="1" checked>Include PPN :</label>
+									<input type="checkbox" name="fbl_dp_inc_ppn" id="fbl_dp_inc_ppn" value="1" checked><?=lang("Termasuk Ppn")?> :</label>
 									<div class="col-md-4 control-label" style="text-align:right">										
 										<input type="text" class="money form-control text-right" id="fdc_downpayment" name="fdc_downpayment" value="0.00" style="text-align: right;">
 									</div>

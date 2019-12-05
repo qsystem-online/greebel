@@ -339,33 +339,33 @@ class Trpo_model extends MY_Model {
         $qr = $this->db->query($ssql,[$finPOId]);
         $rw = $qr->row();
         
-        if ($rw != null){
-
-            //Cek DP
-            if ($rw->fdc_downpayment_paid > 0 ) {                
-                $resp =["status"=>"FAILED","message"=>lang("Status approval PO tidak dapat dirubah karena sudah ada pembayaran DP !")];
-                return $resp;    
-            }
-            
-            //Cek bila sudah ada penerimaan barang
-            $ssql = "select * from trpodetails where fin_po_id = ? and fdb_qty_lpb > 0";
-            $qr = $this->db->query($ssql,[$finPOId]);
-            $rw = $qr->row();
-            if ($rw != null){
-                $resp =["status"=>"FAILED","message"=>lang("Status approval PO tidak dapat dirubah karena sudah terjadi penerimaan barang !")];
-                return $resp;    
-            }
-
-            $this->load->model("glledger_model");
-            $result = $this->glledger_model->cancelJurnal("PO",$finPOId);
-            if ($result["status"] != "SUCCESS"){
-                return $result;    
-            }
-           
-            $ssql = "UPDATE trpo SET fst_active ='S' where fin_po_id = ?";
-            $this->db->query($ssql,[$finPOId]);
-            return $result;
+        if ($rw == null){
+            $resp =["status"=>"FAILED","message"=>lang("ID PO tidak dikenal !")];
+            return $resp;
         }
+        //Cek DP
+        if ($rw->fdc_downpayment_paid > 0 ) {                
+            $resp =["status"=>"FAILED","message"=>lang("Status approval PO tidak dapat dirubah karena sudah ada pembayaran DP !")];
+            return $resp;    
+        }
+        
+        //Cek bila sudah ada penerimaan barang
+        $ssql = "select * from trpodetails where fin_po_id = ? and fdb_qty_lpb > 0";
+        $qr = $this->db->query($ssql,[$finPOId]);
+        $rw = $qr->row();
+        if ($rw != null){
+            $resp =["status"=>"FAILED","message"=>lang("Status approval PO tidak dapat dirubah karena sudah terjadi penerimaan barang !")];
+            return $resp;    
+        }
+
+        $this->load->model("glledger_model");
+        $result = $this->glledger_model->cancelJurnal("PO",$finPOId);
+        if ($result["status"] != "SUCCESS"){
+            return $result;    
+        }
+        $ssql = "UPDATE trpo SET fst_active ='S' where fin_po_id = ?";
+        $this->db->query($ssql,[$finPOId]);
+        
         return ["status"=>"SUCCESS",""];
     }
 

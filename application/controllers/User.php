@@ -131,7 +131,7 @@ class User extends MY_Controller
 			"fin_department_id" => $this->input->post("fin_department_id"),
 			"fin_branch_id" => $this->input->post("fin_branch_id"),
 			"fin_group_id" => $this->input->post("fin_group_id"),
-			"fbl_admin" => $this->input->post("fbl_admin")
+			"fbl_admin" => $this->input->post("fbl_admin") == null? 0:1
 		];
 
 		$this->db->trans_start();
@@ -220,7 +220,7 @@ class User extends MY_Controller
 			"fin_department_id" => $this->input->post("fin_department_id"),
 			"fin_branch_id" => $this->input->post("fin_branch_id"),
 			"fin_group_id" => $this->input->post("fin_group_id"),
-			"fbl_admin" => $this->input->post("fbl_admin")
+			"fbl_admin" =>  $this->input->post("fbl_admin") == null? 0:1
 		];
 
 		$this->db->trans_start();

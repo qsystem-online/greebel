@@ -128,7 +128,7 @@ class Datatables
 
 		$ssql = "select " . $this->selectFields . " from " . $this->tableName . " " . $strWhere . " " . $strGroupBy . " " . $strOrder . " limit ? offset ?";
 
-		$qr = $this->db->query($ssql, $params);
+		$qr = $this->db->query($ssql, $params);		
 		$rs = $qr->result_array();
 		//print_r($this->CI->input->get_post("draw"));
 		$datasource = [

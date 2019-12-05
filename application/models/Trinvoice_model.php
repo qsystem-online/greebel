@@ -254,4 +254,14 @@ class Trinvoice_model extends MY_Model {
         echo "Ini di trinvoice after";
 
     }
+
+    public function getPastDueInvoiceOverToleranceList($toleranceDays,$finCustId){
+        $ssql = "Select * from trinvoice 
+            where fin_relation_id = ? 
+            AND fdc_total > (fdc_total_paid + fdc_total_return)
+            AND DATE_ADD(fdt_payment_due_date,INTERVAL ? DAY)  > CURDATE()
+            AND fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finCustId,$toleranceDays]);
+        return $qr->result();
+    }
 }

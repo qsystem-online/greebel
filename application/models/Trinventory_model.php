@@ -56,24 +56,32 @@ class Trinventory_model extends MY_Model
     public function getMarketingStock($fin_item_id,$fst_unit,$fin_warehouse_id){
         $qtyStock = $this->getStock($fin_item_id,$fst_unit,$fin_warehouse_id);
         //Get Qty SO yang masih belum terpenuhi
-        $qtyUnprocessSO =1;
-        //Get Qty PO yang belum diterima
-        $qtyUnprocessPO = 0;
-        $ssql = "select sum(fdb_qty - fdb_qty_lpb) as ttl_qty_unprocess_po from trpodetails a 
-            inner join trpo b on a.fin_po_id = b.fin_po_id 
-            where a.fin_item_id = ? and b.fst_active = 'A'";
+        $qtyUnprocessSO = 0;
+        $ssql = "SELECT IFNULL(sum(fdb_qty - fdb_qty_out),0) AS ttl_qty_unprocess_so FROM trsalesorderdetails a 
+            INNER JOIN trsalesorder b ON a.fin_salesorder_id = b.fin_salesorder_id 
+            WHERE a.fin_item_id = ? AND b.fbl_is_closed = 0 AND b.fst_active ='A'";
         $qr = $this->db->query($ssql,[$fin_item_id]);
         $rw = $qr->row();
-        if($rw == null){
-            $qtyUnprocessPO = 0;
-        }else{
-            $qtyUnprocessPO = $rw->ttl_qty_unprocess_po;
+        $qtyUnprocessSO = $rw->ttl_qty_unprocess_so;
+
+        //Get Qty PO yang belum diterima
+        $qtyUnprocessPO = 0;
+        $marketingStockIncPO = getDbConfig("marketing_stock_inc_po");
+        
+        if ($marketingStockIncPO != 0){
+            $ssql = "SELECT IFNULL(sum(fdb_qty - fdb_qty_lpb),0) AS ttl_qty_unprocess_po FROM trpodetails a 
+                INNER JOIN trpo b on a.fin_po_id = b.fin_po_id 
+                WHERE a.fin_item_id = ? AND b.fbl_is_closed = 0 AND b.fst_active = 'A'";
+
+            $qr = $this->db->query($ssql,[$fin_item_id]);
+            $rw = $qr->row();
+            if($rw == null){
+                $qtyUnprocessPO = 0;
+            }else{
+                $qtyUnprocessPO = $rw->ttl_qty_unprocess_po;
+            }
         }
-
-
         return $qtyStock - $qtyUnprocessSO + $qtyUnprocessPO;
-
-
     }
 
     public function insert($data){
@@ -89,29 +97,26 @@ class Trinventory_model extends MY_Model
         }
 
 
-        try{        
-            $basicUnit = $this->msitems_model->getBasicUnit($data["fin_item_id"]);
-            if ($basicUnit == null){
-                throw new CustomException(sprintf(lang("Item %s tidak memiliki basic unit"),$itemName),3003,"FAILED",[]);
-            }
-
-            $convToBasicUnit = $this->msitems_model->getConversionUnit($data["fin_item_id"],$data["fst_unit"],$basicUnit);
-            $pricePerBasicUnit = floatval($data["fdc_price_in"]) / $convToBasicUnit;
-            $addCost = 0;
-            $qtyInBasicUnit = $this->msitems_model->getQtyConvertToBasicUnit($data["fin_item_id"],$data["fdb_qty_in"],$data["fst_unit"]);
-            $qtyOutBasicUnit = $this->msitems_model->getQtyConvertToBasicUnit($data["fin_item_id"],$data["fdb_qty_out"],$data["fst_unit"]);
-            $addCost = isset($data["fdc_add_cost"]) ? (float) $data["fdc_add_cost"]: 0;
-            
-            $data["fst_basic_unit"]= $basicUnit;
-            $data["fdb_qty_in"]= $qtyInBasicUnit;
-            $data["fdb_qty_out"]= $qtyOutBasicUnit;
-            $data["fdc_price_in"]= $pricePerBasicUnit;
-            $data["fdc_add_cost"] =$addCost;                        
-
-        }catch(CustomException $e){
-            return ["status"=>$e->getStatus(),"message"=>$e->getMessage()];
+       
+        $basicUnit = $this->msitems_model->getBasicUnit($data["fin_item_id"]);
+        if ($basicUnit == null){
+            throw new CustomException(sprintf(lang("Item %s tidak memiliki basic unit"),$itemName),3003,"FAILED",[]);
         }
-                
+
+        $convToBasicUnit = $this->msitems_model->getConversionUnit($data["fin_item_id"],$data["fst_unit"],$basicUnit);
+        $pricePerBasicUnit = floatval($data["fdc_price_in"]) / $convToBasicUnit;
+        $addCost = 0;
+        $qtyInBasicUnit = $this->msitems_model->getQtyConvertToBasicUnit($data["fin_item_id"],$data["fdb_qty_in"],$data["fst_unit"]);
+        $qtyOutBasicUnit = $this->msitems_model->getQtyConvertToBasicUnit($data["fin_item_id"],$data["fdb_qty_out"],$data["fst_unit"]);
+        $addCost = isset($data["fdc_add_cost"]) ? (float) $data["fdc_add_cost"]: 0;
+        
+        $data["fst_basic_unit"]= $basicUnit;
+        $data["fdb_qty_in"]= $qtyInBasicUnit;
+        $data["fdb_qty_out"]= $qtyOutBasicUnit;
+        $data["fdc_price_in"]= $pricePerBasicUnit;
+        $data["fdc_add_cost"] =$addCost;                        
+
+
         //get last record
         $ssql ="select * from trinventory 
         where fin_warehouse_id = ?
@@ -153,7 +158,7 @@ class Trinventory_model extends MY_Model
 
         $qr = $this->db->query($ssql,[$data["fin_warehouse_id"],$data["fin_item_id"],$data["fdt_trx_datetime"]]);
         $rs = $qr->result_array();        
-        foreach($rs as $data){            
+        foreach($rs as $data){
             $data["fdb_qty_balance_after"] = $rwPrev["fdb_qty_balance_after"] + $data["fdb_qty_in"] -  $data["fdb_qty_out"];
             $data["fdc_avg_cost"] = $this->getHPP(
                 $rwPrev["fdb_qty_balance_after"] ,
@@ -175,7 +180,7 @@ class Trinventory_model extends MY_Model
         }
 
 
-
+       
     }
 
     public function deleteByCodeId($trxCode,$trxId){
@@ -235,15 +240,13 @@ class Trinventory_model extends MY_Model
             }
 
 
-        } 
-
-        return ["status"=>"SUCCESS","message"=>""];
-
+        }                 
     }
 
     public function updateById($finRecId,$fstUnit=null,$fdbQtyIn=null,$fdbQtyOut=null,$fdcPriceIn = null ,$fdcAddCost = null){
         $this->load->model("msitems_model");
 
+            
         //Get Record        
         $ssql = "select a.*,b.fst_item_name from trinventory a 
             inner join msitems b on a.fin_item_id = b.fin_item_id 
@@ -336,7 +339,7 @@ class Trinventory_model extends MY_Model
             }       
             parent::update($dataH);
             $rwPrev = $dataH;
-        }
+        }            
     }
 
     public function recalculate($finWarehouseId, $finItemId , $fdtTransactionDatetime){
@@ -387,6 +390,7 @@ class Trinventory_model extends MY_Model
             parent::update($dataH);
             $rwPrev = $dataH;
         }
+           
     }
 
     public function getHPP($lastBalanceQty,$lastHPP,$qtyIn,$qtyOut,$fdcPrice,$fdcAddCost){
@@ -400,15 +404,224 @@ class Trinventory_model extends MY_Model
         $ttlPriceIn = (float) $qtyIn * $pricePlusCost;
         $ttlPriceOut = (float) $qtyOut * $pricePlusCost;
         $ttlPriceBefore = ((float) $lastBalanceQty * (float) $lastHPP );
-        $newBalanceQty = (float) $lastBalanceQty + (float) $qtyIn - (float) $qtyOut;        
-        $newAvgCost = ( $ttlPriceIn   -  $ttlPriceOut + $ttlPriceBefore  ) / $newBalanceQty;
+        $newBalanceQty = (float) $lastBalanceQty + (float) $qtyIn - (float) $qtyOut;     
+        if ($newBalanceQty <= 0){
+            $newAvgCost = $lastHPP;
+        }else{
+            $newAvgCost = ( $ttlPriceIn   -  $ttlPriceOut + $ttlPriceBefore  ) / $newBalanceQty;
+        }
+        
 
         return $newAvgCost;
 
     }
 
+    public function getSummarySerialNo($finWarehouseId,$finItemId,$arrSerialNo){
+        $ssql = "Select fst_serial_no,fdb_qty_in,fdb_qty_out from msitemdetailssummary where fin_warehouse_id =? and fin_item_id = ? and fst_serial_no in ? and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finWarehouseId,$finItemId,$arrSerialNo]);
+        $rs = $qr->result();
+        $result = [];
+        foreach($rs as $rw){
+            $result[$rw->fst_serial_no] = [
+                "fdb_qty_in" => $rw->fdb_qty_in,
+                "fdb_qty_out" => $rw->fdb_qty_out,
+            ];
+        };
+        return $result;
+    }
 
-    public function test_exception(){        
+    
+    public function insertSerial($dataSerial){
+        /**
+         *"fin_warehouse_id,fin_item_id,fst_unit,fst_serial_number_list,fst_batch_no,fst_trans_type,fin_trans_id,fst_trans_no,fin_trans_detail_id,fdb_qtyin_out"
+         */
+        $this->load->model("msitems_model");
+
+
+        $dataSerial["fst_basic_unit"] = $this->msitems_model->getBasicUnit($dataSerial["fin_item_id"]);
+        $dataSerial["fst_active"] = "A";
+        $dataSerial["fin_insert_id"] = $this->aauth->get_user_id();
+        $dataSerial["fdt_insert_datetime"] = date("Y-m-d H:i:s");
+
+        $strArrSerial = $dataSerial["fst_serial_number_list"];
+        $arrSerial = json_decode($strArrSerial);
+        
+        
+        if (is_array($arrSerial) && sizeof($arrSerial) > 0){
+            unset($dataSerial["fst_unit"]);
+            unset($dataSerial["fdb_qty"]);
+            foreach($arrSerial as $serial){
+                if($dataSerial["in_out"] == "IN"){
+                    $dataSerial["fdb_qty_in"] = 1;
+                    $dataSerial["fdb_qty_out"] = 0;
+                }else{
+                    $dataSerial["fdb_qty_in"] = 0;
+                    $dataSerial["fdb_qty_out"] = 1;
+                }
+
+                $data = [
+                    //"fin_rec_id`, 
+                    "fin_warehouse_id"=>$dataSerial["fin_warehouse_id"],
+                    "fin_item_id"=>$dataSerial["fin_item_id"],
+                    "fst_basic_unit"=>$dataSerial["fst_basic_unit"],
+                    "fst_serial_no"=>$serial,
+                    "fst_batch_no"=>$dataSerial["fst_batch_no"],
+                    "fst_trans_type"=>$dataSerial["fst_trans_type"],
+                    "fin_trans_id"=>$dataSerial["fin_trans_id"],
+                    "fst_trans_no"=>$dataSerial["fst_trans_no"],
+                    "fin_trans_detail_id"=>$dataSerial["fin_trans_detail_id"],
+                    "fdb_qty_in"=>$dataSerial["fdb_qty_in"],
+                    "fdb_qty_out"=>$dataSerial["fdb_qty_out"],
+                    "fst_active"=>"A",
+                    "fin_insert_id"=>$this->aauth->get_user_id(),
+                    "fdt_insert_datetime"=>date("Y-m-d H:i:s")
+                ];
+                $this->db->insert("msitemdetails",$data);                
+                throwIfDBError(); 
+                
+                //Update Summary
+                $ssql = "Select * from msitemdetailssummary where fin_warehouse_id = ? and fin_item_id = ? and fst_batch_no = ? and fst_serial_no = ? and fst_active ='A'";
+                $qr = $this->db->query($ssql,[$dataSerial["fin_warehouse_id"],$dataSerial["fin_item_id"],$dataSerial["fst_batch_no"],$serial]);
+                $rw = $qr->row();
+                if ($rw == null){
+                    $dataSumm=[
+                        "fin_warehouse_id"=>$dataSerial["fin_warehouse_id"],
+                        "fin_item_id"=>$dataSerial["fin_item_id"],
+                        "fst_basic_unit"=>$dataSerial["fst_basic_unit"],
+                        "fst_batch_no"=>$dataSerial["fst_batch_no"],
+                        "fst_serial_no"=>$serial,
+                        "fdb_qty_in"=>$dataSerial["fdb_qty_in"],
+                        "fdb_qty_out"=>$dataSerial["fdb_qty_out"],
+                        "fst_active"=>"A",
+                        "fin_insert_id"=>$this->aauth->get_user_id(),
+                        "fdt_insert_datetime"=>date("Y-m-d H:i:s")
+                    ];
+                    $this->db->insert("msitemdetailssummary",$dataSumm);
+                    throwIfDBError();
+                }else{
+                    $dataSumm=[
+                        "fdb_qty_in"=> $rw->fdb_qty_in  + $dataSerial["fdb_qty_in"],
+                        "fdb_qty_out"=>$rw->fdb_qty_out  + $dataSerial["fdb_qty_out"],
+                        "fin_update_id"=>$this->aauth->get_user_id(),
+                        "fdt_update_datetime"=>date("Y-m-d H:i:s")
+                    ];
+
+                    $this->db->where([
+                        "fin_warehouse_id"=>$dataSerial["fin_warehouse_id"],
+                        "fin_item_id"=>$dataSerial["fin_item_id"],
+                        "fst_batch_no"=>$dataSerial["fst_batch_no"],
+                        "fst_serial_no"=>$serial,
+                    ]);
+                    $this->db->update("msitemdetailssummary",$dataSumm);
+                    throwIfDBError();
+                }
+
+
+            }
+            
+        
+        }else{
+            if ($dataSerial["fst_batch_no"] != null && $dataSerial["fst_batch_no"] != "" ){
+                $qtyInBasicUnit = $this->msitems_model->getQtyConvertToBasicUnit($dataSerial["fin_item_id"],$dataSerial["fdb_qty"],$dataSerial["fst_unit"]);
+                unset($dataSerial["fdb_qty"]);
+                unset($dataSerial["fst_unit"]);                
+                if($dataSerial["in_out"] == "IN"){
+                    $dataSerial["fdb_qty_in"] = $qtyInBasicUnit;
+                    $dataSerial["fdb_qty_out"] = 0;
+                }else{
+                    $dataSerial["fdb_qty_in"] = 0;
+                    $dataSerial["fdb_qty_out"] = $qtyInBasicUnit;
+                }
+
+                $data = [
+                    "fin_warehouse_id"=>$dataSerial["fin_warehouse_id"],
+                    "fin_item_id"=>$dataSerial["fin_item_id"],
+                    "fst_basic_unit"=>$dataSerial["fst_basic_unit"],
+                    "fst_serial_no"=>null,
+                    "fst_batch_no"=>$dataSerial["fst_batch_no"],
+                    "fst_trans_type"=>$dataSerial["fst_trans_type"],
+                    "fin_trans_id"=>$dataSerial["fin_trans_id"],
+                    "fst_trans_no"=>$dataSerial["fst_trans_no"],
+                    "fin_trans_detail_id"=>$dataSerial["fin_trans_detail_id"],
+                    "fdb_qty_in"=>$dataSerial["fdb_qty_in"],
+                    "fdb_qty_out"=>$dataSerial["fdb_qty_out"],
+                    "fst_active"=>"A",
+                    "fin_insert_id"=>$this->aauth->get_user_id(),
+                    "fdt_insert_datetime"=>date("Y-m-d H:i:s")
+                ];
+                $this->db->insert("msitemdetails",$data);                
+                throwIfDBError(); 
+
+                //Update Summary
+                $ssql = "Select * from msitemdetailssummary where fin_warehouse_id = ? and fin_item_id = ? and fst_batch_no = ? and fst_active ='A'";
+                $qr = $this->db->query($ssql,[$dataSerial["fin_warehouse_id"],$dataSerial["fin_item_id"],$dataSerial["fst_batch_no"]]);
+                $rw = $qr->row();
+                if ($rw == null){
+                    $dataSumm=[
+                        "fin_warehouse_id"=>$dataSerial["fin_warehouse_id"],
+                        "fin_item_id"=>$dataSerial["fin_item_id"],
+                        "fst_basic_unit"=>$dataSerial["fst_basic_unit"],
+                        "fst_batch_no"=>$dataSerial["fst_batch_no"],
+                        "fst_serial_no"=>null,
+                        "fdb_qty_in"=>$dataSerial["fdb_qty_in"],
+                        "fdb_qty_out"=>$dataSerial["fdb_qty_out"],
+                        "fst_active"=>$dataSerial["fst_active"],
+                        "fin_insert_id"=>$this->aauth->get_user_id(),
+                        "fdt_insert_datetime"=>date("Y-m-d H:i:s")
+                    ];
+                    $this->db->insert("msitemdetailssummary",$dataSumm);
+                    throwIfDBError();
+                   
+                }else{
+                    $dataSumm=[
+                        "fdb_qty_in"=> $rw->fdb_qty_in  + $dataSerial["fdb_qty_in"],
+                        "fdb_qty_out"=>$rw->fdb_qty_out  + $dataSerial["fdb_qty_out"],
+                        "fin_update_id"=>$this->aauth->get_user_id(),
+                        "fdt_update_datetime"=>date("Y-m-d H:i:s")
+                    ];
+
+                    $this->db->where([
+                        "fin_warehouse_id"=>$dataSerial["fin_warehouse_id"],
+                        "fin_item_id"=>$dataSerial["fin_item_id"],
+                        "fst_batch_no"=>$dataSerial["fst_batch_no"],
+                        "fst_serial_no"=>null
+                    ]);
+                    $this->db->update("msitemdetailssummary",$dataSumm);
+                    throwIfDBError();
+                }
+            }
+        }
+    }
+
+    public function deleteInsertSerial($transType,$finTransId){
+        $ssql ="SELECT * FROM msitemdetails WHERE fst_trans_type =? AND fin_trans_id = ?";
+        $qr = $this->db->query($ssql,[$transType,$finTransId]);
+        $detailList = $qr->result();
+        foreach($detailList as $dataD){
+            $ssql = "UPDATE msitemdetailssummary SET fdb_qty_in = fdb_qty_in- ? , fdb_qty_out = fdb_qty_out - ? WHERE fin_warehouse_id = ? AND fin_item_id = ? AND fst_batch_no = ? and fst_serial_no = ?";
+            $this->db->query($ssql,[$dataD->fdb_qty_in,$dataD->fdb_qty_out,$dataD->fin_warehouse_id,$dataD->fin_item_id,$dataD->fst_batch_no,$dataD->fst_serial_no]);
+            throwIfDBError();
+        }
+        $ssql ="DELETE FROM msitemdetails WHERE fst_trans_type = ? AND fin_trans_id = ?";
+        $qr = $this->db->query($ssql,[$transType,$finTransId]);
+        throwIfDBError();
+    }
+
+
+    public function getReadyBatchNoList($finWarehouseId,$finItemId){
+        $ssql = "select distinct fst_batch_no from msitemdetailssummary where fin_warehouse_id = ? and fin_item_id = ? and fdb_qty_in > fdb_qty_out and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finWarehouseId,$finItemId]);
+        return $qr->result();
+    }
+
+    public function getReadySerialNoList($finWarehouseId,$finItemId,$fstBatchNo){
+
+        $ssql = "select distinct fst_serial_no from msitemdetailssummary where fin_warehouse_id = ? and fin_item_id = ? and fst_batch_no = ?  and fdb_qty_in > fdb_qty_out and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finWarehouseId,$finItemId,$fstBatchNo]);
+        return $qr->result();
+    }
+
+    public function test_exception(){
         throw new CustomException("INI BAGIAN MESSAGE",100,"FAILED",["data1"=>"Ini Data 1","data2"=>"ini datat 2"]);
 
     }
