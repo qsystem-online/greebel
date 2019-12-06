@@ -127,4 +127,13 @@ class Glaccounts_model extends MY_Model
         $rs = $qr->result();		
 		return $rs;
     }
+
+    public function get_MainGL()
+    {
+        $term = $this->input->get("term");
+        $ssql = "SELECT fin_glaccount_maingroup_id, fst_glaccount_maingroup_name from glaccountmaingroups where fst_glaccount_maingroup_name like ?";
+        $qr = $this->db->query($ssql, ['%' . $term . '%']);
+        $rs = $qr->result();
+        return $rs;
+    }
 }
