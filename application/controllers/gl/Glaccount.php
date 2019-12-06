@@ -8,6 +8,7 @@ class Glaccount extends MY_Controller
     {
         parent::__construct();
         $this->load->library('form_validation');
+        $this->load->model('glaccounts_model');
     }
 
     public function index()
@@ -74,6 +75,7 @@ class Glaccount extends MY_Controller
         $data["mdlPrint"] = $mdlPrint;
         $data["mainGLSeparator"] = getDbConfig("main_glaccount_separator");
         $data["parentGLSeparator"] = getDbConfig("parent_glaccount_separator");
+        $data["mainGL2Report"] = $this->glaccounts_model->get_MainGL();
         
 
         $page_content = $this->parser->parse('pages/gl/glaccounts/form', $data, true);
@@ -310,6 +312,134 @@ class Glaccount extends MY_Controller
     }
 
     public function get_printGLAccount($mainGroupGL_start,$mainGroupGL_end) {
+        //$layout = $this->input->post("layoutColumn");
+        //$arrLayout = json_decode($layout);
+        //$vendorName = urldecode($vendorName);
+        
+        $this->load->model("glaccounts_model");
+        $this->load->library("phpspreadsheet");
+        
+        $spreadsheet = $this->phpspreadsheet->load(FCPATH . "assets/templates/template_glaccount_log.xlsx");
+        $sheet = $spreadsheet->getActiveSheet();
+        
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+        $sheet->getPageMargins()->setBottom(1);
+
+        //AUTO SIZE COLUMN
+        $sheet->getColumnDimension("A")->setAutoSize(true);
+        $sheet->getColumnDimension("B")->setAutoSize(true);
+        $sheet->getColumnDimension("C")->setAutoSize(true);
+        $sheet->getColumnDimension("D")->setAutoSize(true);
+
+        // SUBTITLE
+        $sheet->mergeCells('B3:D3');
+
+        //HEADER COLUMN
+        $sheet->setCellValue("A5", "No.");
+        $sheet->setCellValue("B5", "GL Account Code");
+        $sheet->setCellValue("C5", "GL Account Name");
+        $sheet->setCellValue("D5", "Level");
+
+		$i = 3;
+		$col = $this->phpspreadsheet->getNameFromNumber($i);
+
+        //TITLE
+        $sheet->mergeCells('A1:'.$col.'1');
+        $sheet->setCellValue("A1", "GL ACCOUNT LIST");
+
+        //FORMAT NUMBER
+        $spreadsheet->getActiveSheet()->getStyle('K8:'.$col.'500')->getNumberFormat()->setFormatCode('#,##0.00');
+        
+        //COLOR HEADER COLUMN
+        $spreadsheet->getActiveSheet()->getStyle('A5:'.$col.'5')
+            ->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('99FFFF');
+
+        //FONT HEADER CENTER
+        $spreadsheet->getActiveSheet()->getStyle('A5:'.$col.'5')
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        //FONT ITALIC
+        $italycArray = [
+            'font' => [
+                'italic' => true,
+            ],
+        ];
+
+        //FONT BOLD
+        $styleArray = [
+            'font' => [
+                'bold' => true,
+            ],
+        ];
+        $sheet->getStyle('A5:'.$col.'5')->applyFromArray($styleArray);
+        $sheet->getStyle('B3:M3')->applyFromArray($styleArray);
+
+        //FONT SIZE
+        $spreadsheet->getActiveSheet()->getStyle("A1")->getFont()->setSize(18);
+        $spreadsheet->getActiveSheet()->getStyle("A3:".$col."3")->getFont()->setSize(12);
+        $spreadsheet->getActiveSheet()->getStyle("A5:".$col."5")->getFont()->setSize(12);
+
+		$iRow0 = 3;
+        $iRow = 6;
+        $no = 1;
+
+        //DATE & TIME
+        //$sheet->setCellValue('E3', '=NOW()');
+        //$sheet->mergeCells('E3:'.$col.'3');
+        //$sheet->setCellValue('E4', '=NOW()');
+        //$sheet->mergeCells('E4:'.$col.'4');
+
+        $printGLAccount = $this->glaccounts_model->getPrintGLAccount($mainGroupGL_start,$mainGroupGL_end);
+        foreach ($printGLAccount as $rw) {
+            $level_name = $rw->fst_glaccount_level;
+            switch($level_name){
+				case "HD":
+                    $level_name = "Header";
+					break;
+				case "DT":
+					$level_name = "Detail";
+					break;
+				case "DK":
+					$level_name = "Detail Kas";
+					break;
+				case "DB":
+					$level_name = "Detail Bank";
+					break;
+			}
+			//$rw->fst_glaccount_level = $level_name;
+			$sheet->setCellValue("A$iRow", $no++);
+			$sheet->setCellValue("B$iRow0", $mainGroupGL_start." s/d ".$mainGroupGL_end);
+			//$sheet->setCellValue("A$iRow", $no++);
+			$sheet->setCellValue("B$iRow", $rw->fst_glaccount_code);
+			$sheet->setCellValue("C$iRow", $rw->fst_glaccount_name);
+			$sheet->setCellValue("D$iRow", $level_name);
+            $iRow++;
+
+            
+        }
+
+        //BORDER
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DASHED
+                ],
+            ],
+        ];
+        $iRow = $iRow - 1;
+        $sheet->getStyle('A5:'.$col.$iRow)->applyFromArray($styleArray);
+        
+        //FILE NAME WITH DATE
+        $this->phpspreadsheet->save("GLAccounts_report_" . date("Ymd") . ".xls" ,$spreadsheet);
+
+    }
+
+    public function get_printGLAccountHeader($mainGroupGL_start,$mainGroupGL_end) {
         //$layout = $this->input->post("layoutColumn");
         //$arrLayout = json_decode($layout);
         //$vendorName = urldecode($vendorName);

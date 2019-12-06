@@ -19,8 +19,9 @@ class Mspromo_model extends MY_Model
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rwPromo = $qr->row();
 
-        $ssql = "SELECT a.*,b.fst_item_name AS ItemTerms FROM mspromoitems a 
+        $ssql = "SELECT a.*,IF (a.fst_item_type ='ITEM',b.fst_item_name,c.fst_item_group_name) AS ItemTerms FROM mspromoitems a 
         LEFT JOIN msitems b ON a.fin_item_id = b.fin_item_id
+        LEFT JOIN msgroupitems c ON a.fin_item_id = c.fin_item_group_id 
         WHERE a.fin_promo_id = ?";
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rsPromoTerms = $qr->result();

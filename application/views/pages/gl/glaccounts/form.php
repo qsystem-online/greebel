@@ -185,14 +185,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div class="form-group">
                                     <label for="select-mainGLStart" class="col-md-3 control-label"><?= lang("Main Group GL") ?> :</label>
                                     <div class="col-md-3">
-                                        <select id="select-mainGLStart" class="form-control" name="fin_glaccount_maingroup_id">
-                                            <option value="0">--  <?= lang("select") ?>  --</option>
+                                        <select id="select-mainGLStart" class="form-control" name="fin_glaccount_maingroup_idS">
+                                            <?php foreach ($mainGL2Report as $mainGLReport) {    ?>
+                                            <option value='<?= $mainGLReport->fin_glaccount_maingroup_id ?>'><?= $mainGLReport->fst_glaccount_maingroup_name ?> </option>
+                                        <?php
+                                    } ?>
                                         </select>
                                     </div>
                                     <label for="select-mainGLEnd" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
                                     <div class="col-md-3">
-                                        <select id="select-mainGLEnd" class="form-control" name="fin_glaccount_maingroup_id">
-                                            <option value="0">--  <?= lang("select") ?>  --</option>
+                                        <select id="select-mainGLEnd" class="form-control" name="fin_glaccount_maingroup_idE">
+                                            <?php foreach ($mainGL2Report as $mainGLReport) {    ?>
+                                            <option value='<?= $mainGLReport->fin_glaccount_maingroup_id ?>'><?= $mainGLReport->fst_glaccount_maingroup_name ?> </option>
+                                        <?php
+                                    } ?>
                                         </select>
                                     </div>
                                 </div>
@@ -295,6 +301,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
             $("#fst_glaccount_code").val(generateAccountCode());
 
         })
+
+        $("#select-MainGLStart").select2();
+
+        $("#select-MainGLEnd").select2();
 
 
         $("#select-ParentGL").change(function(event) {
