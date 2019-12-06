@@ -283,6 +283,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#fstItem").change(function(e){
 			e.preventDefault();
+			alert("Item Change");
 			//var data = $('#fstItem').find(':selected');
 			var data = $('#fstItem').select2('data');
 			data = data[0];			

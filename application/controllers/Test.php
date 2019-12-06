@@ -207,7 +207,179 @@ class Test extends CI_Controller {
 		}		
 	}
 	
+	public function test_report($type = "pdf"){		
+		switch ($type){
+			case "pdf":
+				$this->load->library("pdf");
+				$this->pdf->load_view('test/test_report', []);
+				break;
+			case "excel":
+				$this->load->library("phpspreadsheet");
+				$page_content = $this->parser->parse('test/test_report', [], true);
+				$spreadsheet = $this->phpspreadsheet->loadFromHTMLString($page_content);
+				$this->phpspreadsheet->save("sample.xls",$spreadsheet);
+				break;
+			case "simple_excel":
+				header("Content-type: application/vnd-ms-excel");
+				header("Content-Disposition: attachment; filename=hasil.xls");
+				$page_content = $this->parser->parse('test/test_report', [], true);
+				echo $page_content;
+				break;
+			case "advance_excel":
+				$this->generateTestReport();
+				break;
+			default:
+				break;
+		}		
+	}
+	private function generateTestReport(){				
+		$this->load->library("phpspreadsheet");
+		$spreadsheet = $this->phpspreadsheet->load();
+		$sheet = $spreadsheet->getActiveSheet();
+
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+		$sheet->getPageMargins()->setBottom(1);
+		
+		//AUTO SIZE COLUMN
+        $sheet->getColumnDimension("A")->setAutoSize(true);
+        $sheet->getColumnDimension("B")->setAutoSize(true);
+        $sheet->getColumnDimension("C")->setAutoSize(true);
+        $sheet->getColumnDimension("D")->setAutoSize(true);
+        $sheet->getColumnDimension("E")->setAutoSize(true);
+        $sheet->getColumnDimension("F")->setAutoSize(true);
+		$sheet->getColumnDimension("G")->setAutoSize(true);
+		
+		$sheet->setCellValue("A1", "TESTING DIV");
+		$sheet->mergeCells('A2:F2');
+		$sheet->setCellValue("A2", "Laporan Testing");
+
+		$sheet->setCellValue("A3","Name");
+		$sheet->setCellValue("B3","Position");
+		$sheet->setCellValue("C3","Office");
+		$sheet->setCellValue("D3","Age");
+		$sheet->setCellValue("E3","Start date");
+		$sheet->setCellValue("F3","Salary");
+
+
+		//Detail
+		$i = 4;
+		$sheet->setCellValue("A$i","Tiger Nixon");
+		$sheet->setCellValue("B$i","System Architect");
+		$sheet->setCellValue("C$i","Edinburgh");
+		$sheet->setCellValue("D$i","61");
+		$sheet->setCellValue("E$i","2011/04/25");
+		$sheet->setCellValue("F$i","$320,800");
+
+		$i++;
+		$sheet->setCellValue("A$i","Garrett Winters");
+		$sheet->setCellValue("B$i","Accountant");
+		$sheet->setCellValue("C$i","Tokyo");
+		$sheet->setCellValue("D$i","63");
+		$sheet->setCellValue("E$i","2011/07/25");
+		$sheet->setCellValue("F$i","$170,750");
+		
+		
+
+		$i++;
+		$sheet->setCellValue("A$i","Ashton Cox");
+		$sheet->setCellValue("B$i","Junior Technical Author");
+		$sheet->setCellValue("C$i","San Francisco");
+		$sheet->setCellValue("D$i","66");
+		$sheet->setCellValue("E$i","2009/01/12");
+		$sheet->setCellValue("F$i","$86,000");
+
+		$i++;
+		$sheet->setCellValue("A$i","Cedric Kelly");
+		$sheet->setCellValue("B$i","Senior Javascript Developer");
+		$sheet->setCellValue("C$i","Edinburgh");
+		$sheet->setCellValue("D$i","22");
+		$sheet->setCellValue("E$i","2012/03/29");
+		$sheet->setCellValue("F$i","$433,060");
 	
+
+		$i++;
+		$sheet->setCellValue("A$i","Airi Satou");
+		$sheet->setCellValue("B$i","Accountant");
+		$sheet->setCellValue("C$i","Tokyo");
+		$sheet->setCellValue("D$i","33");
+		$sheet->setCellValue("E$i","2008/11/28");
+		$sheet->setCellValue("F$i","$162,700");
+
+
+		$i++;
+		$sheet->setCellValue("A$i","Brielle Williamson");
+		$sheet->setCellValue("B$i","Integration Specialist");
+		$sheet->setCellValue("C$i","New York");
+		$sheet->setCellValue("D$i","61");
+		$sheet->setCellValue("E$i","2012/12/02");
+		$sheet->setCellValue("F$i","$372,000");
+
+		$arrData =[
+			["Herrod Chandler","Sales Assistant","San Francisco","59","2012/08/06","$137,500"],
+			["Rhona Davidson","Integration Specialist","Tokyo","55","2010/10/14","$327,900"],
+			["Colleen Hurst","Javascript Developer","San Francisco","39","2009/09/15","$205,500"],
+			["Sonya Frost","Software Engineer","Edinburgh","23","2008/12/13","$103,600"],
+			["Jena Gaines","Office Manager","London","30","2008/12/19","$90,560"],
+			["Quinn Flynn","Support Lead","Edinburgh","22","2013/03/03","$342,000"]
+		];
+
+		for($y=0;$y<sizeof($arrData);$y++){
+			$data = $arrData[$y];
+			$posRow = $y + $i;
+
+			$sheet->setCellValue("A$posRow",$data[0]);
+			$sheet->setCellValue("B$posRow",$data[1]);
+			$sheet->setCellValue("C$posRow",$data[2]);
+			$sheet->setCellValue("D$posRow",$data[3]);
+			$sheet->setCellValue("E$posRow",$data[4]);
+			$sheet->setCellValue("F$posRow",$data[5]);
+		};
+
+		/**
+		 * Styling
+		 * https://phpoffice.github.io/PhpSpreadsheet/1.1.0/PhpOffice/PhpSpreadsheet/Style.html
+		 */
+		//BORDER
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+					//https://phpoffice.github.io/PhpSpreadsheet/1.1.0/PhpOffice/PhpSpreadsheet/Style/Border.html
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+                ],
+            ],
+        ];
+		$sheet->getStyle('A2:F14')->applyFromArray($styleArray);
+
+		//FONT BOLD & Center
+		$styleArray = [
+            'font' => [
+                'bold' => true,
+			],
+			'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+            ]
+		];
+		$sheet->getStyle('A2')->applyFromArray($styleArray);
+		$sheet->getStyle('A3:F3')->applyFromArray($styleArray);
+		
+		$styleArray = [
+            'font' => [
+				'bold' => true,
+				'size' => 24,
+			],
+		
+		];
+		$sheet->getStyle('A1')->applyFromArray($styleArray);
+
+
+		$this->phpspreadsheet->save("hasil.xls" ,$spreadsheet);
+
+		
+	}
 	
 	
 }

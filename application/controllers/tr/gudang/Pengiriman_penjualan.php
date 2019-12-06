@@ -165,8 +165,7 @@ class Pengiriman_penjualan extends MY_Controller{
         $this->json_output();        
     }
 
-    public function ajx_add_save(){
-        
+    public function ajx_add_save(){    
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsuratjalandetails_model");
         $this->load->model("trinventory_model");
@@ -282,14 +281,15 @@ class Pengiriman_penjualan extends MY_Controller{
             foreach($details as $detail){
                 $detail = (array) $detail;
                 $detail["fin_sj_id"] = $insertId;
-                $this->trsuratjalandetails_model->insert((array)$detail);
+                $detail["fst_serial_number_list"] = json_encode($detail["fst_serial_number_list"]);
+                $this->trsuratjalandetails_model->insert($detail);
             }
 
             //POSTING
             $this->trsuratjalan_model->posting($insertId);
 
 
-            $this->db->trans_complete();
+           // $this->db->trans_complete();
             $this->ajxResp["status"] = "SUCCESS";
             $this->ajxResp["message"] = "Data Saved !";
             $this->ajxResp["data"]["insert_id"] = $insertId;
