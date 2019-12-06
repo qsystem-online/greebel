@@ -11,6 +11,10 @@
     }
     if (!function_exists('dBDateFormat')){
         function dBDateFormat($strDate,$inputFormat=''){
+            if ($strDate == null || $strDate == ""){
+                return null;
+            }
+
             $inputFormat = ($inputFormat == '' ) ? DATEPICKER_FORMAT_ALIAS : $inputFormat;
 
             $date = DateTime::createFromFormat($inputFormat, $strDate);
@@ -23,6 +27,10 @@
     }
     if (!function_exists('dBDateTimeFormat')){
         function dBDateTimeFormat($strDate,$inputFormat =''){
+            if ($strDate == null || $strDate == ""){
+                return null;
+            }
+
             $inputFormat = ($inputFormat == '' ) ? DATEPICKER_FORMAT_ALIAS . " H:i:s" : $inputFormat;
             
             $date = DateTime::createFromFormat($inputFormat, $strDate);
@@ -89,7 +97,11 @@
 
     if (!function_exists('calculateDisc')){
         function calculateDisc($strDisc,$amount){
-            $arrDisc = explode("+",$strDisc);            
+
+            if ($strDisc == null || $strDisc ==""){
+                $strDisc = "100";
+            }
+            $arrDisc = explode("+",$strDisc);    
             $totalDisc = 0;
             foreach($arrDisc as $disc){
                 $discAmount = $amount * ($disc/100);
@@ -183,6 +195,8 @@
         //'11', 'lock_transaction_date', '2019-05-01', 'Setiap transaksi dibawah tgl lock tidak dapat ditambah, rubah ataupun di hapus', '1'
         $lockDate = getDbConfig("lock_transaction_date");
         $lockDate = strtotime($lockDate);
+       
+
         $tgl = strtotime($tgl);
         if ($tgl < $lockDate){
             return [
@@ -218,4 +232,22 @@
             "from"=>dBDateFormat($arr[0]),
             "to"=>dBDateFormat($arr[1]) . " 23:59:59",
         ];
+    }
+
+    function startWith($sstr,$prefix){
+        $patern = $prefix;
+        $patern = str_replace(".","\.",$patern);
+        //$sstr = "23.1.1123123.1";
+        $cek = preg_match('/^'.$patern.'/',$sstr);
+        if ($cek > 0 ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    function throwIfDBError($db = null){
+        $CI = & get_instance();
+        $CI->load->model("mY_model","my_model");
+        $CI->my_model->throwIfDBError($db);
+
     }

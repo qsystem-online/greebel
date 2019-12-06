@@ -49,11 +49,11 @@ class Trvoucher_model extends MY_Model
         $ssql ="select * from " . $this->tableName . " where fst_transaction_type = ? and fin_transaction_id = ? and fbl_is_used = true limit 1";
         $qr = $this->db->query($ssql,[$transactionType,$transactionId]);
         $rw = $qr->row();
-        if($rw){
-            return false; //voucher sudah terpakai
+        if($rw != null){
+            throw new CustomException(lang("Voucher sudah terpakai !"),3003,"FAILED",[]);
         }
         $ssql = "delete from " . $this->tableName . " where fst_transaction_type = ? and fin_transaction_id = ?";
         $this->db->query($ssql,[$transactionType,(int)$transactionId]);
-        
+        throwIfDBError();        
     }
 }

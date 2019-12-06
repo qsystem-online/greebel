@@ -250,7 +250,7 @@
 			//var data = $('#fstItem').find(':selected');
 			var data = $('#fstItem').select2('data');
 			data = data[0];	
-			console.log(data);					
+			App.log(data);					
 			$("#fstUnit").text(data.fst_unit);
 			$("#fdcConvBasicUnit").text(data.fdc_conv_to_basic_unit);
 			$("#fstBasicUnit").text(data.fst_basic_unit);
@@ -291,11 +291,21 @@
 		
 		$("#btn-save-detail").click(function(e){
 			e.preventDefault();
+			
 
 			item = $("#fstItem").select2("data");
 			item = item[0];
-			console.log(item);
+			
+			if ($("#fdbQty").val() <= 0 ){
+				alert("<?=lang("Qty harus diisi !") ?>");
+				return;
+			}
 
+			if ($("#fdcM3").val() <= 0 ){
+				alert("<?=lang("Meter kubik (M3) harus diisi !") ?>");
+				return;
+			}
+			
 			if (item.fbl_is_batch_number == 1){
 				if ($("#fstBatchNo").val() == "" ){
 					alert("Batch Number harus diisi !");
@@ -317,7 +327,7 @@
 			
 			var arrSerial = [];
 			$.each($("#fstSerialNoList option"),function(i,serial){
-				console.log(serial);
+				App.log(serial);
 				arrSerial.push($(serial).val());
 			});
 
@@ -354,7 +364,7 @@
 			
 
 			if (rowDetail == null){
-				console.log(data);
+				App.log(data);
 				t.row.add(data).draw(false);
 			}else{
 				t.row(rowDetail).data(data).draw(false);
@@ -430,7 +440,7 @@
 			var trRow = $(this).parents('tr');
 			rowDetail = trRow;
 			var data = t.row(trRow).data();
-			console.log(data);
+			App.log(data);
 
 			$("#fstItem").val(data.fin_item_id).trigger("change");	
 
@@ -526,7 +536,7 @@
 					});
 					t.row.add(data);
 				});
-				console.log(arrItems);
+				App.log(arrItems);
 				$("#fstItem").select2({data:arrItems});
 
 				App.fixedSelect2();
@@ -540,6 +550,7 @@
 		$("#btn-add-items").click(function(e){
 			e.preventDefault();
 			rowDetail = null;
+			$("#fstItem").val(null).trigger("change.select2");
 			$("#mdlDetail").modal("show");
 		});
 	});
@@ -767,54 +778,6 @@
 					$("#btnNew").trigger("click");
 				}
 			});
-
-			/*
-			App.getValueAjax({
-				site_url:"<site_url()?>",
-				model:"trlpbgudang_model",
-				func:"getDataById",
-				params:[finLPBGudangId],
-				callback:function(resp){
-					console.log(resp);
-					if(resp == null){
-						alert("data not found !");
-						return;
-					}
-					
-					dataH = resp.lpbGudang;
-					dataD = resp.lpbGudangItems;
-
-					App.autoFillForm(dataH);
-					
-					$("#fdt_lpbgudang_datetime").val(App.dateTimeFormat(dataH.fdt_lpbgudang_datetime)).datetimepicker("update");
-					
-					App.addOptionIfNotExist("<option value='"+ dataH.fin_po_id +"' selected>" + dataH.fst_po_no +"</option>","fin_po_id");
-					$("#fdt_po_datetime").val(App.dateTimeFormat(dataH.fdt_po_datetime)).datetimepicker("update");
-					$("#fst_supplier_name").val(dataH.fstSupplierName);
-					
-					t= $("#tbldetails").DataTable();
-					t.rows().remove();
-					$.each(dataD,function(i,item){				
-						data = {
-							fin_rec_id:item.fin_rec_id,
-							fin_po_detail_id:item.fin_po_detail_id,
-							fin_item_id:item.fin_item_id,
-							fst_item_code:item.fst_item_code,
-							fst_custom_item_name:item.fst_custom_item_name,
-							fst_unit:item.fst_unit,
-							fdb_qty_po: parseFloat(item.fdb_qty_po),
-							fdb_qty_po_received:  parseFloat(item.fdb_qty_lpb),
-							fdb_qty:item.fdb_qty,
-							fdc_m3:item.fdc_m3
-						}
-						console.log(data);
-						t.row.add(data);
-					});
-					t.draw(false);
-					calculateTotalQty();
-				}
-			});
-			*/
 		}
 	}
 

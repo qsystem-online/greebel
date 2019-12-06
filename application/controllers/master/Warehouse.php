@@ -166,10 +166,10 @@ class Warehouse extends MY_Controller
             "fin_warehouse_id" => $fin_warehouse_id,
             "fst_warehouse_name" => $this->input->post("fst_warehouse_name"),
             "fin_branch_id" => $this->input->post("fin_branch_id"),
-			"fst_delivery_address" => $this->input->post("fst_delivery_address"),
-            "fbl_is_external" => $this->input->post("fbl_is_external"),
-            "fbl_is_main" => $this->input->post("fbl_is_main"),
-            "fbl_logistic" => $this->input->post("fbl_logistic"),
+            "fst_delivery_address" => $this->input->post("fst_delivery_address"),
+            "fbl_is_external" => ($this->input->post("fbl_is_external") == null) ? 0 : 1,
+            "fbl_is_main" => ($this->input->post("fbl_is_main") == null) ? 0 : 1,
+            "fbl_logistic" => ($this->input->post("fbl_logistic") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
 

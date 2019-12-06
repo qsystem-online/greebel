@@ -111,52 +111,78 @@ class Approval extends MY_Controller{
         $this->load->model('trverification_model');
 		$fstNotes = $this->input->post("fst_notes");
 		$isApproved = $this->input->post("isApproved");
-        $this->db->trans_start();
-		$result = $this->trverification_model->approve($finRecId,$fstNotes,$isApproved);
-		if( $result["status"] != "SUCCESS"){
-			$this->ajxResp["status"] = $result["status"];
-        	$this->ajxResp["message"] = $result["message"];
+		try{
+			$this->db->trans_start();
+
+			$result = $this->trverification_model->approve($finRecId,$fstNotes,$isApproved);
+			if( $result["status"] != "SUCCESS" && $result !== null){
+				$this->ajxResp["status"] = $result["status"];
+				$this->ajxResp["message"] = $result["message"];
+				$this->json_output();
+				$this->db->trans_rollback();
+				return;
+			}
+			
+			$this->db->trans_complete();
+			
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "";
 			$this->json_output();
+
+		}catch(CustomException $e){
 			$this->db->trans_rollback();
-			return;
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();
 		}
-        $this->db->trans_complete();		
-		$this->ajxResp["status"] = $result["status"];
-        $this->ajxResp["message"] = $result["message"];
-        $this->json_output();
 	}
 
 	public function cancelApproval(){
 		$this->load->model('trverification_model');
-		$this->db->trans_start();
 		$finRecId = $this->input->post("fin_rec_id");
 
-		$result = $this->trverification_model->cancelApprove($finRecId);
+		try{
+		
+			$this->db->trans_start();		
+			$this->trverification_model->cancelApprove($finRecId);		
+			$this->db->trans_complete();
 
-		if( $result["status"] != "SUCCESS"){
-			$this->ajxResp["status"] = $result["status"];
-        	$this->ajxResp["message"] = $result["message"];
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "";
 			$this->json_output();
+			
+		}catch(CustomException $e){
 			$this->db->trans_rollback();
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();			
 			return;
-		}
-        $this->db->trans_complete();		
-		$this->ajxResp["status"] = $result["status"];
-        $this->ajxResp["message"] = $result["message"];
-        $this->json_output();
+
+		}		
 	}
 	
 	public function doReject($finRecId){
         $this->load->model('trverification_model');
 
-        $this->db->trans_start();
-        $result = $this->trverification_model->reject($finRecId);
-        $this->db->trans_complete();
-        
-        $this->ajxResp["status"] = "SUCCESS";
-        $this->ajxResp["message"] = "";
-        $this->ajxResp["data"]=[];
-        $this->json_output();
+		try{
+			$this->db->trans_start();
+			$result = $this->trverification_model->reject($finRecId);
+			$this->db->trans_complete();
+			
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "";
+			$this->ajxResp["data"]=[];
+			$this->json_output();
+			
+		}catch(CustomException $e){
+			$this->db->trans_rollback();
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();
+		}
 	}
 	
 	public function viewDetail($finRecId){

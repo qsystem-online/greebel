@@ -67,7 +67,7 @@ class Trpurchasereturn_model extends MY_Model {
         $ssql ="select a.fin_lpbpurchase_id,a.fst_lpbpurchase_no from trlpbpurchase a
             inner join trpo b on a.fin_po_id = b.fin_po_id 
             where a.fdc_total > a.fdc_total_paid + a.fdc_total_return
-            AND b.fbl_is_import = ? 
+            AND b.fbl_is_import = ? AND b.fbl_cost_completed = 1 
             AND a.fin_supplier_id = ? and a.fst_active != 'D' ";
             
         $qr =$this->db->query($ssql,[(boolean) $isImport,(int) $fin_supplier_id]);
@@ -150,9 +150,16 @@ class Trpurchasereturn_model extends MY_Model {
 
     public function posting($finPurchaseReturnId){
         $this->load->model("glledger_model");
+        $this->load->model("trinventory_model");
+
         $ssql ="select * from trpurchasereturn where fin_purchasereturn_id = ?";
         $qr = $this->db->query($ssql,[$finPurchaseReturnId]);
         $dataH = $qr->row_array();
+
+        $ssql ="select * from trpurchasereturnitems where fin_purchasereturn_id = ?";
+        $qr = $this->db->query($ssql,[$finPurchaseReturnId]);
+        $detailList = $qr->result();
+
 
 
         if($dataH["fin_lpbpurchase_id"] != 0 ){ //Return dengan Faktur
@@ -274,47 +281,87 @@ class Trpurchasereturn_model extends MY_Model {
         ];
 
         $result = $this->glledger_model->createJurnal($dataJurnal);
-        if( $result["status"] != "SUCCESS"){
-            throw new Exception($result["message"], EXCEPTION_JURNAL);
+        if($result["status"] != "SUCCESS"){
+            return $result;
         }
+        
+         //Update kartu stock - Inventory
+         foreach($detailList as $dataD){
+            $dataStock = [
+                //`fin_rec_id`, 
+                "fin_warehouse_id"=>$dataH["fin_warehouse_id"],
+                "fdt_trx_datetime"=>$dataH["fdt_purchasereturn_datetime"],
+                "fst_trx_code"=>"PRT", 
+                "fin_trx_id"=>$finPurchaseReturnId, 
+                "fin_trx_detail_id"=>$dataD->fin_rec_id, 
+                "fst_trx_no"=>$dataH["fst_purchasereturn_no"], 
+                "fst_referensi"=>null, 
+                "fin_item_id"=>$dataD->fin_item_id, 
+                "fst_unit"=>$dataD->fst_unit, 
+                "fdb_qty_in"=>0,
+                "fdb_qty_out"=>$dataD->fdb_qty, 
+                "fdc_price_in"=>(float) $dataD->fdc_price - (float) calculateDisc($dataD->fst_disc_item,$dataD->fdc_price) , 
+                "fst_active"=>"A" 
+            ];
+    
+            $this->trinventory_model->insert($dataStock);
+         }
+         
+
+
         return $result;
     }
 
     public function unposting($finPurchaseReturnId){
         $this->load->model("glledger_model");
-        $ssql ="select * from trpurchasereturn where fin_purchasereturn_id = ?";
-        $qr = $this->db->query($ssql,[$finPurchaseReturnId]);
-        $dataH = $qr->row_array();
+        $this->load->model("trinventory_model");
 
-
-        if($dataH["fin_lpbpurchase_id"] != 0 ){ //Return dengan Faktur
-            
-            //Update total Return di LPB Purchase        
-            $ssql = "update trlpbpurchase set fdc_total_return = fdc_total_return - $dataH[fdc_total] where fin_lpbpurchase_id = $dataH[fin_lpbpurchase_id]";
-            $this->db->query($ssql,[]);
-                    
-            //Update qty return di podetails
-            $ssql ="select * from trpurchasereturnitems where fin_purchasereturn_id = ?";
+        try{
+            $ssql ="select * from trpurchasereturn where fin_purchasereturn_id = ?";
             $qr = $this->db->query($ssql,[$finPurchaseReturnId]);
-            $dataDetails = $qr->result_array();
-            foreach($dataDetails as $dataD){
-                $ssql ="update trpodetails set fdb_qty_return = fdb_qty_return - $dataD[fdb_qty] where fin_po_detail_id = $dataD[fin_po_detail_id]";
-                $this->db->query($ssql,[]);
-            }
-        }
+            $dataH = $qr->row_array();
 
-        $this->glledger_model->cancelJurnal("PRT",$finPurchaseReturnId);        
+
+            if($dataH["fin_lpbpurchase_id"] != 0 ){ //Return dengan Faktur
+                
+                //Update total Return di LPB Purchase        
+                $ssql = "update trlpbpurchase set fdc_total_return = fdc_total_return - $dataH[fdc_total] where fin_lpbpurchase_id = $dataH[fin_lpbpurchase_id]";
+                $this->db->query($ssql,[]);
+                        
+                //Update qty return di podetails
+                $ssql ="select * from trpurchasereturnitems where fin_purchasereturn_id = ?";
+                $qr = $this->db->query($ssql,[$finPurchaseReturnId]);
+                $dataDetails = $qr->result_array();
+                foreach($dataDetails as $dataD){
+                    $ssql ="update trpodetails set fdb_qty_return = fdb_qty_return - $dataD[fdb_qty] where fin_po_detail_id = $dataD[fin_po_detail_id]";
+                    $this->db->query($ssql,[]);
+                }
+            }
+
+            $result = $this->glledger_model->cancelJurnal("PRT",$finPurchaseReturnId);   
+            if($result["status"] != "SUCCESS"){
+                return $result;
+            }     
+        
+            $result = $this->trinventory_model->deleteByCodeId("PRT",$finPurchaseReturnId);
+            if($result["status"] != "SUCCESS"){
+                return $result;
+            }
+            
+            $this->my_model->throwIfDBError();
+
+        }catch(CustomException $e){
+            $result["status"]= $e->getStatus();
+            $result["message"]= $e->getMessage();
+            $result["data"]= $e->getData();
+			return $result;
+        }
+        
+        
         $result=[
             "status"=>"SUCCESS",
             "message"=>""
         ];
-
-        $dbError  = $this->db->error();
-		if ($dbError["code"] != 0){	
-            $result["status"]= "FAILED";
-            $result["message"]= $dbError["message"];            
-			return $result;
-        }                
         return $result;
     }
 

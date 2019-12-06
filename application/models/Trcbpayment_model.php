@@ -174,7 +174,14 @@ class Trcbpayment_model extends MY_Model {
                 if($result["status"] != "SUCCESS"){
                     return $result;
                 }
-            }             
+            }else if ($dataItem->fst_trans_type == "LPB_RETURN"){
+                $ssql = "update trpurchasereturn set fdc_total_claimed = fdc_total_claimed - ? where fin_purchasereturn_id = ?";
+                $this->db->query($ssql,[abs($dataItem->fdc_payment),$dataItem->fin_trans_id]);
+                $result = $this->checkIsValidLPBReturn($dataItem->fin_trans_id);
+                if($result["status"] != "SUCCESS"){
+                    return $result;
+                }
+            }
         }
         $this->glledger_model->cancelJurnal("CBOUT",$dataH->fin_cbpayment_id,$unpostingDateTime);
 
@@ -200,7 +207,7 @@ class Trcbpayment_model extends MY_Model {
         //get Detail Transaksi
         $ssql ="select * from trcbpaymentitems where fin_cbpayment_id = ?";        
         $qr = $this->db->query($ssql,[$finCBPaymentId]);        
-        $dataItems = $qr->result();        
+        $dataItems = $qr->result();               
         foreach($dataItems as $dataItem){
             if ($dataItem->fst_trans_type == "LPB_PO"){
                 //Purchase Invoice
@@ -227,7 +234,18 @@ class Trcbpayment_model extends MY_Model {
                 if($result["status"] != "SUCCESS"){
                     return $result;
                 }
-            } 
+            }else if ($dataItem->fst_trans_type == "LPB_RETURN"){
+                $tmpArr = $this->getDataJurnalPostingLPBReturn($dataItem,$dataH);                
+                foreach($tmpArr as $tmp){
+                    $dataJurnal[] = $tmp;
+                }
+                $ssql = "update trpurchasereturn set fdc_total_claimed = fdc_total_claimed + ? where fin_purchasereturn_id = ?";
+                $this->db->query($ssql,[abs($dataItem->fdc_payment),$dataItem->fin_trans_id]);
+                $result = $this->checkIsValidLPBReturn($dataItem->fin_trans_id);
+                if($result["status"] != "SUCCESS"){
+                    return $result;
+                }
+            }
         }
 
         //Get Detail Payment
@@ -249,7 +267,8 @@ class Trcbpayment_model extends MY_Model {
                 "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
                 "fst_trx_sourcecode"=>"CBOUT",
                 "fin_trx_id"=>$finCBPaymentId,
-                "fst_reference"=>null,
+                "fst_trx_no"=>$dataH->fst_cbpayment_no,
+                "fst_reference"=>$payment->fst_referensi,
                 "fdc_debit"=>0,
                 "fdc_origin_debit"=>0,
                 "fdc_credit"=>$payment->fdc_amount * $dataH->fdc_exchange_rate_idr,
@@ -264,25 +283,9 @@ class Trcbpayment_model extends MY_Model {
                 "fin_relation_id"=>null,
                 "fst_active"=>"A"
             ];  
-        }  
-        //Cek Balance Debet Vs Credit
-        $totalDebet = 0;
-        $totalCredit = 0;        
-        foreach($dataJurnal as $jurnal){
-            $totalDebet += $jurnal["fdc_debit"] * 1;
-            $totalCredit += $jurnal["fdc_credit"] * 1;
-        }
+        }         
 
-        if ($totalDebet !=  $totalCredit){
-            //var_dump();            
-            $result["status"] ="FAILED";
-            $result["message"] ="Debet Vs Credit not balance !($totalDebet vs $totalCredit)";
-            $result["data"] =$dataJurnal;
-            return $result;
-        }else{
-            //var_dump($dataJurnal);
-            $result = $this->glledger_model->createJurnal($dataJurnal);
-        }               
+        $result = $this->glledger_model->createJurnal($dataJurnal);            
         return $result;
        
     }
@@ -299,6 +302,79 @@ class Trcbpayment_model extends MY_Model {
 
     }
 
+
+    public function getDataJurnalPostingLPBReturn($dataItem,$dataH){
+
+        $ssql ="select * from trpurchasereturn where fin_purchasereturn_id = ?";
+        $qr = $this->db->query($ssql,[$dataItem->fin_trans_id]);
+        $rw = $qr->row();
+        if(!$rw){            
+            return null;
+        }
+        
+        
+        $accHutang = $rw->fbl_is_import == 1 ? getGLConfig("AP_DAGANG_IMPORT") : getGLConfig("AP_DAGANG_LOKAL");
+        $accReturn = $rw->fbl_is_import == 1 ? getGLConfig("RETURN_IMPORT") : getGLConfig("RETURN_LOKAL");
+
+        $dataJurnal = [];
+        $dataItem->fdc_payment = abs($dataItem->fdc_payment);
+        $dataJurnal[] = [
+            "fin_branch_id"=>$rw->fin_branch_id,
+            "fst_account_code"=>$accHutang,
+            "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
+            "fst_trx_sourcecode"=>"CBOUT",
+            "fin_trx_id"=>$dataItem->fin_cbpayment_id,
+            "fst_trx_no"=>$dataH->fst_cbpayment_no,
+            "fst_reference"=>$rw->fst_purchasereturn_no . " | " .$dataH->fst_memo,
+            "fdc_debit"=> 0,
+            "fdc_origin_debit"=>0,
+            "fdc_credit"=>$dataItem->fdc_payment   * $rw->fdc_exchange_rate_idr,
+            "fdc_origin_credit"=>$dataItem->fdc_payment,
+            "fst_orgi_curr_code"=>$rw->fst_curr_code,
+            "fdc_orgi_rate"=>$rw->fdc_exchange_rate_idr,
+            "fst_no_ref_bank"=>null,
+            "fin_pcc_id"=>null,
+            "fin_relation_id"=>$rw->fin_supplier_id,
+            "fst_active"=>"A"
+        ];
+        
+
+        //Cek selisih Kurs        
+        if ($dataH->fdc_exchange_rate_idr  != $rw->fdc_exchange_rate_idr){            
+            $selisih = ($dataItem->fdc_payment * $rw->fdc_exchange_rate_idr) - ($dataItem->fdc_payment * $dataH->fdc_exchange_rate_idr);
+
+            if ($selisih < 0){
+                $accSelisihKurs =  getGLConfig("SELISIH_KURS_UNTUNG");
+                $debet = 0;
+                $credit = $selisih * -1;
+            }else{                
+                $accSelisihKurs =  getGLConfig("SELISIH_KURS_RUGI");
+                $debet =  $selisih;
+                $credit = 0 ;
+            }
+
+            $dataJurnal[] = [
+                "fin_branch_id"=>$rw->fin_branch_id,
+                "fst_account_code"=>$accSelisihKurs,
+                "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
+                "fst_trx_sourcecode"=>"CBOUT",
+                "fin_trx_id"=>$dataItem->fin_cbpayment_id,
+                "fst_trx_no"=>$dataH->fst_cbpayment_no,
+                "fst_reference"=>$rw->fst_purchasereturn_no . " | " .$dataH->fst_memo,
+                "fdc_debit"=> $debet,
+                "fdc_origin_debit"=>$debet,
+                "fdc_credit"=>$credit,
+                "fdc_origin_credit"=>$credit,
+                "fst_orgi_curr_code"=>"IDR",
+                "fdc_orgi_rate"=>1,
+                "fst_no_ref_bank"=>null,
+                "fin_pcc_id"=>null,
+                "fin_relation_id"=>null,
+                "fst_active"=>"A"
+            ];
+        }
+        return $dataJurnal;
+    }
 
     public function getDataJurnalPostingDPPO($dataItem,$dataH){
 
@@ -329,7 +405,8 @@ class Trcbpayment_model extends MY_Model {
             "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
             "fst_trx_sourcecode"=>"CBOUT",
             "fin_trx_id"=>$dataItem->fin_cbpayment_id,
-            "fst_reference"=>null,
+            "fst_trx_no"=>$dataH->fst_cbpayment_no,
+            "fst_reference"=>$rw->fst_po_no . " | " . $dataH->fst_memo,
             "fdc_debit"=> $dataItem->fdc_payment   * $rw->fdc_exchange_rate_idr,
             "fdc_origin_debit"=>$dataItem->fdc_payment,
             "fdc_credit"=>0,
@@ -337,7 +414,7 @@ class Trcbpayment_model extends MY_Model {
             "fst_orgi_curr_code"=>$rw->fst_curr_code,
             "fdc_orgi_rate"=>$rw->fdc_exchange_rate_idr,
             "fst_no_ref_bank"=>null,
-            "fst_profit_cost_center_code"=>null,
+            "fin_pcc_id"=>null,
             "fin_relation_id"=>$rw->fin_supplier_id,
             "fst_active"=>"A"
         ];
@@ -364,7 +441,8 @@ class Trcbpayment_model extends MY_Model {
                 "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
                 "fst_trx_sourcecode"=>"CBOUT",
                 "fin_trx_id"=>$dataItem->fin_cbpayment_id,
-                "fst_reference"=>null,
+                "fst_trx_no"=>$dataH->fst_cbpayment_no,
+                "fst_reference"=>$rw->fst_po_no . " | " . $dataH->fst_memo,
                 "fdc_debit"=> $debet,
                 "fdc_origin_debit"=>$debet,
                 "fdc_credit"=>$credit,
@@ -372,14 +450,13 @@ class Trcbpayment_model extends MY_Model {
                 "fst_orgi_curr_code"=>"IDR",
                 "fdc_orgi_rate"=>1,
                 "fst_no_ref_bank"=>null,
-                "fst_profit_cost_center_code"=>null,
+                "fin_pcc_id"=>null,
                 "fin_relation_id"=>null,
                 "fst_active"=>"A"
             ];
         }
         return $dataJurnal;
     }
-
 
     public function getDataJurnalPostingLPBPurchase($dataItem,$dataH){
         $dataJurnal = [];
@@ -410,7 +487,8 @@ class Trcbpayment_model extends MY_Model {
             "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
             "fst_trx_sourcecode"=>"CBOUT",
             "fin_trx_id"=>$dataItem->fin_cbpayment_id,
-            "fst_reference"=>null,
+            "fst_trx_no"=>$dataH->fst_cbpayment_no,
+            "fst_reference"=>$dataD->fst_lpbpurchase_no . " | " . $dataH->fst_memo,
             "fdc_debit"=> $dataItem->fdc_payment   * $dataD->fdc_exchange_rate_idr,
             "fdc_origin_debit"=>$dataItem->fdc_payment,
             "fdc_credit"=>0,
@@ -448,7 +526,8 @@ class Trcbpayment_model extends MY_Model {
                 "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
                 "fst_trx_sourcecode"=>"CBOUT",
                 "fin_trx_id"=>$dataItem->fin_cbpayment_id,
-                "fst_reference"=>null,
+                "fst_trx_no"=>$dataH->fst_cbpayment_no,
+                "fst_reference"=>$dataD->fst_lpbpurchase_no . " | " . $dataH->fst_memo,
                 "fdc_debit"=> $debet,
                 "fdc_origin_debit"=>$debet,
                 "fdc_credit"=>$credit,
@@ -465,6 +544,7 @@ class Trcbpayment_model extends MY_Model {
 
         return $dataJurnal;
     }
+
 
     function getUnpaidPurchaseInvoiceList($finSupplierId,$fstCurrCode){
         $ssql = "SELECT * FROM trlpbpurchase 
@@ -568,6 +648,21 @@ class Trcbpayment_model extends MY_Model {
 
         return ["status"=>"SUCCESS","message"=>""];
 
+    }
+    public function checkIsValidLPBReturn($finPurchaseReturnId){
+        $ssql = "select * from trpurchasereturn where fin_purchasereturn_id = ?";
+        $qr = $this->db->query($ssql,[$finPurchaseReturnId]);
+        $rw = $qr->row();
+        if($rw == null){
+            return ["status"=>"FAILED",'message'=>lang("ID Invoice Pembelian tidak dikenal")];
+        }
+
+        //total klaim retur melebihi jumlah retur
+        if($rw->fdc_total  < $rw->fdc_total_claimed){
+            return ["status"=>"FAILED","message"=>sprintf(lang("Total klaim retur %s melebih jumlah retur yang tersisa !"),$rw->fst_purchasereturn_no)];
+        }   
+
+        return ["status"=>"SUCCESS","message"=>""];
     }
 
 }

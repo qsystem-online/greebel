@@ -218,6 +218,7 @@ class Trpo_model extends MY_Model {
                 "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
                 "fst_trx_sourcecode"=>"PO",
                 "fin_trx_id"=>$dataH["fin_po_id"],
+                "fst_trx_no"=>$dataH["fst_po_no"],
                 "fst_reference"=>null,
                 "fdc_debit"=> $dp * $dataH["fdc_exchange_rate_idr"],
                 "fdc_origin_debit"=>$dp,
@@ -241,6 +242,7 @@ class Trpo_model extends MY_Model {
                     "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
                     "fst_trx_sourcecode"=>"PO",
                     "fin_trx_id"=>$dataH["fin_po_id"],
+                    "fst_trx_no"=>$dataH["fst_po_no"],
                     "fst_reference"=>null,
                     "fdc_debit"=> $dpPpn * $dataH["fdc_exchange_rate_idr"],
                     "fdc_origin_debit"=>$dpPpn,
@@ -269,6 +271,7 @@ class Trpo_model extends MY_Model {
                 "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
                 "fst_trx_sourcecode"=>"PO",
                 "fin_trx_id"=>$dataH["fin_po_id"],
+                "fst_trx_no"=>$dataH["fst_po_no"],
                 "fst_reference"=>null,
                 "fdc_debit"=>0,
                 "fdc_origin_debit"=>0,
@@ -336,33 +339,33 @@ class Trpo_model extends MY_Model {
         $qr = $this->db->query($ssql,[$finPOId]);
         $rw = $qr->row();
         
-        if ($rw != null){
-
-            //Cek DP
-            if ($rw->fdc_downpayment_paid > 0 ) {                
-                $resp =["status"=>"FAILED","message"=>lang("Status approval PO tidak dapat dirubah karena sudah ada pembayaran DP !")];
-                return $resp;    
-            }
-            
-            //Cek bila sudah ada penerimaan barang
-            $ssql = "select * from trpodetails where fin_po_id = ? and fdb_qty_lpb > 0";
-            $qr = $this->db->query($ssql,[$finPOId]);
-            $rw = $qr->row();
-            if ($rw != null){
-                $resp =["status"=>"FAILED","message"=>lang("Status approval PO tidak dapat dirubah karena sudah terjadi penerimaan barang !")];
-                return $resp;    
-            }
-
-            $this->load->model("glledger_model");
-            $result = $this->glledger_model->cancelJurnal("PO",$finPOId);
-            if ($result["status"] != "SUCCESS"){
-                return $result;    
-            }
-           
-            $ssql = "UPDATE trpo SET fst_active ='S' where fin_po_id = ?";
-            $this->db->query($ssql,[$finPOId]);
-            return $result;
+        if ($rw == null){
+            $resp =["status"=>"FAILED","message"=>lang("ID PO tidak dikenal !")];
+            return $resp;
         }
+        //Cek DP
+        if ($rw->fdc_downpayment_paid > 0 ) {                
+            $resp =["status"=>"FAILED","message"=>lang("Status approval PO tidak dapat dirubah karena sudah ada pembayaran DP !")];
+            return $resp;    
+        }
+        
+        //Cek bila sudah ada penerimaan barang
+        $ssql = "select * from trpodetails where fin_po_id = ? and fdb_qty_lpb > 0";
+        $qr = $this->db->query($ssql,[$finPOId]);
+        $rw = $qr->row();
+        if ($rw != null){
+            $resp =["status"=>"FAILED","message"=>lang("Status approval PO tidak dapat dirubah karena sudah terjadi penerimaan barang !")];
+            return $resp;    
+        }
+
+        $this->load->model("glledger_model");
+        $result = $this->glledger_model->cancelJurnal("PO",$finPOId);
+        if ($result["status"] != "SUCCESS"){
+            return $result;    
+        }
+        $ssql = "UPDATE trpo SET fst_active ='S' where fin_po_id = ?";
+        $this->db->query($ssql,[$finPOId]);
+        
         return ["status"=>"SUCCESS",""];
     }
 
@@ -451,5 +454,103 @@ class Trpo_model extends MY_Model {
 
         $resp =["status"=>"SUCCESS","message"=>""];
         return $resp;
+    }
+
+    public function updateClosedStatus($finPOId){
+        $ssql = "select * from trpodetails where fin_po_id = ? and fdb_qty > fdb_qty_lpb";
+        $qr = $this->db->query($ssql,$finPOId);
+        if ($qr->row() == null){
+            //Penerimaan lengkap close PO
+            $ssql = "update trpo set fdt_closed_datetime = now() , fbl_is_closed = 1, fst_closed_notes = 'AUTO - ".date("Y-m-d H:i:s") ."' where fin_po_id = ?";
+            $this->db->query($ssql,[$finPOId]);
+        }else{
+            $ssql = "update trpo set fdt_closed_datetime = null , fbl_is_closed = 0, fst_closed_notes = null where fin_po_id = ?";
+            $this->db->query($ssql,[$finPOId]);
+        }
+    }
+
+    public function updateManualClosedStatus($isClosed,$finPOId,$fstClosedNotes){
+        if($isClosed){
+            $ssql = "update trpo set fdt_closed_datetime = now() , fbl_is_closed = 1, fst_closed_notes = ? where fin_po_id = ?";
+            $this->db->query($ssql,[$fstClosedNotes,$finPOId]);
+        }else{
+            $ssql = "update trpo set fdt_closed_datetime = null , fbl_is_closed = 0, fst_closed_notes = null where fin_po_id = ?";
+            $this->db->query($ssql,[$finPOId]);
+        }
+        parent::throwIfDBError();
+    }
+
+    public function getSummaryCostPO($finPOId){
+        $ssql ="select * from trpurchasecost where fin_po_id = ? and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finPOId]);
+        return $qr->result();
+    }
+
+    public function completedCost($finPOId){
+        $this->load->model("trinventory_model");
+        //get total cost
+        $ssql = "select sum(fdc_total) as ttl_cost from trpurchasecost where fin_po_id = ? and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finPOId]);
+        $rw = $qr->row();
+        $ttlCost = $rw == null ? 0 : (float) $rw->ttl_cost;
+
+        //Get total Kubikasi
+        $ssql =  "select sum(a.fdc_m3) as ttl_kubikasi from trlpbgudangitems a 
+            INNER JOIN trlpbgudang b on a.fin_lpbgudang_id = b.fin_lpbgudang_id
+            INNER JOIN trpodetails c on a.fin_po_detail_id = c.fin_po_detail_id
+            WHERE b.fin_po_id = ? and b.fst_active ='A'";
+
+        $qr = $this->db->query($ssql,[$finPOId]);
+        $rw = $qr->row();
+        $ttlKubik = $rw == null ? 0 : (float) $rw->ttl_kubikasi;
+
+        $ssql = "select a.* from trlpbgudangitems a 
+        inner join trlpbgudang b on a.fin_lpbgudang_id = b.fin_lpbgudang_id
+        where b.fin_po_id = ? and b.fst_active = 'A'";        
+        $qr = $this->db->query($ssql,[$finPOId]);
+        $rs = $qr->result();
+
+        foreach($rs as $rw){
+            //get data inventory
+            $ssql = "select * from trinventory where fst_trx_code ='LPB' and fin_trx_id = ? and fin_trx_detail_id = ? and fst_active ='A'";
+            $qr = $this->db->query($ssql,[$rw->fin_lpbgudang_id,$rw->fin_rec_id]);
+            $rwInv = $qr->row();
+
+            $cost = ((float) $rw->fdc_m3 / $ttlKubik) * $ttlCost;
+            $this->trinventory_model->updateById($rwInv->fin_rec_id,null,null,null,null,$cost);
+        }      
+
+        //Sampe sini berarti sukses semua proses
+        //Update is completed on trpo
+        $ssql ="update trpo set fbl_cost_completed = true where fin_po_id = ?";
+        $this->db->query($ssql,[$finPOId]);
+        $this->my_model->throwIfDBError();
+
+    }
+
+    public function cancelCompletedCost($finPOId){
+        $this->load->model("trinventory_model");
+        
+
+        $ssql = "select a.* from trlpbgudangitems a 
+        inner join trlpbgudang b on a.fin_lpbgudang_id = b.fin_lpbgudang_id
+        where b.fin_po_id = ? and b.fst_active = 'A'";
+        
+        $qr = $this->db->query($ssql,[$finPOId]);
+        $rs = $qr->result();
+        foreach($rs as $rw){
+            //get data inventory
+            $ssql = "select * from trinventory where fst_trx_code ='LPB' and fin_trx_id = ? and fin_trx_detail_id = ? and fst_active ='A'";
+            $qr = $this->db->query($ssql,[$rw->fin_lpbgudang_id,$rw->fin_rec_id]);
+            $rwInv = $qr->row();
+           
+            $this->trinventory_model->updateById($rwInv->fin_rec_id,null,null,null,null,0);
+        }
+
+        //Sampe sini berarti sukses semua proses
+        //Update is completed on trpo
+        $ssql ="update trpo set fbl_cost_completed = false where fin_po_id = ?";
+        $this->db->query($ssql,[$finPOId]);
+        $this->my_model->throwIfDBError();
     }
 }

@@ -8,7 +8,18 @@ class Test{
 	}
 
 	public function test(){
-		echo "test";
+		
+		$this->load->model("trinventory_model");
+		
+		try{
+			$this->trinventory_model->test_exception();
+			echo "LEWAT EXCEPTION";
+		}catch(CustomException $e){
+			echo "KENA EXCEPTION ! :";
+			echo $e->getMessage();
+
+		}
+
 	}
 
 
@@ -46,4 +57,7 @@ class Test{
 
 		fclose($fp);
 	}
+
+
+	
 }

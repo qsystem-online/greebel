@@ -5,7 +5,7 @@
             var trRow = $(this).parents('tr');            
 			var data = t.row(trRow).data();
             //console.log(data);
-            deleteAjax(data.fin_lpbgudang_id,0);
+            deleteAjax(data.fin_purchasereturn_id,0);
         });
     });
 
@@ -42,7 +42,7 @@
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/purchase/invoice/delete/" + finId;
+		var url =  "<?= site_url() ?>tr/purchase/purchase_return/delete/" + finId;
 		$.ajax({
 			url:url,
 			method:"POST",
@@ -53,7 +53,7 @@
 			}
 
 			if(resp.status == "SUCCESS"){
-                window.location.href = "<?=site_url()?>tr/gudang/Penerimaan_pembelian/";
+                window.location.href = "<?=site_url()?>tr/purchase/purchase_return/";
 			}
 
         });

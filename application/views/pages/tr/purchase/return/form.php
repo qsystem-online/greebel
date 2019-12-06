@@ -120,7 +120,7 @@
                             <div class="col-sm-10">
 								<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id" style="width:100%">
 									<?php
-										$warehouseList = $this->mswarehouse_model->getWarehouseList();
+										$warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
 										foreach($warehouseList as $warehouse){
 											
 											echo "<option value='$warehouse->fin_warehouse_id'>$warehouse->fst_warehouse_name</option>";
@@ -327,8 +327,10 @@
 		$("#fin_supplier_id").change(function(e){
 			e.preventDefault();
 			//console.log($("#fin_supplier_id").val());
+			
 			getLPBPurchase(function(resp){
 				$("#tbldetails").DataTable().clear().draw(false);
+				calculateTotal();
 			});			
 		});
 
@@ -787,7 +789,7 @@
 					detailData = resp.data.purchasereturn_details;
 					
 					App.autoFillForm(dataH);
-
+					$("#fbl_non_faktur").trigger("change");				
 					$(".fbl_is_import [value='" + dataH.fbl_is_import +"']").prop("checked",true);
 					$("#fdt_purchasereturn_datetime").val(App.dateTimeFormat(dataH.fdt_purchasereturn_datetime)).datetimepicker("update");
 					$("#fin_supplier_id").val(dataH.fin_supplier_id).trigger("change.select2");

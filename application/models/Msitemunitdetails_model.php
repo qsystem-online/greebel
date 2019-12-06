@@ -100,4 +100,14 @@ class Msitemunitdetails_model extends MY_Model
         $rw = $qr->result();
         return $rw;
     }
+
+    public function getBasicUnit($fin_item_id){
+        $ssql = "select * from msitemunitdetails where fin_item_id = ? and fbl_is_basic_unit = 1 and fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$fin_item_id]);
+        $rw = $qr->row();
+        if ($rw == null){
+            throw new CustomException("Item ID : $fin_item_id doesn't have basic unit !",3003,"FAILED",[]);
+        }
+        return $rw->fst_unit;
+    }
 }

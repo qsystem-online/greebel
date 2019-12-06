@@ -85,4 +85,26 @@ class Msgroupitems_model extends MY_Model
             return true;
         }
     }
+
+    public function isInGroup($finItemId,$finItemGroupId){
+        $ssql = "select a.*,b.fst_tree_id from msitems a
+            inner join msgroupitems b on a.fin_item_group_id = b.fin_item_group_id 
+            where fin_item_id = ?";
+
+        $qr =$this->db->query($ssql,[$finItemId]);
+        $rwItem = $qr->row();
+        if ($rwItem == null){
+            return false;
+        }
+
+        $ssql = "select * from msgroupitems where fin_item_group_id = ?";
+        $qr =$this->db->query($ssql,[$finItemGroupId]);
+        $rwCek = $qr->row();
+        if ($rwCek == null){
+            return false;
+        }
+        
+        $isStartWith = startWith($rwItem->fst_tree_id, $rwCek->fst_tree_id);
+        return $isStartWith;
+    }
 }

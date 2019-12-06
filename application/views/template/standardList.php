@@ -58,10 +58,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 	</div>
 </div>
-
+<?php
+	if(isset($mdlEditForm)){
+		echo $mdlEditForm;
+	}
+?>
 <script type="text/javascript">
+	var t;
+	var trRow;
+	var needConfirmDelete = false;
+
 	$(function(){	
-     
+		
+		if ($('#mdlEditForm').length > 0){
+			needConfirmDelete = true;
+		}
+
 		$('#tblList').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 			 //data.sessionId = "TEST SESSION ID";
@@ -118,22 +130,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 		
 		$("#tblList").on("click",".btn-delete",function(event){
-			id = $(this).data("<?=$pKey?>");
-			if (typeof id === "undefined") {			
-				t = $('#tblList').DataTable();
-				var trRow = $(this).parents('tr');				
-				data = t.row(trRow).data();
-				id = data.<?=$pKey?>;
-			}
+			t = $('#tblList').DataTable();
+			trRow = $(this).parents('tr');				
+			data = t.row(trRow).data();
+			id = data.<?=$pKey?>;
+			
+			//
 
-			$.ajax({
-				url:"<?=$delete_ajax_url?>" + id,
-				success:function(resp){
-					if (resp.status == "SUCCESS"){
-						t.row(trRow).remove();
-					}
-				}
-			})
+			deleteAjax(id,false);			
 		});
 
 		$("#tblList").on("click",".btn-edit",function(event){
@@ -148,6 +152,48 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 	});
+
+	function deleteAjax(id,confirmDelete){
+		var dataSubmit = [];
+		dataSubmit.push({
+			name : SECURITY_NAME,
+			value: SECURITY_VALUE,
+		});
+		
+		if (needConfirmDelete){
+			if (confirmDelete == 0){
+				MdlEditForm.saveCallBack = function(){
+					deleteAjax(id,1);
+				};		
+				MdlEditForm.show();
+				return;
+			}			
+			dataSubmit.push({
+				name : "fin_user_id_request_by",
+				value: MdlEditForm.user
+			});
+			dataSubmit.push({
+				name : "fst_edit_notes",
+				value: MdlEditForm.notes
+			});
+		}
+
+		$.ajax({			
+			url:"<?=$delete_ajax_url?>" + id,
+			method:"POST",
+			data:dataSubmit,
+			success:function(resp){
+				if (resp.message != ""){
+					alert(resp.message);
+				}
+
+				if (resp.status == "SUCCESS"){
+					//t.row(trRow).remove().draw(false); //refresh ajax
+					trRow.remove(); //no refresh ajax
+				}
+			}
+		})
+	}
 </script>
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>

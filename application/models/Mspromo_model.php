@@ -21,7 +21,7 @@ class Mspromo_model extends MY_Model
 
         $ssql = "SELECT a.*,IF (a.fst_item_type ='ITEM',b.fst_item_name,c.fst_item_group_name) AS ItemTerms FROM mspromoitems a 
         LEFT JOIN msitems b ON a.fin_item_id = b.fin_item_id
-        LEFT JOIN msgroupitems c ON a.fin_item_id = c.fin_item_group_id  
+        LEFT JOIN msgroupitems c ON a.fin_item_id = c.fin_item_group_id 
         WHERE a.fin_promo_id = ?";
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rsPromoTerms = $qr->result();
@@ -90,4 +90,22 @@ class Mspromo_model extends MY_Model
         $rs = $qr->result();
         return $rs;
     }
+
+    public function getDiscItem($finCustomerId,$finItemId,$fstUnit,$fdbQty,$trxDate = null){
+        if ($trxDate == null){
+            $trxDate = date("Y-m-d 23:59:59");
+        }else{
+            $trxDate = dBDateTimeFormat($trxDate);
+        }
+
+        $ssql = "SELECT * FROM mspromodiscperitems a 
+            INNER JOIN mspromo b on a.fin_promo_id = b.fin_promo_id 
+            WHERE a.fin_item_id = ? and a.fst_unit = ? and a.fin_qty < ?
+            and ? between b.fdt_start and b.fdt_end
+            AND b.fst_active = 'A'";
+
+        $qr = $this->
+
+    }
+
 }

@@ -1,5 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+include APPPATH . 'third_party/CustomException.php';
+
 /*
 | -------------------------------------------------------------------
 | AUTO-LOADER
@@ -131,4 +133,4 @@ $autoload['language'] = array();
 |
 |	$autoload['model'] = array('first_model' => 'first');
 */
-$autoload['model'] = array("mscurrencies_model");
+$autoload['model'] = array("mscurrencies_model","mY_Model"=>'my_model');

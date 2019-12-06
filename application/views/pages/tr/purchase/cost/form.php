@@ -537,8 +537,18 @@
 		return $('<label style="width:100%">'+ val.text +'</label>');
 	}
 
+	function formatPO(val){
+		var sstrElement = "<span style='display:inline-block;width:150px'>" + val.text + "</span>";
+		sstrElement += "<span style='display:inline-block;width:150px'>" + $("#fin_po_id option[value='" + val.id +"']").data("total") +"</span>";
+		sstrElement += "<span>"+ $("#fin_po_id option[value='" + val.id +"']").data("supplier_name") +"</span>";
+		return $(sstrElement);
+	}
+
 	$(function(){
 		$("#fdt_purchasecost_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
+
+		$("#fin_po_id").select2({templateResult:formatPO});
+
 		$("#fin_supplier_id").select2({templateResult:testSelec});
 		$("#fin_supplier_id").val(null).trigger("change.select2");		
 		$(".fbl_is_import").trigger("change");
@@ -561,7 +571,9 @@
 				var poList = resp;
 				$("#fin_po_id").empty();
 				$.each(poList ,function(i,v){
-					$("#fin_po_id").append("<option value='"+v.fin_po_id+"'>"+ v.fst_po_no +"</option>")
+					var total = parseFloat(v.fdc_subttl) - parseFloat(v.fdc_disc_amount) + parseFloat(v.fdc_ppn_amount);
+					total =App.money_format(total);
+					$("#fin_po_id").append("<option value='"+v.fin_po_id+"' data-total='" + v.fst_curr_code +':' + total +"' data-supplier_name='"+v.fst_supplier_name+"'>"+ v.fst_po_no +"</option>")
 				});
 				$("#fin_po_id").val(null);
 				callback(resp);
@@ -656,7 +668,7 @@
 					buttons : {
 						OK : function(){
 							if(resp.status == "SUCCESS"){
-								$("btnNew").trigger("click");
+								$("#btnNew").trigger("click");
 								return;
 							}
 						},
@@ -701,11 +713,23 @@
 
 					
 					$(".fbl_is_import [value='" + dataH.fbl_is_import +"']").prop("checked",true);
+					var isImport = $(".fbl_is_import:checked").val();
+					if (isImport == 1){
+						$("#fst_curr_code").prop("disabled",false);
+					}else{
+						$("#fst_curr_code").prop("disabled",true);
+						//$("#fst_curr_code").val("IDR");
+						//$("#fdc_exchange_rate_idr").val(App.money_parse(1));
+					}
+					$("#fst_curr_code").val(dataH.fst_curr_code);
+
+					//$(".fbl_is_import").trigger("change");
+
 					$("#fdt_purchasecost_datetime").val(App.dateTimeFormat(dataH.fdt_purchasecost_datetime)).datetimepicker("update");
 					$("#fin_supplier_id").val(dataH.fin_supplier_id).trigger("change.select2");
 
 
-					getPOList(function(resp){											
+					getPOList(function(resp){
 						App.addOptionIfNotExist("<option value='"+dataH.fin_po_id+"'>"+dataH.fst_po_no+"</option>","fin_po_id");
 						$("#fin_po_id").val(dataH.fin_po_id).trigger("change.select2");
 					});
@@ -775,7 +799,7 @@
 				alert(resp.message);
 			}
 			if(resp.status == "SUCCESS"){
-				//$("#btnClose").trigger("click");			
+				$("#btnClose").trigger("click");			
 			}
 
 		});	

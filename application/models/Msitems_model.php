@@ -13,10 +13,9 @@ class Msitems_model extends MY_Model
     public function getDataById($fin_item_id)
     {
         //$ssql = "select * from " . $this->tableName . " where fin_item_id = ? and fst_active = 'A'";
-        $ssql = "select a.*,b.fst_item_maingroup_name,c.fst_item_group_name,d.fst_item_subgroup_name,e.fst_linebusiness_name from " . $this->tableName . " a 
+        $ssql = "select a.*,b.fst_item_maingroup_name,c.fst_item_group_name,e.fst_linebusiness_name from " . $this->tableName . " a 
         left join msmaingroupitems b on a.fin_item_maingroup_id = b.fin_item_maingroup_id 
         left join msgroupitems c on a.fin_item_group_id = c.fin_item_group_id  
-        left join mssubgroupitems d on a.fin_item_subgroup_id = d.fin_item_subgroup_id
         left join mslinebusiness e on a.fst_linebusiness_id = e.fin_linebusiness_id  
         where a.fin_item_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$fin_item_id]);
@@ -251,14 +250,14 @@ class Msitems_model extends MY_Model
         $qr = $this->db->query($ssql,[$itemId,$fromUnit]);
         $rw = $qr->row();
         if($rw == null){
-            throw new Exception("Conversion Unit error : unit $fromUnit not defined !");                        
+            return 0; //throw new Exception("Conversion Unit error : unit $fromUnit not defined !");                        
         }
         $fromConversion = (float) $rw->fdc_conv_to_basic_unit;
         $ssql = "select * from msitemunitdetails where fin_item_id = ? and fst_unit = ?";
         $qr = $this->db->query($ssql,[$itemId,$toUnit]);
         $rw = $qr->row();
         if($rw == null){
-            throw new Exception("Conversion Unit error : unit $fromUnit not defined !");                        
+            return 0; //throw new Exception("Conversion Unit error : unit $fromUnit not defined !");                        
         }
 
         $toConversion = (float) $rw->fdc_conv_to_basic_unit;

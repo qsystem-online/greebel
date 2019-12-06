@@ -43,7 +43,7 @@ class Invoice extends MY_Controller{
 			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
 			['title' => 'Total Amount', 'width' => '100px', 'data' => 'fdc_total','className'=>'text-right',
 				'render'=>"function(data,type,row){
-					return App.money_format(data);
+					return row.fst_curr_code + ':' + App.money_format(data);
 				}"
 			],
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
@@ -83,7 +83,7 @@ class Invoice extends MY_Controller{
 			INNER JOIN msrelations c on b.fin_supplier_id = c.fin_relation_id 
 			) a");
 
-        $selectFields = "a.fin_lpbpurchase_id,a.fst_lpbpurchase_no,a.fdt_lpbpurchase_datetime,a.fst_po_no,a.fst_supplier_name,a.fst_memo,a.fdc_total";
+        $selectFields = "a.fin_lpbpurchase_id,a.fst_lpbpurchase_no,a.fdt_lpbpurchase_datetime,a.fst_po_no,a.fst_supplier_name,a.fst_memo,a.fdc_total,a.fst_curr_code";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');

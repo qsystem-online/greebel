@@ -176,6 +176,7 @@ class Trverification_model extends MY_Model {
             return $result;
 
         }else{
+
             $result =[
                 "status"=>"FAILED",
                 "message"=>lang("Anda tidak memiliki autorisasi untuk melakukan approval !")
@@ -198,13 +199,12 @@ class Trverification_model extends MY_Model {
         $qr = $this->db->query($ssql,[$finRecId]);        
         $rw = $qr->row();
         if($rw==null){
-            return["status"=>"FAILED","message"=>lang("Id transaksi tidak ditemukan !")];
+            throw new CustomException(lang("Id transaksi tidak ditemukan !"),3003,"FAILED",[]);
         }
 
         if ($rw->fin_department_id == $activeUser->fin_department_id && $rw->fin_user_group_id == $activeUser->fin_group_id){
             //Cek status diatasnya
             //NV = Need Verification, RV = Ready to verification, VF=Verified, RJ= Rejected, VD= Void
-
             $ssql ="SELECT * FROM trverification 
                 WHERE fin_branch_id = ? AND fst_controller = ? AND fst_verification_type = ? AND fin_transaction_id = ? 
                 AND fin_seqno > ? AND fst_verification_status IN ?";
@@ -219,14 +219,14 @@ class Trverification_model extends MY_Model {
             ]);
             $rs = $qr->result();
             if (sizeof($rs) > 0){
-                return["status"=>"FAILED","message"=>lang("Transaksi ini telah diapprove oleh level yang lebih tinggi !")];    
+                throw new CustomException(lang("Transaksi ini telah diapprove oleh level yang lebih tinggi !"),3003,"FAILED",[]);  
             }
 
             $this->load->model($rw->fst_model,'model');
             $action = "cancelApproval";
             if(is_callable(array($this->model, $action))){
                 $result = $this->model->$action($rw->fin_transaction_id);
-                if ($result["status"] == "SUCCESS"){
+                if ($result["status"] == "SUCCESS" || $result === null){
                     //Update status diatasnya menjadi NV dan Status ini menjadi RV
                     $ssql = "UPDATE trverification SET fst_verification_status = 'NV' 
                         WHERE fin_branch_id = ? AND fst_controller = ? AND fst_verification_type = ? AND fin_transaction_id = ? 
@@ -242,10 +242,12 @@ class Trverification_model extends MY_Model {
 
                     $ssql = "UPDATE trverification SET fst_verification_status = 'RV' WHERE fin_rec_id = ?";
                     $qr = $this->db->query($ssql,[$finRecId]);
+                }else{
+                    throw new CustomException($result["message"],3003,$result["status"],[]);
                 }
-                return $result;                            
+                
             }else{
-                return["status"=>"FAILED","message"=>lang("Cancel Approval Method Not Found in Model")];    
+                throw new CustomException(lang("Cancel Approval Method Not Found in Model"),3003,"FAILED",[]);     
             }
 
         }else{
@@ -318,6 +320,18 @@ class Trverification_model extends MY_Model {
         }else{
             return true;
         }
+    }
+
+    public function deleteApproval($controller,$finTransId){
+        $ssql ="select * from trverification where fst_controller = ? and fin_transaction_id = ? and fst_verification_status in ('VF','RJ','VD') and fst_active ='A' ";
+        $qr = $this->db->query($ssql,[$controller,$finTransId]);
+        $rw = $qr->row();
+        if ($rw != null){
+            throw new CustomException(sprintf(lang("Transaksi %s sudah dilakukan proses approval"),$rw->fst_transaction_no),3003,"FAILED",null);
+        }
+        $ssql = "delete from trverification where fst_controller = ? and fin_transaction_id = ?";
+        $this->db->query($ssql,[$controller,$finTransId]);
+        throwIfDBError();
     }
 
 }

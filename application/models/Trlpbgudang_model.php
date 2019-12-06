@@ -133,6 +133,7 @@ class Trlpbgudang_model extends MY_Model {
 
     public function unposting($finLPBGudangId,$unpostingDateTime =""){
         $this->load->model("trinventory_model");
+        $this->load->model("trpo_model");
         //$this->load->model("glledger_model");
         $result=[
             "status"=>"SUCCESS",
@@ -149,49 +150,45 @@ class Trlpbgudang_model extends MY_Model {
         $ssql ="select * from trlpbgudangitems where fin_lpbgudang_id = ?";        
         $qr = $this->db->query($ssql,[$finLPBGudangId]);        
         $listItems = $qr->result();        
-        foreach($listItems as $item){            
+        foreach($listItems as $item){
             $ssql = "update trpodetails set fdb_qty_lpb = fdb_qty_lpb - ? where fin_po_detail_id = ?";
             $this->db->query($ssql,[$item->fdb_qty,$item->fin_po_detail_id]);
             $this->trinventory_model->deleteByCodeId("LPB",$finLPBGudangId);
         }
 
         //Delete itemdetails
-        $ssql ="delete from msitemdetails where fst_trans_type = 'PPB' and fin_trans_id = ?";
-        $this->db->query($ssql,[$finLPBGudangId]);
-
-        $dbError  = $this->db->error();
-		if ($dbError["code"] != 0){	
-            $result["status"]= "FAILED";
-            $result["message"]= $dbError["message"];            
-			return $result;
-        }
-        
+        $this->trinventory_model->deleteInsertSerial("PPB",$finLPBGudangId);
+                
+        //Update Status Closed PO
+        $this->trpo_model->updateClosedStatus($dataH->fin_po_id);
         
         return $result;
     }
 
     public function posting($finLPBGudangId){
         $this->load->model("trinventory_model");
+        $this->load->model("trpo_model");
 
         $ssql = "select * from trlpbgudang where fin_lpbgudang_id = ?";
         $qr= $this->db->query($ssql,[$finLPBGudangId]);
         $dataH = $qr->row();
+        if ($dataH == null){
+            throw new CustomException(lang("ID Penerimaan Gudang tidak dikenal"),3003,"FAILED");
+        }
+        
+        $finPOId = $dataH->fin_po_id;
 
-        $ssql = "SELECT a.*,b.fin_item_id,b.fst_unit,b.fdc_price,b.fdb_qty as qty_po,b.fdb_qty_lpb as qty_lpb,b.fst_custom_item_name 
+        $ssql = "SELECT a.*,b.fin_item_id,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdb_qty as qty_po,b.fdb_qty_lpb as qty_lpb,b.fst_custom_item_name 
             FROM trlpbgudangitems a 
             LEFT JOIN trpodetails b on a.fin_po_detail_id = b.fin_po_detail_id
             WHERE fin_lpbgudang_id = ?";
 
         $qr= $this->db->query($ssql,[$finLPBGudangId]);
-        $dataD = $qr->result();
+        $dataD = $qr->result();        
 
-        $result=[
-            "status"=>"SUCCESS",
-            "message"=>""
-        ];
-
+        
         foreach($dataD as $detail){
-            
+
             //Cek qty_lpb < qty po
             $qtyPO = (double) $detail->qty_po;
             $qtyLPB= (double) $detail->qty_lpb;
@@ -210,24 +207,40 @@ class Trlpbgudang_model extends MY_Model {
                     "fin_warehouse_id"=>$dataH->fin_warehouse_id,
                     "fdt_trx_datetime"=>$dataH->fdt_lpbgudang_datetime,
                     "fst_trx_code"=>"LPB", 
-                    "fin_trx_id"=>$finLPBGudangId, 
+                    "fin_trx_id"=>$finLPBGudangId,
+                    "fin_trx_detail_id"=>$detail->fin_rec_id,
                     "fst_trx_no"=>$dataH->fst_lpbgudang_no, 
                     "fst_referensi"=>null, 
                     "fin_item_id"=>$detail->fin_item_id, 
                     "fst_unit"=>$detail->fst_unit, 
                     "fdb_qty_in"=>$detail->fdb_qty, 
                     "fdb_qty_out"=>0, 
-                    "fdc_price_in"=>$detail->fdc_price, 
+                    "fdc_price_in"=>(float) $detail->fdc_price - (float) calculateDisc($detail->fst_disc_item,$detail->fdc_price),
                     "fst_active"=>"A" 
                 ];
-
                 $this->trinventory_model->insert($dataStock);
 
+                //Update msitemdetails & summary
+                $dataSerial = [
+                    "fin_warehouse_id"=>$dataH->fin_warehouse_id,
+                    "fin_item_id"=>$detail->fin_item_id,
+                    "fst_unit"=>$detail->fst_unit,
+                    "fst_serial_number_list"=>$detail->fst_serial_number_list,
+                    "fst_batch_no"=>$detail->fst_batch_number,
+                    "fst_trans_type"=>"PPB", 
+                    "fin_trans_id"=>$dataH->fin_lpbgudang_id,
+                    "fst_trans_no"=>$dataH->fst_lpbgudang_no,
+                    "fin_trans_detail_id"=>$detail->fin_rec_id,
+                    "fdb_qty"=>$detail->fdb_qty,
+                    "in_out"=>"IN",
+                ];
+                
+                $this->trinventory_model->insertSerial($dataSerial);
+                
             }else{
-                $result["status"] ="FAILED";
-                $result["message"] ="Qty penerimaan " . $detail->fst_custom_item_name ." tidak bisa melebihi $qtySisa";
-                return $result;
+                throw new CustomException(sprintf(lang("Qty penerimaan %s tidak bisa melebih %s"),$detail->fst_custom_item_name,$qtySisa),3003,"FAILED",null);
             }
+            
         }
 
         //Cek total qty Penerimaan 
@@ -240,71 +253,11 @@ class Trlpbgudang_model extends MY_Model {
             $errorQty[] = "Total $rw->fst_custom_item_name tidak boleh melebihi $rw->fdb_qty";
         }
         if (sizeof($errorQty) > 0){
-            $result["status"] ="FAILED";
-            $result["message"] ="Total qty penerimaan melebihi qty di PO !";
-            $result["data"] = $errorQty;
-            return $result;            
+            throw new CustomException(lang("Total qty penerimaan melebihi qty di PO !"),3003,"FAILED",$errorQty);
         }
 
-        //Insert Detail item
-        foreach($dataD as $detail){
-            $strBatchNo = $detail->fst_batch_number;
-            $strArrSerial = $detail->fst_serial_number_list;
-            $arrSerial = json_decode($strArrSerial);
-            if ($arrSerial != null){
-                foreach($arrSerial as $serial){
-                    $data = [
-                        "fin_item_id"=>$detail->fin_item_id,
-                        "fst_serial_no"=>$serial,
-                        "fst_trans_type"=>"PPB",
-                        "fin_trans_id"=>$detail->fin_lpbgudang_id,
-                        "fdb_qty_in"=>1,
-                        "fst_active"=>"A",
-                        "fdt_insert_datetime"=>date("Y-m-d H:i:s")
-                    ];
-                    if ($strBatchNo != "" && $strBatchNo != null){
-                        $data["fst_batch_no"] = $strBatchNo;
-                    }
-
-                    $this->db->insert("msitemdetails",$data);
-                    $result = parent::getDBErrors();
-                    if ($result["status"] != "SUCCESS"){
-                        return ["status"=>"FAILED",
-                            "message"=>sprintf(lang("Nomor serial %s tidak bisa disimpan!"),$serial),
-                            "data"=>$result
-                        ];
-                    }
-                }
-            }else{
-                if ($strBatchNo != "" && $strBatchNo != null){
-                    $data = [
-                        "fin_item_id"=>$detail->fin_item_id,
-                        "fst_batch_no"=> $strBatchNo,
-                        "fst_trans_type"=>"PPB",
-                        "fin_trans_id"=>$detail->fin_lpbgudang_id,
-                        "fdb_qty_in"=>$detail->fdb_qty,
-                        "fst_active"=>"A",
-                        "fdt_insert_datetime"=>date("Y-m-d H:i:s")
-                    ];
-                    try {
-                        $this->db->insert("msitemdetails",$data);
-                    }catch(Exception $e){
-                        return ["status"=>"FAILED",
-                            "message"=>$e->message,
-                            "data"=>$e
-                        ];
-                    }
-                }
-            }
-        }
-
-        if( $result["status"] != "SUCCESS"){
-            var_dump($result); 
-            throw new Exception($result["message"], EXCEPTION_JURNAL);
-        }
-
-        return $result;
-       
+        //Update Status Closed PO
+        $this->trpo_model->updateClosedStatus($finPOId);       
     }
 
     public function update($data){
@@ -358,7 +311,8 @@ class Trlpbgudang_model extends MY_Model {
    public function isEditable($finLPBGudangId){
        /**
         * FAILED CONDITION
-        * 1. Sudah terbit faktur
+        * + Sudah terbit faktur
+        * + bila  serial_number atau batch_no sudah terpakai
         */
 
         /** 1. Sudahh terbit faktur */
@@ -371,8 +325,28 @@ class Trlpbgudang_model extends MY_Model {
             $resp =["status"=>"FAILED","message"=>sprintf(lang("Transaksi ini telah memiliki faktur %s" ),$rw->fst_lpbpurchase_no)];
             return $resp;
         }
-        
 
+        /** cek bila batch no atau serial sudah terpakai */
+        $ssql = "SELECT a.*,b.fst_item_code,b.fst_item_name FROM msitemdetails a 
+            INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
+            WHERE a.fst_trans_type ='PPB' AND a.fin_trans_id = ?";
+        $qr = $this->db->query($ssql,[$finLPBGudangId]);
+        $rs = $qr->result();
+        foreach($rs as $rw){
+            $ssql = "SELECT * FROM msitemdetailssummary WHERE fin_warehouse_id = ? and fin_item_id = ? and fst_batch_no = ? and fst_serial_no =?";
+            $qr = $this->db->query($ssql,[$rw->fin_warehouse_id,$rw->fin_item_id,$rw->fst_batch_no,$rw->fst_serial_no]);
+            $rwSumm = $qr->row();
+            if ($rwSumm->fdb_qty_in < $rwSumm->fdb_qty_out + ($rw->fdb_qty_in - $rw->fdb_qty_out)){
+                $resp =["status"=>"FAILED",
+                    "message"=>sprintf(
+                        lang("Transaksi tidak dapat dihapus, item %s batch|serial: %s telah digunakan !" ),
+                        $rw->fst_item_code . " - " . $rw->fst_item_name , 
+                        $rw->fst_batch_no ."|". $rw->fst_serial_no
+                    )
+                ];
+                return $resp;
+            }
+        }
 
         $resp =["status"=>"SUCCESS","message"=>""];
         return $resp;

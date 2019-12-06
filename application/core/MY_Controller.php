@@ -51,7 +51,6 @@ class MY_Controller extends CI_Controller
 
 	public function json_output($data = null, $http_code = 200)
 	{
-
 		header('Content-Type: application/json');
 		http_response_code($http_code);
 
