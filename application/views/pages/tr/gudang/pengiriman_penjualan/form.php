@@ -491,6 +491,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             submitAjax(0);
 		})
 
+		$("#fin_warehouse_id").change(function(e){
+			//set batch and serial to null
+			t = $('#tblSJDetails').DataTable();
+
+			var rows = t.rows().indexes();
+			App.log(rows);
+			//var data = t.rows( rows ).data();
+			/*
+			dataList = t.rows().data();
+			$.each(dataList , function(i,data){
+				data.fst_batch_number:null;
+				data.fst_serial_number_list:null;
+			});
+			*/
+
+
+		})
 
 		$("#btn-add-items").click(function(e){
 			e.preventDefault();
@@ -503,6 +520,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript" info="init">
 	$(function(){
 		$("#fdt_sj_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
+		
 
 		//Get unprocess SO
         $("#fin_salesorder_id").select2({
@@ -583,17 +601,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			fnRowCallback: function( nRow, aData, iDisplayIndex ) {},
 		}).on('draw',function(){
 			
-			$('.xbtn-delete').confirmation({
-				//rootSelector: '[data-toggle=confirmation]',
-				rootSelector: '.btn-delete',
-				// other options
-			});	
+			$("#btnDelete").confirmation({
+				title:"<?=lang("Hapus data ini ?")?>",
+				rootSelector: '#btnDelete',
+				placement: 'left',
+			});
 
 			calculateTotal();
 		}).on("click",".btn-delete",function(event){
-			t = $('#tblSODetails').DataTable();
+			event.preventDefault();
+			t = $('#tblSJDetails').DataTable();
 			var trRow = $(this).parents('tr');
-
 			t.row(trRow).remove().draw();
 			calculateTotal();
 		}).on("click",".btn-edit",function(event){	
@@ -629,7 +647,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             $("#mdlDetail").modal("show");
 								
         });
-
+		
+		
 
 		App.fixedSelect2();
 
@@ -815,11 +834,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	}
 
     function getOutstandingDetailSO(finSalesOrderId,callback){
+		t = $("#tblSJDetails").DataTable();
+		t.clear().draw();
+
         $.ajax({
             url:"<?=site_url()?>tr/gudang/pengiriman_penjualan/get_detail_so/" + finSalesOrderId,
         }).done(function(resp){
             arrData = resp.data;
-			t = $("#tblSJDetails").DataTable();            
+			
 			var dataTable =[];
 			var itemList = [];
             $.each(arrData,function(i,v){				
@@ -929,46 +951,7 @@ $(function(){
 
 		
 
-		$("#btnDelete").confirmation({
-			title:"<?=lang("Hapus data ini ?")?>",
-			rootSelector: '#btnDelete',
-			placement: 'left',
-		});
-		$("#btnDelete").click(function(e){
-			e.preventDefault();
-			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
-			$.ajax({
-				url:"<?= site_url() ?>tr/delivery_order/delete/" + $("#fin_sj_id").val(),
-			}).done(function(resp){
-				//consoleLog(resp);
-				$.unblockUI();
-				if (resp.message != "")	{
-					$.alert({
-						title: 'Message',
-						content: resp.message,
-						buttons : {
-							OK : function() {
-								if (resp.status == "SUCCESS") {
-									window.location.href = "<?= site_url() ?>tr/delivery_order/lizt";
-									//return;
-								}
-							},
-						}
-					});
-				}
-
-				if(resp.status == "SUCCESS") {
-					data = resp.data;
-					$("#fin_sj_id").val(data.insert_id);
-
-					//Clear all previous error
-					$(".text-danger").html("");
-					// Change to Edit mode
-					$("#frm-mode").val("EDIT");  //ADD|EDIT
-					$('#fst_sj_no').prop('readonly', true);
-				}
-			});
-		});
+		
 
 		$("#btnList").click(function(e){
 			e.preventDefault();

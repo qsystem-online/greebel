@@ -457,6 +457,17 @@ class Trinventory_model extends MY_Model
                 }else{
                     $dataSerial["fdb_qty_in"] = 0;
                     $dataSerial["fdb_qty_out"] = 1;
+                    $isAvailable = $this->isBatchSerialAvailable(
+                        $dataSerial["fin_warehouse_id"],
+                        $dataSerial["fin_item_id"],
+                        $dataSerial["fst_batch_no"],
+                        $serial,
+                        $dataSerial["fdb_qty_out"],
+                        $dataSerial["fst_basic_unit"]
+                    );
+                    if ($isAvailable == false){
+                        throw new CustomException(sprintf(lang("serial %s:%s tidak tersedia"),$dataSerial["fst_batch_no"],$serial),3003,"FAILED",null);
+                    }
                 }
 
                 $data = [
@@ -517,9 +528,7 @@ class Trinventory_model extends MY_Model
                 }
 
 
-            }
-            
-        
+            }                
         }else{
             if ($dataSerial["fst_batch_no"] != null && $dataSerial["fst_batch_no"] != "" ){
                 $qtyInBasicUnit = $this->msitems_model->getQtyConvertToBasicUnit($dataSerial["fin_item_id"],$dataSerial["fdb_qty"],$dataSerial["fst_unit"]);
@@ -531,6 +540,17 @@ class Trinventory_model extends MY_Model
                 }else{
                     $dataSerial["fdb_qty_in"] = 0;
                     $dataSerial["fdb_qty_out"] = $qtyInBasicUnit;
+                    $isAvailable = $this->isBatchSerialAvailable(
+                        $dataSerial["fin_warehouse_id"],
+                        $dataSerial["fin_item_id"],
+                        $dataSerial["fst_batch_no"],
+                        null,
+                        $dataSerial["fdb_qty_out"],
+                        $dataSerial["fst_basic_unit"]
+                    );
+                    if ($isAvailable == false){
+                        throw new CustomException(sprintf(lang("serial %s:%s tidak tersedia"),$dataSerial["fst_batch_no"],$serial),3003,"FAILED",null);
+                    }
                 }
 
                 $data = [
@@ -591,6 +611,24 @@ class Trinventory_model extends MY_Model
                 }
             }
         }
+    }
+
+    public function isBatchSerialAvailable($finWarehouseId,$finItemId,$fstBatchNo,$fstSerialNo,$fdbQty,$fstUnit){
+        $this->load->model("msitems_model");
+        $ssql = "Select * from msitemdetailssummary where fin_warehouse_id = ? and fin_item_id = ? and fst_batch_no =? and fst_serial_no = ? ";
+        $qr =$this->db->query($ssql,[$finWarehouseId,$finItemId,$fstBatchNo,$fstSerialNo]);
+        $rw = $qr->row();
+        if ($rw == null){
+            return false;
+        }
+        $basicUnit = $this->msitems_model->getBasicUnit($finItemId);
+        $qtyBasicUnit = $this->msitems_model->getQtyConvertToBasicUnit($finItemId,$fdbQty,$fstUnit);
+        if ($rw->fdb_qty_in - $rw->fdb_qty_out < $qtyBasicUnit){
+            return false;
+        }else{
+            return true;
+        }
+
     }
 
     public function deleteInsertSerial($transType,$finTransId){

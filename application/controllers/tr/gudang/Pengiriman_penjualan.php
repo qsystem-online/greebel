@@ -35,7 +35,7 @@ class Pengiriman_penjualan extends MY_Controller{
 		$this->list['columns'] = [
 			['title' => 'Sales Order ID.', 'width' => '5%', 'data' => 'fin_sj_id'],
 			['title' => 'Sales Order No.', 'width' => '13%', 'data' => 'fst_sj_no'],
-			['title' => 'Sales Order Date', 'width' => '12%', 'data' => 'fdt_sj_date'],
+			['title' => 'Sales Order Date', 'width' => '12%', 'data' => 'fdt_sj_datetime'],
             ['title' => 'Memo', 'width' => '13%', 'data' => 'fst_sj_memo'],
             ['title' => 'Action', 'width' => '7%', 'sortable' => false, 'className' => 'dt-body-center text-center',
                 'render'=>'function( data, type, row, meta ) {
@@ -289,7 +289,7 @@ class Pengiriman_penjualan extends MY_Controller{
             $this->trsuratjalan_model->posting($insertId);
 
 
-           // $this->db->trans_complete();
+            $this->db->trans_complete();
             $this->ajxResp["status"] = "SUCCESS";
             $this->ajxResp["message"] = "Data Saved !";
             $this->ajxResp["data"]["insert_id"] = $insertId;
@@ -313,7 +313,7 @@ class Pengiriman_penjualan extends MY_Controller{
         $this->load->model("trinventory_model");
         
         $dataH = $this->input->post();        
-        $dataH["fdt_sj_date"] = dBDateTimeFormat($dataH["fdt_sj_date"]);
+        $dataH["fdt_sj_datetime"] = dBDateTimeFormat($dataH["fdt_sj_datetime"]);
         
         $dataH["fbl_is_hold"] = isset($dataH["fbl_is_hold"]) ? TRUE : FALSE;
 
