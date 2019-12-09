@@ -444,7 +444,7 @@ class Relation extends MY_Controller{
 
 	public function get_sales_id(){
 		$term = $this->input->get("term");
-		$ssql = "SELECT fin_user_id, fst_username from users where fin_department_id = 1 ";
+		$ssql = "SELECT fin_user_id, fst_username from users where fin_department_id = 2 ";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
