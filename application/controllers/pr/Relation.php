@@ -335,16 +335,6 @@ class Relation extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function get_linebusiness_id(){
-		$term = $this->input->get("term");
-		$ssql = "SELECT fin_linebusiness_id, fst_linebusiness_name FROM mslinebusiness where fst_linebusiness_name LIKE ?";
-		$qr = $this->db->query($ssql,['%'.$term.'%']);
-		$rs = $qr->result();
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["data"] = $rs;
-		$this->json_output();
-	}
-
 	public function get_relation_group(){
 		$term = $this->input->get("term");
 		$ssql = "SELECT fin_relation_group_id, fst_relation_group_name from msrelationgroups where fst_relation_group_name like ?";

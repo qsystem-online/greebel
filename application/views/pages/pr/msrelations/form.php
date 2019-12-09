@@ -75,10 +75,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="fst_linebusiness_id" class="col-md-2 control-label"><?=lang("Line Business")?> :</label>
+					<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Line Of Business")?> :</label>
 						<div class="col-md-10">
-							<select class="form-control select2" id= "fst_linebusiness_id" name="fst_linebusiness_id[]" multiple="multiple">
-								<?php foreach ($linebusinessList as $linebusiness) {    ?>
+							<select class="form-control select2" id="select-lineBusiness" name="fst_linebusiness_id[]"  multiple="multiple">
+							<?php foreach ($linebusinessList as $linebusiness) {    ?>
 										<option value='<?= $linebusiness->fin_linebusiness_id ?>'><?= $linebusiness->fst_linebusiness_name ?> </option>
 									<?php
 								} ?>
@@ -789,7 +789,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$(".select2").select2();
 
-		$("#fst_linebusiness_id").select2();
+		$("#select-lineBusiness").select2();
 
 		$("#select-parentId").select2({
 			width: '100%',
@@ -1327,9 +1327,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					} 
 				});
 
-				var fst_linebusiness_id = (resp.ms_relations.fst_linebusiness_id.split(","));
-				console.log(fst_linebusiness_id);
-				$("#fst_linebusiness_id").val(fst_linebusiness_id).trigger("change.select2");
+				var arrLinebusiness = (resp.ms_relations.fst_linebusiness_id.split(","));
+                $('#select-lineBusiness').val(arrLinebusiness).trigger("change.select2");
 
 				$("#fdt_birth_date").datepicker('update', dateFormat(resp.ms_relations.fdt_birth_date));
 
