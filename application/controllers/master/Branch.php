@@ -41,7 +41,7 @@ class Branch extends MY_Controller
             ['title' => 'Branch Name', 'width' => '15%', 'data' => 'fst_branch_name'],
             ['title' => 'Phone', 'width' => '10%', 'data' => 'fst_branch_phone'],
             ['title' => 'Notes', 'width' => '15%', 'data' => 'fst_notes'],
-            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);

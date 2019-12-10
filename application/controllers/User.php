@@ -42,7 +42,7 @@ class User extends MY_Controller
 			['title' => 'Gender', 'width' => '10%', 'data' => 'fst_gender'],
 			['title' => 'Birthdate', 'width' => '15%', 'data' => 'fdt_birthdate'],
 			['title' => 'Birthplace', 'width' => '15%', 'data' => 'fst_birthplace'],
-			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 
 		$main_header = $this->parser->parse('inc/main_header', [], true);

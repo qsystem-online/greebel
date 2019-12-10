@@ -35,7 +35,7 @@ class Usersgroup extends MY_Controller {
 			['title' => 'Group ID', 'width'=>'10%', 'data'=>'fin_group_id'],
             ['title' => 'Group Name', 'width'=>'25%', 'data'=>'fst_group_name'],
             ['title' => 'Level', 'width' =>'15%', 'data'=>'fst_level_name'],
-			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-center']
+			['title' => 'Action', 'width'=>'10%', 'data'=>'action','sortable'=>false, 'className'=>'dt-body-center text-center']
 		];
         $main_header = $this->parser->parse('inc/main_header',[],true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);

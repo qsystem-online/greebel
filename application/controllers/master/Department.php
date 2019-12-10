@@ -39,7 +39,7 @@ class Department extends MY_Controller
 		$this->list['columns'] = [
 			['title' => 'Department ID', 'width' => '10%', 'data' => 'fin_department_id'],
 			['title' => 'Department Name', 'width' => '25%', 'data' => 'fst_department_name'],
-			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
