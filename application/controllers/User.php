@@ -42,7 +42,7 @@ class User extends MY_Controller
 			['title' => 'Gender', 'width' => '10%', 'data' => 'fst_gender'],
 			['title' => 'Birthdate', 'width' => '15%', 'data' => 'fdt_birthdate'],
 			['title' => 'Birthplace', 'width' => '15%', 'data' => 'fst_birthplace'],
-			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 
 		$main_header = $this->parser->parse('inc/main_header', [], true);
@@ -336,7 +336,6 @@ class User extends MY_Controller
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 				<a class='btn-edit' href='#' data-id='" . $data["fin_user_id"] . "'><i class='fa fa-pencil'></i></a>
-				<a class='btn-delete' href='#' data-id='" . $data["fin_user_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 			</div>";
 
 			$arrDataFormated[] = $data;

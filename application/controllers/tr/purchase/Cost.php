@@ -22,7 +22,7 @@ class Cost extends MY_Controller{
         $this->list['page_name'] = lang("Biaya - Pembelian");
         $this->list['list_name'] = "Daftar Biaya Pembelian";
         $this->list['boxTools'] = [
-			"<a id='btnNew'  href='".site_url()."tr/purchase/cost/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> ".lang("Tambah Data")."</a>",
+			"<a id='btnNew'  href='".site_url()."tr/purchase/cost/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> ".lang("New Record")."</a>",
 		];
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/purchase/cost/fetch_list_data';

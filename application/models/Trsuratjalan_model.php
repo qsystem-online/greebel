@@ -220,23 +220,21 @@ class Trsuratjalan_model extends MY_Model {
 
         foreach($detailList as $dataD){
             //Update msitemdetails dan msitemdetailssummary
-            $strArrSerial  = $dataD["fst_serial_number_list"];
-            $arrSerial = json_decode($strArrSerial);
-            foreach($arrSerial as $serial){
-                $dataSerial = [
-                    "fin_warehouse_id"=>$dataH->fin_warehouse_id,
-                    "fin_item_id"=>$dataD->fin_item_id,
-                    "fst_serial_no"=>$serial,
-                    "fst_batch_no"=>$dataD->fst_batch_no,
-                    "fst_trans_type"=>"PPJ", 
-                    "fin_trans_id"=>$dataH->fin_sj_id,
-                    "fst_trans_no"=>$dataH->fst_sj_no,
-                    "fin_trans_detail_id"=>$dataD->fin_rec_id,
-                    "fdb_qty_in"=>0,
-                    "fdb_qty_out"=>1
-                ];
-                $this->trinventory_model->insertSerial($dataSerial);
-            }
+            //$strArrSerial  = $dataD["fst_serial_number_list"];                       
+            $dataSerial = [
+                "fin_warehouse_id"=>$dataH->fin_warehouse_id,
+                "fin_item_id"=>$dataD->fin_item_id,
+                "fst_unit"=>$dataD->fst_unit,
+                "fst_serial_number_list"=>$dataD->fst_serial_number_list,
+                "fst_batch_no"=>$dataD->fst_batch_number,
+                "fst_trans_type"=>"PPJ", 
+                "fin_trans_id"=>$dataH->fin_sj_id,
+                "fst_trans_no"=>$dataH->fst_sj_no,
+                "fin_trans_detail_id"=>$dataD->fin_rec_id,
+                "fdb_qty"=>$dataD->fdb_qty,
+                "in_out"=>"OUT",
+            ];            
+            $this->trinventory_model->insertSerial($dataSerial);
             
             //Update kartu stock
             $data = [
@@ -247,10 +245,10 @@ class Trsuratjalan_model extends MY_Model {
                 "fst_trx_no"=>$dataH->fst_sj_no,
                 "fin_trx_detail_id"=>$dataD->fin_rec_id,
                 "fst_referensi"=>$dataH->fst_sj_memo,
-                "fin_item_id"=>$rw->fin_item_id,
-                "fst_unit"=>$rw->fst_unit,
+                "fin_item_id"=>$dataD->fin_item_id,
+                "fst_unit"=>$dataD->fst_unit,
                 "fdb_qty_in"=>0,
-                "fdb_qty_out"=>$rw->fdb_qty,
+                "fdb_qty_out"=>$dataD->fdb_qty,
                 "fdc_price_in"=>0,
                 "fst_active"=>"A"
             ];
@@ -264,7 +262,7 @@ class Trsuratjalan_model extends MY_Model {
 
         //Cek All Data valid after Process
         //Data SO detail  still valid
-        $ssql = "SELECT * FROM trsalesorderdetail WHERE fin_salesorder_id = ? AND fdb_qty < (fdb_qty_out + fdb_qty_return)";
+        $ssql = "SELECT * FROM trsalesorderdetails WHERE fin_salesorder_id = ? AND fdb_qty < (fdb_qty_out + fdb_qty_return)";
         $qr = $this->db->query($ssql,$dataH->fin_salesorder_id);
         $rw = $qr->row();
         if ($rw != null){

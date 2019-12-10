@@ -300,7 +300,6 @@ class Relation extends MY_Controller{
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='" . $data["fin_relation_id"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["fin_relation_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 			$arrDataFormated[] = $data;
 		}
@@ -328,16 +327,6 @@ class Relation extends MY_Controller{
 	public function get_branch(){
 		$term = $this->input->get("term");
 		$ssql = "SELECT fin_branch_id, fst_branch_name from msbranches where fst_branch_name like ?";
-		$qr = $this->db->query($ssql,['%'.$term.'%']);
-		$rs = $qr->result();
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["data"] = $rs;
-		$this->json_output();
-	}
-
-	public function get_linebusiness_id(){
-		$term = $this->input->get("term");
-		$ssql = "SELECT fin_linebusiness_id, fst_linebusiness_name FROM mslinebusiness where fst_linebusiness_name LIKE ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		$this->ajxResp["status"] = "SUCCESS";
@@ -454,7 +443,7 @@ class Relation extends MY_Controller{
 
 	public function get_sales_id(){
 		$term = $this->input->get("term");
-		$ssql = "SELECT fin_user_id, fst_username from users where fin_department_id = 1 ";
+		$ssql = "SELECT fin_user_id, fst_username from users where fin_department_id = 2 ";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		

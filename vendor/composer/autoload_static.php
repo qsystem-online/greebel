@@ -86,6 +86,7 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
         array (
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
+            'Svg\\' => 4,
         ),
         'P' => 
         array (
@@ -138,6 +139,10 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
         ),
+        'Svg\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src/Svg',
+        ),
         'Psr\\SimpleCache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
@@ -148,7 +153,7 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
         ),
         'Prophecy\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpspec/prophecy/src',
+            0 => __DIR__ . '/..' . '/phpspec/prophecy/src/Prophecy',
         ),
         'PhpOffice\\PhpSpreadsheet\\' => 
         array (
@@ -189,15 +194,11 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
         array (
             'org\\bovigo\\vfs' => 
             array (
-                0 => __DIR__ . '/..' . '/mikey179/vfsStream/src/main/php',
+                0 => __DIR__ . '/..' . '/mikey179/vfsstream/src/main/php',
             ),
         ),
         'S' => 
         array (
-            'Svg\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src',
-            ),
             'Sabberworm\\CSS' => 
             array (
                 0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/lib',

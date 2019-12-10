@@ -104,7 +104,7 @@ class Mspromo_model extends MY_Model
             and ? between b.fdt_start and b.fdt_end
             AND b.fst_active = 'A'";
 
-        //$qr = $this->
+        
 
     }
 

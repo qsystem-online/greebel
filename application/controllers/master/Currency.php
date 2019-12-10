@@ -21,8 +21,8 @@ class Currency extends MY_Controller {
         $this->list['delete_ajax_url']=site_url().'master/currency/delete/';
         $this->list['edit_ajax_url']=site_url().'master/currency/edit/';
         $this->list['arrSearch']=[
-            'a.fst_curr_code ' => 'Currencies Code',
-            'a.fst_curr_name' => 'Name'
+            'fst_curr_code ' => 'Currencies Code',
+            'fst_curr_name' => 'Name'
 		];
 		$this->list['breadcrumbs']=[
 			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
@@ -271,7 +271,6 @@ class Currency extends MY_Controller {
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='".$data["fst_curr_code"]."'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='".$data["fst_curr_code"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;

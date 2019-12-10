@@ -77,14 +77,16 @@ class Dumper
                     continue;
                 }
 
-				if ($value instanceof TaggedValue) {
+                if ($value instanceof TaggedValue) {
                     $output .= sprintf('%s%s !%s', $prefix, $dumpAsMap ? Inline::dump($key, $flags).':' : '-', $value->getTag());
-                    if ($inline - 1 <= 0) {
+
+                    if ($inline - 1 <= 0 || null === $value->getValue() || is_scalar($value->getValue())) {
                         $output .= ' '.$this->dump($value->getValue(), $inline - 1, 0, $flags)."\n";
                     } else {
                         $output .= "\n";
                         $output .= $this->dump($value->getValue(), $inline - 1, $dumpAsMap ? $indent + $this->indentation : $indent + 2, $flags);
                     }
+
                     continue;
                 }
 

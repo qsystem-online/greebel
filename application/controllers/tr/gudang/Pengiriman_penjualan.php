@@ -23,8 +23,8 @@ class Pengiriman_penjualan extends MY_Controller{
 		$this->list['delete_ajax_url'] = site_url() . 'tr/gudang/pengiriman_penjualan/ajx_delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'tr/gudang/pengiriman_penjualan/edit/';
 		$this->list['arrSearch'] = [
-			'fin_ssj_id' => 'Surat jalan ID',
-			'fst_sj_no' => 'Surat jalan No'
+			'fin_ssj_id' => 'Surat Jalan ID',
+			'fst_sj_no' => 'Surat Jalan No'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -35,7 +35,7 @@ class Pengiriman_penjualan extends MY_Controller{
 		$this->list['columns'] = [
 			['title' => 'Sales Order ID.', 'width' => '5%', 'data' => 'fin_sj_id'],
 			['title' => 'Sales Order No.', 'width' => '13%', 'data' => 'fst_sj_no'],
-			['title' => 'Sales Order Date', 'width' => '12%', 'data' => 'fdt_sj_date'],
+			['title' => 'Sales Order Date', 'width' => '12%', 'data' => 'fdt_sj_datetime'],
             ['title' => 'Memo', 'width' => '13%', 'data' => 'fst_sj_memo'],
             ['title' => 'Action', 'width' => '7%', 'sortable' => false, 'className' => 'dt-body-center text-center',
                 'render'=>'function( data, type, row, meta ) {
@@ -165,8 +165,7 @@ class Pengiriman_penjualan extends MY_Controller{
         $this->json_output();        
     }
 
-    public function ajx_add_save(){
-        
+    public function ajx_add_save(){    
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsuratjalandetails_model");
         $this->load->model("trinventory_model");
@@ -282,7 +281,8 @@ class Pengiriman_penjualan extends MY_Controller{
             foreach($details as $detail){
                 $detail = (array) $detail;
                 $detail["fin_sj_id"] = $insertId;
-                $this->trsuratjalandetails_model->insert((array)$detail);
+                $detail["fst_serial_number_list"] = json_encode($detail["fst_serial_number_list"]);
+                $this->trsuratjalandetails_model->insert($detail);
             }
 
             //POSTING
@@ -313,7 +313,7 @@ class Pengiriman_penjualan extends MY_Controller{
         $this->load->model("trinventory_model");
         
         $dataH = $this->input->post();        
-        $dataH["fdt_sj_date"] = dBDateTimeFormat($dataH["fdt_sj_date"]);
+        $dataH["fdt_sj_datetime"] = dBDateTimeFormat($dataH["fdt_sj_datetime"]);
         
         $dataH["fbl_is_hold"] = isset($dataH["fbl_is_hold"]) ? TRUE : FALSE;
 

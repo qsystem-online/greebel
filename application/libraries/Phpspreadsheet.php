@@ -2,6 +2,7 @@
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Html;
 
 class Phpspreadsheet extends Spreadsheet {
 	
@@ -75,7 +76,7 @@ class Phpspreadsheet extends Spreadsheet {
 				case "XLSM":
 					$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
 					$fileEXT = "xlsm";
-					break;
+					break;				
 				default:
 					$reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
 					$fileEXT = "xls";
@@ -89,7 +90,18 @@ class Phpspreadsheet extends Spreadsheet {
 
 
 	}
-	
+
+	public function loadFromHTMLString($htmlString){
+
+		//$reader = new \PhpOffice\PhpSpreadsheet\Reader\Html();
+		//$this->spreadsheet = $reader->loadFromString($htmlString);
+		$reader = new \PhpOffice\PhpSpreadsheet\Reader\Html();	
+		$spreadsheet = $reader->loadFromString($htmlString);
+
+
+		return $spreadsheet;
+	}
+
 	public function protectSheet($sheet,$password){
 		$sheet->getProtection()->setPassword($password);
 		$sheet->getProtection()->setSheet(true);
