@@ -310,6 +310,28 @@ class Glaccount extends MY_Controller
 		$this->json_output();
     }
 
+    public function delete($fst_glaccount_code){
+		if (!$this->aauth->is_permit("")) {
+			$this->ajxResp["status"] = "NOT_PERMIT";
+			$this->ajxResp["message"] = "You not allowed to do this operation !";
+			$this->json_output();
+			return;
+		}
+
+		$this->db->trans_start();
+
+		$result = $this->glaccounts_model->delete($fst_glaccount_code);
+		$this->db->trans_complete();
+		if ($result["status"] ==  true){
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = lang("AKUN Telah dihapus");		
+		}else{
+			$this->ajxResp["status"] = "FAILED";
+			$this->ajxResp["message"] = $result["message"];
+		}
+		$this->json_output();
+	}
+
     public function get_printGLAccount($mainGroupGL_start,$mainGroupGL_end) {
         //$layout = $this->input->post("layoutColumn");
         //$arrLayout = json_decode($layout);

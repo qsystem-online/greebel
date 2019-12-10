@@ -290,6 +290,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
         </div>
     </div>
 
+    <?php
+    echo $mdlItemGroup;
+    ?>
     <script type="text/javascript">
         var action = '<a class="btn-edit" href="#" data-toggle="" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp; <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
         $(function() {
@@ -398,7 +401,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 if (type =="ITEM"){
                     select_itemDetail();
                 }else{
-                    select_itemSubgroup();
+                    select_itemGroup();
                 }
             });
             $("#fin_item_id").change(function(event) {
@@ -467,50 +470,69 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
             function select_itemDetail(){
                 $("#fin_item_id").select2({
-                    width: '100%',
-                    ajax: {
-                        url: '<?= site_url() ?>master/promotion/get_data_ItemPromo',
-                        dataType: 'json',
-                        delay: 250,
-                        processResults: function(data) {
-                            data2 = [];
-                            $.each(data, function(index, value) {
-                                data2.push({
-                                    "id": value.fin_item_id,
-                                    "text": value.fst_item_name
-                                });
+                width: '100%',
+                ajax: {
+                    url: '<?= site_url() ?>master/promotion/get_data_ItemPromo',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        data2 = [];
+                        $.each(data, function(index, value) {
+                            data2.push({
+                                "id": value.fin_item_id,
+                                "text": value.fst_item_name
                             });
-                            console.log(data2);
-                            return {
-                                results: data2
-                            };
-                        },
-                        cache: true,
-                    }
-                });
+                        });
+                        console.log(data2);
+                        return {
+                            results: data2
+                        };
+                    },
+                    cache: true,
+                }
+                }).off("select2:open");
             }
-            function select_itemSubgroup(){
+
+            function select_itemGroup(){
                 $("#fin_item_id").select2({
-                    width: '100%',
-                    ajax: {
-                        url: '<?= site_url() ?>master/promotion/get_item_SubgroupPromo',
-                        dataType: 'json',
-                        delay: 250,
-                        processResults: function(data) {
-                            data2 = [];
-                            $.each(data, function(index, value) {
-                                data2.push({
-                                    "id": value.fin_item_subgroup_id,
-                                    "text": value.fst_item_subgroup_name
-                                });
+                width: '100%',
+                ajax: {
+                    url: '<?= site_url() ?>master/item/get_data_ItemGroupId',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        data2 = [];
+                        $.each(data, function(index, value) {
+                            data2.push({
+                                "id": value.fin_item_group_id,
+                                "text": value.fst_item_group_name
                             });
-                            console.log(data2);
-                            return {
-                                results: data2
-                            };
-                        },
-                        cache: true,
-                    }
+                        });
+                        console.log(data2);
+                        return {
+                            results: data2
+                        };
+                    },
+                    cache: true,
+                }
+                }).on("select2:open",function(e){
+                    e.preventDefault();
+                    $(this).select2("close");
+                    showItemGroup(true,function(node){
+                        //consoleLog(node);                
+                        $("#fin_item_id").empty();
+                        var newOption = new Option(node.text,node.id, false, false);
+                        $('#fin_item_id').append(newOption).trigger('change');
+                        $("#fin_item_id").trigger({
+                            type: 'select2:select',
+                            params: {
+                                data: {
+                                    id: node.id,
+                                    text: node.text,
+                                }
+                            }
+                        })
+                    });
                 });
             }
             $("#btn-add-item").click(function(event) {

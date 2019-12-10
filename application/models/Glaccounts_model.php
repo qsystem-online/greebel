@@ -87,6 +87,28 @@ class Glaccounts_model extends MY_Model
         return true;
     }
 
+    public function delete($fst_glaccount_code,$softDelete=true,$data=null){
+        //cek jika sudah ada di LEDGER
+        $ssql  = "select * from glledger where fst_account_code = ?";
+        $qr = $this->db->query($ssql,[$fst_glaccount_code]);
+        if ($qr->row()){
+            return [
+                "status"=>false,
+                "message"=>lang("AKUN tidak dapat dihapus, sudah ada record Ledger !"),
+            ];
+        }
+        parent::delete($fst_glaccount_code,$softDelete);
+        if(!$softDelete){
+            $this->db->delete("glledger",array("fst_account_code"=>$fst_glaccount_code));
+        }
+        
+
+        return [
+            "status"=>true,
+            "message"=>"",
+        ];
+    }
+
     public function getPrintGLAccount($mainGroupGL_start,$mainGroupGL_end){
         if ($mainGroupGL_start == 'null'){
             $mainGroupGL_start ="";

@@ -114,7 +114,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <?php 
                                         $currencies = getDataTable("mscurrencies","*","fst_active ='A'");
                                         foreach($currencies as $currency){
-											echo "<option value='$$currency->fst_curr_code'>$currency->fst_curr_name</option>";
+											echo "<option value='$currency->fst_curr_code'>$currency->fst_curr_name</option>";
                                         }
                                         
                                     ?>
