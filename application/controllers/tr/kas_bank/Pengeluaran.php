@@ -20,7 +20,7 @@ class Pengeluaran extends MY_Controller{
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/kas_bank/pengeluaran/fetch_list_data';
         $this->list['arrSearch'] = [
-			'fst_purchasereturn_no' => 'No Pengeluaran',
+			'fst_cbpayment_no' => 'No Pengeluaran',
 			'fst_supplier_name' => 'Supplier'
         ];
 
