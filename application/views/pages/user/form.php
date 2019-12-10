@@ -170,8 +170,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">
 						<label for="fbl_admin" class="col-sm-2 control-label"><?=lang("Admin")?></label>
-						<div class="checkbox">
-							<label><input id="fbl_admin" type="checkbox" name="fbl_admin" value="1"><?=lang("Admin")?></label><br>
+						<div class="col-md-2">
+							<label class="checkbox-inline"><input id="fbl_admin" name='fbl_admin' type="checkbox">Admin</label>
 						</div>
 					</div>
 				</div>
