@@ -39,7 +39,7 @@ class Linebusiness extends MY_Controller
 		$this->list['columns'] = [
 			['title' => 'Line of business ID', 'width' => '10%', 'data' => 'fin_linebusiness_id'],
 			['title' => 'Line of business Name', 'width' => '25%', 'data' => 'fst_linebusiness_name'],
-			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
