@@ -71,6 +71,7 @@ class Promotion extends MY_Controller
         $data["title"] = $mode == "ADD" ? "Add Sales Promotion" : "Update Sales Promotion";
         $data["fin_promo_id"] = $fin_promo_id;
         $data["arrBranch"] = $this->msbranches_model->getAllList();
+        $data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>true], true);
 
 
         $page_content = $this->parser->parse('pages/master/promotion/form', $data, true);
@@ -412,7 +413,6 @@ class Promotion extends MY_Controller
             //action
             $data["action"]    = "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='" . $data["fin_promo_id"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["fin_promo_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
             $arrDataFormated[] = $data;

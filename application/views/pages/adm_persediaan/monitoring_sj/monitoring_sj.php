@@ -49,7 +49,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									<select id="selectSearch" class="form-control" style="display:inline;width:148px">
 										<option value='a.fst_relation_name'>Customer</option>
 										<option value='a.fst_sj_no'>Surat Jalan No.</option>
-										<option value='a.fdt_sj_date'>S/J DateTime</option>
+										<option value='a.fdt_sj_datetime'>S/J DateTime</option>
 										<option value='a.fst_sj_return_resi_no'>S/J Return Resi No.</option>
 									</select>
 								</div>
@@ -216,9 +216,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			columns:[
                 {"title" : "Surat Jalan ID","width": "10%",sortable:true,data:"fin_sj_id",visible:true},
 				{"title" : "Surat Jalan No","width": "20%",sortable:true,data:"fst_sj_no",visible:true},
-                {"title" : "Surat Jalan DateTime","width": "20%",sortable:true,data:"fdt_sj_date",visible:true},
+                {"title" : "Surat Jalan DateTime","width": "20%",sortable:true,data:"fdt_sj_datetime",visible:true},
 				{"title" : "Sales Order No","width": "20%",sortable:true,data:"fst_salesorder_no",visible:true},
-				{"title" : "Sales Order Date","width": "20%",sortable:true,data:"fdt_salesorder_date",visible:true},
+				{"title" : "Sales Order Date","width": "20%",sortable:true,data:"fdt_salesorder_datetime",visible:true},
                 {"title" : "Warehouse Name","width": "20%",sortable:true,data:"fst_warehouse_name",visible:true},
 				{"title" : "Customer Name","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
 				{"title" : "Unhold","width": "15%",sortable:false,className:'dt-body-center text-center',
@@ -326,9 +326,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			columns:[
                 {"title" : "Surat Jalan ID","width": "10%",sortable:true,data:"fin_sj_id",visible:true},
 				{"title" : "Surat Jalan No","width": "20%",sortable:true,data:"fst_sj_no",visible:true},
-                {"title" : "Surat Jalan DateTime","width": "20%",sortable:true,data:"fdt_sj_date",visible:true},
+                {"title" : "Surat Jalan DateTime","width": "20%",sortable:true,data:"fdt_sj_datetime",visible:true},
 				{"title" : "Sales Order No","width": "20%",sortable:true,data:"fst_salesorder_no",visible:true},
-				{"title" : "Sales Order Date","width": "20%",sortable:true,data:"fdt_salesorder_date",visible:true},
+				{"title" : "Sales Order Date","width": "20%",sortable:true,data:"fdt_salesorder_datetime",visible:true},
                 {"title" : "Warehouse Name","width": "20%",sortable:true,data:"fst_warehouse_name",visible:true},
 				{"title" : "Customer Name","width": "25%",sortable:true,data:"fst_relation_name",visible:true},
 				{"title" : "Unhold DateTime","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:true},

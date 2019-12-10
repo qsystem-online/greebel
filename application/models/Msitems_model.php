@@ -13,10 +13,11 @@ class Msitems_model extends MY_Model
     public function getDataById($fin_item_id)
     {
         //$ssql = "select * from " . $this->tableName . " where fin_item_id = ? and fst_active = 'A'";
-        $ssql = "select a.*,b.fst_item_maingroup_name,c.fst_item_group_name,e.fst_linebusiness_name from " . $this->tableName . " a 
+        $ssql = "select a.*,b.fst_item_maingroup_name,c.fst_item_group_name,e.fst_linebusiness_name,ifnull(f.ttl_record,0) as fin_ttl_invnetory from " . $this->tableName . " a 
         left join msmaingroupitems b on a.fin_item_maingroup_id = b.fin_item_maingroup_id 
         left join msgroupitems c on a.fin_item_group_id = c.fin_item_group_id  
-        left join mslinebusiness e on a.fst_linebusiness_id = e.fin_linebusiness_id  
+        left join mslinebusiness e on a.fst_linebusiness_id = e.fin_linebusiness_id
+        left join (select fin_item_id,count(*) ttl_record from trinventory group by fin_item_id) f on a.fin_item_id = f.fin_item_id  
         where a.fin_item_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$fin_item_id]);
         $rwItem = $qr->row();
@@ -191,7 +192,10 @@ class Msitems_model extends MY_Model
 
     }
 
-    public function getPrintItem($vendorName,$groupName,$itemCode_awal,$itemCode_akhir){
+    public function getPrintItem($lineBussines,$vendorName,$groupName,$itemCode_awal,$itemCode_akhir){
+        if ($lineBussines == 'null'){
+            $lineBussines ="";
+        }
         if ($vendorName == 'null'){
             $vendorName ="";
         }
@@ -199,16 +203,15 @@ class Msitems_model extends MY_Model
             $groupName ="";
         }
         $ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,
-                CONCAT(a.fin_standard_vendor_id,'  -  ',d.fst_relation_name) as vendorName1,
-                CONCAT(a.fin_optional_vendor_id,'  -  ',d.fst_relation_name) as vendorName2,
+                CONCAT(a.fst_linebusiness_id,'  -  ',d.fst_linebusiness_name) as vendorName1,
                 CONCAT(a.fin_item_group_id,'  -  ',b.fst_item_group_name) as itemGroup,
                 c.fdc_price_list,c.fst_unit 
                 FROM msitems a LEFT JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
                 LEFT JOIN msitemunitdetails c on a.fin_item_id = c.fin_item_id
-                LEFT JOIN msrelations d on a.fin_standard_vendor_id = d.fin_relation_id
-                WHERE (a.fin_standard_vendor_id like ? OR a.fin_optional_vendor_id like ?) AND a.fin_item_group_id like ?
+                LEFT JOIN mslinebusiness d ON REPLACE(a.fst_linebusiness_id,',','|') REGEXP  REPLACE(d.fin_linebusiness_id,',','|')
+                WHERE a.fin_standard_vendor_id like ? AND a.fin_item_group_id like ?
                 AND a.fst_item_code >= '$itemCode_awal' AND a.fst_item_code <= '$itemCode_akhir' ORDER BY a.fst_item_name ";
-        $query = $this->db->query($ssql,['%'.$vendorName.'%','%'.$vendorName.'%','%'.$groupName.'%']);
+        $query = $this->db->query($ssql,['%'.$lineBussines.'%','%'.$vendorName.'%','%'.$groupName.'%']);
         //echo $this->db->last_query();
         //die();
         $rs = $query->result();
@@ -265,6 +268,29 @@ class Msitems_model extends MY_Model
         return $fromConversion/$toConversion;
 
     }
+
+    public function delete($fin_item_id,$softDelete=true,$data=null){
+        //cek jika sudah ada di inventory
+        $ssql  = "select * from trinventory where fin_item_id = ?";
+        $qr = $this->db->query($ssql,[$fin_item_id]);
+        if ($qr->row()){
+            return [
+                "status"=>false,
+                "message"=>lang("ITEM tidak dapat dihapus, sudah ada record inventory !"),
+            ];
+        }
+        parent::delete($fin_item_id,$softDelete);
+        if(!$softDelete){
+            $this->db->delete("trinventory",array("fin_item_id"=>$fin_item_id));
+        }
+        
+
+        return [
+            "status"=>true,
+            "message"=>"",
+        ];
+    }
+
 
     
 }

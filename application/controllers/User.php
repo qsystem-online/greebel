@@ -26,8 +26,8 @@ class User extends MY_Controller
 		$this->list['delete_ajax_url'] = site_url() . 'user/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'user/edit/';
 		$this->list['arrSearch'] = [
-			'a.fin_user_id' => 'User ID',
-			'a.fst_username' => 'User Name'
+			'fin_user_id' => 'User ID',
+			'fst_username' => 'User Name'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -42,7 +42,7 @@ class User extends MY_Controller
 			['title' => 'Gender', 'width' => '10%', 'data' => 'fst_gender'],
 			['title' => 'Birthdate', 'width' => '15%', 'data' => 'fdt_birthdate'],
 			['title' => 'Birthplace', 'width' => '15%', 'data' => 'fst_birthplace'],
-			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 
 		$main_header = $this->parser->parse('inc/main_header', [], true);
@@ -322,7 +322,7 @@ class User extends MY_Controller
 		$selectFields = "fin_user_id,fst_fullname,fst_gender,fdt_birthdate,fst_birthplace,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fst_fullname", "fst_birthplace"];
+		$searchFields = ["fin_user_id", "fst_username"];
 		$this->datatables->setSearchFields($searchFields);
 
 		// Format Data
@@ -336,7 +336,6 @@ class User extends MY_Controller
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 				<a class='btn-edit' href='#' data-id='" . $data["fin_user_id"] . "'><i class='fa fa-pencil'></i></a>
-				<a class='btn-delete' href='#' data-id='" . $data["fin_user_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 			</div>";
 
 			$arrDataFormated[] = $data;

@@ -35,7 +35,7 @@ class Discount extends MY_Controller{
 		$this->list['columns'] = [
 			['title' => 'Rec ID', 'width' => '10%', 'data' => 'fin_rec_id'],
 			['title' => 'Discounts', 'width' => '25%', 'data' => 'fst_item_discount'],
-			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
@@ -195,7 +195,6 @@ class Discount extends MY_Controller{
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='" . $data["fin_rec_id"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["fin_rec_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 			$arrDataFormated[] = $data;
 		}

@@ -43,7 +43,7 @@ class Sales_area extends MY_Controller{
             ['title' => 'Name', 'width' => '15%', 'data' => 'fst_name'],
             ['title' => 'Sales Regional Name', 'width' => '15%', 'data' => 'RegionalName'],
             ['title' => 'Sales Name', 'width' => '12%', 'data' => 'SalesName'],
-            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
@@ -205,7 +205,6 @@ class Sales_area extends MY_Controller{
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='".$data["fin_sales_area_id"]."'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='".$data["fin_sales_area_id"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -279,7 +278,7 @@ class Sales_area extends MY_Controller{
             ['title' => 'Name', 'width' => '15%', 'data' => 'fst_name'],
             ['title' => 'Sales National Name', 'width' => '15%', 'data' => 'NationalName'],
             ['title' => 'Sales Name', 'width' => '12%', 'data' => 'SalesName'],
-            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
@@ -414,7 +413,6 @@ class Sales_area extends MY_Controller{
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='".$data["fin_sales_regional_id"]."'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='".$data["fin_sales_regional_id"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;
@@ -487,7 +485,7 @@ class Sales_area extends MY_Controller{
             ['title' => 'Sales National ID', 'width' => '10%', 'data' => 'fin_sales_national_id'],
             ['title' => 'Name', 'width' => '15%', 'data' => 'fst_name'],
             ['title' => 'Sales Name', 'width' => '15%', 'data' => 'SalesName'],
-            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
@@ -619,7 +617,6 @@ class Sales_area extends MY_Controller{
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='".$data["fin_sales_national_id"]."'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='".$data["fin_sales_national_id"]."' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
 			$arrDataFormated[] = $data;

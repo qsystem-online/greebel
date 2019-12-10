@@ -412,7 +412,7 @@
 				{"title" : "Item id","width": "100px",sortable:false,data:"fin_item_id",visible:false},
 				{"title" : "Item Code","width": "100px",sortable:false,data:"fst_item_code"},
 				{"title" : "Item Name","width": "100px",sortable:false,data:"fst_custom_item_name"},
-				{"title" : "Satuan","width": "100px",sortable:false,data:"fst_unit"},
+				{"title" : "Unit","width": "100px",sortable:false,data:"fst_unit"},
 				{"title" : "Total Qty PO","width": "100px",sortable:false,data:"fdb_qty_po",className:'text-right'},
 				{"title" : "Total Qty Received","width": "100px",sortable:false,data:"fdb_qty_po_received",className:'text-right'},
 				{"title" : "Qty","width": "100px",sortable:false,data:"fdb_qty",className:'text-right'},

@@ -251,7 +251,6 @@ class Glaccount extends MY_Controller
             //action
             $data["action"]    = "<div style='font-size:16px'>
                         <a class='btn-edit' href='#' data-id='" . $data["fst_glaccount_code"] . "'><i class='fa fa-pencil'></i></a>
-                        <a class='btn-delete' href='#' data-id='" . $data["fst_glaccount_code"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
                     </div>";
 
             $arrDataFormated[] = $data;
@@ -310,6 +309,28 @@ class Glaccount extends MY_Controller
 		//$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
     }
+
+    public function delete($fst_glaccount_code){
+		if (!$this->aauth->is_permit("")) {
+			$this->ajxResp["status"] = "NOT_PERMIT";
+			$this->ajxResp["message"] = "You not allowed to do this operation !";
+			$this->json_output();
+			return;
+		}
+
+		$this->db->trans_start();
+
+		$result = $this->glaccounts_model->delete($fst_glaccount_code);
+		$this->db->trans_complete();
+		if ($result["status"] ==  true){
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = lang("AKUN Telah dihapus");		
+		}else{
+			$this->ajxResp["status"] = "FAILED";
+			$this->ajxResp["message"] = $result["message"];
+		}
+		$this->json_output();
+	}
 
     public function get_printGLAccount($mainGroupGL_start,$mainGroupGL_end) {
         //$layout = $this->input->post("layoutColumn");

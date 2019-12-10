@@ -42,7 +42,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="btn-group btn-group-sm  pull-right">					
 					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 				</div>
@@ -73,7 +72,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     <div class="form-group">
 					<label for="fdc_percent_of_price_list" class="col-md-3 control-label"><?= lang("Percent Of Price List")?> (%)</label>
-						<div class="col-md-1">
+						<div class="col-md-2">
 							<input type="text" class="form-control text-right" id="fdc_percent_of_price_list" name="fdc_percent_of_price_list">
 						</div>
 						

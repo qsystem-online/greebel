@@ -41,7 +41,7 @@ class Branch extends MY_Controller
             ['title' => 'Branch Name', 'width' => '15%', 'data' => 'fst_branch_name'],
             ['title' => 'Phone', 'width' => '10%', 'data' => 'fst_branch_phone'],
             ['title' => 'Notes', 'width' => '15%', 'data' => 'fst_notes'],
-            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
@@ -219,7 +219,6 @@ class Branch extends MY_Controller
             //action
             $data["action"]    = "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='" . $data["fin_branch_id"] . "'><i class='fa fa-pencil'></i></a>
-					<a class='btn-delete' href='#' data-id='" . $data["fin_branch_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
 				</div>";
 
             $arrDataFormated[] = $data;
