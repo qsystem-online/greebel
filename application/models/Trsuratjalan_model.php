@@ -93,28 +93,40 @@ class Trsuratjalan_model extends MY_Model {
 
     public function getDataById($fin_sj_id){
         $ssql = "select a.*,
-            b.fdt_salesorder_date,b.fst_salesorder_no,
+            b.fdt_salesorder_datetime,b.fst_salesorder_no,
             c.fin_relation_id,c.fst_relation_name,a.fin_shipping_address_id
             from trsuratjalan a
             inner join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id
             inner join msrelations c on b.fin_relation_id  = c.fin_relation_id 
-            where a.fin_sj_id = ?";
-        $qr = $this->db->query($ssql, [$fin_sj_id]);
+            where a.fin_sj_id = ? and a.fst_active !='D' ";
+        $qr = $this->db->query($ssql, [$fin_sj_id]);        
         $rwSJ = $qr->row();
 
-        $ssql = "select a.*,c.fst_item_code,b.fin_promo_id,b.fst_custom_item_name from trsuratjalandetails a 
-        inner join trsalesorderdetails b on a.fin_salesorder_detail_id = b.fin_rec_id 
-        inner join msitems c on b.fin_item_id = c.fin_item_id  
-        where a.fin_sj_id = ?";
+
+        $ssql = "SELECT a.*,
+            b.fin_promo_id,b.fin_promo_id,b.fst_custom_item_name,
+            c.fbl_is_batch_number,c.fbl_is_serial_number,c.fst_item_code,c.fst_item_name,
+            d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit from trsuratjalandetails a 
+            INNER JOIN trsalesorderdetails b on a.fin_salesorder_detail_id = b.fin_rec_id 
+            INNER JOIN msitems c on b.fin_item_id = c.fin_item_id  
+            LEFT JOIN msitemunitdetails d on c.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1
+            WHERE a.fin_sj_id = ?";
+
 		$qr = $this->db->query($ssql,[$fin_sj_id]);
 		$rsSJDetails = $qr->result();
-
+        
 		$data = [
             "sj" => $rwSJ,
             "sj_details" => $rsSJDetails
 		];
 
 		return $data;
+    }
+
+    public function getDataHeaderById($finSJId){
+        $ssql ="SELECT * FROM trsuratjalan where fin_sj_id =? and fst_active != 'D'";
+        $qr = $this->db->query($ssql,[$finSJId]);
+        return $qr->row();
     }
 
     public function GenerateSJNo($trDate = null) {
@@ -179,32 +191,50 @@ class Trsuratjalan_model extends MY_Model {
     }
 
     public function unposting($sjId){
-        $this->load->model("trinventory_model");   
+        /**
+         * Cancel kartu stock
+         * Cancel serial no
+         * cancel qty out SO detail
+         * update if salesorder status closed
+         */
         
-        //update Sales Order
+        $this->load->model("trinventory_model");   
+        $this->load->model("trsalesorder_model");   
+
+        $ssql = "select * from trsuratjalan where fin_sj_id = ? and fst_active != 'D'";
+        $qr = $this->db->query($ssql,[$sjId]);
+        $dataH = $qr->row();        
+        if ($dataH == null){
+            throw new CustomException(lang("ID Surat Jalan tidak dikenal !"),3003,"FAILED",null);
+        }
+        
+        //Cancel kartu stock
+        $this->trinventory_model->deleteByCodeId("DO",$sjId);
+
+        //Cancel serial no
+        $this->trinventory_model->deleteInsertSerial("PPJ",$sjId);                
+
+        //cancel qty out SO detail
         $ssql = "select a.*,b.fin_warehouse_id from trsuratjalandetails a 
             inner join trsuratjalan b on a.fin_sj_id = b.fin_sj_id 
             where a.fin_sj_id = ?";
 
         $qr = $this->db->query($ssql,[$sjId]);
         $rs = $qr->result();
-        if(!$rs){
-            return false;
-        }
-        
-        $this->trinventory_model->deleteByCodeId("DO",$sjId);
-
         foreach($rs as $rw){
             $finSalesorderDetailId = $rw->fin_salesorder_detail_id;
             $ssql = "update trsalesorderdetails set fdb_qty_out = fdb_qty_out -  " . $rw->fdb_qty  ." where fin_rec_id = ?";
             $query = $this->db->query($ssql,[$finSalesorderDetailId]);                  
         }
-
+        
+        
+        $this->trsalesorder_model->updateClosedStatus($dataH->fin_salesorder_id);
     }
 
     public function posting($sjId){
         $this->load->model("trinventory_model");  
         $this->load->model("msitems_model");
+        $this->load->model("trsalesorder_model");   
 
         $ssql = "select * from trsuratjalan where fin_sj_id = ? and fst_active != 'D'";
         $qr = $this->db->query($ssql,[$sjId]);
@@ -261,6 +291,8 @@ class Trsuratjalan_model extends MY_Model {
         }
 
         //Cek All Data valid after Process
+        $this->trsalesorder_model->updateClosedStatus($dataH->fin_salesorder_id);
+
         //Data SO detail  still valid
         $ssql = "SELECT * FROM trsalesorderdetails WHERE fin_salesorder_id = ? AND fdb_qty < (fdb_qty_out + fdb_qty_return)";
         $qr = $this->db->query($ssql,$dataH->fin_salesorder_id);
@@ -269,6 +301,16 @@ class Trsuratjalan_model extends MY_Model {
             throw new CustomException(lang("Qty sales order detail not balance !"),3003,"FAILED",null);            
         }
 
+    }
+    
+    public function delete($key, $softdelete = TRUE,$data=null){
+        if ($softdelete){
+            $ssql = "UPDATE trsuratjalandetails SET fst_active ='D' WHERE fin_sj_id = ?";
+        }else{
+            $ssql = "DELETE FROM trsuratjalandetails where fin_sj_id = ?";            
+        }
+        throwIfDBError();        
+        parent::delete($key,$softdelete);
     }
 
     public function createObject($sjId){
@@ -279,6 +321,30 @@ class Trsuratjalan_model extends MY_Model {
         }catch(Exception $e){
             return null;
         }        
+    }
+
+    public function isEditable($finSJId){
+        /**
+         * + tidak bisa di rubah bila sudah terbit invoice / faktur
+         * 
+         */
+        $ssql = "select a.*,b.fst_inv_no from trsuratjalan a 
+        inner join trinvoice b on a.fin_inv_id = b.fin_inv_id 
+        where a.fin_sj_id = ?";
+        $qr = $this->db->query($ssql,[$finSJId]);
+        $rw =$qr->row();
+        if ($rw == null){
+            return true;
+        }else{
+            throw new CustomException(sprintf(lang("Transaksi tidak bisa dirubah karena sudah ada invoice %s"),$rw->fst_inv_no),3003,"FAILED",[]);
+        }
+        
+    }
+
+    public function deleteDetailForUpdate($finSJId){
+        $ssql ="delete from trsuratjalandetails where fin_sj_id = ?";
+        $this->db->query($ssql,[$finSJId]);
+        throwIfDBError();
     }
 
     //===== MONITORING 02/08/2019 enny06 ==========\\

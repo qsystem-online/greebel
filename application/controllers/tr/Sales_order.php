@@ -727,7 +727,6 @@ class Sales_order extends MY_Controller{
 			return;
 		}
 
-
 		try{
 			$this->db->trans_start();
 			$this->trsalesorder_model->unposting($finSalesOrderId);

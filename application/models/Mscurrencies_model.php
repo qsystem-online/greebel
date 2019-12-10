@@ -100,5 +100,17 @@ class Mscurrencies_model extends MY_Model{
         
     }
 
+    public function getCurrencyList($date=""){
+        $ssql =  "select * from mscurrencies where fst_active ='A'";
+        $qr = $this->db->query($ssql,[]);
+        $rs = $qr->result();
+        for ($i=0;$i<sizeof($rs);$i++) { 
+            $curr = $rs[$i];
+            $curr->fdc_exchange_rate_to_idr = $this->getRate($curr->fst_curr_code,$date);
+            $rs[$i] = $curr;
+        }
+        return $rs;
+    }
+
     
 }

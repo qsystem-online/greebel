@@ -158,6 +158,13 @@ class Trsalesorder_model extends MY_Model {
 		return $data;
     }
 
+    public function getDataHeaderById($finSalesOrderId){
+        $ssql = "select * from trsalesorder where fin_salesorder_id = ? and fst_active != 'D'";
+        $qr = $this->db->query($ssql,[$finSalesOrderId]);
+        return $qr->row();
+        
+    }
+
     public function GenerateSONo($trDate = null) {
         /*
         $soDate = ($soDate == null) ? date ("Y-m-d"): $soDate;
@@ -1185,6 +1192,20 @@ class Trsalesorder_model extends MY_Model {
         }
         return $qr->result();
     }
+
+    public function updateClosedStatus($finSOId){
+        $ssql = "select * from trsalesorderdetails where fin_salesorder_id = ? and fdb_qty > fdb_qty_out";
+        $qr = $this->db->query($ssql,$finSOId);
+        if ($qr->row() == null){
+            //Penerimaan lengkap close SO
+            $ssql = "update trsalesorder set fdt_closed_datetime = now() , fbl_is_closed = 1, fst_closed_notes = 'AUTO - ".date("Y-m-d H:i:s") ."' where fin_salesorder_id = ?";
+            $this->db->query($ssql,[$finSOId]);
+        }else{
+            $ssql = "update trsalesorder set fdt_closed_datetime = null , fbl_is_closed = 0, fst_closed_notes = null where fin_salesorder_id = ?";
+            $this->db->query($ssql,[$finSOId]);
+        }
+    }
+
 
     //==== UNHOLD ===============================\\
     public function unhold($finSalesOrderId){

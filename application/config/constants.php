@@ -96,6 +96,7 @@ defined('EXCEPTION_JURNAL') OR define ('EXCEPTION_JURNAL',2000);
 
 
 defined('JURNAL_TRX_SC_SO') OR define ('JURNAL_TRX_SC_SO','SO');
+defined('SOFT_DELETE') OR define ('SOFT_DELETE',true);
 
 include_once 'host_const.php';
 

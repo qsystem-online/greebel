@@ -10,34 +10,10 @@ class Trinvoicedetails_model extends MY_Model {
 
     public function getRules($mode="ADD",$id=0){
         $rules = [];
-
-        $rules[] = [
-            'field' => 'fin_salesorder_id',
-            'label' => 'Sales Order No',
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong',
-            )
-        ];
-        $rules[] = [
-            'field' => 'fdt_inv_date',
-            'label' => lang('Tgl Invoice'),
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong',
-            )
-        ];
-        $rules[] = [
-            'field' => 'fin_terms_payment',
-            'label' => 'term',
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong',
-            )
-        ];
+        
         $rules[] = [
             'field' => 'fin_sj_id',
-            'label' => 'Driver',
+            'label' => 'Surat Jalan',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',

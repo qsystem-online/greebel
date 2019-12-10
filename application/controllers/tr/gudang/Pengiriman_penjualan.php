@@ -20,10 +20,10 @@ class Pengiriman_penjualan extends MY_Controller{
 		$this->list['addnew_ajax_url'] = site_url() . 'tr/gudang/pengiriman_penjualan/add';
 		$this->list['pKey'] = "fin_sj_id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/gudang/pengiriman_penjualan/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'tr/gudang/pengiriman_penjualan/ajx_delete/';
+		$this->list['delete_ajax_url'] = site_url() . 'tr/gudang/pengiriman_penjualan/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'tr/gudang/pengiriman_penjualan/edit/';
 		$this->list['arrSearch'] = [
-			'fin_ssj_id' => 'Surat jalan ID',
+			'fin_sj_id' => 'Surat jalan ID',
 			'fst_sj_no' => 'Surat jalan No'
 		];
 
@@ -33,16 +33,29 @@ class Pengiriman_penjualan extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Sales Order ID.', 'width' => '5%', 'data' => 'fin_sj_id'],
-			['title' => 'Sales Order No.', 'width' => '13%', 'data' => 'fst_sj_no'],
-			['title' => 'Sales Order Date', 'width' => '12%', 'data' => 'fdt_sj_datetime'],
-            ['title' => 'Memo', 'width' => '13%', 'data' => 'fst_sj_memo'],
-            ['title' => 'Action', 'width' => '7%', 'sortable' => false, 'className' => 'dt-body-center text-center',
+			['title' => 'Surat Jalan ID.', 'width' => '20px', 'data' => 'fin_sj_id'],
+            ['title' => 'Surat Jalan No.', 'width' => '20px', 'data' => 'fst_sj_no'],
+            ['title' => 'Sales Order No.', 'width' => '20px', 'data' => 'fst_salesorder_no'],
+            ['title' => 'Sales Order Date.', 'width' => '20px', 'data' => 'fdt_salesorder_datetime',
+                'render'=>"function(data,type,row){
+                    return App.dateTimeFormat(data);
+                }",
+            ],
+            ['title' => 'Surat Jalan Date', 'width' => '20px', 'data' => 'fdt_sj_datetime',
+                'render'=>"function(data,type,row){
+                    return App.dateTimeFormat(data);
+                }",
+            ],
+            ['title' => 'Memo', 'width' => '100px', 'data' => 'fst_sj_memo'],
+            ['title' => 'Action', 'width' => '25px', 'sortable' => false, 'className' => 'dt-body-center text-center',
                 'render'=>'function( data, type, row, meta ) {
                     return "<div style=\'font-size:16px\'><a data-id=\'" + row.fin_sj_id + "\' class=\'btn-edit\' href=\'#\'><i class=\'fa fa-pencil\'></i></a><a class=\'btn-delete\' href=\'#\'><i class=\'fa fa-trash\'></i></a></div>";
                 }',
             ]
-		];
+        ];
+        $edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+        $this->list["mdlEditForm"] = $edit_modal;
+
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$page_content = $this->parser->parse('template/standardList', $this->list, true);
@@ -58,9 +71,9 @@ class Pengiriman_penjualan extends MY_Controller{
 
     public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("trsuratjalan");
+		$this->datatables->setTableName("(select a.*,b.fst_salesorder_no,b.fdt_salesorder_datetime from trsuratjalan a inner join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id) a");
 
-		$selectFields = "fin_sj_id,fst_sj_no,fdt_sj_datetime,fst_sj_memo";
+		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_datetime,a.fst_sj_memo,a.fst_salesorder_no,a.fdt_salesorder_datetime";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
@@ -165,7 +178,7 @@ class Pengiriman_penjualan extends MY_Controller{
         $this->json_output();        
     }
 
-    public function ajx_add_save(){    
+    public function ajx_add_save(){
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsuratjalandetails_model");
         $this->load->model("trinventory_model");
@@ -282,6 +295,7 @@ class Pengiriman_penjualan extends MY_Controller{
                 $detail = (array) $detail;
                 $detail["fin_sj_id"] = $insertId;
                 $detail["fst_serial_number_list"] = json_encode($detail["fst_serial_number_list"]);
+                $detail["fst_active"] = 'A';
                 $this->trsuratjalandetails_model->insert($detail);
             }
 
@@ -305,146 +319,211 @@ class Pengiriman_penjualan extends MY_Controller{
         }
     }
 
-
-
     public function ajx_edit_save(){
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsuratjalandetails_model");
         $this->load->model("trinventory_model");
+        $this->load->model("msitems_model");
         
-        $dataH = $this->input->post();        
-        $dataH["fdt_sj_datetime"] = dBDateTimeFormat($dataH["fdt_sj_datetime"]);
-        
-        $dataH["fbl_is_hold"] = isset($dataH["fbl_is_hold"]) ? TRUE : FALSE;
 
-        
-        $this->form_validation->set_rules($this->trsuratjalan_model->getRules("ADD", 0));
-        $this->form_validation->set_data($dataH);
-        
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		if ($this->form_validation->run() == FALSE) {
-			//print_r($this->form_validation->error_array());
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Error Validation Forms";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $dataH;
-			$this->json_output();
-			return;
-        }
-        
-        $details = $this->input->post("detail");
-        $details = json_decode($details);
-        foreach($details as $detail){
-            $detailOld = $this->trsuratjalandetails_model->getDataById($detail->fin_rec_id);
+        try{
+            $this->db->trans_start();
 
-            $qtyOld = ($detailOld == false) ? 0 :(float) $detailOld->fdb_qty;
+            //CHECK LOCKED DATE            
+            $finSJId = $this->input->post("fin_sj_id");            
+            $dataHOld = $this->trsuratjalan_model->getDataHeaderById($finSJId);
+            if ($dataHOld == null){
+                throw new CustomException(lang("ID Surat Jalan tidak dikenal !"),3003,"FAILED",null);
+            }
+            $resp = dateIsLock($dataHOld->fdt_sj_datetime);
+            if ($resp["status"] != "SUCCESS" ){
+                throw new CustomException($resp["message"],3009,$resp["status"],null);
+            }            
+            
+            $fdt_sj_datetime = dBDateTimeFormat($this->input->post("fdt_sj_datetime"));		
+            $resp = dateIsLock($fdt_sj_datetime);
+            if ($resp["status"] != "SUCCESS" ){
+                throw new CustomException($resp["message"],3009,$resp["status"],null);
+            }
 
-            $valid = true;
+            //IS EDITABLE
+            $this->trsuratjalan_model->isEditable($finSJId);
 
-            $this->form_validation->set_rules($this->trsuratjalandetails_model->getRules("ADD", 0));
-            $this->form_validation->set_data((array) $detail);            
+
+            //UNPOSTING
+            $this->trsuratjalan_model->unposting($finSJId);
+
+            //DELETE DATA
+            $this->trsuratjalan_model->deleteDetailForUpdate($finSJId);
+
+            //PREPARE DATA
+            $dataH = $this->input->post();
+            $dataH["fdt_sj_datetime"] = $fdt_sj_datetime;
+            $dataH["fbl_is_hold"] = $this->input->post("fbl_is_hold") == null ? 1 : 0;
+            unset($dataH["details"]);
+
+            $details = $this->input->post("detail");
+            $details = json_decode($details);            
+
+
+            //VALIDATION
+            $this->form_validation->set_rules($this->trsuratjalan_model->getRules("ADD", 0));
+            $this->form_validation->set_data($dataH);            
             $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-            $this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-            $this->ajxResp["message"] = "Error Validation Forms";
-            $this->ajxResp["request_data"] = $dataH;                            
-
             if ($this->form_validation->run() == FALSE) {
-                $error = [
-					"detail"=> $this->form_validation->error_string(),
-				];
-                $this->ajxResp["data"] = $error;
-                $valid = false;                
-            }
-
-            //Validation if qty more than SO
-            $maxQty = $this->trsuratjalan_model->maxQtyItem($detail->fin_salesorder_detail_id,$dataH["fin_sj_id"]);
-            $maxQty = $maxQty + $qtyOld;
-            if ($detail->fdb_qty > $maxQty ){
-                $error = [
-					"detail"=> sprintf(lang("Qty %s melebihi qty pada sales order") ,$detail->fst_custom_item_name),
-				];
-                $this->ajxResp["data"] = $error;
-                $valid = false;
-            }
-
-            //Validation stock is available
-            $qtyStock = (float) $this->trinventory_model->getStock($detail->fin_item_id,$detail->fst_unit,$dataH["fin_warehouse_id"]);
-            $qtyStock = $qtyStock + $qtyOld;
-
-            if ($detail->fdb_qty > $qtyStock ){
-                $error = [
-					"detail"=> sprintf(lang("Stock %s tersisa : %d %s") ,$detail->fst_custom_item_name,$qtyStock,$detail->fst_unit),
-				];
-                $this->ajxResp["data"] = $error;
-                $valid = false;
+                throw new CustomException("Error Validation Forms",3009,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
             }
 
 
-
-            if ($valid == false){
-                $this->json_output();
-                return;
-            }
-        }
-
-
-        //$dataH["fst_sj_no"] = $this->trsuratjalan_model->GenerateSJNo();		
-        $dataH["fst_active"] = "A";
-
-        $this->db->trans_start();
-        $this->trsuratjalan_model->update($dataH);
-
-        //Unposting
-        $this->trsuratjalan_model->unposting($dataH["fin_sj_id"]);
-
-        //Delete Detail
-        $this->trsuratjalandetails_model->deleteByHId($dataH["fin_sj_id"]);
-        
-        foreach($details as $detail){
-            $detail = (array) $detail;
-            $detail["fin_sj_id"] = $dataH["fin_sj_id"];
-            $this->trsuratjalandetails_model->insert((array)$detail);
-        }
-        $this->trsuratjalan_model->posting($dataH["fin_sj_id"]);
-
-        $this->db->trans_complete();
-
-        $this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $dataH["fin_sj_id"];
-		$this->json_output();
+            $arrItem = $this->msitems_model->getDetailbyArray(array_column($details, 'fin_item_id'));
+            foreach($details as $detail){
+                $this->form_validation->set_rules($this->trsuratjalandetails_model->getRules("ADD", 0));
+                $this->form_validation->set_data((array) $detail);            
+                $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+                if ($this->form_validation->run() == FALSE) {
+                    $error = [
+                        "detail"=> $this->form_validation->error_string(),
+                    ];
+                    throw new CustomException("Error Validation Forms",3009,"VALIDATION_FORM_FAILED",$error);
+                }
     
+                //Validation is valid batch number & serial number (qty, serial number exist)
+                $item = $arrItem[$detail->fin_item_id];
+                if ($item->fbl_is_batch_number == 1){
+                    if ($detail->fst_batch_number == null || $detail->fst_batch_number == ""){
+                        throw new CustomException(sprintf(lang("%s harus memiliki batch number"),$detail->fst_custom_item_name),3009,"FAILED",null);
+                    }
+                }
+                
+                if ($item->fbl_is_serial_number == 1){
+                    if ($detail->fst_serial_number_list == null || $detail->fst_serial_number_list == ""){
+                        if (is_array($detail->fst_serial_number_list)){
+                            $arrSerial = $detail->fst_serial_number_list;
+
+                            //Check Jumlah serial no
+                            if (sizeof($arrSerial) != $this->msitems_model->getQtyConvertToBasicUnit($detail->fin_item_id,$detail->fdb_qty,$item->fst_unit) ){
+                                throw new CustomException(sprintf(lang("total serial %s harus sesuai dengan total qty (%u)"),$item->fst_custom_item_name,$item->fdb_qty),3009,"FAILED",null);
+                            }
+                            //Check all serial is exist and ready;
+                            $arrSerialStatus = $this->trinventory_model->getSummarySerialNo($dataH["fin_warehouse_id"],$detail->fin_item_id,$arrSerial);
+                            foreach($arrSerial as $serial){
+                                if (isset($arrSerialStatus[$serial]) ){
+                                    $serialStatus = $arrSerialStatus[$serial];
+                                    if ($serialStatus["fdb_qty_in"] <= $serialStatus["fdb_qty_out"] ){
+                                        throw new CustomException(sprintf(lang("No serial %s untuk item %s tidak tersedia"),$serial,$item->fst_custom_item_name),3009,"FAILED",null);    
+                                    }
+                                }else{
+                                    throw new CustomException(sprintf(lang("No serial %s untuk item %s tidak tersedia"),$serial,$item->fst_custom_item_name),3009,"FAILED",null);
+                                }
+                            }
+                        }else{
+                            throw new CustomException(sprintf(lang("%s harus memiliki serial number"),$detail->fst_custom_item_name),3009,"FAILED",null);
+                        }
+                    }
+                }
+
+                //Validation if qty more than SO
+                if ($detail->fdb_qty > $this->trsuratjalan_model->maxQtyItem($detail->fin_salesorder_detail_id) ){
+                    throw new CustomException(sprintf(lang("Qty %s melebihi qty pada sales order") ,$detail->fst_custom_item_name),3009,"FAILED",null);
+                }
+    
+
+                //Validation stock is available
+                if ($item->fbl_stock == 1){
+                    $basicUnit = $this->msitems_model->getBasicUnit($detail->fin_item_id);
+                    $qtyStockBasicUnit = (float) $this->trinventory_model->getStock($detail->fin_item_id,$basicUnit,$dataH["fin_warehouse_id"]);
+                    $qtyReqInBasicUnit = $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$detail->fdb_qty,$detail->fst_unit,$basicUnit);
+                    $qtyStockReqUnit =  $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$qtyStockBasicUnit,$basicUnit,$detail->fst_unit);
+                    if ($qtyReqInBasicUnit > $qtyStockBasicUnit ){
+                        throw new CustomException(sprintf(lang("Stock %s tersisa : %d %s") ,$detail->fst_custom_item_name,$qtyStockReqUnit,$detail->fst_unit),3009,"FAILED",null);
+                    }
+
+                }
+            }
+
+            //SAVE
+            $insertId = $dataH["fin_sj_id"];            
+            $this->trsuratjalan_model->update($dataH);
+            foreach($details as $detail){
+                $detail = (array) $detail;
+                $detail["fin_sj_id"] = $insertId;
+                $detail["fst_serial_number_list"] = json_encode($detail["fst_serial_number_list"]);
+                $detail["fst_active"] = 'A';
+                $this->trsuratjalandetails_model->insert($detail);
+            }
+
+            //POSTING
+            $this->trsuratjalan_model->posting($insertId);
+        
+            $this->db->trans_complete();
+            $this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = lang("Data saved !");
+			$this->ajxResp["data"] = [];
+			$this->json_output();
+
+        }catch(CustomException $e){            
+            $this->db->trans_rollback();
+            $this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();			
+			$this->json_output();
+            return;
+            
+        }
     }
 
-    public function ajx_delete($sjId){
-        $suratJalan = $this->trsuratjalan_model->createObject($sjId);
-        if($suratJalan == null){
-            show_404();
+    public function delete($sjId){
+
+        try{
+            //CHECK LOCKED DATE
+            $finSJId = $sjId;            
+            $dataHOld = $this->trsuratjalan_model->getDataHeaderById($finSJId);
+            if ($dataHOld == null){
+                throw new CustomException(lang("ID Surat Jalan tidak dikenal !"),3003,"FAILED",null);
+            }
+
+            $resp = dateIsLock($dataHOld->fdt_sj_datetime);
+            if ($resp["status"] != "SUCCESS" ){
+                throw new CustomException($resp["message"],3009,$resp["status"],null);
+            }                                    
+
+            //IS EDITABLE
+            $this->trsuratjalan_model->isEditable($finSJId);
+
+
+            
+
+        }catch(CustomException $e){
+            $this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();			
+			$this->json_output();
+            return;            
         }
 
-        //SJ yg memiliki invoice tidak bisa dihapus
-        if ($suratJalan->fin_inv_id != null){
-            $this->ajxResp["status"] = "FAILED";
-            $this->ajxResp["message"] = lang("Transaksi yang telah memiliki invoice tidak dapat di hapus");
-            $this->ajxResp["data"]["id"] = $sjId;
+
+        try{
+            $this->db->trans_start();            
+            //UNPOSTING
+            $this->trsuratjalan_model->unposting($finSJId);
+            $this->trsuratjalan_model->delete($finSJId,SOFT_DELETE);
+
+            $this->db->trans_complete();
+            $this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = lang("Data dihapus !");
+			$this->ajxResp["data"] = [];
             $this->json_output();
-        }
-        $this->load->model("trsuratjalandetails_model");
+            
 
-        $this->db->trans_start();
-        $this->trsuratjalan_model->delete($sjId);
-
-        //Unposting
-        $this->trsuratjalan_model->unposting($sjId);
-
-        //Delete Detail
-        $this->trsuratjalandetails_model->deleteByHId($sjId);        
-        $this->db->trans_complete();
-
-        $this->ajxResp["status"] = "SUCCESS";
-        $this->ajxResp["message"] = lang("Transaksi yang telah di hapus");
-        $this->ajxResp["data"]["id"] = $sjId;
-        $this->json_output();
+        }catch(CustomException $e){
+            $this->db->trans_rollback();
+            $this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();			
+			$this->json_output();
+            return;
+            
+        }        
     }
 
     public function test(){

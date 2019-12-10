@@ -225,7 +225,7 @@
 										<div class="col-md-10">
 											<select id="fst_trans_type" class="form-control" style="width:100%">
 												<option value="DP_SO">DP Penjualan</option>
-												<option value="LPB_PO">***LPB Pembelian</option>												
+												<option value="INV_SO">Faktur Penjualan</option>												
 												<option value="LPB_RETURN">***Return Pembelian Non Faktur</option>
 											</select>
 										</div>
@@ -357,22 +357,22 @@
 					});
 					break;
 
-				case "LPB_PO":
+				case "INV_SO":
 					App.getValueAjax({
 						site_url:"<?=site_url()?>",
-						model:"trcbpayment_model",
-						func:"getUnpaidPurchaseInvoiceList",
-						params:[$("#fin_supplier_id").val(),$("#fst_curr_code").val()],
-						callback:function(lpbPurchaseList){
+						model:"trinvoice_model",
+						func:"getUnpaidSalesInvoiceList",
+						params:[$("#fin_customer_id").val(),$("#fst_curr_code").val()],
+						callback:function(salesInvList){
 							$("#fin_trans_id").empty();
-							$.each(lpbPurchaseList,function(i,lpbPurchase){
+							$.each(salesInvList,function(i,salesInv){
 								//var dp = parseFloat(lpbPurchase.fdc_downpayment);					
-								$("#fin_trans_id").append("<option value='"+lpbPurchase.fin_lpbpurchase_id+"' data-ttl_amount='"+ lpbPurchase.fdc_total  +"' data-ttl_paid='"+lpbPurchase.fdc_total_paid+ "' data-ttl_return='"+lpbPurchase.fdc_total_return+"' >"+lpbPurchase.fst_lpbpurchase_no+"</option>")
+								$("#fin_trans_id").append("<option value='"+salesInv.fin_inv_id+"' data-ttl_amount='"+ (salesInv.fdc_total)   +"' data-ttl_paid='"+salesInv.fdc_total_paid+ "' data-ttl_return='"+salesInv.fdc_total_return+"' >"+salesInv.fst_inv_no+"</option>")
 							});
 							$("#fin_trans_id").val(null);
 
 							if(typeof callback !== "undefined"){
-								callback(lpbPurchaseList);
+								callback(salesInvList);
 							}
 							
 						}
@@ -772,6 +772,16 @@
 <?php echo $mdlJurnal ?>
 
 <script type="text/javascript" info="bind">
+	$(function(){
+		$(document).bind('keydown', 'alt+d', function(){
+			$("#btn-add-detail").trigger("click");
+		});
+
+		$(document).bind('keydown', 'alt+j', function(){
+			$("#btnJurnal").trigger("click");
+		});
+	});
+	
 </script>
 
 <script type="text/javascript" info="define">
@@ -896,8 +906,8 @@
 							case "DP_SO":
 								return "DP Penjualan";
 								break;
-							case "LPB_PO":
-								return "LPB Pembelian";
+							case "INV_SO":
+								return "Faktur Penjualan";
 								break;
 							
 							case "LPB_RETURN":

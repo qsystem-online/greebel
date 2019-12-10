@@ -80,7 +80,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div class="input-group-addon">
 									<i class="fa fa-calendar"></i>
 								</div>
-								<input type="text" class="unfocus form-control text-right" id="fdt_salesorder_datetime" disabled/>
+								<input type="text" class="unfocus form-control text-right datetimepicker" id="fdt_salesorder_datetime" disabled/>
 							</div>
 						</div>
 					</div>
@@ -283,7 +283,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#fstItem").change(function(e){
 			e.preventDefault();
-			alert("Item Change");
 			//var data = $('#fstItem').find(':selected');
 			var data = $('#fstItem').select2('data');
 			data = data[0];			
@@ -414,7 +413,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				dataRow.fin_rec_id = selectedData.fin_rec_id;
 				selectedDetail.data(dataRow).draw(false);
 			}
-			App.log(dataRow);
 			calculateTotal();
 			$("#mdlDetail").modal("hide");
 
@@ -489,24 +487,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btnSubmitAjax").click(function(e){
             e.preventDefault();
             submitAjax(0);
-		})
+		});
+		
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			deleteAjax(0);
+		});
+
+		$("#btnList").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>tr/gudang/pengiriman_penjualan");
+		});
 
 		$("#fin_warehouse_id").change(function(e){
 			//set batch and serial to null
 			t = $('#tblSJDetails').DataTable();
-
 			var rows = t.rows().indexes();
-			App.log(rows);
-			//var data = t.rows( rows ).data();
-			/*
-			dataList = t.rows().data();
-			$.each(dataList , function(i,data){
-				data.fst_batch_number:null;
-				data.fst_serial_number_list:null;
+			$.each(rows , function(i,row){
+				data = t.row(row).data();
+				data.fst_batch_number=null;
+				data.fst_serial_number_list=null;				
+				t.row(row).data(data).draw(false);
 			});
-			*/
-
-
 		})
 
 		$("#btn-add-items").click(function(e){
@@ -561,8 +568,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             $("#fdt_salesorder_datetime").val(dateTimeFormat(data.fdt_salesorder_datetime)).datetimepicker("update");
             $("#fin_warehouse_id").val(data.fin_warehouse_id);
 
-			initShippingAddress(data.fin_relation_id,function(){
-				$("#fin_shipping_address_id").val(data.fin_shipping_address_id).trigger("change");
+			initShippingAddress(data.fin_relation_id,function(){				
+				$("#fin_shipping_address_id").val(data.fin_shipping_address_id).trigger("change.select2");				
+				$("#fin_shipping_address_id").trigger({
+					type:"select2:select",
+					params:{
+						data:$("#fin_shipping_address_id").select2("data")[0]
+					}
+				});				
 			});
 
             getOutstandingDetailSO(data.id,function(){
@@ -599,14 +612,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			paging: false,
 			info:false,
 			fnRowCallback: function( nRow, aData, iDisplayIndex ) {},
-		}).on('draw',function(){
-			
-			$("#btnDelete").confirmation({
-				title:"<?=lang("Hapus data ini ?")?>",
-				rootSelector: '#btnDelete',
-				placement: 'left',
-			});
-
+		}).on('draw',function(){						
 			calculateTotal();
 		}).on("click",".btn-delete",function(event){
 			event.preventDefault();
@@ -648,10 +654,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								
         });
 		
-		
-
 		App.fixedSelect2();
 
+		initForm();
 		//initVarForm();
 
 
@@ -683,7 +688,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if (isValidData == false){				
 			return;
 		}
-
+		
 		data.push({
 			name:"detail",
 			value: JSON.stringify(detail)
@@ -711,8 +716,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						buttons : {
 							OK : function(){
 								if(resp.status == "SUCCESS"){
-									//window.location.href = "<= site_url() ?>tr/delivery_order/lizt";
-									//return;
+									$("#btnNew").trigger("click");
+									return false;
 								}
 							},
 						}
@@ -746,7 +751,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         $.ajax({
             url:"<?=site_url()?>select_data/get_shipping_address/" + relationId,
         }).done(function(resp){
-            arrData = resp.data;
+			arrData = resp.data;
 
             sel2DataShippingAddress = [];
             $.each(arrData,function(i,v){
@@ -756,18 +761,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     fst_shipping_address: v.fst_shipping_address
                 })
             });
+			
+
             $("#fin_shipping_address_id").select2({
                 data:sel2DataShippingAddress
-            }).on("change",function(e){
+            }).on("select2:select",function(e){
 				//data = e.params.data;
-				data = $('#fin_shipping_address_id').select2('data')[0];				
+				var data = e.params.data;
+				//data = $('#fin_shipping_address_id').select2('data')[0];				
 				App.log(data);
                 $("#fst_shipping_address").val(data.fst_shipping_address);
 			});
-			$("#fin_shipping_address_id").val(null).trigger("change.select2");
 
+			$("#fin_shipping_address_id").val(null).trigger("change.select2");
 			App.fixedSelect2();
-			
+			//App.log($("#fin_shipping_address_id").select2("data"));
 			if(typeof callback == "function"){
 				callback();
 			}            
@@ -775,62 +783,74 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
     }
 
-	function initVarForm(){
-		blockUIOnAjaxRequest();
-        $.ajax({
-            url:"<?=site_url()?>tr/delivery_order/initVarForm"
-        }).done(function(resp){
-            data = resp.data;
-            $("#fin_warehouse_id").select2({
-                data:data.arrWarehouse
-            });
-            $("#fin_driver_id").select2({
-                data:data.arrDriver
-			});
-			
-			<?php if($mode == "EDIT"){?>
-			initForm();
-			<?php } ?>
-            
-        });
-    }
-
+	
 	function initForm(){
-		
-		$.ajax({
-			url:"<?= site_url() ?>tr/delivery_order/fetch_data/" + $("#fin_sj_id").val(),
-		}).done(function(resp){
-			dataH = resp.sj;
+		if ($("#fin_sj_id").val() != 0){
+			App.blockUIOnAjaxRequest();
+			$.ajax({
+				url:"<?= site_url() ?>tr/gudang/pengiriman_penjualan/fetch_data/" + $("#fin_sj_id").val(),
+			}).done(function(resp){
+				dataH = resp.sj;
+				if (dataH == null){
+					alert("<?=lang("ID transaksi tidak dikenal")?>");
+					$("#btnNew").trigger("click");
+					return false;
+				}
+				
+				App.autoFillForm(dataH);
+				$("#fdt_sj_datetime").val(dateTimeFormat(dataH.fdt_sj_datetime)).datetimepicker("update");
+				
+				
+				App.addOptionIfNotExist("<option value='"+dataH.fin_salesorder_id+"' selected>"+dataH.fst_salesorder_no+"</option>","fin_salesorder_id");
+				$("#fdt_salesorder_datetime").val(dateTimeFormat(dataH.fdt_salesorder_datetime)).datetimepicker("update");		
+				
 
-			$("#fst_sj_no").val(dataH.fst_sj_no);
-			$("#fst_sj_no").val(dataH.fst_sj_no);
-			$("#fdt_sj_datetime").val(dateTimeFormat(dataH.fdt_sj_datetime));
+				initShippingAddress(dataH.fin_relation_id,function(){
+					$("#fin_shipping_address_id").val(dataH.fin_shipping_address_id).trigger("change.select2");		
+					$("#fin_shipping_address_id").trigger({
+						type:"select2:select",
+						params:{
+							data:$("#fin_shipping_address_id").select2("data")[0]
+						}
+					});
+				});
+							
+				
+				$("#fst_relation_name").val(dataH.fst_relation_name);
+				isHold = (dataH.fbl_is_hold == 0) ? false : true;			
+				$("#fbl_is_hold").prop('checked', isHold);
+				
+				
+				details = resp.sj_details;
+				t = $("#tblSJDetails").DataTable(); 
+				var itemList = [];
+				$.each(details,function(i,v){				
+					t.row.add(v);
+					itemList.push({
+						fin_salesorder_detail_id: v.fin_salesorder_detail_id,
+						id: v.fin_item_id,
+						text:v.fst_custom_item_name,
+						fin_promo_id: v.fin_promo_id,
+						fst_item_code: v.fst_item_code,
+						fst_item_name: v.fst_item_name,
+						fst_unit: v.fst_unit,
+						fdb_qty: v.fdb_qty,
+						fbl_is_batch_number: v.fbl_is_batch_number,
+						fbl_is_serial_number: v.fbl_is_serial_number,
+						fst_basic_unit : v.fst_basic_unit,
+						fdc_conv_to_basic_unit : v.fdc_conv_to_basic_unit,									
+					});
+				});
+				t.draw();
 
-			var newOption = new Option( dataH.fst_salesorder_no, dataH.fin_salesorder_id, true, true);
-			$('#fin_salesorder_id').append(newOption).trigger('change');
-			$("#fdt_salesorder_date").val(dateTimeFormat(dataH.fdt_salesorder_date));
-			$("#fst_relation_name").val(dataH.fst_relation_name);
+				$("#fstItem").select2({
+					data:itemList
+				});
+				$("#fstItem").val(null).trigger("change.select2");
+				App.fixedSelect2();
 
-			initShippingAddress(dataH.fin_relation_id,dataH.fin_shipping_address_id);
-						
-			$("#fin_driver_id").val(dataH.fin_driver_id).trigger("change");
-			$("#fst_no_polisi").val(dataH.fst_no_polisi);
-			$("#fin_warehouse_id").val(dataH.fin_warehouse_id).trigger("change");
-			$("#fst_sj_memo").val(dataH.fst_sj_memo);
-			
-
-			isHold = (dataH.fbl_is_hold == 0) ? false : true;			
-			$("#fbl_is_hold").prop('checked', isHold);
-			
-			details = resp.sj_details;
-			t = $("#tblSJDetails").DataTable(); 
-			$.each(details,function(i,v){				
-				t.row.add(v);				
 			});
-			t.draw();
-			//$("#fin_shipping_address_id").val(dataH.fin_shipping_address_id).trigger("change");
-
-		});
+		}
 	}
 
     function getOutstandingDetailSO(finSalesOrderId,callback){
@@ -920,49 +940,47 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#ttlSerial").text($("#fstSerialNoList option").length);
 	}
 
-</script>
-
-
-
-<script type="application/json">
-
-$(function(){		
+	function deleteAjax(confirmDelete){
 		
+		if (confirmDelete == 0){
+			MdlEditForm.saveCallBack = function(){
+				deleteAjax(1);
+			};		
+			MdlEditForm.show();
+			return;
+		}
 
-        $(".unfocus").focus(function(){
-            $(this).blur();
-        });
-
-        
-
-	
-		
-
-		
-
-
-		
-
-        fixedSelect2();
-        $("#fst_shipping_address").click(function(e){
-            calculateTotal();
-        })
-        
-
-		
-
-		
-
-		$("#btnList").click(function(e){
-			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/delivery_order/lizt");
+		var dataSubmit = [];		
+		dataSubmit.push({
+			name : SECURITY_NAME,
+			value: SECURITY_VALUE
 		});
-    });
-    
-    
+		dataSubmit.push({
+			name : "fin_user_id_request_by",
+			value: MdlEditForm.user
+		});
+		dataSubmit.push({
+			name : "fst_edit_notes",
+			value: MdlEditForm.notes
+		});
+
+		var url =  "<?= site_url() ?>tr/gudang/pengiriman_penjualan/delete/" + $("#fin_sj_id").val();
+		$.ajax({
+			url:url,
+			method:"POST",
+			data:dataSubmit,
+		}).done(function(resp){
+			if (resp.message != ""){
+				alert(resp.message);
+			}
+			if(resp.status == "SUCCESS"){
+				$("#btnList").trigger("click");			
+			}
+		});	
+
+	}
+
 </script>
-
-
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
 <!-- DataTables -->

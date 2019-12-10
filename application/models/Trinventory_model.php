@@ -549,7 +549,7 @@ class Trinventory_model extends MY_Model
                         $dataSerial["fst_basic_unit"]
                     );
                     if ($isAvailable == false){
-                        throw new CustomException(sprintf(lang("serial %s:%s tidak tersedia"),$dataSerial["fst_batch_no"],$serial),3003,"FAILED",null);
+                        throw new CustomException(sprintf(lang("serial %s:%s tidak tersedia"),$dataSerial["fst_batch_no"],null),3003,"FAILED",null);
                     }
                 }
 
@@ -615,9 +615,13 @@ class Trinventory_model extends MY_Model
 
     public function isBatchSerialAvailable($finWarehouseId,$finItemId,$fstBatchNo,$fstSerialNo,$fdbQty,$fstUnit){
         $this->load->model("msitems_model");
-        $ssql = "Select * from msitemdetailssummary where fin_warehouse_id = ? and fin_item_id = ? and fst_batch_no =? and fst_serial_no = ? ";
-        $qr =$this->db->query($ssql,[$finWarehouseId,$finItemId,$fstBatchNo,$fstSerialNo]);
+        $opBatch = $fstBatchNo == null ? "is" : "=";
+        $opSerial = $fstSerialNo == null ? "is" : "=";
+        
+        $ssql = "Select * from msitemdetailssummary where fin_warehouse_id = ? and fin_item_id = ? and fst_batch_no $opBatch ? and fst_serial_no $opSerial ? ";
+        $qr =$this->db->query($ssql,[$finWarehouseId,$finItemId,$fstBatchNo,$fstSerialNo]);        
         $rw = $qr->row();
+
         if ($rw == null){
             return false;
         }
@@ -636,8 +640,13 @@ class Trinventory_model extends MY_Model
         $qr = $this->db->query($ssql,[$transType,$finTransId]);
         $detailList = $qr->result();
         foreach($detailList as $dataD){
-            $ssql = "UPDATE msitemdetailssummary SET fdb_qty_in = fdb_qty_in- ? , fdb_qty_out = fdb_qty_out - ? WHERE fin_warehouse_id = ? AND fin_item_id = ? AND fst_batch_no = ? and fst_serial_no = ?";
-            $this->db->query($ssql,[$dataD->fdb_qty_in,$dataD->fdb_qty_out,$dataD->fin_warehouse_id,$dataD->fin_item_id,$dataD->fst_batch_no,$dataD->fst_serial_no]);
+            $opBatch = $dataD->fst_batch_no == null ? "is" : "=";
+            $opSerial = $dataD->fst_serial_no == null ? "is" : "=";
+
+            $ssql = "UPDATE msitemdetailssummary SET fdb_qty_in = fdb_qty_in- ? , fdb_qty_out = fdb_qty_out - ? 
+                WHERE fin_warehouse_id = ? AND fin_item_id = ? 
+                AND fst_batch_no $opBatch ? and fst_serial_no $opSerial ?";
+            $this->db->query($ssql,[$dataD->fdb_qty_in,$dataD->fdb_qty_out,$dataD->fin_warehouse_id,$dataD->fin_item_id,$dataD->fst_batch_no,$dataD->fst_serial_no]);            
             throwIfDBError();
         }
         $ssql ="DELETE FROM msitemdetails WHERE fst_trans_type = ? AND fin_trans_id = ?";
