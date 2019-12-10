@@ -294,7 +294,7 @@
 				{"title" : "Item id","width": "80px",sortable:false,data:"fin_item_id",visible:false},
 				{"title" : "Item Code","width": "80px",sortable:false,data:"fst_item_code"},
 				{"title" : "Item Name","width": "100px",sortable:false,data:"fst_custom_item_name"},
-				{"title" : "Satuan","width": "100px",sortable:false,data:"fst_unit"},
+				{"title" : "Unit","width": "100px",sortable:false,data:"fst_unit"},
 				{"title" : "Price","width": "100px",sortable:false,data:"fdc_price",className:'text-right',
 					render:function(data,type,row){
 						return App.money_format(data);

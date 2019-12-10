@@ -227,7 +227,8 @@ class Prefix_cash_bank extends MY_Controller {
         $this->json_output($rs);
     }
 
-    public function delete(){
+    public function delete($id){
+		$this->load->model("kasbank_model");
         $this->db->trans_start();
         $this->kasbank_model->delete($id);
         $this->db->trans_complete();
