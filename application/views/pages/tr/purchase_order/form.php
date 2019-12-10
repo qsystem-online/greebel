@@ -146,7 +146,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="form-group">
 							<label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Warehouse")?> :</label>
 							<div class="col-md-10">
-								<div class="pull-left" style="width:20%" >
+								<div class="pull-left" style="width:16%" >
 									<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id">
 									<?php
 										$warehouses = $this->mswarehouse_model->getNonLogisticWarehouseList();
@@ -157,7 +157,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</select>
 									<div id="fin_warehouse_id_err" class="text-danger"></div>
 								</div>
-								<div class="pull-left" style="width:26%" >
+								<div class="pull-left" style="width:30%" >
 									<div class="form-group">
 										<label for="fst_do_no" class="col-md-5 control-label"><?=lang("Nomor DO")?> :</label>
 										<div class="col-md-7">
