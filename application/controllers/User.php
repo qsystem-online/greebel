@@ -26,8 +26,8 @@ class User extends MY_Controller
 		$this->list['delete_ajax_url'] = site_url() . 'user/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'user/edit/';
 		$this->list['arrSearch'] = [
-			'a.fin_user_id' => 'User ID',
-			'a.fst_username' => 'User Name'
+			'fin_user_id' => 'User ID',
+			'fst_username' => 'User Name'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -322,7 +322,7 @@ class User extends MY_Controller
 		$selectFields = "fin_user_id,fst_fullname,fst_gender,fdt_birthdate,fst_birthplace,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fst_fullname", "fst_birthplace"];
+		$searchFields = ["fin_user_id", "fst_username"];
 		$this->datatables->setSearchFields($searchFields);
 
 		// Format Data

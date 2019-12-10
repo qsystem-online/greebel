@@ -40,7 +40,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="btn-group btn-group-sm  pull-right">					
 					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 				</div>
@@ -53,7 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
-					<div class='form-group'>
+					<div class="form-group">
                     <label for="fin_relation_group_id" class="col-sm-2 control-label"><?=lang("Relation Group ID")?></label>
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="fin_relation_group_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_relation_group_id" value="<?=$fin_relation_group_id?>" readonly>
