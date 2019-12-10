@@ -93,7 +93,7 @@ class Trsuratjalan_model extends MY_Model {
 
     public function getDataById($fin_sj_id){
         $ssql = "select a.*,
-            b.fdt_salesorder_date,b.fst_salesorder_no,
+            b.fdt_salesorder_datetime,b.fst_salesorder_no,
             c.fin_relation_id,c.fst_relation_name,a.fin_shipping_address_id
             from trsuratjalan a
             inner join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id

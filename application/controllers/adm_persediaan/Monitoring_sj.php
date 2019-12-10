@@ -30,13 +30,13 @@ class Monitoring_sj extends MY_Controller{
 		$useractive = $this->aauth->get_user_id();
 		$user = $this->aauth->user();
 		
-		$this->datatables->setTableName("(select a.*,b.fst_warehouse_name,c.fst_salesorder_no,c.fdt_salesorder_date,d.fst_relation_name from trsuratjalan a
+		$this->datatables->setTableName("(select a.*,b.fst_warehouse_name,c.fst_salesorder_no,c.fdt_salesorder_datetime,d.fst_relation_name from trsuratjalan a
 			left join mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id
 			left join trsalesorder c on a.fin_salesorder_id = c.fin_salesorder_id
 			left join msrelations d on c.fin_relation_id = d.fin_relation_id
 			where a.fst_sj_return_resi_no is NULL ) a ");
 
-		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_date,a.fst_warehouse_name,a.fst_salesorder_no,a.fdt_salesorder_date,
+		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_datetime,a.fst_warehouse_name,a.fst_salesorder_no,a.fdt_salesorder_datetime,
 			a.fst_relation_name,a.fdt_sj_return_datetime,a.fst_sj_return_resi_no,a.fst_sj_return_memo,a.fin_sj_return_by_id,a.fbl_is_hold,a.fdt_unhold_datetime,a.fin_unhold_id";
 		$this->datatables->setSelectFields($selectFields);
 
@@ -109,13 +109,13 @@ class Monitoring_sj extends MY_Controller{
 		$useractive = $this->aauth->get_user_id();
 		$user = $this->aauth->user();
 		
-		$this->datatables->setTableName("(select a.*,b.fst_warehouse_name,c.fst_salesorder_no,c.fdt_salesorder_date,d.fst_relation_name from trsuratjalan a
+		$this->datatables->setTableName("(select a.*,b.fst_warehouse_name,c.fst_salesorder_no,c.fdt_salesorder_datetime,d.fst_relation_name from trsuratjalan a
 			left join mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id
 			left join trsalesorder c on a.fin_salesorder_id = c.fin_salesorder_id
 			left join msrelations d on c.fin_relation_id = d.fin_relation_id
 			where a.fst_sj_return_resi_no is NOT NULL ) a ");
 
-		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_date,a.fst_warehouse_name,a.fst_salesorder_no,a.fdt_salesorder_date,
+		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_datetime,a.fst_warehouse_name,a.fst_salesorder_no,a.fdt_salesorder_datetime,
 			a.fst_relation_name,a.fdt_sj_return_datetime,a.fst_sj_return_resi_no,a.fst_sj_return_memo,a.fin_sj_return_by_id,a.fdt_unhold_datetime";
 		$this->datatables->setSelectFields($selectFields);
 
