@@ -38,336 +38,334 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <div class="col-md-12">
             <div class="box box-info">
 				<div class="box-header with-border">
-				<h3 class="box-title title"><?=$title?></h3>
-				<div class="btn-group btn-group-sm  pull-right">					
-					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
-					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-					<a id="btnPrinted" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
-					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+					<h3 class="box-title title"><?=$title?></h3>
+					<div class="btn-group btn-group-sm  pull-right">					
+						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
+						<a id="btnPrinted" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+						<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+					</div>
 				</div>
-			</div>
-            <!-- end box header -->
+            	<!-- end box header -->
 
-            <!-- form start -->
-            <form id="frmRelation" class="form-horizontal" action="<?=site_url()?>pr/relation/add" method="POST" enctype="multipart/form-data">			
-				<div class="box-body">
-					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
-					<input type="hidden" id="frm-mode" value="<?=$mode?>">
+				<!-- form start -->
+				<form id="frmRelation" class="form-horizontal" action="<?=site_url()?>pr/relation/add" method="POST" enctype="multipart/form-data">			
+					<div class="box-body">
+						<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
+						<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
-					<div class="form-group">
-                    <label for="fin_relation_id" class="col-md-2 control-label"><?=lang("Relation ID")?> :</label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fin_relation_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_relation_id" value="<?=$fin_relation_id?>" readonly>
-							<div id="fin_relation_id_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="fst_relation_type" class="col-md-2 control-label"><?=lang("Relation Type")?> :</label>
-						<div class="col-md-10">
-							<select class="form-control select2" id="fst_relation_type" name="fst_relation_type[]"  multiple="multiple">
-								<option value="1"><?=lang("Customer")?></option>
-								<option value="2"><?=lang("Supplier/Vendor")?></option>
-								<option value="3"><?=lang("Expedisi")?></option>
-							</select>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Line Of Business")?> :</label>
-						<div class="col-md-10">
-							<select class="form-control select2" id="select-lineBusiness" name="fst_linebusiness_id[]"  multiple="multiple">
-							<?php foreach ($linebusinessList as $linebusiness) {    ?>
-										<option value='<?= $linebusiness->fin_linebusiness_id ?>'><?= $linebusiness->fst_linebusiness_name ?> </option>
-									<?php
-								} ?>
-							</select>
-						</div>
-					</div>
-
-					<div class="form-group">
-                    <label for="fst_relation_name" class="col-md-2 control-label"><?=lang("Relation Name")?> :</label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_relation_name" placeholder="<?=lang("Relation Name")?>" name="fst_relation_name">
-							<div id="fst_relation_name_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="fin_branch_id" class="col-md-2 control-label"><?=lang("Branch Name")?> :</label>
-						<div class="col-md-4">
-							<select id="select-branch" class="form-control" name="fin_branch_id">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fin_branch_id_err" class="text-danger"></div>
+						<div class="form-group">
+						<label for="fin_relation_id" class="col-md-2 control-label"><?=lang("Relation ID")?> :</label>
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="fin_relation_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_relation_id" value="<?=$fin_relation_id?>" readonly>
+								<div id="fin_relation_id_err" class="text-danger"></div>
+							</div>
 						</div>
 
-					<label for="fst_business_type" class="col-md-2 control-label"><?=lang("Business Type")?> :</label>
-						<div class="col-md-4">
-							<select class="form-control" id="fst_business_type" name="fst_business_type">
-								<option value='P'><?=lang("Personal")?></option>
-								<option value='C'><?=lang("Corporate")?></option>
-							</select>
+						<div class="form-group">
+						<label for="fst_relation_type" class="col-md-2 control-label"><?=lang("Relation Type")?> :</label>
+							<div class="col-md-10">
+								<select class="form-control select2" id="fst_relation_type" name="fst_relation_type[]"  multiple="multiple">
+									<option value="1"><?=lang("Customer")?></option>
+									<option value="2"><?=lang("Supplier/Vendor")?></option>
+									<option value="3"><?=lang("Expedisi")?></option>
+								</select>
+							</div>
 						</div>
-					</div>
 
-					<div class="form-group">
-					<label for="select-parentId" class="col-md-2 control-label"><?=lang("Customer Induk")?> :</label>
-						<div class="col-md-4">
-							<select id="select-parentId" class="form-control relation-info" name="fin_parent_id">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fin_parent_id_err" class="text-danger"></div>
+						<div class="form-group">
+						<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Line Of Business")?> :</label>
+							<div class="col-md-10">
+								<select class="form-control select2" id="select-lineBusiness" name="fst_linebusiness_id[]"  multiple="multiple">
+								<?php foreach ($linebusinessList as $linebusiness) {    ?>
+											<option value='<?= $linebusiness->fin_linebusiness_id ?>'><?= $linebusiness->fst_linebusiness_name ?> </option>
+										<?php
+									} ?>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+						<label for="fst_relation_name" class="col-md-2 control-label"><?=lang("Relation Name")?> :</label>
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="fst_relation_name" placeholder="<?=lang("Relation Name")?>" name="fst_relation_name">
+								<div id="fst_relation_name_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+						<label for="fin_branch_id" class="col-md-2 control-label"><?=lang("Branch Name")?> :</label>
+							<div class="col-md-4">
+								<select id="select-branch" class="form-control" name="fin_branch_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fin_branch_id_err" class="text-danger"></div>
+							</div>
+
+						<label for="fst_business_type" class="col-md-2 control-label"><?=lang("Business Type")?> :</label>
+							<div class="col-md-4">
+								<select class="form-control" id="fst_business_type" name="fst_business_type">
+									<option value='P'><?=lang("Personal")?></option>
+									<option value='C'><?=lang("Corporate")?></option>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+						<label for="select-parentId" class="col-md-2 control-label"><?=lang("Customer Induk")?> :</label>
+							<div class="col-md-4">
+								<select id="select-parentId" class="form-control relation-info" name="fin_parent_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fin_parent_id_err" class="text-danger"></div>
+							</div>
+						
+						<label for="select-groupId" class="col-md-2 control-label"><?=lang("Relation Group Name")?> :</label>
+							<div class="col-md-4">
+								<select id="select-groupId" class="form-control" name="fin_relation_group_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fin_relation_group_id_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group personal-info">
+						<label for="fst_gender" class="col-md-2 control-label"><?=lang("Gender")?> :</label>
+							<div class="col-md-4 personal-info">
+								<select class="form-control" id="fst_gender" name="fst_gender">
+									<option value="0">-- <?=lang("select")?> --</option>
+									<option value="M"><?=lang("Male")?></option>
+									<option value="F"><?=lang("Female")?></option>
+								</select>
+							</div>
+
+						<label for="fdt_birth_date" class="col-md-2 control-label"><?=lang("Birth Date")?> :</label>
+							<div class="col-md-4">
+								<div class="input-group date">
+									<div class="input-group-addon">
+										<i class="fa fa-calendar"></i>
+									</div>
+									<input type="text" class="form-control pull-right datepicker" id="fdt_birth_date" name="fdt_birth_date"/>								
+								</div>
+								<div id="fdt_birth_date_err" class="text-danger"></div>
+								<!-- /.input group -->
+							</div>
+						</div>
+
+						<div class="form-group personal-info">
+						<label for="fst_nik" class="col-md-2 control-label"><?=lang("NIK")?> :</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control" id="fst_nik" placeholder="<?=lang("NIK")?>" name="fst_nik">
+								<div id="fst_nik_err" class="text-danger"></div>
+							</div>
+
+							<label for="fst_birth_place" class="col-md-2 control-label"><?=lang("Birth Place")?> :</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control" id="fst_birth_place" placeholder="<?=lang("Birth Place")?>" name="fst_birth_place">
+								<div id="fst_birth_place_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="fst_npwp" class="col-md-2 control-label"><?=lang("NPWP")?> :</label>
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="fst_npwp" placeholder="<?=lang("NPWP")?>" name="fst_npwp">
+								<div id="fst_npwp_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+						<label for="fst_address" class="col-md-2 control-label"><?=lang("Address")?> :</label>
+							<div class="col-md-10">
+								<textarea class="form-control" id="fst_address" placeholder="<?=lang("Address")?>" name="fst_address"></textarea>
+								<div id="fst_address_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+						<label for="fst_phone" class="col-md-2 control-label"><?=lang("Phone")?> :</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control" id="fst_phone" placeholder="<?=lang("Phone")?>" name="fst_phone">
+								<div id="fst_phone_err" class="text-danger"></div>
+							</div>
+
+						<label for="fst_fax" class="col-md-2 control-label"><?=lang("Fax")?> :</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control" id="fst_fax" placeholder="<?=lang("Fax")?>" name="fst_fax">
+								<div id="fst_fax_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+						<label for="fst_postal_code" class="col-md-2 control-label"><?=lang("Postal Code")?> :</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control" id="fst_postal_code" placeholder="<?=lang("Postal Code")?>" name="fst_postal_code">
+								<div id="fst_postal_code_err" class="text-danger"></div>
+							</div>
+
+						<label for="select-country" class="col-md-2 control-label"><?=lang("Country Name")?> :</label>
+							<div class="col-md-4">
+								<select id="select-country" class="form-control" name="fin_country_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fst_country_name_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+						<label for="select-provinces" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
+							<div class="col-md-4">
+								<select id="select-provinces" class="form-control" name="fst_kode">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fst_nama__err" class="text-danger"></div>
+							</div>
+
+						<label for="select-district" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
+							<div class="col-md-4">
+								<select id="select-district" class="form-control" name="fst_kode">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fst_nama__err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+						<label for="select-subdistrict" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
+							<div class="col-md-4">
+								<select id="select-subdistrict" class="form-control" name="fst_kode">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fst_nama__err" class="text-danger"></div>
+							</div>
+
+						<label for="select-village" class="col-md-2 control-label"><?=lang("Village Name")?> :</label>
+							<div class="col-md-4">
+								<select id="select-village" class="form-control" name="fst_kode">
+									<option value="0">-- <?=lang("select")?> --</option>
+									<div id="fst_nama__err" class="text-danger"></div>
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group relation-info">
+						<label for="select-custpricing" class="col-md-2 control-label"><?=lang("Pricing Group")?> :</label>
+							<div class="col-md-10">
+								<select id="select-custpricing" class="form-control" name="fin_cust_pricing_group_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fin_cust_pricing_group_id_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+						<label for="fst_relation_notes" class="col-md-2 control-label"><?=lang("Relation Notes")?> :</label>
+							<div class="col-md-7">
+								<select id="select-notes" class="form-control" name="fst_relation_notes">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<textarea class="form-control" id="fst_relation_notes" name="fst_relation_notes"></textarea>
+								<div id="fst_relation_notes_err" class="text-danger"></div>
+							</div>
+							<button id="btn-add-fst_relation_notes" type="button" class="btn btn-add" ><?=lang("Add")?></button>
+						</div>
+
+						<div class="form-group">
+						<label for="fdc_credit_limit" class="col-md-2 control-label"><?=lang("Credit Limit")?> :</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control text-right money" id="fdc_credit_limit" name="fdc_credit_limit">
+								<div id="fdc_credit_limit_err" class="text-danger"></div>
+							</div>
+
+						<label for="fin_sales_area_id" class="col-md-2 control-label"><?=lang("Sales Area Name")?> :</label>
+							<div class="col-md-4">
+								<select id="select-salesArea" class="form-control" name="fin_sales_area_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fin_sales_area_id_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+						<label for="select-salesId" class="col-md-2 control-label"><?=lang("Sales Name")?> :</label>
+							<div class="col-md-4">
+								<select id="select-salesId" class="form-control" name="fin_sales_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fin_sales_id_err" class="text-danger"></div>
+							</div>
+
+						<label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?> :</label>
+							<div class="col-md-4">
+								<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fin_warehouse_id_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+						<label for="fin_terms_payment" class="col-md-2 control-label"><?=lang("Terms Payment")?> :</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control text-right" id="fin_terms_payment" placeholder="<?=lang("Terms Payment")?>" name="fin_terms_payment">
+								<div id="fin_terms_payment_err" class="text-danger"></div>
+							</div>
+						<label for="fin_terms_payment" class="col-sm-0 control-label"><?=lang("Hari")?></label>
+						</div>
+
+						<div class="form-group">
+							<label for="fin_top_komisi" class="col-md-2 control-label"><h6><i>*<?=lang("Terms Of Payment")?>*</i></h6></label>
+						</div>
+
+						<div class="form-group">
+							<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("TOP Commission")?> :</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control text-right" id="fin_top_komisi" name="fin_top_komisi" value="0">
+								<div id="fin_top_komisi_err" class="text-danger"></div>
+							</div>
+						<label for="fin_top_komisi" class="col-sm-0 control-label"><?=lang("Hari")?></label>
+						</div>
+							
+						<div class="form-group">
+							<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("TOP Plus Commission")?> :</label>
+							<div class="col-md-4">
+								<input type="text" class="form-control text-right" id="fin_top_plus_komisi" name="fin_top_plus_komisi" value="0">
+								<div id="fin_top_plus_komisi_err" class="text-danger"></div>
+							</div>
+						<label for="fin_top_plus_komisi" class="col-sm-0 control-label"><?=lang("Hari")?></label>
 						</div>
 					
-					<label for="select-groupId" class="col-md-2 control-label"><?=lang("Relation Group Name")?> :</label>
-						<div class="col-md-4">
-							<select id="select-groupId" class="form-control" name="fin_relation_group_id">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fin_relation_group_id_err" class="text-danger"></div>
-						</div>
-					</div>
+						<!-- end box body -->
 
-					<div class="form-group personal-info">
-					<label for="fst_gender" class="col-md-2 control-label"><?=lang("Gender")?> :</label>
-						<div class="col-md-4 personal-info">
-							<select class="form-control" id="fst_gender" name="fst_gender">
-								<option value="0">-- <?=lang("select")?> --</option>
-								<option value="M"><?=lang("Male")?></option>
-								<option value="F"><?=lang("Female")?></option>
-							</select>
-						</div>
-
-					<label for="fdt_birth_date" class="col-md-2 control-label"><?=lang("Birth Date")?> :</label>
-						<div class="col-md-4">
-							<div class="input-group date">
-								<div class="input-group-addon">
-									<i class="fa fa-calendar"></i>
+						<?php $displaytabs = ($mode == "ADD") ? "none" : "" ?>
+						<div class="nav-tabs-custom" style="display:unset">
+							<ul class="nav nav-tabs">
+								<li class="active"><a href="#shipping_details" data-toggle="tab" aria-expanded="true"><?= lang("Shipping Address") ?></a></li>
+							</ul>
+							<div class="tab-content">
+								<div class="tab-pane active" id="shipping_details">
+									<form class="form-horizontal edit-mode ">	
+										<div class="form-group">
+											<div class="col-md-12">
+											<button id="btn-add-shipping" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Shipping") ?></button>
+											</div>	
+										</div>
+									</form>
+									<table id="tbl_shipping_details" class="table table-bordered table-hover" style="width:100%;"></table>
 								</div>
-								<input type="text" class="form-control pull-right datepicker" id="fdt_birth_date" name="fdt_birth_date"/>								
 							</div>
-							<div id="fdt_birth_date_err" class="text-danger"></div>
-							<!-- /.input group -->
+							<!-- /.tab-pane -->
 						</div>
-					</div>
+						<!-- /.tab-content -->
 
-					<div class="form-group personal-info">
-					<label for="fst_nik" class="col-md-2 control-label"><?=lang("NIK")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control" id="fst_nik" placeholder="<?=lang("NIK")?>" name="fst_nik">
-							<div id="fst_nik_err" class="text-danger"></div>
-						</div>
-
-						<label for="fst_birth_place" class="col-md-2 control-label"><?=lang("Birth Place")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control" id="fst_birth_place" placeholder="<?=lang("Birth Place")?>" name="fst_birth_place">
-							<div id="fst_birth_place_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-                    	<label for="fst_npwp" class="col-md-2 control-label"><?=lang("NPWP")?> :</label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_npwp" placeholder="<?=lang("NPWP")?>" name="fst_npwp">
-							<div id="fst_npwp_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="fst_address" class="col-md-2 control-label"><?=lang("Address")?> :</label>
-						<div class="col-md-10">
-							<textarea class="form-control" id="fst_address" placeholder="<?=lang("Address")?>" name="fst_address"></textarea>
-							<div id="fst_address_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="fst_phone" class="col-md-2 control-label"><?=lang("Phone")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control" id="fst_phone" placeholder="<?=lang("Phone")?>" name="fst_phone">
-							<div id="fst_phone_err" class="text-danger"></div>
-						</div>
-
-					<label for="fst_fax" class="col-md-2 control-label"><?=lang("Fax")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control" id="fst_fax" placeholder="<?=lang("Fax")?>" name="fst_fax">
-							<div id="fst_fax_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="fst_postal_code" class="col-md-2 control-label"><?=lang("Postal Code")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control" id="fst_postal_code" placeholder="<?=lang("Postal Code")?>" name="fst_postal_code">
-							<div id="fst_postal_code_err" class="text-danger"></div>
-						</div>
-
-					<label for="select-country" class="col-md-2 control-label"><?=lang("Country Name")?> :</label>
-						<div class="col-md-4">
-							<select id="select-country" class="form-control" name="fin_country_id">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fst_country_name_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="select-provinces" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
-						<div class="col-md-4">
-							<select id="select-provinces" class="form-control" name="fst_kode">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fst_nama__err" class="text-danger"></div>
-						</div>
-
-					<label for="select-district" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
-						<div class="col-md-4">
-							<select id="select-district" class="form-control" name="fst_kode">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fst_nama__err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="select-subdistrict" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
-						<div class="col-md-4">
-							<select id="select-subdistrict" class="form-control" name="fst_kode">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fst_nama__err" class="text-danger"></div>
-						</div>
-
-					<label for="select-village" class="col-md-2 control-label"><?=lang("Village Name")?> :</label>
-						<div class="col-md-4">
-							<select id="select-village" class="form-control" name="fst_kode">
-								<option value="0">-- <?=lang("select")?> --</option>
-								<div id="fst_nama__err" class="text-danger"></div>
-							</select>
-						</div>
-					</div>
-
-					<div class="form-group relation-info">
-					<label for="select-custpricing" class="col-md-2 control-label"><?=lang("Pricing Group")?> :</label>
-						<div class="col-md-10">
-							<select id="select-custpricing" class="form-control" name="fin_cust_pricing_group_id">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fin_cust_pricing_group_id_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="fst_relation_notes" class="col-md-2 control-label"><?=lang("Relation Notes")?> :</label>
-						<div class="col-md-7">
-							<select id="select-notes" class="form-control" name="fst_relation_notes">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<textarea class="form-control" id="fst_relation_notes" name="fst_relation_notes"></textarea>
-							<div id="fst_relation_notes_err" class="text-danger"></div>
-						</div>
-						<button id="btn-add-fst_relation_notes" type="button" class="btn btn-add" ><?=lang("Add")?></button>
-					</div>
-
-					<div class="form-group">
-					<label for="fdc_credit_limit" class="col-md-2 control-label"><?=lang("Credit Limit")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control text-right money" id="fdc_credit_limit" name="fdc_credit_limit">
-							<div id="fdc_credit_limit_err" class="text-danger"></div>
-						</div>
-
-					<label for="fin_sales_area_id" class="col-md-2 control-label"><?=lang("Sales Area Name")?> :</label>
-						<div class="col-md-4">
-							<select id="select-salesArea" class="form-control" name="fin_sales_area_id">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fin_sales_area_id_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="select-salesId" class="col-md-2 control-label"><?=lang("Sales Name")?> :</label>
-						<div class="col-md-4">
-							<select id="select-salesId" class="form-control" name="fin_sales_id">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fin_sales_id_err" class="text-danger"></div>
-						</div>
-
-					<label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?> :</label>
-						<div class="col-md-4">
-							<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
-								<option value="0">-- <?=lang("select")?> --</option>
-							</select>
-							<div id="fin_warehouse_id_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-					<label for="fin_terms_payment" class="col-md-2 control-label"><?=lang("Terms Payment")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control text-right" id="fin_terms_payment" placeholder="<?=lang("Terms Payment")?>" name="fin_terms_payment">
-							<div id="fin_terms_payment_err" class="text-danger"></div>
-						</div>
-					<label for="fin_terms_payment" class="col-sm-0 control-label"><?=lang("Hari")?></label>
-					</div>
-
-					<div class="form-group">
-						<label for="fin_top_komisi" class="col-md-2 control-label"><h6><i>*<?=lang("Terms Of Payment")?>*</i></h6></label>
-					</div>
-
-					<div class="form-group">
-						<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("TOP Commission")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control text-right" id="fin_top_komisi" name="fin_top_komisi" value="0">
-							<div id="fin_top_komisi_err" class="text-danger"></div>
-						</div>
-					<label for="fin_top_komisi" class="col-sm-0 control-label"><?=lang("Hari")?></label>
-					</div>
-						
-					<div class="form-group">
-						<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("TOP Plus Commission")?> :</label>
-						<div class="col-md-4">
-							<input type="text" class="form-control text-right" id="fin_top_plus_komisi" name="fin_top_plus_komisi" value="0">
-							<div id="fin_top_plus_komisi_err" class="text-danger"></div>
-						</div>
-					<label for="fin_top_plus_komisi" class="col-sm-0 control-label"><?=lang("Hari")?></label>
-					</div>
-                </div>
-				<!-- end box body -->
-
-				<?php $displaytabs = ($mode == "ADD") ? "none" : "" ?>
-				<div class="nav-tabs-custom" style="display:unset">
-					<ul class="nav nav-tabs">
-						<li class="active"><a href="#shipping_details" data-toggle="tab" aria-expanded="true"><?= lang("Shipping Address") ?></a></li>
-					</ul>
-					<div class="tab-content">
-						<div class="tab-pane active" id="shipping_details">
-							<form class="form-horizontal edit-mode ">	
-								<div class="form-group">
-									<div class="col-md-12">
-									<button id="btn-add-shipping" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Shipping") ?></button>
-									</div>	
-								</div>
-                            </form>
-							<table id="tbl_shipping_details" class="table table-bordered table-hover" style="width:100%;"></table>
-						</div>
-					</div>
-					<!-- /.tab-pane -->
-				</div>
-				<!-- /.tab-content -->
-
-                <div class="box-footer text-right">
-                    
-                </div>
-                <!-- end box-footer -->
-            </form>
-        </div>
-    </div>
+						<div class="box-footer text-right"></div>
+						<!-- end box-footer -->
+				</form>
+        	</div>
+    	</div>
 </section>
-</div>
+
 
 
 <!--- // START TAB SHIPPING ADDRESS \\ ---------------------------------------------------------------------------------------------------------------->
@@ -786,8 +784,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 			});
 		});
-
-		$(".select2").select2();
 
 		$("#select-lineBusiness").select2();
 
@@ -1408,7 +1404,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?= base_url() ?>bower_components/datatables.net/datatables.min.js"></script>
 <script src="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.min.js"></script>
 <script type="text/javascript">
-    $(function(){
+    function fixedSelect2(){
         $(".select2-container").addClass("form-control"); 
         $(".select2-selection--single , .select2-selection--multiple").css({
             "border":"0px solid #000",
@@ -1418,5 +1414,5 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             "margin-top" : "-5px",
             "background-color":"unset"
         });
-    });
+    };
 </script>
