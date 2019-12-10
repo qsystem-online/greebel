@@ -200,7 +200,6 @@ class Project extends MY_Controller {
             //action
             $data["action"] = "<div style='font-size:16px'>
                     <a class='btn-edit' href='#' data-id='" . $data["fin_project_id"] . "'><i class='fa fa-pencil'></i></a>
-                    <a class='btn-delete' href='#' data-id='" . $data["fin_project_id"] . "' data-toggle='confirmation'><i class='fa fa-trash'></i></a>
                 </div>";
             
             $arrDataFormated[] = $data;
