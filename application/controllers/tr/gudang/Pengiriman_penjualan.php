@@ -23,8 +23,8 @@ class Pengiriman_penjualan extends MY_Controller{
 		$this->list['delete_ajax_url'] = site_url() . 'tr/gudang/pengiriman_penjualan/ajx_delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'tr/gudang/pengiriman_penjualan/edit/';
 		$this->list['arrSearch'] = [
-			'fin_ssj_id' => 'Surat jalan ID',
-			'fst_sj_no' => 'Surat jalan No'
+			'fin_ssj_id' => 'Surat Jalan ID',
+			'fst_sj_no' => 'Surat Jalan No'
 		];
 
 		$this->list['breadcrumbs'] = [
