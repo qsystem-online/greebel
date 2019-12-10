@@ -21,8 +21,8 @@ class Currency extends MY_Controller {
         $this->list['delete_ajax_url']=site_url().'master/currency/delete/';
         $this->list['edit_ajax_url']=site_url().'master/currency/edit/';
         $this->list['arrSearch']=[
-            'a.fst_curr_code ' => 'Currencies Code',
-            'a.fst_curr_name' => 'Name'
+            'fst_curr_code ' => 'Currencies Code',
+            'fst_curr_name' => 'Name'
 		];
 		$this->list['breadcrumbs']=[
 			['title'=>'Home','link'=>'#','icon'=>"<i class='fa fa-dashboard'></i>"],
