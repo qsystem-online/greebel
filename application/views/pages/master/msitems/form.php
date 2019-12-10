@@ -203,6 +203,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <img id="imgItem" style="border:1px solid #999;width:128px;" align="right" src="<?= site_url() ?>assets/app/items/image/default.jpg" />
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <div class="col-md-1">
+                                <input type="text" class="form-control" id="fin_ttl_invnetory" placeholder="<?= lang("TTL Inventory") ?>" name="fin_ttl_invnetory">
+                                <div id="fin_ttl_invnetory_err" class="text-danger"></div>
+                            </div>
+                        </div>
                         <!-- end box body -->
                         <?php $displaytabs = ($mode == "ADD") ? "none" : "" ?>
                         <div class="nav-tabs-custom" style="display:unset">
@@ -442,9 +449,24 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
             $("#tbl_unit_details").on("click", ".btn-delete-unit-details", function(event) {
                 event.preventDefault();
+
                 t = $("#tbl_unit_details").DataTable();
                 var trRow = $(this).parents('tr');
-                t.row(trRow).remove().draw();
+                selectedUnit = trRow;
+
+                unit_detail = t.row(trRow);
+                row = unit_detail.data();
+                selectedRow = row;
+                //alert(row.fin_item_id);
+                t.id = row.fin_rec_id;
+                var ttl_inventory = $("#fin_ttl_invnetory").val();
+                //alert(item);
+                if (ttl_inventory != 0 && t.id != 0 ) {
+                    alert ("Item sudah ada record inventory ,Unit tidak bisa delete ! ");
+                    return;
+                } else {
+                    t.row(trRow).remove().draw();
+                }
             });
             $("#fst_unit").select2({
                 width: '100%',
@@ -1008,21 +1030,32 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label for="select-vendorName" class="col-md-3 control-label"><?= lang("Vendor Item Name") ?> :</label>
-                                    <div class="col-md-7">
-                                        <select id="select-vendorName" class="form-control" name="fst_vendor_item_name">
-                                            
-                                        </select>
-                                        <div id="fst_vendor_item_name_err" class="text-danger"></div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
                                     <label for="select-groupItemName" class="col-md-3 control-label"><?= lang("Group") ?> :</label>
                                     <div class="col-md-7">
                                         <select id="select-groupItemName" class="form-control" name="fin_item_group_id">
                                             <option value="0">-- <?= lang("select") ?> --</option>
                                         </select>
                                         <div id="fst_item_group_name_err" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="select-lineBusinessR" class="col-md-3 control-label"><?=lang("Line Of Business")?> :</label>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" style= "width:100%" id="select-lineBusinessR" name="fst_linebusinessR[]"  multiple="multiple">
+                                        <?php foreach ($linebusinessList as $linebusiness) {    ?>
+                                                    <option value='<?= $linebusiness->fin_linebusiness_id ?>'><?= $linebusiness->fst_linebusiness_name ?> </option>
+                                                <?php
+                                            } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="select-vendorName" class="col-md-3 control-label"><?= lang("Vendor Name") ?> :</label>
+                                    <div class="col-md-7">
+                                        <select id="select-vendorName" class="form-control" name="fst_vendor_item_name">
+                                            
+                                        </select>
+                                        <div id="fst_vendor_item_name_err" class="text-danger"></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -1176,37 +1209,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         });
 
-        $("#select-vendorName").select2({
-            width: '100%',
-            allowClear: true,           
-            placeholder: 'select.....',
-            ajax: {
-                url: '<?= site_url() ?>master/item/get_data_relationVendor',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value){
-                        data2.push({
-                            "id": value.fin_relation_id,
-                            "text": value.fst_relation_name
-                        });
-                    });
-                    console.log(data2);
-                    return {
-                        results: data2
-                    };
-                },
-                cache: true
-            }
-        });
-
         $("#select-groupItemName").select2({
             width: '100%',
             allowClear: true,           
             placeholder: 'select.....',
             ajax: {
-                url: '<?= site_url() ?>master/item/get_data_groupItemName',
+                url: '<?= site_url() ?>master/item/get_data_ItemGroupId',
                 dataType: 'json',
                 delay: 250,
                 processResults: function(data) {
@@ -1234,53 +1242,146 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         });
 
-        $("#select-lineBusiness").select2();
+        $("#select-groupItemName").change(function(e){
+            $('#select-lineBusinessR').val(null).trigger('change');
+            $('#select-vendorName').val(null).trigger('change');
+            select_VendorName();
+            $('#select-ItemCode').val(null).trigger('change');
+            select_StartItem();
+            $('#select-CodeItem').val(null).trigger('change');
+            select_EndItem();
 
-        $("#select-ItemCode").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>master/item/get_data_ItemCode',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value){
-                        data2.push({
-                            "id": value.fst_item_code,
-                            "text": value.fst_item_code
-                        });
-                    });
-                    console.log(data2);
-                    return {
-                        results: data2
-                    };
-                },
-                cache: true,
-            }
-        });
+        })
 
-        $("#select-CodeItem").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>master/item/get_data_ItemCode',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value){
-                        data2.push({
-                            "id": value.fst_item_code,
-                            "text": value.fst_item_code
+        $("#select-lineBusinessR").change(function(e){
+            console.log($("#select-lineBusinessR").val());
+            datapost = [];
+            datapost.push({
+                name: SECURITY_NAME,
+                value: SECURITY_VALUE,
+            });
+            datapost.push({
+                name: "fst_linebusiness",
+                value: JSON.stringify($("#select-lineBusinessR").val()),
+            });
+            $('#select-vendorName').val(null).trigger('change');
+            select_VendorName();
+            $('#select-ItemCode').val(null).trigger('change');
+            select_StartItem();
+            $('#select-CodeItem').val(null).trigger('change');
+            select_EndItem();
+        })
+
+        //$("#select-lineBusiness").select2();
+
+        $("#select-vendorName").change(function(e){
+            $('#select-ItemCode').val(null).trigger('change');
+            select_StartItem();
+            $('#select-CodeItem').val(null).trigger('change');
+            select_EndItem();
+        })
+
+        function select_lineBusiness($groupid){
+            $("#select-lineBusinessR").select2({
+                width: '100%',
+                ajax: {
+                    url: '<?= site_url() ?>master/item/get_line_business/' + $groupid ,
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        data2 = [];
+                        $.each(data, function(index, value){
+                            data2.push({
+                                "id": value.fin_linebusiness_id,
+                                "text": value.fst_linebusiness_name
+                            });
                         });
-                    });
-                    console.log(data2);
-                    return {
-                        results: data2
-                    };
-                },
-                cache: true,
-            }
-        });
+                        console.log(data2);
+                        return {
+                            results: data2
+                        };
+                    },
+                    cache: true
+                }
+            });
+        }
+
+        function select_VendorName(){
+            $("#select-vendorName").select2({
+                width: '100%',
+                ajax: {
+                    url: '<?= site_url() ?>master/item/get_data_relationVendor',
+                    dataType: 'json',
+                    delay: 250,
+                    method: "POST",
+                    data: datapost,
+                    processResults: function(data) {
+                        data2 = [];
+                        $.each(data, function(index, value){
+                            data2.push({
+                                "id": value.fin_relation_id,
+                                "text": value.fst_relation_name
+                            });
+                        });
+                        console.log(data2);
+                        return {
+                            results: data2
+                        };
+                    },
+                    cache: true
+                }
+            });
+        }
+
+        function select_StartItem(){
+            $("#select-ItemCode").select2({
+                width: '100%',
+                ajax: {
+                    url: '<?= site_url() ?>master/item/get_data_ItemCode',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        data2 = [];
+                        $.each(data, function(index, value){
+                            data2.push({
+                                "id": value.fst_item_code,
+                                "text": value.fst_item_code
+                            });
+                        });
+                        console.log(data2);
+                        return {
+                            results: data2
+                        };
+                    },
+                    cache: true,
+                }
+            });
+        }
+
+        function select_EndItem(){
+            $("#select-CodeItem").select2({
+                width: '100%',
+                ajax: {
+                    url: '<?= site_url() ?>master/item/get_data_ItemCode',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        data2 = [];
+                        $.each(data, function(index, value){
+                            data2.push({
+                                "id": value.fst_item_code,
+                                "text": value.fst_item_code
+                            });
+                        });
+                        console.log(data2);
+                        return {
+                            results: data2
+                        };
+                    },
+                    cache: true,
+                }
+            });
+        }
         
         $("#btnNew").click(function(e){
 			e.preventDefault();

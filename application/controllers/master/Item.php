@@ -407,17 +407,27 @@ class Item extends MY_Controller
         $this->json_output($data);
     }
 
-    public function delete($id){
-        $this->load->model("msitems_model");
-        $this->db->trans_start();
-        $this->msitems_model->delete($id);
-        $this->db->trans_complete();
+    public function delete($fin_item_id){
+		if (!$this->aauth->is_permit("")) {
+			$this->ajxResp["status"] = "NOT_PERMIT";
+			$this->ajxResp["message"] = "You not allowed to do this operation !";
+			$this->json_output();
+			return;
+		}
 
-        $this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = lang("Data dihapus !");
-		//$this->ajxResp["data"]["insert_id"] = $insertId;
+		$this->db->trans_start();
+
+		$result = $this->msitems_model->delete($fin_item_id);
+		$this->db->trans_complete();
+		if ($result["status"] ==  true){
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = lang("ITEM Telah dihapus");		
+		}else{
+			$this->ajxResp["status"] = "FAILED";
+			$this->ajxResp["message"] = $result["message"];
+		}
 		$this->json_output();
-    }
+	}
 
     public function get_data_ItemMainGroupId(){
         $term = $this->input->get("term");
@@ -454,9 +464,20 @@ class Item extends MY_Controller
     }
 
     public function get_data_relationVendor(){
+        $fstLinebusiness = $this->input->post("fst_linebusiness");
+        $arrLB = json_decode ($fstLinebusiness);
+        //var_dump($arrLB);
+        //die();
+        $fstLB = '';
+        foreach($arrLB as $lb){
+            $fstLB .= $lb . '|';
+        }
+        $fstLB = rtrim($fstLB,'|');
+        //var_dump($fstLB);
         $term = $this->input->get("term");
-        $ssql = "select * from msrelations where fst_relation_name like ? and fst_relation_type = 2 order by fst_relation_name";
+        $ssql = "select * from msrelations where REPLACE(fst_linebusiness_id,',','|') REGEXP '$fstLB' and fst_relation_name like ? and FIND_IN_SET('2',fst_relation_type) order by fst_relation_name";
         $qr = $this->db->query($ssql, ['%' . $term . '%']);
+        //echo $this->db->last_query();
         $rs = $qr->result();
         $this->json_output($rs);
     }
@@ -546,6 +567,27 @@ class Item extends MY_Controller
         $this->json_output($resp);
     }
 
+    public function get_line_business($groupid)
+    {
+        $ssql = "SELECT * FROM msitems WHERE fin_item_group_id = ? ";
+        $rs = $qr->result();
+        foreach($rs as $rw){
+            $lbC.=','.$rw->fst_linebusiness_id;
+        }
+        $lbA = '';
+        $lbB = '';
+        $lbC = $lbA .",". $lbB;
+        $arrlbC = explode(",",$lbC);
+        $arrlbD = array_unique($arrlbC);
+        $lbD = implode(",",$arrlbD);
+        $term = $this->input->get("term");
+        $ssql = "SELECT * FROM mslinebusiness WHERE fin_linebusiness_id IN ($lbD) ";
+        $qr = $this->db->query($ssql, ['%' . $term . '%', $groupid]);
+        $rs = $qr->result();
+
+        $this->json_output($rs);
+    }
+
     public function testTree(){
         $this->load->library('menus');
         $this->list['page_name'] = "Master Items";
@@ -579,7 +621,7 @@ class Item extends MY_Controller
         $this->parser->parse('template/main', $this->data);
     }
 
-    public function get_printItem($vendorName,$groupName,$itemCode_awal,$itemCode_akhir) {
+    public function get_printItem($lineBussines,$vendorName,$groupName,$itemCode_awal,$itemCode_akhir) {
         $layout = $this->input->post("layoutColumn");
         $arrLayout = json_decode($layout);
         $vendorName = urldecode($vendorName);
