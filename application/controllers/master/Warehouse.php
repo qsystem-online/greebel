@@ -40,7 +40,7 @@ class Warehouse extends MY_Controller
             ['title' => 'Warehouse ID', 'width' => '5%', 'data' => 'fin_warehouse_id'],
             ['title' => 'Warehouse Name', 'width' => '15%', 'data' => 'fst_warehouse_name'],
             ['title' => 'Branch', 'width' => '10%', 'data' => 'fst_branch_name'],
-            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
+            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
