@@ -5,7 +5,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/datatables.min.css">
 
 <section class="content-header">
-    <h1><?= lang("Menus") ?><small><?= lang("form") ?></small></h1>
+    <h1><?= lang("Branch") ?><small><?= lang("form") ?></small></h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
         <li><a href="#"><?= lang("Menus") ?></a></li>
@@ -22,7 +22,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     <div class="btn-group btn-group-sm  pull-right">					
                         <a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
                         <a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-                        <a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
                         <a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
                         <a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
                     </div>
