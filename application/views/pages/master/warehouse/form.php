@@ -6,7 +6,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.css">
 
 <section class="content-header">
-    <h1><?= lang("Menus") ?><small><?= lang("form") ?></small></h1>
+    <h1><?= lang("Warehouse") ?><small><?= lang("form") ?></small></h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
         <li><a href="#"><?= lang("Menus") ?></a></li>
