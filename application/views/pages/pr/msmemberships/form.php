@@ -95,13 +95,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-					<label for="fdt_expiry_date" class="col-md-2 control-label"><?=lang("Expiry Date")?> </label>
+					<label for="fdt_expiry_date" class="col-md-2 control-label text-right"><?=lang("Expiry Date")?> </label>
 						<div class="col-md-4">
 							<div class="input-group date">
 								<div class="input-group-addon">
 									<i class="fa fa-calendar"></i>
 								</div>
-								<input type="text" class="form-control pull-right datepicker" id="fdt_expiry_date" name="fdt_expiry_date"/>								
+								<input type="text" class="form-control text-right datepicker" id="fdt_expiry_date" name="fdt_expiry_date"/>								
 							</div>
 							<div id="fdt_expiry_date_err" class="text-danger"></div>
 							<!-- /.input group -->

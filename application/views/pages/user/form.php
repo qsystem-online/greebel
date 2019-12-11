@@ -80,31 +80,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">
 						<label for="fst_gender" class="col-sm-2 control-label"><?=lang("Gender")?></label>
-						<div class="col-sm-3">
+						<div class="col-sm-4">
 							<select class="form-control" id="fst_gender" name="fst_gender">
 								<option value='M'><?=lang("Male")?></option>
 								<option value='F'><?=lang("Female")?></option>
 							</select>
 						</div>
-					</div>
 
-					<div class="form-group">
-						<label for="fdt_birthdate" class="col-sm-2 control-label"><?=lang("Birth Date")?> *</label>
-						<div class="col-sm-3">
-							<div class="input-group date">
-								<div class="input-group-addon">
-									<i class="fa fa-calendar"></i>
-								</div>
-								<input type="text" class="form-control pull-right datepicker" id="fdt_birthdate" name="fdt_birthdate"/>								
-							</div>
-							<div id="fdt_birthdate_err" class="text-danger"></div>
+						<label for="fst_email" class="col-md-2 control-label"><?=lang("Email")?> *</label>
+						<div class="col-md-4">
+							<input type="text" class="form-control" id="fst_email" placeholder="<?=lang("Email")?>" name="fst_email">
+							<div id="fst_email_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-						<label for="fst_birthplace" class="col-sm-2 control-label"><?=lang("Birth Place")?></label>
-						<div class="col-sm-10">
-							<input type="text" class="form-control" id="fst_birthplace" placeholder="<?=lang("Birth Place")?>" name="fst_birthplace">
+						<label for="fdt_birthdate" class="col-sm-2 control-label text-right"><?=lang("Birth Date")?> *</label>
+						<div class="col-sm-4">
+							<div class="input-group date">
+								<div class="input-group-addon">
+									<i class="fa fa-calendar"></i>
+								</div>
+								<input type="text" class="form-control text-right datepicker" id="fdt_birthdate" name="fdt_birthdate"/>								
+							</div>
+							<div id="fdt_birthdate_err" class="text-danger"></div>
+						</div>
+
+						<label for="fst_birthplace" class="col-sm-2 control-label text-right"><?=lang("Birth Place")?></label>
+						<div class="col-sm-4">
+							<input type="text" class="form-control text-right" id="fst_birthplace" placeholder="<?=lang("Birth Place")?>" name="fst_birthplace">
 							<div id="fst_birthplace_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -119,17 +123,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">
 						<label for="fst_phone" class="col-md-2 control-label"><?=lang("Phone")?> *</label>
-						<div class="col-md-10">
+						<div class="col-md-4">
 							<input type="text" class="form-control" id="fst_phone" placeholder="<?=lang("Phone")?>" name="fst_phone">
 							<div id="fst_phone_err" class="text-danger"></div>
 						</div>
-					</div>
 
-					<div class="form-group">
-						<label for="fst_email" class="col-md-2 control-label"><?=lang("Email")?> *</label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_email" placeholder="<?=lang("Email")?>" name="fst_email">
-							<div id="fst_email_err" class="text-danger"></div>
+						<label for="fin_branch_id" class="col-md-2 control-label"><?=lang("Branch")?></label>
+						<div class="col-md-4">
+							<select class="form-control select2" id="fin_branch_id" name="fin_branch_id"></select>
+							<div id="fin_branch_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -139,22 +141,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<select id="select-departmentname" class="form-control" name="fin_department_id"></select>
 							<div id="fst_department_name_err" class="text-danger"></div>
 						</div>
-					</div>
-
-					<div class="form-group">
-                        <label for="fin_branch_id" class="col-md-2 control-label"><?=lang("Branch")?></label>
-                            <div class="col-md-4">
-                                <select class="form-control select2" id="fin_branch_id" name="fin_branch_id"></select>
-                                <div id="fin_branch_id_err" class="text-danger"></div>
-                            </div>
-                    </div>
-					<div class="form-group">
+                    
                         <label for="fin_group_id" class="col-md-2 control-label"><?=lang("Group")?></label>
-                            <div class="col-md-4">
-                                <select class="form-control select2" id="fin_group_id" name="fin_group_id"></select>
-                                <div id="fin_group_id_err" class="text-danger"></div>
-                            </div>
+						<div class="col-md-4">
+							<select class="form-control select2" id="fin_group_id" name="fin_group_id"></select>
+							<div id="fin_group_id_err" class="text-danger"></div>
+						</div>
                     </div>
+
 					<div class="form-group">
 						<label for="fst_birthplace" class="col-sm-2 control-label"></label>
 						<div class="col-sm-10">
@@ -163,7 +157,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 					<div class="form-group">
 						<label for="fst_birthplace" class="col-sm-2 control-label"><?=lang("Avatar")?></label>
-						<div class="col-sm-10">
+						<div class="col-sm-4">
 							<input type="file" class="form-control" id="fst_avatar"  name="fst_avatar">
 						</div>
 					</div>

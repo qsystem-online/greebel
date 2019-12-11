@@ -71,12 +71,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
                     <div class="form-group">
-					<label for="fdc_percent_of_price_list" class="col-md-3 control-label"><?= lang("Percent Of Price List")?> (%)</label>
+					<label for="fdc_percent_of_price_list" class="col-md-3 control-label text-right"><?= lang("Percent Of Price List")?> (%)</label>
 						<div class="col-md-2">
 							<input type="text" class="form-control text-right" id="fdc_percent_of_price_list" name="fdc_percent_of_price_list">
 						</div>
 						
-					<label for="fdc_difference_in_amount" class="col-md-2 control-label"><?= lang("Amount")?></label>
+					<label for="fdc_difference_in_amount" class="col-md-2 control-label text-right"><?= lang("Amount")?></label>
 						<div class="col-md-2">
 							<input type="text" class="form-control text-right money" id="fdc_difference_in_amount" name="fdc_difference_in_amount">
 							<div id="fdc_difference_in_amount_err" class="text-danger"></div>

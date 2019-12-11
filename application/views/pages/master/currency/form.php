@@ -118,13 +118,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="fdt_date" class="col-md-4 control-label"><?=lang("Date")?></label>
+										<label for="fdt_date" class="col-md-4 control-label text-right"><?=lang("Date")?></label>
 										<div class="col-md-8">
 											<div class="input-group date">
 												<div class="input-group-addon">
 													<i class="fa fa-calendar"></i>
 												</div>
-												<input type="text" class="form-control pull-right datepicker" id="fdt_date" name="fdt_date"/>								
+												<input type="text" class="form-control text-right datepicker" id="fdt_date" name="fdt_date"/>								
 											</div>
 											<div id="fdt_date_err" class="text-danger"></div>
 											<!-- /.input group -->

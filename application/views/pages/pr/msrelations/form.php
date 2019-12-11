@@ -140,13 +140,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</select>
 							</div>
 
-						<label for="fdt_birth_date" class="col-md-2 control-label"><?=lang("Birth Date")?> :</label>
+						<label for="fdt_birth_date" class="col-md-2 control-label text-right"><?=lang("Birth Date")?> :</label>
 							<div class="col-md-4">
 								<div class="input-group date">
 									<div class="input-group-addon">
 										<i class="fa fa-calendar"></i>
 									</div>
-									<input type="text" class="form-control pull-right datepicker" id="fdt_birth_date" name="fdt_birth_date"/>								
+									<input type="text" class="form-control text-right datepicker" id="fdt_birth_date" name="fdt_birth_date"/>								
 								</div>
 								<div id="fdt_birth_date_err" class="text-danger"></div>
 								<!-- /.input group -->
@@ -160,9 +160,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fst_nik_err" class="text-danger"></div>
 							</div>
 
-							<label for="fst_birth_place" class="col-md-2 control-label"><?=lang("Birth Place")?> :</label>
+							<label for="fst_birth_place" class="col-md-2 control-label text-right"><?=lang("Birth Place")?> :</label>
 							<div class="col-md-4">
-								<input type="text" class="form-control" id="fst_birth_place" placeholder="<?=lang("Birth Place")?>" name="fst_birth_place">
+								<input type="text" class="form-control text-right" id="fst_birth_place" placeholder="<?=lang("Birth Place")?>" name="fst_birth_place">
 								<div id="fst_birth_place_err" class="text-danger"></div>
 							</div>
 						</div>
