@@ -5,9 +5,9 @@
 		var respAjx;
 		
 		App.getValueAjax({
-			model:"trsalesorder_model",
-			func:"getSummaryCostSO",
-			params:[finSOId],
+			model:"trpo_model",
+			func:"getSummaryCostPO",
+			params:[finPOId],
 			async:true,
 			callback:function(resp){
 				respAjx = resp;
@@ -16,7 +16,7 @@
 				var arrCost = resp;
 				$.each(arrCost,function(i,v){
 					result += "<tr>";
-					result += '<td style="width:20%">'+ v.fst_salesorder_no +'</td>';
+					result += '<td style="width:20%">'+ v.fst_po_no +'</td>';
 					result += '<td style="width:20%">'+ v.fst_curr_code + ':' + App.money_format(v.fdc_total) +'</td>';
 					result += '<td>'+ v.fst_memo +'</td>';
 					result += '</tr>';
@@ -29,7 +29,7 @@
 			}
 		});	
 		
-		//row.child(formatDetailCost(data.fin_salesorder_id)).show();
+		//row.child(formatDetailCost(data.fin_po_id)).show();
 		//trRow.addClass('shown');
 
 		/*
@@ -69,12 +69,12 @@
 				trRow.removeClass('shown');
 			}else {
 				// Open this row
-				formatDetailCost(data.fin_salesorder_id,row,trRow);
+				formatDetailCost(data.fin_po_id,row,trRow);
 
 				//row.child("asdasdasdasdasdasdasd");
 			//	trRow.addClass('shown');
 
-				//row.child(formatDetailCost(data.fin_salesorder_id)).show();
+				//row.child(formatDetailCost(data.fin_po_id)).show();
 				//trRow.addClass('shown');
 			}
 
@@ -106,13 +106,13 @@
 			var callback = function(respNotes){				
 				dataPost = {
 					[SECURITY_NAME] : SECURITY_VALUE,
-					fin_salesorder_id : data.fin_salesorder_id,
+					fin_po_id : data.fin_po_id,
 					fst_closed_note:respNotes
 				};
 				//dataPost[SECURITY_NAME] = SECURITY_VALUE;
 				App.blockUIOnAjaxRequest();
 				$.ajax({
-					url:"<?=site_url()?>tr/sales_order/process_closing_cost/" + +isChecked,
+					url:"<?=site_url()?>tr/purchase_order/process_closing_cost/" + +isChecked,
 					data:dataPost,
 					method:"POST"
 				}).done(function(resp){
@@ -171,7 +171,7 @@
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/sales_order/delete/" + finId;
+		var url =  "<?= site_url() ?>tr/purchase_order/delete/" + finId;
 		$.ajax({
 			url:url,
 			method:"POST",
@@ -182,7 +182,7 @@
 			}
 
 			if(resp.status == "SUCCESS"){
-                window.location.href = "<?=site_url()?>tr/sales_order/";
+                window.location.href = "<?=site_url()?>tr/purchase_order/";
 			}
 
         });
