@@ -32,8 +32,8 @@ class Sales_order extends MY_Controller{
 		$this->list['delete_ajax_url'] = site_url() . 'tr/sales_order/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'tr/sales_order/edit/';
 		$this->list['arrSearch'] = [
-			'fin_salesorder_id' => 'Sales Order ID',
-			'fst_salesorder_no' => 'Sales Order No'
+			'fst_salesorder_no' => 'Sales Order No',
+			'fst_customer' => 'Customer'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -42,11 +42,52 @@ class Sales_order extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Sales Order ID.', 'width' => '20%', 'data' => 'fin_salesorder_id'],
-			['title' => 'Sales Order No.', 'width' => '20%', 'data' => 'fst_salesorder_no'],
-			['title' => 'Sales Order Date', 'width' => '20%', 'data' => 'fdt_salesorder_datetime'],
-            ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_memo'],
-			['title' => 'Action', 'width' => '15%', 'sortable' => false, 'className' => 'dt-body-center text-center',
+			['title' => 'Sales Order ID.', 'width' => '10px', 'visible' => 'false', 'data' => 'fin_salesorder_id'],
+			['title' => 'Sales Order No.', 'width' => '100px', 'data' => 'fst_salesorder_no'],
+			['title' => 'Sales Order Date', 'width' => '100px', 'data' => 'fdt_salesorder_datetime'],
+			['title' => 'Customer', 'width' => '200px', 'data' => 'fst_customer'],
+			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
+			
+			['title' => 'Total', 'width' => '150px','className'=>'text-right',
+				'render'=>"function(data,type,row){
+					var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount) + parseFloat(row.fdc_vat_amount);
+					return row.fst_curr_code + ':' + App.money_format(total);
+				}"
+			],
+			['title' => 'DP', 'width' => '80px', 'data' => 'fdc_downpayment','className' => 'text-right',
+				'render'=>"function(data,type,row){
+					return App.money_format(data);
+				}"
+			],
+			['title' => 'DP paid', 'width' => '80px', 'data' => 'fdc_downpayment_paid','className' => 'text-right',
+				'render'=>"function(data,type,row){
+					return App.money_format(data);
+				}"
+			],
+			['title' => 'Status', 'width' => '50px', 'data' => 'fst_active','className'=>'text-center',
+				'render'=>"function(data,type,row){
+					if(data == 'A'){
+						return 'Active';
+					}else if (data == 'S'){
+						return 'Suspend';
+					}else if (data == 'D'){
+						return 'Deleted';
+					}else if (data == 'R'){
+						return 'Rejected';
+					}
+				}"
+			],
+			['title' => 'Closed', 'width' => '50px', 'data' => 'fbl_is_closed','className'=>'text-center',
+				'render'=>"function(data,type,row){
+					if(data == 1){
+						return '<input class=\"isClosed\" type=\"checkbox\" value=\"1\" checked>';
+					}else{
+						return '<input class=\"isClosed\" type=\"checkbox\" value=\"0\" >';
+					}					
+				}"
+			],
+
+			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'dt-body-center text-center',
 				'render'=>"function(data,type,row){
 					action = \"<div style='font-size:16px'>\";
 					action += \"<a class='btn-edit' href='#' data-id='\" + row.fin_salesorder_id + \"'><i class='fa fa-pencil'></i></a>\";
@@ -56,6 +97,10 @@ class Sales_order extends MY_Controller{
 				}",
 			]
 		];
+
+		$mdlPopupNotes = $this->parser->parse('template/mdlPopupNotes', [], true);
+		$this->list['jsfile'] = $this->parser->parse('pages/tr/sales_order/listjs', ["mdlPopupNotes"=>$mdlPopupNotes], true);
+
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
 		$this->list["mdlEditForm"] = $edit_modal;
 		$main_header = $this->parser->parse('inc/main_header', [], true);
@@ -122,8 +167,12 @@ class Sales_order extends MY_Controller{
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_salesorder_id){
+	public function edit($fin_salesorder_id){
 		$this->openForm("EDIT", $fin_salesorder_id);
+	}
+
+	public function view($finSOId){
+		$this->openForm("VIEW", $finSOId);
 	}
 	
 	public function ajx_add_save(){		
@@ -660,9 +709,9 @@ class Sales_order extends MY_Controller{
 
 	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("trsalesorder");
+		$this->datatables->setTableName("(select a.*,b.fst_relation_name as fst_customer from trsalesorder a inner join msrelations b on a.fin_relation_id = b.fin_relation_id) a");
 
-		$selectFields = "fin_salesorder_id,fst_salesorder_no,fdt_salesorder_datetime,fst_memo,'action' as action";
+		$selectFields = "a.fin_salesorder_id,a.fst_salesorder_no,a.fdt_salesorder_datetime,a.fst_memo,a.fst_customer,a.fst_active,a.fdc_subttl,a.fdc_disc_amount,a.fdc_vat_amount,a.fst_curr_code,a.fdc_downpayment,a.fdc_downpayment_paid,a.fbl_is_closed,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
@@ -672,12 +721,12 @@ class Sales_order extends MY_Controller{
 
 		// Format Data
 		$datasources = $this->datatables->getData();
-		//$arrData = $datasources["data"];
-		//$arrDataFormated = [];
-		/*
+		$arrData = $datasources["data"];
+		$arrDataFormated = [];
+		
 		foreach ($arrData as $data) {
-			//$insertDate = strtotime($data["fdt_salesorder_datetime"]);
-			//$data["fdt_salesorder_date"] = date("d-M-Y",$insertDate);
+			$insertDate = strtotime($data["fdt_salesorder_datetime"]);
+			$data["fdt_salesorder_date"] = date("d-M-Y",$insertDate);
 			//action
 			$data["action"]	= "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='" . $data["fin_salesorder_id"] . "'><i class='fa fa-pencil'></i></a>
@@ -686,8 +735,8 @@ class Sales_order extends MY_Controller{
 
 			$arrDataFormated[] = $data;
 		}
-		*/
-		//$datasources["data"] = $arrDataFormated;
+		
+		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 	}
 

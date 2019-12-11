@@ -41,7 +41,7 @@ class Purchase_order extends MY_Controller{
 			['title' => 'ID. LPB Pembelian', 'width' => '10px','visible'=>'false', 'data' => 'fin_po_id'],
             ['title' => 'No. Order Pembelian', 'width' => '100px', 'data' => 'fst_po_no'],
             ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_po_datetime'],
-            ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
+            ['title' => 'Supplier', 'width' => '200px', 'data' => 'fst_supplier_name'],
 			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
 			['title' => 'Total', 'width' => '150px','className'=>'text-right',
 				'render'=>"function(data,type,row){
