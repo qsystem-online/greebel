@@ -250,7 +250,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						
 						<div class="form-group">
-						<label for="select-custpricing" class="col-md-2 control-label relation-info"><?=lang("Pricing Group")?> :</label>
+						<label for="select-custpricing" class="col-md-2 control-label"><?=lang("Pricing Group")?> :</label>
 							<div class="col-md-4">
 								<select id="select-custpricing" class="form-control relation-info" name="fin_cust_pricing_group_id">
 									<option value="0">-- <?=lang("select")?> --</option>
