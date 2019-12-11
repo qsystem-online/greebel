@@ -22,9 +22,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div class="table">
-					<table class="table">
+					<div style="margin-bottom:5px;margin-top:20px">
+						<div style="float:right">
+							<label class="control-label">Search by :</label>
+							<select id="selectSearch" class="form-control"  style="display:inline;width:148px">
+								<option value='fin_salesorder_id'>Sales Order ID</option>
+								<option value='fst_salesorder_no'>Sales Order No</option>
+							</select>
+						</div>
+						<div style="clear:both"></div>
+					</div>
+					
 					<table id="tblUnhold" style="width:100%"></table>
-					</table>
 				</div>
 			</div>
 			<!-- /.box-body -->	
