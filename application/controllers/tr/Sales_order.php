@@ -91,7 +91,6 @@ class Sales_order extends MY_Controller{
 				'render'=>"function(data,type,row){
 					action = \"<div style='font-size:16px'>\";
 					action += \"<a class='btn-edit' href='#' data-id='\" + row.fin_salesorder_id + \"'><i class='fa fa-pencil'></i></a>\";
-					action += \"<a class='btn-delete' href='#' data-id='\" + row.fin_salesorder_id + \"'><i class='fa fa-trash'></i></a>\";
 					action += \"</div>\";
 					return action;
 				}",
@@ -218,7 +217,7 @@ class Sales_order extends MY_Controller{
 			"fbl_dp_inc_ppn" => ($this->input->post("fbl_dp_inc_ppn") == null) ? 0 : 1,
 			"fdc_downpayment_paid"=>0,
 			"fbl_is_closed"=>0,
-			"fst_active" => 'S'
+			"fst_active" => 'S' //SEMUA SO HARUS DI APPROVE DULU
 		];
 		
 
