@@ -216,7 +216,9 @@ class Sales_order extends MY_Controller{
 			"fdc_total" => 0, //total recalculate
 			"fdc_downpayment" => $fdc_downpayment,
 			"fbl_dp_inc_ppn" => ($this->input->post("fbl_dp_inc_ppn") == null) ? 0 : 1,
-			"fst_active" => 'A'
+			"fdc_downpayment_paid"=>0,
+			"fbl_is_closed"=>0,
+			"fst_active" => 'S'
 		];
 		
 
@@ -512,6 +514,8 @@ class Sales_order extends MY_Controller{
 				"fdc_total" => 0, //total recalculate
 				"fdc_downpayment" => $fdc_downpayment,
 				"fbl_dp_inc_ppn" => ($this->input->post("fbl_dp_inc_ppn") == null) ? 0 : 1,
+				"fdc_downpayment_paid"=>0,
+				"fbl_is_closed"=>0,
 				"fst_active" => 'A'				
 			];
 
