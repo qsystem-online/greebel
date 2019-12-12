@@ -963,6 +963,10 @@ class Trsalesorder_model extends MY_Model {
         $this->unposting($finSalesOrderId);
     }
 
+    public function show_transaction($finSalesOrderId){
+        redirect(site_url()."tr/sales_order/view/$finSalesOrderId", 'refresh');
+    }
+
     public function getAuthorizationList($dataH,$details){
         $this->load->model("trinventory_model");
         

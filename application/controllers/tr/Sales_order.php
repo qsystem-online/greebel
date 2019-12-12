@@ -170,8 +170,8 @@ class Sales_order extends MY_Controller{
 		$this->openForm("EDIT", $fin_salesorder_id);
 	}
 
-	public function view($finSOId){
-		$this->openForm("VIEW", $finSOId);
+	public function view($finSalesOrderId){
+		$this->openForm("VIEW", $finSalesOrderId);
 	}
 	
 	public function ajx_add_save(){		
