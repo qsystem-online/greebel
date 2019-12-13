@@ -739,9 +739,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			columns:[				
 				{"title" : "id",sortable:false,data:"fin_rec_id",visible:true},
 				{"title" : "promo",sortable:false,data:"fin_promo_id",visible:true},				
-				{"title" : "Items","width": "250px",sortable:false,data:"fin_item_id",
+				{"title" : "Items","width": "200px",sortable:false,data:"fin_item_id",
 					render: function(data,type,row){
-						return row.fst_item_code + "-" + row.fst_custom_item_name;
+						return row.fst_item_code + " - " + row.fst_custom_item_name;
 					}
 				},
 				{"title" : "Custom Name","width": "0px",sortable:false,data:"fst_custom_item_name",visible:false},
@@ -768,8 +768,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 					
 				},
-				{"title" : "Memo","width": "200px",data:"fst_memo_item"},
-				{"title" : "Action","width": "40px",sortable:false,className:'dt-body-center text-center',
+				{"title" : "Memo","width": "120px",data:"fst_memo_item"},
+				{"title" : "Action","width": "60px",sortable:false,className:'dt-body-center text-center',
 					render:function(data,type,row){
 						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';
 						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
