@@ -39,11 +39,11 @@ class Purchase_order extends MY_Controller{
 
         $this->list['columns'] = [
 			['title' => 'ID. LPB Pembelian', 'width' => '10px','visible'=>'false', 'data' => 'fin_po_id'],
-            ['title' => 'No. Order Pembelian', 'width' => '100px', 'data' => 'fst_po_no'],
-            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_po_datetime'],
-            ['title' => 'Supplier', 'width' => '200px', 'data' => 'fst_supplier_name'],
-			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
-			['title' => 'Total', 'width' => '150px','className'=>'text-right',
+            ['title' => 'No. Order Pembelian', 'width' => '120px', 'data' => 'fst_po_no'],
+            ['title' => 'Tanggal', 'width' => '80px', 'data' => 'fdt_po_datetime'],
+            ['title' => 'Supplier', 'width' => '260px', 'data' => 'fst_supplier_name'],
+			['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
+			['title' => 'Total', 'width' => '120px','className'=>'text-right',
 				'render'=>"function(data,type,row){
 					var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount) + parseFloat(row.fdc_ppn_amount);
 					return row.fst_curr_code + ':' + App.money_format(total);
@@ -59,7 +59,7 @@ class Purchase_order extends MY_Controller{
 					return App.money_format(data);
 				}"
 			],
-			['title' => 'Status', 'width' => '50px', 'data' => 'fst_active','className'=>'text-center',
+			['title' => 'Status', 'width' => '70px', 'data' => 'fst_active','className'=>'text-center',
 				'render'=>"function(data,type,row){
 					if(data == 'A'){
 						return 'Active';
@@ -82,7 +82,7 @@ class Purchase_order extends MY_Controller{
 				}"
 			],
 			
-			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/purchase_order/edit/' + row.fin_po_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
