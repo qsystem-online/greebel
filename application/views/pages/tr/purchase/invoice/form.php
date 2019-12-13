@@ -292,23 +292,23 @@
 			order: [],
 			columns:[
 				{"title" : "Item id","width": "80px",sortable:false,data:"fin_item_id",visible:false},
-				{"title" : "Item Code","width": "80px",sortable:false,data:"fst_item_code"},
-				{"title" : "Item Name","width": "100px",sortable:false,data:"fst_custom_item_name"},
-				{"title" : "Unit","width": "100px",sortable:false,data:"fst_unit"},
-				{"title" : "Price","width": "100px",sortable:false,data:"fdc_price",className:'text-right',
+				{"title" : "Item Code","width": "60px",sortable:false,data:"fst_item_code"},
+				{"title" : "Item Name","width": "150px",sortable:false,data:"fst_custom_item_name"},
+				{"title" : "Unit","width": "40px",sortable:false,data:"fst_unit"},
+				{"title" : "Price","width": "60px",sortable:false,data:"fdc_price",className:'text-right',
 					render:function(data,type,row){
 						return App.money_format(data);
 					}
 				},
-				{"title" : "Discount","width": "100px",sortable:false,data:"fst_disc_item",className:'text-center'},
-				{"title" : "Discount Amount","width": "100px",sortable:false,className:'text-right',
+				{"title" : "Discount","width": "50px",sortable:false,data:"fst_disc_item",className:'text-center'},
+				{"title" : "Discount Amount","width": "50px",sortable:false,className:'text-right',
 					render:function(data,type,row){
 						discAmount = App.calculateDisc((row.fdc_price * row.fdb_qty_total), row.fst_disc_item);
 						return App.money_format(discAmount);
 					}
 				},
-				{"title" : "Total Qty","width": "100px",sortable:false,data:"fdb_qty_total",className:'text-right'},
-				{"title" : "Total","width": "100px",sortable:false,className:'text-right',
+				{"title" : "Total Qty","width": "50px",sortable:false,data:"fdb_qty_total",className:'text-right'},
+				{"title" : "Total","width": "80px",sortable:false,className:'text-right',
 					render:function(data,type,row){
 						var total = row.fdb_qty_total * row.fdc_price;
 						var discAmount = App.calculateDisc((row.fdc_price * row.fdb_qty_total), row.fst_disc_item);
