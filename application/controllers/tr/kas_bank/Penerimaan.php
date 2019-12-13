@@ -35,15 +35,15 @@ class Penerimaan extends MY_Controller{
 			['title' => 'ID. ', 'width' => '10px','visible'=>'false', 'data' => 'fin_cbreceive_id'],
             ['title' => 'Receive No.', 'width' => '100px', 'data' => 'fst_cbreceive_no'],
             ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_cbreceive_datetime'],
-            ['title' => 'Customer', 'width' => '100px', 'data' => 'fst_customer_name'],		
-			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
+            ['title' => 'Customer', 'width' => '150px', 'data' => 'fst_customer_name'],		
+			['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
 			['title' => 'Currency', 'width' => '50px', 'data' => 'fst_curr_code'],
-			['title' => 'Total Amount', 'width' => '100px', 'data' => 'fdc_total_receive','className'=>'text-right',
+			['title' => 'Total Amount', 'width' => '80px', 'data' => 'fdc_total_receive','className'=>'text-right',
 				'render'=>"function(data,type,row){
 					return App.money_format(data);
 				}",
 			],
-			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/kas_bank/penerimaan/edit/' + row.fin_cbreceive_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
