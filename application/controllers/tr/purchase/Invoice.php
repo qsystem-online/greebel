@@ -39,14 +39,14 @@ class Invoice extends MY_Controller{
             ['title' => 'No. LPB Pembelian', 'width' => '100px', 'data' => 'fst_lpbpurchase_no'],
             ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_lpbpurchase_datetime'],
             ['title' => 'Purchase Order No.', 'width' => '100px', 'data' => 'fst_po_no'],
-			['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
-			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
+			['title' => 'Supplier', 'width' => '200px', 'data' => 'fst_supplier_name'],
+			['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
 			['title' => 'Total Amount', 'width' => '100px', 'data' => 'fdc_total','className'=>'text-right',
 				'render'=>"function(data,type,row){
 					return row.fst_curr_code + ':' + App.money_format(data);
 				}"
 			],
-			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/purchase/invoice/edit/' + row.fin_lpbpurchase_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';

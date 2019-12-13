@@ -33,13 +33,13 @@ class Penerimaan_pembelian extends MY_Controller{
 		
 
         $this->list['columns'] = [
-			['title' => 'ID. LPB Pembelian', 'width' => '100px', 'data' => 'fin_lpbgudang_id'],
+			['title' => 'ID. LPB Pembelian', 'width' => '60px', 'data' => 'fin_lpbgudang_id'],
             ['title' => 'No. LPB Pembelian', 'width' => '100px', 'data' => 'fst_lpbgudang_no'],
             ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_lpbgudang_datetime'],
             ['title' => 'Purchase Order No.', 'width' => '100px', 'data' => 'fst_po_no'],
-			['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
-			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
-			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Supplier', 'width' => '200px', 'data' => 'fst_supplier_name'],
+			['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
+			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/gudang/penerimaan_pembelian/edit/' + row.fin_lpbgudang_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';

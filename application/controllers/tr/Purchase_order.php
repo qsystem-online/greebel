@@ -751,10 +751,10 @@ class Purchase_order extends MY_Controller{
         $this->list['columns'] = [
 			['title' => 'ID. LPB Pembelian', 'width' => '10px','visible'=>'false', 'data' => 'fin_po_id'],
             ['title' => 'No. Order Pembelian', 'width' => '100px', 'data' => 'fst_po_no'],
-            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_po_datetime'],
-            ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
-			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
-			['title' => 'Total', 'width' => '150px','className'=>'text-right',
+            ['title' => 'Tanggal', 'width' => '80px', 'data' => 'fdt_po_datetime'],
+            ['title' => 'Supplier', 'width' => '200px', 'data' => 'fst_supplier_name'],
+			['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
+			['title' => 'Total', 'width' => '100px','className'=>'text-right',
 				'render'=>"function(data,type,row){
 					var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount) + parseFloat(row.fdc_ppn_amount);
 					return row.fst_curr_code + ':' + App.money_format(total);
