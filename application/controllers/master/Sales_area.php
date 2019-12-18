@@ -39,10 +39,10 @@ class Sales_area extends MY_Controller{
         ];
         
         $this->list['columns'] = [
-            ['title' => 'Sales Area ID', 'width' => '8%', 'data' => 'fin_sales_area_id'],
-            ['title' => 'Name', 'width' => '15%', 'data' => 'fst_name'],
-            ['title' => 'Sales Regional Name', 'width' => '15%', 'data' => 'RegionalName'],
-            ['title' => 'Sales Name', 'width' => '12%', 'data' => 'SalesName'],
+            ['title' => 'Sales Area ID', 'width' => '5%', 'data' => 'fin_sales_area_id'],
+            ['title' => 'Name', 'width' => '10%', 'data' => 'fst_name'],
+            ['title' => 'Sales Regional Name', 'width' => '10%', 'data' => 'RegionalName'],
+            ['title' => 'Sales Name', 'width' => '10%', 'data' => 'SalesName'],
             ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
@@ -274,10 +274,10 @@ class Sales_area extends MY_Controller{
         ];
         
         $this->list['columns'] = [
-            ['title' => 'Sales Regional ID', 'width' => '8%', 'data' => 'fin_sales_regional_id'],
-            ['title' => 'Name', 'width' => '15%', 'data' => 'fst_name'],
-            ['title' => 'Sales National Name', 'width' => '15%', 'data' => 'NationalName'],
-            ['title' => 'Sales Name', 'width' => '12%', 'data' => 'SalesName'],
+            ['title' => 'Sales Regional ID', 'width' => '5%', 'data' => 'fin_sales_regional_id'],
+            ['title' => 'Name', 'width' => '10%', 'data' => 'fst_name'],
+            ['title' => 'Sales National Name', 'width' => '10%', 'data' => 'NationalName'],
+            ['title' => 'Sales Name', 'width' => '10%', 'data' => 'SalesName'],
             ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);

@@ -71,25 +71,25 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-                        <label for="fdt_project_start" class="col-sm-2 control-label"><?=lang("Start Date")?> :</label>
-                        <div class="col-sm-4">
+                        <label for="fdt_project_start" class="col-sm-2 control-label text-right"><?=lang("Start Date")?> :</label>
+                        <div class="col-sm-3">
                             <div class="input-group date">
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
-                                <input type="text" class="form-control pull-right datepicker" autocomplete="off" id="fdt_project_start" name="fdt_project_start" />
+                                <input type="text" class="form-control text-right datepicker" id="fdt_project_start" name="fdt_project_start" />
                             </div>
                             <div id="fdt_project_start_err" class="text-danger"></div>
                             <!-- /.input group -->
                         </div>
 
-                        <label for="fdt_project_end" class="col-sm-2 control-label"><?=lang("End Date")?> :</label>
-                        <div class="col-sm-4">
+                        <label for="fdt_project_end" class="col-sm-2 control-label text-right"><?=lang("End Date")?> :</label>
+                        <div class="col-sm-3">
                             <div class="input-group date">
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
-                                <input type="text" class="form-control pull-right datepicker" autocomplete="off" id="fdt_project_end" name="fdt_project_end" />
+                                <input type="text" class="form-control text-right datepicker" id="fdt_project_end" name="fdt_project_end" />
                             </div>
                             <div id="fdt_project_end_err" class="text-danger"></div>
                             <!-- /.input group -->

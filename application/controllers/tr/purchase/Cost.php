@@ -40,17 +40,17 @@ class Cost extends MY_Controller{
 
         $this->list['columns'] = [
 			['title' => 'ID.', 'width' => '0px','visible'=>'false', 'data' => 'fin_purchasecost_id'],
-            ['title' => 'No. Biaya Pembelian', 'width' => '150px', 'data' => 'fst_purchasecost_no'],
+            ['title' => 'No. Biaya Pembelian', 'width' => '120px', 'data' => 'fst_purchasecost_no'],
             ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_purchasecost_datetime'],
-            ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
-			['title' => 'No. PO', 'width' => '100px', 'data' => 'fst_po_no'],			
-            ['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
-            ['title' => 'Total', 'width' => '100px', 'data' => 'fdc_total','className'=>'text-right',
+            ['title' => 'Supplier', 'width' => '200px', 'data' => 'fst_supplier_name'],
+			['title' => 'No. PO', 'width' => '120px', 'data' => 'fst_po_no'],			
+            ['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
+            ['title' => 'Total', 'width' => '80px', 'data' => 'fdc_total','className'=>'text-right',
                 'render'=>"function(data,type,row){
                     return App.money_format(data);
                 }",
             ],
-			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/purchase/cost/edit/' + row.fin_purchasecost_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';

@@ -38,17 +38,17 @@ class Purchase_return extends MY_Controller{
 
         $this->list['columns'] = [
 			['title' => 'ID. Retur Pembelian', 'width' => '10px','visible'=>'false', 'data' => 'fin_purchasereturn_id'],
-            ['title' => 'No. Retur Pembelian', 'width' => '100px', 'data' => 'fst_purchasereturn_no'],
-            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_purchasereturn_datetime'],
-            ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
-			['title' => 'No. Faktur', 'width' => '100px', 'data' => 'fst_lpbpurchase_no'],			
-			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
-			['title' => 'Total Amount', 'width' => '100px', 'data' => 'fdc_total','className'=>'text-right',
+            ['title' => 'No. Retur Pembelian', 'width' => '120px', 'data' => 'fst_purchasereturn_no'],
+            ['title' => 'Tanggal', 'width' => '120px', 'data' => 'fdt_purchasereturn_datetime'],
+            ['title' => 'Supplier', 'width' => '200px', 'data' => 'fst_supplier_name'],
+			['title' => 'No. Faktur', 'width' => '120px', 'data' => 'fst_lpbpurchase_no'],			
+			['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
+			['title' => 'Total Amount', 'width' => '80px', 'data' => 'fdc_total','className'=>'text-right',
 				'render'=>"function(data,type,row){
 					return App.money_format(data);
 				}",
 			],
-			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/purchase/purchase_return/edit/' + row.fin_purchasereturn_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';

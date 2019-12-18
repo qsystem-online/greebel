@@ -51,14 +51,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="box box-info">
 				<div class="box-header with-border">
 					<h3 class="box-title title pull-left"><?=$title?></h3>
+					<?php if ($mode != "VIEW") { ?>
 					<div class="btn-group btn-group-sm  pull-right">					
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
 						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
+						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
+					<?php } ?>
+					
 				</div>
 				<!-- end box header -->
 				<!-- form start -->
@@ -736,9 +739,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			columns:[				
 				{"title" : "id",sortable:false,data:"fin_rec_id",visible:true},
 				{"title" : "promo",sortable:false,data:"fin_promo_id",visible:true},				
-				{"title" : "Items","width": "250px",sortable:false,data:"fin_item_id",
+				{"title" : "Items","width": "200px",sortable:false,data:"fin_item_id",
 					render: function(data,type,row){
-						return row.fst_item_code + "-" + row.fst_custom_item_name;
+						return row.fst_item_code + " - " + row.fst_custom_item_name;
 					}
 				},
 				{"title" : "Custom Name","width": "0px",sortable:false,data:"fst_custom_item_name",visible:false},
@@ -765,8 +768,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 					
 				},
-				{"title" : "Memo","width": "200px",data:"fst_memo_item"},
-				{"title" : "Action","width": "40px",sortable:false,className:'dt-body-center text-center',
+				{"title" : "Memo","width": "120px",data:"fst_memo_item"},
+				{"title" : "Action","width": "60px",sortable:false,className:'dt-body-center text-center',
 					render:function(data,type,row){
 						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';
 						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';

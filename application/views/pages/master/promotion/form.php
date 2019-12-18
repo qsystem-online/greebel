@@ -113,24 +113,24 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <option value='POS'><?= lang("POS") ?></option>
                                 </select>
                             </div>
-                            <label for="fdt_start" class="col-md-2 control-label"><?= lang("Start Date") ?> :</label>
+                            <label for="fdt_start" class="col-md-2 control-label text-right"><?= lang("Start Date") ?> :</label>
                             <div class="col-md-2">
                                 <div class="input-group date">
                                     <div class="input-group-addon">
                                         <i class="fa fa-calendar"></i>
                                     </div>
-                                    <input type="text" class="form-control pull-right datepicker" id="fdt_start" name="fdt_start" />
+                                    <input type="text" class="form-control text-right datepicker" id="fdt_start" name="fdt_start" />
                                 </div>
                                 <div id="fdt_start_err" class="text-danger"></div>
                                 <!-- /.input group -->
                             </div>
-                            <label for="fdt_end" class="col-md-2 control-label"><?= lang("End Date") ?> :</label>
+                            <label for="fdt_end" class="col-md-2 control-label text-right"><?= lang("End Date") ?> :</label>
                             <div class="col-md-2">
                                 <div class="input-group date">
                                     <div class="input-group-addon">
                                         <i class="fa fa-calendar"></i>
                                     </div>
-                                    <input type="text" class="form-control pull-right datepicker" id="fdt_end" name="fdt_end" />
+                                    <input type="text" class="form-control text-right datepicker" id="fdt_end" name="fdt_end" />
                                 </div>
                                 <div id="fdt_end_err" class="text-danger"></div>
                                 <!-- /.input group -->

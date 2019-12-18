@@ -38,9 +38,9 @@ class Promotion extends MY_Controller
         ];
         $this->list['columns'] = [
             ['title' => 'Promo ID', 'width' => '10%', 'data' => 'fin_promo_id'],
-            ['title' => 'Promo Name', 'width' => '10%', 'data' => 'fst_promo_name'],
-            ['title' => 'Start Date', 'width' => '15%', 'data' => 'fdt_start'],
-            ['title' => 'End Date', 'width' => '15%', 'data' => 'fdt_end'],
+            ['title' => 'Promo Name', 'width' => '20%', 'data' => 'fst_promo_name'],
+            ['title' => 'Start Date', 'width' => '10%', 'data' => 'fdt_start'],
+            ['title' => 'End Date', 'width' => '10%', 'data' => 'fdt_end'],
             ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);

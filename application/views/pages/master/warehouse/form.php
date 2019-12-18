@@ -6,7 +6,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.css">
 
 <section class="content-header">
-    <h1><?= lang("Menus") ?><small><?= lang("form") ?></small></h1>
+    <h1><?= lang("Warehouse") ?><small><?= lang("form") ?></small></h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
         <li><a href="#"><?= lang("Menus") ?></a></li>
@@ -36,49 +36,49 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="fin_warehouse_id" class="col-sm-4 control-label"><?= lang("Warehouse ID") ?> :</label>
-                            <div class="col-sm-5">
+                            <label for="fin_warehouse_id" class="col-sm-2 control-label"><?= lang("Warehouse ID") ?> :</label>
+                            <div class="col-sm-10">
                                 <input type="text" class="form-control" id="fin_warehouse_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_warehouse_id" value="<?= $fin_warehouse_id ?>" readonly>
                                 <div id="fin_warehouse_id_err" class="text-danger"></div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_warehouse_name" class="col-sm-4 control-label"><?= lang("Warehouse Name") ?> :</label>
-                            <div class="col-sm-5">
+                            <label for="fst_warehouse_name" class="col-sm-2 control-label"><?= lang("Warehouse Name") ?> :</label>
+                            <div class="col-sm-4">
                                 <input type="text" class="form-control" id="fst_warehouse_name" placeholder="<?= lang("Warehouse Name") ?>" name="fst_warehouse_name">
                                 <div id="fst_warehouse_name_err" class="text-danger"></div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="select-Branch" class="col-md-4 control-label"><?= lang("Branch") ?> :</label>
-                            <div class="col-md-5">
+                       
+                            <label for="select-Branch" class="col-md-2 control-label"><?= lang("Branch") ?> :</label>
+                            <div class="col-md-4">
                                 <select id="select-Branch" class="form-control" name="fin_branch_id"></select>
                                 <div id="fin_branch_id_err" class="text-danger"></div>
                             </div>
                         </div>
+
 						<div class="form-group">
-							<label for="fst_delivery_address" class="col-md-4 control-label"><?= lang("Deliver ") ?> :</label>
-							<div class="col-sm-5">
+							<label for="fst_delivery_address" class="col-md-2 control-label"><?= lang("Deliver ") ?> :</label>
+							<div class="col-sm-10">
 								<textarea class="form-control" id="fst_delivery_address" name="fst_delivery_address"></textarea>
 								<div id="fst_delivery_address_err" class="text-danger"></div>
 							</div>
 						</div>
                         <div class="form-group">
-                            <label for="fbl_is_external" class="col-sm-4 control-label"><?= lang("External") ?> :</label>
+                            <label for="fbl_is_external" class="col-sm-2 control-label"><?= lang("External") ?> :</label>
                             <div class="checkbox col-sm-2">
                                 <label><input id="fbl_is_external" type="checkbox" name="fbl_is_external" value="1"><?= lang("External") ?></label><br>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="fbl_is_main" class="col-sm-4 control-label"><?= lang("Main") ?> :</label>
+                            <label for="fbl_is_main" class="col-sm-2 control-label"><?= lang("Main") ?> :</label>
                             <div class="checkbox col-sm-2">
                                 <label><input id="fbl_is_main" type="checkbox" name="fbl_is_main" value="1"><?= lang("Main Warehouse") ?></label><br>
                                 <div id="fbl_is_main_err" class="text-danger" style="padding-left:200px"></div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="fbl_logistic" class="col-sm-4 control-label"><?= lang("Logistic") ?> :</label>
+                            <label for="fbl_logistic" class="col-sm-2 control-label"><?= lang("Logistic") ?> :</label>
                             <div class="checkbox col-sm-2">
                                 <label><input id="fbl_logistic" type="checkbox" name="fbl_logistic" value="1"><?= lang("Logistic") ?></label><br>
                             </div>

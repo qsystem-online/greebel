@@ -35,19 +35,19 @@ class Pengiriman_penjualan extends MY_Controller{
 		$this->list['columns'] = [
 			['title' => 'Surat Jalan ID.', 'width' => '20px', 'data' => 'fin_sj_id'],
             ['title' => 'Surat Jalan No.', 'width' => '20px', 'data' => 'fst_sj_no'],
+            ['title' => 'Surat Jalan Date.', 'width' => '20px', 'data' => 'fdt_sj_datetime',
+                'render'=>"function(data,type,row){
+                    return App.dateTimeFormat(data);
+                }",
+            ],
             ['title' => 'Sales Order No.', 'width' => '20px', 'data' => 'fst_salesorder_no'],
             ['title' => 'Sales Order Date.', 'width' => '20px', 'data' => 'fdt_salesorder_datetime',
                 'render'=>"function(data,type,row){
                     return App.dateTimeFormat(data);
                 }",
             ],
-            ['title' => 'Surat Jalan Date', 'width' => '20px', 'data' => 'fdt_sj_datetime',
-                'render'=>"function(data,type,row){
-                    return App.dateTimeFormat(data);
-                }",
-            ],
             ['title' => 'Memo', 'width' => '100px', 'data' => 'fst_sj_memo'],
-            ['title' => 'Action', 'width' => '25px', 'sortable' => false, 'className' => 'dt-body-center text-center',
+            ['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'dt-body-center text-center',
                 'render'=>'function( data, type, row, meta ) {
                     return "<div style=\'font-size:16px\'><a data-id=\'" + row.fin_sj_id + "\' class=\'btn-edit\' href=\'#\'><i class=\'fa fa-pencil\'></i></a><a class=\'btn-delete\' href=\'#\'><i class=\'fa fa-trash\'></i></a></div>";
                 }',
