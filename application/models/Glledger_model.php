@@ -55,7 +55,7 @@ class Glledger_model extends MY_Model{
         $epsilon = 0.00001;        
         
         
-        //foreach($datas as $data){
+        //foreach($datas as $data){        
         for($i = 0; $i < sizeof($datas) ;$i++){
             $data = $datas[$i];
 

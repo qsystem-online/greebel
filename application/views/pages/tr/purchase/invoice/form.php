@@ -107,17 +107,20 @@
 						<div class="form-group">
                             <label class="col-md-2 control-label"><?=lang("Term")?> :</label>
                             <div class="col-md-1">
-								<input id="fin_term" type="TEXT" class="form-control" readonly />
+								<input id="fin_term" type="TEXT" name="fin_term" class="form-control" />
 							</div>	                    
 							<label class="col-md-1 control-label" style="text-align:left;padding-left:0px"><?=lang("Hari")?> </label>
 						</div>
 						<div class="form-group">
-						<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> :</label>
+							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> :</label>
                             <div class="col-sm-2">
 								<select id="fst_curr_code" class="form-control" style="width:100%" disabled>
 									<?php
-										foreach ($arrExchangeRate as $curr){
-											echo "<option value='$curr->fst_curr_code'>$curr->fst_curr_name</option>";
+										$currList = $this->mscurrencies_model->getCurrencyList();
+
+										foreach ($currList as $curr){
+											$selected = $curr->fbl_is_default == 1 ? "selected" : "";
+											echo "<option value='$curr->fst_curr_code' data-rate='$curr->fdc_exchange_rate_to_idr' $selected >$curr->fst_curr_code</option>";
 										}
 									?>
 								</select>								
@@ -236,13 +239,13 @@
 				listLPBGudang = resp.lpbgudang_list;
 				
 				$("#fin_lpbgudang_id").empty();
-				$.each(listLPBGudang,function(i,lpbGudang){
-					$("#fin_lpbgudang_id").append("<option value='"+ lpbGudang.fin_lpbgudang_id +"'>"+lpbGudang.fst_lpbgudang_no+"</option>");
+				$.each(listLPBGudang,function(i,lpbGudang){					
+					App.addOptionIfNotExist("<option value='"+ lpbGudang.fin_lpbgudang_id +"'>"+lpbGudang.fst_lpbgudang_no+"</option>","fin_lpbgudang_id");
 				});
 				$("#ppnPercent").text(header.fdc_ppn_percent);
 				$("#fin_term").val(header.fin_term);
-				$("#fst_curr_code").val(header.fst_curr_code);
-				$("#fdc_exchange_rate_idr").val(App.money_format(arrExchangeRate[header.fst_curr_code]));
+				$("#fst_curr_code").val(header.fst_curr_code).trigger("change");
+				
 
 				var claimDP = parseFloat(header.fdc_downpayment_paid) - parseFloat(header.fdc_downpayment_claimed);
 				$("#ttlRemainingDP").text(App.money_format(claimDP));
@@ -250,6 +253,13 @@
 				calculateTotal();
 			});
 		});
+
+		$("#fst_curr_code").change(function(e){
+			e.preventDefault();
+			var exchangeRate = $("#fst_curr_code option:selected").data("rate");
+			$("#fdc_exchange_rate_idr").val(App.money_format(exchangeRate));
+		});
+
 		$("#fin_lpbgudang_id").change(function(e){
 			e.preventDefault();
 			var arrLPBGudangId = $("#fin_lpbgudang_id").val();
@@ -272,13 +282,8 @@
 </script>
 
 <script type="text/javascript" info="define">
-	var rowDetail;
-	var arrExchangeRate =  new Array();;
-	<?php foreach($arrExchangeRate as $key=>$value){ ?>
-		arrExchangeRate["<?=$key?>"] = "<?= $value->fdc_rate ?>";
-	<?php }	?>
+	var rowDetail;	
 	$(function(){
-		console.log(arrExchangeRate);
 		$("#fin_po_id").select2({});
 		$("#fin_lpbgudang_id").select2({});
 		App.fixedSelect2();
@@ -415,11 +420,12 @@
 		});
 	}
 	function submitAjax(confirmEdit){
-		var dataSubmit = $("#frmLPBPurchase").serializeArray();
-		
+		var dataSubmit = $("#frmLPBPurchase").serializeArray();		
 		var mode = $("#fin_lpbpurchase_id").val() == "0" ? "ADD" : "EDIT";	
+
 		if (mode == "ADD"){
 			url =  "<?= site_url() ?>tr/purchase/invoice/ajx_add_save/";
+
 		}else{
 			dataSubmit.push({
 				name : "fin_user_id_request_by",
@@ -438,6 +444,7 @@
 			MdlEditForm.show();
 			return;
 		}
+
 		App.blockUIOnAjaxRequest("Please wait while saving data.....");
 		$.ajax({
 			type: "POST",
@@ -495,7 +502,9 @@
 				}
 				if (resp.status == "SUCCESS"){				
 					dataH = resp.data.lpbPurchase;
-					dataD = resp.data.lpbPurchaseItems;
+					dataDetails = resp.data.lpbPurchaseDetails;
+					dataItems = resp.data.lpbPurchaseItems;
+
 					App.autoFillForm(dataH);
 					
 					$("#fdt_lpbpurchase_datetime").val(App.dateTimeFormat(dataH.fdt_lpbpurchase_datetime)).datetimepicker("update");
@@ -507,10 +516,11 @@
 					$("#fst_supplier_name").val(dataH.fst_supplier_name);
 					
 					var finLPBGudangIds = new Array();
-					$.each(dataD,function(i,value){
+					$.each(dataDetails,function(i,value){
 						finLPBGudangIds.push(value.fin_lpbgudang_id);
 						App.addOptionIfNotExist("<option value='"+ value.fin_lpbgudang_id +"' selected>" + value.fst_lpbgudang_no +"</option>","fin_lpbgudang_id");
 					});
+
 					$("#fin_lpbgudang_id").val(finLPBGudangIds).trigger("change");
 					$("#fin_term").val(dataH.fin_term);
 					$("#ttlRemainingDP").text( App.money_format(parseFloat(dataH.fdc_downpayment_paid) - parseFloat(dataH.fdc_downpayment_claimed)));

@@ -301,6 +301,7 @@ class Purchase_order extends MY_Controller{
 				"fdc_price"=>$item->fdc_price,
 				"fst_disc_item"=>$item->fst_disc_item,
 				"fdc_disc_amount"=>$item->fdc_disc_amount,
+				"fdc_disc_amount_per_item"=> calculateDisc($item->fst_disc_item,$item->fdc_price),
 				"fst_notes"=>$item->fst_notes,				
 				"fst_active"=> 'A'
 			];
@@ -473,6 +474,7 @@ class Purchase_order extends MY_Controller{
 				"fdc_price"=>$item->fdc_price,
 				"fst_disc_item"=>$item->fst_disc_item,
 				"fdc_disc_amount"=>$item->fdc_disc_amount,
+				"fdc_disc_amount_per_item"=> calculateDisc($item->fst_disc_item,$item->fdc_price),
 				"fst_notes"=>$item->fst_notes,				
 				"fst_active"=> 'A'
 			];

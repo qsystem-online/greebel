@@ -7,7 +7,11 @@ class Penerimaan_pembelian extends MY_Controller{
 		$this->load->library('form_validation');		
 		$this->load->model('msrelations_model');	
 		$this->load->model('trlpbgudang_model');
+		$this->load->model("trlpbgudangitems_model");
 		$this->load->model('mswarehouse_model');
+		$this->load->model('trpo_model');
+		$this->load->model('trsalesreturn_model');		
+		$this->load->model("msitems_model");		
     }
 
 	public function index(){
@@ -33,11 +37,16 @@ class Penerimaan_pembelian extends MY_Controller{
 		
 
         $this->list['columns'] = [
-			['title' => 'ID. LPB Pembelian', 'width' => '100px', 'data' => 'fin_lpbgudang_id'],
-            ['title' => 'No. LPB Pembelian', 'width' => '100px', 'data' => 'fst_lpbgudang_no'],
-            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_lpbgudang_datetime'],
-            ['title' => 'Purchase Order No.', 'width' => '100px', 'data' => 'fst_po_no'],
-			['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
+			['title' => 'ID.', 'width' => '100px', 'data' => 'fin_lpbgudang_id'],
+            ['title' => 'No. LPB', 'width' => '100px', 'data' => 'fst_lpbgudang_no'],
+			['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_lpbgudang_datetime'],
+			['title' => 'LPB Type', 'width' => '80px', 'data' => 'fst_lpb_type',
+				'render'=>"function(data,type,row){					
+					return data;
+				}"
+			],
+			['title' => 'Reff No.', 'width' => '100px', 'data' => 'fst_trans_no2'],
+			['title' => 'Relation', 'width' => '200px', 'data' => 'fst_relation_name'],
 			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
@@ -71,12 +80,13 @@ class Penerimaan_pembelian extends MY_Controller{
 	public function fetch_list_data(){
 		$this->load->library("datatables");
         $this->datatables->setTableName("(
-			SELECT a.*,b.fst_po_no,b.fin_supplier_id,c.fst_relation_name as fst_supplier_name FROM trlpbgudang a 
-			INNER JOIN trpo b on a.fin_po_id = b.fin_po_id 
-			INNER JOIN msrelations c on b.fin_supplier_id = c.fin_relation_id 
+				SELECT a.*,b.fin_supplier_id,ifnull(c.fst_salesreturn_no,b.fst_po_no) as fst_trans_no2,d.fst_relation_name from trlpbgudang a 
+				LEFT join trpo b on a.fin_trans_id = b.fin_po_id and a.fst_lpb_type = 'PO'
+				LEFT join trsalesreturn c on a.fin_trans_id = c.fin_salesreturn_id and a.fst_lpb_type = 'SO_RETURN'
+				INNER JOIN msrelations d on ifnull(b.fin_supplier_id,c.fin_customer_id) = d.fin_relation_id
 			) a");
 
-        $selectFields = "a.fin_lpbgudang_id,a.fst_lpbgudang_no,a.fdt_lpbgudang_datetime,a.fst_po_no,a.fst_supplier_name,a.fst_memo";
+        $selectFields = "a.fin_lpbgudang_id,a.fst_lpbgudang_no,a.fdt_lpbgudang_datetime,a.fst_lpb_type,a.fst_trans_no2,a.fst_relation_name,a.fst_memo";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');
@@ -150,105 +160,40 @@ class Penerimaan_pembelian extends MY_Controller{
 	public function ajx_add_save(){	
 		$this->load->model("trlpbgudangitems_model");
 		$this->load->model("msitems_model");
-		/*
-		__c9da2c3066cf64f25a59677d1666d7ac: cb99194f88c06cda68f79c16a2d85a4a
-		fin_lpbgudang_id: 0
-		fst_lpbgudang_no: GUD/JKT/2019/10/00001
-		fdt_lpbgudang_datetime: 11-10-2019 13:52:45
-		fin_po_id: 6
-		fin_warehouse_id: 2
-		fst_memo: 
-		details: [{"fin_rec_id":0,"fin_po_detail_id":"24","fin_item_id":"1","fst_item_code":"AB1230","fst_custom_item_name":"Greebel Artists Crayon Oil Pastel","fst_unit":"BOX","fdb_qty_po":20,"fdb_qty":20,"fdc_m3":null}]
-		*/
+	
+		try{
+			$fdt_lpbgudang_datetime = dBDateTimeFormat($this->input->post("fdt_lpbgudang_datetime"));
+			$resp = dateIsLock($fdt_lpbgudang_datetime);
+			if ($resp["status"] != "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}
+			$fst_lpbgudang_no = $this->trlpbgudang_model->generateLPBGudangNo($fdt_lpbgudang_datetime);
+			
+			$dataPrepared = $this->prepareData();
+			$dataH = $dataPrepared["dataH"];
+			$dataDetails = $dataPrepared["dataDetails"];
 
-
-		//PREPARE DATA
-		$this->form_validation->set_rules($this->trlpbgudang_model->getRules("ADD", 0));
-
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		if ($this->form_validation->run() == FALSE) {
-			//print_r($this->form_validation->error_array());
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Error Validation Header";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $_POST;
+			$this->validateData($dataH,$dataDetails);
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();			
 			$this->json_output();
 			return;
-		}
-		
-		$fdt_lpbgudang_datetime = dBDateTimeFormat($this->input->post("fdt_lpbgudang_datetime"));
-		$fst_lpbgudang_no = $this->trlpbgudang_model->generateLPBGudangNo($fdt_lpbgudang_datetime);
-
-		$dataH = [
-			"fst_lpbgudang_no"=>$fst_lpbgudang_no,
-			"fin_warehouse_id"=>$this->input->post("fin_warehouse_id"),
-			"fdt_lpbgudang_datetime"=>$fdt_lpbgudang_datetime,
-			"fin_po_id"=>$this->input->post("fin_po_id"),
-			"fst_memo"=>$this->input->post("fst_memo"),
-			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
-			"fst_active"=>'A',			
-		];
-
-
-		$details = $this->input->post("details");
-		$details = json_decode($details);
-		$this->form_validation->set_rules($this->trlpbgudangitems_model->getRules("ADD",0));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');		
-		for($i = 0; $i < sizeof($details) ; $i++){
-			$item = $details[$i];
-			// Validate item Details
-			$this->form_validation->set_data((array)$details[$i]);
-			if ($this->form_validation->run() == FALSE){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = lang("Error Validation Forms");
-				$this->ajxResp["request_data"] = $dataH;
-				$error = [
-					"detail"=> $this->form_validation->error_string(),
-				];
-				$this->ajxResp["data"] = $error;				
-				$this->json_output();
-				return;	
-			}
-
-			$itemInfo = $this->msitems_model->geSimpletDataById($item->fin_item_id);
-
-			if($itemInfo->fbl_is_batch_number && $item->fst_batch_no == "" ){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = sprintf("%s harus memiliki batch number",$item->fst_custom_item_name);
-				$this->json_output();
-				return;	
-			}
-			if($itemInfo->fbl_is_serial_number){				
-				//$arrSerial = json_decode($item->arr_serial);
-				$arrSerial = $item->arr_serial;
-				if($arrSerial == null){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = sprintf("%s harus memiliki serial number",$item->fst_custom_item_name);
-					$this->json_output();
-					return;	
-				}
-				if (sizeof($arrSerial) != $this->msitems_model->getQtyConvertToBasicUnit($item->fin_item_id,$item->fdb_qty,$item->fst_unit) ){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = sprintf("total serial %s harus sesuai dengan total qty (%u)",$item->fst_custom_item_name,$item->fdb_qty);
-					$this->json_output();
-					return;	
-				}
-
-			}
-		}
+		}		
 
 		try{
 			$this->db->trans_start();
 			$insertId = $this->trlpbgudang_model->insert($dataH);
 
 			//Insert Data Detail Transaksi
-			foreach ($details as $detail) {		
-				$detail = (array) $detail;
-				$detail["fin_lpbgudang_id"] = $insertId;
-				$detail["fst_batch_number"] = $detail["fst_batch_no"];
-				$detail["fst_serial_number_list"] = json_encode($detail["arr_serial"]);
-				$detail["fst_active"] = "A";					
-				$this->trlpbgudangitems_model->insert($detail);			
+			foreach ($dataDetails as $dataD) {		
+				$dataD = (array) $dataD;
+				$dataD["fin_lpbgudang_id"] = $insertId;
+				$dataD["fst_batch_number"] = $dataD["fst_batch_no"];
+				$dataD["fst_serial_number_list"] = json_encode($dataD["arr_serial"]);
+				$dataD["fst_active"] = "A";									
+				$this->trlpbgudangitems_model->insert($dataD);			
 			}
 			
 			$this->trlpbgudang_model->posting($insertId);
@@ -272,110 +217,56 @@ class Penerimaan_pembelian extends MY_Controller{
 
 	public function ajx_edit_save(){			
 
-		$this->load->model("trlpbgudangitems_model");
-		$this->load->model("msitems_model");
-		/*
-		__c9da2c3066cf64f25a59677d1666d7ac: cb99194f88c06cda68f79c16a2d85a4a
-		fin_lpbgudang_id: 0
-		fst_lpbgudang_no: GUD/JKT/2019/10/00001
-		fdt_lpbgudang_datetime: 11-10-2019 13:52:45
-		fin_po_id: 6
-		fin_warehouse_id: 2
-		fst_memo: 
-		details: [{"fin_rec_id":0,"fin_po_detail_id":"24","fin_item_id":"1","fst_item_code":"AB1230","fst_custom_item_name":"Greebel Artists Crayon Oil Pastel","fst_unit":"BOX","fdb_qty_po":20,"fdb_qty":20,"fdc_m3":null}]
-		*/
+		
+		try{
+			$finLPBGudangId = $this->input->post("fin_lpbgudang_id");
 
+			$dataHOld = $this->trlpbgudang_model->getDataHeaderById($finLPBGudangId);
+			if ($dataHOld == null){
+				throw new CustomException(lang("Invalid LPB Gudang ID"),3003,"FAILED",null);
+			}
 
+			$resp = dateIsLock($dataHOld->fdt_lpbgudang_datetime);
+			if ($resp["status"] != "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}
+						
+			$fdt_lpbgudang_datetime = dBDateTimeFormat($this->input->post("fdt_lpbgudang_datetime"));
+			$resp = dateIsLock($fdt_lpbgudang_datetime);
+			if ($resp["status"] != "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}
 
-		$this->form_validation->set_rules($this->trlpbgudang_model->getRules("ADD", 0));
-
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		if ($this->form_validation->run() == FALSE) {
-			//print_r($this->form_validation->error_array());
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Error Validation Header";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $_POST;
+			$resp = $this->trlpbgudang_model->isEditable($finLPBGudangId,$dataHOld);
+			if ($resp["status"] != "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}			
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
 		}
-		
-		$fdt_lpbgudang_datetime = dBDateTimeFormat($this->input->post("fdt_lpbgudang_datetime"));
-		$fst_lpbgudang_no = $this->input->post("fst_lpbgudang_no");
-
-		$dataH = [
-			"fin_lpbgudang_id"=>$this->input->post("fin_lpbgudang_id"),
-			"fst_lpbgudang_no"=>$fst_lpbgudang_no,
-			"fin_warehouse_id"=>$this->input->post("fin_warehouse_id"),
-			"fdt_lpbgudang_datetime"=>$fdt_lpbgudang_datetime,
-			"fin_po_id"=>$this->input->post("fin_po_id"),
-			"fst_memo"=>$this->input->post("fst_memo"),
-			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
-			"fst_active"=>'A',	
-			"fin_user_id_request_by"=>$this->input->post("fin_user_id_request_by"),
-			"fst_edit_notes"=>$this->input->post("fst_edit_notes"),
-		];
-
-
-		$details = $this->input->post("details");
-		$details = json_decode($details);
-		$this->form_validation->set_rules($this->trlpbgudangitems_model->getRules("ADD",0));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');		
-		for($i = 0; $i < sizeof($details) ; $i++){
-			$item = $details[$i];
-			// Validate item Details
-			$this->form_validation->set_data((array)$details[$i]);
-			if ($this->form_validation->run() == FALSE){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = lang("Error Validation Forms");
-				$this->ajxResp["request_data"] = $dataH;
-				$error = [
-					"detail"=> $this->form_validation->error_string(),
-				];
-				$this->ajxResp["data"] = $error;				
-				$this->json_output();
-				return;	
-			}
-
-			$itemInfo = $this->msitems_model->geSimpletDataById($item->fin_item_id);
-			if($itemInfo->fbl_is_batch_number && $item->fst_batch_no == "" ){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = sprintf("%s harus memiliki batch number",$item->fst_custom_item_name);
-				$this->json_output();
-				return;	
-			}
-			if($itemInfo->fbl_is_serial_number){
-				//$arrSerial = json_decode($item->arr_serial);
-				$arrSerial = $item->arr_serial;
-				if($arrSerial == null){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = sprintf("%s harus memiliki serial number",$item->fst_custom_item_name);
-					$this->json_output();
-					return;	
-				}
-				if (sizeof($arrSerial) != $this->msitems_model->getQtyConvertToBasicUnit($item->fin_item_id,$item->fdb_qty,$item->fst_unit) ){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = sprintf("total serial %s harus sesuai dengan total qty (%u)",$item->fst_custom_item_name,$item->fdb_qty);
-					$this->json_output();
-					return;	
-				}
-
-			}
-
-		}		
 
 		try{
 			$this->db->trans_start();
+			
+			$this->trlpbgudang_model->unposting($finLPBGudangId);
+			$this->trlpbgudang_model->deleteDetail($finLPBGudangId);
+			$preparedData = $this->prepareData();
+			$dataH = $preparedData["dataH"];
+			$dataH["fin_lpbgudang_id"] = $finLPBGudangId;
+			$dataH["fst_lpbgudang_no"] = $dataHOld->fst_lpbgudang_no;
+						
+			$dataDetails = $preparedData["dataDetails"];
+			$this->validateData($dataH,$dataDetails);
 
-			$result = $this->trlpbgudang_model->unposting($dataH["fin_lpbgudang_id"]);
-			if ($result["status"] != "SUCCESS"){
-				return $result;
-			}
-
+			
 			$this->trlpbgudang_model->update($dataH);
-
+			
 			//Insert Data Detail Transaksi
-			foreach ($details as $detail) {		
+			foreach ($dataDetails as $detail) {		
 				$detail = (array) $detail;
 				$detail["fin_lpbgudang_id"] = $dataH["fin_lpbgudang_id"];
 				$detail["fst_batch_number"] = $detail["fst_batch_no"];
@@ -384,37 +275,13 @@ class Penerimaan_pembelian extends MY_Controller{
 				$this->trlpbgudangitems_model->insert($detail);			
 			}
 
-			$result = $this->trlpbgudang_model->posting($dataH["fin_lpbgudang_id"]);
-
-			if ($result["status"] != "SUCCESS"){
-				$this->ajxResp["status"] = "FAILED";
-				$this->ajxResp["message"] = $result["message"];
-				if(isset($result["data"])){
-					$this->ajxResp["data"] = $result["data"];
-				}
-
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}
-
-			$dbError  = $this->db->error();
-			if ($dbError["code"] != 0){			
-				$this->ajxResp["status"] = "DB_FAILED";
-				$this->ajxResp["message"] = "Insert Failed";
-				$this->ajxResp["data"] = $this->db->error();
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}
-
+			$this->trlpbgudang_model->posting($finLPBGudangId);
 
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
 			$this->ajxResp["data"]["insert_id"] = $dataH["fin_lpbgudang_id"];
-			$this->json_output();
-
+			$this->json_output();			
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
 			$this->ajxResp["status"] = $e->getStatus();
@@ -422,8 +289,111 @@ class Penerimaan_pembelian extends MY_Controller{
 			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
+		}		
+
+	}
+
+	private function prepareData(){
+		$fdt_lpbgudang_datetime = dBDateTimeFormat($this->input->post("fdt_lpbgudang_datetime"));
+		$fst_lpbgudang_no = $this->trlpbgudang_model->generateLPBGudangNo($fdt_lpbgudang_datetime);
+		$lpbType = $this->input->post("fst_lpb_type");
+		$finTransId = $this->input->post("fin_trans_id");
+
+		$fstTransNo = "";
+		$finRelationId = 0;
+
+		switch ($lpbType){
+			case "PO":
+				$po = $this->trpo_model->getDataHeaderById($finTransId);
+				if ($po == null){
+					throw new CustomException("Invalid PO ID",3003,"FAILED",["fin_po_id"=>$finTransId]);
+				}
+				$fstTransNo = $po->fst_po_no;
+				$finRelationId = $po->fin_supplier_id;
+				break;
+			case "SO_RETURN":
+				$soReturn = $this->trsalesreturn_model->getDataHeaderById($finTransId);
+				if ($soReturn == null){
+					throw new CustomException("Invalid Sales Return ID",3003,"FAILED",["fin_salesreturn_id"=>$finTransId]);
+				}
+				$fstTransNo = $soReturn->fst_salesreturn_no;
+				$finRelationId = $po->fin_customer_id;
+				break;
+			default:
+				throw new CustomException("Invalid LPB Type",3003,"FAILED",["fst_lpb_type"=>$lpbType]);
 		}
 
+
+		$ssql = "";
+
+		$dataH = [
+			"fst_lpbgudang_no"=>$fst_lpbgudang_no,
+			"fin_warehouse_id"=>$this->input->post("fin_warehouse_id"),
+			"fdt_lpbgudang_datetime"=>$fdt_lpbgudang_datetime,
+			"fst_lpb_type"=>$this->input->post("fst_lpb_type"),
+			"fin_trans_id"=>$this->input->post("fin_trans_id"),
+			"fst_trans_no"=>$fstTransNo,
+			"fin_relation_id"=>$finRelationId,
+			"fst_memo"=>$this->input->post("fst_memo"),
+			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
+			"fst_active"=>'A',			
+		];
+
+
+		$dataDetails = $this->input->post("details");
+		$dataDetails = json_decode($dataDetails);
+
+		return[
+			"dataH"=>$dataH,
+			"dataDetails"=>$dataDetails
+		];
+		
+	}
+	
+	private function validateData($dataH,$dataDetails){
+		$this->form_validation->set_rules($this->trlpbgudang_model->getRules("ADD", 0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+		$this->form_validation->set_data($dataH);
+		if ($this->form_validation->run() == FALSE) {
+			//print_r($this->form_validation->error_array());
+			throw new CustomException("Error Validation Header",3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
+		}
+
+
+		$this->form_validation->set_rules($this->trlpbgudangitems_model->getRules("ADD", 0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+		foreach($dataDetails as $dataD){
+			$this->form_validation->set_data((array) $dataD);
+			if ($this->form_validation->run() == FALSE) {
+				//print_r($this->form_validation->error_array());
+				throw new CustomException("Error Validation Details",3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
+			}
+
+			$itemInfo = $this->msitems_model->geSimpletDataById($dataD->fin_item_id);
+
+			//Cek is item have batch number
+			if($itemInfo->fbl_is_batch_number && $dataD->fst_batch_no == "" ){
+				throw new CustomException(sprintf(lang("%s harus memiliki batch number"),$dataD->fst_custom_item_name),3003,"FAILED",$dataD);
+			}
+
+			//Cek is item have serial number
+			if($itemInfo->fbl_is_serial_number){				
+				//$arrSerial = json_decode($item->arr_serial);
+				$arrSerial = $dataD->arr_serial;
+				if($arrSerial == null){
+					throw new CustomException(sprintf(lang("%s harus memiliki serial number"),$dataD->fst_custom_item_name),3003,"FAILED",$dataD);
+				}
+
+				if (sizeof($arrSerial) != $this->msitems_model->getQtyConvertToBasicUnit($dataD->fin_item_id,$dataD->fdb_qty,$dataD->fst_unit) ){
+					throw new CustomException(sprintf(lang("total serial %s harus sesuai dengan total qty (%u)"),$dataD->fst_custom_item_name,$dataD->fdb_qty),3003,"FAILED",$dataD);
+				}
+
+			}
+
+		}
+		
+
+		
 	}
 
 	public function fetch_data($finLPBGudangId){
@@ -472,6 +442,14 @@ class Penerimaan_pembelian extends MY_Controller{
 		}
 	}
 
+	public function get_transaction_list($lpbType){
+		$transList = $this->trlpbgudang_model->getTransactionList($lpbType);
+		return $this->json_output([
+			"status"=>"SUCCESS",
+			"message"=>"",
+			"data"=>$transList,
+		]);		
+	}
 
 
 }    

@@ -65,40 +65,33 @@
 
 						</div>
 
-						
-
 						<div class="form-group">
-							<label for="fin_po_id" class="col-md-2 control-label"><?=lang("PO Number")?> </label>
-							<div class="col-md-4">
-								<select id="fin_po_id" class="form-control non-editable" name="fin_po_id">
-									<?php
-										$poList = $this->trlpbgudang_model->getPOList();
-										foreach($poList as $po){
-											echo "<option value='$po->fin_po_id'>$po->fst_po_no</option>";
-										}
-									?>
+							<label for="fst_lpb_type" class="col-md-2 control-label"><?=lang("Jenis Penerimaan")?> </label>
+							<div class="col-md-10">
+								<select id="fst_lpb_type" class="form-control non-editable" name="fst_lpb_type">
+									<option value='PO'>Purchase Order</option>
+									<option value='SO_RETURN'>Sales Return</option>
 								</select>
-								<div id="fin_po_id" class="text-danger"></div>
-							</div>
-							<label for="fin_po_id" class="col-md-2 control-label"><?=lang("PO Date")?> </label>
-							<div class="col-md-4">
-								<div class="input-group date">
-									<div class="input-group-addon">
-										<i class="fa fa-calendar"></i>
-									</div>
-									<input type="text" class="form-control text-right datetimepicker" id="fdt_po_datetime"  value="" readonly/>
-								</div>
-								<div id="fdt_lpbgudang_datetime_err" class="text-danger"></div>
-								<!-- /.input group -->
-							</div>
+								<div id="fst_lpb_type_err" class="text-danger"></div>
+							</div>							
 						</div>
 
+
 						<div class="form-group">
-                            <label for="fin_vendor_id" class="col-md-2 control-label"><?=lang("Supplier")?> </label>							
-                            <div class="col-sm-10">
-                                <input type='TEXT' class="form-control" id="fst_supplier_name" readonly />
-                            </div>                        
-                        </div>
+							<label for="fin_trans_id" class="col-md-2 control-label"><?=lang("No trasaksi")?> </label>
+							<div class="col-md-10">
+								<select id="fin_trans_id" class="form-control non-editable" name="fin_trans_id">									
+								</select>
+								<div id="fin_trans_id_err" class="text-danger"></div>
+							</div>
+						</div>			
+						<div class="form-group">
+							<label class="col-md-10 col-md-offset-2">
+								<label id="fst_relation_name">Relation Name</label>
+							</label>
+							
+						</div>	
+
 						
 						<div class="form-group">
                             <label for="fin_vendor_id" class="col-md-2 control-label"><?=lang("Gudang")?> </label>							
@@ -245,16 +238,49 @@
 	</div>
 
 	<script type="text/javascript" info="event">
+		mdlDetail = {
+			setDataItems:function(arrDataItems){
+				arrItems = arrDataItems.map(function(dataD){
+					dataD.id = dataD.fin_item_id;
+					dataD.text = dataD.fst_custom_item_name;
+					return dataD;
+				});
+				App.log(arrItems);
+				$("#fstItem").select2({
+					data: arrItems
+				});
+				App.fixedSelect2();
+			},
+			show:function(){
+				if ($("#fin_warehouse_id").val() == null){
+					alert("<?=lang("Gudang harus diisi !")?>");
+					return;
+				}
+				$("#mdlDetail").modal("show");
+			},
+			hide:function(){
+				$("#mdlDetail").modal("hide");
+			},
+			clear:function(){				
+				$("#fstItem").val(null).trigger("change.select2");
+				$(".batchNoBlock").hide();
+				$(".serialNoBlock").hide();
+			},			
+		};
+
+		$(function(){
+			
+		});
+		
 		$("#fstItem").change(function(e){
 			e.preventDefault();
 			//var data = $('#fstItem').find(':selected');
 			var data = $('#fstItem').select2('data');
-			data = data[0];	
-			App.log(data);					
+			data = data[0];		
+			App.log(data);
 			$("#fstUnit").text(data.fst_unit);
 			$("#fdcConvBasicUnit").text(data.fdc_conv_to_basic_unit);
 			$("#fstBasicUnit").text(data.fst_basic_unit);
-
 			if (data.fbl_is_batch_number == 1){
 				$(".batchNoBlock").show();
 			}else{
@@ -290,9 +316,7 @@
 		});
 		
 		$("#btn-save-detail").click(function(e){
-			e.preventDefault();
-			
-
+			e.preventDefault();			
 			item = $("#fstItem").select2("data");
 			item = item[0];
 			
@@ -341,13 +365,13 @@
 
 				data = {
 					fin_rec_id: 0,					
-					fin_po_detail_id: item.fin_po_detail_id,
+					fin_trans_detail_id: item.fin_trans_detail_id,
 					fin_item_id: item.id,
 					fst_item_code: item.fst_item_code,
 					fst_custom_item_name: item.text,
 					fst_unit: item.fst_unit,
-					fdb_qty_po: item.fdb_qty_po,
-					fdb_qty_po_received:item.fdb_qty_po_received,
+					fdb_qty_trans: item.fdb_qty_trans,
+					fdb_qty_lpb:item.fdb_qty_lpb,
 					fdb_qty: 0,
 					fdc_m3: 0,
 					fst_batch_no: "",
@@ -360,9 +384,7 @@
 			data.fdb_qty = $("#fdbQty").val();
 			data.fdc_m3 = $("#fdcM3").val();
 			data.fst_batch_no = $("#fstBatchNo").val();
-			data.arr_serial = arrSerial;
-			
-
+			data.arr_serial = arrSerial;			
 			if (rowDetail == null){
 				App.log(data);
 				t.row.add(data).draw(false);
@@ -371,7 +393,7 @@
 			}
 			
 			calculateTotalQty();
-			$("#mdlDetail").modal("hide");
+			mdlDetail.hide();
 
 		})
 
@@ -390,9 +412,47 @@
 	$(function(){
 		$("#fdt_lpbgudang_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		
+		$("#fst_lpb_type").change(function(e){
+			$("#fin_trans_id").val(null).trigger("select2:select").trigger("change.select2");
+		});
 
-		$("#fin_po_id").select2({});
-		$("#fin_po_id").val(null).trigger("change.select2");
+		$("#fin_trans_id").select2({
+			ajax:{
+				delay:500,
+				url:function(){
+					return SITE_URL + "tr/gudang/penerimaan_pembelian/get_transaction_list/" + $("#fst_lpb_type").val();
+				},
+				processResults:function(resp){
+					transList = resp.data;
+					arrTrans = transList.map(function(trans){
+						return {
+							id:trans.fin_trans_id,
+							text: trans.fst_trans_no,// + " - " + trans.fdt_trans_datetime + " - "  + trans.fst_relation_name,
+							fst_trans_no:trans.fst_trans_no,
+							fdt_trans_datetime:trans.fdt_trans_datetime,
+							fst_relation_name:trans.fst_relation_name,
+						}
+					});
+					return {
+						results:arrTrans
+					}
+				}
+			},
+			templateResult:function(trans){
+				if (typeof trans.fst_trans_no == "undefined"){
+					return trans.text;
+				}
+
+				return $("<span style='display:inline-block;width:150px'>" + trans.fst_trans_no +"</span><span style='display:inline-block;width:150px'>"+trans.fdt_trans_datetime+"</span><span>"+trans.fst_relation_name+"</span>");
+			}
+		}).on("select2:select",function(e){
+			//GET DETAIL Transaction
+			data = e.params.data;
+			//$("#fdt_trans_datetime").html(dateTimeFormat(data.fdt_trans_datetime));
+			$("#fst_relation_name").html(data.fst_relation_name);
+			getDetailTransaction();
+		});
+
 		$("#fin_warehouse_id").val(null);
 
 		//$("#fstItem").select2();
@@ -408,13 +468,12 @@
 			order: [],
 			columns:[
 				{"title" : "id","width": "50px",sortable:false,data:"fin_rec_id",visible:false},
-				{"title" : "po_detail_id","width": "50px",sortable:false,data:"fin_po_detail_id",visible:false},
-				{"title" : "Item id","width": "100px",sortable:false,data:"fin_item_id",visible:false},
+				{"title" : "trans_detail_id","width": "50px",sortable:false,data:"fin_trans_detail_id",visible:false},
 				{"title" : "Item Code","width": "100px",sortable:false,data:"fst_item_code"},
 				{"title" : "Item Name","width": "100px",sortable:false,data:"fst_custom_item_name"},
 				{"title" : "Unit","width": "100px",sortable:false,data:"fst_unit"},
-				{"title" : "Total Qty PO","width": "100px",sortable:false,data:"fdb_qty_po",className:'text-right'},
-				{"title" : "Total Qty Received","width": "100px",sortable:false,data:"fdb_qty_po_received",className:'text-right'},
+				{"title" : "Total Qty","width": "100px",sortable:false,data:"fdb_qty_trans",className:'text-right'},
+				{"title" : "Total Qty Received","width": "100px",sortable:false,data:"fdb_qty_lpb",className:'text-right'},
 				{"title" : "Qty","width": "100px",sortable:false,data:"fdb_qty",className:'text-right'},
 				{"title" : "M3","width": "100px",sortable:false,data:"fdc_m3",className:'text-right'},
 				{"title" : "Action","width": "40px",sortable:false,className:'dt-body-center text-center',
@@ -434,16 +493,18 @@
 		}).on('draw',function(){
 			$(".dataTables_scrollHeadInner").css("min-width","100%");
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+			calculateTotalQty();
+
 		}).on('click','.btn-edit',function(e){
 			e.preventDefault();
+			
+			mdlDetail.show();
+
 			t = $("#tbldetails").DataTable();
 			var trRow = $(this).parents('tr');
 			rowDetail = trRow;
-			var data = t.row(trRow).data();
-			App.log(data);
-
-			$("#fstItem").val(data.fin_item_id).trigger("change");	
-
+			var data = t.row(trRow).data();			
+			$("#fstItem").val(data.fin_item_id).trigger("change");
 			$("#fstUnit").text(data.fst_unit);
 			$("#fdbQty").val(data.fdb_qty);
 			$("#fdcM3").val(data.fdc_m3);
@@ -451,10 +512,7 @@
 			$("#fstSerialNoList").empty();
 			$.each(data.arr_serial,function(i,serial){
 				$("#fstSerialNoList").prepend("<option value='"+serial+"'>"+serial+"</option>");
-			});
-
-			$("#mdlDetail").modal("show");
-			
+			});					
 		}).on('click','.btn-delete',function(e){
 			e.preventDefault();
 			t = $('#tbldetails').DataTable();
@@ -545,27 +603,63 @@
 
 			});
 		});
-
 		
 		$("#btn-add-items").click(function(e){
 			e.preventDefault();
 			rowDetail = null;
-			$("#fstItem").val(null).trigger("change.select2");
-			$("#mdlDetail").modal("show");
+			mdlDetail.show();
+			mdlDetail.clear();			
 		});
 	});
 </script>
 
 <script type="text/javascript" info="function">
-	function getPOInfo(finPOId,callback){
+	
+	function getDetailTransaction(callback){
+		var lpbType =$("#fst_lpb_type").val();
+		var transId =$("#fin_trans_id").val();
+		
 		App.getValueAjax({
 			site_url:"<?=site_url()?>",
 			model:"trlpbgudang_model",
-			func:"getPODetail",
-			params:[finPOId],
-			callback:callback
+			func:"getTransDetail",
+			params:[lpbType,transId],
+			callback:function(resp){
+				
+				var dataDetails = resp;
+				arrDetails = [];
+				arrDetails = dataDetails.map(function(dataD){
+					dataD.fin_rec_id = 0;
+					dataD.fdb_qty = 0;
+					dataD.fdc_m3 = 0;
+					dataD.fst_batch_no="";
+					dataD.arr_serial=[];
+
+					/*
+					return {
+						fin_trans_detail_id: "87"
+						fdb_qty_trans: "50.00"
+						fst_unit: "SET"
+						fdb_qty_lpb: "5.00"
+						fst_item_code: "040101000009"
+						fst_item_name: "GREEBEL 3736 PENCIL SUPER LEAD"
+						fbl_is_batch_number: "1"
+						fbl_is_serial_number: "0"
+						fdc_conv_to_basic_unit: "1.00"
+						fst_basic_unit: "SET"
+					};
+					*/
+					return dataD;
+				});
+				
+				var t = $("#tbldetails").DataTable();
+				t.clear();
+				t.rows.add(arrDetails).draw(false);
+				mdlDetail.setDataItems(arrDetails);
+			}
 		});
 	}
+
 	function calculateTotalSerialNo(){
 		$("#ttlSerial").text($("#fstSerialNoList option").length);
 
@@ -619,7 +713,6 @@
 			MdlEditForm.show();
 			return;
 		}
-
 
 
 		App.blockUIOnAjaxRequest("Please wait while saving data.....");
@@ -682,98 +775,50 @@
 				}
 
 				if (resp.status == "SUCCESS"){				
+
 					dataH = resp.data.lpbGudang;
-					dataD = resp.data.lpbGudangItems;
+					dataDetails = resp.data.lpbGudangItems;
+
 					App.autoFillForm(dataH);
 
 					$("#fdt_lpbgudang_datetime").val(App.dateTimeFormat(dataH.fdt_lpbgudang_datetime)).datetimepicker("update");
-					
-					//App.addOptionIfNotExist("<option value='"+ dataH.fin_po_id +"' selected>" + dataH.fst_po_no +"</option>","fin_po_id");					
-					if ($('#fin_po_id').find("option[value='" + dataH.fin_po_id + "']").length) {
-					} else { 
-						var newOption = new Option(dataH.fst_po_no,dataH.fin_po_id, true, true);
-						$('#fin_po_id').append(newOption);
-					}
-					$('#fin_po_id').trigger("change.select2");
 
-					$("#fdt_po_datetime").val(App.dateTimeFormat(dataH.fdt_po_datetime)).datetimepicker("update");
-					$("#fst_supplier_name").val(dataH.fstSupplierName);
+					App.addOptionIfNotExist("<option value='"+ dataH.fin_trans_id +"' selected>" + dataH.fst_trans_no +"</option>","fin_trans_id");	
+					$('#fin_trans_id').trigger("change.select2");
+					$("#fdt_trans_datetime").html(dataH.fdt_trans_datetime);
+					$("#fst_relation_name").html(dataH.fst_relation_name);
+										
 					
 					t= $("#tbldetails").DataTable();
-					t.rows().remove();
-
-					$.each(dataD,function(i,item){
+					t.rows().clear();
+					arrDataDetails = [];
+					$.each(dataDetails,function(i,dataD){
 						data = {
-							fbl_is_batch_number:item.fbl_is_batch_number,
-							fbl_is_serial_number: item.fbl_is_serial_number,
-							fin_rec_id:item.fin_rec_id,
-							fin_po_detail_id:item.fin_po_detail_id,
-							fin_item_id:item.fin_item_id,
-							fst_item_code:item.fst_item_code,
-							fst_custom_item_name:item.fst_custom_item_name,
-							fst_unit:item.fst_unit,
-							fdb_qty_po: parseFloat(item.fdb_qty_po),
-							fdb_qty_po_received:  parseFloat(item.fdb_qty_lpb),
-							fdb_qty:item.fdb_qty,
-							fdc_m3:item.fdc_m3,
-							fst_batch_no: item.fst_batch_number,
-							arr_serial: JSON.parse(item.fst_serial_number_list),
-							fdc_conv_to_basic_unit:item.fdc_conv_to_basic_unit,
-							fst_basic_unit:item.fst_basic_unit
-						}					
-						t.row.add(data);
-					});					
-					t.draw(false);
-					calculateTotalQty();
+							fbl_is_batch_number:dataD.fbl_is_batch_number,
+							fbl_is_serial_number: dataD.fbl_is_serial_number,
+							fin_rec_id:dataD.fin_rec_id,
+							fin_trans_detail_id:dataD.fin_trans_detail_id,
+							fin_item_id:dataD.fin_item_id,
+							fst_item_code:dataD.fst_item_code,
+							fst_custom_item_name:dataD.fst_custom_item_name,
+							fst_unit:dataD.fst_unit,
+							fdb_qty_trans: parseFloat(dataD.fdb_qty_trans),
+							fdb_qty_lpb:  parseFloat(dataD.fdb_qty_lpb),
+							fdb_qty:dataD.fdb_qty,
+							fdc_m3:dataD.fdc_m3,
+							fst_batch_no: dataD.fst_batch_number,
+							arr_serial: JSON.parse(dataD.fst_serial_number_list),
+							fdc_conv_to_basic_unit:dataD.fdc_conv_to_basic_unit,
+							fst_basic_unit:dataD.fst_basic_unit
+						}		
+						arrDataDetails.push(data);						
+					});	
+					App.log(arrDataDetails);
 
-					getPOInfo($("#fin_po_id").val(),function(resp){					
-						details = resp.po_details;
-						$.each(details,function(i,detail){
-							arrItems.push({
-								fin_po_detail_id:detail.fin_po_detail_id,
-								id: detail.fin_item_id,						
-								fst_item_code: detail.fst_item_code,
-								text:detail.fst_custom_item_name,
-								fst_unit:detail.fst_unit,
-								fdb_qty_po: detail.fdb_qty,
-								fdb_qty_po_received: detail.fdb_qty_lpb,						
-								fbl_is_batch_number:detail.fbl_is_batch_number,
-								fbl_is_serial_number:detail.fbl_is_serial_number,
-								fdc_conv_to_basic_unit:detail.fdc_conv_to_basic_unit,
-								fst_basic_unit:detail.fst_basic_unit																
-							});
-						});
+					t.rows.add(arrDataDetails).draw(false);
+					mdlDetail.setDataItems(arrDataDetails);
+					
 
-						//Add item from tabel if not exist												
-						var datas = t.data();
-						$.each(datas,function(i,v){
-							var isExist =false;
-							$.each(arrItems,function(i2,v2){
-								if(v.fin_item_id == v2.fin_item_id){
-									isExist = true;
-									return false;
-								}								
-							});
-							if(isExist == false){							
-								arrItems.push({
-									fin_po_detail_id:v.fin_po_detail_id,
-									id: v.fin_item_id,						
-									fst_item_code: v.fst_item_code,
-									text:v.fst_custom_item_name,
-									fst_unit:v.fst_unit,
-									fdb_qty_po: v.fdb_qty_po,
-									fdb_qty_po_received: v.fdb_qty_po_received,						
-									fdb_qty: v.fdb_qty,
-									fbl_is_batch_number:v.fbl_is_batch_number,
-									fbl_is_serial_number:v.fbl_is_serial_number,
-									fdc_conv_to_basic_unit:v.fdc_conv_to_basic_unit,
-									fst_basic_unit:v.fst_basic_unit																
-								});
-							}
-						});						
-						$("#fstItem").select2({data:arrItems});
-						App.fixedSelect2();
-					});
 				}else{
 					$("#btnNew").trigger("click");
 				}

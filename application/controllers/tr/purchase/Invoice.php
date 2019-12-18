@@ -8,6 +8,8 @@ class Invoice extends MY_Controller{
 		$this->load->model('msrelations_model');	
 		$this->load->model('trlpbgudang_model');
 		$this->load->model('trlpbpurchase_model');
+		$this->load->model('trlpbpurchasedetails_model');
+		$this->load->model('trlpbpurchaseitems_model');
 		$this->load->model('mscurrencies_model');
 		$this->load->model('trpo_model');
 		
@@ -169,111 +171,29 @@ class Invoice extends MY_Controller{
 		fin_lpbgudang_id[]: 11
 		fst_memo:
 		*/
-		
 
+		try{
+			$fdt_lpbpurchase_datetime = dBDateTimeFormat($this->input->post("fdt_lpbpurchase_datetime"));
+			$resp = dateIsLock($fdt_lpbpurchase_datetime);
+			if($resp["status"] !=  "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}
 
-		$this->form_validation->set_rules($this->trlpbpurchase_model->getRules("ADD", 0));
+			$dataPrepared = $this->prepareData();
+			$dataH =  $dataPrepared["dataH"];
+			$dataDetails =  $dataPrepared["dataDetails"];
+			$po = $dataPrepared["po"];
+			
+			$this->validateData($dataH,$po);
 
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		if ($this->form_validation->run() == FALSE) {
-			//print_r($this->form_validation->error_array());
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = lang("Error Validation Data"); ;
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $_POST;
-			$this->json_output();
-			return;
-		}
-		
-		
-		$fdt_lpbpurchase_datetime = dBDateTimeFormat($this->input->post("fdt_lpbpurchase_datetime"));
-		$resp = dateIsLock($fdt_lpbpurchase_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
-
-		$fst_lpbpurchase_no = $this->trlpbpurchase_model->generateLPBPurchaseNo($fdt_lpbpurchase_datetime);
-
-
-		$tmp = $this->trpo_model->getDataById($this->input->post("fin_po_id"));
-		$po = $tmp["po"];
-		if($po == null){
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Invalid PO Number";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $_POST;
-			$this->json_output();
-			return;
-		}
-		
-		//CEK APAKAH OVER CLAIM DP
-		$dpClaim = parseNumber($this->input->post("fdc_downpayment_claim"));
-		$availClaimDp = $po->fdc_downpayment_paid - $po->fdc_downpayment_claimed;
-		
-		if($dpClaim > $availClaimDp ){
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = lang("Error Validation Data");
-			$this->ajxResp["data"] = ["fdc_downpayment_claim"=>"Klaim DP tidak boleh melebihi " . $availClaimDp];
-			$this->ajxResp["request_data"] = $_POST;
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
 		}
 
-		
-
-		$dataH = [
-			"fst_lpbpurchase_no"=>$fst_lpbpurchase_no,
-			"fdt_lpbpurchase_datetime"=>$fdt_lpbpurchase_datetime,
-			"fin_po_id"=>$this->input->post("fin_po_id"),
-			"fin_supplier_id"=>$po->fin_supplier_id,
-			"fin_term"=>$po->fin_term,
-			"fst_curr_code"=> $po->fst_curr_code,
-			"fdc_exchange_rate_idr"=>parseNumber($this->input->post("fdc_exchange_rate_idr")),
-			"fdc_subttl"=>0,
-			"fdc_disc_amount"=>0,
-			"fdc_ppn_percent"=>$po->fdc_ppn_percent,
-			"fdc_ppn_amount"=>0,
-			"fst_memo"=>$this->input->post("fst_memo"),
-			"fdc_downpayment_claim"=>$dpClaim,
-			"fdc_total"=>0,
-			"fst_active"=>"A",
-			"fin_branch_id"=>$this->aauth->get_active_branch_id()
-		];
-
-		$details =  $this->trlpbpurchase_model->getListItemByLPBGudangIds($this->input->post("fin_lpbgudang_id"));
-		$subTotal =0;
-		$ttlDisc =0;
-		$ttlAfterDisc = 0;
-		$ttlPpnAmount = 0;
-		$total =0;
-
-		foreach($details as $detail){
-			$qty = $detail->fdb_qty_total;
-			$price = $detail->fdc_price;
-			$discItem =$detail->fst_disc_item;
-			$discAmount =  calculateDisc($discItem , $qty * $price);
-			$subTotal += ($qty * $price);
-			$ttlDisc += $discAmount;
-		}
-		$ttlAfterDisc = $subTotal - $ttlDisc;
-		$ttlPpnAmount = $ttlAfterDisc * ($dataH["fdc_ppn_percent"] /100);
-		$total = $ttlAfterDisc + $ttlPpnAmount;
-
-		$dataH["fdc_subttl"]=$subTotal;
-		$dataH["fdc_disc_amount"]=$ttlDisc;
-		$dataH["fdc_ppn_amount"]=$ttlPpnAmount;
-		$dataH["fdc_total"]=$dataH["fdc_subttl"] + $dataH["fdc_ppn_amount"] - $dataH["fdc_disc_amount"] - $dataH["fdc_downpayment_claim"];
-
-		//CEK Claim DP lebih besar dari invoice
-		if ($dataH["fdc_total"] < 0 ){
-			$this->ajxResp["status"] = "FAILED";
-			$this->ajxResp["message"] = lang("Total invoice negatif !");
-			$this->json_output();
-			return;
-		}
 
 		try{
 			$this->db->trans_start();
@@ -288,210 +208,208 @@ class Invoice extends MY_Controller{
 					"fin_lpbgudang_id"=>$finLPBGudangId,
 					"fst_active"=> "A"
 				];
+				$this->trlpbpurchasedetails_model->insert($dataD);			
+			}
+
+			foreach ($dataDetails as $dataD) {	
+				$dataD =(array) $dataD;	
+				$dataD["fin_lpbpurchase_id"] = $insertId;
+				$dataD["fdb_qty"] = $dataD["fdb_qty_total"];
+				$dataD["fst_active"] = "A";
+
 				$this->trlpbpurchaseitems_model->insert($dataD);			
 			}
-			
-			$result = $this->trlpbpurchase_model->posting($insertId);
-
-			if ($result["status"] != "SUCCESS"){
-				$this->ajxResp["status"] = "FAILED";
-				$this->ajxResp["message"] = $result["message"];
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}
+						
+			$this->trlpbpurchase_model->posting($insertId);
 
 			$this->db->trans_complete();
-		}catch(Exception $e){
-			$this->ajxResp["status"] = "DB_FAILED";
-			$this->ajxResp["message"] = $e->message;
-			$this->ajxResp["data"] = $e;
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $insertId;
 			$this->json_output();
-			$this->db->trans_rollback();
-			return;
-		}
 
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $insertId;
-		$this->json_output();
+		}catch(CustomException $e){
+			$this->db->trans_rollback();
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();		
+		}
 
 	}
 
 	public function ajx_edit_save(){
 		$this->load->model("trlpbpurchaseitems_model");	
-		$tmp = $this->trlpbpurchase_model->getDataById($this->input->post("fin_lpbpurchase_id"));
-		$dataHOld = $tmp["lpbPurchase"];
-		//CEK tgl lock dari transaksi tersimpan
-		$resp = dateIsLock($dataHOld->fdt_lpbpurchase_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
+
+
+		try{
+			$finLPBPurchaseId =  $this->input->post("fin_lpbpurchase_id");
+			$dataHOld = $this->db->get_where("trlpbpurchase",["fin_lpbpurchase_id"=>$finLPBPurchaseId])->row();
+			if ($dataHOld == null){
+				throw new CustomException("Invalid LPB Purchase ID",3003,"FAILED",["fin_lpbpurchase_id"=>$finLPBPurchaseId]);				
+			}
+
+			$resp = dateIsLock($dataHOld->fdt_lpbpurchase_datetime);
+			if($resp["status"] !=  "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}
+
+			$fdt_lpbpurchase_datetime = dBDateTimeFormat($this->input->post("fdt_lpbpurchase_datetime"));
+			$resp = dateIsLock($fdt_lpbpurchase_datetime);
+			if($resp["status"] !=  "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}
+
+			$resp = $this->trlpbpurchase_model->isEditable($finLPBPurchaseId);
+			if($resp["status"] !=  "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}
+
+
+			
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
 		}
 
-		//CEK tgl lock dari transaksi yg di kirim
-		$fdt_lpbpurchase_datetime = dBDateTimeFormat($this->input->post("fdt_lpbpurchase_datetime"));		
-		$resp = dateIsLock($fdt_lpbpurchase_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
+		try{
+			$this->db->trans_start();
+			$this->trlpbpurchase_model->unposting($dataHOld->fin_lpbpurchase_id);
+			$this->trlpbpurchase_model->deleteDetail($dataHOld->fin_lpbpurchase_id);
+
+			$dataPrepared = $this->prepareData();
+			$dataH =  $dataPrepared["dataH"];
+			$dataDetails =  $dataPrepared["dataDetails"];
+			$po = $dataPrepared["po"];
+			$dataH["fin_lpbpurchase_id"] = $dataHOld->fin_lpbpurchase_id;
+			$dataH["fst_lpbpurchase_no"] = $dataHOld->fst_lpbpurchase_no;			
+			
+			$this->validateData($dataH,$po);
+
+			$insertId = $dataHOld->fin_lpbpurchase_id;
+			$this->trlpbpurchase_model->update($dataH);
+
+			//Insert Data Detail Transaksi
+			foreach ($this->input->post("fin_lpbgudang_id") as $finLPBGudangId){				
+				$dataD =[
+					"fin_lpbpurchase_id"=>$insertId,
+					"fin_lpbgudang_id"=>$finLPBGudangId,
+					"fst_active"=> "A"
+				];
+				$this->trlpbpurchasedetails_model->insert($dataD);			
+			}
+
+			foreach ($dataDetails as $dataD) {	
+				$dataD =(array) $dataD;	
+				$dataD["fin_lpbpurchase_id"] = $insertId;
+				$dataD["fdb_qty"] = $dataD["fdb_qty_total"];
+				$dataD["fst_active"] = "A";
+				$this->trlpbpurchaseitems_model->insert($dataD);			
+			}
+						
+			$this->trlpbpurchase_model->posting($insertId);
+
+			$this->db->trans_complete();
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $dataH["fin_lpbpurchase_id"];
 			$this->json_output();
 			return;
-		}
 
-		$resp = $this->trlpbpurchase_model->isEditable($dataHOld->fin_lpbpurchase_id);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
-
-
-
-		$this->db->trans_start();
-
-		//UNPOSTING
-		$resp = $this->trlpbpurchase_model->unposting($dataHOld->fin_lpbpurchase_id);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			$this->db->trans_rollback();			
-			return;
-		}
-
-
-
-		//PREPARE DATA		
-		$tmp = $this->trpo_model->getDataById($this->input->post("fin_po_id"));				
-		$po = $tmp["po"];
-		if($po == null){
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Invalid PO Number";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $_POST;
+		}catch(CustomException $e){
 			$this->db->trans_rollback();
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
 		}
 
-		$dataH = [			
-			"fin_lpbpurchase_id"=>$dataHOld->fin_lpbpurchase_id,
-			"fst_lpbpurchase_no"=>$dataHOld->fst_lpbpurchase_no,
+	}
+
+	private function prepareData(){
+		$fdt_lpbpurchase_datetime = dBDateTimeFormat($this->input->post("fdt_lpbpurchase_datetime"));
+		$fst_lpbpurchase_no = $this->trlpbpurchase_model->generateLPBPurchaseNo($fdt_lpbpurchase_datetime);
+		$finPOId =$this->input->post("fin_po_id");
+		$po = $this->trpo_model->getDataHeaderById($finPOId);
+		
+		if($po == null){
+			throw new CustomException("Invalid PO ID",3003,"FAILED",["fin_po_id"=>$finPOId]);
+		}
+
+		$exchangeRate = parseNumber($this->input->post("fdc_exchange_rate_idr"));
+		$dpClaim = parseNumber($this->input->post("fdc_downpayment_claim"));
+
+		$dataH = [
+			"fst_lpbpurchase_no"=>$fst_lpbpurchase_no,
 			"fdt_lpbpurchase_datetime"=>$fdt_lpbpurchase_datetime,
-			"fin_po_id"=>$this->input->post("fin_po_id"),
+			"fin_po_id"=>$finPOId,
 			"fin_supplier_id"=>$po->fin_supplier_id,
-			"fin_term"=>$po->fin_term,
+			"fin_term"=> $this->input->post("fin_term"),
 			"fst_curr_code"=> $po->fst_curr_code,
-			"fdc_exchange_rate_idr"=>$this->input->post("fdc_exchange_rate_idr"),
+			"fdc_exchange_rate_idr"=>$exchangeRate,
 			"fdc_subttl"=>0,
 			"fdc_disc_amount"=>0,
 			"fdc_ppn_percent"=>$po->fdc_ppn_percent,
 			"fdc_ppn_amount"=>0,
 			"fst_memo"=>$this->input->post("fst_memo"),
-			"fdc_downpayment_claim"=>$this->input->post("fdc_downpayment_claim"),
+			"fdc_downpayment_claim"=>$dpClaim,
 			"fdc_total"=>0,
-			"fst_active"=>"A",
+			"fst_active"=>"A",		
 			"fin_branch_id"=>$this->aauth->get_active_branch_id()
 		];
-		
-		$details =  $this->trlpbpurchase_model->getListItemByLPBGudangIds($this->input->post("fin_lpbgudang_id"));
-		$subTotal =0;
-		$ttlDisc =0;
-		$ttlAfterDisc = 0;
-		$ttlPpnAmount = 0;
-		$total =0;
 
-		foreach($details as $detail){
-			$qty = $detail->fdb_qty_total;
-			$price = $detail->fdc_price;
-			$discItem =$detail->fst_disc_item;
-			$discAmount =  calculateDisc($discItem , $qty * $price);
+
+		$dataDetails =  $this->trlpbpurchase_model->getListItemByLPBGudangIds($this->input->post("fin_lpbgudang_id"));
+		$subTotal =0;
+		$ttlDisc =0;		
+		foreach($dataDetails as $dataD){
+			$qty = $dataD->fdb_qty_total;
+			$price = $dataD->fdc_price;
+			$discItem =$dataD->fst_disc_item;
+			$discAmountPerItem = $dataD->fdc_disc_amount_per_item;
+			//$discAmount =  calculateDisc($discItem , $qty * $price);
+			$discAmount =  $discAmountPerItem * $qty;
 			$subTotal += ($qty * $price);
 			$ttlDisc += $discAmount;
 		}
-		$ttlAfterDisc = $subTotal - $ttlDisc;
-		$ttlPpnAmount = $ttlAfterDisc * ($dataH["fdc_ppn_percent"] /100);
-		$total = $ttlAfterDisc + $ttlPpnAmount;
 
-		$dataH["fdc_subttl"]=$subTotal;
-		$dataH["fdc_disc_amount"]=$ttlDisc;
-		$dataH["fdc_ppn_amount"]=$ttlPpnAmount;
-		$dataH["fdc_total"]=$dataH["fdc_subttl"] + $dataH["fdc_ppn_amount"] - $dataH["fdc_disc_amount"] - $dataH["fdc_downpayment_claim"];
-
-		//VALIDATION
-		$this->form_validation->set_rules($this->trlpbpurchase_model->getRules("ADD", 0));
-		$this->form_validation->set_data($dataH);
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		if ($this->form_validation->run() == FALSE) {
-			//print_r($this->form_validation->error_array());
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = lang("Error Validation Data"); ;
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $_POST;
-			$this->db->trans_rollback();
-			$this->json_output();
-			return;
-		}
-
-		//CEK APAKAH OVER CLAIM DP
-		$dpClaim = floatval($this->input->post("fdc_downpayment_claim"));
-		$availClaimDp = floatval($po->fdc_downpayment_paid) - floatval($po->fdc_downpayment_claimed);
-		if($dpClaim > $availClaimDp ){
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = lang("Error Validation Data");
-			$this->ajxResp["data"] = ["fdc_downpayment_claim"=>"Klaim DP tidak boleh melebihi " . $availClaimDp];
-			$this->ajxResp["request_data"] = $_POST;
-			$this->db->trans_rollback();
-			$this->json_output();
-			return;
-		}
-
-		//UPDATING (DELETE & SAVE) HEADER & DETAILS
-		$this->trlpbpurchase_model->update($dataH);
-
-		//Insert Data Detail Transaksi		
-		foreach ($this->input->post("fin_lpbgudang_id") as $finLPBGudangId) {					
-			$dataD =[
-				"fin_lpbpurchase_id"=>$dataH["fin_lpbpurchase_id"],
-				"fin_lpbgudang_id"=>$finLPBGudangId,
-				"fst_active"=> "A"
-			];
-			$this->trlpbpurchaseitems_model->insert($dataD);			
-		}
+		$dataH["fdc_subttl"] = $subTotal;
+		$dataH["fdc_disc_amount"] = $ttlDisc;
+		$dataH["fdc_ppn_amount"] = ($subTotal - $ttlDisc) * ($dataH["fdc_ppn_percent"] /100); 
+		$dataH["fdc_total"] = $subTotal - $ttlDisc + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
 		
+		
+		return [
+			"dataH"=>$dataH,
+			"dataDetails"=>$dataDetails,
+			"po"=>$po
+		];
 
-		//POSTING NEW UPDATE
-		$result = $this->trlpbpurchase_model->posting($dataH["fin_lpbpurchase_id"]);
-		if ($result["status"] != "SUCCESS"){
-			$this->ajxResp["status"] = "FAILED";
-			$this->ajxResp["message"] = $result["message"];
-			$this->json_output();
-			$this->db->trans_rollback();
-			return;
-		}
-
-		$dbError  = $this->db->error();
-		if ($dbError["code"] != 0){			
-			$this->ajxResp["status"] = "DB_FAILED";
-			$this->ajxResp["message"] = lang("Update data Failed !");
-			$this->ajxResp["data"] = $this->db->error();
-			$this->json_output();
-			$this->db->trans_rollback();
-			return;
-		}
-
-		$this->db->trans_complete();
-
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $dataH["fin_lpbpurchase_id"];
-		$this->json_output();
 	}
 
+	private function validateData($dataH,$po){
+		//CEK APAKAH OVER CLAIM DP		
+		$availClaimDp = $po->fdc_downpayment_paid - $po->fdc_downpayment_claimed;		
+		if($dataH["fdc_downpayment_claim"] > $availClaimDp ){
+			throw new CustomException(lang("Over Claim DP"),3003,"VALIDATION_FORM_FAILED",["fdc_downpayment_claim"=>sprintf(lang("Klaim DP tidak boleh melebihi %s"),formatNumber($availClaimDp)) ]);
+		}
+
+		//CEK Total Invoice negatif
+		if($dataH["fdc_total"] < 0 ){
+			throw new CustomException(lang("Total tagihan negatif"),3003,"FAILED", null);
+		}
+
+		$this->form_validation->set_rules($this->trlpbpurchase_model->getRules("ADD", 0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+		$this->form_validation->set_data($dataH);
+		if ($this->form_validation->run() == FALSE) {
+			throw new CustomException(lang("Error Validation Data"),3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
+		}
+	}
 
 	public function fetch_data($finLPBPurchaseId){
 		$data = $this->trlpbpurchase_model->getDataById($finLPBPurchaseId);	
@@ -507,55 +425,52 @@ class Invoice extends MY_Controller{
 	}
 
 	public function delete($finLPBPurchaseId){
-		
-		$tmp = $this->trlpbpurchase_model->getDataById($finLPBPurchaseId);
-		$dataHOld = $tmp["lpbPurchase"];
-		//CEK tgl lock dari transaksi tersimpan
-		$resp = dateIsLock($dataHOld->fdt_lpbpurchase_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
+
+		try{
+			
+			$dataHOld = $this->db->get_where("trlpbpurchase",["fin_lpbpurchase_id"=>$finLPBPurchaseId])->row();
+			if ($dataHOld == null){
+				throw new CustomException("Invalid LPB Purchase ID",3003,"FAILED",["fin_lpbpurchase_id"=>$finLPBPurchaseId]);				
+			}
+
+			$resp = dateIsLock($dataHOld->fdt_lpbpurchase_datetime);
+			if($resp["status"] !=  "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}
+
+			$resp = $this->trlpbpurchase_model->isEditable($finLPBPurchaseId);
+			if($resp["status"] !=  "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}
+			
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
 		}
 
-		$isEditable = $this->trlpbpurchase_model->isEditable($finLPBPurchaseId);
-        if($isEditable["status"] != "SUCCESS"){
-            return $isEditable;
-		}
-		
+		try{
+			$this->db->trans_start();
+			
+			$this->trlpbpurchase_model->unposting($finLPBPurchaseId);
+			$this->trlpbpurchase_model->delete($finLPBPurchaseId,$softDelete = true,$data=null);			
 
-		$this->db->trans_start();
-
-		$data =[
-			"fin_user_id_request_by"=>$this->input->post("fin_user_id_request_by"),
-			"fst_edit_notes"=>$this->input->post("fst_edit_notes"),
-		];
-
-		$resp = $this->trlpbpurchase_model->unposting($finLPBPurchaseId);               
-        if($resp["status"] != "SUCCESS"){
-			$this->db->trans_rollback();
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
+			$this->db->trans_complete();
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
 			$this->json_output();
-            return;
-        }
+			return;
 
-		$resp = $this->trlpbpurchase_model->delete($finLPBPurchaseId,true,$data);
-		
-		$dbError  = $this->db->error();
-		if ($dbError["code"] != 0){
-			$this->db->trans_rollback();	
-			$resp["status"] = "DB_FAILED";
-			$resp["message"] = $dbError["message"];
-			return $resp;
+		}catch(CustomException $e){
+			$this->db->trans_rollback();
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();
+			return;
 		}
-		
-		$this->db->trans_complete();
 
-
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "";
-		$this->json_output();
 	}
 }    
