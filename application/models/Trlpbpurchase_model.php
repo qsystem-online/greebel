@@ -33,7 +33,7 @@ class Trlpbpurchase_model extends MY_Model {
     }
 
     public function getDataById($finLPBPurchaseId){
-        $ssql = "SELECT a.*,b.fst_po_no,b.fdt_po_datetime,b.fin_term,fdc_downpayment_paid,fdc_downpayment_claimed,c.fst_relation_name as fst_supplier_name FROM trlpbpurchase a 
+        $ssql = "SELECT a.*,b.fst_po_no,b.fdt_po_datetime,fdc_downpayment_paid,fdc_downpayment_claimed,c.fst_relation_name as fst_supplier_name FROM trlpbpurchase a 
             INNER JOIN trpo b ON a.fin_po_id = b.fin_po_id 
             INNER JOIN msrelations  c ON a.fin_supplier_id = c.fin_relation_id 
             WHERE fin_lpbpurchase_id = ? and a.fst_active != 'D'";
@@ -46,8 +46,14 @@ class Trlpbpurchase_model extends MY_Model {
             return null;
         }
 
-        $ssql = "select a.*,b.fst_lpbgudang_no from trlpbpurchaseitems a 
-            inner join trlpbgudang b on a.fin_lpbgudang_id = b.fin_lpbgudang_id 
+        $ssql = "select a.*,b.fst_lpbgudang_no from trlpbpurchasedetails a 
+            INNER JOIN trlpbgudang b on a.fin_lpbgudang_id = b.fin_lpbgudang_id 
+            where a.fin_lpbpurchase_id = ?";
+        $qr = $this->db->query($ssql,[$finLPBPurchaseId]);        
+        $rsLPBPurchaseDetails = $qr->result();
+
+            
+        $ssql = "select a.* from trlpbpurchaseitems a 
             where a.fin_lpbpurchase_id = ?";
 
         $qr = $this->db->query($ssql,[$finLPBPurchaseId]);        
@@ -55,11 +61,13 @@ class Trlpbpurchase_model extends MY_Model {
 
         $data = [
             "lpbPurchase" => $rwLPBPurchase,
+            "lpbPurchaseDetails" => $rsLPBPurchaseDetails,
             "lpbPurchaseItems" => $rsLPBPurchaseItems,
 		];
 		return $data;
     }
 
+    
     public function generateLPBPurchaseNo($trDate = null) {
         $trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
         $tahun = date("Y/m", strtotime ($trDate));
@@ -89,11 +97,11 @@ class Trlpbpurchase_model extends MY_Model {
     }
 
     public function getPOList(){
-        $ssql = "select distinct a.fin_po_id,b.fst_po_no,b.fin_supplier_id,c.fst_relation_name as fst_supplier_name 
+        $ssql = "select distinct a.fin_trans_id as fin_po_id,b.fst_po_no,b.fin_supplier_id,c.fst_relation_name as fst_supplier_name 
             FROM trlpbgudang a 
-            INNER JOIN trpo b on a.fin_po_id = b.fin_po_id 
+            INNER JOIN trpo b on a.fin_trans_id = b.fin_po_id 
             INNER JOIN msrelations c on b.fin_supplier_id = c.fin_relation_id 
-            WHERE a.fin_lpbpurchase_id IS NULL and a.fst_active != 'D' ";
+            WHERE a.fst_lpb_type = 'PO' and a.fin_lpbpurchase_id IS NULL and a.fst_active != 'D' ";
         $qr = $this->db->query($ssql,[]);
         $rs = $qr->result();
         return $rs;
@@ -109,7 +117,7 @@ class Trlpbpurchase_model extends MY_Model {
 
 
         $ssql = "SELECT fin_lpbgudang_id,fst_lpbgudang_no,fdt_lpbgudang_datetime  FROM trlpbgudang 
-            WHERE fin_po_id = ? AND fin_lpbpurchase_id IS NULL AND fst_active != 'D'";
+            WHERE fst_lpb_type= 'PO' and fin_trans_id = ? AND fin_lpbpurchase_id IS NULL AND fst_active != 'D'";
         $qr = $this->db->query($ssql,[$finPOId]);
         $poDetails=$qr->result();
 
@@ -123,20 +131,25 @@ class Trlpbpurchase_model extends MY_Model {
     }
 
     public function getListItemByLPBGudangIds($finLPBGudangIds){
-        $ssql ="SELECT b.fin_item_id,c.fst_item_code,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,SUM(a.fdb_qty) as fdb_qty_total 
+        
+        $ssql ="SELECT b.fin_item_id,c.fst_item_code,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item,SUM(a.fdb_qty) as fdb_qty_total 
             FROM trlpbgudangitems a 
-            INNER JOIN trpodetails b ON a.fin_po_detail_id = b.fin_po_detail_id 
+            INNER JOIN trpodetails b ON a.fin_trans_detail_id = b.fin_po_detail_id 
             INNER JOIN msitems c ON b.fin_item_id = c.fin_item_id 
             WHERE fin_lpbgudang_id IN ? 
-            GROUP BY b.fin_item_id,c.fst_item_code,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item";
-
-
+            GROUP BY b.fin_item_id,c.fst_item_code,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item";
+        
         $qr = $this->db->query($ssql,[$finLPBGudangIds]);
         $rs = $qr->result();
         return $rs;
     }
 
     public function posting($finLPBPurchaseId){
+        /**
+         * +Update field fin_lpbpurchase_id di trlpbgudang
+         * +Update claimed downpayment di PO
+         * +Jurnal
+         */
         $this->load->model("glledger_model");
 
         $ssql = "SELECT a.*,b.fbl_is_import,b.fdc_downpayment,b.fdc_downpayment_paid,b.fbl_dp_inc_ppn FROM trlpbpurchase a 
@@ -144,27 +157,25 @@ class Trlpbpurchase_model extends MY_Model {
             WHERE fin_lpbpurchase_id = ?";
 
         $qr = $this->db->query($ssql,[$finLPBPurchaseId]);
-        $dataH = $qr->row();
-        
+        $dataH = $qr->row();        
         if($dataH == null){
-            $result = [
-                "status"=>"failed",
-                "message"=>"Invalid LPB Purchase ID",
-            ];
-            return $result;
+            throw new CustomException(lang("Invalid LPB Purchase ID"),3003,"FAILED",null);
         }
         
-        $ssql = "select * from trlpbpurchaseitems where fin_lpbpurchase_id = ?";
+        $ssql = "SELECT * from trlpbpurchasedetails where fin_lpbpurchase_id = ?";
         $qr= $this->db->query($ssql,[$finLPBPurchaseId]);
         $rs = $qr->result();
         foreach($rs as $rw){
+            //Update field fin_lpbpurchase_id di trlpbgudang
             $ssql ="update trlpbgudang set fin_lpbpurchase_id = ? where fin_lpbgudang_id = ?";
             $this->db->query($ssql,[$finLPBPurchaseId,$rw->fin_lpbgudang_id]);
+            throwIfDBError();
         }
 
         //Update claimed downpayment di PO
         $ssql = "update trpo set fdc_downpayment_claimed = fdc_downpayment_claimed + " . $dataH->fdc_downpayment_claim . " where fin_po_id = ?";
         $this->db->query($ssql,[$dataH->fin_po_id]);
+        throwIfDBError();
                 
 
         //JURNAL 
@@ -178,41 +189,17 @@ class Trlpbpurchase_model extends MY_Model {
             $glAccount = getGLConfig("PURCHASE_LOKAL");
             $dpGlAccount = getGLConfig("DP_OUT_LOKAL");
             $apGlAccount = getGLConfig("AP_DAGANG_LOKAL");
-        }
+        }    
 
-        
-        $ssql = "CREATE TEMPORARY TABLE tmp_result  
-            SELECT c.fin_po_detail_id,f.fin_pcc_id, c.fdc_price,c.fst_disc_item,0 as fdc_disc_amount,sum(b.fdb_qty) as fdb_qty FROM trlpbpurchaseitems a 
-            INNER JOIN trlpbgudangitems b ON a.fin_lpbgudang_id = b.fin_lpbgudang_id
-            INNER JOIN trpodetails c ON b.fin_po_detail_id = c.fin_po_detail_id
-            INNER JOIN msitems d ON c.fin_item_id = d.fin_item_id
-            INNER JOIN msgroupitems e ON d.fin_item_group_id = e.fin_item_group_id
-            INNER JOIN msgroupitems f ON f.fin_item_group_id = SUBSTRING(e.fst_tree_id,1,INSTR(e.fst_tree_id,'.')-1)
+        $ssql = "SELECT d.fin_pcc_id,sum(a.fdb_qty * a.fdc_price) as fdc_total,sum(a.fdb_qty * a.fdc_disc_amount_per_item) as fdc_ttl_disc_amount 
+            FROM trlpbpurchaseitems a
+            INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
+            INNER JOIN msgroupitems c on b.fin_item_group_id = c.fin_item_group_id 
+            INNER JOIN msgroupitems d on SUBSTRING_INDEX(c.fst_tree_id, '.', 1) = d.fin_item_group_id
             WHERE a.fin_lpbpurchase_id = ? 
-            GROUP  BY c.fin_po_detail_id,f.fin_pcc_id, c.fdc_price,c.fst_disc_item";
-
+            GROUP BY d.fin_pcc_id";
         $qr = $this->db->query($ssql,[$finLPBPurchaseId]);
-
-        $ssql = "update tmp_result   set fdc_disc_amount = 0" ;
-        $qr = $this->db->query($ssql);
-
-        $ssql = "select * from tmp_result";
-        $qr = $this->db->query($ssql,[]);
-        $rs = $qr->result();
-    
-
-        foreach($rs as $rw ){
-            $ttlDisc = calculateDisc($rw->fst_disc_item,($rw->fdb_qty * $rw->fdc_price));
-            $ssql = "update tmp_result set fdc_disc_amount = ? where fin_po_detail_id = ? and fin_pcc_id = ?";    
-            $this->db->query($ssql,[$ttlDisc,$rw->fin_po_detail_id,$rw->fin_pcc_id]);
-    
-        }
-        $ssql = "select * from tmp_result";
-        $qr = $this->db->query($ssql,[]);
-
-        $ssql = "select fin_pcc_id,sum(fdb_qty * fdc_price) as fdc_total,sum(fdc_disc_amount) as fdc_ttl_disc_amount  from tmp_result group by fin_pcc_id";
-        $qr = $this->db->query($ssql,[]);
-        $rs = $qr->result();
+        $rs =$qr->result();      
 
         foreach($rs as $rw){                    
             //PEMBELIAN
@@ -222,7 +209,7 @@ class Trlpbpurchase_model extends MY_Model {
                 "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
                 "fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
                 "fin_trx_id"=>$finLPBPurchaseId,
-                "fst_reference"=>null,
+                "fst_reference"=>$dataH->fst_memo,
                 "fdc_debit"=> $rw->fdc_total * $dataH->fdc_exchange_rate_idr, //$dataH->fdc_subttl * $dataH->fdc_exchange_rate_idr,
                 "fdc_origin_debit"=> $rw->fdc_total, //$dataH->fdc_subttl,
                 "fdc_credit"=>0,
@@ -258,14 +245,8 @@ class Trlpbpurchase_model extends MY_Model {
             ];                          
         }
 
-        $ssql = "DROP TEMPORARY TABLE IF EXISTS tmp_result";
-        $qr = $this->db->query($ssql,[]);
-        
-
-
-        
         //PPN
-        //APAKAH DP SUDAH ADA UNSUR PPN ATAU TIDAK
+        //APAKAH DP SUDAH ADA UNSUR PPN ATAU TIDAK        
         if ($dataH->fbl_dp_inc_ppn){
             $ttlPpn = $dataH->fdc_ppn_amount;            
             $dpClaim = $dataH->fdc_downpayment_claim;
@@ -282,7 +263,7 @@ class Trlpbpurchase_model extends MY_Model {
             "fdt_trx_datetime"=>date("Y-m-d H:i:s"),
             "fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
             "fin_trx_id"=>$finLPBPurchaseId,
-            "fst_reference"=>null,
+            "fst_reference"=>$dataH->fst_memo,
             "fdc_debit"=> $ttlPpn * $dataH->fdc_exchange_rate_idr,
             "fdc_origin_debit"=>$ttlPpn,
             "fdc_credit"=>0,
@@ -335,63 +316,38 @@ class Trlpbpurchase_model extends MY_Model {
             "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
             "fst_no_ref_bank"=>null,
             "fin_pcc_id"=>null,
-            "fin_relation_id"=>null,
+            "fin_relation_id"=>$dataH->fin_supplier_id,
             "fst_active"=>"A",
             "fst_info"=>"HUTANG DAGANG"
-        ];      
-        
-        $result = $this->glledger_model->createJurnal($dataJurnal);
-        if ($result["status"] != "SUCCESS"){
-            return $result;
-        }
-
-        $result=[
-            "status"=>"SUCCESS",
-            "message"=>""
-        ];
-
-        return $result;
-       
+        ];            
+        $this->glledger_model->createJurnal($dataJurnal);       
     }
 
     public function unposting($finLPBPurchaseId,$unpostingDateTime =""){
         $this->load->model("glledger_model");
-
-        //trpo : unpost fdc_downpayment_claimed
         //trlpbgudang : unpost fin_lpbpurchase_id
+        //trpo : unpost fdc_downpayment_claimed        
         //glledger: unpost jurnal
+
         $unpostingDateTime = $unpostingDateTime == "" ? date("Y-m-d H:i:s") : $unpostingDateTime;
 
         $ssql ="select * from trlpbpurchase where fin_lpbpurchase_id = ?";
         $qr = $this->db->query($ssql,[$finLPBPurchaseId]);
         $dataH = $qr->row();
         if($dataH == null){
-            return [
-                "status"=>"FAILED",
-                "message"=>lang("Invalid Purchase Invoice")
-            ];
+            throw new CustomException(lang("Invalid Purchase Invoice"),3003,"FAILED",null);            
         }
-        $ssql = "update trpo set fdc_downpayment_claimed = fdc_downpayment_claimed - " . $dataH->fdc_downpayment_claim . " where fin_po_id = ?";
-        $this->db->query($ssql,[$dataH->fin_po_id]);
 
         $ssql = "update trlpbgudang set fin_lpbpurchase_id = NULL where fin_lpbpurchase_id = ?";
         $this->db->query($ssql,[$finLPBPurchaseId]);
+        throwIfDBError();
 
+        $ssql = "update trpo set fdc_downpayment_claimed = fdc_downpayment_claimed - " . $dataH->fdc_downpayment_claim . " where fin_po_id = ?";
+        $this->db->query($ssql,[$dataH->fin_po_id]);
+        throwIfDBError();
+        
 
-        $this->glledger_model->cancelJurnal("PINV",$finLPBPurchaseId,$unpostingDateTime);
-
-        $result=[
-            "status"=>"SUCCESS",
-            "message"=>""
-        ];
-
-        $dbError  = $this->db->error();
-		if ($dbError["code"] != 0){	
-            $result["status"]= "FAILED";
-            $result["message"]= $dbError["message"];            
-			return $result;
-        }                
-        return $result;
+        $this->glledger_model->cancelJurnal("PINV",$finLPBPurchaseId,$unpostingDateTime);        
     }
 
     public function isEditable($finLPBPurchaseId){
@@ -416,14 +372,7 @@ class Trlpbpurchase_model extends MY_Model {
 
         $resp =["status"=>"SUCCESS","message"=>""];
         return $resp;
-    }
-
-    public function update($data){
-        //Cancel Transaksi
-        $ssql ="delete from trlpbpurchaseitems where fin_lpbpurchase_id = ?";
-        $this->db->query($ssql,$data["fin_lpbpurchase_id"]);        
-        parent::update($data);
-    }
+    } 
 
 
     public function delete($finLPBPurchaseId,$softDelete = true,$data=null){
@@ -440,8 +389,16 @@ class Trlpbpurchase_model extends MY_Model {
         parent::delete($finLPBPurchaseId,$softDelete,$data);
 
         return ["status" => "SUCCESS","message"=>""];
-   }
+    }
 
+    public function deleteDetail($finLPBPurchaseId){
+        $ssql ="DELETE from trlpbpurchasedetails where fin_lpbpurchase_id = ?";
+        $this->db->query($ssql,[$finLPBPurchaseId]);
+        throwIfDBError();
+        $ssql ="DELETE from trlpbpurchaseitems where fin_lpbpurchase_id = ?";
+        $this->db->query($ssql,[$finLPBPurchaseId]);
+        throwIfDBError();
+    }
 }
 
 

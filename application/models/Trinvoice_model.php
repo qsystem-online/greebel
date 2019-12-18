@@ -191,10 +191,10 @@ class Trinvoice_model extends MY_Model {
     }
 
     public function getDetailSJ($arrSJId){
-        $ssql ="SELECT b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item,sum(b.fdb_qty) as fdb_qty_so,sum(a.fdb_qty) as fdb_qty_sj FROM trsuratjalandetails a 
+        $ssql ="SELECT b.fin_promo_id,b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item,b.fdb_qty as fdb_qty_so,sum(a.fdb_qty) as fdb_qty_sj FROM trsuratjalandetails a 
             INNER JOIN trsalesorderdetails b on a.fin_salesorder_detail_id = b.fin_rec_id            
             WHERE fin_sj_id IN ?
-            GROUP BY b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item";
+            GROUP BY b.fin_promo_id,b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item,b.fdb_qty";
 
         $qr = $this->db->query($ssql,[$arrSJId]);        
 
@@ -317,6 +317,7 @@ class Trinvoice_model extends MY_Model {
 
         $rsSalesPerPCC = $qr->result();
         foreach($rsSalesPerPCC  as $salesPerPCC){
+            
             //DISCOUNT PECAH PER PROFIT CENTER
             $dataJurnal[] =[ 
                 "fin_branch_id"=>$dataH->fin_branch_id,
@@ -333,11 +334,21 @@ class Trinvoice_model extends MY_Model {
                 "fst_orgi_curr_code"=>$dataH->fst_curr_code,
                 "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
                 "fst_no_ref_bank"=>null,
-                "fin_pcc_id"=>null,
+                "fin_pcc_id"=>$salesPerPCC->fin_pcc_id,
                 "fin_relation_id"=>null,
                 "fst_active"=>"A",
                 "fst_info"=>"DISC",
             ];
+
+            //CEK PPN INC ATAU EXCLUDE fbl_is_vat_include
+            $salesAmount = 0;
+            if ($dataH->fbl_is_vat_include == 1){
+                $dpp = $salesPerPCC->fdc_total;
+                $ppn = $dpp * ($dataH->fdc_ppn_percent /100);
+                $salesAmount = $salesPerPCC->fdc_total - $ppn;
+            }else{
+                $salesAmount = $salesPerPCC->fdc_total;
+            }
 
             $dataJurnal[] =[ //SALES PER PCC
                 "fin_branch_id"=>$dataH->fin_branch_id,
@@ -349,8 +360,8 @@ class Trinvoice_model extends MY_Model {
                 "fst_reference"=>$dataH->fst_inv_memo,
                 "fdc_debit"=> 0,
                 "fdc_origin_debit"=>0,
-                "fdc_credit"=> $salesPerPCC->fdc_total * $dataH->fdc_exchange_rate_idr,
-                "fdc_origin_credit"=>$salesPerPCC->fdc_total,
+                "fdc_credit"=> $salesAmount * $dataH->fdc_exchange_rate_idr,
+                "fdc_origin_credit"=>$salesAmount,
                 "fst_orgi_curr_code"=>$dataH->fst_curr_code,
                 "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
                 "fst_no_ref_bank"=>null,
@@ -381,6 +392,10 @@ class Trinvoice_model extends MY_Model {
             "fst_active"=>"A",
             "fst_info"=>"PPN",
         ];
+
+
+        //var_dump($dataJurnal);
+        //die();
    
         $this->glledger_model->createJurnal($dataJurnal);        
     }
@@ -409,6 +424,11 @@ class Trinvoice_model extends MY_Model {
     public function deleteDetail($invId){
         $ssql ="delete from trinvoicedetails where fin_inv_id = ?";
         $this->db->query($ssql,[$invId]);
+        throwIfDBError();
+        $ssql ="delete from trinvoiceitems where fin_inv_id = ?";
+        $this->db->query($ssql,[$invId]);
+        throwIfDBError();
+        
     }
 
     public function delete($invId,$softdelete = true,$data=null){        

@@ -58,4 +58,25 @@ class Select_data extends MY_Controller {
         $this->json_output();
         
     }
+
+    public function get_items_by_customer(){
+        $finCustomerId = $this->input->get("finCustomerId");
+        $term = $this->input->get("term");
+
+        $ssql = "select fin_item_id,fst_item_code,fst_item_name from msitems a 
+        inner join msrelations b on replace(a.fst_linebusiness_id,',','|') REGEXP replace(b.fst_linebusiness_id,',','|')
+        where b.fin_relation_id = ? and (a.fst_item_name like ? OR a.fst_item_code like ?) and a.fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finCustomerId, "%$term%","%$term%"]);
+        //echo $this->db->last_query();
+
+        //$qr = $this->db->query($ssql,[$finSupplierId,$finSupplierId,"%$term%","%$term%"]);
+
+        $rs = $qr->result();		
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["data"] = $rs;
+        $this->json_output();
+        
+    }
+
+
 }

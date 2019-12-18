@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Purchase_return extends MY_Controller{
+class Sales_return extends MY_Controller{
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -9,21 +9,22 @@ class Purchase_return extends MY_Controller{
 		$this->load->model('msrelations_model');
 		$this->load->model('mscurrencies_model');
 		$this->load->model('mswarehouse_model');
-		$this->load->model('trpurchasereturn_model');
-		$this->load->model('msitemdiscounts_model');
-		
+		$this->load->model('trsalesreturn_model');
+		$this->load->model("trsalesreturnitems_model");
+		$this->load->model("trinvoiceitems_model");
+		$this->load->model('msitemdiscounts_model');		
     }
 	
 	public function index(){
 
 		$this->load->library('menus');
-        $this->list['page_name'] = "Purchase - Return";
+        $this->list['page_name'] = "Sales - Return";
         $this->list['list_name'] = "Invoice Retur Pembelian List";
         $this->list['boxTools'] = [
-			"<a id='btnNew'  href='".site_url()."tr/purchase/purchase_return/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
+			"<a id='btnNew'  href='".site_url()."tr/sales/sales_return/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 		];
         $this->list['pKey'] = "id";
-        $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/purchase/purchase_return/fetch_list_data';
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales/sales_return/fetch_list_data';
         $this->list['arrSearch'] = [
 			'fst_purchasereturn_no' => 'No Retur Pembelian',
 			'fst_supplier_name' => 'Supplier'
@@ -31,17 +32,15 @@ class Purchase_return extends MY_Controller{
 
         $this->list['breadcrumbs'] = [
             ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-            ['title' => 'Purchase', 'link' => '#', 'icon' => ''],
+            ['title' => 'Sales', 'link' => '#', 'icon' => ''],
             ['title' => 'Return', 'link' => NULL, 'icon' => ''],
 		];
 		
 
         $this->list['columns'] = [
-			['title' => 'ID. Retur Pembelian', 'width' => '10px','visible'=>'false', 'data' => 'fin_purchasereturn_id'],
-            ['title' => 'No. Retur Pembelian', 'width' => '100px', 'data' => 'fst_purchasereturn_no'],
-            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_purchasereturn_datetime'],
-            ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
-			['title' => 'No. Faktur', 'width' => '100px', 'data' => 'fst_lpbpurchase_no'],			
+			['title' => 'No. Retur Penjualan', 'width' => '100px', 'data' => 'fst_salesreturn_no'],
+            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_salesreturn_datetime'],
+            ['title' => 'Customer', 'width' => '100px', 'data' => 'fst_customer_name'],
 			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
 			['title' => 'Total Amount', 'width' => '100px', 'data' => 'fdc_total','className'=>'text-right',
 				'render'=>"function(data,type,row){
@@ -51,15 +50,14 @@ class Purchase_return extends MY_Controller{
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
-					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/purchase/purchase_return/edit/' + row.fin_purchasereturn_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
-					action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
+					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/sales/sales_return/edit/' + row.fin_salesreturn_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
 					action += '<div>';
 					return action;
 				}"
 			]
 		];
 
-		$this->list['jsfile'] = $this->parser->parse('pages/tr/purchase/return/listjs', [], true);
+		$this->list['jsfile'] = $this->parser->parse('pages/tr/sales/return/listjs', [], true);
 
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
 		$this->list['mdlEditForm'] = $edit_modal;
@@ -83,11 +81,11 @@ class Purchase_return extends MY_Controller{
         $this->openForm("ADD", 0);
 	}
 
-	public function edit($finPurchaseReturnId){
-        $this->openForm("EDIT", $finPurchaseReturnId);
+	public function edit($finSalesReturnId){
+        $this->openForm("EDIT", $finSalesReturnId);
     }
 
-	private function openForm($mode = "ADD", $finPurchaseReturnId = 0){
+	private function openForm($mode = "ADD", $finSalesReturnId = 0){
         $this->load->library("menus");			
 
 		$main_header = $this->parser->parse('inc/main_header', [], true);
@@ -96,22 +94,22 @@ class Purchase_return extends MY_Controller{
 		$jurnal_modal = $this->parser->parse('template/mdlJurnal', [], true);
 
 		$data["mode"] = $mode;
-        $data["title"] = $mode == "ADD" ? lang("Retur Pembelian") : lang("Update Retur Pembelian");
-		$data["fin_purchasereturn_id"] = $finPurchaseReturnId;
+        $data["title"] = $mode == "ADD" ? lang("Retur Penjualan") : lang("Update Retur Penjualan");
+		$data["fin_salesreturn_id"] = $finSalesReturnId;
 		$data["mdlEditForm"] = $edit_modal;
 
 		$data["arrExchangeRate"] = $this->mscurrencies_model->getArrRate();
 		
 		
 		if($mode == 'ADD'){
-			$data["fst_purchasereturn_no"]=$this->trpurchasereturn_model->generatePurchaseReturnNo(); 
+			$data["fst_salesreturn_no"]=$this->trsalesreturn_model->generateSalesReturnNo(); 
 			$data["mdlJurnal"] = "";
 		}else if($mode == 'EDIT'){
-			$data["fst_purchasereturn_no"]="";	
+			$data["fst_salesreturn_no"]="";	
 			$data["mdlJurnal"] = $jurnal_modal;
         }        
 		
-		$page_content = $this->parser->parse('pages/tr/purchase/return/form', $data, true);
+		$page_content = $this->parser->parse('pages/tr/sales/return/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 
 		$control_sidebar = NULL;
@@ -123,74 +121,171 @@ class Purchase_return extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 
-	public function ajx_add_save(){			
-		/*
-		'fin_purchasereturn_id' => string '0' (length=1)
-		'fbl_is_import' => 1
-		'fst_purchasereturn_no' => string 'PRT/JKT/2019/10/00001' (length=21)
-		'fdt_purchasereturn_datetime' => string '31-10-2019 11:24:34' (length=19)
-		'fin_supplier_id' => string '142' (length=3)
-		'fin_lpbpurchase_id' => string '23' (length=2)
-		'fdc_exchange_rate_idr' => string '1.00' (length=4)
-		'fin_warehouse_id' => string '2' (length=1)
-		'fst_memo' => string 'asdas asda asdasd' (length=17)
-		'fdc_ppn_percent' => string '10' (length=2)
-		'details' => string '[
-			{"fin_rec_id":0,"fin_po_detail_id":"12","fin_item_id":"1","fst_item_code":"AB1230","fst_custom_item_name":"Greebel Artists Crayon Oil Pastel","fst_unit":"BOX","fdc_price":"10000.00","fst_disc_item":"10+2.5","fdb_qty_total":3,"fdb_qty_return":"2"},
-			{"fin_rec_id":0,"fin_po_detail_id":"13","fin_item_id":"2","fst_item_code":"AB2250","fst_custom_item_name":"Silver Queen","fst_unit":"PACK","fdc_price":"20000.00","fst_disc_item":"10","fdb_qty_total":2,"fdb_qty_return":"1"}
-		]' (length=471)
-		 */
-
-		$this->load->model("trpurchasereturnitems_model");
-		$this->load->model("trlpbpurchase_model");		
-		$this->load->model("trpodetails_model");	
+	public function ajx_add_save(){
 		
-		//CEK tgl lock dari transaksi yg di kirim
-		$fdt_purchasereturn_datetime = dBDateTimeFormat($this->input->post("fdt_purchasereturn_datetime"));		
-		$resp = dateIsLock($fdt_purchasereturn_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
+
+		try{
+			//CEK tgl lock dari transaksi yg di kirim
+			$fdt_salesreturn_datetime = dBDateTimeFormat($this->input->post("fdt_salesreturn_datetime"));		
+			$resp = dateIsLock($fdt_salesreturn_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+			//Prepare Data
+			$arrData = $this->prepareData();
+			$dataH = $arrData["dataH"];
+			$dataDetails = $arrData["dataDetails"];			
+			
+			//VALIDATION
+			$this->validation($dataH,$dataDetails);					
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();			
+			return;
+		}
+
+		try{
+			//SAVE
+			$this->db->trans_start(); 
+			$insertId = $this->trsalesreturn_model->insert($dataH);
+			foreach($dataDetails as $dataD){
+				unset($dataD["fin_rec_id"]);
+				$dataD["fin_salesreturn_id"] = $insertId;
+				$this->trsalesreturnitems_model->insert($dataD);
+			}
+			//POSTING
+			$result = $this->trsalesreturn_model->posting($insertId);			
+			
+			$this->db->trans_complete();
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $insertId;
+			$this->json_output();
+
+		}catch(CustomException $e){
+			$this->db->trans_rollback();
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();			
+			return;
+		}
+	}
+	
+	public function ajx_edit_save(){
+		$finSalesReturnId = $this->input->post("fin_salesreturn_id");		
+		try{
+			//CEK if editable
+			$dataHOld = $this->trsalesreturn_model->getDataHeaderById($finSalesReturnId);		
+			if ($dataHOld == null){
+				throw new CustomException(lang("ID Sales return tidak dikenal !"),3003,'FAILED',["fin_salesreturn_id"=>$finSalesReturnId]);
+			}
+			//CEK tgl lock dari transaksi tersimpan
+			$resp = dateIsLock($dataHOld->fdt_salesreturn_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+			//CEK tgl lock dari transaksi yg di kirim
+			$fdt_salesreturn_datetime = dBDateTimeFormat($this->input->post("fdt_salesreturn_datetime"));		
+			$resp = dateIsLock($fdt_salesreturn_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+			//CEK iseditable 
+			$resp = $this->trsalesreturn_model->isEditable($finSalesReturnId);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}	
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
 		}
 
+		try{
+
+			$this->db->trans_start(); 
+			
+			//UNPOSTING
+			$result = $this->trsalesreturn_model->unposting($finSalesReturnId);					
+
+			//DELETE DETAIL DATA
+			$this->trsalesreturn_model->deleteDetail($finSalesReturnId);     
+
+			//PREPARE DATA
+			$dataPrepared = $this->prepareData();
+			$dataH = $dataPrepared["dataH"];
+			$dataDetails = $dataPrepared["dataDetails"];
+
+			$dataH["fin_salesreturn_id"] = $finSalesReturnId;
+			$dataH["fst_salesreturn_no"] =  $dataHOld->fst_salesreturn_no;
+			
+			//VALIDATION
+			$this->validation($dataH,$dataDetails);
+			
+			//SAVE
+			$this->trsalesreturn_model->update($dataH);
+			foreach($dataDetails as $dataD){
+				$dataD["fin_salesreturn_id"] = $finSalesReturnId;
+				$this->trsalesreturnitems_model->insert($dataD);				
+			}						
+			
+			//POSTING
+			$this->trsalesreturn_model->posting($finSalesReturnId);			
+			
+			$this->db->trans_complete();		
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $finSalesReturnId;
+			$this->json_output();
+
+		}catch(CustomException $e){
+			$this->db->trans_rollback();
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();			
+			return;
+		}		
+	}
+
+	public function prepareData(){
+		/*
+		fin_salesreturn_id: 0
+		fst_salesreturn_no: SRT/JKT/2019/12/00001
+		fdt_purchasereturn_datetime: 13-12-2019 18:23:53
+		fin_customer_id: 154
+		fst_curr_code: IDR
+		fdc_exchange_rate_idr: 1.00
+		fst_memo: 
+		details: [{"fin_rec_id":0,"fin_item_id":"64","fin_inv_id":"54","fst_inv_no":"IV/JKT/2019/12/00006","fin_inv_detail_id":"13","fbl_is_vat_include":true,"fst_item_code":"010103000022","fst_custom_item_name":"GREEBEL PENCIL BAG MICA 2520","fst_unit":"PCS","fdc_price":"4200.00","fdb_qty":"14.00","fst_disc_item":"10+2.5","fdc_disc_amount_per_item":514.5,"fdc_dpp_amount":53454.54545454545,"fdc_ppn_percent":"10.00","fdc_ppn_amount":5345.454545454545}]
+		*/
 
 		//PREPARE DATA
-		$fst_purchasereturn_no = $this->trpurchasereturn_model->generatePurchaseReturnNo();
-		$fdt_purchasereturn_datetime = dBDateTimeFormat($this->input->post("fdt_purchasereturn_datetime"));
+		$fst_salesreturn_no = $this->trsalesreturn_model->generateSalesReturnNo();
+		$fdt_salesreturn_datetime = dBDateTimeFormat($this->input->post("fdt_salesreturn_datetime"));
+
 		$fbl_non_faktur = $this->input->post("fbl_non_faktur") == null ? false :true;
-		$fin_lpbpurchase_id = $fbl_non_faktur ? null : $this->input->post("fin_lpbpurchase_id");
 		$fst_curr_code =  $this->input->post("fst_curr_code");
-
-		$data = [];		
-		if($fin_lpbpurchase_id != null){ //retur dengan faktur
-			$data = $this->trlpbpurchase_model->getDataById($fin_lpbpurchase_id);
-			if( $data == null || $this->input->post("fin_supplier_id") != $data["lpbPurchase"]->fin_supplier_id ){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = lang("Error Validation Data");
-				$this->ajxResp["data"] = ["fin_lpbpurchase_id"=>lang("Invalid purchase id")];
-				$this->json_output();
-				die();
-			}
-
-			$fst_curr_code = $data["lpbPurchase"]->fst_curr_code;
-
-		}
 
 		$dataH =[
 			//"fin_purchasereturn_id"
-			"fst_purchasereturn_no" =>$fst_purchasereturn_no,
-			"fdt_purchasereturn_datetime"=>$fdt_purchasereturn_datetime,
-			"fin_supplier_id" => $this->input->post("fin_supplier_id"),
-			"fbl_non_faktur"=>$fbl_non_faktur,
-			"fin_lpbpurchase_id"=>$fin_lpbpurchase_id,
+			"fst_salesreturn_no" =>$fst_salesreturn_no,
+			"fdt_salesreturn_datetime"=>$fdt_salesreturn_datetime,
+			"fin_customer_id" => $this->input->post("fin_customer_id"),
+			"fbl_non_faktur"=>$fbl_non_faktur,			
 			"fst_curr_code"=>$fst_curr_code,
 			"fdc_exchange_rate_idr"=> $this->input->post("fdc_exchange_rate_idr"),
-			"fin_warehouse_id"=>$this->input->post("fin_warehouse_id"),
 			"fdc_subttl"=>0,
 			"fdc_disc_amount"=>0,
-			"fdc_ppn_percent"=>$this->input->post("fdc_ppn_percent"),
+			"fdc_dpp_amount"=>0,
 			"fdc_ppn_amount"=>0,
 			"fdc_total"=>0,
 			"fst_memo"=>$this->input->post("fst_memo"),
@@ -203,390 +298,165 @@ class Purchase_return extends MY_Controller{
 		$dataDetails = [];
 		$ttlDisc = 0;
 		$ttlBfDisc = 0;
-		$ttlAfDisc = 0;		
+		$ttlAfDisc = 0;
+		$ttlDPP = 0;
+		$ttlPpn = 0;
+
 		foreach($postDetails as $detail){
+			
+			
+			$subTotal = ($detail->fdb_qty * $detail->fdc_price);
+			$discPerItem =calculateDisc($detail->fst_disc_item,$detail->fdc_price);
+			$ttlDisc = $discPerItem * $detail->fdb_qty;
+
+			if ($detail->fbl_is_vat_include){				
+				$dpp =   ($subTotal - $ttlDisc) / (1 + ($detail->fdc_ppn_percent/100));
+			}else{
+				$dpp = $subTotal - $ttlDisc;
+			}
+			$ppnAmount = $dpp * ($detail->fdc_ppn_percent/100);
+
 			$dataD = [
-				"fin_rec_id"=>0,
-				"fin_purchasereturn_id"=>0,
-				"fin_po_detail_id"=>$detail->fin_po_detail_id,
+				"fin_rec_id"=>$detail->fin_rec_id,
+				"fin_salesreturn_id"=>0,
+				"fin_inv_id"=>$detail->fin_inv_id,
+				"fin_inv_detail_id"=>$detail->fin_inv_detail_id,
 				"fin_item_id"=>$detail->fin_item_id,
 				"fst_custom_item_name"=>$detail->fst_custom_item_name,
-				"fdb_qty"=>$detail->fdb_qty_return,
+				"fbl_is_vat_include"=>$detail->fbl_is_vat_include,
+				"fdb_qty"=>$detail->fdb_qty,
 				"fst_unit"=>$detail->fst_unit,
-				"fdc_price"=>$detail->fdc_price,
+				"fdc_price"=>$detail->fdc_price,				
+				"fdc_subttl"=>$detail->fdb_qty * $detail->fdc_price,
 				"fst_disc_item"=>$detail->fst_disc_item,
-				"fdc_disc_amount"=>calculateDisc($detail->fst_disc_item, $detail->fdb_qty_return * $detail->fdc_price),
-				//fst_notes
+				"fdc_disc_amount_per_item"=>$discPerItem,
+				"fdc_dpp_amount"=>$dpp,
+				"fdc_ppn_percent"=>$detail->fdc_ppn_percent,
+				"fdc_ppn_amount"=> $ppnAmount,
+				"fdc_total"=> $dpp + $ppnAmount,
 				"fst_active"=>'A'
-			];
+			];			
 
-			if ($detail->fin_po_detail_id != 0){
-				$dPO = $this->trpodetails_model->getDataById($detail->fin_po_detail_id);
-				if($dPO == null){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = lang("Error Validation Data");
-					$this->ajxResp["data"] = ["details"=> sprintf(lang("Invalid Data Item %s"),$detail->fst_custom_item_name)];
-					$this->json_output();
-					die();
+			//Overwrite data detail
+			if ($detail->fin_inv_detail_id != 0){
+				$dInv = $this->trinvoiceitems_model->getDataById($detail->fin_inv_detail_id);
+				if($dInv == null){
+					throw new CustomException(lang("Error Validation Data"),3003,"VALIDATION_FORM_FAILED",["details"=> sprintf(lang("Invalid Data Item %s"),$detail->fst_custom_item_name)]);
 				}
-				$dataD["fin_item_id"] = $dPO->fin_item_id; 
-				$dataD["fst_custom_item_name"] = $dPO->fst_custom_item_name;
-				$dataD["fst_unit"] = $dPO->fst_unit;
-				$dataD["fdc_price"] = $dPO->fdc_price;
-				$dataD["fst_disc_item"] = $dPO->fst_disc_item;				
-				$dataD["fdc_disc_amount"] = calculateDisc($dPO->fst_disc_item, $dataD["fdb_qty"] * $dataD["fdc_price"]);
+
+				$subTotal = ($dataD["fdb_qty"] * $dataD["fdc_price"]);
+				$discTotal = $dataD["fdb_qty"] * $dInv->fdc_disc_amount_per_item;
+				$dpp = 0;
+				if ($dInv->fbl_is_vat_include){
+					$dpp = ($subTotal - $discTotal) / (1 + ($dInv->fdc_ppn_percent/100));
+				}else{
+					$dpp = $subTotal - $discTotal;
+				}
+
+				$dataD["fin_item_id"] = $dInv->fin_item_id; 
+				$dataD["fst_custom_item_name"] = $dInv->fst_custom_item_name;
+				$dataD["fbl_is_vat_include"] = $dInv->fbl_is_vat_include;
+				$dataD["fst_unit"] = $dInv->fst_unit;
+				$dataD["fdc_subttl"] = $dataD["fdb_qty"] * $dataD["fdc_price"];
+				$dataD["fst_disc_item"] = $dInv->fst_disc_item;				
+				$dataD["fdc_disc_amount_per_item"] = $dInv->fdc_disc_amount_per_item;
+				$dataD["fdc_dpp_amount"] = $dpp;
+				$dataD["fdc_ppn_percent"] = $dInv->fdc_ppn_percent;
+				$dataD["fdc_ppn_amount"] = $dpp * ($dInv->fdc_ppn_percent/100);
+				$dataD["fdc_total"] = $dpp + $dataD["fdc_ppn_amount"];
 			}
 
 			$dataDetails[] = $dataD;
-			$ttlDisc +=  floatval($dataD["fdc_disc_amount"]);
+			$ttlDisc +=  floatval( $dataD["fdb_qty"] * $dataD["fdc_disc_amount_per_item"]);
 			$ttlBfDisc += floatval($dataD["fdb_qty"] * $dataD["fdc_price"]);
+			$ttlDPP += floatval($dataD["fdc_dpp_amount"]);
+			$ttlPpn += floatval($dataD["fdc_ppn_amount"]);
 		}
 		$ttlAfDisc = $ttlBfDisc - $ttlDisc;
 		$dataH["fdc_subttl"] = $ttlBfDisc;
 		$dataH["fdc_disc_amount"] = $ttlDisc;
-		$dataH["fdc_ppn_amount"] = $ttlAfDisc * ($dataH["fdc_ppn_percent"] / 100);		
-		$totalReturn = $dataH["fdc_subttl"] -  $dataH["fdc_disc_amount"] + $dataH["fdc_ppn_amount"];
+		$dataH["fdc_dpp_amount"] = $ttlDPP;
+		$dataH["fdc_ppn_amount"] = $ttlPpn;
+		$totalReturn = $dataH["fdc_dpp_amount"] + $dataH["fdc_ppn_amount"];
 		$dataH["fdc_total"] = $totalReturn;
 
-		
-		//VALIDATION
+		return [
+			"dataH"=>$dataH,
+			"dataDetails"=>$dataDetails
+		];
 
+	}
+
+	public function validation($dataH,$dataDetails){
+		
 		//validation header
-		$this->form_validation->set_rules($this->trpurchasereturn_model->getRules("ADD", 0));
+		$this->form_validation->set_rules($this->trsalesreturn_model->getRules("ADD", 0));
 		$this->form_validation->set_data($dataH);
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = lang("Error Validation Data");
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->json_output();
-			die();
+			throw new CustomException(lang("Error Validation Data Header"),3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
 		}
 
+			
 		if($dataH["fbl_non_faktur"] == false){
-			//Cek total retur tidak boleh melebihi total_invoice - (total_pembayaran + total_yang_telah_di_retur)
-			$lpbPurchase = $data["lpbPurchase"];
-			$totalReturAllow = floatval($lpbPurchase->fdc_total) - ( floatval($lpbPurchase->fdc_total_paid) +  floatval($lpbPurchase->fdc_total_return) );
-			if ( $totalReturn > $totalReturAllow ){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = sprintf(lang("Total retur tidak boleh melebihi %s"), formatNumber($totalReturAllow) );
-				$this->ajxResp["data"] = [];
-				$this->json_output();
-				die();
-			}
-
-			//validation detail
-			$returnedList = $this->trpurchasereturn_model->getSummaryReturnByLPBPurchase($dataH["fin_lpbpurchase_id"]);
-			$lPBList = $this->trpurchasereturn_model->getSummaryQtyLPBByLPBPurchase($dataH["fin_lpbpurchase_id"]);
-			foreach($dataDetails as $dataD){
-				$finPODetailId = $dataD["fin_po_detail_id"];
-				$lPB = isset($lPBList[$finPODetailId]) ? $lPBList[$finPODetailId] : null;
-				$qtyLPB = $lPB == null ? 0  : (float) $lPB->fdb_qty_lpb;
-				$returnLPB = isset($returnedList[$finPODetailId]) ? $returnedList[$finPODetailId] : null;
-				$qtyReturned = $returnLPB == null ? 0  : (float) $returnLPB->fdb_qty_return;
-				$qtyReturn = (float) $dataD["fdb_qty"];
-				$maxReturnAllow = $qtyLPB - $qtyReturned;
-
-				if ($qtyReturn > $maxReturnAllow ){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = sprintf(lang("Total qty retur %s tidak boleh melebihi %s"),$dataD["fst_custom_item_name"], $maxReturnAllow );
-					$this->ajxResp["data"] = [];
-					$this->json_output();
-					die();
-				}
-			}
-		}		
-		
-		try{
-			//SAVE
-			$this->db->trans_start(); 
-			$insertId = $this->trpurchasereturn_model->insert($dataH);
-			foreach($dataDetails as $dataD){
-				$dataD["fin_purchasereturn_id"] = $insertId;
-				$this->trpurchasereturnitems_model->insert($dataD);
-
-			}
-			//POSTING
-			$result = $this->trpurchasereturn_model->posting($insertId);
-			if($result["status"] != "SUCCESS"){
-				$this->ajxResp["status"] = $result["status"];
-				$this->ajxResp["message"] = $result["message"];
-				$this->json_output();			
-				$this->db->trans_rollback();
-				return;
-			}
+			//Return langsung mengurangi tagihan
 			
-			$dbError  = $this->db->error();
-			if ($dbError["code"] != 0){			
-				$this->ajxResp["status"] = "DB_FAILED";
-				$this->ajxResp["message"] = "Insert Failed";
-				$this->ajxResp["data"] = $this->db->error();
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
+			foreach($dataDetails as $dataD){				
+				$dInv = $this->trinvoiceitems_model->getDataById($dataD["fin_inv_detail_id"]);				
+				//Invoice tidak boleh kosong
+				if($dInv == null){
+					throw new CustomException(sprintf(lang("ID %s Invoice detail tidak ditemukan !"),$dataD->fin_inv_detail_id),3003,"FAILED",null);
+				}				
+				//Invoce tidak boleh ada pembayaran
+				if ($dInv->fdc_total_paid > 0 ){
+					throw new CustomException(sprintf(lang("Invoice %s sudah dilakukan pembayaran !"),$dInv->fst_inv_no),3003,"FAILED",null);
+				}
+				//Cek total retur tidak boleh melebihi total_invoice - (total_pembayaran + total_yang_telah_di_retur)	
+				$maxReturn = ($dInv->fdc_total -  $dInv->fdc_total_paid + $dInv->fdc_total_return);
+				if ($dataH["fdc_total"] > $maxReturn ){
+					throw new CustomException(sprintf(lang("Total return Invoice %s tidak boleh melebihi %s"),$dInv->fst_inv_no,formatNumber($maxReturn)),3003,"FAILED",null);
+				}
+				$maxQtyReturn = ($dInv->fdb_qty -  $dInv->fdb_qty_return);				
+				//Cek Qty retur tidak boleh melebih qty di invoice
+				if ($dataD["fdb_qty"] > $maxQtyReturn ){
+					throw new CustomException(sprintf(lang("Total qty return Invoice %s tidak boleh melebihi %s"),$dInv->fst_inv_no,$maxQtyReturn),3003,"FAILED",null);
+				}
+			}						
+		}else{
+			//Return tidak mengurangi tagihan dan harus digunakan sebagai voucher return
+			foreach($dataDetails as $dataD){
+				if ($dataD["fin_inv_detail_id"] != 0){
+					$dInv = $this->trinvoiceitems_model->getDataById($dataD->fin_inv_detail_id);				
+					//Invoice tidak boleh kosong
+					if($dInv == null){
+						throw new CustomException(sprintf(lang("ID %s Invoice detail tidak ditemukan !"),$dataD->fin_inv_detail_id),3003,"FAILED",null);
+					}				
+					//Invoce harus ada pembayaran
+					if ($dInv->fdc_total_paid == 0 ){
+						throw new CustomException(sprintf(lang("Invoice %s belum dilakukan pembayaran !"),$dInv->fst_inv_no),3003,"FAILED",null);
+					}
+					//Cek total retur tidak boleh melebihi total_invoice - (total_pembayaran + total_yang_telah_di_retur)	
+					$maxReturn = ($dInv->fdc_total -  $dInv->fdc_total_paid + $dInv->fdc_total_return);
+					if ($dataH["fdc_total"] > $maxReturn ){
+						throw new CustomException(sprintf(lang("Total return Invoice %s tidak boleh melebihi %s"),$dInv->fst_inv_no,formatNumber($maxReturn)),3003,"FAILED",null);
+					}
+					$maxQtyReturn = ($dInv->fdb_qty -  $dInv->fdb_qty_return);				
+					//Cek Qty retur tidak boleh melebih qty di invoice
+					if ($dataD["fdb_qty"] > $maxQtyReturn ){
+						throw new CustomException(sprintf(lang("Total qty return Invoice %s tidak boleh melebihi %s"),$dInv->fst_inv_no,$maxQtyReturn),3003,"FAILED",null);
+					}
+				}else{
+					//Return tanpa invoice;
+				}
+				
 			}
-
-			$this->db->trans_complete();
-			$this->ajxResp["status"] = "SUCCESS";
-			$this->ajxResp["message"] = "Data Saved !";
-			$this->ajxResp["data"]["insert_id"] = $insertId;
-			$this->json_output();
-
-		}catch(CustomException $e){
-			$this->ajxResp["status"] = $e->getStatus();
-			$this->ajxResp["message"] = $e->getMessage();
-			$this->ajxResp["data"] = $e->getData();
-			$this->json_output();			
-			$this->db->trans_rollback();
-			return;
 		}
-	}
 	
-	public function ajx_edit_save(){					
-		$this->load->model("trpurchasereturnitems_model");
-		$this->load->model("trlpbpurchase_model");		
-		$this->load->model("trpodetails_model");		
-
-		$finPurchaseReturnId = $this->input->post("fin_purchasereturn_id");		
-
-		//CEK if editable
-		$dataHOld = $this->trpurchasereturn_model->getDataHeaderById($finPurchaseReturnId);
-		if ($dataHOld == null){
-			$this->ajxResp["status"] = "FAILED!";
-			$this->ajxResp["message"] = lang("Data Not Found !");
-			$this->json_output();
-			return;
-		}
-		//CEK tgl lock dari transaksi tersimpan
-		$resp = dateIsLock($dataHOld->fdt_purchasereturn_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
-
-		//CEK tgl lock dari transaksi yg di kirim
-		$fdt_purchasereturn_datetime = dBDateTimeFormat($this->input->post("fdt_purchasereturn_datetime"));		
-		$resp = dateIsLock($fdt_purchasereturn_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
-
-		//CEK iseditable 
-		$resp = $this->trpurchasereturn_model->isEditable($dataHOld->fin_purchasereturn_id);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
-
-
-		try{
-
-			$this->db->trans_start(); 
-
-			//UNPOSTING
-			$result = $this->trpurchasereturn_model->unposting($finPurchaseReturnId);
-
-			//DELETE DETAIL DATA
-			$ssql  = "delete from trpurchasereturnitems  where fin_purchasereturn_id = ?";
-			$qr = $this->db->query($ssql,[$finPurchaseReturnId]);        
-
-
-			//PREPARE DATA
-			$fdt_purchasereturn_datetime = dBDateTimeFormat($this->input->post("fdt_purchasereturn_datetime"));
-			$fbl_non_faktur = $this->input->post("fbl_non_faktur") == null ? false :true;
-			$fin_lpbpurchase_id = $fbl_non_faktur ? null : $this->input->post("fin_lpbpurchase_id");
-			$fst_curr_code =  $this->input->post("fst_curr_code");
-
-			$data = [];		
-			if($fin_lpbpurchase_id != null){ //retur dengan faktur
-				$data = $this->trlpbpurchase_model->getDataById($fin_lpbpurchase_id);
-				if( $data == null || $this->input->post("fin_supplier_id") != $data["lpbPurchase"]->fin_supplier_id ){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = lang("Error Validation Data");
-					$this->ajxResp["data"] = ["fin_lpbpurchase_id"=>lang("Invalid purchase id")];
-					$this->db->trans_rollback();
-					$this->json_output();
-					die();
-				}
-				$fst_curr_code = $data["lpbPurchase"]->fst_curr_code;
-			}
-
-			$dataH =[
-				"fin_purchasereturn_id"=>$finPurchaseReturnId,
-				"fst_purchasereturn_no"=>$dataHOld->fst_purchasereturn_no,
-				"fdt_purchasereturn_datetime"=>$fdt_purchasereturn_datetime,
-				"fin_supplier_id" => $this->input->post("fin_supplier_id"),
-				"fbl_non_faktur"=>$fbl_non_faktur,
-				"fin_lpbpurchase_id"=>$fin_lpbpurchase_id,
-				"fst_curr_code"=>$fst_curr_code,
-				"fdc_exchange_rate_idr"=> $this->input->post("fdc_exchange_rate_idr"),
-				"fin_warehouse_id"=>$this->input->post("fin_warehouse_id"),
-				"fdc_subttl"=>0,
-				"fdc_disc_amount"=>0,
-				"fdc_ppn_percent"=>$this->input->post("fdc_ppn_percent"),
-				"fdc_ppn_amount"=>0,
-				"fdc_total"=>0,
-				"fst_memo"=>$this->input->post("fst_memo"),
-				"fin_branch_id"=>$this->aauth->get_active_branch_id(),
-				"fst_active"=>'A'
-			];
-
-			$postDetails = $this->input->post("details");
-			$postDetails = json_decode($postDetails);
-			$dataDetails = [];
-			$ttlDisc = 0;
-			$ttlBfDisc = 0;
-			$ttlAfDisc = 0;		
-			foreach($postDetails as $detail){
-				$dataD = [
-					"fin_rec_id"=> $detail->fin_rec_id == 0 ? null : $detail->fin_rec_id,
-					"fin_purchasereturn_id"=>$finPurchaseReturnId,
-					"fin_po_detail_id"=>$detail->fin_po_detail_id,
-					"fin_item_id"=>$detail->fin_item_id,
-					"fst_custom_item_name"=>$detail->fst_custom_item_name,
-					"fdb_qty"=>$detail->fdb_qty_return,
-					"fst_unit"=>$detail->fst_unit,
-					"fdc_price"=>$detail->fdc_price,
-					"fst_disc_item"=>$detail->fst_disc_item,
-					"fdc_disc_amount"=>calculateDisc($detail->fst_disc_item, $detail->fdb_qty_return * $detail->fdc_price),
-					//fst_notes
-					"fst_active"=>'A'
-				];
-
-				if ($detail->fin_po_detail_id != 0){
-					$dPO = $this->trpodetails_model->getDataById($detail->fin_po_detail_id);
-					if($dPO == null){
-						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-						$this->ajxResp["message"] = lang("Error Validation Data");
-						$this->ajxResp["data"] = ["details"=> sprintf(lang("Invalid Data Item %s"),$detail->fst_custom_item_name)];
-						$this->db->trans_rollback();
-						$this->json_output();
-						die();
-					}
-					$dataD["fin_item_id"] = $dPO->fin_item_id; 
-					$dataD["fst_custom_item_name"] = $dPO->fst_custom_item_name;
-					$dataD["fst_unit"] = $dPO->fst_unit;
-					$dataD["fdc_price"] = $dPO->fdc_price;
-					$dataD["fst_disc_item"] = $dPO->fst_disc_item;				
-					$dataD["fdc_disc_amount"] = calculateDisc($dPO->fst_disc_item, $dataD["fdb_qty"] * $dataD["fdc_price"]);
-				}
-
-				$dataDetails[] = $dataD;
-				$ttlDisc +=  floatval($dataD["fdc_disc_amount"]);
-				$ttlBfDisc += floatval($dataD["fdb_qty"] * $dataD["fdc_price"]);
-			}
-			$ttlAfDisc = $ttlBfDisc - $ttlDisc;
-			$dataH["fdc_subttl"] = $ttlBfDisc;
-			$dataH["fdc_disc_amount"] = $ttlDisc;
-			$dataH["fdc_ppn_amount"] = $ttlAfDisc * ($dataH["fdc_ppn_percent"] / 100);		
-			$totalReturn = $dataH["fdc_subttl"] -  $dataH["fdc_disc_amount"] + $dataH["fdc_ppn_amount"];
-			$dataH["fdc_total"] = $totalReturn;
-
-			
-			//VALIDATION
-
-			//validation header
-			$this->form_validation->set_rules($this->trpurchasereturn_model->getRules("ADD", 0));
-			$this->form_validation->set_data($dataH);
-			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-			if ($this->form_validation->run() == FALSE) {
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = lang("Error Validation Data");
-				$this->ajxResp["data"] = $this->form_validation->error_array();
-				$this->db->trans_rollback();
-				$this->json_output();
-				die();
-			}
-			if($dataH["fbl_non_faktur"] == false){
-				//Cek total retur tidak boleh melebihi total_invoice - (total_pembayaran + total_yang_telah_di_retur)
-				$lpbPurchase = $data["lpbPurchase"];
-				$totalReturAllow = floatval($lpbPurchase->fdc_total) - ( floatval($lpbPurchase->fdc_total_paid) +  floatval($lpbPurchase->fdc_total_return) );
-				if ( $totalReturn > $totalReturAllow ){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = sprintf(lang("Total retur tidak boleh melebihi %s"), formatNumber($totalReturAllow) );
-					$this->ajxResp["data"] = [];
-					$this->db->trans_rollback();
-					$this->json_output();
-					die();
-				}
-
-				//validation detail
-				$returnedList = $this->trpurchasereturn_model->getSummaryReturnByLPBPurchase($dataH["fin_lpbpurchase_id"]);
-				$lPBList = $this->trpurchasereturn_model->getSummaryQtyLPBByLPBPurchase($dataH["fin_lpbpurchase_id"]);
-				foreach($dataDetails as $dataD){
-					$finPODetailId = $dataD["fin_po_detail_id"];
-					$lPB = isset($lPBList[$finPODetailId]) ? $lPBList[$finPODetailId] : null;
-					$qtyLPB = $lPB == null ? 0  : (float) $lPB->fdb_qty_lpb;
-					$returnLPB = isset($returnedList[$finPODetailId]) ? $returnedList[$finPODetailId] : null;
-					$qtyReturned = $returnLPB == null ? 0  : (float) $returnLPB->fdb_qty_return;
-					$qtyReturn = (float) $dataD["fdb_qty"];
-					$maxReturnAllow = $qtyLPB - $qtyReturned;
-
-					if ($qtyReturn > $maxReturnAllow ){
-						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-						$this->ajxResp["message"] = sprintf(lang("Total qty retur %s tidak boleh melebihi %s"),$dataD["fst_custom_item_name"], $maxReturnAllow );
-						$this->ajxResp["data"] = [];
-						$this->db->trans_rollback();
-						$this->json_output();
-						die();
-					}
-				}
-			}		
-
-			//SAVE
-			$this->trpurchasereturn_model->update($dataH);
-			foreach($dataDetails as $dataD){
-				$dataD["fin_purchasereturn_id"] = $finPurchaseReturnId;
-				$this->trpurchasereturnitems_model->insert($dataD);
-
-			}
-			
-			//POSTING
-			$result = $this->trpurchasereturn_model->posting($finPurchaseReturnId);
-			if($result["status"] != "SUCCESS"){
-				$this->ajxResp["status"] = $result["status"];
-				$this->ajxResp["message"] = $result["message"];
-				$this->json_output();			
-				$this->db->trans_rollback();
-				return;
-			}
-			
-			$dbError  = $this->db->error();
-			if ($dbError["code"] != 0){			
-				$this->ajxResp["status"] = "DB_FAILED";
-				$this->ajxResp["message"] = "Insert Failed";
-				$this->ajxResp["data"] = $this->db->error();
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}
-
-			$this->db->trans_complete();
-			$this->ajxResp["status"] = "SUCCESS";
-			$this->ajxResp["message"] = "Data Saved !";
-			$this->ajxResp["data"]["insert_id"] = $finPurchaseReturnId;
-			$this->json_output();
-
-		}catch(CustomException $e){
-			$this->ajxResp["status"] = $e->getStatus();
-			$this->ajxResp["message"] = $e->getMessage();
-			$this->ajxResp["data"] = $e->getData();
-			$this->json_output();			
-			$this->db->trans_rollback();
-			return;
-		}		
+		
 	}
 
-
-	public function fetch_data($finPurchaseReturnId){
-		$data = $this->trpurchasereturn_model->getDataById($finPurchaseReturnId);	
+	public function fetch_data($finSalesReturnId){
+		$data = $this->trsalesreturn_model->getDataById($finSalesReturnId);	
 		if ($data == null){
 			$resp = ["status"=>"FAILED","message"=>"DATA NOT FOUND !"];
 		}else{
@@ -598,48 +468,43 @@ class Purchase_return extends MY_Controller{
 		$this->json_output($resp);
 	}
 
-	public function delete($finPurchaseReturnId){
+	public function delete($finSalesReturnId){
 		
-		$dataHOld = $this->trpurchasereturn_model->getDataHeaderById($finPurchaseReturnId);
-		//CEK tgl lock dari transaksi tersimpan
-		$resp = dateIsLock($dataHOld->fdt_purchasereturn_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
+		try{
+			$dataHOld = $this->trsalesreturn_model->getDataHeaderById($finSalesReturnId);
+			//CEK tgl lock dari transaksi tersimpan
+			$resp = dateIsLock($dataHOld->fdt_salesreturn_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+			$resp = $this->trsalesreturn_model->isEditable($finSalesReturnId);
+			if($resp["status"] != "SUCCESS"){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
 		}
 
-		$isEditable = $this->trpurchasereturn_model->isEditable($finPurchaseReturnId);
-        if($isEditable["status"] != "SUCCESS"){
-            return $isEditable;
-		}
-		
+				
 		try{
 
 			$this->db->trans_start();
 			$data =[];
-			$resp = $this->trpurchasereturn_model->unposting($finPurchaseReturnId);               
-			if($resp["status"] != "SUCCESS"){
-				$this->db->trans_rollback();
-				$this->ajxResp["status"] = $resp["status"];
-				$this->ajxResp["message"] = $resp["message"];
-				$this->json_output();
-				return;
-			}
-
-			$resp = $this->trpurchasereturn_model->delete($finPurchaseReturnId,true,$data);			
-			$dbError  = $this->db->error();
-			if ($dbError["code"] != 0){
-				$this->db->trans_rollback();	
-				$resp["status"] = "DB_FAILED";
-				$resp["message"] = $dbError["message"];
-				return $resp;
-			}
 			
+			$this->trsalesreturn_model->unposting($finSalesReturnId);               
+			
+			$this->trsalesreturn_model->delete($finSalesReturnId,true,$data);						
+
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
-			$this->ajxResp["message"] = "";
+			$this->ajxResp["message"] = lang("Data telah dihapus !");
 			$this->json_output();
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
@@ -656,12 +521,11 @@ class Purchase_return extends MY_Controller{
 	public function fetch_list_data(){
 		$this->load->library("datatables");
         $this->datatables->setTableName("(
-			SELECT a.*,b.fst_lpbpurchase_no,c.fst_relation_name as fst_supplier_name FROM trpurchasereturn a 
-			LEFT JOIN trlpbpurchase b on a.fin_lpbpurchase_id = b.fin_lpbpurchase_id  
-			INNER JOIN msrelations c on a.fin_supplier_id = c.fin_relation_id 
+			SELECT a.*,c.fst_relation_name as fst_customer_name FROM trsalesreturn a 
+			INNER JOIN msrelations c on a.fin_customer_id = c.fin_relation_id 
 			) a");
 
-        $selectFields = "a.fin_purchasereturn_id,a.fst_purchasereturn_no,a.fdt_purchasereturn_datetime,a.fst_lpbpurchase_no,a.fst_supplier_name,a.fst_memo,a.fdc_total";
+        $selectFields = "a.fin_salesreturn_id,a.fst_salesreturn_no,a.fdt_salesreturn_datetime,a.fst_customer_name,a.fst_memo,a.fdc_total";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');
@@ -680,29 +544,57 @@ class Purchase_return extends MY_Controller{
 		
 	}
 
-	
+	public function get_item_by_inv(){
+		$search = $this->input->get("term");
+		$search  = "%$search%";
+		$finInvId = $this->input->get("finInvId");		
+		$itemList = $this->trsalesreturn_model->getItemListByInv($finInvId,$search);
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"message"=>"",
+			"data"=>$itemList,
+		]);
+	}
+
+	public function get_list_invoice(){
+		$search = $this->input->get("term");
+
+		$search  = "%$search%";
+		$fin_customer_id = $this->input->get("finCustomerId");
+		$fstCurrCode = $this->input->get("fstCurrCode");
+		$isPaidFaktur = $this->input->get("isPaidInv");
+		$invList = $this->trsalesreturn_model->getListSalesFaktur($isPaidFaktur,$fin_customer_id,$fstCurrCode,$search);		
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"message"=>"",
+			"data"=>$invList,
+		]);
+	}
+	public function get_sell_unit_list(){
+		$this->load->model("msitemunitdetails_model");
+		$this->load->model("msitems_model");
+		$finCustomerId = $this->input->get("finCustomerId");
+		$finItemId = $this->input->get("finItemId");
+
+		$unitList = $this->msitemunitdetails_model->getSellingListUnit($finItemId);
+		$result = [];
+		foreach($unitList as $unit){
+			$result[] = [
+				"fst_unit"=>$unit->fst_unit,
+				"fdc_price"=>$this->msitems_model->getSellingPrice($finItemId,$unit->fst_unit,$finCustomerId)
+			];
+		}
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"message"=>"",
+			"data"=>$result,
+		]);
+		die();
+
+		//params.finCustomerId = $("#fin_customer_id").val();
+		//params.finItemId =$("#fin_item_id").val();
 
 
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-	
 }    

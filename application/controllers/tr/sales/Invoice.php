@@ -7,6 +7,7 @@ class Invoice extends MY_Controller{
 		$this->load->library('form_validation');
         $this->load->model('trinvoice_model');
         $this->load->model("trinvoicedetails_model");
+        $this->load->model("trinvoiceitems_model");
         $this->load->model('msrelations_model');
         $this->load->model('users_model');
         $this->load->model('mswarehouse_model');
@@ -83,29 +84,6 @@ class Invoice extends MY_Controller{
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
 	}
-
-    public function initVarForm($invId){
-        $this->load->model("mswarehouse_model");
-        $this->load->model("users_model");
-        $this->load->library("select2");
-        
-        $branchId = $this->aauth->get_active_branch_id();
-        
-        //Get Data Customer
-        $arrCustomer = $this->select2->get_customer($branchId);
-
-        //Get uninvoice SJ        
-        $arrSJ = $this->trinvoice_model->get_select2_uninvoice_sj($invId);
-        
-        $this->ajxResp["status"] = "SUCCESS";
-        $this->ajxResp["data"] = [
-            "arrCustomer"=>$arrCustomer,
-            "arrSJ"=>$arrSJ,
-        ];
-        $this->json_output();
-
-
-    }
 
     private function openForm($mode = "ADD", $fin_inv_id = 0){
         $this->load->library("menus");		
@@ -243,18 +221,31 @@ class Invoice extends MY_Controller{
             $ppnTotal =0;
             $discTotal =0;
             $total = 0;
-
-            //$detailData = $this->trinvoice_model->getDetailSJ( explode(",",$this->input->post("fst_sj_id_list")));            
+                        
             $detailData = $this->trinvoice_model->getDetailSJ($this->input->post("fst_sj_id_list"));
+            $dataItemList = [];
 
-            for($i = 0;$i < sizeof($detailData);$i++){
-                //b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item,sum(b.fdb_qty) as fdb_qty_so,sum(a.fdb_qty) as fdb_qty_sj                
+            for($i = 0;$i < sizeof($detailData);$i++){                
                 $dataD = $detailData[$i];
+                $dataItemList[] = [
+                    "fin_inv_id"=>0,
+                    "fin_item_id"=>$dataD->fin_item_id,
+                    "fst_custom_item_name"=>$dataD->fst_custom_item_name,
+                    "fst_unit"=>$dataD->fst_unit,
+                    "fdb_qty"=>$dataD->fdb_qty_sj,
+                    "fdc_price"=>$dataD->fdc_price,
+                    "fst_disc_item"=>$dataD->fst_disc_item,
+                    "fdc_disc_amount_per_item"=>$dataD->fdc_disc_amount_per_item,
+                    "fin_promo_id"=>$dataD->fin_promo_id,
+                    "fst_active"=>"A",
+                ];                
                 $ttlNoDisc += $dataD->fdb_qty_sj * $dataD->fdc_price;
                 $ttlDisc += $dataD->fdb_qty_sj * $dataD->fdc_disc_amount_per_item;                
             }
+
+
             if($dataH["fbl_is_vat_include"] == 1){
-                $subTotalDPP = $ttlNoDisc - $ttlDisc;
+                $subTotal = $ttlNoDisc - $ttlDisc;
                 $subTotalDPP = $subTotal / (1+ ($dataH["fdc_ppn_percent"] / 100));                
             }else{
                 $subTotalDPP = $ttlNoDisc - $ttlDisc;
@@ -268,7 +259,7 @@ class Invoice extends MY_Controller{
             $dataH["fdc_total"] = $ttlNoDisc - $discTotal + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
             
             //VALIDASI DATA
-            $this->validation_data($dataH,$detailData,$salesOrder);
+            $this->validation_data($dataH,$detailData,$dataItemList,$salesOrder);
             
         }catch(CustomException $e){
             $this->ajxResp["status"] = $e->getStatus();
@@ -284,20 +275,22 @@ class Invoice extends MY_Controller{
             $insertId = $this->trinvoice_model->insert($dataH);
             //$detailData = explode(",",$this->input->post("fst_sj_id_list"));
             $detailData = $this->input->post("fst_sj_id_list");           
-            foreach($detailData as $finSJId){
-                
+            foreach($detailData as $finSJId){                
                 $data =[
                     "fin_inv_id"=>$insertId,
                     "fin_sj_id"=>$finSJId,
                     "fst_active"=>"A"
-                ];
-                
+                ];                
                 $this->trinvoicedetails_model->insert($data);
             }
-
+            foreach($dataItemList as $dataItem){
+                $dataItem["fin_inv_id"] = $insertId;
+                $this->trinvoiceitems_model->insert($dataItem);
+            }
+            
             //POSTING
             $this->trinvoice_model->posting($insertId);
-
+            
             $this->db->trans_complete();
             $this->ajxResp["status"] = "SUCCESS";
             $this->ajxResp["message"] = lang("Data saved !");
@@ -396,18 +389,30 @@ class Invoice extends MY_Controller{
             $ppnTotal =0;
             $discTotal =0;
             $total = 0;
-
-            //$detailData = $this->trinvoice_model->getDetailSJ( explode(",",$this->input->post("fst_sj_id_list")));            
+                    
             $detailData = $this->trinvoice_model->getDetailSJ($this->input->post("fst_sj_id_list"));
+            $dataItemList = [];
 
             for($i = 0;$i < sizeof($detailData);$i++){
                 //b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item,sum(b.fdb_qty) as fdb_qty_so,sum(a.fdb_qty) as fdb_qty_sj                
                 $dataD = $detailData[$i];
+                $dataItemList[] = [
+                    "fin_inv_id"=>0,
+                    "fin_item_id"=>$dataD->fin_item_id,
+                    "fst_custom_item_name"=>$dataD->fst_custom_item_name,
+                    "fst_unit"=>$dataD->fst_unit,
+                    "fdb_qty"=>$dataD->fdb_qty_sj,
+                    "fdc_price"=>$dataD->fdc_price,
+                    "fst_disc_item"=>$dataD->fst_disc_item,
+                    "fdc_disc_amount_per_item"=>$dataD->fdc_disc_amount_per_item,
+                    "fin_promo_id"=>$dataD->fin_promo_id,
+                    "fst_active"=>"A",
+                ];
                 $ttlNoDisc += $dataD->fdb_qty_sj * $dataD->fdc_price;
                 $ttlDisc += $dataD->fdb_qty_sj * $dataD->fdc_disc_amount_per_item;                
             }
             if($dataH["fbl_is_vat_include"] == 1){
-                $subTotalDPP = $ttlNoDisc - $ttlDisc;
+                $subTotal = $ttlNoDisc - $ttlDisc;
                 $subTotalDPP = $subTotal / (1+ ($dataH["fdc_ppn_percent"] / 100));                
             }else{
                 $subTotalDPP = $ttlNoDisc - $ttlDisc;
@@ -421,7 +426,7 @@ class Invoice extends MY_Controller{
             $dataH["fdc_total"] = $ttlNoDisc - $discTotal + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
             
             //VALIDASI DATA
-            $this->validation_data($dataH,$detailData,$salesOrder);
+            $this->validation_data($dataH,$detailData,$dataItemList,$salesOrder);
             
             
             
@@ -429,15 +434,18 @@ class Invoice extends MY_Controller{
             $insertId = $dataH["fin_inv_id"];            
             $this->trinvoice_model->update($dataH);
 
-            //$detailData = explode(",",$this->input->post("fst_sj_id_list"));
             $detailData = $this->input->post("fst_sj_id_list");           
-            foreach($detailData as $finSJId){                
+            foreach($detailData as $finSJId){
                 $data =[
                     "fin_inv_id"=>$insertId,
                     "fin_sj_id"=>$finSJId,
                     "fst_active"=>"A"
                 ];                
                 $this->trinvoicedetails_model->insert($data);
+            }
+            foreach($dataItemList as $dataItem){
+                $dataItem["fin_inv_id"] = $insertId;
+                $this->trinvoiceitems_model->insert($dataItem);
             }
 
             //POSTING
@@ -498,7 +506,7 @@ class Invoice extends MY_Controller{
         
     }
 
-    private function validation_data($dataH,$dataDetail,$salesOrder){
+    private function validation_data($dataH,$dataDetail,$dataItemList,$salesOrder){
         //Validation Header
         $this->form_validation->set_rules($this->trinvoice_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');

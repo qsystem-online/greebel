@@ -26,29 +26,49 @@ class Trlpbgudang_model extends MY_Model {
 
 
     public function getDataById($finLPBGudangId){
-        $ssql = "SELECT a.*,b.fst_po_no,b.fdt_po_datetime,c.fst_relation_name as fstSupplierName FROM " .$this->tableName. " a 
-            INNER JOIN trpo b on a.fin_po_id = b.fin_po_id 
-            INNER JOIN msrelations c on b.fin_supplier_id = c.fin_relation_id 
+        $ssql = "SELECT a.*,c.fst_relation_name  FROM " .$this->tableName. " a             
+            INNER JOIN msrelations c on a.fin_relation_id = c.fin_relation_id 
             WHERE a.fin_lpbgudang_id = ? and a.fst_active != 'D' ";
 
         $qr = $this->db->query($ssql, [$finLPBGudangId]);
         $rwLPBGudang = $qr->row();
 
         if ($rwLPBGudang == null){
-            return null;
+            return [
+                "lpbGudang" => null,
+                "lpbGudangItems" => [],
+            ];
         }
 
-        $ssql = "SELECT a.*,b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdb_qty as fdb_qty_po,b.fdb_qty_lpb,
-            c.fst_item_code,c.fbl_is_batch_number,c.fbl_is_serial_number,d.fdc_conv_to_basic_unit,e.fst_unit as fst_basic_unit 
-            FROM trlpbgudangitems a
-            INNER JOIN trpodetails b ON a.fin_po_detail_id = b.fin_po_detail_id
-            INNER JOIN msitems c ON b.fin_item_id = c.fin_item_id 
-            INNER JOIN msitemunitdetails d ON (b.fin_item_id = d.fin_item_id and a.fst_unit = d.fst_unit)  
-            INNER JOIN msitemunitdetails e ON (b.fin_item_id = e.fin_item_id and e.fbl_is_basic_unit = 1)   
-            WHERE fin_lpbgudang_id = ?";
 
+        switch ($rwLPBGudang->fst_lpb_type ){
+            case "PO":
+                $ssql = "SELECT a.fin_rec_id,a.fin_trans_detail_id,a.fin_item_id,a.fst_custom_item_name,a.fst_unit,a.fdb_qty,a.fst_batch_number,a.fst_serial_number_list,a.fdc_m3,
+                    b.fdb_qty as fdb_qty_trans,b.fdb_qty_lpb,
+                    c.fst_item_code,c.fbl_is_batch_number,c.fbl_is_serial_number,d.fdc_conv_to_basic_unit,e.fst_unit as fst_basic_unit 
+                    FROM trlpbgudangitems a
+                    INNER JOIN trpodetails b ON a.fin_trans_detail_id = b.fin_po_detail_id                    
+                    INNER JOIN msitems c ON b.fin_item_id = c.fin_item_id 
+                    INNER JOIN msitemunitdetails d ON (b.fin_item_id = d.fin_item_id and a.fst_unit = d.fst_unit)  
+                    INNER JOIN msitemunitdetails e ON (b.fin_item_id = e.fin_item_id and e.fbl_is_basic_unit = 1)                       
+                    WHERE fin_lpbgudang_id = ?";
+                break;
+
+            case "SO_RETURN":
+
+                break;
+            default:
+                return [
+                    "lpbGudang" => null,
+                    "lpbGudangItems" => [],
+                ];
+        }
+        
+
+
+        
         $qr = $this->db->query($ssql,[$finLPBGudangId]);
-
+        throwIfDBError();
 
         $rsLPBGudangItems = $qr->result();
 
@@ -58,6 +78,14 @@ class Trlpbgudang_model extends MY_Model {
 		];
 		return $data;
     }
+
+    public function getDataHeaderById($finLPBGudangId){
+        $ssql = "select * from trlpbgudang where fin_lpbgudang_id = ? and fst_active != 'D'";
+        $qr = $this->db->query($ssql,[$finLPBGudangId]);
+        return $qr->row();
+        
+    }
+
     
     public function generateLPBGudangNo($trDate = null) {
         $trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
@@ -89,27 +117,26 @@ class Trlpbgudang_model extends MY_Model {
 
     public function getPOList(){
 
+        /*
         $ssql = "select distinct a.fin_po_id,b.fst_po_no from trpodetails a 
             INNER JOIN trpo b on a.fin_po_id = b.fin_po_id 
             WHERE a.fdb_qty > a.fdb_qty_lpb 
             and b.fst_active ='A' 
             and b.fbl_is_closed = 0 
             and b.fdc_downpayment <= b.fdc_downpayment_paid";
-
+        */
+        $ssql = "SELECT a.fin_po_id as fin_trans_id,a.fst_po_no as fst_trans_no,a.fdt_po_datetime as fdt_trans_datetime,b.fst_relation_name  from trpo a 
+            INNER JOIN msrelations b on a.fin_supplier_id = b.fin_relation_id 
+            and a.fst_active ='A' 
+            and a.fbl_is_closed = 0 
+            and a.fdc_downpayment <= a.fdc_downpayment_paid";
         $qr = $this->db->query($ssql,[]);
         $rs = $qr->result();
-        return $rs;
-        
-    }
+        return $rs;        
+    }    
+
     public function getPODetail($finPOId){
-        $ssql = "select a.*,b.fst_relation_name as fst_supplier_name from trpo a
-            INNER JOIN msrelations b on a.fin_supplier_id = b.fin_relation_id
-            WHERE fin_po_id = ?";
-        $qr = $this->db->query($ssql,[$finPOId]);
-        $po=$qr->row();
-
-
-        $ssql = "SELECT a.*,
+        $ssql = "SELECT a.fin_po_detail_id as fin_trans_detail_id,a.fdb_qty as fdb_qty_trans,a.fst_unit,a.fdb_qty_lpb,a.fin_item_id,a.fst_custom_item_name,
             b.fst_item_code,b.fst_item_name,b.fbl_is_batch_number,b.fbl_is_serial_number, 
             c.fdc_conv_to_basic_unit, d.fst_unit AS fst_basic_unit
             FROM trpodetails a
@@ -119,51 +146,86 @@ class Trlpbgudang_model extends MY_Model {
             WHERE a.fdb_qty > a.fdb_qty_lpb AND a.fin_po_id = ?";
 
         $qr = $this->db->query($ssql,[$finPOId]);
-        $poDetails=$qr->result();
+        $poDetails=$qr->result(); 
 
-        $result =[
-            "po"=>$po,
-            "po_details"=>$poDetails,
-        ];
-
-        return $result;
+        return $poDetails;
 
     }
    
 
-    public function unposting($finLPBGudangId,$unpostingDateTime =""){
-        $this->load->model("trinventory_model");
-        $this->load->model("trpo_model");
-        //$this->load->model("glledger_model");
-        $result=[
-            "status"=>"SUCCESS",
-            "message"=>""
-        ];
+    public function getSOReturnList(){
+        $ssql = "SELECT a.fin_salesreturn_id as fin_trans_id,a.fst_salesreturn_no as fst_trans_no,a.fdt_salesreturn_datetime as fdt_trans_datetime,b.fst_relation_name FROM trsalesreturn a 
+            INNER JOIN msrelations b on a.fin_customer_id = b.fin_relation_id 
+            WHERE  a.fbl_is_closed = 0 and a.fst_active = 'A'";
+        $qr = $this->db->query($ssql,[]);
+        return $qr->result();
+    }
 
+    public function getSOReturnDetail($finSalesRetunId){
+        $ssql = "SELECT a.fin_rec_id as fin_trans_detail_id,a.fdb_qty as fdb_qty_trans,a.fst_unit,a.fdb_qty_lpb,a.fin_item_id,a.fst_custom_item_name,
+            b.fst_item_code,b.fst_item_name,b.fbl_is_batch_number,b.fbl_is_serial_number, 
+            c.fdc_conv_to_basic_unit, d.fst_unit AS fst_basic_unit
+            FROM trsalesreturnitems a
+            INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
+            INNER JOIN msitemunitdetails c on (a.fin_item_id = c.fin_item_id and a.fst_unit = c.fst_unit) 
+            INNER JOIN msitemunitdetails d on (a.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1)  
+            WHERE a.fdb_qty > a.fdb_qty_lpb AND a.fin_salesreturn_id = ?";
+
+        $qr = $this->db->query($ssql,[$finSalesRetunId]);
+        $soReturnDetails = $qr->result();        
+        return $soReturnDetails;
+
+    }
+   
+
+
+    public function unposting($finLPBGudangId,$unpostingDateTime =""){
+        $this->load->model("trinventory_model");               
         $unpostingDateTime = $unpostingDateTime == "" ? date("Y-m-d H:i:s") : $unpostingDateTime;
+
 
         $ssql ="select * from trlpbgudang where fin_lpbgudang_id = ?";        
         $qr = $this->db->query($ssql,[$finLPBGudangId]);        
         $dataH = $qr->row();
+        if($dataH == null){
+            throw new CustomException("Invalid LPB Gudang Id",3003,"FAILED",["fin_lpbgudang_id"=>$finLPBGudangId]);
+        }
 
         //get Detail Transaksi
         $ssql ="select * from trlpbgudangitems where fin_lpbgudang_id = ?";        
         $qr = $this->db->query($ssql,[$finLPBGudangId]);        
-        $listItems = $qr->result();        
-        foreach($listItems as $item){
-            $ssql = "update trpodetails set fdb_qty_lpb = fdb_qty_lpb - ? where fin_po_detail_id = ?";
-            $this->db->query($ssql,[$item->fdb_qty,$item->fin_po_detail_id]);
-            $this->trinventory_model->deleteByCodeId("LPB",$finLPBGudangId);
+        $listItems = $qr->result();
+        
+        switch ($dataH->fst_lpb_type){
+            case "PO":
+                $this->unpostingLPBPO($listItems,$dataH);
+                break;
+            case "SO_RETURN":
+                throw new CustomException("BELUM DIBUAT !!!!",3003,"FAILED",null);
+                break;
+            default:
+                throw new CustomException("Invalid LPB Type",3003,"FAILED",["fst_lpb_type"=>$dataH->fst_lpb_type]);
         }
 
+        //delete Inventory
+        $this->trinventory_model->deleteByCodeId("LPB",$finLPBGudangId);
         //Delete itemdetails
         $this->trinventory_model->deleteInsertSerial("PPB",$finLPBGudangId);
-                
-        //Update Status Closed PO
-        $this->trpo_model->updateClosedStatus($dataH->fin_po_id);
         
-        return $result;
     }
+
+    private function unpostingLPBPO($listItems,$dataH){
+
+        foreach($listItems as $item){
+            $ssql = "update trpodetails set fdb_qty_lpb = fdb_qty_lpb - ? where fin_po_detail_id = ?";
+            $this->db->query($ssql,[$item->fdb_qty,$item->fin_trans_detail_id]);
+            throwIfDBError();
+        }
+
+        //Update Status Closed PO
+        $this->trpo_model->updateClosedStatus($dataH->fin_trans_id);
+    }
+
 
     public function posting($finLPBGudangId){
         $this->load->model("trinventory_model");
@@ -176,29 +238,39 @@ class Trlpbgudang_model extends MY_Model {
             throw new CustomException(lang("ID Penerimaan Gudang tidak dikenal"),3003,"FAILED");
         }
         
-        $finPOId = $dataH->fin_po_id;
+        if ($dataH->fst_lpb_type == "PO"){
+            $this->postingLPBPO($dataH);
+        }else if($dataH->fst_lpb_type == "SO_RETURN"){
+            $this->postingLPBSOReturn($dataH);
+        }else{
+            throw new CustomException("Invalid LPB type",3003,"FAILED",$dataH);
+        }
+
+    }
+
+    private function postingLPBPO($dataH){
+        $finPOId = $dataH->fin_trans_id;
 
         $ssql = "SELECT a.*,b.fin_item_id,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdb_qty as qty_po,b.fdb_qty_lpb as qty_lpb,b.fst_custom_item_name 
             FROM trlpbgudangitems a 
-            LEFT JOIN trpodetails b on a.fin_po_detail_id = b.fin_po_detail_id
+            LEFT JOIN trpodetails b on a.fin_trans_detail_id = b.fin_po_detail_id
             WHERE fin_lpbgudang_id = ?";
 
-        $qr= $this->db->query($ssql,[$finLPBGudangId]);
-        $dataD = $qr->result();        
+        $qr = $this->db->query($ssql,[$dataH->fin_lpbgudang_id]);
+        $dataDetails = $qr->result();
 
         
-        foreach($dataD as $detail){
-
+        foreach($dataDetails as $detail){
             //Cek qty_lpb < qty po
-            $qtyPO = (double) $detail->qty_po;
-            $qtyLPB= (double) $detail->qty_lpb;
-            $qtyTransaksi = (double) $detail->fdb_qty;
+            $qtyPO = (float) $detail->qty_po;
+            $qtyLPB= (float) $detail->qty_lpb;
+            $qtyTransaksi = (float) $detail->fdb_qty;
             $qtySisa =$qtyPO -$qtyLPB;
 
 
             if ( $qtySisa >=  $qtyTransaksi ){
                 //Update detail PO                
-                $ssql = "update trpodetails set fdb_qty_lpb = fdb_qty_lpb + $detail->fdb_qty where fin_po_detail_id = $detail->fin_po_detail_id";
+                $ssql = "update trpodetails set fdb_qty_lpb = fdb_qty_lpb + $detail->fdb_qty where fin_po_detail_id = $detail->fin_trans_detail_id";
                 $this->db->query($ssql,[]);
 
                 //Update kartu stock
@@ -207,7 +279,7 @@ class Trlpbgudang_model extends MY_Model {
                     "fin_warehouse_id"=>$dataH->fin_warehouse_id,
                     "fdt_trx_datetime"=>$dataH->fdt_lpbgudang_datetime,
                     "fst_trx_code"=>"LPB", 
-                    "fin_trx_id"=>$finLPBGudangId,
+                    "fin_trx_id"=>$dataH->fin_lpbgudang_id,
                     "fin_trx_detail_id"=>$detail->fin_rec_id,
                     "fst_trx_no"=>$dataH->fst_lpbgudang_no, 
                     "fst_referensi"=>null, 
@@ -244,9 +316,9 @@ class Trlpbgudang_model extends MY_Model {
         }
 
         //Cek total qty Penerimaan 
-        $ssql = "SELECT a.* FROM trpodetails a
-            INNER JOIN msitems b on a.fin_item_id = b.fin_item_id WHERE fdb_qty_lpb > fdb_qty AND fin_po_detail_id = $detail->fin_po_detail_id";
-        $qr = $this->db->query($ssql,[]);
+        $ssql = "SELECT a.* FROM trpodetails a            
+            WHERE a.fdb_qty_lpb > a.fdb_qty AND fin_po_id = ?";
+        $qr = $this->db->query($ssql,[$finPOId]);
         $rs = $qr->result();
         $errorQty = [];
         foreach($rs as $rw){
@@ -257,7 +329,7 @@ class Trlpbgudang_model extends MY_Model {
         }
 
         //Update Status Closed PO
-        $this->trpo_model->updateClosedStatus($finPOId);       
+        $this->trpo_model->updateClosedStatus($finPOId);   
     }
 
     public function update($data){
@@ -308,48 +380,86 @@ class Trlpbgudang_model extends MY_Model {
         return ["status" => "SUCCESS","message"=>""];
    }
 
-   public function isEditable($finLPBGudangId){
+   public function deleteDetail($finLPBGudangId){
+       $ssql = "DELETE from trlpbgudangitems where fin_lpbgudang_id = ?";
+       $this->db->query($ssql,[$finLPBGudangId]);
+       throwIfDBError();
+   }
+
+   public function isEditable($finLPBGudangId,$dataH){
        /**
         * FAILED CONDITION
-        * + Sudah terbit faktur
-        * + bila  serial_number atau batch_no sudah terpakai
+        * + PO Sudah terbit faktur
+        * + PO bila  serial_number atau batch_no sudah terpakai
+        * + SO RETURN
         */
 
-        /** 1. Sudahh terbit faktur */
-        $ssql = "select a.*,b.fst_lpbpurchase_no from trlpbgudang a
-            inner join trlpbpurchase b on a.fin_lpbpurchase_id = b.fin_lpbpurchase_id
-            where a.fin_lpbgudang_id = ?";
-        $qr = $this->db->query($ssql,[$finLPBGudangId]);
-        $rw = $qr->row();
-        if($rw != null){
-            $resp =["status"=>"FAILED","message"=>sprintf(lang("Transaksi ini telah memiliki faktur %s" ),$rw->fst_lpbpurchase_no)];
-            return $resp;
+        switch ($dataH->fst_lpb_type){
+        
+            case "PO" :
+                /** 1. Sudah terbit faktur */
+                $ssql = "select a.*,b.fst_lpbpurchase_no from trlpbgudang a
+                    inner join trlpbpurchase b on a.fin_lpbpurchase_id = b.fin_lpbpurchase_id
+                    where a.fin_lpbgudang_id = ?";
+
+                $qr = $this->db->query($ssql,[$finLPBGudangId]);
+                $rw = $qr->row();
+                if($rw != null){
+                    $resp =["status"=>"FAILED","message"=>sprintf(lang("Transaksi ini telah memiliki faktur %s" ),$rw->fst_lpbpurchase_no)];
+                    return $resp;
+                }
+
+                /** cek bila batch no atau serial sudah terpakai */
+                $ssql = "SELECT a.*,b.fst_item_code,b.fst_item_name FROM msitemdetails a 
+                    INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
+                    WHERE a.fst_trans_type ='PPB' AND a.fin_trans_id = ?";
+                $qr = $this->db->query($ssql,[$finLPBGudangId]);
+                $rs = $qr->result();
+                foreach($rs as $rw){
+                    $opBatch = $rw->fst_batch_no == null ? "is" : "=";
+                    $opSerial = $rw->fst_serial_no == null ? "is" : "=";
+
+                    $ssql = "SELECT * FROM msitemdetailssummary WHERE fin_warehouse_id = ? and fin_item_id = ? and fst_batch_no $opBatch ? and fst_serial_no $opSerial ?";
+                    $qr = $this->db->query($ssql,[$rw->fin_warehouse_id,$rw->fin_item_id,$rw->fst_batch_no,$rw->fst_serial_no]);
+                    $rwSumm = $qr->row();
+                    if (($rwSumm->fdb_qty_in - $rwSumm->fdb_qty_out) < ($rw->fdb_qty_in - $rw->fdb_qty_out)){
+                        $resp =["status"=>"FAILED",
+                            "message"=>sprintf(
+                                lang("Transaksi tidak dapat dihapus, item %s batch|serial: %s telah digunakan !" ),
+                                $rw->fst_item_code . " - " . $rw->fst_item_name , 
+                                $rw->fst_batch_no ."|". $rw->fst_serial_no
+                            )
+                        ];
+                        return $resp;
+                    }
+                }
+                break;
+
+            case "SO_RETURN":
+                break;
+            default:
+
         }
 
-        /** cek bila batch no atau serial sudah terpakai */
-        $ssql = "SELECT a.*,b.fst_item_code,b.fst_item_name FROM msitemdetails a 
-            INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
-            WHERE a.fst_trans_type ='PPB' AND a.fin_trans_id = ?";
-        $qr = $this->db->query($ssql,[$finLPBGudangId]);
-        $rs = $qr->result();
-        foreach($rs as $rw){
-            $ssql = "SELECT * FROM msitemdetailssummary WHERE fin_warehouse_id = ? and fin_item_id = ? and fst_batch_no = ? and fst_serial_no =?";
-            $qr = $this->db->query($ssql,[$rw->fin_warehouse_id,$rw->fin_item_id,$rw->fst_batch_no,$rw->fst_serial_no]);
-            $rwSumm = $qr->row();
-            if ($rwSumm->fdb_qty_in < $rwSumm->fdb_qty_out + ($rw->fdb_qty_in - $rw->fdb_qty_out)){
-                $resp =["status"=>"FAILED",
-                    "message"=>sprintf(
-                        lang("Transaksi tidak dapat dihapus, item %s batch|serial: %s telah digunakan !" ),
-                        $rw->fst_item_code . " - " . $rw->fst_item_name , 
-                        $rw->fst_batch_no ."|". $rw->fst_serial_no
-                    )
-                ];
-                return $resp;
-            }
-        }
-
+        
         $resp =["status"=>"SUCCESS","message"=>""];
         return $resp;
+   }
+
+   public function getTransactionList($lpbType){
+        if ($lpbType == "PO"){
+            return $this->getPOList();
+        }else if($lpbType == "SO_RETURN"){
+            return $this->getSOReturnList();
+        }
+   }
+
+   public function getTransDetail($lpbType,$finTransId){
+        if ($lpbType == "PO"){
+            return $this->getPODetail($finTransId);
+        }else if($lpbType == "SO_RETURN"){
+            return $this->getSOReturnDetail($finTransId);
+        }
    }
 }
 
