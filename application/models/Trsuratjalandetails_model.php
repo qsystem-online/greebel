@@ -12,8 +12,8 @@ class Trsuratjalandetails_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'fin_salesorder_detail_id',
-            'label' => 'Sales Order Detail ID',
+            'field' => 'fin_trans_detail_id',
+            'label' => 'Transaction Detail ID',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',

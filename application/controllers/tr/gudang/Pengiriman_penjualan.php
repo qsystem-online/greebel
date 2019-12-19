@@ -146,39 +146,9 @@ class Pengiriman_penjualan extends MY_Controller{
 		$this->load->model("trsuratjalan_model");
 		$data = $this->trsuratjalan_model->getDataById($fin_sj_id);		
 		$this->json_output($data);
-	}
-    
-    public function sel2_get_so(){
+	}    
 
-        $term = $this->input->get("term"); 
-        $ssql = "SELECT a.fin_salesorder_id,a.fst_salesorder_no,a.fin_relation_id,a.fdt_salesorder_datetime,
-            a.fin_shipping_address_id,a.fin_warehouse_id,
-            c.fst_relation_name,d.fst_name,d.fst_shipping_address FROM trsalesorder a
-            INNER JOIN trsalesorderdetails b ON a.fin_salesorder_id = b.fin_salesorder_id 
-            INNER JOIN msrelations c ON a.fin_relation_id= c.fin_relation_id 
-            INNER JOIN msshippingaddress d ON a.fin_shipping_address_id = d.fin_shipping_address_id
-            WHERE a.fst_active ='A' 
-            AND a.fbl_is_hold = FALSE 
-            AND a.fbl_is_closed = FALSE 
-            AND a.fdc_downpayment <= a.fdc_downpayment_paid
-            AND (a.fst_salesorder_no like ? OR c.fst_relation_name like ? )
-            GROUP BY b.fin_salesorder_id HAVING SUM(b.fdb_qty) > SUM(b.fdb_qty_out)";
-
-        $qr = $this->db->query($ssql,["%".$term."%","%".$term."%"]);
-        $rs = $qr->result();		
-        $this->ajxResp["status"] = "SUCCESS";
-        $this->ajxResp["data"] = $rs;
-        $this->json_output();
-    }
-
-    public function get_detail_so($salesOrderId){
-        $rs = $this->trsuratjalan_model->getPendingDetailSO($salesOrderId);
-        $this->ajxResp["status"] = "SUCCESS";
-        $this->ajxResp["data"] = $rs;
-        $this->json_output();        
-    }
-
-    public function ajx_add_save(){
+    public function ajx_add_save(){        
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsuratjalandetails_model");
         $this->load->model("trinventory_model");
@@ -303,7 +273,7 @@ class Pengiriman_penjualan extends MY_Controller{
             $this->trsuratjalan_model->posting($insertId);
 
 
-            $this->db->trans_complete();
+            //$this->db->trans_complete();
             $this->ajxResp["status"] = "SUCCESS";
             $this->ajxResp["message"] = "Data Saved !";
             $this->ajxResp["data"]["insert_id"] = $insertId;
@@ -552,6 +522,26 @@ class Pengiriman_penjualan extends MY_Controller{
         $this->json_output();
 
 
+    }
+
+    public function get_transaction_list(){
+        $fstSJType = $this->input->get("fst_sj_type");
+        $term = $this->input->get("term") ;
+        $term = $term == null ? "" :$term;
+
+        $rs = $this->trsuratjalan_model->getTransactionList($fstSJType,$term);
+
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["data"] = $rs;
+        $this->json_output();
+    }
+
+    public function get_detail_trans($sjType,$transId){
+
+        $rs = $this->trsuratjalan_model->getPendingDetailTrans($sjType,$transId); //$this->trsuratjalan_model->getPendingDetailSO($salesOrderId);
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["data"] = $rs;
+        $this->json_output();        
     }
 
 }

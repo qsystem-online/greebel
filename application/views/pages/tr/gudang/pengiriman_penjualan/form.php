@@ -67,30 +67,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
 					<div class="form-group">						
-						<label for="fin_salesorder_id" class="col-md-2 control-label"><?=lang("Sales Order")?> :</label>
-						<div class="col-md-4">
-							<select id="fin_salesorder_id" class="form-control" name="fin_salesorder_id" style="width:100%" ></select>
-							<div id="fin_salesorder_id_err" class="text-danger"></div>
-						</div>
-					
-						<label for="" class="col-md-2 control-label"><?=lang("Tanggal SO")?> :</label>
-						<div class="col-md-4">
-                            <div class="input-group date">
-								<div class="input-group-addon">
-									<i class="fa fa-calendar"></i>
-								</div>
-								<input type="text" class="unfocus form-control text-right datetimepicker" id="fdt_salesorder_datetime" disabled/>
-							</div>
-						</div>
+						<label for="fst_sj_type" class="col-md-2 control-label"><?=lang("Jenis Transaksi")?> :</label>
+						<div class="col-md-10">
+							<select id="fst_sj_type" class="form-control" name="fst_sj_type" style="width:100%" >
+								<option value='SO'>Sales Order</option>
+								<option value='PO_RETURN'>Purchase Return</option>
+							</select>
+							<div id="fst_sj_type_err" class="text-danger"></div>
+						</div>					
+					</div>
+					<div class="form-group">						
+						<label for="fin_trans_id" class="col-md-2 control-label"><?=lang("No Transaksi")?> :</label>
+						<div class="col-md-10">
+							<select id="fin_trans_id" class="form-control" name="fin_trans_id" style="width:100%" ></select>
+							<div id="fin_trans_id_err" class="text-danger"></div>
+						</div>					
+					</div>
+					<div class="form-group">						
+						<label for="fin_trans_id" class="col-md-10 col-md-offset-2">
+							<label id="fst_relation_name"> Relation Name</label>						
+						</label>									
 					</div>
 
-					<div class="form-group">						
-						<label for="select-relations" class="col-md-2 control-label"><?=lang("Customer")?> :</label>
-						<div class="col-md-10">
-							<input type="TEXT" class="form-control unfocus" id="fst_relation_name" disabled/>
-							<div id="fin_relation_id_err" class="text-danger"></div>
+
+					<div class="form-group">
+						<div class="checkbox col-md-10 col-md-offset-2">
+							<label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label>							
 						</div>
 					</div>
+					
 
 					<div class="form-group">
 						
@@ -143,11 +148,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
                     
-					<div class="form-group">
-						<div class="checkbox col-md-10 col-md-offset-2">
-							<label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label>							
-						</div>
-					</div>
+					
 						
 					<div class="form-group" style="margin-bottom:0px">
 						<div class="col-md-12" style="text-align:right">
@@ -207,7 +208,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="col-md-12" >
                         <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
                             <fieldset style="padding:10px">
-								<form id="form-detail" class="form-horizontal">
+								<form class="form-horizontal">
 									<input type='hidden' id='fin_rec_id_items'/>
 									<div class="form-group">
 										<label class="col-md-3 control-label"><?=lang("Item")?> :</label>
@@ -278,13 +279,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 	</div>
 	<script type="text/javascript">
-		var availableSerialList =[];
 
-		$("#fstItem").change(function(e){
-			e.preventDefault();
-			//var data = $('#fstItem').find(':selected');
-			var data = $('#fstItem').select2('data');
-			data = data[0];			
+		var availableSerialList =[];
+		var selectedItem;
+
+		var mdlDetail = {
+			show:function(){
+				$("#mdlDetail").modal("show");
+			},
+			hide:function(){
+				$("#mdlDetail").modal("hide");
+			},
+			clear:function(){
+
+			}
+		}
+
+		$("#fstItem").on("select2:select",function(e){
+			var data = e.params.data;
+			selectedItem = data;
+			//data = data[0];			
 			$("#fstUnit").text(data.fst_unit);
 			$("#fdcConvBasicUnit").text(data.fdc_conv_to_basic_unit);
 			$("#fstBasicUnit").text(data.fst_basic_unit);
@@ -295,6 +309,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}else{
 				$(".batchNoBlock").hide();
 			}
+
 			if (data.fbl_is_serial_number == 1){				
 				$(".serialNoBlock").show();
 			}else{				
@@ -433,8 +448,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						App.addOptionIfNotExist("<option value='"+batchNo+"'>"+batchNo+"</option>","fstBatchNo");
 						
 					});
-					$("#fstBatchNo").val(null);
-					$("#fstBatchNo").select2();
+					//$("#fstBatchNo").val(null);
 					App.fixedSelect2();
 					callback();					
 				}
@@ -475,6 +489,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript" info="define">
 	var selectedDetail;
+	var selectedTrans;
+
 </script>
 <script type="text/javascript" info="event">
 	$(function(){
@@ -527,21 +543,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		$("#fdt_sj_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		
-
-		//Get unprocess SO
-        $("#fin_salesorder_id").select2({
+		$("#fin_trans_id").select2({
 			dropdownAutoWidth : true,
-            ajax:{
+			ajax:{
 				delay:500,
-                url:"<?=site_url()?>tr/gudang/pengiriman_penjualan/sel2_get_so",
+				url:"<?=site_url()?>tr/gudang/pengiriman_penjualan/get_transaction_list",
+				data:function(params){
+					params.fst_sj_type = $("#fst_sj_type").val();
+					return params;
+				},
                 processResults: function (resp) {
                     arrData = resp.data;
                     sel2Data =[];
                     $.each(arrData,function(i,v){
                         sel2Data.push({
-                            id: v.fin_salesorder_id,
-                            text: v.fst_salesorder_no,
-                            fdt_salesorder_datetime : v.fdt_salesorder_datetime,
+                            id: v.fin_trans_id,
+                            text: v.fst_trans_no,
+                            fdt_trans_datetime : v.fdt_trans_datetime,
                             fin_relation_id : v.fin_relation_id,
                             fst_relation_name : v.fst_relation_name,
                             fin_shipping_address_id : v.fin_shipping_address_id,
@@ -561,26 +579,59 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     return "Loading...";
                 }
             }
-        }).on("select2:select",function(e){
-            data = e.params.data;
-            $("#fst_relation_name").val(data.fst_relation_name);            
-            $("#fdt_salesorder_datetime").val(dateTimeFormat(data.fdt_salesorder_datetime)).datetimepicker("update");
-            $("#fin_warehouse_id").val(data.fin_warehouse_id);
+		}).on("select2:select",function(e){
+			data = e.params.data;
+			selectedTrans = data;
+            $("#fst_relation_name").html(data.fst_relation_name);            
+			//$("#fdt_salesorder_datetime").val(dateTimeFormat(data.fdt_salesorder_datetime)).datetimepicker("update");			
+			$("#fin_warehouse_id").val(data.fin_warehouse_id);
+			if ( data.fin_shipping_address_id != null){
+				$("#fin_shipping_address_id").empty();
+				App.addOptionIfNotExist("<option value='" + data.fin_shipping_address_id + "'>"+ data.fst_address_name +"</option>");
+			}
+			getDetailTransaction(function(){});
 
-			initShippingAddress(data.fin_relation_id,function(){				
-				$("#fin_shipping_address_id").val(data.fin_shipping_address_id).trigger("change.select2");				
-				$("#fin_shipping_address_id").trigger({
-					type:"select2:select",
-					params:{
-						data:$("#fin_shipping_address_id").select2("data")[0]
-					}
-				});				
+			/*			
+            getOutstandingDetailSO(data.id,function(){			
 			});
-
-            getOutstandingDetailSO(data.id,function(){
-
-			});
+			*/
 		});
+
+		$("#fin_shipping_address_id").select2({
+			dropdownAutoWidth : true,
+			ajax:{
+				delay:500,
+				url: function(){
+					App.log(selectedTrans);
+					return  SITE_URL + "select_data/get_shipping_address/" + selectedTrans.fin_relation_id;
+				},				
+                processResults: function (resp) {
+                    arrData = resp.data;
+                    sel2Data =[];
+                    $.each(arrData,function(i,v){
+                        sel2Data.push({
+                            id: v.fin_shipping_address_id,
+                            text: v.fst_name,
+                            fst_shipping_address:v.fst_shipping_address
+                        });
+                    });                    
+                    return {
+                        results: sel2Data
+                    };
+                }
+            },
+            templateResult:function(item){
+				return item.text;
+                if (item.loading != true){
+                    return $("<div style='display:inline-block;width:150px'>" + item.text + "</div>"  + "<div style='min-width:100px;display:inline-block'>" + item.fst_relation_name + "</div>");
+                }else{
+                    return "Loading...";
+                }
+            }
+		}).on("select2:select",function(e){
+			data = e.params.data;
+			$("#fst_shipping_address").val(data.fst_shipping_address);
+		})
 
 		$('#tblSJDetails').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
@@ -625,41 +676,45 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             selectedDetail  = t.row(tRow);
 			data = t.row(tRow).data();
 			
-			/*
-			fbl_is_batch_number: "1"
-			fbl_is_serial_number: "1"
-			fdb_qty: "1.00"
-			fin_item_id: "63"
-			fin_promo_id: "0"
-			fin_salesorder_detail_id: "326"
-			fst_custom_item_name: "GREEBEL 3736 PENCIL SUPER LEAD"
-			fst_item_code: "040101000009"
-			fst_item_name: "GREEBEL 3736 PENCIL SUPER LEAD"
-			fst_unit: "CTN"
-			*/
-			
-			//App.addOptionIfNotExist("<option value='"+data.fin_item_id+"' selected>"+ data.fst_custom_item_name +"</option>","fstItem");			
-			$('#fstItem').val(data.fin_item_id).trigger("change");
+
+			mdlDetail.show();
+			$('#fstItem').val(data.fin_item_id);
+			$('#fstItem').val(data.fin_item_id).trigger({
+				type:"select2:select",
+				params:{
+					data:{
+						fin_trans_detail_id: data.fin_trans_detail_id,
+						id: data.fin_item_id,
+						text:data.fst_custom_item_name,
+						fin_promo_id: data.fin_promo_id,
+						fst_item_code: data.fst_item_code,
+						fst_item_name: data.fst_item_name,
+						fst_unit: data.fst_unit,
+						fdb_qty: data.fdb_qty,
+						fbl_is_batch_number: data.fbl_is_batch_number,
+						fbl_is_serial_number: data.fbl_is_serial_number,
+						fst_basic_unit : data.fst_basic_unit,
+						fdc_conv_to_basic_unit : data.fdc_conv_to_basic_unit,		
+
+					}
+				}
+			});
 
 			$("#fstUnit").html(data.fst_unit);			
 			$("#fstBasicUnit").html(data.fst_basic_unit);
 			$("#fdcConvBasicUnit").html(data.fdc_conv_to_basic_unit);
 			$("#fdbQty").val(data.fdb_qty);
-			$("#fstBatchNo").val(data.fst_batch_no);
+			$("#fstBatchNo").val(data.fst_batch_number).trigger("change.select2");
 			$.each(data.arr_serial,function(i,serial){
 				$("#fstSerialNoList").prepend("<option value='"+serial+"'>"+serial+"</option>");
 			});            
-            $("#mdlDetail").modal("show");
+            
 								
         });
 		
 		App.fixedSelect2();
 
 		initForm();
-		//initVarForm();
-
-
-
 	});
 </script>
 <script type="text/javascript" info="function">
@@ -746,43 +801,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	}
 	
-	function initShippingAddress(relationId,callback){
-        $.ajax({
-            url:"<?=site_url()?>select_data/get_shipping_address/" + relationId,
-        }).done(function(resp){
-			arrData = resp.data;
-
-            sel2DataShippingAddress = [];
-            $.each(arrData,function(i,v){
-                sel2DataShippingAddress.push({
-                    id: v.fin_shipping_address_id,
-                    text: v.fst_name,
-                    fst_shipping_address: v.fst_shipping_address
-                })
-            });
-			
-
-            $("#fin_shipping_address_id").select2({
-                data:sel2DataShippingAddress
-            }).on("select2:select",function(e){
-				//data = e.params.data;
-				var data = e.params.data;
-				//data = $('#fin_shipping_address_id').select2('data')[0];				
-				App.log(data);
-                $("#fst_shipping_address").val(data.fst_shipping_address);
-			});
-
-			$("#fin_shipping_address_id").val(null).trigger("change.select2");
-			App.fixedSelect2();
-			//App.log($("#fin_shipping_address_id").select2("data"));
-			if(typeof callback == "function"){
-				callback();
-			}            
-        });
-
-    }
-
-	
 	function initForm(){
 		if ($("#fin_sj_id").val() != 0){
 			App.blockUIOnAjaxRequest();
@@ -852,12 +870,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}
 	}
 
-    function getOutstandingDetailSO(finSalesOrderId,callback){
+    function getDetailTransaction(callback){
 		t = $("#tblSJDetails").DataTable();
 		t.clear().draw();
 
         $.ajax({
-            url:"<?=site_url()?>tr/gudang/pengiriman_penjualan/get_detail_so/" + finSalesOrderId,
+            url:"<?=site_url()?>tr/gudang/pengiriman_penjualan/get_detail_trans/" +$("#fst_sj_type").val() + "/" + $("#fin_trans_id").val(),
         }).done(function(resp){
             arrData = resp.data;
 			
@@ -870,7 +888,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					fdb_qty: v.fdb_qty,
 					fin_item_id: v.fin_item_id,
 					fin_promo_id: v.fin_promo_id,
-					fin_salesorder_detail_id: v.fin_salesorder_detail_id,
+					fin_trans_detail_id: v.fin_trans_detail_id,
 					fst_custom_item_name: v.fst_custom_item_name,
 					fst_item_code: v.fst_item_code,
 					fst_item_name: v.fst_item_name,
@@ -882,10 +900,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					fst_basic_unit : v.fst_basic_unit,
             		fdc_conv_to_basic_unit : v.fdc_conv_to_basic_unit,
 				}
-				dataTable.push(dataRow); 
-				
+				dataTable.push(dataRow);
+
 				itemList.push({
-					fin_salesorder_detail_id: v.fin_salesorder_detail_id,
+					fin_trans_detail_id: v.fin_trans_detail_id,
 					id: v.fin_item_id,
 					text:v.fst_custom_item_name,
 					fin_promo_id: v.fin_promo_id,
@@ -897,8 +915,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					fbl_is_serial_number: v.fbl_is_serial_number,
 					fst_basic_unit : v.fst_basic_unit,
 					fdc_conv_to_basic_unit : v.fdc_conv_to_basic_unit,									
-				});
-			
+				});			
 			});
 
 			t.rows.add(dataTable).draw(false);
@@ -906,7 +923,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				data:itemList
 			});
 
-			$("#fstItem").val(null).trigger("change.select2");
+			//$("#fstItem").val(null).trigger("change.select2");
 			App.fixedSelect2();			
 			callback();
         });

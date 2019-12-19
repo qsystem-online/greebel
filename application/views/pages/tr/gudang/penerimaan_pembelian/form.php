@@ -630,7 +630,7 @@
 				arrDetails = [];
 				arrDetails = dataDetails.map(function(dataD){
 					dataD.fin_rec_id = 0;
-					dataD.fdb_qty = 0;
+					dataD.fdb_qty = dataD.fdb_qty_trans - dataD.fdb_qty_lpb;
 					dataD.fdc_m3 = 0;
 					dataD.fst_batch_no="";
 					dataD.arr_serial=[];

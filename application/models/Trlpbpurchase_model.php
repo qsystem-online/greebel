@@ -65,7 +65,7 @@ class Trlpbpurchase_model extends MY_Model {
             "lpbPurchaseItems" => $rsLPBPurchaseItems,
 		];
 		return $data;
-    }
+    }    
 
     
     public function generateLPBPurchaseNo($trDate = null) {

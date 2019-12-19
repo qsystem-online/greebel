@@ -45,8 +45,8 @@ class Trsuratjalan_model extends MY_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'fin_salesorder_id',
-            'label' => 'Sales Order ID',
+            'field' => 'fin_trans_id',
+            'label' => 'Transaction ID',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
@@ -68,26 +68,7 @@ class Trsuratjalan_model extends MY_Model {
                 'required' => '%s tidak boleh kosong',
             )
         ];
-        $rules[] = [
-            'field' => 'fin_driver_id',
-            'label' => 'Driver',
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong',
-            )
-        ];
-        $rules[] = [
-            'field' => 'fst_no_polisi',
-            'label' => lang('No Polisi'),
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong',
-            )
-        ];
         
-
-
-
         return $rules;
     }
 
@@ -152,29 +133,7 @@ class Trsuratjalan_model extends MY_Model {
         return $max_tr_no;
     }
 
-    public function getPendingDetailSO($salesOrderId){
-        $this->load->model("msitems_model");
-
-        $ssql = "select a.fin_rec_id as fin_salesorder_detail_id,a.fin_item_id,a.fst_custom_item_name,
-            a.fst_unit,a.fin_promo_id,b.fbl_is_batch_number,b.fbl_is_serial_number,
-            (a.fdb_qty - (a.fdb_qty_out + a.fdb_qty_return)) as fdb_qty,
-            b.fst_item_code,b.fst_item_name
-            from trsalesorderdetails a
-            inner join msitems b on a.fin_item_id = b.fin_item_id
-            where fin_salesorder_id = ? and fdb_qty > (fdb_qty_out + fdb_qty_return)";
-        $qr = $this->db->query($ssql,[$salesOrderId]);
-        
-        $rs = $qr->result();
-
-        for($i = 0;$i < sizeof($rs); $i++){
-            $rw = $rs[$i];
-            $fstBasicUnit = $this->msitems_model->getBasicUnit($rw->fin_item_id);
-            $rw->fst_basic_unit = $fstBasicUnit;
-            $rw->fdc_conv_to_basic_unit = $this->msitems_model->getQtyConvertToBasicUnit($rw->fin_item_id,1,$rw->fst_unit);            
-            $rs[$i] =  $rw;
-        }
-        return $rs;
-    }
+    
     
 
     public function maxQtyItem($salesorderDetailId){
@@ -360,6 +319,97 @@ class Trsuratjalan_model extends MY_Model {
             "fdt_unhold_datetime" => date("Y-m-d H:i:s")
         ];
         parent::update($data);
+    }
+
+    public function getTransactionList($sjType,$term){
+        switch ($sjType){            
+            case "SO":                        
+                $ssql = "SELECT a.fin_salesorder_id as fin_trans_id,a.fst_salesorder_no as fst_trans_no,a.fin_relation_id,a.fdt_salesorder_datetime as fdt_trans_datetime,
+                    a.fin_shipping_address_id,a.fin_warehouse_id,
+                    c.fst_relation_name,d.fst_name as fst_address_name ,d.fst_shipping_address FROM trsalesorder a
+                    INNER JOIN trsalesorderdetails b ON a.fin_salesorder_id = b.fin_salesorder_id 
+                    INNER JOIN msrelations c ON a.fin_relation_id= c.fin_relation_id 
+                    INNER JOIN msshippingaddress d ON a.fin_shipping_address_id = d.fin_shipping_address_id
+                    WHERE a.fst_active ='A' 
+                    AND a.fbl_is_hold = FALSE 
+                    AND a.fbl_is_closed = FALSE 
+                    AND a.fdc_downpayment <= a.fdc_downpayment_paid
+                    AND (a.fst_salesorder_no like ? OR c.fst_relation_name like ? )
+                    GROUP BY b.fin_salesorder_id HAVING SUM(b.fdb_qty) > SUM(b.fdb_qty_out)";
+                $qr = $this->db->query($ssql,["%".$term."%","%".$term."%"]);                
+                return $qr->result();
+                break;
+            case "PO_RETURN":
+                $ssql = "SELECT a.fin_purchasereturn_id as fin_trans_id,a.fst_purchasereturn_no as fst_trans_no,c.fin_relation_id,a.fdt_purchasereturn_datetime as fdt_trans_datetime,
+                    null as fin_shipping_address_id,null as fin_warehouse_id,
+                    c.fst_relation_name,null as fst_address_name, null as fst_shipping_address 
+                    FROM trpurchasereturn a
+                    INNER JOIN trpurchasereturnitems b ON a.fin_purchasereturn_id = b.fin_purchasereturn_id 
+                    INNER JOIN msrelations c ON a.fin_supplier_id= c.fin_relation_id                     
+                    WHERE a.fst_active ='A' 
+                    AND a.fbl_is_closed = FALSE 
+                    AND (a.fst_purchasereturn_no like ? OR c.fst_relation_name like ? )
+                    GROUP BY b.fin_purchasereturn_id HAVING SUM(b.fdb_qty) > SUM(b.fdb_qty_out)";
+                $qr = $this->db->query($ssql,["%".$term."%","%".$term."%"]);                                
+                return $qr->result();
+                break;
+            default:
+                return null;
+        }
+    }
+    public function getPendingDetailTrans($sjType,$transId){
+        $this->load->model("msitems_model");
+
+        switch($sjType){
+            case "SO":
+                $salesOrderId = $transId;
+                $ssql = "select a.fin_rec_id as fin_trans_detail_id,a.fin_item_id,a.fst_custom_item_name,
+                    a.fst_unit,a.fin_promo_id,b.fbl_is_batch_number,b.fbl_is_serial_number,
+                    (a.fdb_qty - (a.fdb_qty_out + a.fdb_qty_return)) as fdb_qty,
+                    b.fst_item_code,b.fst_item_name
+                    from trsalesorderdetails a
+                    inner join msitems b on a.fin_item_id = b.fin_item_id
+                    where fin_salesorder_id = ? and fdb_qty > (fdb_qty_out + fdb_qty_return)";
+                $qr = $this->db->query($ssql,[$salesOrderId]);
+                
+                $rs = $qr->result();
+
+                for($i = 0;$i < sizeof($rs); $i++){
+                    $rw = $rs[$i];
+                    $fstBasicUnit = $this->msitems_model->getBasicUnit($rw->fin_item_id);
+                    $rw->fst_basic_unit = $fstBasicUnit;
+                    $rw->fdc_conv_to_basic_unit = $this->msitems_model->getQtyConvertToBasicUnit($rw->fin_item_id,1,$rw->fst_unit);            
+                    $rs[$i] =  $rw;
+                }
+                return $rs;                
+                break;
+
+            case "PO_RETURN":
+                $ssql = "select a.fin_rec_id as fin_trans_detail_id,a.fin_item_id,a.fst_custom_item_name,
+                    a.fst_unit, 0 as fin_promo_id,b.fbl_is_batch_number,b.fbl_is_serial_number,
+                    (a.fdb_qty - a.fdb_qty_out ) as fdb_qty,
+                    b.fst_item_code,b.fst_item_name
+                    from trpurchasereturnitems a
+                    inner join msitems b on a.fin_item_id = b.fin_item_id
+                    where fin_purchasereturn_id = ? and fdb_qty > fdb_qty_out";
+                $qr = $this->db->query($ssql,[$transId]);                
+                throwIfDBError();
+                $rs = $qr->result();
+                for($i = 0;$i < sizeof($rs); $i++){
+                    $rw = $rs[$i];
+                    $fstBasicUnit = $this->msitems_model->getBasicUnit($rw->fin_item_id);
+                    $rw->fst_basic_unit = $fstBasicUnit;
+                    $rw->fdc_conv_to_basic_unit = $this->msitems_model->getQtyConvertToBasicUnit($rw->fin_item_id,1,$rw->fst_unit);            
+                    $rs[$i] =  $rw;
+                }
+                return $rs;                
+                
+                break;
+            default :
+                return [];
+        }
+
+        
     }
 
 }
