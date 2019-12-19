@@ -68,6 +68,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </div>
                     </div>
 
+					<div class="form-group">
+                    <label for="fst_name_on_card" class="col-md-2 control-label"><?=lang("Name On Card")?> </label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" id="fst_name_on_card" placeholder="<?=lang("Name On Card")?>" name="fst_name_on_card">
+							<div id="fst_name_on_card_err" class="text-danger"></div>
+						</div>
+                    </div>
+
                     <div class="form-group">
                     <label for="fin_relation_id" class="col-md-2 control-label"><?=lang("Relation Name")?> *</label>
                         <div class="col-md-4">
@@ -83,14 +91,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<option value="0">-- <?=lang("select")?> --</option>
 							</select>
 							<div id="nama_err" class="text-danger"></div>
-						</div>
-                    </div>
-
-                    <div class="form-group">
-                    <label for="fst_name_on_card" class="col-md-2 control-label"><?=lang("Name On Card")?> </label>
-						<div class="col-md-10">
-							<input type="text" class="form-control" id="fst_name_on_card" placeholder="<?=lang("Name On Card")?>" name="fst_name_on_card">
-							<div id="fst_name_on_card_err" class="text-danger"></div>
 						</div>
                     </div>
 
