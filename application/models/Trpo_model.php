@@ -497,17 +497,17 @@ class Trpo_model extends MY_Model {
         //Get total Kubikasi
         $ssql =  "select sum(a.fdc_m3) as ttl_kubikasi from trlpbgudangitems a 
             INNER JOIN trlpbgudang b on a.fin_lpbgudang_id = b.fin_lpbgudang_id
-            INNER JOIN trpodetails c on a.fin_po_detail_id = c.fin_po_detail_id
-            WHERE b.fin_po_id = ? and b.fst_active ='A'";
+            INNER JOIN trpodetails c on a.fin_trans_detail_id = c.fin_po_detail_id
+            WHERE b.fin_trans_id = ? and b.fst_active ='A'";
 
-        $qr = $this->db->query($ssql,[$finPOId]);
+        $qr = $this->db->query($ssql,[$finPOId]);        
         $rw = $qr->row();
         $ttlKubik = $rw == null ? 0 : (float) $rw->ttl_kubikasi;
 
         $ssql = "select a.* from trlpbgudangitems a 
         inner join trlpbgudang b on a.fin_lpbgudang_id = b.fin_lpbgudang_id
-        where b.fin_po_id = ? and b.fst_active = 'A'";        
-        $qr = $this->db->query($ssql,[$finPOId]);
+        where b.fin_trans_id = ? and b.fst_active = 'A'";        
+        $qr = $this->db->query($ssql,[$finPOId]);        
         $rs = $qr->result();
 
         foreach($rs as $rw){
