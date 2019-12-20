@@ -146,13 +146,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
                         <div class='form-group'>
                             <div class="col-md-2 col-md-offset-2">
-								<label class="checkbox-inline"><input id="fbl_promo_gabungan" name='fbl_promo_gabungan' type="checkbox">Allow Other Promo</label>
+								<label class="checkbox-inline"><input id="fbl_promo_gabungan" name='fbl_promo_gabungan' type="checkbox" value="1"><?=lang("Allow Other Promo")?></label>
 							</div>
                             <div class="col-md-2 col-md-offset-1">
-								<label class="checkbox-inline"><input id="fbl_is_multiples_prize" name='fbl_is_multiples_prize' type="checkbox">Multiple Prize</label>
+								<label class="checkbox-inline"><input id="fbl_is_multiples_prize" name='fbl_is_multiples_prize' type="checkbox" value="1"><?=lang("Multiple Prize")?></label>
 							</div>
                             <div class="col-md-2 col-md-offset-1">
-                                <label class="checkbox-inline"><input id="fbl_disc_per_item" name='fbl_disc_per_item' type="checkbox">Disk Per Item</label>
+                                <label class="checkbox-inline"><input id="fbl_disc_per_item" name='fbl_disc_per_item' type="checkbox" value="1"><?=lang("Disk Per Item")?></label>
                             </div>
                         </div>
 
