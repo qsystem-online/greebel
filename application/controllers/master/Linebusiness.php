@@ -8,7 +8,7 @@ class Linebusiness extends MY_Controller
 	{
 		parent::__construct();
 		$this->load->library('form_validation');
-		$this->load->model('Mslinebusiness_model');
+		$this->load->model('mslinebusiness_model');
 	}
 
 	public function index()
@@ -21,11 +21,11 @@ class Linebusiness extends MY_Controller
 		$this->load->library('menus');
 		$this->list['page_name'] = "Line of Business";
 		$this->list['list_name'] = "Line of Business List";
-		$this->list['addnew_ajax_url'] = site_url() . 'master/Linebusiness/add';
+		$this->list['addnew_ajax_url'] = site_url() . 'master/linebusiness/add';
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'master/Linebusiness/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'master/Linebusiness/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'master/Linebusiness/edit/';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'master/linebusiness/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'master/linebusiness/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'master/linebusiness/edit/';
 		$this->list['arrSearch'] = [
 			'fin_linebusiness_id' => 'Line of business ID',
 			'fst_linebusiness_name' => 'Line of business Name'
@@ -69,7 +69,7 @@ class Linebusiness extends MY_Controller
 		$data["title"] = $mode == "ADD" ? "Add Line of Business" : "Update Line of Business";
 		$data["fin_linebusiness_id"] = $fin_linebusiness_id;
 
-		$page_content = $this->parser->parse('pages/master/Linebusiness/form', $data, true);
+		$page_content = $this->parser->parse('pages/master/linebusiness/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 
 		$control_sidebar = NULL;
@@ -93,8 +93,8 @@ class Linebusiness extends MY_Controller
 
 	public function ajx_add_save()
 	{
-		$this->load->model('Mslinebusiness_model');
-		$this->form_validation->set_rules($this->Mslinebusiness_model->getRules("ADD", 0));
+		$this->load->model('mslinebusiness_model');
+		$this->form_validation->set_rules($this->mslinebusiness_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -112,7 +112,7 @@ class Linebusiness extends MY_Controller
 		];
 
 		$this->db->trans_start();
-		$insertId = $this->Mslinebusiness_model->insert($data);
+		$insertId = $this->mslinebusiness_model->insert($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -133,9 +133,9 @@ class Linebusiness extends MY_Controller
 
 	public function ajx_edit_save()
 	{
-		$this->load->model('Mslinebusiness_model');
+		$this->load->model('mslinebusiness_model');
 		$fin_linebusiness_id = $this->input->post("fin_linebusiness_id");
-		$data = $this->Mslinebusiness_model->getDataById($fin_linebusiness_id);
+		$data = $this->mslinebusiness_model->getDataById($fin_linebusiness_id);
 		$linebusiness = $data["mslinebusiness"];
 		if (!$linebusiness) {
 			$this->ajxResp["status"] = "DATA_NOT_FOUND";
@@ -145,7 +145,7 @@ class Linebusiness extends MY_Controller
 			return;
 		}
 
-		$this->form_validation->set_rules($this->Mslinebusiness_model->getRules("EDIT", $fin_linebusiness_id));
+		$this->form_validation->set_rules($this->mslinebusiness_model->getRules("EDIT", $fin_linebusiness_id));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
@@ -164,7 +164,7 @@ class Linebusiness extends MY_Controller
 
 		$this->db->trans_start();
 
-		$this->Mslinebusiness_model->update($data);
+		$this->mslinebusiness_model->update($data);
 		$dbError  = $this->db->error();
 		if ($dbError["code"] != 0) {
 			$this->ajxResp["status"] = "DB_FAILED";
@@ -185,7 +185,7 @@ class Linebusiness extends MY_Controller
 
 	public function add_save()
 	{
-		$this->load->model('Mslinebusiness_model');
+		$this->load->model('mslinebusiness_model');
 
 		$data = [
 			'fst_linebusiness_name' => $this->input->get("fst_linebusiness_name")
@@ -198,10 +198,10 @@ class Linebusiness extends MY_Controller
 		}
 		die();
 
-		echo "Table Name :" . $this->Mslinebusiness_model->getTableName();
-		print_r($this->Mslinebusiness_model->getRules());
+		echo "Table Name :" . $this->mslinebusiness_model->getTableName();
+		print_r($this->mslinebusiness_model->getRules());
 
-		$this->form_validation->set_rules($this->Mslinebusiness_model->rules);
+		$this->form_validation->set_rules($this->mslinebusiness_model->rules);
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -245,8 +245,8 @@ class Linebusiness extends MY_Controller
 
 	public function fetch_data($fin_linebusiness_id)
 	{
-		$this->load->model("Mslinebusiness_model");
-		$data = $this->Mslinebusiness_model->getDataById($fin_linebusiness_id);
+		$this->load->model("mslinebusiness_model");
+		$data = $this->mslinebusiness_model->getDataById($fin_linebusiness_id);
 
 		//$this->load->library("datatables");		
 		$this->json_output($data);
@@ -254,7 +254,7 @@ class Linebusiness extends MY_Controller
 
 	public function delete($id){
 		$this->db->trans_start();
-        $this->Mslinebusiness_model->delete($id);
+        $this->mslinebusiness_model->delete($id);
         $this->db->trans_complete();
 
         $this->ajxResp["status"] = "SUCCESS";
@@ -265,7 +265,7 @@ class Linebusiness extends MY_Controller
 
 	public function getAllList()
 	{
-		$result = $this->Mslinebusiness_model->getAllList();
+		$result = $this->mslinebusiness_model->getAllList();
 		$this->ajxResp["data"] = $result;
 		$this->json_output();
 	}
@@ -277,10 +277,10 @@ class Linebusiness extends MY_Controller
         $this->pdf->setPaper('A4', 'portrait');
 		//$this->pdf->setPaper('A4', 'landscape');
 		
-		$this->load->model("Mslinebusiness_model");
-		$listLinebusiness = $this->Mslinebusiness_model->get_linebusiness();
+		$this->load->model("mslinebusiness_model");
+		$listlinebusiness = $this->mslinebusiness_model->get_linebusiness();
         $data = [
-			"datas" => $listLinebusiness
+			"datas" => $listlinebusiness
 		];
 			
         $this->pdf->load_view('report/departments_pdf', $data);
