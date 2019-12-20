@@ -251,3 +251,8 @@
         $CI->my_model->throwIfDBError($db);
 
     }
+    
+    function dd($object){
+        var_dump($object);
+        die();
+    }

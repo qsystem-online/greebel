@@ -76,11 +76,12 @@ class Trsuratjalan_model extends MY_Model {
         $ssql = "SELECT a.*,
             IFNULL(b.fst_salesorder_no,c.fst_purchasereturn_no) as fst_trans_no ,
             IFNULL(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime) as fdt_trans_datetime,            
-            d.fin_relation_id,d.fst_relation_name
+            d.fin_relation_id,d.fst_relation_name,e.fst_name as fst_shipping_name,e.fst_shipping_address
             FROM trsuratjalan a
             LEFT JOIN trsalesorder b on a.fin_trans_id = b.fin_salesorder_id and a.fst_sj_type = 'SO' 
             LEFT JOIN trpurchasereturn c on a.fin_trans_id = c.fin_purchasereturn_id and a.fst_sj_type = 'PO_RETURN' 
-            inner join msrelations d on IFNULL(b.fin_relation_id,c.fin_supplier_id)  = d.fin_relation_id 
+            INNER JOIN msrelations d on IFNULL(b.fin_relation_id,c.fin_supplier_id)  = d.fin_relation_id 
+            INNER JOIN msshippingaddress e on a.fin_shipping_address_id = e.fin_shipping_address_id 
             where a.fin_sj_id = ? and a.fst_active !='D' ";
 
         $qr = $this->db->query($ssql, [$fin_sj_id]);      
@@ -103,9 +104,9 @@ class Trsuratjalan_model extends MY_Model {
 
 
 
-        }else if ($rwSJ->fst_sj_type == "PO_PURCHASE"){
+        }else if ($rwSJ->fst_sj_type == "PO_RETURN"){
             $ssql = "SELECT a.*,
-                0 as b.fin_promo_id,b.fst_custom_item_name,
+                0 as fin_promo_id,b.fst_custom_item_name,
                 c.fbl_is_batch_number,c.fbl_is_serial_number,c.fst_item_code,c.fst_item_name,
                 d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit 
                 FROM trsuratjalandetails a 
@@ -120,8 +121,8 @@ class Trsuratjalan_model extends MY_Model {
                 "sj_details" => []
             ];
         }
-           
-		$qr = $this->db->query($ssql,[$fin_sj_id]);
+
+        $qr = $this->db->query($ssql,[$fin_sj_id]);
 		$rsSJDetails = $qr->result();
         
 		$data = [
@@ -205,7 +206,7 @@ class Trsuratjalan_model extends MY_Model {
          */
         
         $this->load->model("trinventory_model");   
-        $this->load->model("trsalesorder_model");   
+        
 
         $ssql = "select * from trsuratjalan where fin_sj_id = ? and fst_active != 'D'";
         $qr = $this->db->query($ssql,[$sjId]);
@@ -214,27 +215,57 @@ class Trsuratjalan_model extends MY_Model {
             throw new CustomException(lang("ID Surat Jalan tidak dikenal !"),3003,"FAILED",null);
         }
         
+        $ssql = "select * from trsuratjalandetails where fin_sj_id = ?";
+        $qr = $this->db->query($ssql,[$sjId]);
+        $dataDetails = $qr->result();
+        
+        if ($dataH->fst_sj_type == "SO"){
+            $this->unpostingSOType($dataH,$dataDetails);
+        
+        }else if ($dataH->fst_sj_type == "PO_RETURN"){
+
+            $this->unpostingPOReturnType($dataH,$dataDetails);
+
+        }else{
+            throw new CustomException("Invalid SJ Type :$dataH->fst_sj_type",3003,"FAILED",NULL);
+        }
+
+        
+    }
+
+    private function unpostingSOType($dataH,$dataDetails){
+        $this->load->model("trsalesorder_model");
+
         //Cancel kartu stock
-        $this->trinventory_model->deleteByCodeId("DO",$sjId);
+        $this->trinventory_model->deleteByCodeId("DO",$dataH->fin_sj_id);
 
         //Cancel serial no
         $this->trinventory_model->deleteInsertSerial("PPJ",$sjId);                
 
-        //cancel qty out SO detail
-        $ssql = "select a.*,b.fin_warehouse_id from trsuratjalandetails a 
-            inner join trsuratjalan b on a.fin_sj_id = b.fin_sj_id 
-            where a.fin_sj_id = ?";
-
-        $qr = $this->db->query($ssql,[$sjId]);
-        $rs = $qr->result();
-        foreach($rs as $rw){
-            $finSalesorderDetailId = $rw->fin_salesorder_detail_id;
-            $ssql = "update trsalesorderdetails set fdb_qty_out = fdb_qty_out -  " . $rw->fdb_qty  ." where fin_rec_id = ?";
+        foreach($dataDetails as $dataD){
+            $finSalesorderDetailId = $dataD->fin_trans_detail_id;
+            $ssql = "update trsalesorderdetails set fdb_qty_out = fdb_qty_out -  " . $dataD->fdb_qty  ." where fin_rec_id = ?";
             $query = $this->db->query($ssql,[$finSalesorderDetailId]);                  
-        }
-        
-        
-        $this->trsalesorder_model->updateClosedStatus($dataH->fin_salesorder_id);
+        }            
+        $this->trsalesorder_model->updateClosedStatus($dataH->fin_trans_id);
+    }
+
+    private function unpostingPOReturnType($dataH,$dataDetails){
+        $this->load->model("trpurchasereturn_model");        
+        //Cancel kartu stock
+        $this->trinventory_model->deleteByCodeId("PRT",$dataH->fin_sj_id);
+
+        //Cancel serial no
+        $this->trinventory_model->deleteInsertSerial("RPB",$dataH->fin_sj_id);                
+
+        foreach($dataDetails as $dataD){
+            $finPurchaseReturnDetailId = $dataD->fin_trans_detail_id;
+            $ssql = "update trpurchasereturnitems set fdb_qty_out = fdb_qty_out -  " . $dataD->fdb_qty  ." where fin_rec_id = ?";
+            $query = $this->db->query($ssql,[$finPurchaseReturnDetailId]);                  
+        }           
+
+        $this->trpurchasereturn_model->updateClosedStatus($dataH->fin_trans_id);
+
     }
 
     public function posting($sjId){
@@ -410,23 +441,57 @@ class Trsuratjalan_model extends MY_Model {
 
     public function isEditable($finSJId){
         /**
-         * + tidak bisa di rubah bila sudah terbit invoice / faktur
-         * 
+         * + SO tidak bisa di rubah bila sudah terbit invoice / faktur
+         * +          
          */
-        $ssql = "select a.*,b.fst_inv_no from trsuratjalan a 
-        inner join trinvoice b on a.fin_inv_id = b.fin_inv_id 
-        where a.fin_sj_id = ?";
-        $qr = $this->db->query($ssql,[$finSJId]);
-        $rw =$qr->row();
-        if ($rw == null){
-            return true;
-        }else{
-            throw new CustomException(sprintf(lang("Transaksi tidak bisa dirubah karena sudah ada invoice %s"),$rw->fst_inv_no),3003,"FAILED",[]);
+
+        $dataH  = $this->db->get_where("trsuratjalan",["fin_sj_id"=>$finSJId])->row();
+        if($dataH == null){
+            throw new CustomException("Invalid SJ Id",3003,'FAILED',["fin_sj_id"=>$finSJId]);            
         }
+
+        if ($dataH->fst_sj_type == "SO"){
+            $ssql = "select a.*,b.fst_inv_no from trsuratjalan a 
+                inner join trinvoice b on a.fin_inv_id = b.fin_inv_id 
+                where a.fin_sj_id = ?";
+            $qr = $this->db->query($ssql,[$finSJId]);
+            $rw =$qr->row();
+            if ($rw != null){
+                throw new CustomException(sprintf(lang("Transaksi tidak bisa dirubah karena sudah ada invoice %s"),$rw->fst_inv_no),3003,"FAILED",[]);
+            }
+        }else if ($dataH->fst_sj_type == "PO_RETURN"){
+            
+            $purchaseReturn = $this->db->get_where("trpurchasereturn",["fin_purchasereturn_id"=>$dataH->fin_trans_id])->row();
+            if($purchaseReturn == null){
+                throw new CustomException("Invalid Reff Purchase Return",3003,'FAILED',[$dataH]);
+            }
+
+            //Cek Non Faktur atau faktur
+            if ($purchaseReturn->fbl_non_faktur == 1){
+                /**
+                 * non faktur: no voucher retur tidak boleh digunakan
+                 */
+                if ($purchaseReturn->fdc_total_claimed > 0){
+                    throw new CustomException(lang("Transaksi tidak bisa dibatalkan, karena sudah ada pemakaian voucher return"),3003,'FAILED',[$purchaseReturn]);
+                }
+            }else{
+                /**
+                 * faktur: faktur tidak boleh sudah ada pembayaran
+                 */
+                $lpbPurchase = $this->db->get_where("trlpbpurchase",["fin_lpbpurchase_id"=>$purchaseReturn->fin_lpbpurchase_id])->row();
+                if ($lpbPurchase->fdc_total_paid > 0){
+                    throw new CustomException(lang("Transaksi tidak bisa dibatalkan, karena sudah ada pembayaran untuk invoice yang diretur"),3003,'FAILED',[$lpbPurchase]);
+                }
+
+            }
+
+
+        }
+        
         
     }
 
-    public function deleteDetailForUpdate($finSJId){
+    public function deleteDetails($finSJId){
         $ssql ="delete from trsuratjalandetails where fin_sj_id = ?";
         $this->db->query($ssql,[$finSJId]);
         throwIfDBError();

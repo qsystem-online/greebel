@@ -291,7 +291,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#mdlDetail").modal("hide");
 			},
 			clear:function(){
-
+				$("#fin_item_id").val(null).trigger("change.select2");
+				$("#fstBatchNo").val(null).trigger("change.select2");
+				$("#fstSerialNoList").empty();
 			}
 		}
 
@@ -369,9 +371,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		
 		$("#btn-save-detail").click(function(e){
 			e.preventDefault();			
-			item = $("#fstItem").select2("data");
-			item = item[0];			
-			
+			item = selectedItem;			
 			if ($("#fdbQty").val() <= 0 ){
 				alert("<?=lang("Qty harus diisi !") ?>");
 				return;
@@ -428,7 +428,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				selectedDetail.data(dataRow).draw(false);
 			}
 			calculateTotal();
-			$("#mdlDetail").modal("hide");
+			mdlDetail.hide();
+			selectedDetail = null;
 
 		})
 
@@ -445,10 +446,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#fstBatchNo").empty();
 					$.each(value,function(i,obj){
 						batchNo = obj.fst_batch_no;
-						App.addOptionIfNotExist("<option value='"+batchNo+"'>"+batchNo+"</option>","fstBatchNo");
-						
-					});
-					//$("#fstBatchNo").val(null);
+						App.addOptionIfNotExist("<option value='"+batchNo+"'>"+batchNo+"</option>","fstBatchNo");						
+					});					
+					
+					if (selectedDetail != null){
+						selectedData = selectedDetail.data();
+						$("#fstBatchNo").val(selectedData.fst_batch_number);
+			
+						$("#fstSerialNoList").empty();
+						$.each(selectedData.arr_serial,function(i,serial){
+							$("#fstSerialNoList").prepend("<option value='"+serial+"'>"+serial+"</option>");
+						});		
+
+					}else{
+						$("#fstBatchNo").val(null);
+						$("#fstSerialNoList").empty();
+					}
+					
+
 					App.fixedSelect2();
 					callback();					
 				}
@@ -533,8 +548,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btn-add-items").click(function(e){
 			e.preventDefault();
-			selectedDetail = null;
-			$("#mdlDetail").modal("show");
+			selectedDetail = null;		
+			mdlDetail.show();
+			mdlDetail.clear();
 		});
 		
 	});
@@ -678,7 +694,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			
 
 			mdlDetail.show();
-			$('#fstItem').val(data.fin_item_id);
+			$('#fstItem').val(data.fin_item_id).trigger("change.select2");
 			$('#fstItem').val(data.fin_item_id).trigger({
 				type:"select2:select",
 				params:{
@@ -751,6 +767,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if ($("#fin_sj_id").val() == 0){
 			url = "<?=site_url()?>tr/gudang/pengiriman_penjualan/ajx_add_save";
 		}else{
+			if (confirmEdit == 0){
+				MdlEditForm.saveCallBack = function(){
+					submitAjax(1);
+				};		
+				MdlEditForm.show();
+				return;
+			}
+
 			url = "<?=site_url()?>tr/gudang/pengiriman_penjualan/ajx_edit_save";
 		}
 		
@@ -818,10 +842,33 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#fdt_sj_datetime").val(dateTimeFormat(dataH.fdt_sj_datetime)).datetimepicker("update");
 				
 				
-				App.addOptionIfNotExist("<option value='"+dataH.fin_salesorder_id+"' selected>"+dataH.fst_salesorder_no+"</option>","fin_salesorder_id");
-				$("#fdt_salesorder_datetime").val(dateTimeFormat(dataH.fdt_salesorder_datetime)).datetimepicker("update");		
+				App.addOptionIfNotExist("<option value='"+dataH.fin_trans_id+"' selected>"+dataH.fst_trans_no+"</option>","fin_trans_id");
+				$("#fin_trans_id").trigger("change.select2");
+				/*
+				$("#fin_trans_id").trigger({
+					type:"select2:select",
+					params:{
+						data:{
+							id: dataH.fin_trans_id,
+                            text: dataH.fst_trans_no,
+                            fdt_trans_datetime : dataH.fdt_trans_datetime,
+                            fin_relation_id : dataH.fin_relation_id,
+                            fst_relation_name : dataH.fst_relation_name,
+                            fin_shipping_address_id : dataH.fin_shipping_address_id,
+                            fst_shipping_address : dataH.fst_shipping_address,
+                            fin_warehouse_id: dataH.fin_warehouse_id
+						}
+					}
+				});
+				*/
 				
+				$("#fdt_trans_datetime").val(dateTimeFormat(dataH.fdt_trans_datetime)).datetimepicker("update");		
+				$("#fst_relation_name").html(dataH.fst_relation_name);
+				
+				App.addOptionIfNotExist("<option value='" + dataH.fin_shipping_address_id +"'>"+ dataH.fst_shipping_name +"</option>","fin_shipping_address_id");
+				$("#fst_shipping_address").val(dataH.fst_shipping_address );
 
+				/*
 				initShippingAddress(dataH.fin_relation_id,function(){
 					$("#fin_shipping_address_id").val(dataH.fin_shipping_address_id).trigger("change.select2");		
 					$("#fin_shipping_address_id").trigger({
@@ -831,7 +878,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					});
 				});
-							
+				*/			
 				
 				$("#fst_relation_name").val(dataH.fst_relation_name);
 				isHold = (dataH.fbl_is_hold == 0) ? false : true;			
@@ -840,6 +887,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				
 				details = resp.sj_details;
 				t = $("#tblSJDetails").DataTable(); 
+				t.clear();
 				var itemList = [];
 				$.each(details,function(i,v){				
 					t.row.add(v);
@@ -863,6 +911,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#fstItem").select2({
 					data:itemList
 				});
+				
 				$("#fstItem").val(null).trigger("change.select2");
 				App.fixedSelect2();
 

@@ -547,10 +547,15 @@ class Trcbpayment_model extends MY_Model {
 
 
     function getUnpaidPurchaseInvoiceList($finSupplierId,$fstCurrCode){
-        $ssql = "SELECT * FROM trlpbpurchase 
-            WHERE fin_supplier_id = ? AND fst_curr_code = ? 
-            AND (fdc_total > (fdc_total_paid + fdc_total_return) ) 
-            AND fst_active = 'A' ";
+        //tidak boleh ada transaksi return yg status closednya false(untuk memastikan return sudah diproses di gudang)
+
+        $ssql = "SELECT a.* FROM trlpbpurchase a
+            LEFT JOIN trpurchasereturn b on a.fin_lpbpurchase_id = b.fin_lpbpurchase_id 
+            WHERE a.fin_supplier_id = ? AND a.fst_curr_code = ? 
+            AND (a.fdc_total > (a.fdc_total_paid + a.fdc_total_return) ) 
+            AND ifnull(b.fbl_is_closed,1) = 1 
+            AND a.fst_active = 'A' and b.fst_active != 'D'";
+
         $qr = $this->db->query($ssql,[$finSupplierId,$fstCurrCode]);
         //echo $this->db->last_query();
         $rs = $qr->result();
