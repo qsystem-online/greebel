@@ -49,7 +49,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmLinebusiness" class="form-horizontal" action="<?=site_url()?>Linebusiness/add" method="POST" enctype="multipart/form-data">			
+            <form id="frmlinebusiness" class="form-horizontal" action="<?=site_url()?>linebusiness/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">			
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
@@ -93,9 +93,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			mode = $("#frm-mode").val();
 			if (mode == "ADD"){
-				url =  "<?= site_url() ?>master/Linebusiness/ajx_add_save";
+				url =  "<?= site_url() ?>master/linebusiness/ajx_add_save";
 			}else{
-				url =  "<?= site_url() ?>master/Linebusiness/ajx_edit_save";
+				url =  "<?= site_url() ?>master/linebusiness/ajx_edit_save";
 			}
 
 			App.blockUIOnAjaxRequest("Please wait while saving data.....");
@@ -153,7 +153,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		
 		$("#btnNew").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>master/Linebusiness/add")
+			window.location.replace("<?=site_url()?>master/linebusiness/add")
 		});
 
 		$("#btnDelete").confirmation({
@@ -165,7 +165,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			e.preventDefault();
 			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
 			$.ajax({
-				url:"<?= site_url() ?>master/Linebusiness/delete/" + $("#fin_linebusiness_id").val(),
+				url:"<?= site_url() ?>master/linebusiness/delete/" + $("#fin_linebusiness_id").val(),
 			}).done(function(resp){
 				//consoleLog(resp);
 				$.unblockUI();
@@ -176,7 +176,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						buttons : {
 							OK : function() {
 								if (resp.status == "SUCCESS") {
-									window.location.href = "<?= site_url() ?>master/Linebusiness/lizt";
+									window.location.href = "<?= site_url() ?>master/linebusiness/lizt";
 									return;
 								}
 							},
@@ -199,13 +199,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>master/Linebusiness/lizt");
+			window.location.replace("<?=site_url()?>master/linebusiness/lizt");
 		});
 	});
 
 	function init_form(fin_linebusiness_id){
 		//alert("Init Form");
-		var url = "<?=site_url()?>master/Linebusiness/fetch_data/" + fin_linebusiness_id;
+		var url = "<?=site_url()?>master/linebusiness/fetch_data/" + fin_linebusiness_id;
 		$.ajax({
 			type: "GET",
 			url: url,
