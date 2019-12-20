@@ -73,14 +73,20 @@ class Trsuratjalan_model extends MY_Model {
     }
 
     public function getDataById($fin_sj_id){
-        $ssql = "select a.*,
-            b.fdt_salesorder_datetime,b.fst_salesorder_no,
-            c.fin_relation_id,c.fst_relation_name,a.fin_shipping_address_id
-            from trsuratjalan a
-            inner join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id
-            inner join msrelations c on b.fin_relation_id  = c.fin_relation_id 
+        $ssql = "SELECT a.*,
+            IFNULL(b.fst_salesorder_no,c.fst_purchasereturn_no) as fst_trans_no ,
+            IFNULL(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime) as fdt_trans_datetime,            
+            d.fin_relation_id,d.fst_relation_name
+            FROM trsuratjalan a
+            LEFT JOIN trsalesorder b on a.fin_trans_id = b.fin_salesorder_id and a.fst_sj_type = 'SO' 
+            LEFT JOIN trpurchasereturn c on a.fin_trans_id = c.fin_purchasereturn_id and a.fst_sj_type = 'PO_RETURN' 
+            inner join msrelations d on IFNULL(b.fin_relation_id,c.fin_supplier_id)  = d.fin_relation_id 
             where a.fin_sj_id = ? and a.fst_active !='D' ";
-        $qr = $this->db->query($ssql, [$fin_sj_id]);        
+
+
+
+        $qr = $this->db->query($ssql, [$fin_sj_id]);      
+        throwIfDBError();  
         $rwSJ = $qr->row();
 
 
