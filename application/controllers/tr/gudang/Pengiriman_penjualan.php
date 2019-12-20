@@ -155,98 +155,17 @@ class Pengiriman_penjualan extends MY_Controller{
         $this->load->model("msitems_model");
             
         try{
-            //CHECK LOCKED DATE
-            $fdt_sj_datetime = dBDateTimeFormat($this->input->post("fdt_sj_datetime"));		
+            //CHECK LOCKED DATE            
             $resp = dateIsLock($fdt_sj_datetime);
             if ($resp["status"] != "SUCCESS" ){
                 throw new CustomException($resp["message"],3009,$resp["status"],null);
             }
 
-            //PREPARE DATA
-            $dataH = $this->input->post();
-            $dataH["fdt_sj_datetime"] = $fdt_sj_datetime;
-            $dataH["fbl_is_hold"] = isset($dataH["fbl_is_hold"]) ? 1 : 0;
-            $dataH["fst_sj_no"] = $this->trsuratjalan_model->GenerateSJNo();	
-            $dataH["fst_active"] = "A";            
-            unset($dataH["detail"]);
+            $dataPrepared = $this->prepareData();
+            $dataH  = $dataPrepared["dataH"];
+            $dataDetails  = $dataPrepared["dataDetails"];
 
-            $details = $details = $this->input->post("detail");
-            $details = json_decode($details);
-
-            //VALIDATION
-            $this->form_validation->set_rules($this->trsuratjalan_model->getRules("ADD", 0));
-            $this->form_validation->set_data($dataH);            
-            $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-            if ($this->form_validation->run() == FALSE) {
-                throw new CustomException("Error Validation Forms",3009,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
-            }
-
-
-            $arrItem = $this->msitems_model->getDetailbyArray(array_column($details, 'fin_item_id'));
-            foreach($details as $detail){
-                $this->form_validation->set_rules($this->trsuratjalandetails_model->getRules("ADD", 0));
-                $this->form_validation->set_data((array) $detail);            
-                $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-                if ($this->form_validation->run() == FALSE) {
-                    $error = [
-                        "detail"=> $this->form_validation->error_string(),
-                    ];
-                    throw new CustomException("Error Validation Forms",3009,"VALIDATION_FORM_FAILED",$error);
-                }
-    
-                //Validation is valid batch number & serial number (qty, serial number exist)
-                $item = $arrItem[$detail->fin_item_id];
-                if ($item->fbl_is_batch_number == 1){
-                    if ($detail->fst_batch_number == null || $detail->fst_batch_number == ""){
-                        throw new CustomException(sprintf(lang("%s harus memiliki batch number"),$detail->fst_custom_item_name),3009,"FAILED",null);
-                    }
-                }
-                
-                if ($item->fbl_is_serial_number == 1){
-                    if ($detail->fst_serial_number_list == null || $detail->fst_serial_number_list == ""){
-                        if (is_array($detail->fst_serial_number_list)){
-                            $arrSerial = $detail->fst_serial_number_list;
-
-                            //Check Jumlah serial no
-                            if (sizeof($arrSerial) != $this->msitems_model->getQtyConvertToBasicUnit($detail->fin_item_id,$detail->fdb_qty,$item->fst_unit) ){
-                                throw new CustomException(sprintf(lang("total serial %s harus sesuai dengan total qty (%u)"),$item->fst_custom_item_name,$item->fdb_qty),3009,"FAILED",null);
-                            }
-                            //Check all serial is exist and ready;
-                            $arrSerialStatus = $this->trinventory_model->getSummarySerialNo($dataH["fin_warehouse_id"],$detail->fin_item_id,$arrSerial);
-                            foreach($arrSerial as $serial){
-                                if (isset($arrSerialStatus[$serial]) ){
-                                    $serialStatus = $arrSerialStatus[$serial];
-                                    if ($serialStatus["fdb_qty_in"] <= $serialStatus["fdb_qty_out"] ){
-                                        throw new CustomException(sprintf(lang("No serial %s untuk item %s tidak tersedia"),$serial,$item->fst_custom_item_name),3009,"FAILED",null);    
-                                    }
-                                }else{
-                                    throw new CustomException(sprintf(lang("No serial %s untuk item %s tidak tersedia"),$serial,$item->fst_custom_item_name),3009,"FAILED",null);
-                                }
-                            }
-                        }else{
-                            throw new CustomException(sprintf(lang("%s harus memiliki serial number"),$detail->fst_custom_item_name),3009,"FAILED",null);
-                        }
-                    }
-                }
-
-                //Validation if qty more than SO
-                if ($detail->fdb_qty > $this->trsuratjalan_model->maxQtyItem($detail->fin_salesorder_detail_id) ){
-                    throw new CustomException(sprintf(lang("Qty %s melebihi qty pada sales order") ,$detail->fst_custom_item_name),3009,"FAILED",null);
-                }
-    
-
-                //Validation stock is available
-                if ($item->fbl_stock == 1){
-                    $basicUnit = $this->msitems_model->getBasicUnit($detail->fin_item_id);
-                    $qtyStockBasicUnit = (float) $this->trinventory_model->getStock($detail->fin_item_id,$basicUnit,$dataH["fin_warehouse_id"]);
-                    $qtyReqInBasicUnit = $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$detail->fdb_qty,$detail->fst_unit,$basicUnit);
-                    $qtyStockReqUnit =  $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$qtyStockBasicUnit,$basicUnit,$detail->fst_unit);
-                    if ($qtyReqInBasicUnit > $qtyStockBasicUnit ){
-                        throw new CustomException(sprintf(lang("Stock %s tersisa : %d %s") ,$detail->fst_custom_item_name,$qtyStockReqUnit,$detail->fst_unit),3009,"FAILED",null);
-                    }
-
-                }
-            }
+            $this->validationData($dataH,$dataDetails);
 
         }catch(CustomException $e){
             $this->ajxResp["status"] = $e->getStatus();
@@ -440,6 +359,106 @@ class Pengiriman_penjualan extends MY_Controller{
             return;
             
         }
+    }
+
+
+    private function prepareData(){
+        //PREPARE DATA
+        $fdt_sj_datetime = dBDateTimeFormat($this->input->post("fdt_sj_datetime"));		        
+
+        $dataH = $this->input->post();        
+        $dataH["fdt_sj_datetime"] = $fdt_sj_datetime;
+        $dataH["fbl_is_hold"] = isset($dataH["fbl_is_hold"]) ? 1 : 0;
+        $dataH["fst_sj_no"] = $this->trsuratjalan_model->GenerateSJNo();	
+        $dataH["fst_active"] = "A";            
+        unset($dataH["detail"]);
+
+        $details = $details = $this->input->post("detail");
+        $details = json_decode($details);
+
+        return ([
+            "dataH"=>$dataH,
+            "dataDetails"=>$details
+        ]);
+    }
+
+    private function validationData($dataH,$dataDetails){
+        //VALIDATION
+        $this->form_validation->set_rules($this->trsuratjalan_model->getRules("ADD", 0));
+        $this->form_validation->set_data($dataH);            
+        $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+        if ($this->form_validation->run() == FALSE) {
+            throw new CustomException("Error Validation Forms",3009,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
+        }
+
+        $arrItem = $this->msitems_model->getDetailbyArray(array_column($dataDetails, 'fin_item_id'));
+
+        foreach($dataDetails as $detail){
+            $this->form_validation->set_rules($this->trsuratjalandetails_model->getRules("ADD", 0));
+            $this->form_validation->set_data((array) $detail);            
+            $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+            if ($this->form_validation->run() == FALSE) {
+                $error = [
+                    "detail"=> $this->form_validation->error_string(),
+                ];
+                throw new CustomException("Error Validation Forms",3009,"VALIDATION_FORM_FAILED",$error);
+            }
+
+
+            //Validation is valid batch number & serial number (qty, serial number exist)
+            $item = $arrItem[$detail->fin_item_id];
+            if ($item->fbl_is_batch_number == 1){
+                if ($detail->fst_batch_number == null || $detail->fst_batch_number == ""){
+                    throw new CustomException(sprintf(lang("%s harus memiliki batch number"),$detail->fst_custom_item_name),3009,"FAILED",null);
+                }
+            }
+            
+            if ($item->fbl_is_serial_number == 1){
+                if ($detail->fst_serial_number_list == null || $detail->fst_serial_number_list == ""){
+                    if (is_array($detail->fst_serial_number_list)){
+                        $arrSerial = $detail->fst_serial_number_list;
+
+                        //Check Jumlah serial no
+                        if (sizeof($arrSerial) != $this->msitems_model->getQtyConvertToBasicUnit($detail->fin_item_id,$detail->fdb_qty,$item->fst_unit) ){
+                            throw new CustomException(sprintf(lang("total serial %s harus sesuai dengan total qty (%u)"),$item->fst_custom_item_name,$item->fdb_qty),3009,"FAILED",null);
+                        }
+                        //Check all serial is exist and ready;
+                        $arrSerialStatus = $this->trinventory_model->getSummarySerialNo($dataH["fin_warehouse_id"],$detail->fin_item_id,$arrSerial);
+                        foreach($arrSerial as $serial){
+                            if (isset($arrSerialStatus[$serial]) ){
+                                $serialStatus = $arrSerialStatus[$serial];
+                                if ($serialStatus["fdb_qty_in"] <= $serialStatus["fdb_qty_out"] ){
+                                    throw new CustomException(sprintf(lang("No serial %s untuk item %s tidak tersedia"),$serial,$item->fst_custom_item_name),3009,"FAILED",null);    
+                                }
+                            }else{
+                                throw new CustomException(sprintf(lang("No serial %s untuk item %s tidak tersedia"),$serial,$item->fst_custom_item_name),3009,"FAILED",null);
+                            }
+                        }
+                    }else{
+                        throw new CustomException(sprintf(lang("%s harus memiliki serial number"),$detail->fst_custom_item_name),3009,"FAILED",null);
+                    }
+                }
+            }
+
+            //Validation if qty more than SO atau PO_RETURN
+            if ($detail->fdb_qty > $this->trsuratjalan_model->maxQtyItem($dataH["fst_sj_type"],$detail->fin_trans_detail_id) ){
+                throw new CustomException(sprintf(lang("Qty %s melebihi qty pada sales order") ,$detail->fst_custom_item_name),3009,"FAILED",null);
+            }
+
+
+            //Validation stock is available
+            if ($item->fbl_stock == 1){
+                $basicUnit = $this->msitems_model->getBasicUnit($detail->fin_item_id);
+                $qtyStockBasicUnit = (float) $this->trinventory_model->getStock($detail->fin_item_id,$basicUnit,$dataH["fin_warehouse_id"]);
+                $qtyReqInBasicUnit = $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$detail->fdb_qty,$detail->fst_unit,$basicUnit);
+                $qtyStockReqUnit =  $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$qtyStockBasicUnit,$basicUnit,$detail->fst_unit);
+                if ($qtyReqInBasicUnit > $qtyStockBasicUnit ){
+                    throw new CustomException(sprintf(lang("Stock %s tersisa : %d %s") ,$detail->fst_custom_item_name,$qtyStockReqUnit,$detail->fst_unit),3009,"FAILED",null);
+                }
+
+            }
+        }
+
     }
 
     public function delete($sjId){

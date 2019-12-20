@@ -68,7 +68,7 @@ class Trsuratjalan_model extends MY_Model {
                 'required' => '%s tidak boleh kosong',
             )
         ];
-        
+
         return $rules;
     }
 
@@ -136,16 +136,38 @@ class Trsuratjalan_model extends MY_Model {
     
     
 
-    public function maxQtyItem($salesorderDetailId){
-        $ssql = "select * from trsalesorderdetails where fin_rec_id = ?";
-        $qr = $this->db->query($ssql,[$salesorderDetailId]);
-        $rw = $qr->row();
+    public function maxQtyItem($sjType,$transDetailId){
+        switch($sjType){
+            case "SO":
+                $ssql = "select * from trsalesorderdetails where fin_rec_id = ?";
+                $qr = $this->db->query($ssql,[$transDetailId]);
+                $rw = $qr->row();
 
-        if($rw == null){
-            return 0;
-        }else{
-            return (float) $rw->fdb_qty  - ((float) $rw->fdb_qty_out  + (float) $rw->fdb_qty_return);
+                if($rw == null){
+                    return 0;
+                }else{
+                    return (float) $rw->fdb_qty  - ((float) $rw->fdb_qty_out  + (float) $rw->fdb_qty_return);
+                }
+
+                break;
+            case "PO_RETURN":
+                $ssql = "select * from trpurchasereturnitems where fin_rec_id = ?";
+                $qr = $this->db->query($ssql,[$transDetailId]);
+                $rw = $qr->row();
+
+                if($rw == null){
+                    return 0;
+                }else{
+                    return (float) $rw->fdb_qty  - (float) $rw->fdb_qty_out;
+                }
+
+                break;
+            default:
+                throw new CustomException("Invalid SJ Type",3003,"FAILED",["fst_sj_type"=>$sjType]);
+
         }
+        
+        
 
     }
 

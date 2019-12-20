@@ -408,7 +408,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				fdb_qty: $("#fdbQty").val(),
 				fin_item_id: item.id,
 				fin_promo_id: item.fin_promo_id,
-				fin_salesorder_detail_id: item.fin_salesorder_detail_id,
+				fin_trans_detail_id: item.fin_trans_detail_id,
 				fst_custom_item_name: item.text,
 				fst_item_code: item.fst_item_code,
 				fst_item_name: item.fst_item_name,

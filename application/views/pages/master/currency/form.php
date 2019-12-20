@@ -427,5 +427,5 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
 <!-- DataTables -->
-<script src="<?=base_url()?>bower_components/datatables.net/dataTables.min.js"></script>
+<script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
 <script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
