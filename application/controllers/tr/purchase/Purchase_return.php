@@ -293,7 +293,7 @@ class Purchase_return extends MY_Controller{
 		$dataH =[
 			//"fin_purchasereturn_id"
 			"fst_purchasereturn_no" =>$fst_purchasereturn_no,
-			"fbl_is_import"=> $this->input->post("fbl_is_import") == null ? 0 : 1,
+			"fbl_is_import"=> $this->input->post("fbl_is_import") == null ? 0 : 1,			
 			"fdt_purchasereturn_datetime"=>$fdt_purchasereturn_datetime,
 			"fin_supplier_id" => $this->input->post("fin_supplier_id"),
 			"fbl_non_faktur"=>$fbl_non_faktur,
