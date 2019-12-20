@@ -133,9 +133,6 @@ class Trsuratjalan_model extends MY_Model {
         return $max_tr_no;
     }
 
-    
-    
-
     public function maxQtyItem($sjType,$transDetailId){
         switch($sjType){
             case "SO":
@@ -227,9 +224,22 @@ class Trsuratjalan_model extends MY_Model {
 
         $ssql = "SELECT * FROM trsuratjalandetails WHERE fin_sj_id = ?";
         $qr = $this->db->query($ssql,[$sjId]);
-        $detailList = $qr->result();
+        $dataDetails = $qr->result();
 
-        foreach($detailList as $dataD){
+        if($dataH->fst_sj_type == "SO"){
+            $this->postingSOType($dataH,$dataDetails);
+        }else if ($dataH->fst_sj_type == "PO_RETURN"){
+            $this->postingPOReturnType($dataH,$dataDetails);
+        }else{
+            throw new CustomException("Invalid SJ Type",3003,"FAILED",[$dataH]);
+        }
+        
+
+    }
+    
+    private function postingSOType($dataH,$dataDetails){
+
+        foreach($dataDetails as $dataD){
             //Update msitemdetails dan msitemdetailssummary
             //$strArrSerial  = $dataD["fst_serial_number_list"];                       
             $dataSerial = [
@@ -272,18 +282,84 @@ class Trsuratjalan_model extends MY_Model {
         }
 
         //Cek All Data valid after Process
-        $this->trsalesorder_model->updateClosedStatus($dataH->fin_salesorder_id);
+        $this->trsalesorder_model->updateClosedStatus($dataH->fin_trans_id);
 
         //Data SO detail  still valid
         $ssql = "SELECT * FROM trsalesorderdetails WHERE fin_salesorder_id = ? AND fdb_qty < (fdb_qty_out + fdb_qty_return)";
-        $qr = $this->db->query($ssql,$dataH->fin_salesorder_id);
+        $qr = $this->db->query($ssql,$dataH->fin_trans_id);
         $rw = $qr->row();
         if ($rw != null){
             throw new CustomException(lang("Qty sales order detail not balance !"),3003,"FAILED",null);            
         }
-
     }
     
+    private function postingPOReturnType($dataH,$dataDetails){
+
+        $this->load->model("trpurchasereturn_model");
+
+        foreach($dataDetails as $dataD){
+            $dataSerial = [
+                "fin_warehouse_id"=>$dataH->fin_warehouse_id,
+                "fin_item_id"=>$dataD->fin_item_id,
+                "fst_unit"=>$dataD->fst_unit,
+                "fst_serial_number_list"=>$dataD->fst_serial_number_list,
+                "fst_batch_no"=>$dataD->fst_batch_number,
+                "fst_trans_type"=>"RPB", 
+                "fin_trans_id"=>$dataH->fin_sj_id,
+                "fst_trans_no"=>$dataH->fst_sj_no,
+                "fin_trans_detail_id"=>$dataD->fin_rec_id,
+                "fdb_qty"=>$dataD->fdb_qty,
+                "in_out"=>"OUT",
+            ];            
+            $this->trinventory_model->insertSerial($dataSerial);
+
+            //GET PRICE WAKTU BELI ACUANNYA DARI NILAI FAKTUR
+            $ssql = "SELECT * from trpurchasereturn a
+                INNER JOIN trlpbpurchaseitems b on a.fin_lpbpurchase_id = b.fin_lpbpurchase_id and  b.fin_item_id = ? 
+                WHERE a.fin_purchasereturn_id = ?";
+            $qr = $this->db->query($ssql,[$dataD->fin_item_id,$dataH->fin_trans_id]);
+            throwIfDBError();
+            $lpbPurchaseItem = $qr->row();
+            if ($lpbPurchaseItem == null){
+                throw new CustomException("LPB Purchase Item not found !",3003,"FAILED",$dataD);                
+            }
+
+            $dataStock = [
+                "fin_warehouse_id"=>$dataH->fin_warehouse_id,
+                "fdt_trx_datetime"=>$dataH->fdt_sj_datetime,
+                "fst_trx_code"=>"PRT", 
+                "fin_trx_id"=>$dataH->fin_sj_id, 
+                "fin_trx_detail_id"=>$dataD->fin_rec_id, 
+                "fst_trx_no"=>$dataH->fst_sj_no, 
+                "fst_referensi"=>$dataH->fst_sj_memo, 
+                "fin_item_id"=>$dataD->fin_item_id, 
+                "fst_unit"=>$dataD->fst_unit, 
+                "fdb_qty_in"=>0,
+                "fdb_qty_out"=>$dataD->fdb_qty, 
+                "fdc_price_in"=>(float) $lpbPurchaseItem->fdc_price - (float) $lpbPurchaseItem->fdc_disc_amount_per_item, 
+                "fst_active"=>"A" 
+            ];
+            $this->trinventory_model->insert($dataStock);
+
+             //Update data SO detail 
+             $ssql = "UPDATE trpurchasereturnitems SET fdb_qty_out = fdb_qty_out +  ? WHERE fin_rec_id = ?";
+             $query = $this->db->query($ssql,[$dataD->fdb_qty,$dataD->fin_trans_detail_id]);
+             throwIfDBError();
+
+        }
+        
+        //Cek All Data valid after Process
+        $this->trpurchasereturn_model->updateClosedStatus($dataH->fin_trans_id);
+
+        //Data PURCHASE RETURN detail  still valid
+        $ssql = "SELECT * FROM trpurchasereturnitems WHERE fin_purchasereturn_id = ? AND fdb_qty < fdb_qty_out";
+        $qr = $this->db->query($ssql,$dataH->fin_trans_id);
+        $rw = $qr->row();
+        if ($rw != null){
+            throw new CustomException(lang("Qty Purchase return detail not balance !"),3003,"FAILED",null);            
+        }    
+    }
+
     public function delete($key, $softdelete = TRUE,$data=null){
         if ($softdelete){
             $ssql = "UPDATE trsuratjalandetails SET fst_active ='D' WHERE fin_sj_id = ?";

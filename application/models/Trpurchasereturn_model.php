@@ -383,6 +383,20 @@ class Trpurchasereturn_model extends MY_Model {
         $this->db->query($ssql,[$finPurchaseReturnId]);
         throwIfDBError();        
     }
+
+    public function updateClosedStatus($finPurchaseReturnId){
+
+        $ssql = "select * from trpurchasereturnitems where fin_purchasereturn_id = ? and fdb_qty > fdb_qty_out";
+        $qr = $this->db->query($ssql,$finPurchaseReturnId);
+        if ($qr->row() == null){
+            //Transaksi Return Completed
+            $ssql = "update trpurchasereturn set fdt_closed_datetime = now() , fbl_is_closed = 1, fst_closed_notes = 'AUTO - ".date("Y-m-d H:i:s") ."' where fin_purchasereturn_id = ?";
+            $this->db->query($ssql,[$finPurchaseReturnId]);
+        }else{
+            $ssql = "update trpurchasereturn set fdt_closed_datetime = null , fbl_is_closed = 0, fst_closed_notes = null where fin_purchasereturn_id = ?";
+            $this->db->query($ssql,[$finPurchaseReturnId]);
+        }
+    }
 }
 
 

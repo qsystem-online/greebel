@@ -466,7 +466,7 @@ class Trinventory_model extends MY_Model
                         $dataSerial["fst_basic_unit"]
                     );
                     if ($isAvailable == false){
-                        throw new CustomException(sprintf(lang("serial %s:%s tidak tersedia"),$dataSerial["fst_batch_no"],$serial),3003,"FAILED",null);
+                        throw new CustomException(sprintf(lang("serial %s:%s tidak tersedia / qty tidak mencukupi"),$dataSerial["fst_batch_no"],$serial),3003,"FAILED",null);
                     }
                 }
 
@@ -549,7 +549,7 @@ class Trinventory_model extends MY_Model
                         $dataSerial["fst_basic_unit"]
                     );
                     if ($isAvailable == false){
-                        throw new CustomException(sprintf(lang("serial %s:%s tidak tersedia"),$dataSerial["fst_batch_no"],null),3003,"FAILED",null);
+                        throw new CustomException(sprintf(lang("Batch %s:%s tidak tersedia / qty tidak mencukupi"),$dataSerial["fst_batch_no"],null),3003,"FAILED",null);
                     }
                 }
 
@@ -622,7 +622,7 @@ class Trinventory_model extends MY_Model
         $qr =$this->db->query($ssql,[$finWarehouseId,$finItemId,$fstBatchNo,$fstSerialNo]);        
         $rw = $qr->row();
 
-        if ($rw == null){
+        if ($rw == null){            
             return false;
         }
         $basicUnit = $this->msitems_model->getBasicUnit($finItemId);

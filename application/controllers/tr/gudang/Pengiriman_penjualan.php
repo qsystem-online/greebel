@@ -35,13 +35,15 @@ class Pengiriman_penjualan extends MY_Controller{
 		$this->list['columns'] = [
 			['title' => 'Surat Jalan ID.', 'width' => '20px', 'data' => 'fin_sj_id'],
             ['title' => 'Surat Jalan No.', 'width' => '20px', 'data' => 'fst_sj_no'],
-            ['title' => 'Surat Jalan Date.', 'width' => '20px', 'data' => 'fdt_sj_datetime',
+            
+            ['title' => 'Surat Jalan Date.', 'width' => '50px', 'data' => 'fdt_sj_datetime',
                 'render'=>"function(data,type,row){
                     return App.dateTimeFormat(data);
                 }",
             ],
-            ['title' => 'Sales Order No.', 'width' => '20px', 'data' => 'fst_salesorder_no'],
-            ['title' => 'Sales Order Date.', 'width' => '20px', 'data' => 'fdt_salesorder_datetime',
+            ['title' => 'Type', 'width' => '20px', 'data' => 'fst_sj_type'],
+            ['title' => 'Trans No.', 'width' => '20px', 'data' => 'fst_trans_no'],
+            ['title' => 'Trans Date.', 'width' => '20px', 'data' => 'fdt_trans_datetime',
                 'render'=>"function(data,type,row){
                     return App.dateTimeFormat(data);
                 }",
@@ -71,9 +73,16 @@ class Pengiriman_penjualan extends MY_Controller{
 
     public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("(select a.*,b.fst_salesorder_no,b.fdt_salesorder_datetime from trsuratjalan a inner join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id) a");
+		$this->datatables->setTableName("(
+            SELECT a.*,
+            ifnull(b.fst_salesorder_no,c.fst_purchasereturn_no) as fst_trans_no,
+            ifnull(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime) as fdt_trans_datetime         
+            from trsuratjalan a 
+            LEFT JOIN trsalesorder b on a.fin_trans_id = b.fin_salesorder_id and a.fst_sj_type ='SO' 
+            LEFT JOIN trpurchasereturn c on a.fin_trans_id = c.fin_purchasereturn_id and a.fst_sj_type ='PO_RETURN' 
+        ) a");
 
-		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_datetime,a.fst_sj_memo,a.fst_salesorder_no,a.fdt_salesorder_datetime";
+		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fst_sj_type,a.fdt_sj_datetime,a.fst_sj_memo,a.fst_trans_no,a.fdt_trans_datetime";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
@@ -155,6 +164,7 @@ class Pengiriman_penjualan extends MY_Controller{
         $this->load->model("msitems_model");
             
         try{
+            $fdt_sj_datetime = dBDateTimeFormat($this->input->post("fdt_sj_datetime"));
             //CHECK LOCKED DATE            
             $resp = dateIsLock($fdt_sj_datetime);
             if ($resp["status"] != "SUCCESS" ){
@@ -180,7 +190,7 @@ class Pengiriman_penjualan extends MY_Controller{
             $this->db->trans_start();
             
             $insertId = $this->trsuratjalan_model->insert($dataH);
-            foreach($details as $detail){
+            foreach($dataDetails as $detail){
                 $detail = (array) $detail;
                 $detail["fin_sj_id"] = $insertId;
                 $detail["fst_serial_number_list"] = json_encode($detail["fst_serial_number_list"]);
@@ -192,13 +202,13 @@ class Pengiriman_penjualan extends MY_Controller{
             $this->trsuratjalan_model->posting($insertId);
 
 
-            //$this->db->trans_complete();
+            $this->db->trans_complete();
             $this->ajxResp["status"] = "SUCCESS";
             $this->ajxResp["message"] = "Data Saved !";
             $this->ajxResp["data"]["insert_id"] = $insertId;
             $this->json_output();
 
-        }catch(CustomException $e){            
+        }catch(CustomException $e){
             $this->db->trans_rollback();
 			$this->ajxResp["status"] = $e->getStatus();
 			$this->ajxResp["message"] = $e->getMessage();
