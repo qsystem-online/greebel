@@ -140,7 +140,7 @@ class Purchase_return extends MY_Controller{
 			if ($resp["status"] != "SUCCESS" ){
 				throw new CustomException($resp["message"],3003,$resp["status"],null);
 			}
-			$dataPrepared = $this->prepareData();
+			$dataPrepared = $this->prepareData();			
 			$dataH = $dataPrepared["dataH"];
 			$dataDetails = $dataPrepared["dataDetails"];
 			$lpbPurchase = $dataPrepared["lpbPurchase"];
@@ -157,8 +157,9 @@ class Purchase_return extends MY_Controller{
 	
 		try{
 			//SAVE
-			$this->db->trans_start(); 
+			$this->db->trans_start(); 						
 			$insertId = $this->trpurchasereturn_model->insert($dataH);
+			
 			foreach($dataDetails as $dataD){
 				$dataD["fin_purchasereturn_id"] = $insertId;
 				$this->trpurchasereturnitems_model->insert($dataD);
@@ -293,7 +294,7 @@ class Purchase_return extends MY_Controller{
 		$dataH =[
 			//"fin_purchasereturn_id"
 			"fst_purchasereturn_no" =>$fst_purchasereturn_no,
-			"fbl_is_import"=> $this->input->post("fbl_is_import") == null ? 0 : 1,			
+			"fbl_is_import"=> $this->input->post("fbl_is_import") == null ? 0 : $this->input->post("fbl_is_import"),			
 			"fdt_purchasereturn_datetime"=>$fdt_purchasereturn_datetime,
 			"fin_supplier_id" => $this->input->post("fin_supplier_id"),
 			"fbl_non_faktur"=>$fbl_non_faktur,
@@ -308,7 +309,7 @@ class Purchase_return extends MY_Controller{
 			"fst_memo"=>$this->input->post("fst_memo"),
 			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
 			"fst_active"=>'A'
-		];
+		];		
 
 		$postDetails = $this->input->post("details");
 		$postDetails = json_decode($postDetails);

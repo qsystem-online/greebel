@@ -83,22 +83,44 @@ class Trsuratjalan_model extends MY_Model {
             inner join msrelations d on IFNULL(b.fin_relation_id,c.fin_supplier_id)  = d.fin_relation_id 
             where a.fin_sj_id = ? and a.fst_active !='D' ";
 
-
-
         $qr = $this->db->query($ssql, [$fin_sj_id]);      
         throwIfDBError();  
         $rwSJ = $qr->row();
 
 
-        $ssql = "SELECT a.*,
-            b.fin_promo_id,b.fin_promo_id,b.fst_custom_item_name,
-            c.fbl_is_batch_number,c.fbl_is_serial_number,c.fst_item_code,c.fst_item_name,
-            d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit from trsuratjalandetails a 
-            INNER JOIN trsalesorderdetails b on a.fin_salesorder_detail_id = b.fin_rec_id 
-            INNER JOIN msitems c on b.fin_item_id = c.fin_item_id  
-            LEFT JOIN msitemunitdetails d on c.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1
-            WHERE a.fin_sj_id = ?";
+        if ($rwSJ->fst_sj_type == "SO"){
 
+            $ssql = "SELECT a.*,
+                b.fin_promo_id,
+                b.fst_custom_item_name,
+                c.fbl_is_batch_number,c.fbl_is_serial_number,c.fst_item_code,c.fst_item_name,
+                d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit 
+                FROM trsuratjalandetails a 
+                INNER JOIN trsalesorderdetails b on a.fin_trans_detail_id = b.fin_rec_id 
+                INNER JOIN msitems c on b.fin_item_id = c.fin_item_id  
+                LEFT JOIN msitemunitdetails d on c.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1
+                WHERE a.fin_sj_id = ?";
+
+
+
+        }else if ($rwSJ->fst_sj_type == "PO_PURCHASE"){
+            $ssql = "SELECT a.*,
+                0 as b.fin_promo_id,b.fst_custom_item_name,
+                c.fbl_is_batch_number,c.fbl_is_serial_number,c.fst_item_code,c.fst_item_name,
+                d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit 
+                FROM trsuratjalandetails a 
+                INNER JOIN trpurchasereturnitems b on a.fin_trans_detail_id = b.fin_rec_id 
+                INNER JOIN msitems c on b.fin_item_id = c.fin_item_id  
+                LEFT JOIN msitemunitdetails d on c.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1
+                WHERE a.fin_sj_id = ?";
+
+        }else{
+            return [
+                "sj" => $rwSJ,
+                "sj_details" => []
+            ];
+        }
+           
 		$qr = $this->db->query($ssql,[$fin_sj_id]);
 		$rsSJDetails = $qr->result();
         
