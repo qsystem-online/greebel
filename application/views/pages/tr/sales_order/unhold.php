@@ -24,15 +24,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="table">
 					<div style="margin-bottom:5px;margin-top:20px">
 						<div style="float:right">
-							<label class="control-label">Search by :</label>
-							<select id="selectSearch" class="form-control"  style="display:inline;width:148px">
+							<label class="control-label">Search on:</label>
+							<select id="selectSearch" class="form-control"  style="display:inline;width:148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
 								<option value='fin_salesorder_id'>Sales Order ID</option>
 								<option value='fst_salesorder_no'>Sales Order No</option>
 							</select>
 						</div>
 						<div style="clear:both"></div>
 					</div>
-					<table id="tblUnhold" style="width:100%"></table>
+					<table id="tblUnhold" class="table table-bordered table-hover table-striped row-border compact nowarp" style="min-width:100%"></table>
 				</div>
 			</div>
 			<!-- /.box-body -->	
@@ -54,12 +54,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				url:"<?=site_url()?>tr/sales_order/unhold_fetch_list_data",
 			},
 			columns:[
-				{"title" : "Sales Order ID","width": "13%",sortable:true,data:"fin_salesorder_id",visible:true},
-				{"title" : "Sales Order No","width": "12%",sortable:true,data:"fst_salesorder_no",visible:true},
-				{"title" : "Sales Order Date","width": "15%",sortable:true,data:"fdt_salesorder_datetime",visible:true},
-				{"title" : "Customer","width": "15%",sortable:true,data:"fst_relation_name",visible:true},
-				{"title" : "Memo","width": "15%",sortable:true,data:"fst_memo",visible:true},
-				{"title" : "Unhold Date","width": "15%",sortable:true,data:"fdt_unhold_datetime",visible:false},
+				{"title" : "Sales Order ID","width": "10%",sortable:true,data:"fin_salesorder_id",visible:true},
+				{"title" : "Sales Order No","width": "13%",sortable:true,data:"fst_salesorder_no",visible:true},
+				{"title" : "Sales Order Date","width": "13%",sortable:true,data:"fdt_salesorder_datetime",visible:true},
+				{"title" : "Customer","width": "20%",sortable:true,data:"fst_relation_name",visible:true},
+				{"title" : "Memo","width": "20%",sortable:true,data:"fst_memo",visible:true},
+				{"title" : "Unhold Date","width": "14%",sortable:true,data:"fdt_unhold_datetime",visible:false},
 				{"title" : "Unhold","width": "10%",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){
 						return "<a class='btn-unhold' href='#'><i class='fa fa-pause-circle'></i></a>";
