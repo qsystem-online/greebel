@@ -32,7 +32,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						<div style="clear:both"></div>
 					</div>
-					
 					<table id="tblUnhold" style="width:100%"></table>
 				</div>
 			</div>
@@ -43,7 +42,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript">
 	$(function(){
-		$("#tblUnhold").DataTable({
+		$(".filterData").change(function(event){
+			event.preventDefault();
+			$('#tblUnhold').DataTable().ajax.reload();
+		});
+
+		$('#tblUnhold').on('preXhr.dt', function(e, settings, data){
+			data.optionSearch = $('#selectSearch').val();
+		}).DataTable({
 			ajax: {
 				url:"<?=site_url()?>tr/sales_order/unhold_fetch_list_data",
 			},
