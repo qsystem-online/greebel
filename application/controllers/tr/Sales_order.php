@@ -44,11 +44,11 @@ class Sales_order extends MY_Controller{
 		$this->list['columns'] = [
 			['title' => 'Sales Order ID.', 'width' => '10px', 'visible' => 'false', 'data' => 'fin_salesorder_id'],
 			['title' => 'Sales Order No.', 'width' => '120px', 'data' => 'fst_salesorder_no'],
-			['title' => 'Sales Order Date', 'width' => '120px', 'data' => 'fdt_salesorder_datetime'],
-			['title' => 'Customer', 'width' => '200px', 'data' => 'fst_customer'],
-			['title' => 'Memo', 'width' => '160px', 'data' => 'fst_memo'],
+			['title' => 'Sales Order Date', 'width' => '80px', 'data' => 'fdt_salesorder_datetime'],
+			['title' => 'Customer', 'width' => '130px', 'data' => 'fst_customer'],
+			['title' => 'Memo', 'width' => '120px', 'data' => 'fst_memo'],
 			
-			['title' => 'Total', 'width' => '120px','className'=>'text-right',
+			['title' => 'Total', 'width' => '100px','className'=>'text-right',
 				'render'=>"function(data,type,row){
 					var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount) + parseFloat(row.fdc_vat_amount);
 					return row.fst_curr_code + ':' + App.money_format(total);
@@ -87,7 +87,7 @@ class Sales_order extends MY_Controller{
 				}"
 			],
 
-			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'dt-body-center text-center',
+			['title' => 'Action', 'width' => '60px', 'sortable' => false, 'className' => 'dt-body-center text-center',
 				'render'=>"function(data,type,row){
 					action = \"<div style='font-size:16px'>\";
 					action += \"<a class='btn-edit' href='#' data-id='\" + row.fin_salesorder_id + \"'><i class='fa fa-pencil'></i></a>\";
