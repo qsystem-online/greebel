@@ -37,18 +37,18 @@ class Penerimaan_pembelian extends MY_Controller{
 		
 
         $this->list['columns'] = [
-			['title' => 'ID.', 'width' => '100px', 'data' => 'fin_lpbgudang_id'],
-            ['title' => 'No. LPB', 'width' => '100px', 'data' => 'fst_lpbgudang_no'],
-			['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_lpbgudang_datetime'],
-			['title' => 'LPB Type', 'width' => '80px', 'data' => 'fst_lpb_type',
+			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_lpbgudang_id'],
+            ['title' => 'No. LPB', 'width' => '60px', 'data' => 'fst_lpbgudang_no'],
+			['title' => 'Tanggal', 'width' => '50px', 'data' => 'fdt_lpbgudang_datetime'],
+			['title' => 'LPB Type', 'width' => '50px', 'data' => 'fst_lpb_type',
 				'render'=>"function(data,type,row){					
 					return data;
 				}"
 			],
-			['title' => 'Reff No.', 'width' => '100px', 'data' => 'fst_trans_no2'],
-			['title' => 'Relation', 'width' => '200px', 'data' => 'fst_relation_name'],
-			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
-			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Reff No.', 'width' => '60px', 'data' => 'fst_trans_no2'],
+			['title' => 'Relation', 'width' => '100px', 'data' => 'fst_relation_name'],
+			['title' => 'Memo', 'width' => '100px', 'data' => 'fst_memo'],
+			['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/gudang/penerimaan_pembelian/edit/' + row.fin_lpbgudang_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
