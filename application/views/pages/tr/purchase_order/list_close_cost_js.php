@@ -16,7 +16,7 @@
 				var arrCost = resp;
 				$.each(arrCost,function(i,v){
 					result += "<tr>";
-					result += '<td style="width:20%">'+ v.fst_po_no +'</td>';
+					result += '<td style="width:20%">'+ v.fst_purchasecost_no +'</td>';
 					result += '<td style="width:20%">'+ v.fst_curr_code + ':' + App.money_format(v.fdc_total) +'</td>';
 					result += '<td>'+ v.fst_memo +'</td>';
 					result += '</tr>';

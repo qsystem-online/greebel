@@ -100,13 +100,13 @@ class Trcbreceive_model extends MY_Model {
                 throwIfDBError();
                 $this->checkIsValidInvoceSO($dataItem->fin_trans_id);
 
-            }else if ($dataItem->fst_trans_type == "DELETE_LPB_RETURN"){
-                $ssql = "update trpurchasereturn set fdc_total_claimed = fdc_total_claimed - ? where fin_purchasereturn_id = ?";
-                $this->db->query($ssql,[abs($dataItem->fdc_payment),$dataItem->fin_trans_id]);
-                $result = $this->checkIsValidLPBReturn($dataItem->fin_trans_id);
-                if($result["status"] != "SUCCESS"){
-                    return $result;
-                }
+            }else if ($dataItem->fst_trans_type == "RETURN_SO"){
+                $ssql = "update trsalesreturn set fdc_total_claimed = fdc_total_claimed - ? where fin_salesreturn_id = ?";
+                $this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);
+                throwifDBError();
+                $this->checkIsValidSalesReturn($dataItem->fin_trans_id);
+            }else{
+                throw new CustomException("Invalid detail cash bank transaction type $dataItem->fst_trans_type",9009,"FAILED",null);
             }
         }
         $this->glledger_model->cancelJurnal("CBIN",$dataH->fin_cbreceive_id,$unpostingDateTime);
@@ -155,17 +155,20 @@ class Trcbreceive_model extends MY_Model {
                 $this->db->query($ssql,[$dataItem->fdc_receive_amount,$dataItem->fin_trans_id]);
                 throwIfDBError();
                 $this->checkIsValidInvoceSO($dataItem->fin_trans_id);
-            }else if ($dataItem->fst_trans_type == "*****LPB_RETURN"){
-                $tmpArr = $this->getDataJurnalPostingLPBReturn($dataItem,$dataH);                
+            }else if ($dataItem->fst_trans_type == "RETURN_SO"){
+                $tmpArr = $this->getDataJurnalPostingSOReturn($dataItem,$dataH);
+
                 foreach($tmpArr as $tmp){
                     $dataJurnal[] = $tmp;
                 }
-                $ssql = "update trpurchasereturn set fdc_total_claimed = fdc_total_claimed + ? where fin_purchasereturn_id = ?";
-                $this->db->query($ssql,[abs($dataItem->fdc_payment),$dataItem->fin_trans_id]);
-                $result = $this->checkIsValidLPBReturn($dataItem->fin_trans_id);
-                if($result["status"] != "SUCCESS"){
-                    return $result;
-                }
+                $ssql = "update trsalesreturn set fdc_total_claimed = fdc_total_claimed + ? where fin_salesreturn_id = ?";
+                $this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);
+                throwIfDBError();
+
+                $this->checkIsValidSalesReturn($dataItem->fin_trans_id);
+                
+            }else{
+                throw new CustomException("Unknow Detail Transaction Type $dataItem->fst_trans_type",9009,"FAILED",null);
             }
         }
 
@@ -191,10 +194,10 @@ class Trcbreceive_model extends MY_Model {
                 "fin_trx_id"=>$finCBReceiveId,
                 "fst_trx_no"=>$dataH->fst_cbreceive_no,
                 "fst_reference"=>$receive->fst_referensi,
-                "fdc_debit"=>0,
-                "fdc_origin_debit"=>0,
-                "fdc_credit"=>$receive->fdc_amount * $dataH->fdc_exchange_rate_idr,
-                "fdc_origin_credit"=>$receive->fdc_amount,
+                "fdc_debit"=>$receive->fdc_amount * $dataH->fdc_exchange_rate_idr,
+                "fdc_origin_debit"=>$receive->fdc_amount,
+                "fdc_credit"=>0,
+                "fdc_origin_credit"=>0,
                 "fst_orgi_curr_code"=>$dataH->fst_curr_code,
                 "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
                 "fst_no_ref_bank"=>null,
@@ -204,7 +207,7 @@ class Trcbreceive_model extends MY_Model {
                 "fin_pc_project_id"=>$receive->fin_pc_project_id,
                 "fin_relation_id"=>null,
                 "fst_active"=>"A",
-                "fst_info"=>"PEMBAYARANNYA",
+                "fst_info"=>"PENERIMAAN",
             ];  
         }               
         $this->glledger_model->createJurnal($dataJurnal);       
@@ -234,10 +237,10 @@ class Trcbreceive_model extends MY_Model {
             "fin_trx_id"=>$dataItem->fin_cbreceive_id,
             "fst_trx_no"=>$dataH->fst_cbreceive_no,
             "fst_reference"=>$rw->fst_salesorder_no . " | " . $dataH->fst_memo,
-            "fdc_debit"=> $dataItem->fdc_receive_amount   * $rw->fdc_exchange_rate_idr,
-            "fdc_origin_debit"=>$dataItem->fdc_receive_amount,
-            "fdc_credit"=>0,
-            "fdc_origin_credit"=>0,
+            "fdc_debit"=> 0,
+            "fdc_origin_debit"=>0,
+            "fdc_credit"=>$dataItem->fdc_receive_amount   * $rw->fdc_exchange_rate_idr,
+            "fdc_origin_credit"=>$dataItem->fdc_receive_amount,
             "fst_orgi_curr_code"=>$rw->fst_curr_code,
             "fdc_orgi_rate"=>$rw->fdc_exchange_rate_idr,
             "fst_no_ref_bank"=>null,
@@ -250,19 +253,13 @@ class Trcbreceive_model extends MY_Model {
         if ($dataH->fdc_exchange_rate_idr  != $rw->fdc_exchange_rate_idr){
             
             $selisih = ($dataItem->fdc_receive_amount * $rw->fdc_exchange_rate_idr) - ($dataItem->fdc_receive_amount * $dataH->fdc_exchange_rate_idr);
-
             if ($selisih < 0){
                 $fstAccountCode =  getGLConfig("SELISIH_KURS_UNTUNG");
-                $debet = abs($selisih);
-                $credit = 0 ;
-
-                                
             }else{
                 $fstAccountCode =  getGLConfig("SELISIH_KURS_RUGI");
-                $debet = 0;
-                $credit = $selisih ;
-                
             }
+            $debet = $selisih;
+            $credit = 0;
 
             $dataJurnal[] = [
                 "fin_branch_id"=>$rw->fin_branch_id,
@@ -330,10 +327,10 @@ class Trcbreceive_model extends MY_Model {
             "fin_trx_id"=>$dataItem->fin_cbreceive_id,
             "fst_trx_no"=>$dataH->fst_cbreceive_no,
             "fst_reference"=>$dataD->fst_inv_no . " | " . $dataH->fst_memo,
-            "fdc_debit"=> $dataItem->fdc_receive_amount   * $dataD->fdc_exchange_rate_idr,
-            "fdc_origin_debit"=>$dataItem->fdc_receive_amount,
-            "fdc_credit"=>0,
-            "fdc_origin_credit"=>0,
+            "fdc_debit"=> 0,
+            "fdc_origin_debit"=>0,
+            "fdc_credit"=>$dataItem->fdc_receive_amount   * $dataD->fdc_exchange_rate_idr,
+            "fdc_origin_credit"=>$dataItem->fdc_receive_amount,
             "fst_orgi_curr_code"=>$dataD->fst_curr_code,
             "fdc_orgi_rate"=>$dataD->fdc_exchange_rate_idr,
             "fst_no_ref_bank"=>null,
@@ -349,18 +346,16 @@ class Trcbreceive_model extends MY_Model {
 
             $selisih = ($dataItem->fdc_receive_amount * $dataD->fdc_exchange_rate_idr) - ($dataItem->fdc_receive_amount * $dataH->fdc_exchange_rate_idr);
 
-            if ($selisih > 0){
+            if ($selisih < 0){
+                $fstAccountCode =  getGLConfig("SELISIH_KURS_UNTUNG");
+                $glAccountInfo = "SELISIH KURS UNTUNG";                
+            }else{
                 $fstAccountCode =  getGLConfig("SELISIH_KURS_RUGI");
                 $glAccountInfo = "SELISIH KURS RUGI";
-                $debet = 0;
-                $credit = $selisih;
-                                
-            }else{
-                $fstAccountCode =  getGLConfig("SELISIH_KURS_UNTUNG");
-                $glAccountInfo = "SELISIH KURS UNTUNG";
-                $debet = abs($selisih) ;
-                $credit = 0;
             }
+                
+            $debet = $selisih;
+            $credit = 0;
 
             $dataJurnal[] = [
                 "fin_branch_id"=>$dataD->fin_branch_id,
@@ -402,8 +397,108 @@ class Trcbreceive_model extends MY_Model {
     }
 
 
+    public function getDataJurnalPostingSOReturn($dataItem,$dataH){
 
-    
+        /* SAAT REALISASI PEMBAYARAN FAKTUR, POTONG RETUR (AYAT SILANG)
+        ------------------------------------------------------------
+        Kas/Bank		Rp.   891.000,-
+        Retur Belum Realisasi	Rp.    99.000,-
+            Piutang Dagang			Rp.  990.000,-
+        */
+
+        $dataJurnal = [];
+
+        
+        $ssql = "SELECT a.* FROM trsalesreturn a
+            WHERE a.fin_salesreturn_id = ? and a.fst_active != 'D'";
+        $qr =$this->db->query($ssql,[$dataItem->fin_trans_id]);
+        $dataD = $qr->row();
+        if($dataD == null){
+            throw new CustomException("ID sales return tidak dikenal !",9009,"FAILED",null);
+        }
+
+        //Jurnal Piutang dagang Lokal atau Import
+        $accRetunBelumRealisasi = getGLConfig("RETUR_BELUM_REALISASI");        
+        //$glAccountPiutang = getGLConfig("AR_DAGANG_LOKAL");
+        $glAccountInfo = "RETUR BELUM REALISASI";
+                
+        $dataJurnal[] = [
+            "fin_branch_id"=>$dataD->fin_branch_id,
+            "fst_account_code"=>$accRetunBelumRealisasi,
+            "fdt_trx_datetime"=>$dataH->fdt_cbreceive_datetime,
+            "fst_trx_sourcecode"=>"CBIN",
+            "fin_trx_id"=>$dataItem->fin_cbreceive_id,
+            "fst_trx_no"=>$dataH->fst_cbreceive_no,
+            "fst_reference"=>$dataD->fst_salesreturn_no . " | " . $dataH->fst_memo,
+            "fdc_debit"=> 0,
+            "fdc_origin_debit"=>0,
+            "fdc_credit"=> $dataItem->fdc_receive_amount * $dataD->fdc_exchange_rate_idr,
+            "fdc_origin_credit"=> $dataItem->fdc_receive_amount * 1,
+            "fst_orgi_curr_code"=>$dataD->fst_curr_code,
+            "fdc_orgi_rate"=>$dataD->fdc_exchange_rate_idr,
+            "fst_no_ref_bank"=>null,
+            "fin_pcc_id"=>null,
+            "fin_relation_id"=>$dataH->fin_customer_id,
+            "fst_active"=>"A",
+            "fst_info"=>$glAccountInfo,
+        ];
+
+
+        //Jurnal Selisih Kurs     
+        if ($dataH->fdc_exchange_rate_idr  != $dataD->fdc_exchange_rate_idr){
+
+            $selisih = ($dataItem->fdc_receive_amount * $dataD->fdc_exchange_rate_idr) - ($dataItem->fdc_receive_amount * $dataH->fdc_exchange_rate_idr);
+
+            if ($selisih < 0){
+                $fstAccountCode =  getGLConfig("SELISIH_KURS_RUGI");
+                $glAccountInfo = "SELISIH KURS RUGI";                
+                
+            }else{
+                $fstAccountCode =  getGLConfig("SELISIH_KURS_UNTUNG");
+                $glAccountInfo = "SELISIH KURS UNTUNG";
+            }
+                
+            $debet = $selisih;
+            $credit = 0;
+                        
+            $dataJurnal[] = [
+                "fin_branch_id"=>$dataD->fin_branch_id,
+                "fst_account_code"=>$fstAccountCode,
+                "fdt_trx_datetime"=>$dataH->fdt_cbreceive_datetime,
+                "fst_trx_sourcecode"=>"CBIN",
+                "fin_trx_id"=>$dataItem->fin_cbreceive_id,
+                "fst_trx_no"=>$dataH->fst_cbreceive_no,
+                "fst_reference"=>$dataD->fst_inv_no . " | " . $dataH->fst_memo,
+                "fdc_debit"=> $debet,
+                "fdc_origin_debit"=>$debet,
+                "fdc_credit"=>$credit,
+                "fdc_origin_credit"=>$credit,
+                "fst_orgi_curr_code"=>"IDR",
+                "fdc_orgi_rate"=>1,
+                "fst_no_ref_bank"=>null,
+                "fin_pcc_id"=>null,
+                "fin_relation_id"=>null,
+                "fst_active"=>"A",
+                "fst_info"=>$glAccountInfo
+            ];
+        }
+
+        return $dataJurnal;
+
+    }
+
+    public function checkIsValidSalesReturn($finSalesReturnId){
+        $ssql = "select * from trsalesreturn where fin_salesreturn_id = ?";
+        $qr = $this->db->query($ssql,[$finSalesReturnId]);
+        $rw = $qr->row();
+        if($rw == null){
+            throw new CustomException(lang("ID sales return tidak dikenal !"),9009,"FAILED",null);
+        }
+
+        if($rw->fdc_total < $rw->fdc_total_claimed){
+            throw new CustomException(sprintf(lang("Total klaim retur %s melebih nilai retur"),$rw->fst_salesreturn_no),3003,"FAILED",null);
+        }
+    }
 
     public function getDataById($finCBReceiveId){
         $ssql = "select a.*,b.fst_type as fst_kasbank_type from " .$this->tableName. " a 
@@ -412,7 +507,6 @@ class Trcbreceive_model extends MY_Model {
 
         $qr = $this->db->query($ssql, [$finCBReceiveId]);
         $rwCBReceive = $qr->row();
-
         if ($rwCBReceive == null){
             return null;
         }
@@ -420,11 +514,11 @@ class Trcbreceive_model extends MY_Model {
         $ssql = "select * from trcbreceiveitems where fin_cbreceive_id = ?";
         $qr = $this->db->query($ssql,[$finCBReceiveId]);        
         $rsCBReceiveItems = $qr->result();
-
         for($i=0;$i < count($rsCBReceiveItems) ; $i++){
             
             $trans = $this->getTransactionInfo( $rsCBReceiveItems[$i]->fst_trans_type,$rsCBReceiveItems[$i]->fin_trans_id);
-
+            
+            //$trans = (array) $rsCBReceiveItems[$i];
             $rsCBReceiveItems[$i]->fst_trans_no = $trans["fst_trans_no"];
             $rsCBReceiveItems[$i]->fdc_trans_amount = $trans["fdc_trans_amount"];
             $rsCBReceiveItems[$i]->fdc_paid_amount = $trans["fdc_paid_amount"];
@@ -473,10 +567,47 @@ class Trcbreceive_model extends MY_Model {
                     "fdc_paid_amount"=>$rw->fdc_downpayment_paid,
                     "fdc_return_amount"=>0
                 ];
+            }            
+        }else if($transType == "INV_SO"){
+            $ssql ="select * from trinvoice where fin_inv_id = ?";
+            $qr =$this->db->query($ssql,[$transId]);
+            $rw = $qr->row();
+            if($rw == null){
+                return [
+                    "fst_trans_no"=>null,
+                    "fdc_trans_amount"=>0,
+                    "fdc_paid_amount"=>0,
+                    "fdc_return_amount"=>0
+                ];
+            }else{
+                return [
+                    "fst_trans_no"=>$rw->fst_inv_no,
+                    "fdc_trans_amount"=>$rw->fdc_total,
+                    "fdc_paid_amount"=>$rw->fdc_total_paid,
+                    "fdc_return_amount"=>$rw->fdc_total_return
+                ];
             }
-            
-        }else if($transType == "LPB_PO"){
-            
+        }else if($transType == "RETURN_SO"){
+            $ssql ="select * from trsalesreturn where fin_salesreturn_id = ?";
+            $qr =$this->db->query($ssql,[$transId]);
+            $rw = $qr->row();
+            if($rw == null){
+                return [
+                    "fst_trans_no"=>null,
+                    "fdc_trans_amount"=>0,
+                    "fdc_paid_amount"=>0,
+                    "fdc_return_amount"=>0
+                ];
+            }else{
+                return [
+                    "fst_trans_no"=>$rw->fst_salesreturn_no,
+                    "fdc_trans_amount"=>$rw->fdc_total * -1,
+                    "fdc_paid_amount"=>$rw->fdc_total_claimed * -1,
+                    "fdc_return_amount"=>0
+                ];
+            }
+        }else{
+            return null;
         }
 
     }

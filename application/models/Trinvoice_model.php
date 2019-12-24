@@ -163,7 +163,7 @@ class Trinvoice_model extends MY_Model {
         */
         
         $ssql = "SELECT a.fin_sj_id,a.fst_sj_no,a.fdt_sj_datetime FROM trsuratjalan a
-            WHERE fin_salesorder_id = ? AND fin_warehouse_id like ? 
+            WHERE fin_trans_id = ? AND fin_warehouse_id like ? 
             AND fin_inv_id IS NULL AND a.fst_active = 'A'";
         
         $finWarehouseId =  $finWarehouseId == null ? '%' : $finWarehouseId;
@@ -191,12 +191,13 @@ class Trinvoice_model extends MY_Model {
     }
 
     public function getDetailSJ($arrSJId){
-        $ssql ="SELECT b.fin_promo_id,b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item,b.fdb_qty as fdb_qty_so,sum(a.fdb_qty) as fdb_qty_sj FROM trsuratjalandetails a 
-            INNER JOIN trsalesorderdetails b on a.fin_salesorder_detail_id = b.fin_rec_id            
+        $ssql ="SELECT b.fin_promo_id,b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item,b.fdb_qty as fdb_qty_so,sum(a.fdb_qty) as fdb_qty_sj 
+            FROM trsuratjalandetails a 
+            INNER JOIN trsalesorderdetails b on a.fin_trans_detail_id = b.fin_rec_id            
             WHERE fin_sj_id IN ?
             GROUP BY b.fin_promo_id,b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item,b.fdb_qty";
 
-        $qr = $this->db->query($ssql,[$arrSJId]);        
+        $qr = $this->db->query($ssql,[$arrSJId]);                
 
         $rs = $qr->result();
         return $rs;
@@ -306,7 +307,7 @@ class Trinvoice_model extends MY_Model {
         //SALES PECAH PER PROFIT CENTER
         $ssql = "SELECT f.fin_pcc_id,sum(b.fdb_qty * c.fdc_price) as fdc_total,sum(b.fdb_qty * c.fdc_disc_amount_per_item) as fdc_total_disc_amount FROM trinvoicedetails a 
             inner join trsuratjalandetails b on a.fin_sj_id = b.fin_sj_id 
-            inner join trsalesorderdetails c on b.fin_salesorder_detail_id = c.fin_rec_id
+            inner join trsalesorderdetails c on b.fin_trans_detail_id = c.fin_rec_id
             inner join msitems d on c.fin_item_id = d.fin_item_id
             inner join msgroupitems e on d.fin_item_group_id = e.fin_item_group_id
             inner join msgroupitems f on SUBSTRING_INDEX(e.fst_tree_id,'.',1) = f.fin_item_group_id
@@ -395,7 +396,7 @@ class Trinvoice_model extends MY_Model {
 
 
         //var_dump($dataJurnal);
-        //die();
+       // die();
    
         $this->glledger_model->createJurnal($dataJurnal);        
     }
@@ -466,9 +467,9 @@ class Trinvoice_model extends MY_Model {
         $term = $this->input->get("term");
         $term = "%".$term."%";
 
-        $ssql = "SELECT DISTINCT a.fin_salesorder_id,a.fin_warehouse_id, b.fst_salesorder_no,b.fst_curr_code,(b.fdc_downpayment_paid - b.fdc_downpayment_claimed) as fdc_downpayment_rest,b.fbl_is_vat_include, b.fdt_salesorder_datetime,b.fin_terms_payment,b.fin_sales_id,c.fst_relation_name as fst_customer_name 
+        $ssql = "SELECT DISTINCT b.fin_salesorder_id,a.fin_warehouse_id, b.fst_salesorder_no,b.fst_curr_code,(b.fdc_downpayment_paid - b.fdc_downpayment_claimed) as fdc_downpayment_rest,b.fbl_is_vat_include, b.fdt_salesorder_datetime,b.fin_terms_payment,b.fin_sales_id,c.fst_relation_name as fst_customer_name 
             FROM trsuratjalan a 
-            INNER JOIN trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id 
+            INNER JOIN trsalesorder b on a.fin_trans_id = b.fin_salesorder_id 
             INNER JOIN msrelations c on b.fin_relation_id = c.fin_relation_id 
             WHERE fin_inv_id IS NULL AND a.fst_active ='A' 
             AND (
@@ -481,7 +482,15 @@ class Trinvoice_model extends MY_Model {
     }
 
     public function getUnpaidSalesInvoiceList($finCustId,$fstCurrCode){
-        $ssql = "select * from trinvoice where fin_relation_id = ? and fst_curr_code = ? and fdc_total - fdc_total_return > fdc_total_paid and fst_active =! 'D'";
+        //Bisa di bayar kalau tidak ada pendingan return
+
+        $ssql = "SELECT a.* 
+            FROM trinvoice a
+            LEFT JOIN trsalesreturnitems b on a.fin_inv_id = b.fin_inv_id
+            INNER JOIN trsalesreturn c on b.fin_salesreturn_id = c.fin_salesreturn_id
+            where a.fin_relation_id = ? and a.fst_curr_code = ? and a.fdc_total - a.fdc_total_return > a.fdc_total_paid and a.fst_active =! 'D'
+            AND ifnull(c.fbl_is_closed,1) =  1";
+
         $qr =$this->db->query($ssql,[$finCustId,$fstCurrCode]);
         $rs = $qr->result();
         return $rs;

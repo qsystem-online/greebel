@@ -81,6 +81,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).DataTable({
 			scrollX: true,
 			scrollCollapse: true,
+			order:[[0,"desc"]],
 			columns:[
                 <?php
 					foreach($columns as $col){?>

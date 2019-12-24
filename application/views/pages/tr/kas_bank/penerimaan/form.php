@@ -193,6 +193,7 @@
 								<input type="text" class="form-control text-right" id="sub-total-rincian-payment-idr" value="0" readonly>
 							</div>
 						</div>
+						
 
 
 						
@@ -218,15 +219,15 @@
                         <div style="border:0 px inset #f0f0f0;border-radius:10px;padding:5px">
                             <fieldset style="padding:10px">
 				
-								<form id="form-detail" class="form-horizontal">
+								<form id="form-detail-trans" class="form-horizontal">
 									<input type='hidden' id='fin_rec_id_items'/>
 									<div class="form-group">
 										<label for="fst_trans_type" class="col-md-2 control-label"><?=lang("Trans type")?></label>
 										<div class="col-md-10">
 											<select id="fst_trans_type" class="form-control" style="width:100%">
 												<option value="DP_SO">DP Penjualan</option>
-												<option value="INV_SO">Faktur Penjualan</option>												
-												<option value="LPB_RETURN">***Return Pembelian Non Faktur</option>
+												<option value="INV_SO">Faktur Penjualan</option>
+												<option value="RETURN_SO">Return Penjualan Non Faktur</option>
 											</select>
 										</div>
 									</div>
@@ -261,6 +262,12 @@
 											<input type="TEXT" id="fdc_receive_amount"  value= "0" class="money form-control text-right"/>
 										</div>
 									</div>
+									<div class="form-group">
+										<label for="fst_memo_detail_trans" class="col-md-2 control-label"><?=lang("Memo")?></label>
+										<div class="col-md-10">
+											<textarea class="form-control text-left" id="fst_memo_detail_trans" style="resize:none"></textarea>
+										</div>
+									</div>
 
 								</form>
 								
@@ -288,7 +295,8 @@
 					fdc_trans_amount: App.money_parse($("#fdc_trans_amount").val()),
 					fdc_paid_amount: App.money_parse($("#ttl-paid").val()),
 					fdc_return_amount: App.money_parse($("#fdc_return_amount").val()),
-					fdc_receive_amount:App.money_parse($("#fdc_receive_amount").val())
+					fdc_receive_amount:App.money_parse($("#fdc_receive_amount").val()),
+					fst_memo:$("#fst_memo_detail_trans").val()
 				};			
 				t = $("#tblcbreceiveitems").DataTable();
 				if (rowReceiveItem != null){
@@ -322,7 +330,7 @@
 				$("#ttl-paid").val(App.money_format(ttlPaid));
 				$("#fdc_return_amount").val(App.money_format(ttlReturn));
 
-				$("#fdc_payment").val(App.money_format(ttlAmount - ttlPaid - ttlReturn));
+				$("#fdc_receive_amount").val(App.money_format(ttlAmount - ttlPaid - ttlReturn));
 			});
 
 			$("#fdc_amount").change(function(e){
@@ -378,25 +386,23 @@
 						}
 					});
 					break;
-				
-				
-				
-				case "LPB_RETURN":
+												
+				case "RETURN_SO":
 					App.getValueAjax({
 						site_url:"<?=site_url()?>",
-						model:"trcbpayment_model",
-						func:"getPurchaseReturnNonFakturList",
-						params:[$("#fin_supplier_id").val(),$("#fst_curr_code").val()],
-						callback:function(purchaseReturnNonFakturList){
+						model:"trsalesreturn_model",
+						func:"getSalesReturnNonFakturList",
+						params:[$("#fin_customer_id").val(),$("#fst_curr_code").val()],
+						callback:function(salesReturnNonFakturList){
 							$("#fin_trans_id").empty();
-							$.each(purchaseReturnNonFakturList,function(i,purchaseReturnNonFaktur){
+							$.each(salesReturnNonFakturList,function(i,salesReturnNonFaktur){
 								//var dp = parseFloat(lpbPurchase.fdc_downpayment);					
-								$("#fin_trans_id").append("<option value='"+purchaseReturnNonFaktur.fin_purchasereturn_id+"' data-ttl_amount='"+ parseFloat(purchaseReturnNonFaktur.fdc_total) * -1  +"' data-ttl_paid='"+purchaseReturnNonFaktur.fdc_total_claimed * -1 + "' data-ttl_return='0' >"+purchaseReturnNonFaktur.fst_purchasereturn_no+"</option>");
+								$("#fin_trans_id").append("<option value='"+salesReturnNonFaktur.fin_salesreturn_id+"' data-ttl_amount='"+ parseFloat(salesReturnNonFaktur.fdc_total) * -1  +"' data-ttl_paid='"+salesReturnNonFaktur.fdc_total_claimed * -1 + "' data-ttl_return='0' >"+salesReturnNonFaktur.fst_salesreturn_no+"</option>");
 							});
 							$("#fin_trans_id").val(null);
 
 							if(typeof callback !== "undefined"){
-								callback(purchaseReturnNonFakturList);
+								callback(salesReturnNonFakturList);
 							}
 							
 						}
@@ -459,7 +465,7 @@
                     <div class="col-md-12" >
                         <div style="border:0 px inset #f0f0f0;border-radius:10px;padding:5px">
                             <fieldset style="padding:10px">				
-								<form id="form-detail" class="form-horizontal">
+								<form id="form-detail-receive" class="form-horizontal">
 									<input type='hidden' id='fin_rec_id_item_type'/>
 
 									<div class="form-group">
@@ -910,8 +916,8 @@
 								return "Faktur Penjualan";
 								break;
 							
-							case "LPB_RETURN":
-								return "Return Pembelian Non Faktur";
+							case "RETURN_SO":
+								return "Return Penjualan Non Faktur";
 								break;
 							default:
 								return "";
@@ -934,13 +940,20 @@
 						return App.money_format(row.fdc_return_amount);
 					}
 				},			
-				{"title" : "Receive",width:"50px",data:"fdc_receive_amount",
+				{"title" : "Paid",width:"50px",data:"fdc_paid_amount",
 					render:function(data,type,row){
 						return App.money_format(data);
 					},
 					//render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
 				},
+				{"title" : "Payment",width:"50px",data:"fdc_receive_amount",
+					render:function(data,type,row){
+						return App.money_format(data);
+					},
+					className:'text-right'
+				},
+				{"title" : "notes","width": "350px",sortable:false,data:"fst_memo",visible:true},
 				{"title" : "Action","width": "40px",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){
 						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';						
@@ -1184,7 +1197,8 @@
 							fdc_trans_amount: v.fdc_trans_amount,
 							fdc_paid_amount: v.fdc_paid_amount,
 							fdc_return_amount:v.fdc_return_amount,
-							fdc_receive_amount:v.fdc_receive_amount
+							fdc_receive_amount:v.fdc_receive_amount,
+							fst_memo:v.fst_memo
 						};	
 						dataItems.push(data);					
 					});

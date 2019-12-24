@@ -37,7 +37,7 @@ class Sales_return extends MY_Controller{
 		];
 		
 
-        $this->list['columns'] = [
+        $this->list['columns'] = [			
 			['title' => 'No. Retur Penjualan', 'width' => '100px', 'data' => 'fst_salesreturn_no'],
             ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_salesreturn_datetime'],
             ['title' => 'Customer', 'width' => '100px', 'data' => 'fst_customer_name'],
@@ -47,6 +47,13 @@ class Sales_return extends MY_Controller{
 					return App.money_format(data);
 				}",
 			],
+			['title' => 'Closed', 'width' => '30px', 'data' => 'fbl_is_closed','className'=>'text-center',
+				'render'=>"function(data,type,row){
+					var checked = data == 1 ? 'checked' : '';
+					return '<input type=\"checkbox\" ' + checked + ' disabled/>';
+				}",
+			],
+			
 			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
@@ -525,7 +532,7 @@ class Sales_return extends MY_Controller{
 			INNER JOIN msrelations c on a.fin_customer_id = c.fin_relation_id 
 			) a");
 
-        $selectFields = "a.fin_salesreturn_id,a.fst_salesreturn_no,a.fdt_salesreturn_datetime,a.fst_customer_name,a.fst_memo,a.fdc_total";
+        $selectFields = "a.fin_salesreturn_id,a.fst_salesreturn_no,a.fdt_salesreturn_datetime,a.fst_customer_name,a.fst_memo,a.fdc_total,a.fbl_is_closed";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');

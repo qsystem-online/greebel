@@ -55,7 +55,15 @@ class Trlpbgudang_model extends MY_Model {
                 break;
 
             case "SO_RETURN":
-
+                $ssql = "SELECT a.fin_rec_id,a.fin_trans_detail_id,a.fin_item_id,a.fst_custom_item_name,a.fst_unit,a.fdb_qty,a.fst_batch_number,a.fst_serial_number_list,a.fdc_m3,
+                    b.fdb_qty as fdb_qty_trans,b.fdb_qty_lpb,
+                    c.fst_item_code,c.fbl_is_batch_number,c.fbl_is_serial_number,d.fdc_conv_to_basic_unit,e.fst_unit as fst_basic_unit 
+                    FROM trlpbgudangitems a
+                    INNER JOIN trsalesreturnitems b ON a.fin_trans_detail_id = b.fin_rec_id                    
+                    INNER JOIN msitems c ON b.fin_item_id = c.fin_item_id 
+                    INNER JOIN msitemunitdetails d ON (b.fin_item_id = d.fin_item_id and a.fst_unit = d.fst_unit)  
+                    INNER JOIN msitemunitdetails e ON (b.fin_item_id = e.fin_item_id and e.fbl_is_basic_unit = 1)                       
+                    WHERE fin_lpbgudang_id = ?";        
                 break;
             default:
                 return [
@@ -177,8 +185,6 @@ class Trlpbgudang_model extends MY_Model {
 
     }
    
-
-
     public function unposting($finLPBGudangId,$unpostingDateTime =""){
         $this->load->model("trinventory_model");               
         $unpostingDateTime = $unpostingDateTime == "" ? date("Y-m-d H:i:s") : $unpostingDateTime;
@@ -196,21 +202,30 @@ class Trlpbgudang_model extends MY_Model {
         $qr = $this->db->query($ssql,[$finLPBGudangId]);        
         $listItems = $qr->result();
         
+        $invCode = "";
+        $invDetailCode ="";
+
         switch ($dataH->fst_lpb_type){
             case "PO":
+                $invCode =  "LPB";
+                $invDetailCode ="PPB";
                 $this->unpostingLPBPO($listItems,$dataH);
                 break;
             case "SO_RETURN":
-                throw new CustomException("BELUM DIBUAT !!!!",3003,"FAILED",null);
+                $invCode =  "SRT";
+                $invDetailCode ="SRT";
+                $this->unpostingLPBSOReturn($listItems,$dataH);
                 break;
             default:
                 throw new CustomException("Invalid LPB Type",3003,"FAILED",["fst_lpb_type"=>$dataH->fst_lpb_type]);
         }
 
+
         //delete Inventory
-        $this->trinventory_model->deleteByCodeId("LPB",$finLPBGudangId);
+        $this->trinventory_model->deleteByCodeId($invCode,$finLPBGudangId);
+
         //Delete itemdetails
-        $this->trinventory_model->deleteInsertSerial("PPB",$finLPBGudangId);
+        $this->trinventory_model->deleteInsertSerial($invDetailCode,$finLPBGudangId);
         
     }
 
@@ -224,6 +239,18 @@ class Trlpbgudang_model extends MY_Model {
 
         //Update Status Closed PO
         $this->trpo_model->updateClosedStatus($dataH->fin_trans_id);
+    }
+
+    private function unpostingLPBSOReturn($listItems,$dataH){
+
+        foreach($listItems as $item){
+            $ssql = "update trsalesreturnitems set fdb_qty_lpb = fdb_qty_lpb - ? where fin_rec_id = ?";
+            $this->db->query($ssql,[$item->fdb_qty,$item->fin_trans_detail_id]);
+            throwIfDBError();
+        }
+
+        //Update Status Closed SO return
+        $this->trsalesreturn_model->updateClosedStatus($dataH->fin_trans_id);          
     }
 
 
@@ -332,6 +359,92 @@ class Trlpbgudang_model extends MY_Model {
         $this->trpo_model->updateClosedStatus($finPOId);   
     }
 
+    private function postingLPBSOReturn($dataH){
+        $finSOReturnId = $dataH->fin_trans_id;
+
+        $ssql = "SELECT a.*,
+            b.fin_item_id,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdb_qty as qty_soreturn,b.fdb_qty_lpb as qty_lpb,b.fst_custom_item_name 
+            FROM trlpbgudangitems a 
+            LEFT JOIN trsalesreturnitems b on a.fin_trans_detail_id = b.fin_rec_id
+            WHERE fin_lpbgudang_id = ?";
+
+        $qr = $this->db->query($ssql,[$dataH->fin_lpbgudang_id]);
+        $dataDetails = $qr->result();
+
+        
+        foreach($dataDetails as $detail){
+            //Cek qty_lpb < qty po
+            $qtySOReturn = (float) $detail->qty_soreturn;
+            $qtyLPB= (float) $detail->qty_lpb;
+            $qtyTransaksi = (float) $detail->fdb_qty;
+            $qtySisa =$qtySOReturn -$qtyLPB;
+
+
+            if ( $qtySisa >=  $qtyTransaksi ){
+                //Update detail SOReturn          
+                $ssql = "update trsalesreturnitems set fdb_qty_lpb = fdb_qty_lpb + $detail->fdb_qty where fin_rec_id = $detail->fin_trans_detail_id";
+                throwifDBError();
+                $this->db->query($ssql,[]);
+
+                //Update kartu stock
+                $dataStock = [
+                    //`fin_rec_id`, 
+                    "fin_warehouse_id"=>$dataH->fin_warehouse_id,
+                    "fdt_trx_datetime"=>$dataH->fdt_lpbgudang_datetime,
+                    "fst_trx_code"=>"SRT", 
+                    "fin_trx_id"=>$dataH->fin_lpbgudang_id,
+                    "fin_trx_detail_id"=>$detail->fin_rec_id,
+                    "fst_trx_no"=>$dataH->fst_lpbgudang_no, 
+                    "fst_referensi"=>null, 
+                    "fin_item_id"=>$detail->fin_item_id, 
+                    "fst_unit"=>$detail->fst_unit, 
+                    "fdb_qty_in"=>$detail->fdb_qty, 
+                    "fdb_qty_out"=>0, 
+                    "fdc_price_in"=> $this->trinventory_model->getLastHPP($detail->fin_item_id,$dataH->fin_warehouse_id), //Ambil HPP TERAKHIR//(float) $detail->fdc_price - (float) calculateDisc($detail->fst_disc_item,$detail->fdc_price),
+                    "fst_active"=>"A" 
+                ];
+                $this->trinventory_model->insert($dataStock);
+
+                //Update msitemdetails & summary
+                $dataSerial = [
+                    "fin_warehouse_id"=>$dataH->fin_warehouse_id,
+                    "fin_item_id"=>$detail->fin_item_id,
+                    "fst_unit"=>$detail->fst_unit,
+                    "fst_serial_number_list"=>$detail->fst_serial_number_list,
+                    "fst_batch_no"=>$detail->fst_batch_number,
+                    "fst_trans_type"=>"SRT", //SALES RETURN 
+                    "fin_trans_id"=>$dataH->fin_lpbgudang_id,
+                    "fst_trans_no"=>$dataH->fst_lpbgudang_no,
+                    "fin_trans_detail_id"=>$detail->fin_rec_id,
+                    "fdb_qty"=>$detail->fdb_qty,
+                    "in_out"=>"IN",
+                ];
+                
+                $this->trinventory_model->insertSerial($dataSerial);
+                
+            }else{
+                throw new CustomException(sprintf(lang("Qty penerimaan %s tidak bisa melebih %s"),$detail->fst_custom_item_name,$qtySisa),3003,"FAILED",null);
+            }
+            
+        }
+
+        //Cek total qty Penerimaan 
+        $ssql = "SELECT a.* FROM trsalesreturnitems a            
+            WHERE a.fdb_qty_lpb > a.fdb_qty AND fin_salesreturn_id = ?";
+        $qr = $this->db->query($ssql,[$finSOReturnId]);
+        $rs = $qr->result();
+        $errorQty = [];
+        foreach($rs as $rw){
+            $errorQty[] = "Total $rw->fst_custom_item_name tidak boleh melebihi $rw->fdb_qty";
+        }
+        if (sizeof($errorQty) > 0){
+            throw new CustomException(lang("Total qty penerimaan melebihi qty di sales return !"),3003,"FAILED",$errorQty);
+        }
+
+        //Update Status Closed sales return
+        $this->trsalesreturn_model->updateClosedStatus($finSOReturnId);  
+    }
+
     public function update($data){
         //Cancel Transaksi
         $ssql ="delete from trlpbgudangitems where fin_lpbgudang_id = ?";
@@ -342,42 +455,24 @@ class Trlpbgudang_model extends MY_Model {
     }
    
    public function delete($finLPBGudangId,$softDelete = true,$data=null){
-        //bila sudah dibuat invoice pembeliaan transaksi tidak dapat di edit ataupun dihapus
-        $isEditable = $this->isEditable($finLPBGudangId);
-        if($isEditable["status"] != "SUCCESS"){
-            return $isEditable;
-        }
-
-        $resp = $this->unposting($finLPBGudangId);       
-        
-        if($resp["status"] != "SUCCESS"){
-            return $resp;
-        }
-
+       
         //Delete detail transaksi
         if ($softDelete){
             $ssql ="update trlpbgudangitems set fst_active ='D' where fin_lpbgudang_id = ?";
             $this->db->query($ssql,[$finLPBGudangId]);
+            throwIfDBError();
             
             $ssql ="update trlpbgudang set fst_active ='D' where fin_lpbgudang_id = ?";
             $this->db->query($ssql,[$finLPBGudangId]);
-            
+            throwIfDBError();
             
         }else{
             $ssql ="delete from trlpbgudangitems where fin_lpbgudang_id = ?";
             $this->db->query($ssql,[$finLPBGudangId]);
-            
+            throwIfDBError();
+
             parent::delete($finLPBGudangId,$softDelete,$data);
-        }
-
-        $dbError  = $this->db->error();
-		if ($dbError["code"] != 0){			
-			$resp["status"] = "DB_FAILED";
-			$resp["message"] = $dbError["message"];
-			return $resp;
-        }
-
-        return ["status" => "SUCCESS","message"=>""];
+        }       
    }
 
    public function deleteDetail($finLPBGudangId){

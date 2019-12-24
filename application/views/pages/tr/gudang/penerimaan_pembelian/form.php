@@ -160,7 +160,7 @@
                     <div class="col-md-12" >
                         <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
                             <fieldset style="padding:10px">
-								<form id="form-detail" class="form-horizontal">
+								<form id="form-detail-penerimaan-gudang" class="form-horizontal">
 									<input type='hidden' id='fin_rec_id_items'/>
 									<div class="form-group">
 										<label class="col-md-3 control-label"><?=lang("Item")?> :</label>
@@ -413,7 +413,7 @@
 		$("#fdt_lpbgudang_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		
 		$("#fst_lpb_type").change(function(e){
-			$("#fin_trans_id").val(null).trigger("select2:select").trigger("change.select2");
+			$("#fin_trans_id").val(null).trigger("change.select2");
 		});
 
 		$("#fin_trans_id").select2({

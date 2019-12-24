@@ -75,9 +75,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).DataTable({
 			scrollX: true,
 			scrollCollapse: true,
+			order:[[0,"desc"]],
 			columns:[
-                <?php
-					foreach($columns as $col){?>
+				<?php
+					foreach($columns as $col){?>					
 						<?php
 							$strData = isset($col['data']) ? ",data:\"" . $col['data'] ."\"" : "";
 						?>
@@ -89,10 +90,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <?php } ?>
                             <?php if(isset($col['sortable'])){
                                 if ($col['sortable']){ ?>
-                                    ,"sortable": true
+                                    ,"orderable": true
                                 <?php }else
                                 {?>
-                                    ,"sortable": false
+                                    ,"orderable": false
                                 <?php }
                                 
                             } ?>
@@ -101,8 +102,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <?php } ?>
 							<?php if(isset($col['visible'])){?>
                                 ,"visible":<?=$col['visible']?>
-                            <?php } ?>
-
+							<?php } ?>							
                         },
                     <?php }
                 ?>

@@ -672,4 +672,17 @@ class Trinventory_model extends MY_Model
         throw new CustomException("INI BAGIAN MESSAGE",100,"FAILED",["data1"=>"Ini Data 1","data2"=>"ini datat 2"]);
 
     }
+
+    public function getLastHPP($finItemId,$finWarehouseId){
+        $ssql = "select * from trinventory where fin_item_id = ? and fin_warehouse_id = ? 
+            order by fdt_trx_datetime desc , fin_rec_id desc limit 1";
+            
+        $qr = $this->db->query($ssql,[$finItemId,$finWarehouseId]);
+        $rw = $qr->row();
+        if($rw == null){
+            return 0;
+        }else{
+            return $rw->fdc_avg_cost;
+        }
+    }
 }

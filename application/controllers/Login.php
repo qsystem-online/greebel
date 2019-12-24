@@ -6,7 +6,6 @@ class Login extends CI_Controller
 	public $data = [];
 	public function index()
 	{
-		
 		$this->load->model("users_model");
 		$username = $this->input->post("username");
 		$password = $this->input->post("password");

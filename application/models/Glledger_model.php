@@ -55,7 +55,7 @@ class Glledger_model extends MY_Model{
         $epsilon = 0.00001;        
         
         
-        //foreach($datas as $data){        
+        //foreach($datas as $data){
         for($i = 0; $i < sizeof($datas) ;$i++){
             $data = $datas[$i];
 
@@ -80,6 +80,13 @@ class Glledger_model extends MY_Model{
             if ($data["fdc_debit"] == 0 && $data["fdc_credit"] == 0){
                 continue;
             }
+            if ($data["fdc_debit"] < 0){
+                $data["fdc_credit"] += abs($data["fdc_debit"]);
+            }
+            if ($data["fdc_credit"] < 0){
+                $data["fdc_debit"] += abs($data["fdc_credit"]);
+            }
+                        
             //var_dump($data);
             $ids[]= parent::insert($data);
         }        

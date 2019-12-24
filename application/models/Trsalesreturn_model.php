@@ -249,6 +249,7 @@ class Trsalesreturn_model extends MY_Model {
         $accDisc = getGLConfig("INV_DISC");
         $accPiutang = getGLConfig("AR_DAGANG_LOKAL");
         $accRetunBelumRealisasi = getGLConfig("RETUR_BELUM_REALISASI");
+        
 
         $ttlReturnPenjualan = 0;
         $ttlPpn = 0;
@@ -435,12 +436,33 @@ class Trsalesreturn_model extends MY_Model {
         }
     }
 
-    public function isEditable($finPurchaseReturnId){
+    public function isEditable($finSalesReturnId){
        
         /**
-         * FALSE CONDITION
-         * 1. 
+         * Tidak bisa di hapus kalau sudah ada penerimaan barang
+         * Tidak bisa di hapus jika invoice sudah di bayar
+         * tidak bisa di hapus bila voucer retur telah di gunakan
+         *          
          */
+        $ssql = "select * from trsalesreturnitems where fdb_qty_lpb > 0 and fin_salesreturn_id = ? and fst_active =! 'D'";
+        $qr = $this->db->query($ssql,[$finSalesReturnId]);
+        $rw = $qr->row();
+        if($rw != null){
+            throw new CustomException(lang("Transaksi tidak bisa dirubah karena sudah ada penerimaan barang"),3003,"FAILED",null);
+        }
+        
+        /*
+        $ssql = "SELECT a.*,b.fst_inv_no from trsalesreturnitems a 
+            inner join trinvoice b on a.fin_inv_id = b.fin_inv_id 
+            where b.fdc_total_paid > 0
+            and a.fin_salesreturn_id = ? 
+            and a.fst_active != 'D'";            
+        $rw = $qr->row();
+        if($rw != null){
+            throw new CustomException(sprintf(lang("Transaksi tidak bisa dirubah karena invoice %s sudah ada pembayaran"),$rw->fst_inv_no),3003,"FAILED",null);
+        }
+        */
+
         $resp =["status"=>"SUCCESS","message"=>""];
         return $resp;
     }
@@ -462,6 +484,32 @@ class Trsalesreturn_model extends MY_Model {
         parent::delete($finSalesReturnId,$softDelete,$data);
 
         return ["status" => "SUCCESS","message"=>""];
+    }
+
+    public function updateClosedStatus($finSoReturnId){
+        $ssql = "select * from trsalesreturnitems where fin_salesreturn_id = ? and fdb_qty > fdb_qty_lpb";
+        $qr = $this->db->query($ssql,$finSoReturnId);
+        
+        if ($qr->row() == null){
+            //Penerimaan lengkap close sales return
+            $ssql = "update trsalesreturn set fdt_closed_datetime = now() , fbl_is_closed = 1, fst_closed_notes = 'AUTO - ".date("Y-m-d H:i:s") ."' where fin_salesreturn_id = ?";
+            $this->db->query($ssql,[$finSoReturnId]);
+        }else{
+            $ssql = "update trsalesreturn set fdt_closed_datetime = null , fbl_is_closed = 0, fst_closed_notes = null where fin_salesreturn_id = ?";
+            $this->db->query($ssql,[$finSoReturnId]);
+        }
+    }
+
+    public function getSalesReturnNonFakturList($finCustId,$fstCurrCode){
+        $ssql = "SELECT a.* from trsalesreturn a 
+            where a.fdc_total > a.fdc_total_claimed
+            AND fbl_non_faktur = 1
+            AND fbl_is_closed = 1
+            AND fin_customer_id = ?
+            AND fst_curr_code = ?";
+        $qr = $this->db->query($ssql,[$finCustId,$fstCurrCode]);
+        return $qr->result();
+        
     }
 }
 

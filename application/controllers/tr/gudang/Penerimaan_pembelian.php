@@ -36,7 +36,7 @@ class Penerimaan_pembelian extends MY_Controller{
 		];
 		
 
-        $this->list['columns'] = [
+        $this->list['columns'] = [			
 			['title' => 'ID.', 'width' => '100px', 'data' => 'fin_lpbgudang_id'],
             ['title' => 'No. LPB', 'width' => '100px', 'data' => 'fst_lpbgudang_no'],
 			['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_lpbgudang_datetime'],
@@ -196,8 +196,7 @@ class Penerimaan_pembelian extends MY_Controller{
 				$this->trlpbgudangitems_model->insert($dataD);			
 			}
 			
-			$this->trlpbgudang_model->posting($insertId);
-
+			$this->trlpbgudang_model->posting($insertId);		
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
@@ -317,7 +316,7 @@ class Penerimaan_pembelian extends MY_Controller{
 					throw new CustomException("Invalid Sales Return ID",3003,"FAILED",["fin_salesreturn_id"=>$finTransId]);
 				}
 				$fstTransNo = $soReturn->fst_salesreturn_no;
-				$finRelationId = $po->fin_customer_id;
+				$finRelationId = $soReturn->fin_customer_id;
 				break;
 			default:
 				throw new CustomException("Invalid LPB Type",3003,"FAILED",["fst_lpb_type"=>$lpbType]);
@@ -410,28 +409,45 @@ class Penerimaan_pembelian extends MY_Controller{
 	}
 
 	public function delete($finLPBGudangId){
+
+		try{
+			
+			$dataHOld = $this->trlpbgudang_model->getDataHeaderById($finLPBGudangId);
+			if ($dataHOld == null){
+				throw new CustomException(lang("Invalid LPB Gudang ID"),3003,"FAILED",null);
+			}
+
+			$resp = dateIsLock($dataHOld->fdt_lpbgudang_datetime);
+			if ($resp["status"] != "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}
+									
+			$resp = $this->trlpbgudang_model->isEditable($finLPBGudangId,$dataHOld);
+			if ($resp["status"] != "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}			
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();
+			return;
+		}
+
+
+
 		try{
 			$this->db->trans_start();
-			$data =[
-				"fin_user_id_request_by"=>$this->input->post("fin_user_id_request_by"),
-				"fst_edit_notes"=>$this->input->post("fst_edit_notes"),
-			];
 			
-			$resp = $this->trlpbgudang_model->delete($finLPBGudangId,true,$data);	
+			$this->trlpbgudang_model->unposting($finLPBGudangId);			
+			$resp = $this->trlpbgudang_model->delete($finLPBGudangId,true,null);	
 
-			if ($resp["status"] != "SUCCESS"){
-				$this->db->trans_rollback();
-				$this->ajxResp["status"] = $resp["status"];
-				$this->ajxResp["message"] = $resp["message"];
-				$this->json_output();
-				return;
-			}
-			
 			$this->db->trans_complete();	
+
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "";
-			//$this->ajxResp["data"]["insert_id"] = $dataH["fin_lpbgudang_id"];
 			$this->json_output();
+
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
 			$this->ajxResp["status"] = $e->getStatus();

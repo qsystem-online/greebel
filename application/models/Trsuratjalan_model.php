@@ -321,7 +321,7 @@ class Trsuratjalan_model extends MY_Model {
                 "fin_warehouse_id"=>$dataH->fin_warehouse_id,
                 "fdt_trx_datetime"=>$dataH->fdt_sj_datetime,
                 "fst_trx_code"=>"DO",
-                "fin_trx_id"=>$sjId,
+                "fin_trx_id"=>$dataH->fin_sj_id,
                 "fst_trx_no"=>$dataH->fst_sj_no,
                 "fin_trx_detail_id"=>$dataD->fin_rec_id,
                 "fst_referensi"=>$dataH->fst_sj_memo,
