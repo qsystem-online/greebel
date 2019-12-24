@@ -53,7 +53,7 @@
 						</div>
 
                         <div class="form-group">
-							<label for="fst_purchasereturn_no" class="col-md-2 control-label"><?=lang("No. Retur")?></label>	
+							<label for="fst_purchasereturn_no" class="col-md-2 control-label"><?=lang("No. Retur")?> #</label>	
 							<div class="col-md-4">				
 								<input type="TEXT" id="fst_purchasereturn_no" name="fst_purchasereturn_no" class="form-control"  value="<?=$fst_purchasereturn_no?>" placeholder="PREFIX/BRANCH/YEAR/MONTH/99999" /> 
 							</div>
@@ -130,7 +130,7 @@
                         <div class="form-group">
                             							
                             <div class="col-sm-6">
-								<label for="fin_vendor_id" class=""><?=lang("Memo :")?> </label>
+								<label for="fin_vendor_id" class=""><?=lang("Memo")?> </label>
                                 <textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="3" style="resize:none;width:100%"></textarea>
                                 <div id="fst_memo_err" class="text-danger"></div>
 							</div> 

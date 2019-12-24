@@ -100,7 +100,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">						
-							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> :</label>
+							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?></label>
 							<div class="col-md-4">
 								<select id="fst_curr_code" class="form-control" name="fst_curr_code" disabled>
 									<?php
@@ -114,7 +114,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fst_curr_code_err" class="text-danger"></div>
 							</div>
 						
-							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> :</label>
+							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?></label>
 							<div class="col-md-2">
 								<input type="text" class="text-right form-control" id="fdc_exchange_rate_idr" name="fdc_exchange_rate_idr" style="width:100%" value=""/>
 							</div>
@@ -122,7 +122,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">						
-							<label for="select-relations" class="col-md-2 control-label"><?=lang("Supplier")?> :</label>
+							<label for="select-relations" class="col-md-2 control-label"><?=lang("Supplier")?></label>
 							<div class="col-md-4">
 								<select id="fin_supplier_id" class="form-control non-editable" name="fin_supplier_id">
 								<?php									
@@ -135,7 +135,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fin_supplier_id_err" class="text-danger"></div>
 							</div>
 						
-							<label for="fin_term" class="col-md-2 control-label"><?=lang("Term")?> :</label>
+							<label for="fin_term" class="col-md-2 control-label"><?=lang("Term")?></label>
 							<div class="col-md-1">
 								<input type="text" class="form-control" id="fin_term" name="fin_term" style="width:50px" value="0"/>
 								<div id="fin_term_err" class="text-danger"></div>
@@ -144,7 +144,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-							<label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Warehouse")?> :</label>
+							<label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
 							<div class="col-md-10">
 								<div class="pull-left" style="width:16%" >
 									<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id">
@@ -159,7 +159,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</div>
 								<div class="pull-left" style="width:30%" >
 									<div class="form-group">
-										<label for="fst_do_no" class="col-md-5 control-label"><?=lang("Nomor DO")?> :</label>
+										<label for="fst_do_no" class="col-md-5 control-label"><?=lang("Nomor DO")?></label>
 										<div class="col-md-7">
 											<input type="text" class="form-control" id="fst_do_no" name="fst_do_no"/>
 											<div id="fst_do_no_err" class="text-danger"></div>
@@ -168,7 +168,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</div>
 								<div class="pull-left" style="width:35%;min-width:300px" >
 									<div class="form-group">
-										<label for="fst_contract_no" class="col-md-5 control-label"><?=lang("Nomor Kontrak")?> :</label>
+										<label for="fst_contract_no" class="col-md-5 control-label"><?=lang("Nomor Kontrak")?></label>
 										<div class="col-md-7">
 											<input type="text" class="form-control" id="fst_contract_no" name="fst_contract_no"/>
 											<div id="fst_contract_no_err" class="text-danger"></div>
@@ -182,7 +182,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-							<label for="fst_delivery_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?> :</label>
+							<label for="fst_delivery_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?></label>
 							<div class="col-md-10">
 								<textarea class="form-control" id="fst_delivery_address" style="width:100%" name="fst_delivery_address" rows="5"></textarea>
 								<div id="fst_delivery_address_err" class="text-danger"></div>
@@ -205,6 +205,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div class="form-group">
 									
 									<div class="col-sm-12">
+										<label for="fst_memo" class=""><?=lang("Memo")?></label>
 										<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="5" style="resize:none"></textarea>
 										<div id="fst_memo_err" class="text-danger"></div>
 									</div>
@@ -273,13 +274,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<form id="form-detail" class="form-horizontal">
 									<input type='hidden' id='fin_po_detail_id'/>
 									<div class="form-group">
-										<label for="fin_item_id" class="col-md-3 control-label"><?=lang("Items")?> :</label>
+										<label for="fin_item_id" class="col-md-3 control-label"><?=lang("Items")?></label>
 										<div class="col-md-9">
 											<select id="fin_item_id" class="form-control" style="width:100%"></select>
 										</div>
 									</div>
 									<div class="form-group">
-										<label for="fst_custom_item_name" class="col-md-3 control-label"><?=lang("Custom Name")?> :</label>
+										<label for="fst_custom_item_name" class="col-md-3 control-label"><?=lang("Custom Name")?></label>
 										<div class="col-md-9">
 											<input id="fst_custom_item_name" class="form-control"></select>
 											<div id="fst_custom_item_name_err" class="text-danger"></div>
@@ -287,26 +288,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="fst_unit" class="col-md-3 control-label"><?=lang("Unit")?> :</label>
+										<label for="fst_unit" class="col-md-3 control-label"><?=lang("Unit")?></label>
 										<div class="col-md-9">
 											<select id="fst_unit" name="fst_unit" class="form-control" style="width:100%"></select>
 										</div>
 									</div>
 
 									<div class="form-group">
-										<label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?> :</label>
+										<label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?></label>
 										<div class="col-md-2">
 											<input type="number" class="ele-disc form-control text-right numeric" id="fdb_qty" value="1" min="1">
 										</div>
 
-										<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?> :</label>
+										<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?></label>
 										<div class="col-md-5">
 											<input type="text" class="ele-disc form-control text-right money" id="fdc_price" value="0">
 										</div>
 									</div>
 
 									<div class="form-group">
-										<label for="fst_disc_item" class=" col-md-3 control-label"><?=lang("Disc ++")?> :</label>
+										<label for="fst_disc_item" class=" col-md-3 control-label"><?=lang("Disc ++")?></label>
 										<div class="col-md-9">
 											<select id="fst_disc_item" class="ele-disc form-control text-right" style="width:100%">
 											<?php
@@ -320,7 +321,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="fdc_disc_amount" class="col-md-3 control-label"><?=lang("Disc Amt")?> :</label>
+										<label for="fdc_disc_amount" class="col-md-3 control-label"><?=lang("Disc Amt")?></label>
 										<div class="col-md-9">
 											<input type="text" class="form-control text-right" id="fdc_disc_amount" readonly>
 										</div>
@@ -329,7 +330,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									
 
 									<div class="form-group">
-										<label for="fst_memo_item" class="col-md-3 control-label"><?=lang("Memo")?> :</label>
+										<label for="fst_memo_item" class="col-md-3 control-label"><?=lang("Memo")?></label>
 										<div class="col-md-9">
 											<textarea type="text" class="form-control" id="fst_notes_detail" rows="3"></textarea>
 										</div>

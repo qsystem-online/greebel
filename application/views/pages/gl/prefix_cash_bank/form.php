@@ -61,7 +61,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-					<label for="fst_kasbank_name" class="col-md-2 control-label"><?=lang("Kas/Bank Name")?> :</label>
+					<label for="fst_kasbank_name" class="col-md-2 control-label"><?=lang("Kas/Bank Name")?> *</label>
 						<div class="col-md-10">
 							<input type="text" class="form-control" id="fst_kasbank_name" placeholder="<?=lang("Kas/Bank Name")?>" name="fst_kasbank_name">
                             <div id="fst_kasbank_name_err" class="text-danger"></div>
@@ -69,13 +69,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
                     <div class="form-group">
-					<label for="fst_prefix_pengeluaran" class="col-md-2 control-label"><?=lang("Prefix Pengeluaran")?> :</label>
+					<label for="fst_prefix_pengeluaran" class="col-md-2 control-label"><?=lang("Prefix Pengeluaran")?></label>
                         <div class="col-md-4">
 							<input type="text" class="form-control" id="fst_prefix_pengeluaran" placeholder="<?=lang("Prefix Pengeluaran")?>" name="fst_prefix_pengeluaran">
 							<div id="fst_prefix_pengeluaran_err" class="text-danger"></div>
 						</div>
 
-					<label for="fst_prefix_pemasukan" class="col-md-2 control-label"><?=lang("Prefix Pemasukan")?> :</label>
+					<label for="fst_prefix_pemasukan" class="col-md-2 control-label"><?=lang("Prefix Pemasukan")?></label>
 						<div class="col-md-4">
 							<input type="text" class="form-control" id="fst_prefix_pemasukan" placeholder="<?=lang("Prefix Pemasukan")?>" name="fst_prefix_pemasukan">
 							<div id="fst_prefix_pemasukan_err" class="text-danger"></div>
@@ -83,7 +83,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
                     <div class="form-group">
-					<label for="fst_type" class="col-md-2 control-label"><?=lang("Type")?> :</label>
+					<label for="fst_type" class="col-md-2 control-label"><?=lang("Type")?></label>
 						<div class="col-md-4">
 							<select class="form-control" id="fst_type" name="fst_type">
 								<option value='Cash'><?=lang("Cash")?></option>
@@ -91,7 +91,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</select>
 						</div>
                     
-                    <label for="select-glaccounts" class="col-md-2 control-label"><?=lang("Rekening GL Account")?> :</label>
+                    <label for="select-glaccounts" class="col-md-2 control-label"><?=lang("Rekening GL Account")?></label>
 						<div class="col-md-4">
 							<select id="select-glaccounts" class="form-control" name="fst_gl_account_code">
 								<option value="0">-- <?=lang("select")?> --</option>

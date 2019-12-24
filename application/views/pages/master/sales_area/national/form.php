@@ -58,7 +58,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="fin_sales_national_id" class="col-sm-2 control-label"><?=lang("Sales National ID")?> :</label>
+                            <label for="fin_sales_national_id" class="col-sm-2 control-label"><?=lang("Sales National ID")?> #</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="fin_sales_national_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_sales_national_id" value="<?= $fin_sales_national_id ?>" readonly>
                                 <div id="fin_sales_national_id_err" class="text-danger"></div>
@@ -66,7 +66,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_name" class="col-sm-2 control-label"><?=lang("Name")?> :</label>
+                            <label for="fst_name" class="col-sm-2 control-label"><?=lang("Name")?> *</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="fst_name" placeholder="<?= lang("Name")?>" name="fst_name">
                                 <div id="fst_name_err" class="text-danger"></div>
@@ -74,7 +74,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-salesId" class="col-md-2 control-label"><?=lang("Sales Name")?> :</label>
+                            <label for="select-salesId" class="col-md-2 control-label"><?=lang("Sales Name")?></label>
                             <div class="col-md-4">
                                 <select id="select-salesId" class="form-control" name="fin_sales_id">
                                     <option value="0">-- <?=lang("select")?> --</option>

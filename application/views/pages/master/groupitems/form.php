@@ -35,7 +35,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="fin_item_group_id" class="col-sm-2 control-label"><?= lang("Group ID") ?></label>
+                            <label for="fin_item_group_id" class="col-sm-2 control-label"><?= lang("Group ID") ?> #</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="fin_item_group_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_item_group_id" value="<?= $fin_item_group_id ?>" readonly>
                                 <div id="fin_item_group_id_err" class="text-danger"></div>
@@ -44,7 +44,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_item_group_name" class="col-sm-2 control-label"><?= lang("Group Name") ?> * </label>
+                            <label for="fst_item_group_name" class="col-sm-2 control-label"><?= lang("Group Name") ?> *</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="fst_item_group_name" placeholder="<?= lang("Group Name") ?>" name="fst_item_group_name">
                                 <div id="fst_item_group_name_err" class="text-danger"></div>

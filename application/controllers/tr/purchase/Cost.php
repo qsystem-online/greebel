@@ -41,10 +41,10 @@ class Cost extends MY_Controller{
         $this->list['columns'] = [
 			['title' => 'ID.', 'width' => '0px','visible'=>'false', 'data' => 'fin_purchasecost_id'],
             ['title' => 'No. Biaya Pembelian', 'width' => '120px', 'data' => 'fst_purchasecost_no'],
-            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_purchasecost_datetime'],
-            ['title' => 'Supplier', 'width' => '200px', 'data' => 'fst_supplier_name'],
+            ['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_purchasecost_datetime'],
+            ['title' => 'Supplier', 'width' => '150px', 'data' => 'fst_supplier_name'],
 			['title' => 'No. PO', 'width' => '120px', 'data' => 'fst_po_no'],			
-            ['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
+            ['title' => 'Memo', 'width' => '120px', 'data' => 'fst_memo'],
             ['title' => 'Total', 'width' => '80px', 'data' => 'fdc_total','className'=>'text-right',
                 'render'=>"function(data,type,row){
                     return App.money_format(data);

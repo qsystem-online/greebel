@@ -55,7 +55,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <input type="hidden" id="frm-mode" value="<?=$mode?>">
 
                     <div class='form-group'>
-                    <label for="fin_user_id" class="col-sm-2 control-label"><?=lang("User ID")?></label>
+                    <label for="fin_user_id" class="col-sm-2 control-label"><?=lang("User ID")?> #</label>
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="fin_user_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_user_id" value="<?=$fin_user_id?>" readonly>
 							<div id="fin_user_id_err" class="text-danger"></div>
@@ -196,7 +196,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label for="select-branch_R" class="col-md-3 control-label"><?= lang("Branch") ?> :</label>
+                                    <label for="select-branch_R" class="col-md-3 control-label"><?= lang("Branch") ?></label>
                                     <div class="col-md-7">
                                         <select id="select-branch_R" class="form-control" name="fin_branch_id">
                                         </select>
@@ -204,7 +204,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="select-department_R" class="col-md-3 control-label"><?= lang("Department") ?> :</label>
+                                    <label for="select-department_R" class="col-md-3 control-label"><?= lang("Department") ?></label>
                                     <div class="col-md-7">
                                         <select id="select-department_R" class="form-control" name="fin_department_id">
                                         </select>
@@ -212,14 +212,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="select-userId_start" class="col-md-3 control-label"><?= lang("User ID") ?> :</label>
+                                    <label for="select-userId_start" class="col-md-3 control-label"><?= lang("User ID") ?></label>
                                     <div class="col-md-3">
                                         <select id="select-userId_start" class="form-control" name="fin_user_id">
                                             <option value="0">--  <?= lang("select") ?>  --</option>
                                         </select>
                                         <div id="fin_user_id_err" class="text-danger"></div>
                                     </div>
-                                    <label for="select-userId_end" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
+                                    <label for="select-userId_end" class="col-md-1 control-label"><?= lang("s/d") ?></label>
                                     <div class="col-md-3">
                                         <select id="select-userId_end" class="form-control" name="fin_user_id">
                                             <option value="0">--  <?= lang("select") ?>  --</option>

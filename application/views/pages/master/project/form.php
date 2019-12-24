@@ -63,7 +63,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-                        <label for="fst_project_name" class="col-sm-2 control-label"><?=lang("Project Name")?> :</label>
+                        <label for="fst_project_name" class="col-sm-2 control-label"><?=lang("Project Name")?> *</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="fst_project_name" placeholder="<?=lang("Project Name")?>" name="fst_project_name">
                             <div id="fst_project_name_err" class="text-danger"></div>
@@ -71,7 +71,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-                        <label for="fdt_project_start" class="col-sm-2 control-label text-right"><?=lang("Start Date")?> :</label>
+                        <label for="fdt_project_start" class="col-sm-2 control-label text-right"><?=lang("Start Date")?></label>
                         <div class="col-sm-3">
                             <div class="input-group date">
                                 <div class="input-group-addon">
@@ -83,7 +83,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <!-- /.input group -->
                         </div>
 
-                        <label for="fdt_project_end" class="col-sm-2 control-label text-right"><?=lang("End Date")?> :</label>
+                        <label for="fdt_project_end" class="col-sm-2 control-label text-right"><?=lang("End Date")?></label>
                         <div class="col-sm-3">
                             <div class="input-group date">
                                 <div class="input-group-addon">
@@ -97,7 +97,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-                        <label for="fst_memo" class="col-sm-2 control-label"><?=lang("Memo")?> :</label>
+                        <label for="fst_memo" class="col-sm-2 control-label"><?=lang("Memo")?></label>
                         <div class="col-sm-10">
                             <textarea rows="4" style="width:100%" class="form-control" id="fst_memo" placeholder="<?=lang("Memo")?>" name="fst_memo"></textarea>
                         </div>

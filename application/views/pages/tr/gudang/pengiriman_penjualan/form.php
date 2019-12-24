@@ -67,7 +67,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
 					<div class="form-group">						
-						<label for="fst_sj_type" class="col-md-2 control-label"><?=lang("Jenis Transaksi")?> :</label>
+						<label for="fst_sj_type" class="col-md-2 control-label"><?=lang("Jenis Transaksi")?></label>
 						<div class="col-md-10">
 							<select id="fst_sj_type" class="form-control" name="fst_sj_type" style="width:100%" >
 								<option value='SO'>Sales Order</option>
@@ -77,7 +77,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>					
 					</div>
 					<div class="form-group">						
-						<label for="fin_trans_id" class="col-md-2 control-label"><?=lang("No Transaksi")?> :</label>
+						<label for="fin_trans_id" class="col-md-2 control-label"><?=lang("No Transaksi")?></label>
 						<div class="col-md-10">
 							<select id="fin_trans_id" class="form-control" name="fin_trans_id" style="width:100%" ></select>
 							<div id="fin_trans_id_err" class="text-danger"></div>
@@ -99,7 +99,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">
 						
-						<label for="fin_driver_id" class="col-md-2 control-label"><?=lang("Sopir")?> :</label>
+						<label for="fin_driver_id" class="col-md-2 control-label"><?=lang("Sopir")?></label>
 						<div class="col-md-4">
 							<select id="fin_driver_id" class="form-control" name="fin_driver_id">
 								<?php
@@ -111,7 +111,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</select>
 							<div id="fin_driver_id_err" class="text-danger"></div>
 						</div>
-                        <label for="fst_no_polisi" class="col-md-2 control-label"><?=lang("No. Polisi")?> :</label>
+                        <label for="fst_no_polisi" class="col-md-2 control-label"><?=lang("No. Polisi")?></label>
                         <div class="col-md-4">
 							<input type="text" class="form-control" id="fst_no_polisi" name="fst_no_polisi" style="width:100%"/>							
 							<div id="fst_no_polisi_err" class="text-danger"></div>
@@ -119,7 +119,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-                        <label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Warehouse")?> :</label>
+                        <label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
 						<div class="col-md-10">
 							<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id">
 								<?php
@@ -134,7 +134,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
                     <div class="form-group">
-                        <label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?> :</label>
+                        <label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?></label>
 						<div class="col-md-10">
 							<select class="select2 form-control" name="fin_shipping_address_id" id="fin_shipping_address_id" style="width:100%"></select>
 							<div id="fst_shipping_address_err" class="text-danger"></div>
@@ -165,6 +165,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div class="form-group">
 								
 								<div class="col-sm-12">
+									<label for="fin_vendor_id" class=""><?=lang("Memo")?></label>
 									<textarea class="form-control" id="fst_sj_memo" placeholder="<?= lang("Memo") ?>" name="fst_sj_memo" rows="5" style="resize:none"></textarea>
 									<div id="fst_sj_memo_err" class="text-danger"></div>
 								</div>
@@ -211,16 +212,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<form class="form-horizontal">
 									<input type='hidden' id='fin_rec_id_items'/>
 									<div class="form-group">
-										<label class="col-md-3 control-label"><?=lang("Item")?> :</label>
+										<label class="col-md-3 control-label"><?=lang("Item")?></label>
 										<div class="col-md-9">											
 											<select id="fstItem" class="form-control" style="width:100%"> </select>
 										</div>										
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label"><?=lang("Unit")?> :</label>	
+										<label class="col-md-3 control-label"><?=lang("Unit")?></label>	
 										<div class="col-md-9">									
 											<label id="fstUnit" class="control-label"><?=lang("Unit")?></label>
-											<label class="control-label"> => </label>
+											<label class="control-label">  =>  </label>
 											<label id="fdcConvBasicUnit" class="control-label"><?=lang("Unit")?></label>
 											<label id="fstBasicUnit" class="control-label"><?=lang("Unit")?></label>
 										</div>
@@ -228,21 +229,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="fdbQty" class="col-md-3 control-label"><?=lang("Qty")?> :</label>
+										<label for="fdbQty" class="col-md-3 control-label"><?=lang("Qty")?></label>
 										<div class="col-md-9">
 											<input type='TEXT' id="fdbQty" class="money form-control" value="1"/>
 										</div>
 									</div>								
 
 									<div class="form-group batchNoBlock">
-										<label for="" class="col-md-3 control-label"><?=lang("Batch Number")?> :</label>
+										<label for="" class="col-md-3 control-label"><?=lang("Batch Number")?></label>
 										<div class="col-md-9">
 											<select  id="fstBatchNo" class="form-control"></select>
 										</div>
 									</div>
 
 									<div class="form-group serialNoBlock">
-										<label for="" class="col-md-3 control-label"><?=lang("Serial Number")?> :</label>
+										<label for="" class="col-md-3 control-label"><?=lang("Serial Number")?></label>
 										<div class="col-md-9">
 											<input type='TEXT' id="fstSerialNo" class="form-control" />
 										</div>										
@@ -256,7 +257,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									<div class="form-group serialNoBlock">
 										<label for="" class="col-md-3 control-label"></label>
 										<div class="col-md-4" >
-											<label for="" class=""><?=lang("Total Serial")?> :</label>
+											<label for="" class=""><?=lang("Total Serial")?></label>
 											<label id="ttlSerial" class="">0</label>
 
 										</div>

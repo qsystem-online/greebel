@@ -58,12 +58,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="fin_preorder_id" class="col-md-2 control-label"><?= lang("Pre-Order ID") ?> </label>
+                            <label for="fin_preorder_id" class="col-md-2 control-label"><?= lang("Pre-Order ID") ?></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" id="fin_preorder_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_preorder_id" value="<?= $fin_preorder_id ?>" readonly>
                                 <div id="fin_preorder_id_err" class="text-danger"></div>
                             </div>
-                            <label for="fst_preorder_code" class="col-md-2 control-label"><?= lang("Pre-Order Code") ?> </label>
+                            <label for="fst_preorder_code" class="col-md-2 control-label"><?= lang("Pre-Order Code") ?></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" id="fst_preorder_code" placeholder="<?= lang("Pre-Order Code") ?>" name="fst_preorder_code">
                                 <div id="fst_preorder_code_err" class="text-danger"></div>
@@ -71,14 +71,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_preorder_name" class="col-md-2 control-label"><?= lang("Pre-Order Name") ?> </label>
+                            <label for="fst_preorder_name" class="col-md-2 control-label"><?= lang("Pre-Order Name") ?></label>
                             <div class="col-md-10">
                                 <input type="text" class="form-control" id="fst_preorder_name" placeholder="<?= lang("Pre-Order Name") ?>" name="fst_preorder_name">
                                 <div id="fst_preorder_name_err" class="text-danger"></div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="fdt_start_date" class="col-md-2 control-label"><?= lang("Start Date") ?> </label>
+                            <label for="fdt_start_date" class="col-md-2 control-label"><?= lang("Start Date") ?></label>
                             <div class="col-md-4">
                                 <div class="input-group date">
                                     <div class="input-group-addon">
@@ -89,7 +89,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fdt_start_date_err" class="text-danger"></div>
                                 <!-- /.input group -->
                             </div>
-                            <label for="fdt_end_date" class="col-md-2 control-label"><?= lang("End Date") ?> </label>
+                            <label for="fdt_end_date" class="col-md-2 control-label"><?= lang("End Date") ?></label>
                             <div class="col-md-4">
                                 <div class="input-group date">
                                     <div class="input-group-addon">
@@ -103,11 +103,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-GroupItemId" class="col-md-2 control-label"><?= lang("Item group") ?> </label>
+                            <label for="select-GroupItemId" class="col-md-2 control-label"><?= lang("Item group") ?></label>
                             <div class="col-md-4">
                                 <select id="select-GroupItemId" class="form-control" name="fin_item_group_id"></select>
                             </div>
-                            <label for="select-Currency" class="col-md-2 control-label"><?= lang("Curr Code") ?> :</label>
+                            <label for="select-Currency" class="col-md-2 control-label"><?= lang("Curr Code") ?></label>
                             <div class="col-md-4">
                                 <select id="select-Currency" class="form-control" name="fst_curr_code"></select>
                                 <div id="fst_curr_code_err" class="text-danger"></div>
@@ -132,13 +132,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <select id="select-ItemId" class="form-control" name="fin_item_id"></select>
                                 <div id="fin_item_id_id_err" class="text-danger"></div>
                             </div>-->
-                            <label for="fst_item_name" class="col-md-2 control-label"><?= lang("Item Name") ?> </label>
+                            <label for="fst_item_name" class="col-md-2 control-label"><?= lang("Item Name") ?></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" id="fst_item_name" placeholder="<?= lang("Item Name") ?>" name="fst_item_name">
                                 <div id="fst_item_name_err" class="text-danger"></div>
                             </div>
 
-                            <label for="fdt_eta_date" class="col-md-2 control-label"><?= lang("Estimasi") ?> </label>
+                            <label for="fdt_eta_date" class="col-md-2 control-label"><?= lang("Estimasi") ?></label>
                             <div class="col-md-4">
                                 <div class="input-group date">
                                     <div class="input-group-addon">

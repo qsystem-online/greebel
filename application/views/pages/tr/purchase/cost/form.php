@@ -130,7 +130,7 @@
                         <div class="form-group">
                             							
                             <div class="col-sm-6">
-								<label for="fst_memo" class=""><?=lang("Memo :")?> </label>
+								<label for="fst_memo" class=""><?=lang("Memo")?> </label>
                                 <textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="3" style="resize:none;width:100%"></textarea>
                                 <div id="fst_memo_err" class="text-danger"></div>
 							</div> 

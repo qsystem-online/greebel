@@ -56,7 +56,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 						<div class="form-group">
-						<label for="fin_relation_id" class="col-md-2 control-label"><?=lang("Relation ID")?> :</label>
+						<label for="fin_relation_id" class="col-md-2 control-label"><?=lang("Relation ID")?> #</label>
 							<div class="col-md-10">
 								<input type="text" class="form-control" id="fin_relation_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_relation_id" value="<?=$fin_relation_id?>" readonly>
 								<div id="fin_relation_id_err" class="text-danger"></div>
@@ -64,7 +64,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-						<label for="fst_relation_type" class="col-md-2 control-label"><?=lang("Relation Type")?> :</label>
+						<label for="fst_relation_type" class="col-md-2 control-label"><?=lang("Relation Type")?></label>
 							<div class="col-md-10">
 								<select class="form-control select2" id="fst_relation_type" name="fst_relation_type[]"  multiple="multiple">
 									<option value="1"><?=lang("Customer")?></option>
@@ -75,7 +75,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-						<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Line Of Business")?> :</label>
+						<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Line Of Business")?></label>
 							<div class="col-md-10">
 								<select class="form-control select2" id="select-lineBusiness" name="fst_linebusiness_id[]"  multiple="multiple">
 								<?php foreach ($linebusinessList as $linebusiness) {    ?>
@@ -87,7 +87,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-						<label for="fst_relation_name" class="col-md-2 control-label"><?=lang("Relation Name")?> :</label>
+						<label for="fst_relation_name" class="col-md-2 control-label"><?=lang("Relation Name")?> *</label>
 							<div class="col-md-10">
 								<input type="text" class="form-control" id="fst_relation_name" placeholder="<?=lang("Relation Name")?>" name="fst_relation_name">
 								<div id="fst_relation_name_err" class="text-danger"></div>
@@ -95,7 +95,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-						<label for="fin_branch_id" class="col-md-2 control-label"><?=lang("Branch Name")?> :</label>
+						<label for="fin_branch_id" class="col-md-2 control-label"><?=lang("Branch Name")?></label>
 							<div class="col-md-4">
 								<select id="select-branch" class="form-control" name="fin_branch_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -103,7 +103,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fin_branch_id_err" class="text-danger"></div>
 							</div>
 
-						<label for="fst_business_type" class="col-md-2 control-label"><?=lang("Business Type")?> :</label>
+						<label for="fst_business_type" class="col-md-2 control-label"><?=lang("Business Type")?></label>
 							<div class="col-md-4">
 								<select class="form-control" id="fst_business_type" name="fst_business_type">
 									<option value='P'><?=lang("Personal")?></option>
@@ -113,7 +113,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-						<label for="select-parentId" class="col-md-2 control-label"><?=lang("Customer Induk")?> :</label>
+						<label for="select-parentId" class="col-md-2 control-label"><?=lang("Customer Induk")?></label>
 							<div class="col-md-4">
 								<select id="select-parentId" class="form-control relation-info" name="fin_parent_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -121,7 +121,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fin_parent_id_err" class="text-danger"></div>
 							</div>
 						
-						<label for="select-groupId" class="col-md-2 control-label"><?=lang("Relation Group Name")?> :</label>
+						<label for="select-groupId" class="col-md-2 control-label"><?=lang("Relation Group Name")?></label>
 							<div class="col-md-4">
 								<select id="select-groupId" class="form-control" name="fin_relation_group_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -131,7 +131,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group personal-info">
-						<label for="fst_gender" class="col-md-2 control-label"><?=lang("Gender")?> :</label>
+						<label for="fst_gender" class="col-md-2 control-label"><?=lang("Gender")?></label>
 							<div class="col-md-4 personal-info">
 								<select class="form-control" id="fst_gender" name="fst_gender">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -140,7 +140,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</select>
 							</div>
 
-						<label for="fdt_birth_date" class="col-md-2 control-label text-right"><?=lang("Birth Date")?> :</label>
+						<label for="fdt_birth_date" class="col-md-2 control-label text-right"><?=lang("Birth Date")?></label>
 							<div class="col-md-4">
 								<div class="input-group date">
 									<div class="input-group-addon">
@@ -154,13 +154,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group personal-info">
-						<label for="fst_nik" class="col-md-2 control-label"><?=lang("NIK")?> :</label>
+						<label for="fst_nik" class="col-md-2 control-label"><?=lang("NIK")?></label>
 							<div class="col-md-4">
 								<input type="text" class="form-control" id="fst_nik" placeholder="<?=lang("NIK")?>" name="fst_nik">
 								<div id="fst_nik_err" class="text-danger"></div>
 							</div>
 
-							<label for="fst_birth_place" class="col-md-2 control-label text-right"><?=lang("Birth Place")?> :</label>
+							<label for="fst_birth_place" class="col-md-2 control-label text-right"><?=lang("Birth Place")?></label>
 							<div class="col-md-4">
 								<input type="text" class="form-control text-right" id="fst_birth_place" placeholder="<?=lang("Birth Place")?>" name="fst_birth_place">
 								<div id="fst_birth_place_err" class="text-danger"></div>
@@ -168,7 +168,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-							<label for="fst_npwp" class="col-md-2 control-label"><?=lang("NPWP")?> :</label>
+							<label for="fst_npwp" class="col-md-2 control-label"><?=lang("NPWP")?></label>
 							<div class="col-md-4">
 								<input type="text" class="form-control" id="fst_npwp" placeholder="<?=lang("NPWP")?>" name="fst_npwp">
 								<div id="fst_npwp_err" class="text-danger"></div>
@@ -176,13 +176,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-							<label for="fst_phone" class="col-md-2 control-label"><?=lang("Phone")?> :</label>
+							<label for="fst_phone" class="col-md-2 control-label"><?=lang("Phone")?></label>
 							<div class="col-md-4">
 								<input type="text" class="form-control" id="fst_phone" placeholder="<?=lang("Phone")?>" name="fst_phone">
 								<div id="fst_phone_err" class="text-danger"></div>
 							</div>
 
-							<label for="fst_fax" class="col-md-2 control-label"><?=lang("Fax")?> :</label>
+							<label for="fst_fax" class="col-md-2 control-label"><?=lang("Fax")?></label>
 							<div class="col-md-4">
 								<input type="text" class="form-control" id="fst_fax" placeholder="<?=lang("Fax")?>" name="fst_fax">
 								<div id="fst_fax_err" class="text-danger"></div>
@@ -190,7 +190,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-						<label for="fst_address" class="col-md-2 control-label"><?=lang("Address")?> :</label>
+						<label for="fst_address" class="col-md-2 control-label"><?=lang("Address")?></label>
 							<div class="col-md-10">
 								<textarea class="form-control" id="fst_address" placeholder="<?=lang("Address")?>" name="fst_address"></textarea>
 								<div id="fst_address_err" class="text-danger"></div>
@@ -198,13 +198,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-						<label for="fst_postal_code" class="col-md-2 control-label"><?=lang("Postal Code")?> :</label>
+						<label for="fst_postal_code" class="col-md-2 control-label"><?=lang("Postal Code")?></label>
 							<div class="col-md-4">
 								<input type="text" class="form-control" id="fst_postal_code" placeholder="<?=lang("Postal Code")?>" name="fst_postal_code">
 								<div id="fst_postal_code_err" class="text-danger"></div>
 							</div>
 						
-						<label for="select-country" class="col-md-2 control-label"><?=lang("Country Name")?> :</label>
+						<label for="select-country" class="col-md-2 control-label"><?=lang("Country Name")?></label>
 							<div class="col-md-4">
 								<select id="select-country" class="form-control" name="fin_country_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -214,7 +214,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						
 						<div class="form-group">
-						<label for="select-provinces" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
+						<label for="select-provinces" class="col-md-2 control-label"><?=lang("Province Name")?></label>
 							<div class="col-md-4">
 								<select id="select-provinces" class="form-control" name="fst_kode">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -222,7 +222,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fst_nama__err" class="text-danger"></div>
 							</div>
 						
-						<label for="select-district" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
+						<label for="select-district" class="col-md-2 control-label"><?=lang("District Name")?></label>
 							<div class="col-md-4">
 								<select id="select-district" class="form-control" name="fst_kode">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -232,7 +232,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						
 						<div class="form-group">
-						<label for="select-subdistrict" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
+						<label for="select-subdistrict" class="col-md-2 control-label"><?=lang("Sub District Name")?></label>
 							<div class="col-md-4">
 								<select id="select-subdistrict" class="form-control" name="fst_kode">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -240,7 +240,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fst_nama__err" class="text-danger"></div>
 							</div>
 
-						<label for="select-village" class="col-md-2 control-label"><?=lang("Village Name")?> :</label>
+						<label for="select-village" class="col-md-2 control-label"><?=lang("Village Name")?></label>
 							<div class="col-md-4">
 								<select id="select-village" class="form-control" name="fst_kode">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -250,7 +250,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						
 						<div class="form-group">
-						<label for="select-custpricing" class="col-md-2 control-label"><?=lang("Pricing Group")?> :</label>
+						<label for="select-custpricing" class="col-md-2 control-label"><?=lang("Pricing Group")?></label>
 							<div class="col-md-4">
 								<select id="select-custpricing" class="form-control relation-info" name="fin_cust_pricing_group_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -258,7 +258,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fin_cust_pricing_group_id_err" class="text-danger"></div>
 							</div>
 
-						<label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?> :</label>
+						<label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
 							<div class="col-md-4">
 								<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -268,7 +268,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						
 						<div class="form-group">
-						<label for="fin_sales_area_id" class="col-md-2 control-label"><?=lang("Sales Area Name")?> :</label>
+						<label for="fin_sales_area_id" class="col-md-2 control-label"><?=lang("Sales Area Name")?></label>
 							<div class="col-md-4">
 								<select id="select-salesArea" class="form-control" name="fin_sales_area_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -276,7 +276,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fin_sales_area_id_err" class="text-danger"></div>
 							</div>
 						
-						<label for="select-salesId" class="col-md-2 control-label"><?=lang("Sales Name")?> :</label>
+						<label for="select-salesId" class="col-md-2 control-label"><?=lang("Sales Name")?></label>
 							<div class="col-md-4">
 								<select id="select-salesId" class="form-control" name="fin_sales_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -286,7 +286,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						
 						<div class="form-group">
-						<label for="fst_relation_notes" class="col-md-2 control-label"><?=lang("Relation Notes")?> :</label>
+						<label for="fst_relation_notes" class="col-md-2 control-label"><?=lang("Relation Notes")?></label>
 							<div class="col-md-8">
 								<select id="select-notes" class="form-control" name="fst_relation_notes">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -298,13 +298,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-						<label for="fdc_credit_limit" class="col-md-2 control-label"><?=lang("Credit Limit")?> :</label>
+						<label for="fdc_credit_limit" class="col-md-2 control-label"><?=lang("Credit Limit")?></label>
 							<div class="col-md-4">
 								<input type="text" class="form-control text-right money" id="fdc_credit_limit" name="fdc_credit_limit">
 								<div id="fdc_credit_limit_err" class="text-danger"></div>
 							</div>
 
-						<label for="fin_terms_payment" class="col-md-2 control-label"><?=lang("Terms Payment")?> :</label>
+						<label for="fin_terms_payment" class="col-md-2 control-label"><?=lang("Terms Payment")?></label>
 							<div class="col-md-2">
 								<input type="text" class="form-control text-right" id="fin_terms_payment" placeholder="<?=lang("Terms Payment")?>" name="fin_terms_payment">
 								<div id="fin_terms_payment_err" class="text-danger"></div>
@@ -317,7 +317,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-							<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("TOP Commission")?> :</label>
+							<label for="fin_top_komisi" class="col-md-2 control-label"><?=lang("TOP Commission")?></label>
 							<div class="col-md-2">
 								<input type="text" class="form-control text-right" id="fin_top_komisi" name="fin_top_komisi" value="0">
 								<div id="fin_top_komisi_err" class="text-danger"></div>
@@ -326,7 +326,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 							
 						<div class="form-group">
-							<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("TOP Plus Commission")?> :</label>
+							<label for="fin_top_plus_komisi" class="col-md-2 control-label"><?=lang("TOP Plus Commission")?></label>
 							<div class="col-md-2">
 								<input type="text" class="form-control text-right" id="fin_top_plus_komisi" name="fin_top_plus_komisi" value="0">
 								<div id="fin_top_plus_komisi_err" class="text-danger"></div>
@@ -384,7 +384,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <fieldset style="padding:10px">
 								<form  class="form-horizontal">
 									<div class="form-group">
-										<label for="fst_name" class="col-md-2 control-label"><?=lang("Name")?> :</label>
+										<label for="fst_name" class="col-md-2 control-label"><?=lang("Name")?> *</label>
 										<div class="col-md-10">
 											<input type="text" class="form-control" id="fst_name" name="fst_name">
 											<div id="fst_name_err" class="text-danger"></div>
@@ -392,7 +392,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 								
 									<div class="form-group">
-										<label for="provinceShipp" class="col-md-2 control-label"><?=lang("Province Name")?> :</label>
+										<label for="provinceShipp" class="col-md-2 control-label"><?=lang("Province Name")?></label>
 										<div class="col-md-4">
 											<select id="provinceShipp" class="form-control" name="fst_kode">
 												<option value="0">-- <?=lang("select")?> --</option>
@@ -400,7 +400,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											<div id="fst_nama_err" class="text-danger"></div>
 										</div>
 
-										<label for="districtShipp" class="col-md-2 control-label"><?=lang("District Name")?> :</label>
+										<label for="districtShipp" class="col-md-2 control-label"><?=lang("District Name")?></label>
 										<div class="col-md-4">
 											<select id="districtShipp" class="form-control" name="fst_kode">
 												<option value="0">-- <?=lang("select")?> --</option>
@@ -410,7 +410,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="subdistrictShipp" class="col-md-2 control-label"><?=lang("Sub District Name")?> :</label>
+										<label for="subdistrictShipp" class="col-md-2 control-label"><?=lang("Sub District Name")?></label>
 										<div class="col-md-4">
 											<select id="subdistrictShipp" class="form-control" name="fst_kode">
 												<option value="0">-- <?=lang("select")?> --</option>
@@ -418,7 +418,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											<div id="fst_nama_err" class="text-danger"></div>
 										</div>
 
-										<label for="villageShipp" class="col-md-2 control-label"><?=lang("Village Name")?> :</label>
+										<label for="villageShipp" class="col-md-2 control-label"><?=lang("Village Name")?></label>
 										<div class="col-md-4">
 											<select id="villageShipp" class="form-control" name="fst_kode">
 												<option value="0">-- <?=lang("select")?> --</option>
@@ -428,7 +428,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Shipping Address")?> :</label>
+										<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Shipping Address")?></label>
 										<div class="col-md-10">
 											<textarea class="form-control" id="fst_shipping_address" name="fst_shipping_address"></textarea>
 											<div id="fst_shipping_address_err" class="text-danger"></div>

@@ -47,7 +47,7 @@
 
 
                         <div class="form-group">
-							<label for="fst_lpbpurchase_no" class="col-md-2 control-label"><?=lang("No. Faktur")?> :</label>	
+							<label for="fst_lpbpurchase_no" class="col-md-2 control-label"><?=lang("No. Faktur")?> #</label>	
 							<div class="col-md-4">				
 								<input type="TEXT" id="fst_lpbpurchase_no" name="fst_lpbpurchase_no" class="form-control"  value="<?=$fst_lpbpurchase_no?>" placeholder="PREFIX/BRANCH/YEAR/MONTH/99999" /> 
 							</div>
@@ -67,7 +67,7 @@
 						</div>
 					
 						<div class="form-group">
-							<label for="fin_po_id" class="col-md-2 control-label"><?=lang("PO Number")?> :</label>
+							<label for="fin_po_id" class="col-md-2 control-label"><?=lang("PO Number")?></label>
 							<div class="col-md-5">
 								<select id="fin_po_id" class="form-control non-editable" name="fin_po_id">
 									<?php
@@ -79,7 +79,7 @@
 								</select>
 								<div id="fin_po_id_err" class="text-danger"></div>
 							</div>
-							<label for="fin_po_id" class="col-md-1 control-label"><?=lang("PO Date")?> :</label>
+							<label for="fin_po_id" class="col-md-1 control-label"><?=lang("PO Date")?></label>
 							<div class="col-md-4">
 								<div class="input-group date">
 									<div class="input-group-addon">
@@ -92,27 +92,27 @@
 						</div>
 
 						<div class="form-group">
-                            <label for="fin_vendor_id" class="col-md-2 control-label"><?=lang("Supplier")?> :</label>							
+                            <label for="fin_vendor_id" class="col-md-2 control-label"><?=lang("Supplier")?></label>							
                             <div class="col-sm-10">
                                 <input type='TEXT' class="form-control" id="fst_supplier_name" readonly />
                             </div>                        
                         </div>
 						
 						<div class="form-group">
-                            <label for="fin_lpbgudang_id" class="col-md-2 control-label"><?=lang("LPB Gudang")?> :</label>							
+                            <label for="fin_lpbgudang_id" class="col-md-2 control-label"><?=lang("LPB Gudang")?></label>							
                             <div class="col-sm-10">
 								<select id="fin_lpbgudang_id" class="form-control" name="fin_lpbgudang_id[]" multiple="multiple" style="width:100%"></select>                                
 							</div>							                    
 						</div>
 						<div class="form-group">
-                            <label class="col-md-2 control-label"><?=lang("Term")?> :</label>
+                            <label class="col-md-2 control-label"><?=lang("Term")?></label>
                             <div class="col-md-1">
 								<input id="fin_term" type="TEXT" name="fin_term" class="form-control" />
 							</div>	                    
 							<label class="col-md-1 control-label" style="text-align:left;padding-left:0px"><?=lang("Hari")?> </label>
 						</div>
 						<div class="form-group">
-							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> :</label>
+							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?></label>
                             <div class="col-sm-2">
 								<select id="fst_curr_code" class="form-control" style="width:100%" disabled>
 									<?php
@@ -125,7 +125,7 @@
 									?>
 								</select>								
 							</div>										                    
-							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> :</label>
+							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?></label>
                             <div class="col-sm-2">
 								<input type="TEXT" id="fdc_exchange_rate_idr"  name="fdc_exchange_rate_idr" class="form-control money"/>
 								<div id="fdc_exchange_rate_idr_err" class="text-danger"></div>
@@ -156,7 +156,7 @@
 
                         <div class="form-group">                            							
                             <div class="col-sm-6">
-								<label for="fin_vendor_id" class=""><?=lang("Memo :")?> </label>
+								<label for="fin_vendor_id" class=""><?=lang("Memo")?> </label>
                                 <textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="3" style="resize:none;width:100%"></textarea>
                                 <div id="fst_memo_err" class="text-danger"></div>
 							</div> 

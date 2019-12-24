@@ -61,7 +61,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
                     <div class="form-group">
-                    <label for="fst_member_no" class="col-md-2 control-label"><?=lang("Member No")?> *</label>
+                    <label for="fst_member_no" class="col-md-2 control-label"><?=lang("Member No")?></label>
                         <div class="col-md-10">
                         <input type="text" class="form-control" id="fst_member_no" placeholder="<?=lang("Member No")?>" name="fst_member_no">
 							<div id="fst_member_no_err" class="text-danger"></div>
@@ -69,7 +69,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
 					<div class="form-group">
-                    <label for="fst_name_on_card" class="col-md-2 control-label"><?=lang("Name On Card")?> </label>
+                    <label for="fst_name_on_card" class="col-md-2 control-label"><?=lang("Name On Card")?></label>
 						<div class="col-md-10">
 							<input type="text" class="form-control" id="fst_name_on_card" placeholder="<?=lang("Name On Card")?>" name="fst_name_on_card">
 							<div id="fst_name_on_card_err" class="text-danger"></div>
@@ -85,7 +85,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fin_relation_id_err" class="text-danger"></div>
                         </div>
 
-					<label for="select-MemberGroup" class="col-md-2 control-label"><?=lang("Member Group Name")?> :</label>
+					<label for="select-MemberGroup" class="col-md-2 control-label"><?=lang("Member Group Name")?></label>
 						<div class="col-md-4">
 							<select id="select-MemberGroup" class="form-control" name="fin_member_group_id">
 								<option value="0">-- <?=lang("select")?> --</option>
@@ -95,7 +95,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
                     <div class="form-group">
-					<label for="fdt_expiry_date" class="col-md-2 control-label text-right"><?=lang("Expiry Date")?> </label>
+					<label for="fdt_expiry_date" class="col-md-2 control-label text-right"><?=lang("Expiry Date")?></label>
 						<div class="col-md-4">
 							<div class="input-group date">
 								<div class="input-group-addon">
