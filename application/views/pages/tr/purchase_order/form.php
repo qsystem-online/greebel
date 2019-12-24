@@ -157,7 +157,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</select>
 									<div id="fin_warehouse_id_err" class="text-danger"></div>
 								</div>
-								<div class="pull-left" style="width:30%" >
+								<div class="pull-left" style="width:35%" >
 									<div class="form-group">
 										<label for="fst_do_no" class="col-md-5 control-label"><?=lang("Nomor DO")?></label>
 										<div class="col-md-7">
@@ -166,7 +166,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 										</div>
 									</div>
 								</div>
-								<div class="pull-left" style="width:35%;min-width:300px" >
+								<div class="pull-left" style="width:40%;min-width:300px" >
 									<div class="form-group">
 										<label for="fst_contract_no" class="col-md-5 control-label"><?=lang("Nomor Kontrak")?></label>
 										<div class="col-md-7">
