@@ -35,7 +35,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="GLAccountMainGroupId" class="col-sm-2 control-label"><?= lang("GL Main Group ID") ?> :</label>
+                            <label for="GLAccountMainGroupId" class="col-sm-2 control-label"><?= lang("GL Main Group ID") ?> #</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control" id="GLAccountMainGroupId" placeholder="<?= lang("(Autonumber)") ?>" name="GLAccountMainGroupId" value="<?= $GLAccountMainGroupId ?>" readonly>
 
@@ -43,7 +43,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="GLAccountMainGroupName" class="col-sm-2 control-label"><?= lang("GL Main Group Name") ?> :</label>
+                            <label for="GLAccountMainGroupName" class="col-sm-2 control-label"><?= lang("GL Main Group Name") ?> *</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control" id="GLAccountMainGroupName" placeholder="<?= lang("GL Group Name") ?>" name="GLAccountMainGroupName" readonly>
                                 <div id="GLAccountMainGroupName_err" class="text-danger"></div>
@@ -51,7 +51,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="GLAccountMainPrefix" class="col-sm-2 control-label"><?= lang("Prefix") ?> :</label>
+                            <label for="GLAccountMainPrefix" class="col-sm-2 control-label"><?= lang("Prefix") ?></label>
                             <div class="col-sm-2">
                                 <input type="text" class="form-control" id="GLAccountMainPrefix" placeholder="<?= lang("Prefix") ?>" name="GLAccountMainPrefix">
                                 <div id="GLAccountMainPrefix_err" class="text-danger"></div>

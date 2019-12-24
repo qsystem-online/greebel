@@ -35,7 +35,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class="form-group maingroups">
-                            <label for="select-MainGL" class="col-md-2 control-label"><?= lang("Main Group") ?> :</label>
+                            <label for="select-MainGL" class="col-md-2 control-label"><?= lang("Main Group") ?></label>
                             <div class="col-md-4">
                                 <select id="select-MainGL" class="form-control" name="fin_glaccount_maingroup_id">
                                     <?php 
@@ -49,7 +49,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fin_glaccount_maingroup_id_err" class="text-danger"></div>
                             </div>
 
-                            <label for="select-ParentGL" class="col-md-2 control-label"><?= lang("Parent") ?> :</label>
+                            <label for="select-ParentGL" class="col-md-2 control-label"><?= lang("Parent") ?></label>
                             <div class="col-md-4">
                                 <select id="select-ParentGL" class="form-control" name="fst_parent_glaccount_code">
                                     <option value="0">-- <?=lang("select")?> --</option>
@@ -59,13 +59,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_glaccount_code" class="col-sm-2 control-label"><?= lang("GL Account Code") ?> * </label>
+                            <label for="fst_glaccount_code" class="col-sm-2 control-label"><?= lang("GL Account Code") ?> #</label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control" id="fst_glaccount_code"  placeholder="<?= lang("GL Account Code") ?>" name="fst_glaccount_code" value="<?=$fst_glaccount_code?>">
                                 <div id="fst_glaccount_code_err" class="text-danger"></div>
                             </div>
                         
-                            <label for="fst_glaccount_level" class="col-sm-2 control-label"><?= lang("Level")?> :</label>
+                            <label for="fst_glaccount_level" class="col-sm-2 control-label"><?= lang("Level")?></label>
                             <div class="col-sm-4">
                                 <select class="form-control" id="fst_glaccount_level" name="fst_glaccount_level">
                                     <option value="0">-- <?=lang("select")?> --</option>
@@ -77,7 +77,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_glaccount_name" class="col-sm-2 control-label"><?= lang("GL Account Name") ?> :</label>
+                            <label for="fst_glaccount_name" class="col-sm-2 control-label"><?= lang("GL Account Name") ?> *</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="fst_glaccount_name" placeholder="<?= lang("GL Account Name") ?>" name="fst_glaccount_name">
                                 <div id="fst_glaccount_name_err" class="text-danger"></div>
@@ -85,7 +85,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
                         
                         <div class="form-group">
-                            <label for="fst_default_post" class="col-sm-2 control-label"><?= lang("Default Post")?> :</label>
+                            <label for="fst_default_post" class="col-sm-2 control-label"><?= lang("Default Post")?></label>
                             <div class="col-sm-4">
                                 <select class="form-control" id="fst_default_post" name="fst_default_post">
                                     <option value='D'><?= lang("DEBIT") ?></option>
@@ -93,7 +93,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 </select>
                             </div>
                         
-                            <label for="fin_min_user_level_access" class="col-sm-2 control-label"><?= lang("Min. Level Access")?> :</label>
+                            <label for="fin_min_user_level_access" class="col-sm-2 control-label"><?= lang("Min. Level Access")?></label>
                             <div class="col-sm-4">
                                 <select class="form-control" id="fin_min_user_level_access" name="fin_min_user_level_access">
                                     <option value="0">-- <?=lang("select")?> --</option>
@@ -108,7 +108,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-Currency" class="col-md-2 control-label"><?= lang("Curr Code") ?> :</label>
+                            <label for="select-Currency" class="col-md-2 control-label"><?= lang("Curr Code") ?></label>
                             <div class="col-md-4">
                                 <select id="select-Currency" class="form-control" name="fst_curr_code">
                                     <?php 
@@ -122,7 +122,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <!--<div id="fst_curr_code_err" class="text-danger"></div>-->
                             </div>
 
-                            <label for="fin_seq_no" class="col-sm-2 control-label"><?= lang("Seq Number") ?> * </label>
+                            <label for="fin_seq_no" class="col-sm-2 control-label"><?= lang("Seq Number") ?></label>
                             <div class="col-sm-2">
                                 <input type="text" class="form-control" id="fin_seq_no" placeholder="<?= lang("0") ?>" name="fin_seq_no">
                                 <div id="fin_seq_no_err" class="text-danger"></div>
@@ -130,26 +130,22 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fbl_is_allow_in_cash_bank_module" class="col-sm-2 control-label"><?= lang("Allow") ?> :</label>
-                            <div class="checkbox col-sm-5">
+                            <div class="checkbox col-md-3 col-md-offset-2">
                                 <label><input id="fbl_is_allow_in_cash_bank_module" type="checkbox" name="fbl_is_allow_in_cash_bank_module" value="1"><?= lang("Allow In CashBank Module") ?></label><br>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="fbl_pc_divisi" class="col-sm-2 control-label"><?= lang("Allow") ?> :</label>
-                            <div class="checkbox col-sm-5">
+                            <div class="checkbox col-md-2 col-md-offset-2">
                                 <label><input id="fbl_pc_divisi" type="checkbox" name="fbl_pc_divisi" value="1"><?= lang("Analisa Divisi") ?></label><br>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="fbl_pc_customer" class="col-sm-2 control-label"><?= lang("Allow") ?> :</label>
-                            <div class="checkbox col-sm-5">
+                            <div class="checkbox col-md-2 col-md-offset-2">
                                 <label><input id="fbl_pc_customer" type="checkbox" name="fbl_pc_customer" value="1"><?= lang("Analisa Customer") ?></label><br>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="fbl_pc_project" class="col-sm-2 control-label"><?= lang("Allow") ?> :</label>
-                            <div class="checkbox col-sm-5">
+                            <div class="checkbox col-md-2 col-md-offset-2">
                                 <label><input id="fbl_pc_project" type="checkbox" name="fbl_pc_project" value="1"><?= lang("Analisa Project") ?></label><br>
                             </div>
                         </div>
@@ -182,7 +178,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label for="select-mainGLStart" class="col-md-3 control-label"><?= lang("Main Group GL") ?> :</label>
+                                    <label for="select-mainGLStart" class="col-md-3 control-label"><?= lang("Main Group GL") ?></label>
                                     <div class="col-md-3">
                                         <select id="select-mainGLStart" class="form-control" name="fin_glaccount_maingroup_idS">
                                             <?php foreach ($mainGL2Report as $mainGLReport) {    ?>
@@ -191,7 +187,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     } ?>
                                         </select>
                                     </div>
-                                    <label for="select-mainGLEnd" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
+                                    <label for="select-mainGLEnd" class="col-md-1 control-label"><?= lang("s/d") ?></label>
                                     <div class="col-md-3">
                                         <select id="select-mainGLEnd" class="form-control" name="fin_glaccount_maingroup_idE">
                                             <?php foreach ($mainGL2Report as $mainGLReport) {    ?>

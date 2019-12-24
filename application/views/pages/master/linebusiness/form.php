@@ -55,7 +55,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class="form-group">
-                    <label for="fin_linebusiness_id" class="col-sm-2 control-label"><?=lang("Line Of Business ID")?></label>
+                    <label for="fin_linebusiness_id" class="col-sm-2 control-label"><?=lang("Line Of Business ID")?> #</label>
 						<div class="col-sm-10">
 							<input type="text" class="form-control" id="fin_linebusiness_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_linebusiness_id" value="<?=$fin_linebusiness_id?>" readonly>
 							<div id="fin_linebusiness_id_err" class="text-danger"></div>

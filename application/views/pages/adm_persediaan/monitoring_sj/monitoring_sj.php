@@ -31,8 +31,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <div class="tab-pane active" id="tab_1">
 						<div style="margin-bottom:5px;margin-top:20px">						
 							<div style="float:right">
-								<label class="control-label">Search by :</label>
-								<select id="selectSearch" class="form-control" style="display:inline;width:148px">
+								<label class="control-label">Search on:</label>
+								<select id="selectSearch" class="form-control" style="display:inline;width:148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
 									<option value='a.fst_relation_name'>Customer</option>
 									<option value='a.fst_sj_no'>Surat Jalan No.</option>
 								</select>
@@ -45,8 +45,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <div class="tab-pane fade" id="tab_2">
 							<div style="margin-bottom:5px;margin-top:20px">
 								<div style="float:right">						
-									<label class="control-label">Search by :</label>
-									<select id="selectSearch" class="form-control" style="display:inline;width:148px">
+									<label class="control-label">Search on:</label>
+									<select id="selectSearch" class="form-control" style="display:inline;width:148px;background-color:#e6e6ff;padding:8px;margin-left:6px;margin-bottom:6px">
 										<option value='a.fst_relation_name'>Customer</option>
 										<option value='a.fst_sj_no'>Surat Jalan No.</option>
 										<option value='a.fdt_sj_datetime'>S/J DateTime</option>

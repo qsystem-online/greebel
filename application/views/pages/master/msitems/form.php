@@ -84,7 +84,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_vendor_item_name" class="col-md-2 control-label"><?= lang("Vendor Item Name") ?> *</label>
+                            <label for="fst_vendor_item_name" class="col-md-2 control-label"><?= lang("Vendor Item Name") ?></label>
                             <div class="col-md-10">
                                 <input type="text" class="form-control" id="fst_vendor_item_name" placeholder="<?= lang("Vendor Item Name") ?>" name="fst_vendor_item_name">
                                 <div id="fst_vendor_item_name_err" class="text-danger"></div>
@@ -92,7 +92,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_name_on_pos" class="col-md-2 control-label"><?= lang("Item Name on POS") ?> *</label>
+                            <label for="fst_name_on_pos" class="col-md-2 control-label"><?= lang("Item Name on POS") ?></label>
                             <div class="col-md-10">
                                 <input type="text" class="form-control" id="fst_name_on_pos" placeholder="<?= lang("Item Name on POS") ?>" name="fst_name_on_pos">
                                 <div id="fst_name_on_pos_err" class="text-danger"></div>
@@ -100,12 +100,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-GroupItemId" class="col-md-2 control-label"><?= lang("Group") ?> :</label>
+                            <label for="select-GroupItemId" class="col-md-2 control-label"><?= lang("Group") ?></label>
                             <div class="col-md-4">
                                 <select id="select-GroupItemId" class="form-control" name="fin_item_group_id"></select>
                             </div>
 
-                            <label for="fin_item_type_id" class="col-md-2 control-label"><?= lang("Item Type") ?> *</label>
+                            <label for="fin_item_type_id" class="col-md-2 control-label"><?= lang("Item Type") ?></label>
                             <div class="col-md-4">
                                 <select class="form-control" id="fin_item_type_id" name="fin_item_type_id">
                                     <option value='1'><?= lang("Raw Material") ?></option>
@@ -118,7 +118,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                        <label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Line Of Business")?> :</label>
+                        <label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Line Of Business")?></label>
                             <div class="col-md-10">
                                 <select class="form-control select2" id="select-lineBusiness" name="fst_linebusiness_id[]"  multiple="multiple">
                                 <?php foreach ($linebusinessList as $linebusiness) {    ?>
@@ -132,68 +132,62 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                         <div class="form-group">
                             <div class="col-md-10" style="left: 18px;">				
-                                <label for="fdc_scale_for_bom" class="col-md-2 control-label"><?= lang("Scale For BOM") ?>:</label>
+                                <label for="fdc_scale_for_bom" class="col-md-2 control-label"><?= lang("Scale For BOM") ?></label>
                                 <div class="col-md-5">
                                     <input type="text" class="form-control" id="fdc_scale_for_bom" placeholder="<?= lang(" 1 : ") ?>" name="fdc_scale_for_bom">
                                     <div id="fdc_scale_for_bom_err" class="text-danger"></div>
                                 </div>
                             </div>				
                             <div class="checkbox col-sm-2">
-                                <div>
-                                    <input type="checkbox" id="fbl_is_batch_number" name="fbl_is_batch_number" value="1"> &nbsp;
-                                    <label for="fbl_is_batch_number" class=""> <?= lang("Batch Number")?> </label>
-                                </div>
+                                <label><input id="fbl_is_batch_number" type="checkbox" name="fbl_is_batch_number" value="1"><?= lang("Batch Number") ?></label>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-10" style="left: 18px;">				
-                                <label for="fst_storage_rack_info" class="col-md-2 control-label"><?= lang("Storage Rack Info") ?>:</label>
+                                <label for="fst_storage_rack_info" class="col-md-2 control-label"><?= lang("Storage Rack Info") ?></label>
                                 <div class="col-md-5">
                                     <input type="text" class="form-control" id="fst_storage_rack_info" placeholder="<?= lang("Storage Rack Info") ?>" name="fst_storage_rack_info">
                                     <div id="fst_storage_rack_info_err" class="text-danger"></div>
                                 </div>
                             </div>				
                             <div class="checkbox col-sm-2">
-                                <div>
-                                    <input type="checkbox" id="fbl_is_serial_number" name="fbl_is_serial_number" value="1"> &nbsp;
-                                    <label for="fbl_is_serial_number" class=""> <?= lang("Serial Number")?> </label>
-                                </div>
+                                <label><input id="fbl_is_serial_number" type="checkbox" name="fbl_is_serial_number" value="1"><?= lang("Serial Number") ?></label>
                             </div>
                         </div>
 
                         <div class='form-group'>
-                            <label for="fst_sni_no" class="col-md-2 control-label"><?= lang("SNI No") ?>:</label>
+                            <label for="fst_sni_no" class="col-md-2 control-label"><?= lang("SNI No") ?></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" id="fst_sni_no" placeholder="<?= lang("SNI Number") ?>" name="fst_sni_no">
                                 <div id="fst_sni_no_err" class="text-danger"></div>
                             </div>
-                            <label for="fst_max_item_discount" class="col-md-2 control-label"><?= lang("Max Item Discount") ?>:</label>
+                            <label for="fst_max_item_discount" class="col-md-2 control-label"><?= lang("Max Item Discount") ?></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" id="fst_max_item_discount" placeholder="<?= lang("0+0+0") ?>" name="fst_max_item_discount">
                                 <div id="fst_max_item_discount_err" class="text-danger"></div>
                             </div>
                         </div>
                         <div class='form-group'>
-                            <label for="fdc_min_basic_unit_avg_cost" class="col-md-2 control-label"><?= lang("Min AvgCost") ?>:</label>
+                            <label for="fdc_min_basic_unit_avg_cost" class="col-md-2 control-label"><?= lang("Min AvgCost") ?></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control text-left money" id="fdc_min_basic_unit_avg_cost" placeholder="<?= lang("Minimal BasicUnitAvgCost") ?>" value="0" name="fdc_min_basic_unit_avg_cost">
                                 <div id="fdc_min_basic_unit_avg_cost_err" class="text-danger"></div>
                             </div>
 
-                            <label for="fdc_max_basic_unit_avg_cost" class="col-md-2 control-label"><?= lang("Max AvgCost") ?>:</label>
+                            <label for="fdc_max_basic_unit_avg_cost" class="col-md-2 control-label"><?= lang("Max AvgCost") ?></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control text-left money" id="fdc_max_basic_unit_avg_cost" placeholder="<?= lang("Maximal BasicUnitAvgCost") ?>" value="0" name="fdc_max_basic_unit_avg_cost">
                                 <div id="fdc_max_basic_unit_avg_cost_err" class="text-danger"></div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="fst_memo" class="col-md-2 control-label"><?= lang("Memo") ?>:</label>
+                            <label for="fst_memo" class="col-md-2 control-label"><?= lang("Memo") ?></label>
                             <div class="col-md-10">
                                 <textarea rows="4" style="width:100%" class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="fst_image" class="col-sm-2 control-label"><?= lang("Image") ?> :</label>
+                            <label for="fst_image" class="col-sm-2 control-label"><?= lang("Image") ?></label>
                             <div class="col-sm-4">
                                 <input type="file" class="form-control" id="fst_image" name="fst_image">
                             </div>
@@ -291,24 +285,23 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="fbl_is_basic_unit" class="col-sm-3 control-label"><?= lang("Basic") ?> :</label>
-                                        <div class="checkbox">
-                                            <label><input id="fbl_is_basic_unit" type="checkbox" name="fbl_is_basic_unit" value="1"><?= lang("Basic") ?></label><br>
+                                        <div class="col-md-2 col-md-offset-2">
+                                            <label class="checkbox-inline"><input id="fbl_is_basic_unit" type="checkbox" name="fbl_is_basic_unit" value="1"><?= lang("Basic") ?></label><br>
                                         </div>
-
-                                        <label for="fbl_is_production_output" class="col-sm-3 control-label"><?= lang("Production") ?> :</label>
-                                        <div class="checkbox">
-                                            <label><input id="fbl_is_production_output" type="checkbox" name="fbl_is_production_output" value="1"><?= lang("Production") ?></label><br>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-2 col-md-offset-2">
+                                            <label class="checkbox-inline"><input id="fbl_is_production_output" type="checkbox" name="fbl_is_production_output" value="1"><?= lang("Production") ?></label><br>
                                         </div>
-
-                                        <label for="fbl_is_selling" class="col-sm-3 control-label"><?= lang("Selling") ?> :</label>
-                                        <div class="checkbox">
-                                            <label><input id="fbl_is_selling" type="checkbox" name="fbl_is_selling" value="1"><?= lang("Selling") ?></label><br>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-2 col-md-offset-2">
+                                            <label class="checkbox-inline"><input id="fbl_is_selling" type="checkbox" name="fbl_is_selling" value="1"><?= lang("Selling") ?></label><br>
                                         </div>
-
-                                        <label for="fbl_is_buying" class="col-sm-3 control-label"><?= lang("Buying") ?> :</label>
-                                        <div class="checkbox">
-                                            <label><input id="fbl_is_buying" type="checkbox" name="fbl_is_buying" value="1"><?= lang("Buying") ?></label><br>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-2 col-md-offset-2">
+                                            <label class="checkbox-inline"><input id="fbl_is_buying" type="checkbox" name="fbl_is_buying" value="1"><?= lang("Buying") ?></label><br>
                                         </div>
                                     </div>
                                 </form>
@@ -1030,7 +1023,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                             <form class="form-horizontal">
                                 <div class="form-group">
-                                    <label for="select-groupItemName" class="col-md-3 control-label"><?= lang("Group") ?> :</label>
+                                    <label for="select-groupItemName" class="col-md-3 control-label"><?= lang("Group") ?></label>
                                     <div class="col-md-7">
                                         <select id="select-groupItemName" class="form-control" name="fin_item_group_id">
                                             <option value="0">-- <?= lang("select") ?> --</option>
@@ -1039,7 +1032,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="select-lineBusinessR" class="col-md-3 control-label"><?=lang("Line Of Business")?> :</label>
+                                    <label for="select-lineBusinessR" class="col-md-3 control-label"><?=lang("Line Of Business")?></label>
                                     <div class="col-md-7">
                                         <select class="form-control select2" style= "width:100%" id="select-lineBusinessR" name="fst_linebusinessR[]"  multiple="multiple">
                                         <?php foreach ($linebusinessList as $linebusiness) {    ?>
@@ -1050,7 +1043,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="select-vendorName" class="col-md-3 control-label"><?= lang("Vendor Name") ?> :</label>
+                                    <label for="select-vendorName" class="col-md-3 control-label"><?= lang("Vendor Name") ?></label>
                                     <div class="col-md-7">
                                         <select id="select-vendorName" class="form-control" name="fst_vendor_item_name">
                                             
@@ -1059,14 +1052,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="select-ItemCode" class="col-md-3 control-label"><?= lang("Item Code") ?> :</label>
+                                    <label for="select-ItemCode" class="col-md-3 control-label"><?= lang("Item Code") ?></label>
                                     <div class="col-md-3">
                                         <select id="select-ItemCode" class="form-control" name="fst_item_code">
                                             <option value="0">--  <?= lang("select") ?>  --</option>
                                         </select>
                                         <div id="fst_item_code_err" class="text-danger"></div>
                                     </div>
-                                    <label for="select-CodeItem" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
+                                    <label for="select-CodeItem" class="col-md-1 control-label"><?= lang("s/d") ?></label>
                                     <div class="col-md-3">
                                         <select id="select-CodeItem" class="form-control" name="fst_item_code">
                                             <option value="0">--  <?= lang("select") ?>  --</option>
@@ -1075,7 +1068,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="mdlBomDetails" class="col-md-3 control-label"><?= lang("BOM") ?> :</label>
+                                    <label for="mdlBomDetails" class="col-md-3 control-label"><?= lang("BOM") ?></label>
                                     <div class="checkbox col-md-2">
                                         <label><input id="mdlBomDetails" type="checkbox" name="mdlBomDetails" value="1"><?= lang("BOM") ?></label><br>
                                     </div>

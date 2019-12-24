@@ -93,7 +93,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">						
-							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> :</label>
+							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?></label>
 							<div class="col-md-4">
 								<select id="fst_curr_code" class="form-control" name="fst_curr_code">
 									<?php
@@ -110,7 +110,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fst_curr_code_err" class="text-danger"></div>
 							</div>
 						
-							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> :</label>
+							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?></label>
 							<div class="col-md-1">
 								<input type="text" class="form-control" id="fdc_exchange_rate_idr" name="fdc_exchange_rate_idr" style="width:50px" value="1" readonly/>
 							</div>
@@ -118,7 +118,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">						
-							<label for="select-relations" class="col-md-2 control-label"><?=lang("Customer")?> :</label>
+							<label for="select-relations" class="col-md-2 control-label"><?=lang("Customer")?></label>
 							<div class="col-md-4">
 								<select id="select-relations" class="form-control non-editable" name="fin_relation_id">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -126,7 +126,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fin_relation_id_err" class="text-danger"></div>
 							</div>
 						
-							<label for="select-relations" class="col-md-2 control-label"><?=lang("Term")?> :</label>
+							<label for="select-relations" class="col-md-2 control-label"><?=lang("Term")?></label>
 							<div class="col-md-1">
 								<input type="text" class="form-control" id="fin_terms_payment" name="fin_terms_payment" style="width:50px"/>							
 								<div id="fin_terms_payment_err" class="text-danger"></div>
@@ -137,7 +137,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 						<div class="form-group">
 							
-							<label for="select-sales" class="col-md-2 control-label"><?=lang("Sales")?> :</label>
+							<label for="select-sales" class="col-md-2 control-label"><?=lang("Sales")?></label>
 							<div class="col-md-4">
 								<select id="select-sales" class="form-control" name="fin_sales_id">
 									<?php
@@ -153,7 +153,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-							<label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?> :</label>
+							<label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
 							<div class="col-md-4">
 								<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
 									<?php
@@ -173,7 +173,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-							<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?> :</label>
+							<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?></label>
 							<div class="col-md-10">
 								<select class="select2 form-control" name="fin_shipping_address_id" id="fin_shipping_address_id" style="width:100%"></select>
 								<div id="fst_shipping_address_err" class="text-danger"></div>
@@ -205,6 +205,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div class="form-group">
 									
 									<div class="col-sm-12">
+										<label for="fst_memo" class=""><?=lang("Memo")?></label>
 										<textarea class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo" rows="5" style="resize:none"></textarea>
 										<div id="fst_memo_err" class="text-danger"></div>
 									</div>
@@ -281,14 +282,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<form id="form-detail" class="form-horizontal">
 								<input type='hidden' id='fin_rec_id'/>
 									<div class="form-group">
-										<label for="select-items" class="col-md-3 control-label"><?=lang("Items")?> :</label>
+										<label for="select-items" class="col-md-3 control-label"><?=lang("Items")?></label>
 										<div class="col-md-9">
 											<select id="select-items" class="form-control"></select>
 											<div id="ItemId_err" class="text-danger"></div>
 										</div>
 									</div>
 									<div class="form-group">
-										<label for="fst_custom_item_name" class="col-md-3 control-label"><?=lang("Custom Name")?> :</label>
+										<label for="fst_custom_item_name" class="col-md-3 control-label"><?=lang("Custom Name")?></label>
 										<div class="col-md-9">
 											<input id="fst_custom_item_name" class="form-control"></select>
 											<div id="fst_custom_item_name_err" class="text-danger"></div>
@@ -296,7 +297,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="select-unit" class="col-md-3 control-label"><?=lang("Unit")?> :</label>
+										<label for="select-unit" class="col-md-3 control-label"><?=lang("Unit")?></label>
 										<div class="col-md-9">
 											<select id="select-unit" name="fst_unit" class="disc-group form-control" style="width:100%"></select>
 											<div id="fst_unit_err" class="text-danger"></div>
@@ -304,13 +305,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?> :</label>
+										<label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?></label>
 										<div class="col-md-2">
 											<input type="number" class="disc-group form-control text-right numeric" id="so-qty" value="1">
 											<div id="fdb_qty_err" class="text-danger"></div>
 										</div>
 
-										<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?> :</label>
+										<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?></label>
 										<div class="col-md-5">
 											<input type="text" class="disc-group form-control text-right money" id="so-price" value="0">
 											<div id="fdc_price_err" class="text-danger"></div>
@@ -320,7 +321,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									
 
 									<div class="form-group">
-										<label for="select-disc" class="col-md-3 control-label"><?=lang("Disc ++")?> :</label>
+										<label for="select-disc" class="col-md-3 control-label"><?=lang("Disc ++")?></label>
 										<div class="col-md-9">
 											<select id="select-disc" class="form-control text-right" name="fst_disc_item">
 												<?php
@@ -335,7 +336,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="fdc_disc_amount_per_item" class="col-md-3 control-label"><?=lang("Nilai Disc / Barang ")?> :</label>
+										<label for="fdc_disc_amount_per_item" class="col-md-3 control-label"><?=lang("Nilai Disc / Barang ")?></label>
 										<div class="col-md-9">
 											<input type="text" class="money disc-group form-control text-right" id="fdc_disc_amount_per_item">
 											<div id="fdc_disc_amount_per_item_err" class="text-danger"></div>
@@ -343,7 +344,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="fst_memo_item" class="col-md-3 control-label"><?=lang("Memo")?> :</label>
+										<label for="fst_memo_item" class="col-md-3 control-label"><?=lang("Memo")?></label>
 										<div class="col-md-9">
 											<textarea type="text" class="form-control" id="fst_memo_item" rows="3"></textarea>
 											<div id="fst_memo_item_err" class="text-danger"></div>

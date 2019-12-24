@@ -51,7 +51,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
 
                         <div class='form-group'>
-                            <label for="current_password" class="col-sm-2 control-label"><?= lang("Current Password") ?> :</label>
+                            <label for="current_password" class="col-sm-2 control-label"><?= lang("Current Password") ?></label>
                             <div class="col-sm-4">
                                 <input type="password" class="form-control" id="current_password" placeholder="<?= lang("current password") ?>" name="current_password">
                                 <div id="current_password_err" class="text-danger"></div>
@@ -59,7 +59,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="new_password1" class="col-sm-2 control-label"><?= lang("New Password") ?> :</label>
+                            <label for="new_password1" class="col-sm-2 control-label"><?= lang("New Password") ?></label>
                             <div class="col-sm-4">
                                 <input type="password" class="form-control" id="new_password1" placeholder="<?= lang("New Password") ?>" name="new_password1">
                                 <div id="new_password1_err" class="text-danger"></div>
@@ -68,7 +68,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 
                         <div class="form-group">
-                            <label for="new_password2" class="col-sm-2 control-label"><?= lang("Repeat Password") ?> :</label>
+                            <label for="new_password2" class="col-sm-2 control-label"><?= lang("Repeat Password") ?></label>
                             <div class="col-sm-4">
                                 <input type="password" class="form-control" id="new_password2" placeholder="<?= lang("Repeat Password") ?>" name="new_password2">
                                 <div id="new_password2_err" class="text-danger"></div>

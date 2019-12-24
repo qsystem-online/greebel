@@ -35,7 +35,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="fin_branch_id" class="col-sm-2 control-label"><?= lang("Branch ID") ?> :</label>
+                            <label for="fin_branch_id" class="col-sm-2 control-label"><?= lang("Branch ID") ?> #</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="fin_branch_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_branch_id" value="<?= $fin_branch_id ?>" readonly>
                                 <div id="fin_branch_id_err" class="text-danger"></div>
@@ -44,7 +44,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_branch_name" class="col-sm-2 control-label"><?= lang("Branch Name") ?> :</label>
+                            <label for="fst_branch_name" class="col-sm-2 control-label"><?= lang("Branch Name") ?> *</label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="fst_branch_name" placeholder="<?= lang("Branch Name") ?>" name="fst_branch_name">
                                 <div id="fst_branch_name_err" class="text-danger"></div>
@@ -52,7 +52,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_address" class="col-md-2 control-label"><?= lang("Address") ?> :</label>
+                            <label for="fst_address" class="col-md-2 control-label"><?= lang("Address") ?></label>
                             <div class="col-md-10">
                                 <textarea class="form-control" id="fst_address" placeholder="<?= lang("Address") ?>" name="fst_address"></textarea>
                                 <div id="fst_address_err" class="text-danger"></div>
@@ -60,7 +60,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="select-country" class="col-md-2 control-label"><?= lang("Country Name") ?> :</label>
+                            <label for="select-country" class="col-md-2 control-label"><?= lang("Country Name") ?></label>
                             <div class="col-md-4">
                                 <select id="select-country" class="form-control" name="fin_country_id">
                                     <option value="0">-- <?= lang("select") ?> --</option>
@@ -68,7 +68,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fin_country_id_err" class="text-danger"></div>
                             </div>
 
-                            <label for="select-provinces" class="col-md-2 control-label"><?= lang("Province Name") ?> :</label>
+                            <label for="select-provinces" class="col-md-2 control-label"><?= lang("Province Name") ?></label>
                             <div class="col-md-4">
                                 <select id="select-provinces" class="form-control" name="fst_kode">
                                     <option value="0">-- <?= lang("select") ?> --</option>
@@ -76,14 +76,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="select-district" class="col-md-2 control-label"><?= lang("District Name") ?> :</label>
+                            <label for="select-district" class="col-md-2 control-label"><?= lang("District Name") ?></label>
                             <div class="col-md-4">
                                 <select id="select-district" class="form-control" name="fst_kode">
                                     <option value="0">-- <?= lang("select") ?> --</option>
                                 </select>
                             </div>
 
-                            <label for="select-subdistrict" class="col-md-2 control-label"><?= lang("Sub District Name") ?> :</label>
+                            <label for="select-subdistrict" class="col-md-2 control-label"><?= lang("Sub District Name") ?></label>
                             <div class="col-md-4">
                                 <select id="select-subdistrict" class="form-control" name="fst_kode">
                                     <option value="0">-- <?= lang("select") ?> --</option>
@@ -92,20 +92,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_postalcode" class="col-md-2 control-label"><?= lang("Postal Code") ?> :</label>
+                            <label for="fst_postalcode" class="col-md-2 control-label"><?= lang("Postal Code") ?></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" id="fst_postalcode" placeholder="<?= lang("Postal Code") ?>" name="fst_postalcode">
                                 <div id="fst_postalcode_err" class="text-danger"></div>
                             </div>
 
-                            <label for="fst_branch_phone" class="col-sm-2 control-label"><?= lang("Phone") ?> :</label>
+                            <label for="fst_branch_phone" class="col-sm-2 control-label"><?= lang("Phone") ?></label>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control" id="fst_branch_phone" placeholder="<?= lang("Phone") ?>" name="fst_branch_phone">
                                 <div id="fst_branch_phone_err" class="text-danger"></div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="fst_notes" class="col-sm-2 control-label"><?= lang("Notes") ?> :</label>
+                            <label for="fst_notes" class="col-sm-2 control-label"><?= lang("Notes") ?></label>
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" id="fst_notes" placeholder="<?= lang("Notes") ?>" name="fst_notes">
                                 <div id="fst_notes_err" class="text-danger"></div>
@@ -113,9 +113,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                            <label for="fbl_is_hq" class="col-sm-2 control-label"><?= lang("HQ") ?> :</label>
-                            <div class="checkbox col-sm-2">
-                                <label><input id="fbl_is_hq" type="checkbox" name="fbl_is_hq" value="1"><?= lang("HQ") ?></label><br>
+                            <div class="col-md-2 col-md-offset-2">
+                                <label class="checkbox-inline"><input id="fbl_is_hq" type="checkbox" name="fbl_is_hq" value="1"><?= lang("HQ") ?></label><br>
                                 <div id="fbl_is_hq_err" class="text-danger" style="padding-left:200px"></div>
                             </div>
                         </div>

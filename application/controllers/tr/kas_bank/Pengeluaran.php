@@ -33,17 +33,17 @@ class Pengeluaran extends MY_Controller{
 
         $this->list['columns'] = [
 			['title' => 'ID. ', 'width' => '10px','visible'=>'false', 'data' => 'fin_cbpayment_id'],
-            ['title' => 'Payment No.', 'width' => '100px', 'data' => 'fst_cbpayment_no'],
-            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_cbpayment_datetime'],
-            ['title' => 'Supplier', 'width' => '200px', 'data' => 'fst_supplier_name'],		
-			['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
+            ['title' => 'Payment No.', 'width' => '80px', 'data' => 'fst_cbpayment_no'],
+            ['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_cbpayment_datetime'],
+            ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],		
+			['title' => 'Memo', 'width' => '100px', 'data' => 'fst_memo'],
 			['title' => 'Currency', 'width' => '50px', 'data' => 'fst_curr_code'],
-			['title' => 'Total Amount', 'width' => '100px', 'data' => 'fdc_total_payment','className'=>'text-right',
+			['title' => 'Total Amount', 'width' => '50px', 'data' => 'fdc_total_payment','className'=>'text-right',
 				'render'=>"function(data,type,row){
 					return App.money_format(data);
 				}",
 			],
-			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/kas_bank/pengeluaran/edit/' + row.fin_cbpayment_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';

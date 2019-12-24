@@ -91,7 +91,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">						
-						<label for="fst_curr_code" class="col-md-2 control-label">Mata Uang :</label>
+						<label for="fst_curr_code" class="col-md-2 control-label">Mata Uang</label>
 						<div class="col-md-4">
 							<select id="fst_curr_code" class="form-control" name="fst_curr_code" disabled>
 								<?php
@@ -105,7 +105,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fst_curr_code_err" class="text-danger"></div>
 						</div>
 					
-						<label for="fdc_exchange_rate_idr" class="col-md-2 control-label">Nilai Tukar IDR :</label>
+						<label for="fdc_exchange_rate_idr" class="col-md-2 control-label">Nilai Tukar IDR</label>
 						<div class="col-md-1">
 							<input type="text" class="form-control" id="fdc_exchange_rate_idr" name="fdc_exchange_rate_idr" style="width:50px" value="1">
 						</div>
@@ -207,6 +207,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					-->
 					<div class="form-group">								
 						<div class="col-sm-6">
+							<label for="fst_inv_memo" class=""><?=lang("Memo")?></label>
 							<textarea class="form-control" id="fst_inv_memo" placeholder="<?= lang("Memo") ?>" name="fst_inv_memo" rows="5" style="resize:none"></textarea>
 							<div id="fst_inv_memo_err" class="text-danger"></div>
 						</div>
