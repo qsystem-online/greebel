@@ -78,7 +78,7 @@
 
 
 						<div class="form-group">
-							<label for="fin_trans_id" class="col-md-2 control-label"><?=lang("No trasaksi")?> </label>
+							<label for="fin_trans_id" class="col-md-2 control-label"><?=lang("No Transaksi")?> </label>
 							<div class="col-md-10">
 								<select id="fin_trans_id" class="form-control non-editable" name="fin_trans_id">									
 								</select>
