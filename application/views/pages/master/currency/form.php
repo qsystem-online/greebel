@@ -54,16 +54,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class="form-group">
-                        <label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Currencies Code")?> #</label>
-                            <div class="col-md-10">
-                                <input type="text" class="form-control" id="fst_curr_code" placeholder="<?=lang("Currencies Code")?>" name="fst_curr_code" value="<?=$fst_curr_code?>">
+                        <label for="fst_curr_code" class="col-md-3 control-label"><?=lang("Currencies Code")?> #</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" id="fst_curr_code" placeholder="<?=lang("Currencies Code")?>" name="fst_curr_code" >
                                 <div id="fst_curr_code_err" class="text-danger"></div>
                             </div>
 					</div>
 
 					<div class="form-group">
-					<label for="fst_curr_name" class="col-md-2 control-label"><?=lang("Currencies Name")?> *</label>
-						<div class="col-md-10">
+					<label for="fst_curr_name" class="col-md-3 control-label"><?=lang("Currencies Name")?> *</label>
+						<div class="col-md-9">
 							<input type="text" class="form-control" id="fst_curr_name" placeholder="<?=lang("Currencies Name")?>" name="fst_curr_name">
                             <div id="fst_curr_name_err" class="text-danger"></div>
 						</div>
