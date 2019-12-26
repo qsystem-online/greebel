@@ -55,7 +55,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					
 					<div class="form-group">
-						<label for="fst_inv_no" class="col-md-2 control-label"><?=lang("Invoice No")?> #</label>
+						<label for="fst_inv_no" class="col-md-2 control-label"><?=lang("Invoice No.")?> #</label>
 						<div class="col-md-4">
 							<input type="text" class="form-control" id="fst_inv_no" placeholder="<?=lang("Invoice No")?>" name="fst_inv_no" value="<?=$fst_inv_no?>" readonly>
 							<div id="fst_inv_no_err" class="text-danger"></div>

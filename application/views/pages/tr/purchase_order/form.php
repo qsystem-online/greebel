@@ -80,9 +80,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">
-							<label for="fst_po_no" class="col-md-2 control-label"><?=lang("Purchase Order No")?> #</label>
+							<label for="fst_po_no" class="col-md-2 control-label"><?=lang("Purchase Order No.")?> #</label>
 							<div class="col-md-4">
-								<input type="text" class="form-control" id="fst_po_no" placeholder="<?=lang("Purchase Order No")?>" name="fst_po_no" value="<?=$fst_po_no?>" readonly>
+								<input type="text" class="form-control" id="fst_po_no" placeholder="<?=lang("Purchase Order No.")?>" name="fst_po_no" value="<?=$fst_po_no?>" readonly>
 								<div id="fst_po_no_err" class="text-danger"></div>
 							</div>
 							

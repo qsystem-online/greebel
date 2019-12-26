@@ -47,7 +47,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					
 					<div class="form-group">
-						<label for="fst_sj_no" class="col-md-2 control-label"><?=lang("Delivery Order No")?> #</label>
+						<label for="fst_sj_no" class="col-md-2 control-label"><?=lang("Delivery Order No.")?> #</label>
 						<div class="col-md-4">
 							<input type="text" class="form-control" id="fst_sj_no" placeholder="<?=lang("Delivery Order No")?>" name="fst_sj_no" value="<?=$fst_sj_no?>" readonly>
 							<div id="fst_sj_no_err" class="text-danger"></div>
@@ -77,7 +77,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>					
 					</div>
 					<div class="form-group">						
-						<label for="fin_trans_id" class="col-md-2 control-label"><?=lang("No Transaksi")?></label>
+						<label for="fin_trans_id" class="col-md-2 control-label"><?=lang("No. Transaksi")?></label>
 						<div class="col-md-10">
 							<select id="fin_trans_id" class="form-control" name="fin_trans_id" style="width:100%" ></select>
 							<div id="fin_trans_id_err" class="text-danger"></div>
