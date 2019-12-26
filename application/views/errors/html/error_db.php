@@ -59,6 +59,20 @@ p {
 	<div id="container">
 		<h1><?php echo $heading; ?></h1>
 		<?php echo $message; ?>
+		<div>
+			<?php
+				$traces = debug_backtrace();
+				foreach($traces as $trace){
+					echo "<p>";
+					unset($trace["class"]);
+					unset($trace["object"]);
+					unset($trace["type"]);
+					unset($trace["args"]);
+					var_dump($trace);
+					echo "</p>";
+				}
+			?>
+		</div>
 	</div>
 </body>
 </html>

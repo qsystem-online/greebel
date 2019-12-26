@@ -154,197 +154,26 @@ class Penerimaan extends MY_Controller{
 		$this->load->model('kasbank_model');
 		$this->load->model('glaccounts_model');
 
+		try{
+			$fdt_cbreceive_datetime = dBDateTimeFormat($this->input->post("fdt_cbreceive_datetime"));
+			$resp = dateIsLock($fdt_cbreceive_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
 		
-		//PREPARE DATA
-		$fdt_cbreceive_datetime = dBDateTimeFormat($this->input->post("fdt_cbreceive_datetime"));
-		$resp = dateIsLock($fdt_cbreceive_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
+			$preparedData = $this->prepareData();
+			$dataH = $preparedData["dataH"];
+			$detailsTransaksi = $preparedData["detailsTransaksi"];
+			$detailsReceive = $preparedData["detailsReceive"];
+
+			$this->validationData($dataH,$detailsTransaksi,$detailsReceive);
+			
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
-			return;
 		}
-
-		$fst_cbreceive_no = $this->trcbreceive_model->generateCBReceiveNo($this->input->post("fin_kasbank_id"),$fdt_cbreceive_datetime);
-
-		$fstCurrCode = $this->input->post("fst_curr_code");
-		$fdcExchangeRateIdr = parseNumber($this->input->post("fdc_exchange_rate_idr"));
-		if($fstCurrCode ==  null){
-			$defaultCurr = getDefaultCurrency();
-			$fstCurrCode = $defaultCurr["CurrCode"];
-			$fdcExchangeRateIdr = 1;
-		}
-
-		$dataH = [
-			//"fin_cbpayment_id"=>
-			"fst_cbreceive_no"=>$fst_cbreceive_no,
-			"fin_kasbank_id"=>$this->input->post("fin_kasbank_id"),
-			"fdt_cbreceive_datetime"=>$fdt_cbreceive_datetime,
-			"fin_customer_id"=>$this->input->post("fin_customer_id"),
-			"fst_curr_code"=>$fstCurrCode,
-			"fdc_exchange_rate_idr"=>$fdcExchangeRateIdr,
-			"fst_memo"=>$this->input->post("fst_memo"),
-			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
-			"fst_active"=>'A',			
-		];
-		$totalTransaksiIDR = 0;
-		$totalReceiveIDR = 0;
-		
-		$detailsTransaksi = $this->input->post("detailTrans");
-		$detailsTransaksi = json_decode($detailsTransaksi);
-
-		$detailsReceive = $this->input->post("detailReceive");
-		$detailsReceive = json_decode($detailsReceive);
-		
-		//VALIDASI DATA
-		$this->form_validation->set_rules($this->trcbreceive_model->getRules("ADD", 0));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		$this->form_validation->set_data($dataH);
-		if ($this->form_validation->run() == FALSE) {
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Error Validation Header";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $_POST;
-			$this->json_output();
-			return;
-		}
-
-		$this->form_validation->set_rules($this->trcbreceiveitems_model->getRules("ADD",0));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');		
-		for($i = 0; $i < sizeof($detailsTransaksi) ; $i++){
-			$item = $detailsTransaksi[$i];
-			// Validate item Details
-			$this->form_validation->set_data((array)$detailsTransaksi[$i]);
-			if ($this->form_validation->run() == FALSE){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = lang("Error Validation Forms");
-				$this->ajxResp["request_data"] = $dataH;
-				$error = [
-					"detail"=> $this->form_validation->error_string(),
-				];
-				$this->ajxResp["data"] = $error;				
-				$this->json_output();
-				return;	
-			}
-		}
-
-		$this->form_validation->set_rules($this->trcbreceiveitemstype_model->getRules("ADD",0));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');		
-		for($i = 0; $i < sizeof($detailsReceive) ; $i++){
-			$item = $detailsReceive[$i];
-			$detailsReceive[$i]->fdt_clear_date = dBDateFormat($item->fdt_clear_date);
-			// Validate itemType Details
-			if ($detailsReceive[$i]->fst_cbreceive_type == "TUNAI" ||$detailsReceive[$i]->fst_cbreceive_type == "TRANSFER"){
-				$acc = $this->kasbank_model->getDataById($dataH["fin_kasbank_id"]);
-				$acc = $acc["ms_kasbank"];										
-			}else if($detailsReceive[$i]->fst_cbreceive_type == "GIRO"){
-				$acc = $this->trcbreceive_model->getInGiroAccount();
-			}else if($detailsReceive[$i]->fst_cbreceive_type == "GLACCOUNT"){
-				$acc = (object) ["fst_glaccount_code" => $detailsReceive[$i]->fst_glaccount_code];
-				//Check if account id Profit Cost Center, Analisa Divisi, Analisa Customer, Analisa Project
-				$glAccount = $this->glaccounts_model->getSimpleDataHeader($detailsReceive[$i]->fst_glaccount_code);
-
-				if ($glAccount->fst_glaccount_type == "PROFIT_LOST"){
-					if(empty($detailsReceive[$i]->fin_pcc_id)){
-						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-						$this->ajxResp["message"] = lang("Invalid Request");
-						$this->ajxResp["request_data"] = $dataH;
-						$error = [
-							"detail"=> sprintf(lang("%s membutuhkan profit & cost center !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
-						];
-						$this->ajxResp["data"] = $error;
-						$this->json_output();
-						return;
-					}
-				}
-
-				if ($glAccount->fbl_pc_divisi){
-					if(empty($detailsReceive[$i]->fin_pc_divisi_id)){
-						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-						$this->ajxResp["message"] = lang("Invalid Request");
-						$this->ajxResp["request_data"] = $dataH;
-						$error = [
-							"detail"=> sprintf(lang("%s membutuhkan analisa divisi !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
-						];
-						$this->ajxResp["data"] = $error;
-						$this->json_output();
-						return;
-					}
-				}
-
-				if ($glAccount->fbl_pc_customer){
-					if(empty($detailsReceive[$i]->fin_pc_customer_id)){
-						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-						$this->ajxResp["message"] = lang("Invalid Request");
-						$this->ajxResp["request_data"] = $dataH;
-						$error = [
-							"detail"=> sprintf(lang("%s membutuhkan analisa customer !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
-						];
-						$this->ajxResp["data"] = $error;
-						$this->json_output();
-						return;
-					}
-				}
-
-				if ($glAccount->fbl_pc_project){
-					if(empty($detailsReceive[$i]->fin_pc_project_id)){
-						$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-						$this->ajxResp["message"] = lang("Invalid Request");
-						$this->ajxResp["request_data"] = $dataH;
-						$error = [
-							"detail"=> sprintf(lang("%s membutuhkan analisa project !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
-						];
-						$this->ajxResp["data"] = $error;
-						$this->json_output();
-						return;
-					}
-				}
-
-			}
-
-			if ($acc){
-				$detailsReceive[$i]->fst_glaccount_code = $acc->fst_glaccount_code;
-			}else{
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = lang("Invalid Request");
-				$this->ajxResp["request_data"] = $dataH;
-				$error = [
-					"detail"=> "Invalid Kas/Bank ID"
-				];
-				$this->ajxResp["data"] = $error;
-				$this->json_output();
-				return;
-			}
-
-			$this->form_validation->set_data((array)$detailsReceive[$i]);
-			if ($this->form_validation->run() == FALSE){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = lang("Error Validation Forms");
-				$this->ajxResp["request_data"] = $dataH;
-				$error = [
-					"detail"=> $this->form_validation->error_string(),
-				];
-				$this->ajxResp["data"] = $error;
-				$this->json_output();
-				return;	
-			}
-
-
-		}
-
-		//Total IDR Harus sama
-		if($totalTransaksiIDR != $totalReceiveIDR){
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = lang("Total transaksi & Pembayaran tidak sama !");
-			$this->ajxResp["request_data"] = $dataH;
-			$error = [
-				"detail"=> lang("Total transaksi & Pembayaran tidak sama !"),
-			];
-			$this->ajxResp["data"] = $error;
-			$this->json_output();
-			return;
-		}
-		
 		
 		try{
 			//INSERT DATA
@@ -394,37 +223,35 @@ class Penerimaan extends MY_Controller{
 		$this->load->model('kasbank_model');
 		$this->load->model('glledger_model');
 
-		//IS EDITABLE
 		$finCBReceiveId = $this->input->post("fin_cbreceive_id");
-		$dataHOld = $this->trcbreceive_model->getDataHeaderById($finCBReceiveId);
-		if($dataHOld == null){
-			$this->ajxResp["status"] = "FAILED";
-			$this->ajxResp["message"] = lang("ID transaksi tidak ditemukan");			
-			$this->json_output();
-			return;
-		}
 
-		$resp = dateIsLock($dataHOld->fdt_cbreceive_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
+		try{
+			//IS EDITABLE			
+			$dataHOld = $this->trcbreceive_model->getDataHeaderById($finCBReceiveId);
+			if($dataHOld == null){
+				throw new CustomException(lang("ID Penerimaan kas bank tidak dikenal !"),9009,"FAILED",["fin_cbreceive_id"=>$finCBReceiveId]);
+			}
 
-		$fdt_cbreceive_datetime = dBDateTimeFormat($this->input->post("fdt_cbreceive_datetime"));				
-		$resp = dateIsLock($fdt_cbreceive_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
+			$resp = dateIsLock($dataHOld->fdt_cbreceive_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
 
-		$resp = $this->trcbreceive_model->isEditable($finCBReceiveId);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
+			$fdt_cbreceive_datetime = dBDateTimeFormat($this->input->post("fdt_cbreceive_datetime"));				
+			$resp = dateIsLock($fdt_cbreceive_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+			$resp = $this->trcbreceive_model->isEditable($finCBReceiveId);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
 		}
@@ -437,146 +264,22 @@ class Penerimaan extends MY_Controller{
 			$this->trcbreceive_model->unposting($finCBReceiveId);
 
 			//DELETE DETAIL
-			$softDelete = false;
-			$this->trcbreceiveitems_model->deleteByHeaderId($finCBReceiveId,$softDelete);
-			$this->trcbreceiveitemstype_model->deleteByHeaderId($finCBReceiveId,$softDelete);
+			$this->trcbreceive_model->deleteDetail($finCBReceiveId);
 
 			//PREPARE DATA
-			$fstCurrCode = $this->input->post("fst_curr_code");
-			$fdcExchangeRateIdr = parseNumber($this->input->post("fdc_exchange_rate_idr"));
-			if($fstCurrCode ==  null){
-				$defaultCurr = getDefaultCurrency();
-				$fstCurrCode = $defaultCurr["CurrCode"];
-				$fdcExchangeRateIdr = 1;
-			}
-			$dataH = [
-				"fin_cbreceive_id"=>$this->input->post("fin_cbreceive_id"),
-				"fst_cbreceive_no"=>$dataHOld->fst_cbreceive_no,
-				"fin_kasbank_id"=>$this->input->post("fin_kasbank_id"),
-				"fdt_cbreceive_datetime"=>$fdt_cbreceive_datetime,
-				"fin_customer_id"=>$this->input->post("fin_customer_id"),
-				"fst_curr_code"=>$fstCurrCode,
-				"fdc_exchange_rate_idr"=>$fdcExchangeRateIdr,
-				"fst_memo"=>$this->input->post("fst_memo"),
-				"fin_branch_id"=>$this->aauth->get_active_branch_id(),
-				"fst_active"=>'A',	
-				"fin_user_id_request_by"=>$this->input->post("fin_user_id_request_by"),
-				"fst_edit_notes"=>$this->input->post("fst_edit_notes")		
-			];
+			$preparedData = $this->prepareData();
+			$dataH = $preparedData["dataH"];
+			$detailsTransaksi = $preparedData["detailsTransaksi"];
+			$detailsReceive = $preparedData["detailsReceive"];
 
-
-			//VALIDATION
-			$this->form_validation->set_rules($this->trcbreceive_model->getRules("ADD", 0));
-			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-			$this->form_validation->set_data($dataH);
-			if ($this->form_validation->run() == FALSE) {
-				throw new CustomException(lang("Error Validation Header"),3009,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
-			}
-
-			$totalTransaksiIDR = 0;
-			$totalReceiveIDR = 0;
-
-			//Validate detail transaksi
-			$detailsTransaksi = $this->input->post("detailTrans");
-			$detailsTransaksi = json_decode($detailsTransaksi);
-			$this->form_validation->set_rules($this->trcbreceiveitems_model->getRules("ADD",0));
-			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');		
-			for($i = 0; $i < sizeof($detailsTransaksi) ; $i++){
-				$item = $detailsTransaksi[$i];
-				// Validate item Details
-				$this->form_validation->set_data((array)$detailsTransaksi[$i]);
-				if ($this->form_validation->run() == FALSE){
-					$error = [
-						"detail"=> $this->form_validation->error_string(),
-					];
-					throw new CustomException(lang("Error Validation Detail Transaksi"),3009,"VALIDATION_FORM_FAILED",$error);
-				}
-			}
-
-			//Validate detail receive
-			$detailsReceive = $this->input->post("detailReceive");
-			$detailsReceive = json_decode($detailsReceive);
-			$this->form_validation->set_rules($this->trcbreceiveitemstype_model->getRules("ADD",0));
-			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');		
-			for($i = 0; $i < sizeof($detailsReceive) ; $i++){
-				$item = $detailsReceive[$i];
-				// Validate itemType Details
-				$detailsReceive[$i]->fdt_clear_date = dBDateFormat($item->fdt_clear_date);
-				if ($detailsReceive[$i]->fst_cbreceive_type == "TUNAI" ||$detailsReceive[$i]->fst_cbreceive_type == "TRANSFER"){
-					$acc = $this->kasbank_model->getDataById($dataH["fin_kasbank_id"]);
-					$acc = $acc["ms_kasbank"];												
-				}else if($detailsReceive[$i]->fst_cbreceive_type == "GIRO"){
-					$acc = $this->trcbreceive_model->getInGiroAccount();
-				}else if($detailsReceive[$i]->fst_cbreceive_type == "GLACCOUNT"){
-					$acc = (object) ["fst_glaccount_code" => $detailsReceive[$i]->fst_glaccount_code];
-					//Check if account id Profit Cost Center, Analisa Divisi, Analisa Customer, Analisa Project
-					$glAccount = $this->glaccounts_model->getSimpleDataHeader($detailsReceive[$i]->fst_glaccount_code);
-					if ($glAccount->fst_glaccount_type == "PROFIT_LOST"){
-						if(empty($detailsReceive[$i]->fin_pcc_id)){
-							$error = [
-								"detail"=> sprintf(lang("%s membutuhkan profit & cost center !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
-							];
-							throw new CustomException(lang("Error Validation Detail Receive"),3009,"VALIDATION_FORM_FAILED",$error);
-						}
-					}
-
-					if ($glAccount->fbl_pc_divisi){
-						if(empty($detailsReceive[$i]->fin_pc_divisi_id)){
-							$error = [
-								"detail"=> sprintf(lang("%s membutuhkan analisa divisi !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
-							];
-							throw new CustomException(lang("Error Validation Detail Receive"),3009,"VALIDATION_FORM_FAILED",$error);
-						}
-					}
-
-					if ($glAccount->fbl_pc_customer){
-						if(empty($detailsReceive[$i]->fin_pc_customer_id)){
-							$error = [
-								"detail"=> sprintf(lang("%s membutuhkan analisa customer !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
-							];
-							throw new CustomException(lang("Error Validation Detail Receive"),3009,"VALIDATION_FORM_FAILED",$error);
-						}
-					}
-
-					if ($glAccount->fbl_pc_project){
-						if(empty($detailsReceive[$i]->fin_pc_project_id)){
-							$error = [
-								"detail"=> sprintf(lang("%s membutuhkan analisa project !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
-							];
-							throw new CustomException(lang("Error Validation Detail Receive"),3009,"VALIDATION_FORM_FAILED",$error);
-						}
-					}
-				}
-
-				if ($acc){
-					$detailsReceive[$i]->fst_glaccount_code = $acc->fst_glaccount_code;
-				}else{
-					$error = [
-						"detail"=> "Invalid Kas/Bank ID"
-					];
-					throw new CustomException(lang("Error Validation Detail Receive"),3009,"VALIDATION_FORM_FAILED",$error);
-				}
-
-				$this->form_validation->set_data((array)$detailsReceive[$i]);
-				if ($this->form_validation->run() == FALSE){
-					$error = [
-						"detail"=> $this->form_validation->error_string(),
-					];
-					throw new CustomException(lang("Error Validation Detail Receive"),3009,"VALIDATION_FORM_FAILED",$error);
-					
-				}
-			}
-			//Total IDR Harus sama
-			if($totalTransaksiIDR != $totalReceiveIDR){
-				$error = [
-					"detail"=> lang("Total transaksi & Pembayaran tidak sama !"),
-				];
-				throw new CustomException(lang("Total transaksi & Penerimaan tidak sama !"),3009,"VALIDATION_FORM_FAILED",$error);				
-			}
-
+			
+			$dataH["fin_cbreceive_id"] = $finCBReceiveId;
+			$dataH["fst_cbreceive_no"] = $dataHOld->fst_cbreceive_no;
+			
+			$this->validationData($dataH,$detailsTransaksi,$detailsReceive);
 
 			//UPDATE HEADER
-			$insertId = $dataH["fin_cbreceive_id"];
+			$insertId = $finCBReceiveId;
 			$this->trcbreceive_model->update($dataH);
 
 			//INSERT DETAIL
@@ -610,8 +313,168 @@ class Penerimaan extends MY_Controller{
 			$this->ajxResp["message"] = $e->getMessage();
 			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
+			return;
 		}
 
+	}
+
+
+	private function prepareData(){
+		//PREPARE DATA
+		$fdt_cbreceive_datetime = dBDateTimeFormat($this->input->post("fdt_cbreceive_datetime"));				
+		$fst_cbreceive_no = $this->trcbreceive_model->generateCBReceiveNo($this->input->post("fin_kasbank_id"),$fdt_cbreceive_datetime);
+
+		$fstCurrCode = $this->input->post("fst_curr_code");
+		$fdcExchangeRateIdr = parseNumber($this->input->post("fdc_exchange_rate_idr"));
+		if($fstCurrCode ==  null){
+			$defaultCurr = getDefaultCurrency();
+			$fstCurrCode = $defaultCurr["CurrCode"];
+			$fdcExchangeRateIdr = 1;
+		}
+
+		$dataH = [
+			//"fin_cbpayment_id"=>
+			"fst_cbreceive_no"=>$fst_cbreceive_no,
+			"fin_kasbank_id"=>$this->input->post("fin_kasbank_id"),
+			"fdt_cbreceive_datetime"=>$fdt_cbreceive_datetime,
+			"fin_customer_id"=>$this->input->post("fin_customer_id"),
+			"fst_curr_code"=>$fstCurrCode,
+			"fdc_exchange_rate_idr"=>$fdcExchangeRateIdr,
+			"fst_memo"=>$this->input->post("fst_memo"),
+			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
+			"fst_active"=>'A',			
+		];
+
+		$totalTransaksiIDR = 0;
+		$totalReceiveIDR = 0;
+
+		$detailsTransaksi = $this->input->post("detailTrans");
+		$detailsTransaksi = json_decode($detailsTransaksi);
+
+		$detailsReceive = $this->input->post("detailReceive");
+		$detailsReceive = json_decode($detailsReceive);
+		
+		for($i = 0; $i < sizeof($detailsReceive) ; $i++){
+			$detailsReceive[$i]->fdt_clear_date = dBDateFormat($detailsReceive[$i]->fdt_clear_date);			
+			// Validate itemType Details
+			if ($detailsReceive[$i]->fst_cbreceive_type == "TUNAI" ||$detailsReceive[$i]->fst_cbreceive_type == "TRANSFER"){
+				$acc = $this->kasbank_model->getDataById($dataH["fin_kasbank_id"]);
+				$acc = $acc["ms_kasbank"];										
+			}else if($detailsReceive[$i]->fst_cbreceive_type == "GIRO"){
+				$acc = $this->trcbreceive_model->getInGiroAccount();
+			}else if($detailsReceive[$i]->fst_cbreceive_type == "GLACCOUNT"){
+				$acc = (object) ["fst_glaccount_code" => $detailsReceive[$i]->fst_glaccount_code];
+			}
+
+			if ($acc){
+				$detailsReceive[$i]->fst_glaccount_code = $acc->fst_glaccount_code;
+			}else{
+				throw new CustomException(lang("Type penerimaan tidak valid !"),9009,"FAILED",["detail"=> "Invalid Kas/Bank ID"]);
+			}
+		}
+		
+		return [
+			"dataH"=>$dataH,
+			"detailsTransaksi"=>$detailsTransaksi,
+			"detailsReceive"=>$detailsReceive
+		];
+
+	}
+
+	private function validationData($dataH,$detailsTransaksi,$detailsReceive){
+		//VALIDASI DATA
+		$this->form_validation->set_rules($this->trcbreceive_model->getRules("ADD", 0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+		$this->form_validation->set_data($dataH);
+		if ($this->form_validation->run() == FALSE) {
+			throw new CustomException("Error Validation Header",3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
+		}
+
+		if  ( sizeof($detailsTransaksi) == 0  && sizeof($detailsReceive) == 0 ){
+			throw new CustomException(lang("Tidak ada transaksi !"),3003,"FAILED",null);			
+		}
+
+		$totalTransaksi= 0;
+		$totalReceive = 0;
+
+		$this->form_validation->set_rules($this->trcbreceiveitems_model->getRules("ADD",0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');		
+		for($i = 0; $i < sizeof($detailsTransaksi) ; $i++){
+			$totalTransaksi += $detailsTransaksi[$i]->fdc_receive_amount;
+
+			// Validate item Details
+			$this->form_validation->set_data((array)$detailsTransaksi[$i]);
+			if ($this->form_validation->run() == FALSE){				
+				throw new CustomException("Error Validation Forms Detail ",3003,"VALIDATION_FORM_FAILED",["detail_trans"=> $this->form_validation->error_string()]);			
+			}
+		}
+
+		$this->form_validation->set_rules($this->trcbreceiveitemstype_model->getRules("ADD",0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');		
+		for($i = 0; $i < sizeof($detailsReceive) ; $i++){
+			//$item = $detailsReceive[$i];
+			$totalReceive += $detailsReceive[$i]->fdc_amount;
+
+			if($detailsReceive[$i]->fst_cbreceive_type == "GLACCOUNT"){
+				//$acc = (object) ["fst_glaccount_code" => $detailsReceive[$i]->fst_glaccount_code]
+				//Check if account id Profit Cost Center, Analisa Divisi, Analisa Customer, Analisa Project
+				$glAccount = $this->glaccounts_model->getSimpleDataHeader($detailsReceive[$i]->fst_glaccount_code);
+
+				if ($glAccount->fst_glaccount_type == "PROFIT_LOST"){
+					if(empty($detailsReceive[$i]->fin_pcc_id)){
+						$error = [
+							"detail_receive"=> sprintf(lang("%s membutuhkan profit & cost center !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						throw new CustomException("",3003,"VALIDATION_FORM_FAILED",$error);						
+					}
+				}
+
+				if ($glAccount->fbl_pc_divisi){
+					if(empty($detailsReceive[$i]->fin_pc_divisi_id)){
+						$error = [
+							"detail_receive"=> sprintf(lang("%s membutuhkan analisa divisi !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						throw new CustomException("",3003,"VALIDATION_FORM_FAILED",$error);						
+					}
+				}
+
+				if ($glAccount->fbl_pc_customer){
+					if(empty($detailsReceive[$i]->fin_pc_customer_id)){
+						$error = [
+							"detail_receive"=> sprintf(lang("%s membutuhkan analisa customer !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						throw new CustomException("",3003,"VALIDATION_FORM_FAILED",$error);						
+					}
+				}
+
+				if ($glAccount->fbl_pc_project){
+					if(empty($detailsReceive[$i]->fin_pc_project_id)){
+						$error = [
+							"detail_receive"=> sprintf(lang("%s membutuhkan analisa project !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						throw new CustomException("",3003,"VALIDATION_FORM_FAILED",$error);
+					}
+				}
+			}			
+
+			$this->form_validation->set_data((array)$detailsReceive[$i]);
+			if ($this->form_validation->run() == FALSE){
+				$error = [
+					"detail"=> $this->form_validation->error_string(),
+				];
+				throw new CustomException(lang("Error Validation Detail Receive"),3003,"VALIDATION_FORM_FAILED",$error);
+			}
+		}
+
+		//Total IDR Harus sama
+		if($totalTransaksi != $totalReceive){
+			$error = [
+				"detail_trans"=> lang("Total transaksi & Penerimaan tidak sama !"),
+				"detail_receive"=> lang("Total transaksi & Penerimaan tidak sama !"),
+			];			
+			throw new CustomException(lang("Total transaksi & Penerimaan tidak sama !"),3003,"VALIDATION_FORM_FAILED",$error);
+			
+		}
 	}
 
 	public function fetch_data($finCBReceiveId){
@@ -660,8 +523,8 @@ class Penerimaan extends MY_Controller{
 			
 			//DELETE RECORD
 			$this->trcbreceive_model->delete($finCBReceiveId);
-			$this->trcbreceiveitems_model->delete($finCBReceiveId);
-			$this->trcbreceiveitemstype_model->delete($finCBReceiveId);
+			//$this->trcbreceiveitems_model->delete($finCBReceiveId);
+			//$this->trcbreceiveitemstype_model->delete($finCBReceiveId);
 			
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";

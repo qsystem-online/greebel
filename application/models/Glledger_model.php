@@ -80,12 +80,17 @@ class Glledger_model extends MY_Model{
             if ($data["fdc_debit"] == 0 && $data["fdc_credit"] == 0){
                 continue;
             }
+
             if ($data["fdc_debit"] < 0){
                 $data["fdc_credit"] += abs($data["fdc_debit"]);
+                $data["fdc_debit"] = 0;
             }
+
             if ($data["fdc_credit"] < 0){
                 $data["fdc_debit"] += abs($data["fdc_credit"]);
+                $data["fdc_credit"] = 0;
             }
+
                         
             //var_dump($data);
             $ids[]= parent::insert($data);

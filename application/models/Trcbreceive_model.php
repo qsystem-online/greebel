@@ -105,6 +105,16 @@ class Trcbreceive_model extends MY_Model {
                 $this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);
                 throwifDBError();
                 $this->checkIsValidSalesReturn($dataItem->fin_trans_id);
+            
+            }else if ($dataItem->fst_trans_type == "PAYMENT_OVER"){
+                
+            }else if ($dataItem->fst_trans_type == "CLAIM_PAYMENT_OVER"){
+
+                $ssql = "update trcbreceiveitems set fdc_receive_amount_claimed = fdc_receive_amount_claimed -  ? where fin_rec_id = ?";
+                $this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);
+                throwIfDBError();
+
+                $this->checkIsValidClaimPaymentOver($dataItem->fin_trans_id);        
             }else{
                 throw new CustomException("Invalid detail cash bank transaction type $dataItem->fst_trans_type",9009,"FAILED",null);
             }
@@ -135,10 +145,7 @@ class Trcbreceive_model extends MY_Model {
         foreach($dataItems as $dataItem){
             if ($dataItem->fst_trans_type == "DP_SO"){
                 //DP Purcahase
-                $tmpArr = $this->getDataJurnalPostingDPSO($dataItem,$dataH);                
-                foreach($tmpArr as $tmp){
-                    $dataJurnal[] = $tmp;
-                }
+                $tmpArr = $this->getDataJurnalPostingDPSO($dataItem,$dataH);                 
                 $ssql = "update trsalesorder set fdc_downpayment_paid = fdc_downpayment_paid +  ? where fin_salesorder_id = ?";
                 $this->db->query($ssql,[$dataItem->fdc_receive_amount,$dataItem->fin_trans_id]);
                 throwIfDBError();
@@ -148,27 +155,39 @@ class Trcbreceive_model extends MY_Model {
             }else if ($dataItem->fst_trans_type == "INV_SO") {
                 //Purchase Invoice
                 $tmpArr =$this->getDataJurnalPostingSalesInv($dataItem,$dataH);
-                foreach($tmpArr as $tmp){
-                    $dataJurnal[] = $tmp;
-                }
                 $ssql = "update trinvoice set fdc_total_paid = fdc_total_paid +  ? where fin_inv_id = ?";
                 $this->db->query($ssql,[$dataItem->fdc_receive_amount,$dataItem->fin_trans_id]);
                 throwIfDBError();
                 $this->checkIsValidInvoceSO($dataItem->fin_trans_id);
             }else if ($dataItem->fst_trans_type == "RETURN_SO"){
                 $tmpArr = $this->getDataJurnalPostingSOReturn($dataItem,$dataH);
-
-                foreach($tmpArr as $tmp){
-                    $dataJurnal[] = $tmp;
-                }
                 $ssql = "update trsalesreturn set fdc_total_claimed = fdc_total_claimed + ? where fin_salesreturn_id = ?";
                 $this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);
                 throwIfDBError();
 
                 $this->checkIsValidSalesReturn($dataItem->fin_trans_id);
                 
+            
+            }else if ($dataItem->fst_trans_type == "PAYMENT_OVER"){
+                $tmpArr = $this->getDataJurnalPostingPaymentOver($dataItem,$dataH);
+                
+            }else if ($dataItem->fst_trans_type == "CLAIM_PAYMENT_OVER"){
+                //Claim Kelebihan Pembayaran
+                $tmpArr = $this->getDataJurnalPostingClaimPurchaseOver($dataItem,$dataH);        
+
+                $ssql = "update trcbreceiveitems set fdc_receive_amount_claimed = fdc_receive_amount_claimed +  ? where fin_rec_id = ?";
+                $this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);
+                throwIfDBError();
+                
+                //cek valid claim kelebihan pembayaran
+                $this->checkIsValidClaimPaymentOver($dataItem->fin_trans_id);
+
             }else{
                 throw new CustomException("Unknow Detail Transaction Type $dataItem->fst_trans_type",9009,"FAILED",null);
+            }
+            
+            foreach($tmpArr as $tmp){
+                $dataJurnal[] = $tmp;
             }
         }
 
@@ -500,6 +519,142 @@ class Trcbreceive_model extends MY_Model {
         }
     }
 
+    public function getDataJurnalPostingPaymentOver($dataItem,$dataH){
+
+        /* Kelebihan pembayaran
+        ------------------------------------------------------------
+        Kas/Bank		Rp.   50.000,-
+            Kelebihan Bayar			Rp.  50.000,-
+        */
+
+        $dataJurnal = [];
+        //Jurnal Piutang dagang Lokal atau Import
+        $accKelebihanBayar = getGLConfig("CUSTOMER_KELEBIHAN_BAYAR");        
+        $glAccountInfo = "KELEBIHAN PEMBAYARAN";
+                
+        $dataJurnal[] = [
+            "fin_branch_id"=>$dataH->fin_branch_id,
+            "fst_account_code"=>$accKelebihanBayar,
+            "fdt_trx_datetime"=>$dataH->fdt_cbreceive_datetime,
+            "fst_trx_sourcecode"=>"CBIN",
+            "fin_trx_id"=>$dataH->fin_cbreceive_id,
+            "fst_trx_no"=>$dataH->fst_cbreceive_no,
+            "fst_reference"=>$dataH->fst_memo,
+            "fdc_debit"=> 0,
+            "fdc_origin_debit"=>0,
+            "fdc_credit"=> $dataItem->fdc_receive_amount * $dataH->fdc_exchange_rate_idr,
+            "fdc_origin_credit"=> $dataItem->fdc_receive_amount * 1,
+            "fst_orgi_curr_code"=>$dataH->fst_curr_code,
+            "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
+            "fst_no_ref_bank"=>null,
+            "fin_pcc_id"=>null,
+            "fin_relation_id"=>$dataH->fin_customer_id,
+            "fst_active"=>"A",
+            "fst_info"=>$glAccountInfo,
+        ];        
+        return $dataJurnal;
+
+    }
+    
+    public function getDataJurnalPostingClaimPurchaseOver($dataItem,$dataH){
+        $ssql = "SELECT a.*,b.fst_cbreceive_no,b.fst_curr_code,b.fdc_exchange_rate_idr FROM trcbreceiveitems a
+            INNER JOIN trcbreceive b on a.fin_cbreceive_id = b.fin_cbreceive_id 
+            WHERE a.fin_rec_id = ?   
+            AND b.fst_active != 'D'";
+
+        $qr =$this->db->query($ssql,[$dataItem->fin_trans_id]);
+        $dataD = $qr->row();
+        if($dataD == null){
+            throw new CustomException("ID Kelebihan Pembayaran tidak dikenal !",9009,"FAILED",null);
+        }
+
+        $maxClaim = (float) $dataD->fdc_receive_amount - (float) $dataD->fdc_receive_amount_claimed;
+        if ($maxClaim < (float) $dataItem->fdc_receive_amount){
+            throw new CustomException(sprintf(lang("Maksimum klaim kelebihan pembayaran %s"),formatNumber($maxClaim)),3003,"FAILED",null);
+        }
+
+        $dataJurnal = [];
+        //Jurnal Piutang dagang Lokal atau Import
+        $accKelebihanBayar = getGLConfig("CUSTOMER_KELEBIHAN_BAYAR");        
+        $glAccountInfo = "CLAIM KELEBIHAN PEMBAYARAN";
+                
+        $dataJurnal[] = [
+            "fin_branch_id"=>$dataH->fin_branch_id,
+            "fst_account_code"=>$accKelebihanBayar,
+            "fdt_trx_datetime"=>$dataH->fdt_cbreceive_datetime,
+            "fst_trx_sourcecode"=>"CBIN",
+            "fin_trx_id"=>$dataH->fin_cbreceive_id, 
+            "fst_trx_no"=>$dataH->fst_cbreceive_no,
+            "fst_reference"=>$dataH->fst_memo,
+            "fdc_debit"=> 0,
+            "fdc_origin_debit"=>0,
+            "fdc_credit"=> $dataItem->fdc_receive_amount * $dataH->fdc_exchange_rate_idr,
+            "fdc_origin_credit"=> $dataItem->fdc_receive_amount * 1,
+            "fst_orgi_curr_code"=>$dataH->fst_curr_code,
+            "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
+            "fst_no_ref_bank"=>null,
+            "fin_pcc_id"=>null,
+            "fin_relation_id"=>$dataH->fin_customer_id,
+            "fst_active"=>"A",
+            "fst_info"=>$glAccountInfo,
+        ];        
+
+        //Jurnal Selisih Kurs     
+        if ($dataH->fdc_exchange_rate_idr  != $dataD->fdc_exchange_rate_idr){
+
+            $selisih = ($dataItem->fdc_receive_amount * $dataD->fdc_exchange_rate_idr) - ($dataItem->fdc_receive_amount * $dataH->fdc_exchange_rate_idr);
+
+            if ($selisih < 0){
+                $fstAccountCode =  getGLConfig("SELISIH_KURS_RUGI");
+                $glAccountInfo = "SELISIH KURS RUGI";                
+                
+            }else{
+                $fstAccountCode =  getGLConfig("SELISIH_KURS_UNTUNG");
+                $glAccountInfo = "SELISIH KURS UNTUNG";
+            }
+                
+            $debet = $selisih;
+            $credit = 0;
+                        
+            $dataJurnal[] = [
+                "fin_branch_id"=>$dataD->fin_branch_id,
+                "fst_account_code"=>$fstAccountCode,
+                "fdt_trx_datetime"=>$dataH->fdt_cbreceive_datetime,
+                "fst_trx_sourcecode"=>"CBIN",
+                "fin_trx_id"=>$dataItem->fin_cbreceive_id,
+                "fst_trx_no"=>$dataH->fst_cbreceive_no,
+                "fst_reference"=>$dataD->fst_inv_no . " | " . $dataH->fst_memo,
+                "fdc_debit"=> $debet,
+                "fdc_origin_debit"=>$debet,
+                "fdc_credit"=>$credit,
+                "fdc_origin_credit"=>$credit,
+                "fst_orgi_curr_code"=>"IDR",
+                "fdc_orgi_rate"=>1,
+                "fst_no_ref_bank"=>null,
+                "fin_pcc_id"=>null,
+                "fin_relation_id"=>null,
+                "fst_active"=>"A",
+                "fst_info"=>$glAccountInfo
+            ];
+        }        
+        return $dataJurnal;
+    }
+
+    public function checkIsValidClaimPaymentOver($finCbReceiveDetailId){
+        $ssql = "select * from trcbreceiveitems where fin_rec_id = ?";
+        $qr = $this->db->query($ssql,[$finCbReceiveDetailId]);
+        $rw = $qr->row();
+        if($rw == null){
+            throw new CustomException(lang("ID Kelebihan Pembayaran tidak dikenal !"),9009,"FAILED",null);
+        }
+
+        if($rw->fdc_receive_amount < $rw->fdc_receive_amount_claimed){
+            throw new CustomException(lang("Total klaim kelebihan pembayaran melebih nilainya"),3003,"FAILED",null);
+        }
+    }
+
+
+
     public function getDataById($finCBReceiveId){
         $ssql = "select a.*,b.fst_type as fst_kasbank_type from " .$this->tableName. " a 
             INNER JOIN mskasbank b on a.fin_kasbank_id = b.fin_kasbank_id 
@@ -606,8 +761,36 @@ class Trcbreceive_model extends MY_Model {
                     "fdc_return_amount"=>0
                 ];
             }
-        }else{
-            return null;
+        }else if($transType == "PAYMENT_OVER"){                       
+            return [
+                "fst_trans_no"=>null,
+                "fdc_trans_amount"=>0,
+                "fdc_paid_amount"=>0,
+                "fdc_return_amount"=>0,
+            ];        
+        }else if($transType == "CLAIM_PAYMENT_OVER"){
+            $ssql = "SELECT a.*,b.fst_cbreceive_no from trcbreceiveitems a 
+                INNER JOIN trcbreceive b on a.fin_cbreceive_id = b.fin_cbreceive_id
+                WHERE a.fin_rec_id = ? and b.fst_active != 'D'";
+
+            $qr = $this->db->query($ssql,[$transId]);
+            $rw = $qr->row();
+            if($rw == null){
+                return [
+                    "fst_trans_no"=>null,
+                    "fdc_trans_amount"=>0,
+                    "fdc_paid_amount"=>0,
+                    "fdc_return_amount"=>0
+                ];
+            }else{
+                return [
+                    "fst_trans_no"=>$rw->fst_cbreceive_no,
+                    "fdc_trans_amount"=>$rw->fdc_receive_amount,
+                    "fdc_paid_amount"=>$rw->fdc_receive_amount_claimed,
+                    "fdc_return_amount"=>0,
+                ];
+            }
+
         }
 
     }
@@ -621,9 +804,67 @@ class Trcbreceive_model extends MY_Model {
         
     }
 
-    public function isEditable($finCBPaymentId){
+    public function isEditable($finCBReceiveId){
+        //Untuk Kelebihan bayar tidak boleh sudah di gunakan
+        $ssql = "select a.* from trcbreceiveitems a where a.fin_cbreceive_id = ?";
+        $qr = $this->db->query($ssql,[$finCBReceiveId]);
+        $rs = $qr->result();
+        foreach($rs as $rw){
+            if($rw->fst_trans_type == "PAYMENT_OVER"){
+                //SUDAH DI CLAIMED
+                if($rw->fdc_receive_amount_claimed > 0){
+                    throw new CustomException(lang("Transaksi Kelebihan Pembayaran telah digunakan !"),3003,'FAILED',null);
+                }
+            }            
+        }
+
         return ["status"=>"SUCCESS","message"=>""];
     }
+
+    public function getPaymentOverList($finCustId,$fstCurrCode){
+        $ssql = "SELECT a.fin_cbreceive_id,a.fin_rec_id as fin_cbreceive_detail_id ,b.fst_cbreceive_no,a.fdc_receive_amount as fdc_total,a.fdc_receive_amount_claimed as fdc_total_claimed  
+            FROM trcbreceiveitems a 
+            INNER JOIN trcbreceive b on a.fin_cbreceive_id = b.fin_cbreceive_id             
+            WHERE a.fst_trans_type ='PAYMENT_OVER' AND a.fdc_receive_amount > a.fdc_receive_amount_claimed 
+            AND b.fin_customer_id = ?
+            AND b.fst_curr_code = ? 
+            AND b.fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$finCustId,$fstCurrCode]);
+        return $qr->result();
+
+    }
+
+    public function delete($finCBReceiveId,$softDelete=TRUE,$data=null){
+        if($softDelete){
+            $ssql = "UPDATE trcbreceiveitems set fst_active ='D' where fin_cbreceive_id = ?";
+            $this->db->query($ssql,[$finCBReceiveId]);
+            throwIfDBError();
+
+            $ssql = "UPDATE trcbreceiveitemstype set fst_active ='D' where fin_cbreceive_id = ?";
+            $this->db->query($ssql,[$finCBReceiveId]);
+            throwIfDBError();
+        }else{
+            $ssql = "DELETE FROM trcbreceiveitems where fin_cbreceive_id = ?";
+            $this->db->query($ssql,[$finCBReceiveId]);
+            throwIfDBError();
+            
+            $ssql = "DELETE FROM trcbreceiveitemstype where fin_cbreceive_id = ?";
+            $this->db->query($ssql,[$finCBReceiveId]);
+            throwIfDBError();
+        }        
+        parent::delete($finCBReceiveId,$softDelete,$data);            
+    }
+
+    public function deleteDetail($finCBReceiveId){
+        $ssql ="DELETE FROM trcbreceiveitems where fin_cbreceive_id = ?";
+        $this->db->query($ssql,[$finCBReceiveId]);
+        throwIfDBError();
+        
+        $ssql ="DELETE FROM trcbreceiveitemstype where fin_cbreceive_id = ?";
+        $this->db->query($ssql,[$finCBReceiveId]);
+        throwIfDBError();        
+    }
+
 
 
     /*
@@ -766,21 +1007,7 @@ class Trcbreceive_model extends MY_Model {
         $qr = $this->db->query($ssql,[$finSupplierId,$fstCurrCode]);
         return $qr->result();
     }
-    public function delete($finCBPaymentId,$softDelete=TRUE,$data=null){
-        $this->load->model("trcbpaymentitems_model");
-        $this->load->model("trcbpaymentitemstype_model");
-        
-        $this->trcbpaymentitems_model->deleteByHeaderId($finCBPaymentId,$softDelete);
-        $this->trcbpaymentitemstype_model->deleteByHeaderId($finCBPaymentId,$softDelete);
-        parent::delete($finCBPaymentId,$softDelete,$data);
-        
-        $result = parent::getDBErrors();
-        if($result["status"] != "SUCCESS"){
-            return $result;
-        }
-
-        return ["status"=>"SUCCESS","message"=>""];
-    }
+    
     
     public function checkIsValidLPBReturn($finPurchaseReturnId){
         $ssql = "select * from trpurchasereturn where fin_purchasereturn_id = ?";

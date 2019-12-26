@@ -96,7 +96,7 @@ class Invoice extends MY_Controller{
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Add Invoice") : lang("Update Invoice");
-        $mdlJurnal =$this->parser->parse('template/mdlJUrnal.php', [], true);
+        $mdlJurnal =$this->parser->parse('template/mdlJurnal.php', [], true);
         $data["mdlJurnal"] = $mdlJurnal;
         $edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
         $data["mdlEditForm"] = $edit_modal;

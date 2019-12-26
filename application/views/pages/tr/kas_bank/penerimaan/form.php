@@ -60,7 +60,7 @@
                             <div class="col-md-5">
                                 <select id="fin_kasbank_id" name="fin_kasbank_id" class="form-control"></select>                                    
                             </div>
-							<div id="fin_kasbank_id" class="text-danger"></div>
+							<div id="fin_kasbank_id_err" class="text-danger"></div>
 
 							<label for="fdt_cbreceive_datetime" class="col-md-2 control-label text-right"><?=lang("Tanggal Penerimaan")?> *</label>
 							<div class="col-md-3">
@@ -144,10 +144,10 @@
 									<?=lang("Tambah Transaksi")?>
 								</button>
 							</div>
-							<div class="col-md-12">
-							
-							<table id="tblcbreceiveitems" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+							<div class="col-md-12">							
+								<table id="tblcbreceiveitems" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
 							</div>
+							<div id="detail_trans_err" class="text-danger"></div>
 							
 						</div>
 												
@@ -176,9 +176,10 @@
 							</div>
 
 							<div class="col-md-12">
-							<!-- table table-bordered table-hover table-striped nowarp row-border -->
-							<table id="tblcbreceiveitemstype" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
-							</div>							
+								<!-- table table-bordered table-hover table-striped nowarp row-border -->
+								<table id="tblcbreceiveitemstype" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+							</div>		
+							<div id="detail_receive_err" class="text-danger"></div>					
 						</div>
 						<div class="form-group" style="margin-bottom:5px">
 							<label for="sub-total-rincian-transaksi" class="col-md-10 control-label"><?=lang("Sub total")?></label>
@@ -208,7 +209,7 @@
 	</div>
 </section>
 
-<!-- modal atau popup "ADD" -->
+<!-- modal atau popup "Transaksi" -->
 <div id="mdlAddItem" class="modal fade" role="dialog" >
 	<div class="modal-dialog" style="display:table;width:800px">
 		<!-- modal content -->
@@ -217,8 +218,7 @@
 				<div class="row">
                     <div class="col-md-12" >
                         <div style="border:0 px inset #f0f0f0;border-radius:10px;padding:5px">
-                            <fieldset style="padding:10px">
-				
+                            <fieldset style="padding:10px">				
 								<form id="form-detail-trans" class="form-horizontal">
 									<input type='hidden' id='fin_rec_id_items'/>
 									<div class="form-group">
@@ -228,6 +228,8 @@
 												<option value="DP_SO">DP Penjualan</option>
 												<option value="INV_SO">Faktur Penjualan</option>
 												<option value="RETURN_SO">Return Penjualan Non Faktur</option>
+												<option value="PAYMENT_OVER">Kelebihan Bayaran</option>
+												<option value="CLAIM_PAYMENT_OVER">Klaim Kelebihan Bayaran</option>
 											</select>
 										</div>
 									</div>
@@ -408,6 +410,32 @@
 						}
 					});
 					break;
+				case "PAYMENT_OVER":
+					$("#fin_trans_id").empty();
+					callback();
+					break;
+					
+				case "CLAIM_PAYMENT_OVER":
+					App.getValueAjax({
+						site_url:"<?=site_url()?>",
+						model:"trcbreceive_model",
+						func:"getPaymentOverList",
+						params:[$("#fin_customer_id").val(),$("#fst_curr_code").val()],
+						callback:function(paymentOverList){
+							$("#fin_trans_id").empty();
+							$.each(paymentOverList,function(i,paymentOver){
+								//var dp = parseFloat(lpbPurchase.fdc_downpayment);					
+								$("#fin_trans_id").append("<option value='"+paymentOver.fin_cbreceive_detail_id+"' data-ttl_amount='"+ parseFloat(paymentOver.fdc_total) * -1  +"' data-ttl_paid='"+paymentOver.fdc_total_claimed * -1 + "' data-ttl_return='0' >"+paymentOver.fst_cbreceive_no+"</option>");
+							});
+							$("#fin_trans_id").val(null);
+
+							if(typeof callback !== "undefined"){
+								callback(paymentOverList);
+							}
+							
+						}
+					});
+					break;
 				default:
 					// code block
 			}
@@ -456,6 +484,8 @@
 	</script>
 </div>
 
+
+<!-- modal atau popup "Penerimaannya" -->
 <div id="mdlReceiveType" class="modal fade" role="dialog" >
 	<div class="modal-dialog" style="display:table;width:900px">
 		<!-- modal content -->
@@ -919,6 +949,12 @@
 							case "RETURN_SO":
 								return "Return Penjualan Non Faktur";
 								break;
+							case "PAYMENT_OVER":
+								return "Kelebihan Bayar";
+								break;
+							case "CLAIM_PAYMENT_OVER":
+								return "Klaim Kelebihan Bayar";
+								break;
 							default:
 								return "";
 						}
@@ -993,7 +1029,12 @@
 			$("#fst_trans_type").val(row.fst_trans_type);
 			
 			getTransactionList(row.fst_trans_type,function(resp){
-				App.addOptionIfNotExist("<option value='"+ row.fin_trans_id +"' data-ttl_amount='"+row.fdc_trans_amount+"' data-ttl_paid='"+row.fdc_paid_amount+"' data-ttl_return='"+row.fdc_return_amount+"' selected>"+row.fst_trans_no+"</option>","fin_trans_id");
+
+				if (row.fin_trans_id == null){
+					//App.addOptionIfNotExist("<option value='' data-ttl_amount='"+row.fdc_trans_amount+"' data-ttl_paid='"+row.fdc_paid_amount+"' data-ttl_return='"+row.fdc_return_amount+"' selected></option>","fin_trans_id");
+				}else{
+					App.addOptionIfNotExist("<option value='"+ row.fin_trans_id +"' data-ttl_amount='"+row.fdc_trans_amount+"' data-ttl_paid='"+row.fdc_paid_amount+"' data-ttl_return='"+row.fdc_return_amount+"' selected>"+row.fst_trans_no+"</option>","fin_trans_id");
+				}
 				$("#fdc_trans_amount").val(App.money_format(row.fdc_trans_amount));
 				$("#ttl-paid").val(App.money_format(row.fdc_paid_amount));
 				$("#fdc_return_amount").val(App.money_format(row.fdc_return_amount));
@@ -1269,11 +1310,13 @@
 	}
 
 	function submitAjax(confirmEdit){
-
-		if ($("#sub-total-rincian-transaksi-idr").val() != $("#sub-total-rincian-payment-idr").val()){
+		var totalTransaksi = parseFloat($("#sub-total-rincian-transaksi-idr").val());
+		var totalPenerimaan = parseFloat($("#sub-total-rincian-payment-idr").val());
+		if ( totalTransaksi != totalPenerimaan ){
 			alert("<?= lang('Total transaksi & Total Pembayaran tidak sama ...!') ?>");
 			return;
 		}
+
 		if ($("#fin_kasbank_id").val() == null){
 			alert("<?= lang('Pilih jenis penerimaan ...!') ?>");
 			return;
