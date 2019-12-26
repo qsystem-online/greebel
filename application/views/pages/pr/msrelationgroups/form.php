@@ -53,16 +53,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class="form-group">
-                    <label for="fin_relation_group_id" class="col-sm-2 control-label"><?=lang("Relation Group ID")?> #</label>
-						<div class="col-sm-10">
+                    <label for="fin_relation_group_id" class="col-sm-3 control-label"><?=lang("Relation Group ID")?> #</label>
+						<div class="col-sm-9">
 							<input type="text" class="form-control" id="fin_relation_group_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_relation_group_id" value="<?=$fin_relation_group_id?>" readonly>
 							<div id="fin_relation_group_id_err" class="text-danger"></div>
 						</div>
 					</div>
 
 					<div class="form-group">
-                    <label for="fst_relation_group_name" class="col-sm-2 control-label"><?=lang("Relation Group Name")?> *</label>
-						<div class="col-sm-10">
+                    <label for="fst_relation_group_name" class="col-sm-3 control-label"><?=lang("Relation Group Name")?> *</label>
+						<div class="col-sm-9">
 							<input type="text" class="form-control" id="fst_relation_group_name" placeholder="<?=lang("Relation Group Name")?>" name="fst_relation_group_name">
 							<div id="fst_relation_group_name_err" class="text-danger"></div>
 						</div>
