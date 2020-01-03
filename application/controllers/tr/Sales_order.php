@@ -217,7 +217,7 @@ class Sales_order extends MY_Controller{
 			"fbl_dp_inc_ppn" => ($this->input->post("fbl_dp_inc_ppn") == null) ? 0 : 1,
 			"fdc_downpayment_paid"=>0,
 			"fbl_is_closed"=>0,
-			"fst_active" => 'S' //SEMUA SO HARUS DI APPROVE DULU
+			"fst_active" => 'S' //JIKA ITEM YANG DI ORDER TIDAK ADA MAKA STATUS BERUBAH JADI SUSPEND
 		];
 		
 
