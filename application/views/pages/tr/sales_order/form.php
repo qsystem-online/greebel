@@ -733,7 +733,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
 			$(".dataTables_scrollBody").css("position","static");
 		}).DataTable({
-			scrollY: "300px",
+			scrollY: "auto",
 			scrollX: true,			
 			scrollCollapse: true,	
 			order: [],
