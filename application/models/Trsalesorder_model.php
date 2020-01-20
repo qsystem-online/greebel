@@ -496,7 +496,7 @@ class Trsalesorder_model extends MY_Model {
      *     maka qty ordernya dianggap 0
      *  3. Bila terdapat daftar isi pada tabel promo term, maka nilai transaksi & qty berlaku hanya bila item tersebut masuk dalam daftar isi
      * + Allow other promo (fbl_promo_gabungan)
-     *  1. Bilas tidak disetting,Promo di proses berdasarkan prioritas, bila pada daftar promo yang di peroleh belum ada maka tambahkan promo tsb, 
+     *  1. Bila tidak disetting, Promo di proses berdasarkan prioritas, bila pada daftar promo yang di peroleh belum ada maka tambahkan promo tsb, 
      *     namun bila sudah ada promo yang diterima maka promo allow other promo tidak berlaku
      * + Multiple Prize
      * 

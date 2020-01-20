@@ -105,7 +105,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 						<label for="fst_business_type" class="col-md-2 control-label"><?=lang("Business Type")?></label>
 							<div class="col-md-4">
-								<select class="form-control" id="fst_business_type" name="fst_business_type">
+								<select class="form-control select2" id="fst_business_type" name="fst_business_type">
 									<option value='P'><?=lang("Personal")?></option>
 									<option value='C'><?=lang("Corporate")?></option>
 								</select>
@@ -133,7 +133,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="form-group personal-info">
 						<label for="fst_gender" class="col-md-2 control-label"><?=lang("Gender")?></label>
 							<div class="col-md-4 personal-info">
-								<select class="form-control" id="fst_gender" name="fst_gender">
+								<select class="form-control select2" id="fst_gender" name="fst_gender">
 									<option value="0">-- <?=lang("select")?> --</option>
 									<option value="M"><?=lang("Male")?></option>
 									<option value="F"><?=lang("Female")?></option>
@@ -206,7 +206,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						
 						<label for="select-country" class="col-md-2 control-label"><?=lang("Country Name")?></label>
 							<div class="col-md-4">
-								<select id="select-country" class="form-control" name="fin_country_id">
+								<select id="select-country" class="form-control select2" name="fin_country_id">
 									<option value="0">-- <?=lang("select")?> --</option>
 								</select>
 								<div id="fst_country_name_err" class="text-danger"></div>
@@ -216,7 +216,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="form-group">
 						<label for="select-provinces" class="col-md-2 control-label"><?=lang("Province Name")?></label>
 							<div class="col-md-4">
-								<select id="select-provinces" class="form-control" name="fst_kode">
+								<select id="select-provinces" class="form-control select2" name="fst_kode">
 									<option value="0">-- <?=lang("select")?> --</option>
 								</select>
 								<div id="fst_nama__err" class="text-danger"></div>
@@ -224,7 +224,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						
 						<label for="select-district" class="col-md-2 control-label"><?=lang("District Name")?></label>
 							<div class="col-md-4">
-								<select id="select-district" class="form-control" name="fst_kode">
+								<select id="select-district" class="form-control select2" name="fst_kode">
 									<option value="0">-- <?=lang("select")?> --</option>
 								</select>
 								<div id="fst_nama__err" class="text-danger"></div>
@@ -234,7 +234,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="form-group">
 						<label for="select-subdistrict" class="col-md-2 control-label"><?=lang("Sub District Name")?></label>
 							<div class="col-md-4">
-								<select id="select-subdistrict" class="form-control" name="fst_kode">
+								<select id="select-subdistrict" class="form-control select2" name="fst_kode">
 									<option value="0">-- <?=lang("select")?> --</option>
 								</select>
 								<div id="fst_nama__err" class="text-danger"></div>
@@ -242,7 +242,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 						<label for="select-village" class="col-md-2 control-label"><?=lang("Village Name")?></label>
 							<div class="col-md-4">
-								<select id="select-village" class="form-control" name="fst_kode">
+								<select id="select-village" class="form-control select2" name="fst_kode">
 									<option value="0">-- <?=lang("select")?> --</option>
 									<div id="fst_nama__err" class="text-danger"></div>
 								</select>
@@ -260,7 +260,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 						<label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
 							<div class="col-md-4">
-								<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
+								<select id="select-warehouse" class="form-control select2" name="fin_warehouse_id">
 									<option value="0">-- <?=lang("select")?> --</option>
 								</select>
 								<div id="fin_warehouse_id_err" class="text-danger"></div>
