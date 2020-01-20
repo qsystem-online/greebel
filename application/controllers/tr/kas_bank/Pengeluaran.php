@@ -7,6 +7,7 @@ class Pengeluaran extends MY_Controller{
 		$this->load->library('form_validation');		
 		$this->load->model('msrelations_model');	
 		$this->load->model('trcbpayment_model');
+		$this->load->model('glaccounts_model');
 	}
 	
 	public function index(){
@@ -417,6 +418,7 @@ class Pengeluaran extends MY_Controller{
 		$this->load->model('trcbpaymentitemstype_model');
 		$this->load->model('kasbank_model');
 		$this->load->model('glledger_model');
+
 
 		//IS EDITABLE
 		$dataHOld = $this->trcbpayment_model->getDataHeaderById($this->input->post("fin_cbpayment_id"));

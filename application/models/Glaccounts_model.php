@@ -158,4 +158,13 @@ class Glaccounts_model extends MY_Model
         $rs = $qr->result();
         return $rs;
     }
+
+    public function getAccountList(){
+        $ssql = "select a.*,if(b.fst_glaccount_type = 'PROFIT_LOST',true,false) as fbl_pcc from glaccounts a 
+        inner join glaccountmaingroups b on a.fin_glaccount_maingroup_id = b.fin_glaccount_maingroup_id
+        where a.fst_glaccount_level != 'HD' and a.fst_active ='A'";
+        $qr =$this->db->query($ssql,[]);
+        $rs = $qr->result();
+        return $rs;
+    }
 }

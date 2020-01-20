@@ -1,0 +1,38 @@
+Purchase Req Header
+* divisi
+* tgl
+
+Purchase Req Detail
+* Item
+* qty Req
+* qty Process
+* qty Distribut
+* process_id (butuh ditambahkan)
+* po_id
+* tgl_process
+* tgl_distribut
+* tgl ETD (Expected Target date)
+
+Tbl Setup account logistic
+item Group 
+Acc Persediaan
+Acc Quarterhead (pabrikasi)
+Acc Biaya
+
+
+untuk Process PR
+Pilih Item -> Process Generate TEMPLATE PO -> Distribusi
+filter by :
+1. tipe item (Logistik / non logistik)
+2. Line of Bussiness
+
+
+button untuk melihat history pembelian barang tersebut (Detail PO)
+
+Jurnal:
+(Pada saat Faktur)
+* Untuk Barang logistik. cek account persediaan di setup_accoutnnya
+
+(Pada saat Distribusi)
+untuk divisi yg merupakan pabrikasi dr accquaterhead, kalau bukan dari biaya
+

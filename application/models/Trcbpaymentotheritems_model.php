@@ -1,8 +1,8 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
-class Trcbreceive_model extends MY_Model {
-    public $tableName = "trcbreceive";
-    public $pkey = "fin_cbreceive_id";
+class Trcbpaymentotheritems_model extends MY_Model {
+    public $tableName = "trcbpaymentotheritems";
+    public $pkey = "fin_rec_id";
 
     public function __construct(){
         parent:: __construct();
@@ -10,62 +10,66 @@ class Trcbreceive_model extends MY_Model {
 
     public function getRules($mode="ADD",$id=0){
         $rules = [];
-
-        $rules[] = [
-            'field' => 'fst_cbreceive_no',
-            'label' => 'No Penerimaan',
-            'rules' => 'required',
-            'errors' => array(
-                'required' => '%s tidak boleh kosong',
-            )
-        ];
-
-
         return $rules;
     }
 
-    public function generateCBReceiveNo($finKasBankId, $trDate = null) {
-        $this->load->model("kasbanknumbering_model");
 
-        $trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
-        $tahun = date("Y/m", strtotime ($trDate));
-        $activeBranch = $this->aauth->get_active_branch();
-        $branchCode = "";
-        if($activeBranch){
-            $branchCode = $activeBranch->fst_branch_code;
-        }
 
-        $ssql ="select * from mskasbank where fin_kasbank_id = ?";
-        $qr = $this->db->query($ssql,[$finKasBankId]);
-        $rw = $qr->row();
-        if($rw == null){
-            return "";
-        }
 
-        $prefix =$rw->fst_prefix_pemasukan;
 
-        /*
-        $query = $this->db->query("SELECT MAX(fst_cbreceive_no) as max_id FROM trcbreceive where fst_cbreceive_no like '".$prefix."/%/".$tahun."%'");
 
-        $row = $query->row_array();
 
-        $max_id = $row['max_id']; 
-        
-        $max_id1 =(int) substr($max_id,strlen($max_id)-5);
-        
-        $fst_tr_no = $max_id1 +1;
-        */
-        $fst_tr_no =  $this->kasbanknumbering_model->getKasBankNo($prefix."/%/" . $tahun ."%");        
-        $max_tr_no = $prefix."/". $branchCode .'/' .$tahun.'/'.sprintf("%05s",$fst_tr_no);        
-        return $max_tr_no;
-    }
-    public function getInGiroAccount(){
-        $glCode = getGLConfig("CB_IN_GIRO_MUNDUR");
-        $ssql = "select * from glaccounts where fst_glaccount_code = ?";
-        $qr = $this->db->query($ssql,[$glCode]);
-        $rw = $qr->row();
-        return $rw;
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
     public function getAccountList(){
         //$accounts = getDataTable("glaccounts","*","fst_active ='A' and fst_glaccount_level != 'HD' and fbl_is_allow_in_cash_bank_module = 1");
         $ssql ="SELECT a.*,b.fst_glaccount_type FROM glaccounts a 
@@ -123,10 +127,6 @@ class Trcbreceive_model extends MY_Model {
                 throwIfDBError();
 
                 $this->checkIsValidClaimPaymentOver($dataItem->fin_trans_id);        
-            }else if ($dataItem->fst_trans_type == "CLAIM_PAYMENT_UNKNOWN"){
-                $ssql ="UPDATE glledger set fbl_claimed_cashbank_receive_unknown = false where fin_rec_id =?";
-                $this->db->query($ssql,[$dataItem->fin_trans_id]);
-                throwIfDBError();
             }else{
                 throw new CustomException("Invalid detail cash bank transaction type $dataItem->fst_trans_type",9009,"FAILED",null);
             }
@@ -199,14 +199,7 @@ class Trcbreceive_model extends MY_Model {
                 //cek valid claim kelebihan pembayaran
                 $this->checkIsValidClaimPaymentOver($dataItem->fin_trans_id);
 
-            
-            }else if ($dataItem->fst_trans_type == "CLAIM_PAYMENT_UNKNOWN"){
-                $tmpArr = $this->getDataJurnalPostingClaimPaymentUnknown($dataItem,$dataH);
-                $ssql ="UPDATE glledger set fbl_claimed_cashbank_receive_unknown = true where fin_rec_id =?";
-                $this->db->query($ssql,[$dataItem->fin_trans_id]);
-                throwIfDBError();
-                
-            }else{               
+            }else{
                 throw new CustomException("Unknow Detail Transaction Type $dataItem->fst_trans_type",9009,"FAILED",null);
             }
             
@@ -228,6 +221,7 @@ class Trcbreceive_model extends MY_Model {
             }else if ($receive->fst_cbreceive_type == "GLACCOUNT"){
                 $fstAccountCode = $receive->fst_glaccount_code;
             }
+
             $dataJurnal[] = [
                 "fin_branch_id"=>$dataH->fin_branch_id,
                 "fst_account_code"=>$fstAccountCode,
@@ -247,11 +241,11 @@ class Trcbreceive_model extends MY_Model {
                 "fin_pc_divisi_id"=>$receive->fin_pc_divisi_id,
                 "fin_pc_customer_id"=>$receive->fin_pc_customer_id,
                 "fin_pc_project_id"=>$receive->fin_pc_project_id,
-                "fin_relation_id"=>$receive->fin_relation_id,
+                "fin_relation_id"=>null,
                 "fst_active"=>"A",
                 "fst_info"=>"PENERIMAAN",
             ];  
-        }   
+        }               
         $this->glledger_model->createJurnal($dataJurnal);       
     }
 
@@ -677,92 +671,6 @@ class Trcbreceive_model extends MY_Model {
     }
 
 
-    public function getDataJurnalPostingClaimPaymentUnknown($dataItem,$dataH){
-        $ssql = "SELECT * FROM glledger a
-            WHERE a.fin_rec_id = ?   
-            AND a.fst_active != 'D'";
-
-        $qr =$this->db->query($ssql,[$dataItem->fin_trans_id]);
-        $dataD = $qr->row();
-        if($dataD == null){
-            throw new CustomException("ID Pembayaran unknown tidak dikenal !",9009,"FAILED",null);
-        }
-
-        $maxClaim = abs((float) $dataD->fdc_origin_credit);
-        if ($maxClaim < (float) $dataItem->fdc_receive_amount){
-            throw new CustomException(sprintf(lang("Maksimum klaim kelebihan pembayaran %s"),formatNumber($maxClaim)),3003,"FAILED",null);
-        }
-
-        $dataJurnal = [];
-        //Jurnal Piutang dagang Lokal atau Import
-        $accUnknownPayment = getGLConfig("UNKNOWN_CASH_BANK_RECEIVE");   
-        $glAccountInfo = "CLAIM PEMBAYARAN TIDAK DIKENAL";
-                
-        $dataJurnal[] = [
-            "fin_branch_id"=>$dataH->fin_branch_id,
-            "fst_account_code"=>$accUnknownPayment,
-            "fdt_trx_datetime"=>$dataH->fdt_cbreceive_datetime,
-            "fst_trx_sourcecode"=>"CBIN",
-            "fin_trx_id"=>$dataH->fin_cbreceive_id, 
-            "fst_trx_no"=>$dataH->fst_cbreceive_no,
-            "fst_reference"=>$dataH->fst_memo,
-            "fdc_debit"=> 0,
-            "fdc_origin_debit"=>0,
-            "fdc_credit"=> $dataItem->fdc_receive_amount * $dataH->fdc_exchange_rate_idr,
-            "fdc_origin_credit"=> $dataItem->fdc_receive_amount * 1,
-            "fst_orgi_curr_code"=>$dataH->fst_curr_code,
-            "fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
-            "fst_no_ref_bank"=>null,
-            "fin_pcc_id"=>null,
-            "fin_relation_id"=>$dataH->fin_customer_id,
-            "fst_active"=>"A",
-            "fst_info"=>$glAccountInfo,
-        ];        
-
-        //Jurnal Selisih Kurs     
-        if ($dataH->fdc_exchange_rate_idr  != $dataD->fdc_orgi_rate){
-
-            $receiveAmount = abs($dataItem->fdc_receive_amount*1);
-            $selisih = ( $receiveAmount * $dataD->fdc_exchange_rate_idr) - ($receiveAmount * $dataH->fdc_exchange_rate_idr);
-
-            if ($selisih < 0){
-                $fstAccountCode =  getGLConfig("SELISIH_KURS_UNTUNG");
-                $glAccountInfo = "SELISIH KURS UNTUNG";                               
-            }else{
-                $fstAccountCode =  getGLConfig("SELISIH_KURS_RUGI");
-                $glAccountInfo = "SELISIH KURS RUGI";                 
-            }
-                
-            $debet = 0;
-            $credit = $selisih;
-                        
-            $dataJurnal[] = [
-                "fin_branch_id"=>$dataD->fin_branch_id,
-                "fst_account_code"=>$fstAccountCode,
-                "fdt_trx_datetime"=>$dataH->fdt_cbreceive_datetime,
-                "fst_trx_sourcecode"=>"CBIN",
-                "fin_trx_id"=>$dataItem->fin_cbreceive_id,
-                "fst_trx_no"=>$dataH->fst_cbreceive_no,
-                "fst_reference"=>$dataD->fst_inv_no . " | " . $dataH->fst_memo,
-                "fdc_debit"=> $debet,
-                "fdc_origin_debit"=>$debet,
-                "fdc_credit"=>$credit,
-                "fdc_origin_credit"=>$credit,
-                "fst_orgi_curr_code"=>"IDR",
-                "fdc_orgi_rate"=>1,
-                "fst_no_ref_bank"=>null,
-                "fin_pcc_id"=>null,
-                "fin_relation_id"=>null,
-                "fst_active"=>"A",
-                "fst_info"=>$glAccountInfo
-            ];
-        }
-
-
-
-        return $dataJurnal;
-    }
-
 
     public function getDataById($finCBReceiveId){
         $ssql = "select a.*,b.fst_type as fst_kasbank_type from " .$this->tableName. " a 
@@ -900,25 +808,6 @@ class Trcbreceive_model extends MY_Model {
                 ];
             }
 
-        }else if($transType == "CLAIM_PAYMENT_UNKNOWN"){
-            $ssql = "Select * from glledger where fin_rec_id = ?";
-            $qr = $this->db->query($ssql,[$transId]);
-            $rw = $qr->row();
-            if($rw == null){
-                return [
-                    "fst_trans_no"=>null,
-                    "fdc_trans_amount"=>0,
-                    "fdc_paid_amount"=>0,
-                    "fdc_return_amount"=>0
-                ];
-            }else{
-                return [
-                    "fst_trans_no"=>$rw->fst_trx_no,
-                    "fdc_trans_amount"=>$rw->fdc_origin_credit * -1,
-                    "fdc_paid_amount"=>0,
-                    "fdc_return_amount"=>0,
-                ];
-            }
         }
 
     }
@@ -962,14 +851,6 @@ class Trcbreceive_model extends MY_Model {
 
     }
 
-    public function getUnknownReceiveList($fstCurrCode){
-        $accUnknownReceive = getGLConfig("UNKNOWN_CASH_BANK_RECEIVE");
-        $ssql = "SELECT * FROM glledger where fst_account_code = ? and fbl_claimed_cashbank_receive_unknown = false and fst_active ='A' and fdc_origin_credit > 0  and fst_orgi_curr_code = ?";
-        $qr = $this->db->query($ssql,[$accUnknownReceive,$fstCurrCode]);
-        return $qr->result();
-
-    }
-
     public function delete($finCBReceiveId,$softDelete=TRUE,$data=null){
         if($softDelete){
             $ssql = "UPDATE trcbreceiveitems set fst_active ='D' where fin_cbreceive_id = ?";
@@ -1000,6 +881,167 @@ class Trcbreceive_model extends MY_Model {
         $this->db->query($ssql,[$finCBReceiveId]);
         throwIfDBError();        
     }
+
+
+
+    /*
+    public function generateCBPaymentNo($finKasBankId, $trDate = null) {
+        $trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
+        $tahun = date("Y/m", strtotime ($trDate));
+        $activeBranch = $this->aauth->get_active_branch();
+        $branchCode = "";
+        if($activeBranch){
+            $branchCode = $activeBranch->fst_branch_code;
+        }
+
+
+        //$prefix = getDbConfig($prefixKey) . "/" . $branchCode ."/";
+        $ssql ="select * from mskasbank where fin_kasbank_id = ?";
+        $qr = $this->db->query($ssql,[$finKasBankId]);
+        $rw = $qr->row();
+        if(!$rw){
+            return "";
+        }
+
+        $prefix =$rw->fst_prefix_pengeluaran;
+
+
+
+        //$query = $this->db->query("SELECT MAX(fst_po_no) as max_id FROM $table where $field like '".$prefix.$tahun."%'");
+        $query = $this->db->query("SELECT MAX(fst_cbpayment_no) as max_id FROM trcbpayment where fst_cbpayment_no like '".$prefix."/%/".$tahun."%'");
+
+        $row = $query->row_array();
+
+        $max_id = $row['max_id']; 
+        
+        $max_id1 =(int) substr($max_id,strlen($max_id)-5);
+        
+        $fst_tr_no = $max_id1 +1;
+        
+        $max_tr_no = $prefix."/". $branchCode .'/' .$tahun.'/'.sprintf("%05s",$fst_tr_no);
+        
+        return $max_tr_no;
+    }
+    public function update($data){
+        //Cancel Transaksi
+        $ssql ="delete from trcbpaymentitems where fin_cbpayment_id = ?";
+        $this->db->query($ssql,$data["fin_cbpayment_id"]);        
+
+        $ssql ="delete from trcbpaymentitemstype where fin_cbpayment_id = ?";
+        $this->db->query($ssql,$data["fin_cbpayment_id"]);        
+
+        parent::update($data);
+
+    }
+    public function getDataJurnalPostingLPBReturn($dataItem,$dataH){
+
+        $ssql ="select * from trpurchasereturn where fin_purchasereturn_id = ?";
+        $qr = $this->db->query($ssql,[$dataItem->fin_trans_id]);
+        $rw = $qr->row();
+        if(!$rw){            
+            return null;
+        }
+        
+        
+        $accHutang = $rw->fbl_is_import == 1 ? getGLConfig("AP_DAGANG_IMPORT") : getGLConfig("AP_DAGANG_LOKAL");
+        $accReturn = $rw->fbl_is_import == 1 ? getGLConfig("RETURN_IMPORT") : getGLConfig("RETURN_LOKAL");
+
+        $dataJurnal = [];
+        $dataItem->fdc_payment = abs($dataItem->fdc_payment);
+        $dataJurnal[] = [
+            "fin_branch_id"=>$rw->fin_branch_id,
+            "fst_account_code"=>$accHutang,
+            "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
+            "fst_trx_sourcecode"=>"CBOUT",
+            "fin_trx_id"=>$dataItem->fin_cbpayment_id,
+            "fst_trx_no"=>$dataH->fst_cbpayment_no,
+            "fst_reference"=>$rw->fst_purchasereturn_no . " | " .$dataH->fst_memo,
+            "fdc_debit"=> 0,
+            "fdc_origin_debit"=>0,
+            "fdc_credit"=>$dataItem->fdc_payment   * $rw->fdc_exchange_rate_idr,
+            "fdc_origin_credit"=>$dataItem->fdc_payment,
+            "fst_orgi_curr_code"=>$rw->fst_curr_code,
+            "fdc_orgi_rate"=>$rw->fdc_exchange_rate_idr,
+            "fst_no_ref_bank"=>null,
+            "fin_pcc_id"=>null,
+            "fin_relation_id"=>$rw->fin_supplier_id,
+            "fst_active"=>"A"
+        ];
+        
+
+        //Cek selisih Kurs        
+        if ($dataH->fdc_exchange_rate_idr  != $rw->fdc_exchange_rate_idr){            
+            $selisih = ($dataItem->fdc_payment * $rw->fdc_exchange_rate_idr) - ($dataItem->fdc_payment * $dataH->fdc_exchange_rate_idr);
+
+            if ($selisih < 0){
+                $accSelisihKurs =  getGLConfig("SELISIH_KURS_UNTUNG");
+                $debet = 0;
+                $credit = $selisih * -1;
+            }else{                
+                $accSelisihKurs =  getGLConfig("SELISIH_KURS_RUGI");
+                $debet =  $selisih;
+                $credit = 0 ;
+            }
+
+            $dataJurnal[] = [
+                "fin_branch_id"=>$rw->fin_branch_id,
+                "fst_account_code"=>$accSelisihKurs,
+                "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
+                "fst_trx_sourcecode"=>"CBOUT",
+                "fin_trx_id"=>$dataItem->fin_cbpayment_id,
+                "fst_trx_no"=>$dataH->fst_cbpayment_no,
+                "fst_reference"=>$rw->fst_purchasereturn_no . " | " .$dataH->fst_memo,
+                "fdc_debit"=> $debet,
+                "fdc_origin_debit"=>$debet,
+                "fdc_credit"=>$credit,
+                "fdc_origin_credit"=>$credit,
+                "fst_orgi_curr_code"=>"IDR",
+                "fdc_orgi_rate"=>1,
+                "fst_no_ref_bank"=>null,
+                "fin_pcc_id"=>null,
+                "fin_relation_id"=>null,
+                "fst_active"=>"A"
+            ];
+        }
+        return $dataJurnal;
+    }
+    
+    function getUnpaidPurchaseInvoiceList($finSupplierId,$fstCurrCode){
+        $ssql = "SELECT * FROM trlpbpurchase 
+            WHERE fin_supplier_id = ? AND fst_curr_code = ? 
+            AND (fdc_total > (fdc_total_paid + fdc_total_return) ) 
+            AND fst_active = 'A' ";
+        $qr = $this->db->query($ssql,[$finSupplierId,$fstCurrCode]);
+        //echo $this->db->last_query();
+        $rs = $qr->result();
+        return $rs;
+    }
+    function getPurchaseReturnNonFakturList($finSupplierId,$fstCurrCode){
+        $ssql ="select * from trpurchasereturn 
+        where fin_supplier_id = ? and fst_curr_code = ?
+        and fbl_non_faktur = 1 and fdc_total_claimed < fdc_total
+        and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finSupplierId,$fstCurrCode]);
+        return $qr->result();
+    }
+    
+    
+    public function checkIsValidLPBReturn($finPurchaseReturnId){
+        $ssql = "select * from trpurchasereturn where fin_purchasereturn_id = ?";
+        $qr = $this->db->query($ssql,[$finPurchaseReturnId]);
+        $rw = $qr->row();
+        if($rw == null){
+            return ["status"=>"FAILED",'message'=>lang("ID Invoice Pembelian tidak dikenal")];
+        }
+
+        //total klaim retur melebihi jumlah retur
+        if($rw->fdc_total  < $rw->fdc_total_claimed){
+            return ["status"=>"FAILED","message"=>sprintf(lang("Total klaim retur %s melebih jumlah retur yang tersisa !"),$rw->fst_purchasereturn_no)];
+        }   
+
+        return ["status"=>"SUCCESS","message"=>""];
+    }
+    */
 
 }
 

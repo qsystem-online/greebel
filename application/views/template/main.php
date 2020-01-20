@@ -70,7 +70,11 @@
 	}
     .dataTable thead tr th{
         /*background-color:#80ccff;height:25px;padding:5px;border:1px solid #1aa3ff;*/
-		background-color:#3c8dbc;height:25px;padding:5px;border:1px solid #000;color:#fff;
+		background-color:#3c8dbc;
+		/*height:25px;*/
+		padding:5px;
+		border:1px solid #000;
+		color:#fff;
 		font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
 		font-weight: 400;
 		

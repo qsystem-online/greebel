@@ -24,6 +24,18 @@ class Kasbank_model extends MY_Model{
         return $data;
     }
 
+    public function getDataHeaderById($fin_kasbank_id){
+        $ssql = "SELECT a.* FROM mskasbank a 
+                where a.fin_kasbank_id = ? AND a.fst_active = 'A' ";
+
+        $qr = $this->db->query($ssql, [$fin_kasbank_id]);
+        $rwKasbank = $qr->row();
+
+        
+
+        return $rwKasbank;
+    }
+
     public function getRules($mode = "ADD", $id = 0)
     {
         $rules = [];

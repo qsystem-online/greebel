@@ -160,7 +160,7 @@ class Penerimaan_pembelian extends MY_Controller{
 	public function ajx_add_save(){	
 		$this->load->model("trlpbgudangitems_model");
 		$this->load->model("msitems_model");
-	
+		
 		try{
 			$fdt_lpbgudang_datetime = dBDateTimeFormat($this->input->post("fdt_lpbgudang_datetime"));
 			$resp = dateIsLock($fdt_lpbgudang_datetime);

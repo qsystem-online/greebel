@@ -83,12 +83,18 @@ class Glledger_model extends MY_Model{
 
             if ($data["fdc_debit"] < 0){
                 $data["fdc_credit"] += abs($data["fdc_debit"]);
+                $data["fdc_origin_credit"] += abs($data["fdc_origin_debit"]);
+
                 $data["fdc_debit"] = 0;
+                $data["fdc_origin_debit"] = 0;
             }
 
             if ($data["fdc_credit"] < 0){
                 $data["fdc_debit"] += abs($data["fdc_credit"]);
+                $data["fdc_origin_debit"] += abs($data["fdc_origin_credit"]);
+
                 $data["fdc_credit"] = 0;
+                $data["fdc_origin_credit"] = 0;
             }
 
                         
@@ -126,8 +132,16 @@ class Glledger_model extends MY_Model{
     }
 
     public function getJurnal($trxSourcecode,$trxId){
-        $ssql ="select a.fst_account_code,a.fst_account_name as fst_glaccount_name, a.fdc_debit, a.fdc_credit,a.fin_pcc_id,b.fst_pcc_name from glledger a 
+        $ssql ="select a.fin_rec_id,a.fst_account_code,a.fst_account_name as fst_glaccount_name, a.fdc_debit, a.fdc_credit,a.fin_pcc_id,
+            b.fst_pcc_name,
+            c.fst_department_name as fst_pc_divisi_name,
+            d.fst_relation_name as fst_pc_customer_name,
+            e.fst_project_name as fst_pc_project_name
+            from glledger a 
             LEFT JOIN msprofitcostcenter b on a.fin_pcc_id = b.fin_pcc_id 
+            LEFT JOIN departments c on a.fin_pc_divisi_id = c.fin_department_id 
+            LEFT JOIN msrelations d on a.fin_pc_customer_id = d.fin_relation_id 
+            LEFT JOIN msprojects e on a.fin_pc_project_id = e.fin_project_id 
             where fst_trx_sourcecode = ? and fin_trx_id = ? and a.fbl_is_flip = 0 and a.fst_active = 'A' order by (fdc_debit > 0) desc ,fin_rec_id";
 
         $qr= $this->db->query($ssql,[$trxSourcecode,(int) $trxId]);
@@ -157,5 +171,7 @@ class Glledger_model extends MY_Model{
         
     }
 
+
+    
 
 }

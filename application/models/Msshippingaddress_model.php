@@ -44,4 +44,18 @@ class Msshippingaddress_model extends MY_Model {
         $this->db->query($ssql);
     }
 
+    public function getAddressList($finRelationId=null){
+        if ($finRelationId == null){
+            $ssql = "SELECT * from msshippingaddress where  fst_active ='A'";
+            $qr = $this->db->query($ssql,[]);
+
+        }else{
+            $ssql = "SELECT * from msshippingaddress where fin_relation_id = ? and fst_active ='A'";
+            $qr = $this->db->query($ssql,[$finRelationId]);
+        }
+
+        return $qr->result();
+        
+    }
+
 }

@@ -3423,6 +3423,7 @@ S2.define('select2/data/ajax',[
   AjaxAdapter.prototype._applyDefaults = function (options) {
     var defaults = {
       data: function (params) {
+        $(".select2-results__option:not(.loading-results)").remove();
         return $.extend({}, params, {
           q: params.term
         });

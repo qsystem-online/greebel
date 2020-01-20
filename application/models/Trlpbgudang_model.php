@@ -462,17 +462,12 @@ class Trlpbgudang_model extends MY_Model {
             $this->db->query($ssql,[$finLPBGudangId]);
             throwIfDBError();
             
-            $ssql ="update trlpbgudang set fst_active ='D' where fin_lpbgudang_id = ?";
-            $this->db->query($ssql,[$finLPBGudangId]);
-            throwIfDBError();
-            
         }else{
             $ssql ="delete from trlpbgudangitems where fin_lpbgudang_id = ?";
             $this->db->query($ssql,[$finLPBGudangId]);
             throwIfDBError();
-
-            parent::delete($finLPBGudangId,$softDelete,$data);
-        }       
+        }   
+        parent::delete($finLPBGudangId,$softDelete,$data);    
    }
 
    public function deleteDetail($finLPBGudangId){

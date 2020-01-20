@@ -165,7 +165,7 @@ class Penerimaan extends MY_Controller{
 			$dataH = $preparedData["dataH"];
 			$detailsTransaksi = $preparedData["detailsTransaksi"];
 			$detailsReceive = $preparedData["detailsReceive"];
-
+			
 			$this->validationData($dataH,$detailsTransaksi,$detailsReceive);
 			
 		}catch(CustomException $e){
@@ -222,6 +222,8 @@ class Penerimaan extends MY_Controller{
 		$this->load->model('trcbreceiveitemstype_model');
 		$this->load->model('kasbank_model');
 		$this->load->model('glledger_model');
+		
+		
 
 		$finCBReceiveId = $this->input->post("fin_cbreceive_id");
 
@@ -455,6 +457,17 @@ class Penerimaan extends MY_Controller{
 						throw new CustomException("",3003,"VALIDATION_FORM_FAILED",$error);
 					}
 				}
+
+				if ($glAccount->fbl_controll_card_relation){
+					if(empty($detailsReceive[$i]->fin_relation_id)){
+						$error = [
+							"detail_receive"=> sprintf(lang("%s membutuhkan data relasi !"),$glAccount->fst_glaccount_code . " - " .$glAccount->fst_glaccount_name)
+						];
+						throw new CustomException("",3003,"VALIDATION_FORM_FAILED",$error);
+					}
+				}
+
+
 			}			
 
 			$this->form_validation->set_data((array)$detailsReceive[$i]);

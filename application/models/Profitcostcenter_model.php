@@ -43,7 +43,8 @@ class Profitcostcenter_model extends MY_Model {
     }
 
     public function get_profitcostcenter(){
-        $query = $this->db->get('msprofitcostcenter');
+        
+        $query = $this->db->get_where('msprofitcostcenter',['fst_active' => 'A']);
 		return $query->result_array();
     }
 }

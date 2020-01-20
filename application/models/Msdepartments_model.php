@@ -47,7 +47,7 @@ class Msdepartments_model extends MY_Model {
     }
 
     public function get_departments(){
-        $query = $this->db->get('departments');
+        $query = $this->db->get_where('departments',["fst_active"=>'A']);
 		return $query->result_array();
     }
 }

@@ -48,14 +48,15 @@ class Trcbpayment_model extends MY_Model {
         $ssql = "select a.*,b.fst_glaccount_name,c.fst_pcc_name,
             d.fst_department_name as fst_pc_divisi_name,
             e.fst_relation_name as fst_pc_customer_name,
-            f.fst_project_name as fst_pc_project_name 
+            f.fst_project_name as fst_pc_project_name,
+            g.fst_relation_name 
             from trcbpaymentitemstype a 
             INNER JOIN glaccounts b on a.fst_glaccount_code = b.fst_glaccount_code 
             LEFT JOIN msprofitcostcenter c on a.fin_pcc_id = c.fin_pcc_id  
             LEFT JOIN departments d on a.fin_pc_divisi_id = d.fin_department_id  
             LEFT JOIN msrelations e on a.fin_pc_customer_id = e.fin_relation_id  
-            LEFT JOIN msprojects f on a.fin_pc_project_id = f.fin_project_id  
-
+            LEFT JOIN msprojects f on a.fin_pc_project_id = f.fin_project_id
+            LEFT JOIN msrelations g on a.fin_relation_id = g.fin_relation_id
             WHERE a.fin_cbpayment_id = ?";
 
 		$qr = $this->db->query($ssql,[$finCBPaymentId]);
@@ -105,6 +106,7 @@ class Trcbpayment_model extends MY_Model {
 
 
     public function generateCBPaymentNo($finKasBankId, $trDate = null) {
+        $this->load->model("kasbanknumbering_model");
         $trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
         $tahun = date("Y/m", strtotime ($trDate));
         $activeBranch = $this->aauth->get_active_branch();
@@ -123,19 +125,16 @@ class Trcbpayment_model extends MY_Model {
         }
 
         $prefix =$rw->fst_prefix_pengeluaran;
-
-
-
-        //$query = $this->db->query("SELECT MAX(fst_po_no) as max_id FROM $table where $field like '".$prefix.$tahun."%'");
+        
+        /*
         $query = $this->db->query("SELECT MAX(fst_cbpayment_no) as max_id FROM trcbpayment where fst_cbpayment_no like '".$prefix."/%/".$tahun."%'");
-
         $row = $query->row_array();
-
-        $max_id = $row['max_id']; 
-        
-        $max_id1 =(int) substr($max_id,strlen($max_id)-5);
-        
+        $max_id = $row['max_id'];     
+        $max_id1 =(int) substr($max_id,strlen($max_id)-5);        
         $fst_tr_no = $max_id1 +1;
+        */
+
+        $fst_tr_no =  $this->kasbanknumbering_model->getKasBankNo($prefix."/%/" . $tahun ."%");   
         
         $max_tr_no = $prefix."/". $branchCode .'/' .$tahun.'/'.sprintf("%05s",$fst_tr_no);
         
@@ -152,11 +151,15 @@ class Trcbpayment_model extends MY_Model {
 
     public function unposting($finCBPaymentId,$unpostingDateTime =""){
         $this->load->model("glledger_model");
+        $this->load->model("kasbanknumbering_model");
         $unpostingDateTime = $unpostingDateTime == "" ? date("Y-m-d H:i:s") : $unpostingDateTime;
 
         $ssql ="select * from trcbpayment where fin_cbpayment_id = ?";        
         $qr = $this->db->query($ssql,[$finCBPaymentId]);        
         $dataH = $qr->row();
+
+        //unlog kasbank no
+        $this->kasbanknumbering_model->unlog($dataH->fst_cbpayment_no);
 
         //get Detail Transaksi
         $ssql ="select * from trcbpaymentitems where fin_cbpayment_id = ?";        
@@ -190,6 +193,7 @@ class Trcbpayment_model extends MY_Model {
 
     public function posting($finCBPaymentId){
         $this->load->model("kasbank_model");
+        $this->load->model("kasbanknumbering_model");
         $this->load->model("glledger_model");
 
         $ssql ="select * from trcbpayment where fin_cbpayment_id = ?";        
@@ -203,6 +207,8 @@ class Trcbpayment_model extends MY_Model {
 
         $dataJurnal = [];
         
+        //log kasbank no
+        $this->kasbanknumbering_model->log($dataH->fst_cbpayment_no);
 
         //get Detail Transaksi
         $ssql ="select * from trcbpaymentitems where fin_cbpayment_id = ?";        
@@ -280,7 +286,7 @@ class Trcbpayment_model extends MY_Model {
                 "fin_pc_divisi_id"=>$payment->fin_pc_divisi_id,
                 "fin_pc_customer_id"=>$payment->fin_pc_customer_id,
                 "fin_pc_project_id"=>$payment->fin_pc_project_id,
-                "fin_relation_id"=>null,
+                "fin_relation_id"=>$payment->fin_relation_id,
                 "fst_active"=>"A"
             ];  
         }         
@@ -573,7 +579,6 @@ class Trcbpayment_model extends MY_Model {
 
 
     public function getAccountList(){
-        //$accounts = getDataTable("glaccounts","*","fst_active ='A' and fst_glaccount_level != 'HD' and fbl_is_allow_in_cash_bank_module = 1");
         $ssql ="SELECT a.*,b.fst_glaccount_type FROM glaccounts a 
             INNER JOIN glaccountmaingroups b on a.fin_glaccount_maingroup_id = b.fin_glaccount_maingroup_id 
             WHERE a.fst_active = 'A' 
@@ -581,7 +586,6 @@ class Trcbpayment_model extends MY_Model {
             AND a.fbl_is_allow_in_cash_bank_module = 1";
         $qr = $this->db->query($ssql,[]);
         return $qr->result();
-
     }
 
     public function isEditable($finCBPaymentId){

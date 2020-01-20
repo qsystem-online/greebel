@@ -245,4 +245,11 @@ class Prefix_cash_bank extends MY_Controller {
         $this->ajxResp["data"] = $result;
         $this->json_output();
 	}
+
+	public function getListByType(){
+		$typeKasBank = $this->input->get("kasbank_type");
+		$rs  = $this->kasbank_model->getListByType($typeKasBank);
+		$this->json_output($rs);
+
+	}
 }
