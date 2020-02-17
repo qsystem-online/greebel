@@ -112,7 +112,7 @@ class Purchase_order extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 		
 	}
-	private function openForm($mode = "ADD", $fin_po_id = 0){
+	private function openForm($mode = "ADD", $fin_po_id = 0,$fin_process_id = 0,$fin_supplier_id = 0){
 		$this->load->library("menus");		
 		
 
@@ -130,12 +130,23 @@ class Purchase_order extends MY_Controller{
 		if($mode == 'ADD'){
 			$data["fin_po_id"] = 0;
 			$data["fst_po_no"] = $this->trpo_model->GeneratePONo();			
+			$data["fin_process_id"] = 0;
+			$data["fin_supplier_id"] = 0;
 		}else if($mode=="EDIT"){
 			$data["fin_po_id"] = $fin_po_id;
 			$data["fst_po_no"] = "";			
+			$data["fin_process_id"] = 0;
+			$data["fin_supplier_id"] = 0;
 		}else if($mode == "VIEW"){
 			$data["fin_po_id"] = $fin_po_id;
 			$data["fst_po_no"] = "";			
+			$data["fin_process_id"] = 0;
+			$data["fin_supplier_id"] = 0;
+		}else if($mode == "GENERATE"){
+			$data["fin_po_id"] = 0;
+			$data["fst_po_no"] = $this->trpo_model->GeneratePONo();	
+			$data["fin_process_id"] = $fin_process_id;
+			$data["fin_supplier_id"] = $fin_supplier_id;
 		}
 		
 		$page_content = $this->parser->parse('pages/tr/purchase_order/form', $data, true);
@@ -158,18 +169,176 @@ class Purchase_order extends MY_Controller{
 		$this->openForm("VIEW", $finPOId);
 	}
 
-	public function ajx_add_save(){
-		//Prepare Data	
-		$fdt_po_datetime = dBDateTimeFormat($this->input->post("fdt_po_datetime"));
-		$resp = dateIsLock($fdt_po_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
+	public function generate($fin_process_id,$fin_supplier_id){
+		//echo $fin_process_id . ":" . $fin_supplier_id;
+		$this->openForm("GENERATE",0,$fin_process_id,$fin_supplier_id);
 
-		$fst_po_no = $this->trpo_model->GeneratePONo();
+	}
+
+	public function ajx_add_save(){
+
+		try{
+
+		
+			//Prepare Data			
+			$fdt_po_datetime = dBDateTimeFormat($this->input->post("fdt_po_datetime"));
+			$resp = dateIsLock($fdt_po_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+			$dataPrepared = $this->prepareData();
+			$fst_po_no = $this->trpo_model->GeneratePONo();
+
+			$dataH = $dataPrepared["dataH"];
+			$dataH["fst_po_no"]= $fst_po_no;
+
+			$dataDetails =$dataPrepared["dataDetails"];
+
+			//Validation
+			$this->validateData($dataH,$dataDetails);
+
+			//Save
+			$this->db->trans_start();
+
+			//Insert Data Header
+			$insertId = $this->trpo_model->insert($dataH);
+			
+			//Insert Data Detail
+			foreach ($dataDetails as $item) {
+				$dataDetail = (array) $item;
+				$dataDetail =[
+					"fin_po_id"=>$insertId,
+					"fin_item_id"=>$item->fin_item_id,
+					"fst_custom_item_name"=>$item->fst_custom_item_name,
+					"fst_unit"=>$item->fst_unit,
+					"fdb_qty"=>$item->fdb_qty,
+					"fdc_price"=>$item->fdc_price,
+					"fst_disc_item"=>$item->fst_disc_item,
+					"fdc_disc_amount"=>$item->fdc_disc_amount,
+					"fdc_disc_amount_per_item"=> calculateDisc($item->fst_disc_item,$item->fdc_price),
+					"fst_notes"=>$item->fst_notes,				
+					"fst_active"=> 'A'
+				];
+				$this->trpodetails_model->insert($dataDetail);			
+				$dbError  = $this->db->error();
+				if ($dbError["code"] != 0){			
+					$this->ajxResp["status"] = "DB_FAILED";
+					$this->ajxResp["message"] = "Insert Failed";
+					$this->ajxResp["data"] = $this->db->error();
+					$this->json_output();
+					$this->db->trans_rollback();
+					return;
+				}
+			}
+
+			//Posting
+			$this->trpo_model->posting($insertId);
+			
+			$this->db->trans_complete();
+
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $insertId;
+			$this->json_output();
+
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();
+		}
+	}
+
+
+	public function ajx_edit_save(){
+
+		$this->load->model("trverification_model");
+		
+		try{
+			$finPOId = $this->input->post("fin_po_id");
+			//cek editable		
+			//CEK tgl lock dari transaksi tersimpan
+			$dataHOld = $this->trpo_model->getDataHeaderById($finPOId);
+			$resp = dateIsLock($dataHOld->fdt_po_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"], null);
+			}
+
+			$fdt_po_datetime = dBDateTimeFormat($this->input->post("fdt_po_datetime"));		
+			$resp = dateIsLock($fdt_po_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"], null);
+			}
+
+			$resp = $this->trpo_model->isEditable($dataHOld->fin_po_id);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"], null);
+			}
+
+			$this->db->trans_start();
+			
+			//unposting
+			$this->trpo_model->unposting($dataHOld->fin_po_id);
+			//$this->trverification_model->cancelAuthorize("PO",$finPOId);			
+			$this->trpodetails_model->deleteByPOId($dataHOld->fin_po_id);
+
+			$dataPrepared = $this->prepareData();
+
+			$dataH = $dataPrepared["dataH"];
+			$dataDetails = $dataPrepared["dataDetails"];
+
+			$dataH["fin_po_id"]  = $dataHOld->fin_po_id;
+			$dataH["fst_po_no"]  = $dataHOld->fst_po_no;
+			$dataH["fst_active"] = $dataHOld->fst_active;
+
+
+			$this->validateData($dataH,$dataDetails);
+
+			$this->trpo_model->update($dataH);
+
+			foreach ($dataDetails as $item) { //Insert Data Detail
+				$dataDetail = (array) $item;
+				$dataDetail =[
+					"fin_po_detail_id"=>$item->fin_po_detail_id,
+					"fin_po_id"=>$dataH["fin_po_id"],
+					"fin_item_id"=>$item->fin_item_id,
+					"fst_custom_item_name"=>$item->fst_custom_item_name,
+					"fst_unit"=>$item->fst_unit,
+					"fdb_qty"=>$item->fdb_qty,
+					"fdb_qty_plb"=>$this->trpodetails_model->getQtyPLB($item->fin_po_detail_id),
+					"fdc_price"=>$item->fdc_price,
+					"fst_disc_item"=>$item->fst_disc_item,
+					"fdc_disc_amount"=>$item->fdc_disc_amount,
+					"fdc_disc_amount_per_item"=> calculateDisc($item->fst_disc_item,$item->fdc_price),
+					"fst_notes"=>$item->fst_notes,				
+					"fst_active"=> 'A'
+				];
+				$this->trpodetails_model->insert($dataDetail);
+								
+			}
+
+			$this->trpo_model->posting($dataH["fin_po_id"]);
+			
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $dataH["fin_po_id"];
+			$this->json_output();
+
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();			
+			$this->ajxResp["data"] = $e->getData();			
+			$this->json_output();
+		}
+		
+	}
+
+
+	public function prepareData(){
+		
+		$fdt_po_datetime = dBDateTimeFormat($this->input->post("fdt_po_datetime"));
+
 		$fblDPIncPPN = $this->input->post("fbl_dp_inc_ppn");
 		$fblDPIncPPN =  ($fblDPIncPPN == null) ? 0 : 1;
 		$fstCurrCode =  $this->input->post("fst_curr_code");
@@ -185,7 +354,7 @@ class Purchase_order extends MY_Controller{
 		$dataH = [
 			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
 			"fbl_is_import"=>$this->input->post("fbl_is_import"),
-            "fst_po_no" => $fst_po_no,
+			"fst_po_no" => $this->input->post("fst_po_no"),
 			"fdt_po_datetime" => $fdt_po_datetime,
 			"fst_curr_code"=>$fstCurrCode,
 			"fdc_exchange_rate_idr"=>$fdcExchangeRateIdr,
@@ -204,6 +373,7 @@ class Purchase_order extends MY_Controller{
 			"fdc_downpayment_paid"=>0,
 			"fbl_dp_inc_ppn" => $fblDPIncPPN,
 			"fbl_is_closed"=>0,
+			"fin_pr_process_id"=>$this->input->post("fin_process_id"),
 			"fst_active" => 'S' //semua purchase order harus di approve dulu
 		];
 		if ($dataH["fbl_is_import"]){
@@ -231,15 +401,15 @@ class Purchase_order extends MY_Controller{
 		$dataH["fdc_disc_amount"] = $discAmount;
 		$dataH["fdc_ppn_amount"] = $dataH["fdc_subttl"] * ($dataH["fdc_ppn_percent"] / 100);
 
-
-		//Validation
+		return [
+			"dataH"=>$dataH,
+			"dataDetails"=>$details
+		];
+	}
+	
+	public function validateData($dataH,$dataDetails){
 		if($dataH["fdc_subttl"] <= 0){
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Total transaction is zero !";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $_POST;
-			$this->json_output();
-			return;
+			throw new CustomException("Total transaction is zero !",3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array() );
 		}
 
 		$this->form_validation->set_rules($this->trpo_model->getRules("ADD", 0));
@@ -247,273 +417,24 @@ class Purchase_order extends MY_Controller{
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Invalid data input !";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $_POST;
-			$this->json_output();
-			return;
+			throw new CustomException("Invalid data input !",3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array() );
 		}
 
 		// Validate PO Details
 		$this->form_validation->set_rules($this->trpodetails_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		for($i = 0;$i < sizeof($details) ; $i++ ){
-			$this->form_validation->set_data((array)$details[$i]);
+		for($i = 0;$i < sizeof($dataDetails) ; $i++ ){
+			$this->form_validation->set_data((array)$dataDetails[$i]);
 			if ($this->form_validation->run() == FALSE){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = lang("Error Validation Forms");
-				$this->ajxResp["request_data"] = $dataH;
 				$error = [
 					"detail"=> $this->form_validation->error_string(),
 				];
-				$this->ajxResp["data"] = $error;
-				
-				$this->json_output();
-				return;	
+				throw new CustomException(lang("Error Validation Forms"),3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array(),$error);
 			}
 		}
-		
-		//Save
-		$this->db->trans_start();
-
-		//Insert Data Header
-		$insertId = $this->trpo_model->insert($dataH);
-		$dbError  = $this->db->error();
-		if ($dbError["code"] != 0) {
-			$this->ajxResp["status"] = "DB_FAILED";
-			$this->ajxResp["message"] = "Insert Failed";
-			$this->ajxResp["data"] = $this->db->error();
-			$this->json_output();
-			$this->db->trans_rollback();
-			return;
-		}
-
-		//Insert Data Detail
-		foreach ($details as $item) {
-			$dataDetail = (array) $item;
-			$dataDetail =[
-  				"fin_po_id"=>$insertId,
-  				"fin_item_id"=>$item->fin_item_id,
-  				"fst_custom_item_name"=>$item->fst_custom_item_name,
-				"fst_unit"=>$item->fst_unit,
-				"fdb_qty"=>$item->fdb_qty,
-				"fdc_price"=>$item->fdc_price,
-				"fst_disc_item"=>$item->fst_disc_item,
-				"fdc_disc_amount"=>$item->fdc_disc_amount,
-				"fdc_disc_amount_per_item"=> calculateDisc($item->fst_disc_item,$item->fdc_price),
-				"fst_notes"=>$item->fst_notes,				
-				"fst_active"=> 'A'
-			];
-			$this->trpodetails_model->insert($dataDetail);			
-			$dbError  = $this->db->error();
-			if ($dbError["code"] != 0){			
-				$this->ajxResp["status"] = "DB_FAILED";
-				$this->ajxResp["message"] = "Insert Failed";
-				$this->ajxResp["data"] = $this->db->error();
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}
-		}
-
-		//Posting
-		//Create Approval record
-		$this->load->model("trverification_model");
-		$message = "Purchase Order " .$dataH["fst_po_no"] ." Need Approval";
-		$this->trverification_model->createAuthorize("PO","default",$insertId,$message,null,$dataH["fst_po_no"]);
-
-		$this->db->trans_complete();
-
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $insertId;
-		$this->json_output();
 	}
 
 
-	public function ajx_edit_save(){
-		$this->load->model("trverification_model");
-		//cek editable		
-		$finPOId = $this->input->post("fin_po_id");
-
-		//CEK tgl lock dari transaksi tersimpan
-		$dataHOld = $this->trpo_model->getDataHeaderById($finPOId);
-		$resp = dateIsLock($dataHOld->fdt_po_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
-
-		//CEK tgl lock dari transaksi yg di kirim
-		$fdt_po_datetime = dBDateTimeFormat($this->input->post("fdt_po_datetime"));		
-		$resp = dateIsLock($fdt_po_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
-
-		$resp = $this->trpo_model->isEditable($dataHOld->fin_po_id);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
-
-
-		$this->db->trans_start();
-
-		//unposting
-		$this->trverification_model->cancelAuthorize("PO",$finPOId);
-
-		//delete
-		//$this->db->query("delete from trpodetails where fin_po_id = ?",[$finPOId]);
-		$this->trpodetails_model->deleteByPOId($dataHOld->fin_po_id);
-
-		//prepare Data
-		$dataH = $this->input->post();
-		//unset($dataH["fst_po_no"]);
-		$dataH["fst_po_no"] = $dataHOld->fst_po_no;
-		$fdt_po_datetime = dBDateTimeFormat($this->input->post("fdt_po_datetime"));
-		$fblDPIncPPN = $this->input->post("fbl_dp_inc_ppn");
-		$fblDPIncPPN =  ($fblDPIncPPN == null) ? 0 : 1;
-		
-		$fstCurrCode =  $this->input->post("fst_curr_code");
-		$fdcExchangeRateIdr = $this->input->post("fdc_exchange_rate_idr");
-
-		if($fstCurrCode == null){
-			$defaultCurr = getDefaultCurrency();
-			$fstCurrCode = $defaultCurr["CurrCode"];
-			$fdcExchangeRateIdr = 1;
-		}		
-		$fdcExchangeRateIdr = parseNumber($fdcExchangeRateIdr);
-
-
-		$dataH["fst_curr_code"] = $fstCurrCode;
-		$dataH["fdc_exchange_rate_idr"] = $fdcExchangeRateIdr;
-		$dataH["fdt_po_datetime"] = $fdt_po_datetime;
-		$dataH["fbl_dp_inc_ppn"] = $fblDPIncPPN;		
-		$dataH["fdc_subttl"] = 0;		
-		$dataH["fdc_disc_amount"] = 0;
-		$dataH["fdc_ppn_amount"] = 0;
-		if ($dataH["fbl_is_import"]){
-			$dataH["fdc_ppn_percent"] = 0;
-			$dataH["fdc_ppn_amount"] = 0;
-			$dataH["fbl_dp_inc_ppn"] = 0;			
-		}
-
-		$details = $this->input->post("detail");
-		$details = json_decode($details);
-		$total = 0;
-		$discAmount= 0;
-		$ppnAmount = 0;
-		for($i = 0; $i < sizeof($details) ; $i++){
-			$item = $details[$i];
-			$tmpTtl = $item->fdb_qty * $item->fdc_price;
-			$details[$i]->fdc_disc_amount = calculateDisc($item->fst_disc_item,$tmpTtl);			
-			$total += $tmpTtl;
-			$tmpDisc = calculateDisc($item->fst_disc_item,$tmpTtl);
-			$discAmount += $tmpDisc;			
-		}
-		$dataH["fdc_subttl"] = $total - $discAmount;
-		$dataH["fdc_disc_amount"] = $discAmount;
-		$dataH["fdc_ppn_amount"] = $dataH["fdc_subttl"] * ($dataH["fdc_ppn_percent"] / 100);
-
-
-		//VALIDATION SECTION
-		$this->form_validation->set_rules($this->trpo_model->getRules("ADD", 0));
-		$this->form_validation->set_data($dataH);
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		if ($this->form_validation->run() == FALSE) {			
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Error Validation Forms 1";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $_POST;
-			$this->db->trans_rollback();
-			$this->json_output();
-			return;
-		}
-		
-		// Validate PO Details
-		$this->form_validation->set_rules($this->trpodetails_model->getRules("ADD",0));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		for($i = 0; $i < sizeof($details) ; $i++){
-			$this->form_validation->set_data((array)$details[$i]);
-			if ($this->form_validation->run() == FALSE){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = lang("Error Validation Forms");
-				$this->ajxResp["request_data"] = $dataH;
-				$error = [
-					"detail"=> $this->form_validation->error_string(),
-				];
-				$this->ajxResp["data"] = $error;				
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;	
-			}
-		}
-
-		//SAVE
-		//Update Data Header
-		$this->trpo_model->update($dataH);
-		foreach ($details as $item) { //Insert Data Detail
-			$dataDetail = (array) $item;
-			$dataDetail =[
-				"fin_po_detail_id"=>$item->fin_po_detail_id,
-  				"fin_po_id"=>$dataH["fin_po_id"],
-  				"fin_item_id"=>$item->fin_item_id,
-  				"fst_custom_item_name"=>$item->fst_custom_item_name,
-				"fst_unit"=>$item->fst_unit,
-				"fdb_qty"=>$item->fdb_qty,
-				"fdb_qty_plb"=>$this->trpodetails_model->getQtyPLB($item->fin_po_detail_id),
-				"fdc_price"=>$item->fdc_price,
-				"fst_disc_item"=>$item->fst_disc_item,
-				"fdc_disc_amount"=>$item->fdc_disc_amount,
-				"fdc_disc_amount_per_item"=> calculateDisc($item->fst_disc_item,$item->fdc_price),
-				"fst_notes"=>$item->fst_notes,				
-				"fst_active"=> 'A'
-			];
-			$this->trpodetails_model->insert($dataDetail);			
-			$dbError  = $this->db->error();
-			if ($dbError["code"] != 0){			
-				$this->ajxResp["status"] = "DB_FAILED";
-				$this->ajxResp["message"] = "Insert Failed";
-				$this->ajxResp["data"] = $this->db->error();
-				$this->json_output();
-				$this->db->trans_rollback();
-				return;
-			}
-		}
-		$dbError  = $this->db->error();
-		if ($dbError["code"] != 0) {
-			$this->ajxResp["status"] = "DB_FAILED";
-			$this->ajxResp["message"] = "Insert Failed";
-			$this->ajxResp["data"] = $this->db->error();
-			$this->json_output();
-			$this->db->trans_rollback();
-			return;
-		}
-		
-		//posting
-		//Create Approval record
-		$this->load->model("trverification_model");
-		$message = "Purchase Order " .$dataH["fst_po_no"] ." Need Approval";
-		$this->trverification_model->createAuthorize("PO","default",$finPOId,$message,null,$dataH["fst_po_no"]);
-
-		$this->db->trans_complete();
-
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "Data Saved !";
-		$this->ajxResp["data"]["insert_id"] = $dataH["fin_po_id"];
-		$this->json_output();
-	}
-
-	
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("(select a.*,b.fst_relation_name as fst_supplier_name from trpo a inner join msrelations b on a.fin_supplier_id = b.fin_relation_id ) a");
@@ -661,9 +582,12 @@ class Purchase_order extends MY_Controller{
         $this->json_output();
     }
 	
-	public function get_item($supplierId){
+	public function get_item(){
 		$this->load->library("select2");
-		$arrItem = $this->select2->get_itemBySupplier($supplierId);
+
+		$supplierId = $this->input->get("fin_supplier_id");
+		$term = $this->input->get("term");		
+		$arrItem = $this->select2->get_itemBySupplier($supplierId,$term);
 		$this->ajxResp["status"] = "SUCCESS";
         $this->ajxResp["data"] = [
 			"arrItem"=>$arrItem,
@@ -888,5 +812,13 @@ class Purchase_order extends MY_Controller{
 		}
 	}
 
+	public function get_detail_pr($finProcessId){
+		$result = $this->trpo_model->getDetailPr($finProcessId);
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"message"=>"",
+			"data"=>$result
+		]);
+	}
 
 }

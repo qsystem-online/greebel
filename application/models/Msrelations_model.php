@@ -205,4 +205,11 @@ clASs Msrelations_model extends MY_Model {
         $qr = $this->db->query($ssql,[$finBranchId]);
         return $qr->result();
     }
+
+    public function getSupplierByLineBusinessAndActiveBranch($finLineBussiness){
+        $finBranchId = $this->aauth->get_active_branch_id() ;
+        $ssql = "select * from msrelations where fst_active ='A' and fin_branch_id = ? and find_in_set('2',fst_relation_type) and find_in_set(?,fst_linebusiness_id) ";
+        $qr = $this->db->query($ssql,[$finBranchId,$finLineBussiness]);
+        return $qr->result();
+    }
 }

@@ -381,5 +381,15 @@ class Test extends CI_Controller {
 		
 	}
 	
-	
+	public function loadTest(){
+		$this->parser->parse('pages/sample/test',[]);
+	}
+
+	public function loadDataTest(){
+		$divisi = $this->input->get("divisi");
+
+		$arr = [1,2,3,4,5,6,7,8,9,"aaaa" . $divisi,"bbbb sdcsdfsdf sdfsdfsdf sdfsdfsdfsdfsdf sdfsdfsdfsdfsdfsdf bb"];
+		echo json_encode($arr);
+
+	}
 }

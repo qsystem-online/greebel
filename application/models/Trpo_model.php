@@ -184,13 +184,55 @@ class Trpo_model extends MY_Model {
         }
     }
 
-
-    public function posting($finPOId){
-        //Bila terdapat DP jurnal DP tersebut
+    public function unposting($finPOId){
         $ssql ="select * from trpo where fin_po_id = ?";
         $qr = $this->db->query($ssql,[$finPOId]);
         $dataH = $qr->row_array();
 
+        if($dataH == null){
+            throw new CustomException("Invalid PO Id",3003,"FAILED",null);
+        }
+
+        //Process id request dari PR
+        $finProcessId = $dataH["fin_pr_process_id"]; //$this->input->post("fin_process_id");
+        if ($finProcessId != 0 && $finProcessId != null ){
+            $ssql = "UPDATE trpurchaserequestitems set fin_po_id = null where fin_process_id = ?";
+            $this->db->query($ssql,[$finProcessId]);
+        }
+
+
+    }
+
+    public function posting($finPOId){
+
+        
+
+
+        $ssql ="select * from trpo where fin_po_id = ?";
+        $qr = $this->db->query($ssql,[$finPOId]);
+        $dataH = $qr->row_array();
+
+        if($dataH == null){
+            throw new CustomException("Invalid PO Id",3003,"FAILED",null);
+        }
+
+        if ($dataH["fst_active"] == "S") {
+            //Create Approval record
+    		$this->load->model("trverification_model");
+	    	$message = "Purchase Order " .$dataH["fst_po_no"] ." Need Approval";
+		    $this->trverification_model->createAuthorize("PO","default",$finPOId,$message,null,$dataH["fst_po_no"]);
+        }
+
+        //Process id request dari PR
+        $finProcessId = $dataH["fin_pr_process_id"]; //$this->input->post("fin_process_id");
+        if ($finProcessId != 0 && $finProcessId != null ){
+            $ssql = "UPDATE trpurchaserequestitems set fin_po_id = ? where fin_process_id = ?";
+            $this->db->query($ssql,[$finPOId,$finProcessId]);
+        }
+
+
+
+        //Bila terdapat DP jurnal DP tersebut
         if ($dataH["fdc_downpayment"] > 0 && $dataH["fst_active"] == "A"){
             $this->load->model("glledger_model");
 
@@ -296,6 +338,7 @@ class Trpo_model extends MY_Model {
             }
             return $result;
         }
+
         return [
             "status"=>"SUCCESS",
             "message"=>""
@@ -553,4 +596,14 @@ class Trpo_model extends MY_Model {
         $this->db->query($ssql,[$finPOId]);
         $this->my_model->throwIfDBError();
     }
+    public function getDetailPr($finProcessId){
+        $ssql = "SELECT a.*,b.fst_item_code,b.fst_item_name from trpurchaserequestitems a 
+            INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
+            where fin_process_id = ?";
+
+        $qr = $this->db->query($ssql,[$finProcessId]);
+
+        $rs = $qr->result();
+        return $rs;
+    }    
 }

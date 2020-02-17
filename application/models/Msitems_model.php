@@ -91,10 +91,16 @@ class Msitems_model extends MY_Model
         return $rules;
     }
 
-    public function getAllList()
-    {
-        $ssql = "select fin_item_id,fst_item_name from " . $this->tableName . " where fst_active = 'A' order by fst_item_name";
-        $qr = $this->db->query($ssql, []);
+    public function getAllList($filter=null){
+        
+        if ($filter ==null){
+            $ssql = "select fin_item_id,fst_item_code,fst_item_name from " . $this->tableName . " where fst_active = 'A' order by fst_item_name";
+            $qr = $this->db->query($ssql, []);
+        }else{
+            $ssql = "select fin_item_id,fst_item_code,fst_item_name from " . $this->tableName . " where fst_active = 'A' and (fst_item_code like ? or fst_item_name like ?) order by fst_item_name";
+            $qr = $this->db->query($ssql, ["%$filter%","%$filter%"]);
+        }
+                
         $rs = $qr->result();
         return $rs;
     }
