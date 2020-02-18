@@ -27,7 +27,7 @@ class Jurnal_umum extends MY_Controller{
         $this->list['page_name'] = "Manual Jurnal";
         $this->list['list_name'] = "Manual Jurnal List";
         $this->list['boxTools'] = [
-			"<a id='btnNew'  href='".site_url()."tr/purchase_order/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
+			"<a id='btnNew'  href='".site_url()."tr/jurnal_umum/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 		];
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/jurnal_umum/fetch_list_data';
