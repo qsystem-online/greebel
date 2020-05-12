@@ -117,15 +117,16 @@
         $('#multiple-columns').multiselect('updateButtonText');
         
     });
+
     function handleRadioClick(myRadio) {
         // alert('Old value: ' + currentValue);        
         var js_data = '<?php echo json_encode($layout_columns); ?>';
         var js_obj_data = JSON.parse(js_data );
         
         var newArray = js_obj_data.filter(function (el) {                        
-                        // alert(el.layout==(myRadio.value).toString());
-                        return el.layout==(myRadio.value).toString();
-                        });        
+            // alert(el.layout==(myRadio.value).toString());
+            return el.layout==(myRadio.value).toString();
+        });        
 
         console.log(newArray);
         $('#multiple-columns').multiselect('dataprovider', newArray);

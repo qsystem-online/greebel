@@ -166,4 +166,7 @@ class Phpspreadsheet extends Spreadsheet {
 
 	}
 	
+	public function writeCell(&$sheet, $row, $col, $cellValue) {
+        $sheet->setCellValue($col.$row,$cellValue);
+    }
 }
