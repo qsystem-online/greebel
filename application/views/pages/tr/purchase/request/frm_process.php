@@ -32,81 +32,90 @@
 					</div>
 				</div>
 				<!-- end box header -->
+				<div class="box-body">
+					<ul class="nav nav-tabs" style="margin:5px">
+						<li class="active"><a data-toggle="tab" href="#process">Process PR</a></li>
+						<li><a data-toggle="tab" href="#history">Process History</a></li>
+					</ul>
+					<div class="tab-content">
+						<div id="process" class="tab-pane fade in active">
+							<!-- form start -->
+							<form id="frmTransaction" class="form-horizontal"  method="POST" enctype="multipart/form-data">			
+								
+								<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">	
+								
+								
+								<div class="form-group">
+									<label for="fst_item_type" class="col-md-2 control-label"><?=lang("Tipe Barang")?> #</label>	
+									<div class="col-md-3">				
+										<select id="fst_item_type" class="cls-filter form-control">
+											<option value='MERCHANDISE'>Merchandise</option>
+											<option value='LOGISTIC'>Logistik</option>
+										</select>
+									</div>
 
-				<!-- form start -->
-				<form id="frmTransaction" class="form-horizontal"  method="POST" enctype="multipart/form-data">			
-					<div class="box-body">
-						<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">	
-						
-						
-                        <div class="form-group">
-							<label for="fst_item_type" class="col-md-2 control-label"><?=lang("Tipe Barang")?> #</label>	
-							<div class="col-md-3">				
-								<select id="fst_item_type" class="cls-filter form-control">
-									<option value='MERCHANDISE'>Merchandise</option>
-									<option value='LOGISTIC'>Logistik</option>
-								</select>
-							</div>
+									<label for="fin_linebusinness_id" class="col-md-2 control-label text-right"><?=lang("Line Bisnis")?> *</label>
+									<div class="col-md-5">
+										<select id="fin_linebusinness_id" class="cls-filter form-control">
+											<?php
+												$lineBusinessList = $this->mslinebusiness_model->get_data_linebusiness();
+												foreach($lineBusinessList as $lineBusiness){
+													echo "<option value='$lineBusiness->fin_linebusiness_id'>$lineBusiness->fst_linebusiness_name</option>";
+												}
+											?>
+										</select>
+									</div>
 
-							<label for="fin_linebusinness_id" class="col-md-2 control-label text-right"><?=lang("Line Bisnis")?> *</label>
-							<div class="col-md-5">
-								<select id="fin_linebusinness_id" class="cls-filter form-control">
-									<?php
-										$lineBusinessList = $this->mslinebusiness_model->get_data_linebusiness();
-										foreach($lineBusinessList as $lineBusiness){
-											echo "<option value='$lineBusiness->fin_linebusiness_id'>$lineBusiness->fst_linebusiness_name</option>";
-										}
-									?>
-								</select>
-							</div>
+								</div>
+														
+								
+								<div class="form-group" style="margin-bottom:0px">
+									<div class="col-md-10 col-md-offset-2" >
+										<label class='radio-inline control-label'><input type="radio" name="cost_type" class='cost_type cls-filter' value='stock' checked/> Stock</label>
+										<label class='radio-inline'><input type="radio" name="cost_type" class='cost_type cls-filter' value='nonstock_umum' /> Non Stock Biaya Umum</label>
+										<label class='radio-inline'><input type="radio" name="cost_type" class='cost_type cls-filter' value='nonstock_pabrikasi' /> Non Stock Biaya Pabrikasi</label>
 
+										<!-- <button id="btn-add-detail" class="btn btn-primary btn-sm" style="display:inline"><i class="fa fa-cart-plus" aria-hidden="true"></i>Tambah Item</button> -->
+
+									</div>
+								</div>
+
+								<div class="form-group">
+									<div class="col-sm-12">
+										<table id="tbldetails" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+									</div>
+									<div id="details_err" class="text-danger"></div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-1 control-label">Suplier</label>
+									<div class="col-md-5">
+										<select id="fin_supplier_id" class="form-control"></select>
+									</div>
+									<div class="col-md-2">
+										<button id="btn-process" type="button" class="btn btn-default btn-sm text-center form-control"><?= lang("Process to PO")?></button>
+									</div>
+								</div>																
+							</form>
 						</div>
-												
-						
-						<div class="form-group" style="margin-bottom:0px">
-							<div class="col-md-12" style="text-align:right">
-								<button id="btn-add-detail" class="btn btn-primary btn-sm" style="display:none"><i class="fa fa-cart-plus" aria-hidden="true"></i>Tambah Item</button>
+						<div id="history" class="tab-pane fade">
+							<form id="frmHistory" class="form-horizontal">
+								<div class="form-group">
+									<label for="fst_item_type" class="col-md-2 control-label"><?=lang("PR Range Date")?> #</label>	
+									<div class="col-md-3">														
+									</div>
+								</div>
+							</form>
+							<div style="margin:10px">							
+								<table id="tblHist" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
 							</div>
 						</div>
+					</div>
+				</div><!-- end box body -->		
 
-						
-
-						<div class="form-group">
-							<div class="col-sm-12">
-								<table id="tbldetails" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
-							</div>
-							<div id="details_err" class="text-danger"></div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-md-2 control-label">Suplier</label>
-							<div class="col-md-8">
-								<select id="fin_supplier_id" class="form-control">
-									<?php
-										$lineBusinessList = $this->mslinebusiness_model->get_data_linebusiness();
-										foreach($lineBusinessList as $lineBusiness){
-											echo "<option value='$lineBusiness->fin_linebusiness_id'>$lineBusiness->fst_linebusiness_name</option>";
-										}
-									?>
-								</select>
-							</div>
-							<div class="col-md-2">
-								<button id="btn-process" type="button" class="btn btn-default btn-sm text-center form-control">Process</button>
-							</div>
-						</div>
-
-                        
-						
-
-
-					</div><!-- end box body -->
-					
-
-					<div class="box-footer text-right">
-						<!-- <a id="btnSubmitAjaxOld" href="#" class="btn btn-primary"><=lang("Save Ajax")?></a> -->
-					</div><!-- end box-footer -->
-					
-				</form>
+				<div class="box-footer text-right">
+					<!-- <a id="btnSubmitAjaxOld" href="#" class="btn btn-primary"><=lang("Save Ajax")?></a> -->
+				</div><!-- end box-footer -->
         	</div>
     	</div>
 	</div>
@@ -189,9 +198,9 @@
 				//add aditional data post on ajax call
 				//data.sessionId = "TEST SESSION ID";
 				if (selectedDetail != null){
-					var dataTab = selectedDetail.data();
-					data.fin_item_id =  dataTab.fin_item_id;
-					data.fst_unit = dataTab.fst_unit;
+					//var dataTab = selectedDetail.data();
+					//data.fin_item_id =  dataTab.fin_item_id;
+					//data.fst_unit = dataTab.fst_unit;
 				}else{
 					//e.preventDefault();
 					//settings.jqXHR.abort();
@@ -226,7 +235,17 @@
 				serverSide: true,
 				searching: true,
 				lengthChange: false,
-				ajax: SITE_URL + "tr/purchase/purchase_request/fetch_history_list_data",
+				ajax: {
+					url:SITE_URL + "tr/purchase/purchase_request/fetch_history_list_data",
+					data:function(d){
+						if (selectedDetail != null){
+							var dataTab = selectedDetail.data();
+							d.fin_item_id =  dataTab.fin_item_id;
+							d.fst_unit = dataTab.fst_unit;
+						}
+						//d.fin_item_id = "a";
+					},
+				},
 				paging: true,
 				info:true,				
 			}).on('draw',function(){
@@ -238,44 +257,41 @@
 	</script>
 </div>
 
-<script type="text/javascript" info="event">
-	$(function(){
-		
+<?php
+	echo $mdlStock;
+?>
 
+<script type="text/javascript" info="event">
+	$(function(){		
+
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			var target = $(e.target).attr("href") // activated tab
+			if (target == "#history"){
+				getListHistory();
+			}
+		});
+
+		
 
 		$(".cls-filter").change(function(e){
 			var itemType = $("#fst_item_type").val();
 			var lineBusiness = $("#fin_linebusinness_id").val();
+			var costType =  $(".cost_type:checked").val();
 
 			$.ajax({
 				url:SITE_URL + "tr/purchase/purchase_request/get_item_process_list",
 				method:"GET",
 				data:{
 					fst_item_type : $("#fst_item_type").val(),
-					fst_linebusiness_id : $("#fin_linebusinness_id").val()
+					fst_linebusiness_id : $("#fin_linebusinness_id").val(),
+					fst_stock_cost_type : costType
 				}
-			}).done(function(resp){
-				
+			}).done(function(resp){				
 				dataDetails = resp.data;
-				
-				t = $("#tbldetails").DataTable();
-				t.clear().draw();
-
-				$.each(dataDetails, function(i,dataD){
-					details = dataD.details;
-					//dataD.fdb_qty_process = dataD.fdb_qty_req;
-					dataD.details  = details.map(function(obj){
-						obj.fdb_qty_process = obj.fdb_qty_req;
-						return obj;
-					});
-				
-					t.row.add(dataD);
-				});
-				t.draw(false);
-				
-
+				redrawPRList();				
 			});
 		});
+
 
 		$("#fin_linebusinness_id").change(function(e){
 			App.getValueAjax({
@@ -301,44 +317,43 @@
 		$("#btn-process").click(function(e){
 			e.preventDefault();
 			submitAjax();
-		});
-
-		
-		
+		});				
 		
 		$("#btnClose").click(function(e){
 			e.preventDefault();
 			window.location.href = "<?=site_url()?>tr/purchase/purchase_request/";
 		});
-
 		
 
-		$("#tbldetails").on("change" , ".fdb_qty_process_aloc",function(e){
+		$("#tbldetails").on("change" , ".qty_aloc",function(e){
 			t = $("#tbldetails").DataTable();
 			var trRow = $(this).parents('tr').prev();
 			var data = t.row(trRow).data();				
 			details = data.details;
-			recId = $(this).attr('id');
+			recId = $(this).data('id');			
 			newValue = $(this).val();
+			var columnUpdate = $(this).data('column');
+
 			$.each(details,function(i,v){
 				if (v.fin_rec_id == recId){
-					details[i].fdb_qty_process = newValue;
+					if (columnUpdate == "fdb_qty_process"){
+						details[i].fdb_qty_process = newValue;
+					}else{
+						details[i].fdb_qty_po = newValue;
+					}					
 				}
 			});
 			data.details = details;
 			t.row(trRow).data(data).draw(false);						
 		})
 		
-		$("#btn-add-detail").click(function(e){
-			e.preventDefault();
-			mdlDetail.show();			
-		});
-
+		
 		
 	});
 </script>
 
 <script type="text/javascript" info="define">
+	var dataDetails;
 	var selectedDetail = null;		
 	
 	$(function(){
@@ -385,7 +400,10 @@
 				{"title" : "Action","width": "75px",sortable:false,className:'text-center',
 					render:function(data,type,row){
 						var action = '<a class="btn-hist" href="#" data-original-title="" title=""><i class="fa fa-history"></i></a>';
-						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+						action += '&nbsp;<a class="btn-stock" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-shopping-cart"></i></a>';
+						action += '&nbsp;<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+						
+						
 						return action;
 					}
 				}
@@ -408,6 +426,15 @@
 			mdlDetail.show(data);
 
 			
+		
+		}).on('click','.btn-stock',function(e){
+			e.preventDefault();
+			t = $("#tbldetails").DataTable();
+			var trRow = $(this).parents('tr');			
+			selectedDetail = t.row(trRow);
+			var data = selectedDetail.data();	
+			MdlStock.itemName = data.fst_item_name;
+			MdlStock.show(data.fin_item_id,data.fst_unit);
 		}).on('click','.btn-delete',function(e){
 			e.preventDefault();
 			t = $('#tbldetails').DataTable();
@@ -429,9 +456,43 @@
             } 
         });
 		
+		$("#tbldetails").on("click",".btn-delete-detail",function(e){
+			e.preventDefault();
+			/*
+			var detailId = $(this).data('id');	
+			
+			$.each(dataDetails,function(i,v){
+				$.each(v.details,function(y,detail){
+					if (detail.fin_rec_id == detailId){
+						dataDetails[i].details.splice(y,1);
+					}
+				})
+			});
+			$("#tbldetails").DataTable().draw();
+			*/
+			
+			t = $("#tbldetails").DataTable();
+			var trRow = $(this).parents('tr').prev();
+			var data = t.row(trRow).data();	
+			details = data.details;			
+			recId = $(this).data('id');	
+			$(".detail_id_"+ recId).remove();			
+			$.each(details,function(i,v){
+				if (v.fin_rec_id == recId){					
+					details.splice(i,1);
+				}
+			});
+			data.details = details;
+			t.row(trRow).data(data).draw(false);			
+
+			
+			//App.log(dataDetails);
+
+		});
+
 		App.fixedSelect2();
 
-		initForm();
+		//initForm();
 	});
 
 
@@ -439,53 +500,42 @@
 
 <script type="text/javascript" info="function">
 	
+	function redrawPRList(){
+		t = $("#tbldetails").DataTable();
+		t.clear().draw();
+		$.each(dataDetails, function(i,dataD){
+			details = dataD.details;
+			//dataD.fdb_qty_process = dataD.fdb_qty_req;
+			dataD.details  = details.map(function(obj){
+				obj.fdb_qty_process = obj.fdb_qty_req;
+				obj.fdb_qty_po = 0;
+				return obj;
+			});				
+			t.row.add(dataD);
+		});
+		t.draw(false);
+	}
+
 	function sub_trpurchaserequestitems(data){
 		details = data.details;
-
 		var result =  "<table class='table bordered'>";		
 		$.each(details,function(i,v){
-			result +=  "<tr>";		
-			result +="<td style='width:160px'>"+ v.fst_req_department_name +"</td>";
+			result +=  "<tr class='detail_id_" +v.fin_rec_id + "'>";		
+			result +="<td style='width:100px'>"+ v.fst_req_department_name +"</td>";
 			result +="<td style='width:160px'>"+ v.fst_pr_no +"</td>";
 			result +="<td style='width:140px'>"+ v.fdt_pr_datetime +"</td>";
 			result +="<td style='width:75px'>"+ v.fdt_etd +"</td>";
 			result +="<td style='width:85px' class='text-right'>"+ v.fdb_qty_req +"</td>";			
-			result +="<td style='width:85px'><input type='number'  id='"+v.fin_rec_id+"' style='width:100%' class='fdb_qty_process_aloc text-right' value='"+v.fdb_qty_process+"'/></td>";
-			result += "<tr> <td colspan='6'><i>Memo: "+ v.fst_memo +"</i></td></tr>"
+			result +="<td style='width:85px;text-align:right'><label>Qty Process :</label> <input type='number'  data-id='"+v.fin_rec_id+"'  data-column='fdb_qty_process' style='width:100%' class='qty_aloc text-right' value='"+v.fdb_qty_process+"'/></td>";
+			result +="<td style='width:85px;text-align:right'><label>Qty PO :</label> <input type='number'  data-id='" +v.fin_rec_id+"' data-column='fdb_qty_po' style='width:100%' class='qty_aloc text-right' value='0'/></td>";
 			result +="</tr>";
+			result += "<tr class='detail_id_" +v.fin_rec_id + "'>";
+			result += "<td colspan=6><i>Memo: "+ v.fst_memo +"</i></td>";
+			result += "<td><a class='btn btn-delete-detail' data-id='"+ v.fin_rec_id +"'><i class='fa fa-trash'></i></a></td>";
+			result += "</tr>";			
 		})
-		result += "</table>"
-
-		
+		result += "</table>"		
 		return result;
-	}
-
-	function calculateTotal(){
-
-		t= $('#tbldetails').DataTable();
-		var datas = t.rows().data();
-		
-		var total = 0;
-		var totalDisc = 0;
-		
-		$.each(datas,function(i,data){
-			var subttl =  parseFloat(data.fdb_qty * data.fdc_price);
-			var discAmount = parseFloat(data.fdb_qty * data.fdc_disc_amount_per_item);
-			total += subttl;
-			totalDisc += discAmount;			
-		});
-
-		$("#ttlSubTotal").text(App.money_format(total));
-		$("#ttlDisc").text(App.money_format(totalDisc));
-
-		var ppnPercent = $("#fdc_ppn_percent").val();
-		var ttlBeforePPn = total - totalDisc
-		var ppnAmount = ttlBeforePPn * ppnPercent / 100;
-		var totalAfterPPn = ttlBeforePPn + ppnAmount;
-
-		$("#ppnAmount").text(App.money_format(ppnAmount));
-		$("#ttlAmount").text(App.money_format(totalAfterPPn));
-
 	}	
 
 	function cleanForm(){
@@ -496,11 +546,10 @@
 		t.clear().draw();
 	}
 
-	
-
 	function submitAjax(){
-
+		
 		url =  "<?= site_url() ?>tr/purchase/purchase_request/ajx_process_pr/";
+		
 
 		//var dataSubmit = $("#frmTransaction").serializeArray();
 		var dataSubmit = [];		
@@ -511,10 +560,25 @@
 		});					
 
 		dataSubmit.push({
-			name:"fin_supplier_id",
-			value: $("#fin_supplier_id")
+			name:"fst_item_type",
+			value: $("#fst_item_type").val()
 		});
 
+		dataSubmit.push({
+			name:"fin_linebusinness_id",
+			value: $("#fin_linebusinness_id").val()
+		});
+
+		dataSubmit.push({
+			name:"fst_stock_cost_type",
+			value: $(".cost_type:checked").val()
+		});
+
+		dataSubmit.push({
+			name:"fin_supplier_id",
+			value: $("#fin_supplier_id").val()
+		});
+		
 		var details = [];		
 		var datas =$("#tbldetails").DataTable().data();		
 		$.each(datas,function(i,v){
@@ -540,7 +604,12 @@
 				
 				if(resp.status == "SUCCESS") {
 					data = resp.data;
-					window.location.href = SITE_URL + "tr/purchase_order/generate/" + data.fin_process_id +"/" + $("#fin_supplier_id").val();				
+					
+					if (data.with_po){
+						window.location.href = SITE_URL + "tr/purchase_order/generate/" + data.fin_process_id;
+					}else{
+						location.reload();
+					}
 				}
 			},
 			error: function (e) {
@@ -552,8 +621,127 @@
 		});
 	}
 
-	function initForm(){
-					
+	function initForm(){					
+	}
+
+	function getListHistory(){		
+		if ($.fn.DataTable.isDataTable( '#tblHist' ) ) {
+			$('#tblHist').DataTable().clear().destroy();
+		}
+		
+		$('#tblHist').on('preXhr.dt', function ( e, settings, data ) {
+			//add aditional data post on ajax call
+			data.sessionId = "TEST SESSION ID";
+		}).DataTable({
+			scrollX: true,
+			scrollCollapse: true,
+			order:[[1,"desc"]],
+			dataSrc:"data",
+			processing: true,
+			serverSide: true,
+			//searching: false,
+			ajax: "<?=site_url()?>tr/purchase/purchase_request/fetch_list_processed_data",
+			columns:[				
+				{"className":'details-history-control text-center',"defaultContent": '<i class="fa fa-caret-right" aria-hidden="true"></i>',width:"10px",orderable:false},
+				{"title" : "Process Datetime","width": "250px" , data:"fdt_process_datetime"},
+				{"title" : "Process Id","width": "50px",sortable:true,data:"fin_process_id"},
+				{"title" : "Qty Processed","width": "80px",sortable:false,className:'text-right',data:"fdb_qty_process"},
+				{"title" : "PO #","width": "100px",sortable:false,className:'',data:"fst_po_no"},
+				{"title" : "Qty PO","width": "80px",sortable:false,className:'text-right',data:"fdb_qty_to_po"},				
+				{"title" : "Action","width": "75px",sortable:false,className:'text-center',
+					render:function(data,type,row){
+						var action = '';
+						if (row.fdb_qty_to_po > 0 && row.fin_po_id == null){
+							action += '<a class="btn-generate-po" href="#" title="Generate PO" data-prosesid="'+ row.fin_process_id +'"><i class="fa fa-cogs"></i></a> &nbsp;';
+						}
+						action += '<a class="btn-delete-processed" href="#" title="Cancel Process"><i class="fa fa-trash"></i></a>';
+						return action;
+					}
+				}
+			],			
+		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+		}).on('click','.btn-delete-processed',function(e){
+			e.preventDefault();
+			t = $('#tblHist').DataTable();
+			var trRow = $(this).parents('tr');
+			var data = t.row(trRow).data();
+			$.ajax({
+				url:"<?=site_url()?>tr/purchase/purchase_request/ajx_cancel_process/" +data.fin_process_id,
+				method:"GET",
+			}).done(function(resp){
+				if (resp.message != ""){
+					alert(resp.message);
+				}
+
+				if (resp.status == "SUCCESS"){
+					t.row(trRow).remove().draw();
+				}
+			});		
+		}).on('click','.btn-generate-po',function(e){
+			e.preventDefault();
+			t = $('#tblHist').DataTable();
+			var trRow = $(this).parents('tr');
+			var data = t.row(trRow).data();
+			window.location.href = SITE_URL + "tr/purchase_order/generate/" + data.fin_process_id;
+			
+        }).on('click','.details-history-control',function(e){
+			e.preventDefault();
+			t = $('#tblHist').DataTable();
+			var tr = $(this).closest('tr');
+
+			//data = t.row(trRow).data();			
+            var row = t.row( tr );
+            if ( row.child.isShown() ) {
+                row.child.hide();
+                tr.removeClass('shown');
+            }else {
+				// Open this row
+				trpurchaserequest_history_details(row.data(),function(result){
+					row.child(result).show();
+                	tr.addClass('shown');
+				});
+				//console.log(a);
+				//row.child(sub_trpurchaserequestitems(row.data()) ).show();                
+				//row.child(  ).show();
+                //tr.addClass('shown');
+			} 
+			
+
+
+
+			//trpurchaserequest_history_details(data);
+		});
+
+	}
+
+	function trpurchaserequest_history_details(data,callback){
+		finProcessId = data.fin_process_id;		
+		App.blockUIOnAjaxRequest();
+		req = $.ajax({
+			url:"<?=site_url()?>/tr/purchase/purchase_request/ajx_get_process_details/" + finProcessId,
+			method:"GET"
+		}).done(function(resp){
+			if(resp.status == "SUCCESS"){
+				listDetail = resp.data;
+				App.log(listDetail);
+				var result =  "<table class='table bordered'>";		
+				$.each(listDetail,function(i,v){
+					result +=  "<tr>";		
+					result +="<td style='width:160px'>"+ v.fst_pr_no +"</td>";
+					result +="<td style='width:140px'>"+ v.fst_item_name +"</td>";
+					result +="<td style='width:140px'>"+ v.fst_unit +"</td>";					
+					result +="<td style='width:85px' class='text-right'> Req: "+ v.fdb_qty_req +"</td>";			
+					result +="<td style='width:85px' class='text-right'> Processed: "+ v.fdb_qty_process +"</td>";			
+					result +="<td style='width:85px' class='text-right'> PO: "+ v.fdb_qty_to_po +"</td>";			
+					result +="</tr>";
+				})
+				result += "</table>"
+
+				callback(result);
+			}
+		});
 	}
 
 	function deleteAjax(confirmDelete){

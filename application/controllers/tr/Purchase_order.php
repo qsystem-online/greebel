@@ -112,7 +112,7 @@ class Purchase_order extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 		
 	}
-	private function openForm($mode = "ADD", $fin_po_id = 0,$fin_process_id = 0,$fin_supplier_id = 0){
+	private function openForm($mode = "ADD", $fin_po_id = 0,$fin_process_id = 0){
 		$this->load->library("menus");		
 		
 
@@ -135,18 +135,15 @@ class Purchase_order extends MY_Controller{
 		}else if($mode=="EDIT"){
 			$data["fin_po_id"] = $fin_po_id;
 			$data["fst_po_no"] = "";			
-			$data["fin_process_id"] = 0;
-			$data["fin_supplier_id"] = 0;
+			$data["fin_process_id"] = 0;			
 		}else if($mode == "VIEW"){
 			$data["fin_po_id"] = $fin_po_id;
 			$data["fst_po_no"] = "";			
 			$data["fin_process_id"] = 0;
-			$data["fin_supplier_id"] = 0;
 		}else if($mode == "GENERATE"){
 			$data["fin_po_id"] = 0;
 			$data["fst_po_no"] = $this->trpo_model->GeneratePONo();	
 			$data["fin_process_id"] = $fin_process_id;
-			$data["fin_supplier_id"] = $fin_supplier_id;
 		}
 		
 		$page_content = $this->parser->parse('pages/tr/purchase_order/form', $data, true);
@@ -169,9 +166,9 @@ class Purchase_order extends MY_Controller{
 		$this->openForm("VIEW", $finPOId);
 	}
 
-	public function generate($fin_process_id,$fin_supplier_id){
+	public function generate($fin_process_id){
 		//echo $fin_process_id . ":" . $fin_supplier_id;
-		$this->openForm("GENERATE",0,$fin_process_id,$fin_supplier_id);
+		$this->openForm("GENERATE",0,$fin_process_id);
 
 	}
 
@@ -813,11 +810,16 @@ class Purchase_order extends MY_Controller{
 	}
 
 	public function get_detail_pr($finProcessId){
-		$result = $this->trpo_model->getDetailPr($finProcessId);
+		$header = $this->trpo_model->getHeaderProcessPR($finProcessId);
+		$detail = $this->trpo_model->getDetailPr($finProcessId);
+
 		$this->json_output([
 			"status"=>"SUCCESS",
 			"message"=>"",
-			"data"=>$result
+			"data"=>[
+				"header"=>$header,
+				"detail"=>$detail
+			]
 		]);
 	}
 

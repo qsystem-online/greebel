@@ -71,7 +71,7 @@ class Datatables
 
 		//Get Total Row 
 		$ssql = "select count(*) as ttl_records from " . $this->countTableName . " where " . $this->activeCondition;
-		$qr = $this->db->query($ssql, []);
+		$qr = $this->db->query($ssql, []);		
 		$rw = $qr->row();
 	
 		$totalRows = $rw->ttl_records;
@@ -129,6 +129,7 @@ class Datatables
 		$ssql = "select " . $this->selectFields . " from " . $this->tableName . " " . $strWhere . " " . $strGroupBy . " " . $strOrder . " limit ? offset ?";
 
 		$qr = $this->db->query($ssql, $params);				
+		//var_dump($this->db->error());
 		$rs = $qr->result_array();
 		//print_r($this->CI->input->get_post("draw"));
 		$datasource = [

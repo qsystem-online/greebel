@@ -33,7 +33,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	}
 </style>
 <?php
-	echo $mdlPrint;
+	//echo $mdlPrint;
 ?>
 
 <section class="content-header">
@@ -129,8 +129,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<?php									
 									$suppliers = $this->msrelations_model->getSupplierList();									
 									foreach($suppliers as $supplier){	
-										$selected = ($fin_supplier_id == $supplier->fin_relation_id) ? "selected" :"";
-										echo "<option value='$supplier->fin_relation_id' $selected>$supplier->fst_relation_name</option>";
+										//$selected = ($fin_supplier_id == $supplier->fin_relation_id) ? "selected" :"";
+										echo "<option value='$supplier->fin_relation_id'>$supplier->fst_relation_name</option>";
 									}									
 								?>
 								</select>
@@ -151,7 +151,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div class="pull-left" style="width:16%" >
 									<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id">
 									<?php
-										$warehouses = $this->mswarehouse_model->getNonLogisticWarehouseList();
+										if ($fin_process_id == 0){
+											$warehouses = $this->mswarehouse_model->getNonLogisticWarehouseList();
+										}else{
+											//PO berasal dr proses PR
+											//$warehouses = $this->mswarehouse_model->getLogisticWarehouseList();
+											$warehouses = $this->mswarehouse_model->getNonLogisticWarehouseList();
+										}										
 										foreach($warehouses as $warehouse){
 											echo "<option value='$warehouse->fin_warehouse_id' data-address='$warehouse->fst_delivery_address'>$warehouse->fst_warehouse_name</option>";
 										}
@@ -577,9 +583,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 
 <script type="text/javascript" info="DEFINE">
-	var selectedDetail;
-	
-	
+	var selectedDetail;		
 </script>
 
 <script type="text/javascript" info="EVENT">
@@ -974,7 +978,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	
 	function fillPRData(){
-		$("#fin_supplier_id").val("<?=$fin_supplier_id?>").trigger("change.select2");
+		//$("#fin_supplier_id").val("<=$fin_supplier_id?>").trigger("change.select2");
 
 		App.blockUIOnAjaxRequest("<?=lang("Please wait while saving data.....")?>");
 		$.ajax({
@@ -982,32 +986,43 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			url: SITE_URL + "tr/purchase_order/get_detail_pr/" + $("#fin_process_id").val(),
 			timeout: 600000,
 		}).done(function(resp){
-			var dataDetails =  resp.data;
-			t = $('#tblPODetails').DataTable();
+			if (resp.message != ""){
+				alert(resp.message);
+			}
 
-			$.each(dataDetails , function (i,v){
-				var row ={
-					fin_po_detail_id:0,
-					fin_item_id:v.fin_item_id,
-					ItemCode:v.fst_item_code,
-					fst_item_name:v.fst_item_name,
-					fst_custom_item_name:v.fst_item_name,
-					fdb_qty:v.fdb_qty_process,
-					fdb_qty_lpb:0,
-					fst_unit:v.fst_unit,
-					fdc_price:10,
-					fst_disc_item:"0",
-					fdc_disc_amount:0,
-					fst_notes:v.fst_memo
-				};
+			if (resp.status == "SUCCESS"){
+				var dataHeader =  resp.data.header;
 
-				t.row.add(row);
-			});
-			t.draw(false);
+				$("#fin_supplier_id").val(dataHeader.fin_supplier_id).trigger("change.select2");
+
+				var dataDetails =  resp.data.detail;
+				t = $('#tblPODetails').DataTable();
+
+				$.each(dataDetails , function (i,v){
+					var row ={
+						fin_po_detail_id:0,
+						fin_item_id:v.fin_item_id,
+						ItemCode:v.fst_item_code,
+						fst_item_name:v.fst_item_name,
+						fst_custom_item_name:v.fst_item_name,
+						fdb_qty:v.fdb_qty_to_po,
+						fdb_qty_lpb:0,
+						fst_unit:v.fst_unit,
+						fdc_price:v.fdc_last_buy_price,
+						fst_disc_item:"0",
+						fdc_disc_amount:0,
+						fst_notes:""
+					};
+
+					t.row.add(row);
+				});
+				t.draw(false);
+			}
 		})
 	}
 
 </script>
+
 
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>

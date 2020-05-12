@@ -88,9 +88,17 @@ class Mswarehouse_model extends MY_Model
     }
 
     public function getNonLogisticWarehouseList(){
-
         $branchId = $this->aauth->get_active_branch_id();
         $ssql = "select * from " . $this->tableName . " where fbl_logistic = false and fst_active = 'A' and fin_branch_id = ? ";
+        $qr = $this->db->query($ssql, [$branchId]);
+        $rs = $qr->result();
+        return $rs;
+    }
+
+    public function getLogisticWarehouseList(){
+        //Gudang ini digunakan untuk setiap pembelian barang melalui proses PR
+        $branchId = $this->aauth->get_active_branch_id();
+        $ssql = "select * from " . $this->tableName . " where fbl_logistic = true and fst_active = 'A' and fin_branch_id = ? ";
         $qr = $this->db->query($ssql, [$branchId]);
         $rs = $qr->result();
         return $rs;

@@ -1,0 +1,103 @@
+PR -> PO -> Penerimaan Barang -> INVOICE
+   -> Distribusi
+
+
+DEPARTEMENT : Tambah FIELD untuk menentukan ini departement PABRIKASI atau OPERASIONAL
+	+ table jurnal acc distribusi (msconfiglogisticjurnal):
+		kode group item, acc biaya pabrikasi, acc biaya operasional, acc persediaan supplies
+	
+
+proses PO:
+	Bila PO berdasarkan PR maka gudang akan di set ke gudang logistik karena perlu di lakukan proses distribusi
+	gudang yang digunakan akan terdaftar pada gudang pusat (HQ)
+
+proses Penerimaan Barang:
+	penerimaan barang dari proses PR gudang tidak boleh dirubah karena harus melalui proses distribusi
+
+Invoice:
+	Logistik:
+		Jurnal untuk barang logistik berdasarkan tabel jurnal acc distribusi 
+		Persediaan Supplies Pada Hutang
+	
+	NON Logistik:
+		jurnal Pembelian pada Hutang
+				
+	
+Distribusi:
+	Logistik:
+		non stock:
+			
+			Untuk barang logistik langsung diakui sebagai biaya, biaya dibagi menjadi 2 pabrikasi dan operasional(umum), pabrikasi atau umum di tentukan berdasarkan department
+			jurnalnya 
+				biaya pabrikasi/biaya umum pada persediaan suppiles
+			
+			untuk distribusi qty di isi bebas, tidak melihat stock pada gudang logistik
+			
+		stock:
+			jurnal seperti non stock dan kontrol stock
+			
+	Non Logistik:
+		non stock:
+			Hanya menginput qty tanpa melihat stock gudang
+		
+		stock:
+			tidak dilakukan jurnal,hanya pemindahaan stock dr gudang logistik ke gudang yang dituju
+			
+		
+		
+
+
+PR & DISTRIBUSI
+
+1. Merchandise (Non Logistik):
+	Stock:
+		* Penerimaan Barang :
+			- Update Stock ke gudang logistik
+		* Invoice :
+			- Jurnal=> Pembelian > Hutang
+		* Distribusi:
+			- update qty distribusi
+		* Mutasi antar gudang di lakukan untuk memindahkan barang dari gudang logistik ke gudang tujuan
+		
+			
+	Non Stock:
+		* Penerimaan Barang :
+			- tidak ada update stock
+		* Invoice :
+			- Jurnal Pembelian > Hutang
+		* Distribusi:
+			- Update qty distribusi
+		
+
+2. Logistik
+	Stock:
+		* Penerimaan Barang :
+			- Update Stock ke gudang logistik
+		* Invoice :
+			- Jurnal=> Persediaan supply > Hutang
+			
+		* Distribusi:
+			- update qty distribusi
+			- kurangi stock logistik
+			- jurnal: Biaya > persediaan supply (nilai di ambil dari rata kartu stock)
+			- hanya bisa dilakukan bila barang bila barang tersedia di gudang logistik
+			
+		
+	Non Stock:
+		* Penerimaan Barang :
+			- tidak ada update stock
+		* Invoice :
+			- Biaya > Hutang
+		* Distribusi:
+			- Update qty distribusi
+		
+		
+	
+
+
+LIst to reject PR with note
+
+buffer stock item (Perlu di tambahkan di master item)
+
+
+

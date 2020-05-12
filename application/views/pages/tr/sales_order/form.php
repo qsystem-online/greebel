@@ -360,7 +360,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="dialog-info" class="alert alert-info">
 									<a href="#" class="close" onclick="$('#dialog-info').hide()" aria-label="close">&times;</a>
 									<div class="info-message">
-										<strong>Info!</strong> Indicates a neutral informative change or action.
+										<strong>Info!</strong> 
 									</div>
 								</div>
 							</fieldset>

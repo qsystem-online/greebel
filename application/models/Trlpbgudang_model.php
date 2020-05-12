@@ -26,11 +26,12 @@ class Trlpbgudang_model extends MY_Model {
 
 
     public function getDataById($finLPBGudangId){
-        $ssql = "SELECT a.*,c.fst_relation_name  FROM " .$this->tableName. " a             
-            INNER JOIN msrelations c on a.fin_relation_id = c.fin_relation_id 
+        $ssql = "SELECT a.*,c.fst_relation_name,b.fst_warehouse_name,b.fst_delivery_address  FROM " .$this->tableName. " a 
+            INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id 
+            INNER JOIN msrelations c on a.fin_relation_id = c.fin_relation_id             
             WHERE a.fin_lpbgudang_id = ? and a.fst_active != 'D' ";
 
-        $qr = $this->db->query($ssql, [$finLPBGudangId]);
+        $qr = $this->db->query($ssql, [$finLPBGudangId]);        
         $rwLPBGudang = $qr->row();
 
         if ($rwLPBGudang == null){
@@ -133,7 +134,7 @@ class Trlpbgudang_model extends MY_Model {
             and b.fbl_is_closed = 0 
             and b.fdc_downpayment <= b.fdc_downpayment_paid";
         */
-        $ssql = "SELECT a.fin_po_id as fin_trans_id,a.fst_po_no as fst_trans_no,a.fdt_po_datetime as fdt_trans_datetime,b.fst_relation_name  from trpo a 
+        $ssql = "SELECT a.fin_po_id as fin_trans_id,a.fst_po_no as fst_trans_no,a.fdt_po_datetime as fdt_trans_datetime,a.fin_pr_process_id,b.fst_relation_name  from trpo a 
             INNER JOIN msrelations b on a.fin_supplier_id = b.fin_relation_id 
             and a.fst_active ='A' 
             and a.fbl_is_closed = 0 
@@ -162,7 +163,7 @@ class Trlpbgudang_model extends MY_Model {
    
 
     public function getSOReturnList(){
-        $ssql = "SELECT a.fin_salesreturn_id as fin_trans_id,a.fst_salesreturn_no as fst_trans_no,a.fdt_salesreturn_datetime as fdt_trans_datetime,b.fst_relation_name FROM trsalesreturn a 
+        $ssql = "SELECT a.fin_salesreturn_id as fin_trans_id,a.fst_salesreturn_no as fst_trans_no,a.fdt_salesreturn_datetime as fdt_trans_datetime,0 as fin_pr_process_id,b.fst_relation_name FROM trsalesreturn a 
             INNER JOIN msrelations b on a.fin_customer_id = b.fin_relation_id 
             WHERE  a.fbl_is_closed = 0 and a.fst_active = 'A'";
         $qr = $this->db->query($ssql,[]);

@@ -124,7 +124,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                             <label for="fin_seq_no" class="col-sm-2 control-label"><?= lang("Seq Number") ?></label>
                             <div class="col-sm-2">
-                                <input type="text" class="form-control" id="fin_seq_no" placeholder="<?= lang("0") ?>" name="fin_seq_no">
+                                <input type="text" class="form-control text-right" id="fin_seq_no" placeholder="<?= lang("0") ?>" name="fin_seq_no" value="0">
                                 <div id="fin_seq_no_err" class="text-danger"></div>
                             </div>
                         </div>

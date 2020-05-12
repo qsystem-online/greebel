@@ -64,7 +64,19 @@
 								<div id="fdt_pr_datetime_err" class="text-danger"></div>
 								<!-- /.input group -->
 							</div>
-
+						</div>
+						<div class="form-group">
+							<label for="fdt_publish_datetime" class="col-md-2 col-md-offset-6 control-label text-right"><?=lang("Tanggal Publish")?> *</label>
+							<div class="col-md-4">
+								<div class="input-group date">
+									<div class="input-group-addon">
+										<i class="fa fa-calendar"></i>
+									</div>
+									<input type="text" class="form-control text-right datetimepicker" id="fdt_publish_datetime" name="fdt_publish_datetime" value=""/>
+								</div>
+								<div id="fdt_publish_datetime_err" class="text-danger"></div>
+								<!-- /.input group -->
+							</div>
 						</div>
 												
 						<div class="form-group">
@@ -325,18 +337,7 @@
 		$("#btnClose").click(function(e){
 			e.preventDefault();
 			window.location.href = "<?=site_url()?>tr/purchase/purchase_request/";
-		});
-
-		
-		$("#fin_req_department_id").change(function(e){
-			e.preventDefault();
-			//console.log($("#fin_req_department_id").val());
-			
-			getLPBPurchase(function(resp){
-				$("#tbldetails").DataTable().clear().draw(false);
-				calculateTotal();
-			});			
-		});
+		});		
 
 		
 		$("#btn-add-detail").click(function(e){
@@ -360,6 +361,7 @@
 
 	$(function(){		
 		$("#fdt_pr_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
+		$("#fdt_publish_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		
 		$('#tbldetails').on('preXhr.dt', function ( e, settings, data ) {
 			//add aditional data post on ajax call
@@ -384,8 +386,9 @@
 				{"title" : "ETD",data:"fdt_etd","width": "100px",sortable:false,className:'text-right'},
 				{"title" : "Action","width": "75px",sortable:false,className:'text-center',
 					render:function(data,type,row){
-						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>';
-						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+						var action = '<a class="btn-edit" href="#" data-original-title="" title="Edit"><i class="fa fa-pencil"></i></a> &nbsp;';
+						action += '<a class="btn-distribute" href="#" data-original-title="" title="Distribute"><i class="fa fa-exchange"></i></a>&nbsp;';
+						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title="Delete"><i class="fa fa-trash"></i></a>';
 						return action;
 					}
 				}
@@ -479,9 +482,7 @@
 			func:"getBuyingListUnit",
 			params:[$("#fin_item_id").val()],
 			callback:function(units){
-
 				var fstUnit = $("#fst_unit").val();
-
 				$("#fst_unit").empty();
 				$.each(units,function(i,unit){
 					$("#fst_unit").append("<option value='" +unit.fst_unit + "'>"+unit.fst_unit+"</option>");
@@ -578,7 +579,6 @@
 	}
 
 	function initForm(){
-			
 		var finPRId = $("#fin_pr_id").val();
 		if (finPRId != 0){
 			//get data from server;
@@ -598,6 +598,7 @@
 					App.autoFillForm(dataH);
 					
 					$("#fdt_pr_datetime").val(App.dateTimeFormat(dataH.fdt_pr_datetime)).datetimepicker("update");
+					$("#fdt_publish_datetime").val(App.dateTimeFormat(dataH.fdt_publish_datetime)).datetimepicker("update");
 					$("#fin_req_department_id").val(dataH.fin_req_department_id);
 
 					if (dataH.fdt_publish_datetime == null){

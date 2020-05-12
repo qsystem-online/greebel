@@ -69,7 +69,7 @@ class Item extends MY_Controller
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Master Items" : "Update Master Items";
         $data["fin_item_id"] = $fin_item_id;
-        $data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>true], true);
+        $data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>0], true);
         $data["mdlPrint"] = $mdlPrint;
         $data["linebusinessList"] =$this->mslinebusiness_model->get_data_linebusiness();
 
@@ -820,5 +820,15 @@ class Item extends MY_Controller
         
         //FILE NAME WITH DATE
         $this->phpspreadsheet->save("item_report_" . date("Ymd") . ".xls" ,$spreadsheet);
+    }
+
+    public function ajx_get_list_stock($finItemId,$fstUnit){
+        $this->load->model("trinventory_model");
+        $finBranchId = $this->aauth->get_active_branch_id();
+        $listStock = $this->trinventory_model->getListStock($finItemId,$fstUnit,$finBranchId);
+        $this->ajxResp["status"] = "SUCCESS";
+        $this->ajxResp["message"] = "";
+        $this->ajxResp["data"]["stock_list"] = $listStock;
+        $this->json_output();
     }
 }

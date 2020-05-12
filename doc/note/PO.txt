@@ -1,0 +1,9 @@
+Purchase Order:
+
+Non PR:
+	jadi untuk po hanya barang non logistik dan barang stock yang bisa di buat tanpa PR yah
+	
+With PR:
+	untuk semua tipe item logistik baik stock dan non stock harus pake PR, 
+	demikian juga item non logistik yang non stock ?
+ 

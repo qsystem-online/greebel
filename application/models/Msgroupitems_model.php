@@ -14,8 +14,7 @@ class Msgroupitems_model extends MY_Model
     {
         $ssql = "select * from " . $this->tableName . " where fin_item_group_id = ? and fst_active = 'A'";
         $qr = $this->db->query($ssql, [$fin_item_group_id]);
-        $rw = $qr->row();
-
+        $rw = $qr->row();        
         $data = [
             "groupitems" => $rw
         ];
@@ -43,6 +42,7 @@ class Msgroupitems_model extends MY_Model
     public function insert($data){
         $id = parent::insert($data);
         $parent = $this->getDataById($data["fin_parent_item_group_id"]);
+        
         $parent = $parent["groupitems"];        
         if($parent == false){
             $parent_tree_id = null;
@@ -53,7 +53,8 @@ class Msgroupitems_model extends MY_Model
         $ssql ="update msitems set fin_item_group_id = ? where fin_item_group_id = ?";
         $qr = $this->db->query($ssql,[$id,$data["fin_parent_item_group_id"]]);
 
-        $fstTreeId = ($parent_tree_id == null || $parent_tree_id = "") ? $id : $parent_tree_id . "." .$id;
+        $fstTreeId = ($parent_tree_id == null || $parent_tree_id == "") ? $id : $parent_tree_id . "." .$id;
+       
         $data = [
             "fin_item_group_id"=> $id,
             "fst_tree_id"=> $fstTreeId,

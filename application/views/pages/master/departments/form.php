@@ -55,7 +55,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class='form-group'>
-                    <label for="fin_department_id" class="col-sm-3 control-label"><?=lang("Department ID")?> #</label>
+                    	<label for="fin_department_id" class="col-sm-3 control-label"><?=lang("Department ID")?> #</label>
 						<div class="col-sm-9">
 							<input type="text" class="form-control" id="fin_department_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_department_id" value="<?=$fin_department_id?>" readonly>
 							<div id="fin_department_id_err" class="text-danger"></div>
@@ -63,10 +63,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-                    <label for="fst_department_name" class="col-sm-3 control-label"><?=lang("Department Name")?> *</label>
+                    	<label for="fst_department_name" class="col-sm-3 control-label"><?=lang("Department Name")?> *</label>
 						<div class="col-sm-9">
 							<input type="text" class="form-control" id="fst_department_name" placeholder="<?=lang("Department Name")?>" name="fst_department_name">
 							<div id="fst_department_name_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group">
+                    	<label for="fst_department_type" class="col-sm-3 control-label"><?=lang("Department Type")?> *</label>
+						<div class="col-sm-9">
+							<select type="text" class="form-control" id="fst_department_type" name="fst_department_type">
+								<option value='Pabrikasi'>Pabrikasi</option>
+								<option value='Umum'>Umum</option>
+							</select>
+							<div id="fst_department_type_err" class="text-danger"></div>
 						</div>
 					</div>
                 </div>

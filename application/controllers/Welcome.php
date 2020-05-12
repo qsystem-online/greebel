@@ -118,7 +118,9 @@ class Welcome extends MY_Controller {
 	}
 
 
-
+	public function showBlankReport() {
+		$this->parser->parse('template/blankreport.php',[]);
+	}
 
 
 }

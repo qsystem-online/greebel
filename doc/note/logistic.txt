@@ -34,5 +34,5 @@ Jurnal:
 * Untuk Barang logistik. cek account persediaan di setup_accoutnnya
 
 (Pada saat Distribusi)
-untuk divisi yg merupakan pabrikasi dr accquaterhead, kalau bukan dari biaya
+untuk divisi yg merupakan pabrikasi dr acc quaterhead, kalau bukan dari biaya
 

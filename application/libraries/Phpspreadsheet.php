@@ -3,6 +3,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Html;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageMargins;
 
 class Phpspreadsheet extends Spreadsheet {
 	
@@ -53,7 +55,24 @@ class Phpspreadsheet extends Spreadsheet {
 	}
 
 	public function savePDF(){
+
+		//$this->spreadsheet->getActiveSheet()->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
+		//$this->spreadsheet->getActiveSheet()->getPageSetup()->setPaperSize(PageSetup::PAPERSIZE_FOLIO);
+		//$this->spreadsheet->getActiveSheet()->getPageSetup()->setFitToPage(false);
+		//$this->spreadsheet->getActiveSheet()->getPageSetup()->setScale(50);
+		//$this->spreadsheet->getActiveSheet()->getPageSetup()->setFitToWidth(1);
+		//$this->spreadsheet->getActiveSheet()->getPageSetup()->setFitToHeight(0);
+		//$this->spreadsheet->getActiveSheet()->getPageSetup()->setHorizontalCentered(true);
+
+		$this->spreadsheet->getActiveSheet()->getPageMargins()->setLeft(0.2);
+		$this->spreadsheet->getActiveSheet()->getPageMargins()->setRight(0.2);
+
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($this->spreadsheet, 'Dompdf');
+		//$writer->setPaperSize(PageSetup::PAPERSIZE_FOLIO);
+		//$writer->setPaperSize(PageSetup::ORIENTATION_PORTRAIT);
+		//$writer->setHorizontalCentered(true);
+		
+		//$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($this->spreadsheet, 'Mpdf');
 		header("Content-type:application/pdf");
 		//header("Content-Disposition:attachment;filename='downloaded.pdf'");
 		$writer->save('php://output');
@@ -120,6 +139,12 @@ class Phpspreadsheet extends Spreadsheet {
 		} else {
 			return $letter;
 		}
+	}
+
+	public function saveHTMLvia($spreadsheet){
+		$writer = new \PhpOffice\PhpSpreadsheet\Writer\Html($spreadsheet);		
+		//$writer->save("05featuredemo.htm");
+		$writer->save('php://output');
 	}
 	
 	public function testing(){

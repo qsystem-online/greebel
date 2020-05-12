@@ -108,6 +108,7 @@ class Department extends MY_Controller
 
 		$data = [
 			"fst_department_name" => $this->input->post("fst_department_name"),
+			"fst_department_type" => $this->input->post("fst_department_type"),
 			"fst_active" => 'A'
 		];
 
@@ -159,6 +160,7 @@ class Department extends MY_Controller
 		$data = [
 			"fin_department_id" => $fin_department_id,
 			"fst_department_name" => $this->input->post("fst_department_name"),
+			"fst_department_type" => $this->input->post("fst_department_type"),
 			"fst_active" => 'A'
 		];
 

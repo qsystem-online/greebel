@@ -392,4 +392,10 @@ class Test extends CI_Controller {
 		echo json_encode($arr);
 
 	}
+
+	public function mpdf(){
+		$mpdf = new \Mpdf\Mpdf();
+		$mpdf->WriteHTML('<h1>Hello world!</h1>');
+		$mpdf->Output();
+	}
 }

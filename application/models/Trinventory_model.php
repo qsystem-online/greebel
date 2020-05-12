@@ -685,4 +685,35 @@ class Trinventory_model extends MY_Model
             return $rw->fdc_avg_cost;
         }
     }
+
+    public function getListStock($finItemId,$fstUnit,$finBranchId){
+        $this->load->model("msitems_model");
+
+        $ssql = "SELECT a.fin_rec_id,a.fin_warehouse_id,b.fst_warehouse_name,a.fin_item_id,a.fst_basic_unit as fst_unit,a.fdb_qty_balance_after FROM trinventory a 
+            INNER JOIN 
+                (
+                    SELECT a.fin_warehouse_id,b.fst_warehouse_name,MAX(a.fdt_trx_datetime) AS fdt_trx_datetime 
+                    FROM trinventory a
+                    INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id 
+                    WHERE a.fin_item_id = ? AND b.fin_branch_id = ? 
+                    GROUP BY a.fin_warehouse_id,b.fst_warehouse_name
+                ) b 
+                ON a.fin_warehouse_id = b.fin_warehouse_id AND a.fdt_trx_datetime = b.fdt_trx_datetime                
+            WHERE a.fin_item_id = ? ";
+
+        $qr = $this->db->query($ssql,[$finItemId,$finBranchId,$finItemId]);
+        //var_dump($this->db->error());
+        $rs = $qr->result();
+
+        //Convert From basic unit to request unit;
+        for($i=0;$i<sizeof($rs);$i++){
+            $rw = $rs[$i];
+            $rw->fdb_qty_balance_after = $this->msitems_model->getQtyConvertUnit($finItemId,$rw->fdb_qty_balance_after,$rw->fst_unit,$fstUnit);
+            $rw->fst_unit = $fstUnit;
+            $rs[$i] = $rw;
+        }
+
+        return $rs;
+        
+    }
 }

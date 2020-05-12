@@ -97,13 +97,6 @@
                             <label for="fin_vendor_id" class="col-md-2 control-label"><?=lang("Gudang")?> </label>							
                             <div class="col-sm-10">
                                 <select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id" style="width:100%">
-									<?php
-										//$warehouseList = getDataTable("mswarehouse","*","fin_branch_id = " . $this->aauth->get_active_branch_id() ." and fst_active ='A'");
-										$warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
-										foreach($warehouseList as $warehouse){
-											echo "<option value='$warehouse->fin_warehouse_id'>$warehouse->fst_warehouse_name - $warehouse->fst_delivery_address </option>";
-										}
-									?>
 								</select>                                
 							</div>							                    
 						</div>						
@@ -251,6 +244,7 @@
 				});
 				App.fixedSelect2();
 			},
+
 			show:function(){
 				if ($("#fin_warehouse_id").val() == null){
 					alert("<?=lang("Gudang harus diisi !")?>");
@@ -261,7 +255,7 @@
 			hide:function(){
 				$("#mdlDetail").modal("hide");
 			},
-			clear:function(){				
+			clear:function(){
 				$("#fstItem").val(null).trigger("change.select2");
 				$(".batchNoBlock").hide();
 				$(".serialNoBlock").hide();
@@ -270,133 +264,132 @@
 
 		$(function(){
 			
-		});
-		
-		$("#fstItem").change(function(e){
-			e.preventDefault();
-			//var data = $('#fstItem').find(':selected');
-			var data = $('#fstItem').select2('data');
-			data = data[0];		
-			App.log(data);
-			$("#fstUnit").text(data.fst_unit);
-			$("#fdcConvBasicUnit").text(data.fdc_conv_to_basic_unit);
-			$("#fstBasicUnit").text(data.fst_basic_unit);
-			if (data.fbl_is_batch_number == 1){
-				$(".batchNoBlock").show();
-			}else{
-				$(".batchNoBlock").hide();
-			}
-			if (data.fbl_is_serial_number == 1){				
-				$(".serialNoBlock").show();
-			}else{				
-				$(".serialNoBlock").hide();
-			}
-		});
-
-		$("#fstSerialNo").keydown(function(e){
-			if (e.keyCode == 13){
+			$("#fstItem").change(function(e){
 				e.preventDefault();
-				if (checkDuplicateSerialNo($("#fstSerialNo").val())){
-					alert("<?=lang("Serial no duplikat !")?>");
-					$("#fstSerialNo").select();
-					return;
-				}
-				$("#fstSerialNoList").prepend("<option value='"+$("#fstSerialNo").val()+"'>"+$("#fstSerialNo").val()+"</option>");
-				$("#fstSerialNo").val("");
-				calculateTotalSerialNo();
-			}
-		});
-
-		$("#btn-delete-serial").click(function(e){
-			e.preventDefault();
-			$("#fstSerialNoList option:selected").each(function () {
-				$(this).remove(); //or whatever else
-			});
-			calculateTotalSerialNo();
-		});
-		
-		$("#btn-save-detail").click(function(e){
-			e.preventDefault();			
-			item = $("#fstItem").select2("data");
-			item = item[0];
-			
-			if ($("#fdbQty").val() <= 0 ){
-				alert("<?=lang("Qty harus diisi !") ?>");
-				return;
-			}
-
-			if ($("#fdcM3").val() <= 0 ){
-				alert("<?=lang("Meter kubik (M3) harus diisi !") ?>");
-				return;
-			}
-			
-			if (item.fbl_is_batch_number == 1){
-				if ($("#fstBatchNo").val() == "" ){
-					alert("Batch Number harus diisi !");
-					return;
-				}
-			}
-
-			if (item.fbl_is_serial_number == 1){
-				var convToBasic = parseFloat($("#fdcConvBasicUnit").text());
-				var qtyInUnit = parseFloat($("#fdbQty").val());
-				var qtyInBasicUnit = qtyInUnit * convToBasic;
-
-
-				if ($("#fstSerialNoList option").length != qtyInBasicUnit){
-					alert("<?= lang("Total Serial Number harus sesuai dengan qty dalam basic unit")?>("+ qtyInBasicUnit +")");
-					return;
-				}
-			}
-			
-			var arrSerial = [];
-			$.each($("#fstSerialNoList option"),function(i,serial){
-				App.log(serial);
-				arrSerial.push($(serial).val());
-			});
-
-
-			t = $("#tbldetails").DataTable();
-
-			var data;
-			if (rowDetail == null){
-				item = $("#fstItem").select2("data");
-				item = item[0];	
-
-				data = {
-					fin_rec_id: 0,					
-					fin_trans_detail_id: item.fin_trans_detail_id,
-					fin_item_id: item.id,
-					fst_item_code: item.fst_item_code,
-					fst_custom_item_name: item.text,
-					fst_unit: item.fst_unit,
-					fdb_qty_trans: item.fdb_qty_trans,
-					fdb_qty_lpb:item.fdb_qty_lpb,
-					fdb_qty: 0,
-					fdc_m3: 0,
-					fst_batch_no: "",
-					arr_serial: [],
-				};
-			}else{
-				data = t.row(rowDetail).data();				
-			}
-
-			data.fdb_qty = $("#fdbQty").val();
-			data.fdc_m3 = $("#fdcM3").val();
-			data.fst_batch_no = $("#fstBatchNo").val();
-			data.arr_serial = arrSerial;			
-			if (rowDetail == null){
+				//var data = $('#fstItem').find(':selected');
+				var data = $('#fstItem').select2('data');
+				data = data[0];		
 				App.log(data);
-				t.row.add(data).draw(false);
-			}else{
-				t.row(rowDetail).data(data).draw(false);
-			}
+				$("#fstUnit").text(data.fst_unit);
+				$("#fdcConvBasicUnit").text(data.fdc_conv_to_basic_unit);
+				$("#fstBasicUnit").text(data.fst_basic_unit);
+				if (data.fbl_is_batch_number == 1){
+					$(".batchNoBlock").show();
+				}else{
+					$(".batchNoBlock").hide();
+				}
+				if (data.fbl_is_serial_number == 1){				
+					$(".serialNoBlock").show();
+				}else{				
+					$(".serialNoBlock").hide();
+				}
+			});
+
+			$("#fstSerialNo").keydown(function(e){
+				if (e.keyCode == 13){
+					e.preventDefault();
+					if (checkDuplicateSerialNo($("#fstSerialNo").val())){
+						alert("<?=lang("Serial no duplikat !")?>");
+						$("#fstSerialNo").select();
+						return;
+					}
+					$("#fstSerialNoList").prepend("<option value='"+$("#fstSerialNo").val()+"'>"+$("#fstSerialNo").val()+"</option>");
+					$("#fstSerialNo").val("");
+					calculateTotalSerialNo();
+				}
+			});
+
+			$("#btn-delete-serial").click(function(e){
+				e.preventDefault();
+				$("#fstSerialNoList option:selected").each(function () {
+					$(this).remove(); //or whatever else
+				});
+				calculateTotalSerialNo();
+			});
 			
-			calculateTotalQty();
-			mdlDetail.hide();
+			$("#btn-save-detail").click(function(e){
+				e.preventDefault();			
+				item = $("#fstItem").select2("data");
+				item = item[0];
+				
+				if ($("#fdbQty").val() <= 0 ){
+					alert("<?=lang("Qty harus diisi !") ?>");
+					return;
+				}
 
-		})
+				if ($("#fdcM3").val() <= 0 ){
+					alert("<?=lang("Meter kubik (M3) harus diisi !") ?>");
+					return;
+				}
+				
+				if (item.fbl_is_batch_number == 1){
+					if ($("#fstBatchNo").val() == "" ){
+						alert("Batch Number harus diisi !");
+						return;
+					}
+				}
 
+				if (item.fbl_is_serial_number == 1){
+					var convToBasic = parseFloat($("#fdcConvBasicUnit").text());
+					var qtyInUnit = parseFloat($("#fdbQty").val());
+					var qtyInBasicUnit = qtyInUnit * convToBasic;
+
+
+					if ($("#fstSerialNoList option").length != qtyInBasicUnit){
+						alert("<?= lang("Total Serial Number harus sesuai dengan qty dalam basic unit")?>("+ qtyInBasicUnit +")");
+						return;
+					}
+				}
+				
+				var arrSerial = [];
+				$.each($("#fstSerialNoList option"),function(i,serial){
+					App.log(serial);
+					arrSerial.push($(serial).val());
+				});
+
+
+				t = $("#tbldetails").DataTable();
+
+				var data;
+				if (rowDetail == null){
+					item = $("#fstItem").select2("data");
+					item = item[0];	
+
+					data = {
+						fin_rec_id: 0,					
+						fin_trans_detail_id: item.fin_trans_detail_id,
+						fin_item_id: item.id,
+						fst_item_code: item.fst_item_code,
+						fst_custom_item_name: item.text,
+						fst_unit: item.fst_unit,
+						fdb_qty_trans: item.fdb_qty_trans,
+						fdb_qty_lpb:item.fdb_qty_lpb,
+						fdb_qty: 0,
+						fdc_m3: 0,
+						fst_batch_no: "",
+						arr_serial: [],
+					};
+				}else{
+					data = t.row(rowDetail).data();				
+				}
+
+				data.fdb_qty = $("#fdbQty").val();
+				data.fdc_m3 = $("#fdcM3").val();
+				data.fst_batch_no = $("#fstBatchNo").val();
+				data.arr_serial = arrSerial;			
+				if (rowDetail == null){
+					App.log(data);
+					t.row.add(data).draw(false);
+				}else{
+					t.row(rowDetail).data(data).draw(false);
+				}
+				
+				calculateTotalQty();
+				mdlDetail.hide();
+
+			});
+
+		});
 	</script>
 
 </div>
@@ -408,7 +401,31 @@
 <script type="text/javascript" info="init">
 	var rowDetail;
 	var arrItems = new Array();
+	var arrWarehouseNonLogistik =[];
+	var arrWarehouseLogistik =[];
 
+	<?php
+		$warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
+		foreach($warehouseList as $warehouse){ ?>
+			arrWarehouseNonLogistik.push({
+				id:"<?=$warehouse->fin_warehouse_id?>",
+				text:"<?= $warehouse->fst_warehouse_name ." - " . $warehouse->fst_delivery_address?>"
+			});
+			//echo "<option value='$warehouse->fin_warehouse_id'>$warehouse->fst_warehouse_name - $warehouse->fst_delivery_address </option>";
+	<?php }	?>
+	
+	<?php
+		$warehouseList = $this->mswarehouse_model->getLogisticWarehouseList();
+		foreach($warehouseList as $warehouse){ ?>
+			arrWarehouseLogistik.push({
+				id:"<?=$warehouse->fin_warehouse_id?>",
+				text:"<?=$warehouse->fst_warehouse_name . " - " . $warehouse->fst_delivery_address?>"
+			});
+			//echo "<option value='$warehouse->fin_warehouse_id'>$warehouse->fst_warehouse_name - $warehouse->fst_delivery_address </option>";
+	<?php }	?>
+
+
+	
 	$(function(){
 		$("#fdt_lpbgudang_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		
@@ -430,6 +447,7 @@
 							text: trans.fst_trans_no,// + " - " + trans.fdt_trans_datetime + " - "  + trans.fst_relation_name,
 							fst_trans_no:trans.fst_trans_no,
 							fdt_trans_datetime:trans.fdt_trans_datetime,
+							fin_pr_process_id:trans.fin_pr_process_id,
 							fst_relation_name:trans.fst_relation_name,
 						}
 					});
@@ -448,8 +466,19 @@
 		}).on("select2:select",function(e){
 			//GET DETAIL Transaction
 			data = e.params.data;
-			//$("#fdt_trans_datetime").html(dateTimeFormat(data.fdt_trans_datetime));
 			$("#fst_relation_name").html(data.fst_relation_name);
+			//Bila fin_pr_process_id == 0 set warehouse logistik
+			if (data.fin_pr_process_id == 0){
+				$("#fin_warehouse_id").empty();
+				$.each(arrWarehouseNonLogistik,function(i,v){
+					App.addOptionIfNotExist("<option value='"+v.id+"'>"+v.text+"</option>","fin_warehouse_id");
+				});
+			}else{
+				$.each(arrWarehouseLogistik,function(i,v){
+					App.addOptionIfNotExist("<option value='"+v.id+"'>"+v.text+"</option>","fin_warehouse_id");
+				});
+			}
+
 			getDetailTransaction();
 		});
 
@@ -549,6 +578,7 @@
 			window.location.href = "<?=site_url()?>tr/gudang/penerimaan_pembelian/";
 		});
 
+		/*
 		$("#fin_po_id").change(function(e){
 			e.preventDefault();
 			getPOInfo($("#fin_po_id").val(),function(resp){
@@ -603,6 +633,7 @@
 
 			});
 		});
+		*/
 		
 		$("#btn-add-items").click(function(e){
 			e.preventDefault();
@@ -786,6 +817,8 @@
 					App.addOptionIfNotExist("<option value='"+ dataH.fin_trans_id +"' selected>" + dataH.fst_trans_no +"</option>","fin_trans_id");	
 					$('#fin_trans_id').trigger("change.select2");
 					$("#fdt_trans_datetime").html(dataH.fdt_trans_datetime);
+
+					App.addOptionIfNotExist("<option value='"+dataH.fin_warehouse_id+"'>"+dataH.fst_warehouse_name  + " - " + dataH.fst_delivery_address +"</option>","fin_warehouse_id");
 					$("#fst_relation_name").html(dataH.fst_relation_name);
 										
 					

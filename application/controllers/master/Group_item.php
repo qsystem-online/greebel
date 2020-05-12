@@ -261,12 +261,12 @@ class Group_item extends MY_Controller
             $parent = $parent == "#" ? null :$parent;
 
             $data =[
-                "fin_item_group_id"=>$id,
+                //"fin_item_group_id"=>$id,
                 "fst_item_group_name"=>$post["text"],
                 "fin_parent_item_group_id"=> $parent,
                 "fst_active"=>"A"
             ];
-            $this->db->trans_start();        
+            $this->db->trans_start();      
             $id = $this->msgroupitems_model->insert($data);
             $this->db->trans_complete();
 

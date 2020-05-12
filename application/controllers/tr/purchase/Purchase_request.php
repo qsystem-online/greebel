@@ -118,7 +118,10 @@ class Purchase_request extends MY_Controller{
 			$data["mdlJurnal"] = $jurnal_modal;
 			$page_content = $this->parser->parse('pages/tr/purchase/request/form', $data, true);
         } else if ($mode == 'PROCESS'){
-			$data["title"] = $mode == "ADD" ? lang("Permintaan Pembelian") : lang("Proses Permintaan Pembelian");
+			$stock_modal = $this->parser->parse('template/mdlStock', [], true);
+			$data["title"] = $mode == "ADD" ? lang("Permintaan Pembelian") : lang("Proses Permintaan Pembelian");			
+			$data["mdlStock"] = $stock_modal;
+
 			$page_content = $this->parser->parse('pages/tr/purchase/request/frm_process', $data, true);
 		}       
 		
@@ -212,6 +215,8 @@ class Purchase_request extends MY_Controller{
 
 			//CEK tgl lock dari transaksi yg di kirim
 			$fdt_pr_datetime = dBDateTimeFormat($this->input->post("fdt_pr_datetime"));		
+			$fdt_publish_datetime = dBDateTimeFormat($this->input->post("fdt_publish_datetime"));		
+
 			$resp = dateIsLock($fdt_pr_datetime);
 			if ($resp["status"] != "SUCCESS" ){
 				throw new CustomException($resp["message"],3003,$resp["status"],null);
@@ -286,12 +291,15 @@ class Purchase_request extends MY_Controller{
 		//PREPARE DATA
 		
 		$fdt_pr_datetime = dBDateTimeFormat($this->input->post("fdt_pr_datetime"));
+		$fdt_publish_datetime = dBDateTimeFormat($this->input->post("fdt_publish_datetime"));
+		
 		
 		
 		$dataH =[
 			"fin_pr_id"=>$this->input->post("fin_pr_id"),
 			"fst_pr_no"=>$this->input->post("fst_pr_no"),
 			"fdt_pr_datetime"=>$fdt_pr_datetime,
+			"fdt_publish_datetime"=>$fdt_publish_datetime,
 			"fst_memo"=>$this->input->post("fst_memo"), 
 			"fin_req_department_id"=>$this->input->post("fin_req_department_id"),
 			"fst_active"=>"A",
@@ -473,10 +481,13 @@ class Purchase_request extends MY_Controller{
 
 
 	public function get_item_process_list(){
-		$itemType = $this->input->get("fin_item_type_id");
+		$itemType = $this->input->get("fst_item_type");
 		$lineBusinessId = $this->input->get("fst_linebusiness_id");
+		//*stock|nonstock_umum|nonstock_pabrikasi
+		$stockCostType = $this->input->get("fst_stock_cost_type");
 
-		$rs = $this->trpurchaserequest_model->getItemProcessList($itemType,$lineBusinessId);
+
+		$rs = $this->trpurchaserequest_model->getItemProcessList($itemType,$lineBusinessId,$stockCostType);
 
 
 		$result =[];
@@ -501,8 +512,6 @@ class Purchase_request extends MY_Controller{
 					"fdb_qty_process"=>$rw->fdb_qty_process,
 					"fdb_qty_distribute"=>$rw->fdb_qty_distribute,
 					"fin_process_id"=>$rw->fin_process_id,
-					"fin_po_id"=>$rw->fin_po_id,
-					"fdt_process_datetime"=>$rw->fdt_process_datetime,
 					"fdt_distribute_datetime"=>$rw->fdt_distribute_datetime,
 					"fdt_etd"=>$rw->fdt_etd,
 					"fst_memo"=>$rw->fst_memo
@@ -532,8 +541,6 @@ class Purchase_request extends MY_Controller{
 							"fdb_qty_process"=>$rw->fdb_qty_process,
 							"fdb_qty_distribute"=>$rw->fdb_qty_distribute,
 							"fin_process_id"=>$rw->fin_process_id,
-							"fin_po_id"=>$rw->fin_po_id,
-							"fdt_process_datetime"=>$rw->fdt_process_datetime,
 							"fdt_distribute_datetime"=>$rw->fdt_distribute_datetime,
 							"fdt_etd"=>$rw->fdt_etd,
 							"fst_memo"=>$rw->fst_memo
@@ -553,43 +560,350 @@ class Purchase_request extends MY_Controller{
 
 	}
 	
-
-	
 	public function ajx_process_pr(){
-		
-		$processId = 0;
-		$isExist = true;
+		$this->load->model("trpurchaserequestprocess_model");
 
-		while ($isExist){
-			$processId = rand(10000000,999999999);
-			$ssql = "select * from trpurchaserequestitems where fin_process_id = ? and fin_po_id is null limit 1";
-			$qr = $this->db->query($ssql,[$processId]);
-			$rw = $qr->row();
-			if ($rw == null){
-				$isExist = false;
-
-			}
-		}
-
+		$fstItemType = $this->input->post("fst_item_type");
+		$finLineBusinessId = $this->input->post("fin_linebusinness_id");
+		$fstStockCostType = $this->input->post("fst_stock_cost_type");
 		$finSupplierId = $this->input->post("fin_supplier_id");
-		$list = $this->input->post("details");
-		$list =  json_decode($list);
+		
+		$dataH =[
+			"fdt_process_datetime"=>date("Y-m-d H:i:s"),
+			"fst_item_type"=>$fstItemType,
+			"fin_linebusiness_id"=>$finLineBusinessId,
+			"fst_stock_cost_type"=>$fstStockCostType,
+			"fin_supplier_id"=>$finSupplierId,
+			"fin_po_id"=>NULL,
+			"fst_active"=> 'A'
+		];
+		
+		try{		
+			$this->db->trans_start(); 
+			$processId = $this->trpurchaserequestprocess_model->insert($dataH);
+			$list = $this->input->post("details");
+			$list =  json_decode($list);
+			$withPO = false;
+			foreach($list as $listObj){
+				$details = $listObj->details;			
+				foreach($details as $dataD){				
+					if ($dataD->fdb_qty_po > 0){
+						$withPO = true;
+					}
+					$ssql ="update trpurchaserequestitems set fin_process_id = ?, fdb_qty_process = ?, fdb_qty_to_po = ?  where fin_rec_id = ?";
+					$this->db->query($ssql,[$processId,$dataD->fdb_qty_process,$dataD->fdb_qty_po,$dataD->fin_rec_id]);
+					$error = $this->db->error();
+					if ($error["code"] != 0){
+						throw new CustomException($error["message"],3003,"DB_FAILED",[]);
+					}
+				}			
+			}
+			$this->db->trans_complete();
+			$this->json_output([
+				"status"=>"SUCCESS",
+				"message"=>"",
+				"data"=>[
+					"fin_process_id"=>$processId,
+					"with_po"=>$withPO
+				]			
+			]);	
+		}catch(CustomException $e){
+			$this->db->trans_rollback();
 
+			$this->json_output([
+				"status"=>$e->getStatus(),
+				"message"=>$e->getMessage()
+			]);	
+		}		
+	}
 
-		foreach($list as $listObj){
-			$details = $listObj->details;			
-			foreach($details as $dataD){
-				$ssql ="update trpurchaserequestitems set fin_process_id = ?, fdb_qty_process = ? where fin_rec_id = ?";
-				$this->db->query($ssql,[$processId,$dataD->fdb_qty_process,$dataD->fin_rec_id]);				
-			}			
-		}
-
+	public function ajx_get_process_details($finProcessId){
+		$this->load->model("trpurchaserequestprocess_model");
+		$rs = $this->trpurchaserequestprocess_model->getDetailByProcessId($finProcessId);
 		$this->json_output([
 			"status"=>"SUCCESS",
 			"message"=>"",
-			"data"=>[
-				"fin_process_id"=>$processId
-			]			
+			"data"=>$rs			
 		]);
+	}
+
+	public function ajx_cancel_process($finProcessId){
+		$this->load->model("trpurchaserequestprocess_model");
+		
+		$result=[
+			"status"=>"SUCCESS",
+			"message"=>""
+		];
+
+		try{
+			$this->trpurchaserequestprocess_model->cancelProcess($finProcessId);			
+		}catch(CustomException $e){
+			$result["status"]=$e->getStatus();
+			$result["message"]=$e->getMessage();
+		}				
+		$this->json_output($result);
+	}
+
+	public function fetch_list_processed_data(){
+		$this->load->library("datatables");
+		/*
+		$this->datatables->setTableName("
+			(
+				SELECT a.fin_process_id,a.fin_po_id,b.fst_po_no,a.fdt_process_datetime,SUM(a.fdb_qty_process) AS fdb_qty_process,SUM(a.fdb_qty_to_po) AS fdb_qty_to_po,'A' AS fst_active 
+				FROM trpurchaserequestitems a
+				LEFT JOIN trpo b ON a.fin_po_id = b.fin_po_id 
+				WHERE fin_process_id IS NOT NULL 
+				GROUP BY a.fin_process_id,a.fin_po_id,b.fst_po_no,a.fdt_process_datetime ORDER BY  a.fdt_process_datetime  DESC
+			) a");
+		*/
+		$this->datatables->setTableName("
+			(
+				SELECT 
+					a.fin_process_id,
+					a.fin_po_id,
+					c.fst_po_no,
+					a.fdt_process_datetime,
+					a.fst_active,
+					SUM(b.fdb_qty_process) AS fdb_qty_process,
+					SUM(b.fdb_qty_to_po) AS fdb_qty_to_po 
+				FROM trpurchaserequestprocess a
+				INNER JOIN trpurchaserequestitems b on a.fin_process_id = b.fin_process_id
+				LEFT JOIN trpo c on a.fin_po_id = c.fin_po_id
+				GROUP BY a.fin_process_id ORDER BY  a.fdt_process_datetime  DESC
+			) a");
+
+
+        $selectFields = "a.*";
+        $this->datatables->setSelectFields($selectFields);
+
+        $Fields = '';
+        $searchFields = [$Fields];
+        $this->datatables->setSearchFields($searchFields);
+        
+        // Format Data
+        $datasources = $this->datatables->getData();
+        $arrData = $datasources["data"];
+        $arrDataFormated = [];
+        //foreach ($arrData as $data) {        
+        //    $arrDataFormated[] = $data;
+        //}
+		//$datasources["data"] = $arrDataFormated;
+		$datasources["data"] = $arrData;
+		$this->json_output($datasources);		
+	}
+
+	public function distribute(){
+		//List Transaksi	
+	}
+
+	public function distribute_add(){
+		$this->openDistributeForm("ADD");
+	}
+
+
+	private function openDistributeForm($mode = "ADD", $finDistributePRId = 0){
+		$this->load->library("menus");		
+		$this->load->model("trdistributepr_model")	;
+
+		$main_header = $this->parser->parse('inc/main_header', [], true);
+		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		$jurnal_modal = $this->parser->parse('template/mdlJurnal', [], true);
+
+		$data["mode"] = $mode;
+        $data["title"] = $mode == "ADD" ? lang("Distrubusi Permohonan Pembelian") : lang("Update Distrubusi Permohonan Pembelian");
+		$data["fin_distributepr_id"] = $finDistributePRId;
+		$data["mdlEditForm"] = $edit_modal;
+
+		$data["arrExchangeRate"] = $this->mscurrencies_model->getArrRate();
+		
+		if($mode == 'ADD'){
+			$data["fst_distributepr_no"]=$this->trdistributepr_model->generateTransactionNo(); 
+			$data["mdlJurnal"] = "";
+			$page_content = $this->parser->parse('pages/tr/purchase/request/distribution_form', $data, true);
+		}
+		/* else if($mode == 'EDIT'){
+			$data["fst_pr_no"]="";	
+			$data["mdlJurnal"] = $jurnal_modal;
+			$page_content = $this->parser->parse('pages/tr/purchase/request/form', $data, true);
+		}else if ($mode == 'PROCESS'){
+			$stock_modal = $this->parser->parse('template/mdlStock', [], true);
+			$data["title"] = $mode == "ADD" ? lang("Permintaan Pembelian") : lang("Proses Permintaan Pembelian");			
+			$data["mdlStock"] = $stock_modal;
+
+			$page_content = $this->parser->parse('pages/tr/purchase/request/frm_process', $data, true);
+		}  
+		*/     
+		
+		
+		$main_footer = $this->parser->parse('inc/main_footer', [], true);
+
+		$control_sidebar = NULL;
+		$this->data["MAIN_HEADER"] = $main_header;
+		$this->data["MAIN_SIDEBAR"] = $main_sidebar;
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$this->data["MAIN_FOOTER"] = $main_footer;
+		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
+		$this->parser->parse('template/main', $this->data);
+	}
+	
+	public function ajx_get_need_to_distribute(){
+		$this->load->model("trdistributepr_model");
+		$rs = $this->trdistributepr_model->getNeedToDistribute();
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"message"=>"",
+			"data"=>$rs
+		]);
+	}
+
+	public function ajx_distribute_add_save(){		
+		$this->load->model("trdistributepr_model");
+		$this->load->model("trdistributepritems_model");			
+		try{
+			$fdt_distributepr_datetime = dBDateTimeFormat($this->input->post("fdt_distributepr_datetime"));		
+			$resp = dateIsLock($fdt_distributepr_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+			$fst_distributepr_no =$this->trdistributepr_model->generateTransactionNo(); 
+			$dataPrepared = $this->prepareDistributeData();	
+			
+			$dataH = $dataPrepared["dataH"];
+			$dataH["fst_distributepr_no"] = $fst_distributepr_no;
+			unset($dataH["fin_distributepr_id"]);
+			$dataDetails = $dataPrepared["dataDetails"];						
+			$this->validateDistributeData($dataH,$dataDetails);
+			echo "after validate";
+			//SAVE
+			$this->db->trans_start(); 						
+			$insertId = $this->trdistributepr_model->insert($dataH);
+			
+			foreach($dataDetails as $dataD){
+				$dataD["fin_distributepr_id"] = $insertId;
+				$dataD["fst_serial_number_list"] = json_encode($dataD["fst_serial_number_list"]);
+				$this->trdistributepritems_model->insert($dataD);
+			}
+
+			//POSTING
+			$this->trdistributepr_model->posting($insertId);
+			
+			$this->db->trans_complete();
+			//$this->db->trans_rollback();
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $insertId;
+			$this->json_output();
+
+
+		}catch(CustomException $e){
+			$this->db->trans_rollback();
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();			
+			return;
+		}
+	}
+
+
+	private function prepareDistributeData(){
+		$fdt_distributepr_datetime = dBDateTimeFormat($this->input->post("fdt_distributepr_datetime"));
+		$dataH = [
+			"fin_distributepr_id"=>$this->input->post("fin_distributepr_id"),
+			"fst_distributepr_no"=>$this->input->post("fst_distributepr_no"),
+			"fdt_distributepr_datetime"=> $fdt_distributepr_datetime,
+			"fst_distributepr_notes"=>$this->input->post("fst_distributepr_notes")
+		];
+
+		$postDetails = $this->input->post("details");
+		$postDetails = json_decode($postDetails);
+		$dataDetails = [];
+		foreach($postDetails as $detail){
+			$dataD = [
+				"fin_rec_id"=>$detail->fin_rec_id,
+				"fin_distributepr_id"=>$dataH["fin_distributepr_id"], 
+				"fin_pr_detail_id"=>$detail->fin_pr_detail_id, 
+				"fdb_qty_distribute"=>$detail->fdb_qty_distribute, 
+				"fin_source_warehouse_id"=>$detail->fin_source_warehouse_id, 
+				"fst_batch_number"=>$detail->fst_batch_number,
+				"fst_serial_number_list" =>$detail->fst_serial_number_list,
+				"fst_notes"=>$detail->fst_notes, 
+				"fst_active"=>"A"
+			];
+			$dataDetails[] = $dataD;			
+		}
+		return [
+			"dataH"=>$dataH,
+			"dataDetails"=>$dataDetails			
+		];
+	}
+
+	private function validateDistributeData($dataH, $dataDetails){
+		/**
+		 * barang tipe logistic dan fbl_stock true harus menentukan source warehouse
+		 */
+		$this->load->model("msitems_model");
+		$this->load->model("trinventory_model");
+
+		foreach($dataDetails as $detail){			
+			$ssql ="select a.*,b.fst_item_name,b.fin_item_type_id,b.fbl_stock,b.fbl_is_batch_number,b.fbl_is_serial_number from trpurchaserequestitems a 
+				inner join msitems b on a.fin_item_id = b.fin_item_id
+				where a.fin_rec_id  = ?";
+
+			$qr =$this->db->query($ssql,[$detail["fin_pr_detail_id"]]);
+			$item = $qr->row();
+			
+			
+			 //Validation is valid batch number & serial number (qty, serial number exist)
+			 //$item = $arrItem[$detail->fin_item_id];
+			 if ($item->fbl_is_batch_number == 1){
+				 if ($detail["fst_batch_number"] == null || $detail["fst_batch_number"] == ""){
+					 throw new CustomException(sprintf(lang("%s harus memiliki batch number"),$item->fst_item_name),3009,"FAILED",null);
+				 }
+			 }
+			 
+			 if ($item->fbl_is_serial_number == 1){
+				 if ($detail["fst_serial_number_list"] != null && $detail["fst_serial_number_list"] != ""){
+					 if (is_array($detail["fst_serial_number_list"])){
+						 $arrSerial = $detail["fst_serial_number_list"];
+ 
+						 //Check Jumlah serial no
+						 if (sizeof($arrSerial) != $this->msitems_model->getQtyConvertToBasicUnit($item->fin_item_id,$detail["fdb_qty_distribute"],$item->fst_unit) ){
+							 throw new CustomException(sprintf(lang("total serial %s harus sesuai dengan total qty (%u)"),$item->fst_item_name,$detail["fdb_qty_distribute"]),3009,"FAILED",null);
+						 
+							}
+						 //Check all serial is exist and ready;
+						 $arrSerialStatus = $this->trinventory_model->getSummarySerialNo($detail["fin_source_warehouse_id"],$item->fin_item_id,$arrSerial);
+						 foreach($arrSerial as $serial){
+							 if (isset($arrSerialStatus[$serial]) ){
+								 $serialStatus = $arrSerialStatus[$serial];
+								 if ($serialStatus["fdb_qty_in"] <= $serialStatus["fdb_qty_out"] ){
+									 throw new CustomException(sprintf(lang("No serial %s untuk item %s tidak tersedia"),$serial,$item->fst_item_name),3009,"FAILED",null);
+								 }
+							 }else{
+								 throw new CustomException(sprintf(lang("No serial %s untuk item %s tidak tersedia"),$serial,$item->fst_item_name),3009,"FAILED",null);
+							 }
+						 }
+					 }else{
+						 throw new CustomException(sprintf(lang("%s harus memiliki serial number"),$detail->fst_custom_item_name),3009,"FAILED",null);
+					 }
+				 }
+			 }
+
+			 //Validation stock is available
+			 if ($item->fbl_stock == 1){
+                $basicUnit = $this->msitems_model->getBasicUnit($item->fin_item_id);
+                $qtyStockBasicUnit = (float) $this->trinventory_model->getStock($item->fin_item_id,$basicUnit,$detail["fin_source_warehouse_id"]);
+                $qtyReqInBasicUnit = $this->msitems_model->getQtyConvertUnit($item->fin_item_id,$detail["fdb_qty_distribute"],$item->fst_unit,$basicUnit);
+                $qtyStockReqUnit =  $this->msitems_model->getQtyConvertUnit($item->fin_item_id,$qtyStockBasicUnit,$basicUnit,$item->fst_unit);
+                if ($qtyReqInBasicUnit > $qtyStockBasicUnit ){
+                    throw new CustomException(sprintf(lang("Stock %s tersisa : %d %s") ,$item->fst_item_name,$qtyStockReqUnit,$item->fst_unit),3009,"FAILED",null);
+                }
+
+            }
+		
+		}
 	}
 }    
