@@ -186,8 +186,7 @@ class Phpspreadsheet extends Spreadsheet {
 				$colIndex++;
 			}			
 		}		
-		$sheet->removeRow(1);					
-		//$sheet->removeColumn($col);                            
+		$sheet->removeRow(1);							
 	}
 
 	public function getSumColPosition($layoutColumn,$layoutNo,$selectedCol){

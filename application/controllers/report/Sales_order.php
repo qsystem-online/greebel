@@ -673,8 +673,9 @@ class Sales_order extends MY_Controller
 							],
 						],
 					];
-					$sheet->getStyle('A1:L'.$cellRow)->applyFromArray($styleArray);
-
+					//$sheet->getStyle('A1:L'.$cellRow)->applyFromArray($styleArray);
+					//$sheet->getStyle('A1:IV65536'.$cellRow)->applyFromArray($styleArray);
+					$sheet->setShowGridlines(false);
 					//BORDER
 					$styleArray = [
 						'borders' => [
