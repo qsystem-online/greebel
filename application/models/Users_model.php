@@ -14,10 +14,20 @@ class Users_model extends MY_Model
 	public function getDataById($fin_user_id)
 	{
 		//$ssql = "select * from " . $this->tableName ." where fin_user_id = ?";
-		$ssql = "select a.*,b.fst_department_name,c.fst_group_name,c.fin_level,d.fst_branch_name,d.fbl_is_hq from " . $this->tableName . " a 
+		$ssql = "select a.*,
+			b.fst_department_name,
+			c.fst_group_name,c.fin_level,
+			d.fst_branch_name,d.fbl_is_hq,
+			e.fst_name as fst_sales_area_name,
+			f.fin_sales_regional_id, f.fst_name as fst_sales_regional_name,
+			g.fin_sales_national_id, g.fst_name as fst_sales_national_name 
+			from " . $this->tableName . " a 			
 			left join departments b on a.fin_department_id = b.fin_department_id 
 			left join usersgroup c on a.fin_group_id = c.fin_group_id 
 			left join msbranches d on a.fin_branch_id = d.fin_branch_id 
+			left join mssalesarea e on a.fin_sales_area_id = e.fin_sales_area_id
+			left join mssalesregional f on e.fin_sales_regional_id = f.fin_sales_regional_id
+			left join mssalesnational g on f.fin_sales_national_id = g.fin_sales_national_id
 			where a.fin_user_id = ?";
 
 

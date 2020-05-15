@@ -221,7 +221,7 @@ class Sales_area extends MY_Controller{
     }
 
 
-//== SALES AREA REGIONAL ================================================================================================================================================
+    //== SALES AREA REGIONAL ================================================================================================================================================
 
     public function regional() {
         $this->regional_lizt();
@@ -429,7 +429,7 @@ class Sales_area extends MY_Controller{
     }
 
 
-//== SALES AREA NATIONAL ================================================================================================================================================
+    //== SALES AREA NATIONAL ================================================================================================================================================
 
     public function national() {
         $this->national_lizt();
@@ -682,5 +682,33 @@ class Sales_area extends MY_Controller{
         $this->ajxResp["data"] = $rs;
         $this->json_output();
     }
+
+    public function ajx_get_regional(){
+        $term = $this->input->get("term");
+        $finSalesNationalId = $this->input->get("fin_sales_national_id");
+
+        $ssql = "select * from mssalesregional where fst_name like ? and fin_sales_national_id = ? and fst_active ='A'";
+        $qr = $this->db->query($ssql,["%$term%",$finSalesNationalId]);
+        $rs = $qr->result();
+        $this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();       
+
+    }
+
+
+    public function ajx_get_area(){
+        $term = $this->input->get("term");
+        $finSalesRegionalId = $this->input->get("fin_sales_regional_id");
+
+        $ssql = "select * from mssalesarea where fst_name like ? and fin_sales_regional_id = ? and fst_active ='A'";
+        $qr = $this->db->query($ssql,["%$term%",$finSalesRegionalId]);
+        $rs = $qr->result();
+        $this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();       
+
+    }
+
 
 }

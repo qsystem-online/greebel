@@ -63,6 +63,8 @@ class User extends MY_Controller
 		$this->load->library("menus");
 		$this->load->model("usersgroup_model");
 		$this->load->model("users_model");
+		$this->load->model("mssalesnational_model");
+
 
 		if ($this->input->post("submit") != "") {
 			$this->add_save();
@@ -79,6 +81,7 @@ class User extends MY_Controller
 		$data["arrUser_R"] = $this->users_model->getUserList_R();
 		$data["arrBranch"] = $this->msbranches_model->getAllList();
 		$data["arrGroup"] = $this->usersgroup_model->getAllList();
+		$data["finSalesDepartmentId"] = getDbConfig("sales_department_id");
 
 		$page_content = $this->parser->parse('pages/user/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -129,6 +132,7 @@ class User extends MY_Controller
 			"fst_email" => $this->input->post("fst_email"),
 			"fst_phone" => $this->input->post("fst_phone"),
 			"fin_department_id" => $this->input->post("fin_department_id"),
+			"fin_sales_area_id" => $this->input->post("fin_sales_area_id"),
 			"fin_branch_id" => $this->input->post("fin_branch_id"),
 			"fin_group_id" => $this->input->post("fin_group_id"),
 			"fbl_admin" => $this->input->post("fbl_admin") == null? 0:1
@@ -218,6 +222,7 @@ class User extends MY_Controller
 			"fst_email" => $this->input->post("fst_email"),
 			"fst_phone" => $this->input->post("fst_phone"),
 			"fin_department_id" => $this->input->post("fin_department_id"),
+			"fin_sales_area_id" => $this->input->post("fin_sales_area_id"),
 			"fin_branch_id" => $this->input->post("fin_branch_id"),
 			"fin_group_id" => $this->input->post("fin_group_id"),
 			"fbl_admin" =>  $this->input->post("fbl_admin") == null? 0:1
