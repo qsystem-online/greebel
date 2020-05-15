@@ -25,7 +25,7 @@ class Sales_order extends MY_Controller
 			['layout' => 1, 'label'=>'Qty', 'value'=>'7', 'selected'=>false,'sum_total'=>true],
 			['layout' => 1, 'label'=>'Unit', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Harga', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Diskon', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Diskon', 'value'=>'10', 'selected'=>false,'sum_total'=>true],
 			['layout' => 1, 'label'=>'Jumlah', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
 			['layout' => 2, 'label'=>'Nou.', 'value'=>'A', 'selected'=>false,'sum_total'=>false],
 			['layout' => 2, 'label'=>'No.SO', 'value'=>'B', 'selected'=>false,'sum_total'=>false],
@@ -471,7 +471,8 @@ class Sales_order extends MY_Controller
 		// print_r($data['selected_columns'][0]);die;
 		
 
-		$dataReport = $this->sales_order_rpt_model->queryComplete($data,"a.fst_salesorder_no");
+		$dataReport = $this->sales_order_rpt_model->queryComplete($data,"a.fst_salesorder_no",$data['rpt_layout']);
+
 		$arrMerged = [];  //row,ttlColType(full,sum)
 		if (isset($dataReport)) {
 			if ($dataReport==[]) {
@@ -488,11 +489,13 @@ class Sales_order extends MY_Controller
 						$repTitle = "LAPORAN SALES ORDER DETAIL";
 						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
 						$repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
+						$fullColumn = 12;
 						break;
 					case "2":
 						$repTitle = "LAPORAN SALES ORDER RINGKAS";
 						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4;
 						$repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT;
+						$fullColumn = 6;
 						break;
 					case "3":
 						$repTitle = "LAPORAN SALES ORDER OUTSTANDING";
@@ -725,8 +728,8 @@ class Sales_order extends MY_Controller
 					$sheet->getStyle('A1')->applyFromArray($styleArray);
 
 					$ttlSelectedCol = sizeof($data['selected_columns'][0]);
-					$sumCol = $this->phpspreadsheet->getSumColPosition($this->layout_columns,1,$data['selected_columns'][0]);
-					$this->phpspreadsheet->cleanColumns($sheet,12,$data['selected_columns'][0]);
+					$sumCol = $this->phpspreadsheet->getSumColPosition($this->layout_columns,$data['rpt_layout'],$data['selected_columns'][0]);
+					$this->phpspreadsheet->cleanColumns($sheet,$fullColumn,$data['selected_columns'][0]);
 					$this->phpspreadsheet->mergedData($sheet,$arrMerged,$ttlSelectedCol,$sumCol);
 
 				} //end if layout 1
