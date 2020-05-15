@@ -268,16 +268,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						
 						<div class="form-group">
-						<label for="fin_sales_area_id" class="col-md-2 control-label"><?=lang("Sales Area Name")?></label>
+							<!--
+							<label for="fin_sales_area_id" class="col-md-2 control-label"><?=lang("Sales Area Name")?></label>
 							<div class="col-md-4">
 								<select id="select-salesArea" class="form-control" name="fin_sales_area_id">
-									<option value="0">-- <?=lang("select")?> --</option>
+									<option value="0">-- <=lang("select")?> --</option>
 								</select>
 								<div id="fin_sales_area_id_err" class="text-danger"></div>
 							</div>
-						
-						<label for="select-salesId" class="col-md-2 control-label"><?=lang("Sales Name")?></label>
-							<div class="col-md-4">
+							-->
+							<label for="select-salesId" class="col-md-2 control-label"><?=lang("Sales Name")?></label>
+							<div class="col-md-10">
 								<select id="select-salesId" class="form-control" name="fin_sales_id">
 									<option value="0">-- <?=lang("select")?> --</option>
 								</select>
@@ -1065,6 +1066,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		});
 
+		
 		$("#select-salesArea").select2({
 			width: '100%',
 			ajax: {
@@ -1360,8 +1362,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var newOption = new Option(resp.ms_relations.fst_notes, true);
 				$('#select-notes').append(newOption).trigger('change');
 
-				var newOption = new Option(resp.ms_relations.fst_name, resp.ms_relations.fin_sales_area_id, true, true);
-				$('#select-salesArea').append(newOption).trigger('change');
+				//var newOption = new Option(resp.ms_relations.fst_name, resp.ms_relations.fin_sales_area_id, true, true);
+				//$('#select-salesArea').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.SalesName, resp.ms_relations.fin_sales_id, true, true);
 				$('#select-salesId').append(newOption).trigger('change');
