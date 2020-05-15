@@ -480,9 +480,7 @@ class Sales_order extends MY_Controller
 				$repTitle = "";
 		
 				$spreadsheet = $this->phpspreadsheet->load();
-				$sheet = $spreadsheet->getActiveSheet();
-				
-				
+				$sheet = $spreadsheet->getActiveSheet();								
 				$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4;
 				$repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT;
 				switch ($data['rpt_layout']){
@@ -507,6 +505,7 @@ class Sales_order extends MY_Controller
 						$repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
 						break;
 				}	
+
 				$spreadsheet->getProperties()->setCreator('QSystem - Indonesia')
 				->setLastModifiedBy('Developer team')
 				->setTitle($repTitle)
@@ -580,6 +579,7 @@ class Sales_order extends MY_Controller
 					$totalAmount = 0;
 					$numOfRecs = count($dataReport);
 					$idx = 0;
+					
 					foreach($dataReport as $row){
 						$idx++;
 						// break by no_SO
@@ -651,7 +651,7 @@ class Sales_order extends MY_Controller
 					$sheet->getStyle('G'.$cellRow.':L'.$cellRow)->applyFromArray($styleArray);
 					
 					$arrMerged[]=[$cellRow,"SUM"];
-
+					
 					$cellRow++;
 					$cellRow++;
 
@@ -664,6 +664,7 @@ class Sales_order extends MY_Controller
 					$sheet->setCellValue("L".$cellRow,$totalAmount);
 					
 					$arrMerged[]=[$cellRow,"SUM"];
+					
 
 					$styleArray = [
 						'borders' => [
@@ -722,10 +723,11 @@ class Sales_order extends MY_Controller
 					
 					];
 					$sheet->getStyle('A1')->applyFromArray($styleArray);
-					$ttlCol = sizeof($data['selected_columns'][0]);
+
+					$ttlSelectedCol = sizeof($data['selected_columns'][0]);
 					$sumCol = $this->phpspreadsheet->getSumColPosition($this->layout_columns,1,$data['selected_columns'][0]);
 					$this->phpspreadsheet->cleanColumns($sheet,12,$data['selected_columns'][0]);
-					$this->phpspreadsheet->mergedData($sheet,$arrMerged,$ttlCol,$sumCol);
+					$this->phpspreadsheet->mergedData($sheet,$arrMerged,$ttlSelectedCol,$sumCol);
 
 				} //end if layout 1
 
@@ -742,6 +744,85 @@ class Sales_order extends MY_Controller
 		}
 	}
 
+
+	public function generateExcel_test2($isPreview = 1) {
+		$this->load->library("phpspreadsheet");
+		// print_r("Hallo");print_r($data);die();
+		// $dataReport = $this->sales_order_rpt_model->queryComplete($data,"a.fst_salesorder_no");
+		// print_r($dataReport);die();
+		$data = [
+			"fin_branch_id" => $this->input->post("fin_branch_id"),
+			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
+			"fin_relation_id" => $this->input->post("fin_relation_id"),
+			"fin_sales_id" => $this->input->post("fin_sales_id"),
+			"fdt_salesorder_datetime" => $this->input->post("fdt_salesorder_datetime"),
+			"fdt_salesorder_datetime2" => $this->input->post("fdt_salesorder_datetime2"),
+			"rpt_layout" => $this->input->post("rpt_layout"),
+			"selected_columns" => array($this->input->post("selected_columns"))
+		];
+		
+		// print_r($data['selected_columns'][0]);die;
+		
+
+		$dataReport = $this->sales_order_rpt_model->queryComplete($data,"a.fst_salesorder_no");
+		$arrMerged = [];  //row,ttlColType(full,sum)
+		if (isset($dataReport)) {
+			if ($dataReport==[]) {
+				print_r("Data Not Found!");
+			}else {
+				$repTitle = "";
+		
+				$spreadsheet = $this->phpspreadsheet->load();
+				$sheet = $spreadsheet->getActiveSheet();	
+
+				$repPaperSize = \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4;
+				$repOrientation= \PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT;
+				$repTitle = "LAPORAN SALES ORDER DETAIL";
+
+				
+			
+		
+				//$spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
+				//$spreadsheet->getDefaultStyle()->getFont()->setSize(24);
+				//$sheet->setCellValue("A1", $repTitle);
+				
+				//$sheet->mergeCells('A1:L1');                
+				$arrMerged[] = [1,"FULL"];
+
+				$spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
+				$spreadsheet->getDefaultStyle()->getFont()->setSize(10);
+				
+				$sheet->setCellValue("A3","Col A");
+				$sheet->setCellValue("B3","Col B");
+				$sheet->setCellValue("C3","Col C");
+				$sheet->setCellValue("D3","Col D");
+				$sheet->setCellValue("E3","Col E");
+				$sheet->setCellValue("F3","Col F");
+				$sheet->getColumnDimension("A")->setAutoSize(true);
+				$sheet->getColumnDimension("B")->setAutoSize(true);
+				$sheet->getColumnDimension("C")->setAutoSize(true);
+				$sheet->getColumnDimension("D")->setAutoSize(true);
+				$sheet->getColumnDimension("E")->setAutoSize(true);
+				$sheet->getColumnDimension("F")->setAutoSize(true);
+				
+				$ttlCol = 6;
+				$sumCol = 3;
+				$this->phpspreadsheet->cleanColumns($sheet,6,$data['selected_columns'][0]);
+				$this->phpspreadsheet->mergedData($sheet,$arrMerged,$ttlCol,$sumCol);
+
+
+				if ($isPreview != 1) {
+					$this->phpspreadsheet->save("hasil.xls" ,$spreadsheet);
+					// $this->phpspreadsheet->savePDF();
+				}else {
+					//$this->phpspreadsheet->savePDF();
+					$this->phpspreadsheet->saveHTMLvia($spreadsheet);    
+				}
+			}
+		}else {
+			print_r("Data Not Found !");
+		}
+	}
 
 	public function generateExcel_test($isPreview = 1) {
 		$this->load->library("phpspreadsheet");

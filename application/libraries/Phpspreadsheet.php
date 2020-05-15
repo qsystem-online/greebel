@@ -169,22 +169,41 @@ class Phpspreadsheet extends Spreadsheet {
 
 	public function cleanColumns(&$sheet,$ttlCol,$selectedCol){
 		$sheet->insertNewRowBefore(1, 1);		
+		
+		//$sheet->getCell("A1")->setValue("HAPUS");
+		//$sheet->getCell("B1")->setValue("JANGAN");
+		//$sheet->getCell("C1")->setValue("JANGAN");
+		//$sheet->getCell("D1")->setValue("JANGAN");
+		//$sheet->getCell("E1")->setValue("JANGAN");
+
+		
 		for($i=0;$i<$ttlCol;$i++){
-			if (!in_array($i, $selectedCol)){				
-				$colName = $this->getNameFromNumber($i);
-				$sheet->setCellValue("$colName"."1","DELETE");
+			$colName = $this->getNameFromNumber($i);
+			if (!in_array($i, $selectedCol)){								
+				$sheet->getCell("$colName"."1")->setValue("HAPUS");
+			}else{
+				$sheet->getCell("$colName"."1")->setValue("VIEW");
 			}			
-		}		
-		$doDelete = true;
+		}
+				
+
+		//$doDelete = true;
 		$colIndex = 0;
 		for($i=0;$i<$ttlCol;$i++){
-			$colName = $this->getNameFromNumber($colIndex);
-			$val = $sheet->getCell("$colName"."1")->getvalue();
-			if ($val == "DELETE"){
+			//$colName = $this->getNameFromNumber($colIndex);
+			$colName = $this->getNameFromNumber($i);
+			$colFlag =$colName ."1";
+			$val=null;
+			$val = $sheet->getCell($colFlag)->getvalue();
+			$val2 = $sheet->getCell("$colName"."4")->getvalue();
+			if ($val == "HAPUS"){
 				$sheet->removeColumn($colName);
+				//$sheet->removeColumnByIndex($colIndex+1);
+				//$i=-1;
 			}else{
 				$colIndex++;
 			}			
+			//$colIndex++;
 		}		
 		$sheet->removeRow(1);							
 	}
