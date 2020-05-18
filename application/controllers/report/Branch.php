@@ -92,6 +92,7 @@ class Branch extends MY_Controller
 		
 		$data = [
 			"fin_branch_id" => $this->input->post("fin_branch_id"),
+			"fst_area_kode" => $this->input->post("fst_kode"),
 			"rpt_layout" => $this->input->post("rpt_layout"),
 			"selected_columns" => array($this->input->post("selected_columns"))
 		];

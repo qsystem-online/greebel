@@ -8,17 +8,13 @@ class Branch_rpt_model extends CI_Model {
     public function queryComplete($data, $sorder_by="a.fin_branch_id", $rptLayout="1") {
         
         $branch_id = "";
-        $relation_id = "";
+        $kode = "";
         if (isset($data['fin_branch_id'])) { $branch_id = $data['fin_branch_id'];}
-        if (isset($data['fin_relation_id'])) { $relation_id = $data['fin_relation_id'];}
         
         $swhere = "";
         $sorderby = "";
         if ($branch_id > "0") {
             $swhere .= " and a.fin_branch_id = " . $branch_id;
-        }
-        if ($relation_id > "0") {
-            $swhere .= " and a.fin_relation_id = " . $relation_id;
         }
         if ($swhere != "") {
             $swhere = " where " . substr($swhere, 5);
