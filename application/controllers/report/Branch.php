@@ -166,7 +166,7 @@ class Branch extends MY_Controller
 				$spreadsheet->getDefaultStyle()->getFont()->setSize(10);
 				
 				//ini contoh report layout 1 az yang sudah dibuat
-				if  ($data['rpt_layout'] ==  1){
+				if  ($data['rpt_layout'] == 1){
                     $sheet->setCellValue("A3","Nou.");
                     $sheet->setCellValue("B3","ID");
                     $sheet->setCellValue("C3","Nama Cabang");
@@ -204,11 +204,16 @@ class Branch extends MY_Controller
                         $sheet->setCellValue("F".$cellRow,$row->fst_district_name);
                         $sheet->setCellValue("G".$cellRow,$row->fst_province_name);
                         $sheet->setCellValue("H".$cellRow,$row->fst_postalcode);
-                        $sheet->setCellValue("I".$cellRow,$row->fst_branch_phone);
+						$sheet->setCellValue("I".$cellRow,$row->fst_branch_phone);
+						if ($row->fbl_is_hq != 1) {
+							$row->fbl_is_hq = "No";
+						} else if ($row->fbl_is_hq = 1) {
+							$row->fbl_is_hq = "Yes";
+						}
                         $sheet->setCellValue("J".$cellRow,$row->fbl_is_hq);
                         $sheet->setCellValue("K".$cellRow,$row->fst_notes);                            
 						$cellRow++;
-				}
+					}
 					
 
 					$styleArray = [
