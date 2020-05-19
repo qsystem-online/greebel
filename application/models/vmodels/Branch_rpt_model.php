@@ -5,7 +5,7 @@ class Branch_rpt_model extends CI_Model {
 
     public $layout1Columns = ['No', 'ID', 'Nama Cabang'];
 
-    public function queryComplete($data, $sorder_by="(a.fst_area_code,1,2)", $rptLayout="1") {
+    public function queryComplete($data, $sorder_by="(a.fst_area_code,1,5)", $rptLayout="1") {
         
         $branch_id = "";
         $area_code = "";
