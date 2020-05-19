@@ -124,6 +124,7 @@ class Item extends MY_Controller
             "fst_max_item_discount" => $this->input->post("fst_max_item_discount"),
             "fdc_min_basic_unit_avg_cost" => parseNumber($this->input->post("fdc_min_basic_unit_avg_cost")),
             "fdc_max_basic_unit_avg_cost" => parseNumber($this->input->post("fdc_max_basic_unit_avg_cost")),
+            "fbl_is_online" => ($this->input->post("fbl_is_online") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
         $this->db->trans_start();
@@ -257,6 +258,7 @@ class Item extends MY_Controller
             "fst_max_item_discount" => $this->input->post("fst_max_item_discount"),
             "fdc_min_basic_unit_avg_cost" => parseNumber($this->input->post("fdc_min_basic_unit_avg_cost")),
             "fdc_max_basic_unit_avg_cost" => parseNumber($this->input->post("fdc_max_basic_unit_avg_cost")),
+            "fbl_is_online" => ($this->input->post("fbl_is_online") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
         $this->db->trans_start();
