@@ -190,8 +190,8 @@ class Phpspreadsheet extends Spreadsheet {
 		//$doDelete = true;
 		$colIndex = 0;
 		for($i=0;$i<$ttlCol;$i++){
-			//$colName = $this->getNameFromNumber($colIndex);
-			$colName = $this->getNameFromNumber($i);
+			$colName = $this->getNameFromNumber($colIndex);
+			//$colName = $this->getNameFromNumber($i);
 			$colFlag =$colName ."1";
 			$val=null;
 			$val = $sheet->getCell($colFlag)->getvalue();
@@ -225,7 +225,7 @@ class Phpspreadsheet extends Spreadsheet {
 		return $colIndex;
 	}
 
-	public function mergedData(&$sheet,$arrMerged,$ttlCol,$sumCol){		
+	public function mergedData(&$sheet,$arrMerged,$ttlCol,$sumCol){				
 		$ttlCol = $this->getNameFromNumber($ttlCol-1);
 		$sumCol = $this->getNameFromNumber($sumCol-1);
 		foreach($arrMerged as $merged){
