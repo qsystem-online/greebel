@@ -5,16 +5,16 @@ class Branch_rpt_model extends CI_Model {
 
     public $layout1Columns = ['No', 'ID', 'Nama Cabang'];
 
-    public function queryComplete($data, $sorder_by="a.fin_branch_id", $rptLayout="1") {
+    public function queryComplete($data, $sorder_by="(a.fst_area_code,1,2)", $rptLayout="1") {
         
         $branch_id = "";
-        $kode = "";
-        if (isset($data['fin_branch_id'])) { $branch_id = $data['fin_branch_id'];}
+        $area_code = "";
+        if (isset($data['fst_area_code'])) { $area_code = $data['fst_area_code'];}
         
         $swhere = "";
         $sorderby = "";
-        if ($branch_id > "0") {
-            $swhere .= " and a.fin_branch_id = " . $branch_id;
+        if ($area_code > "0") {
+            $swhere .= " and a.fst_area_code = " . $area_code;
         }
         if ($swhere != "") {
             $swhere = " where " . substr($swhere, 5);
