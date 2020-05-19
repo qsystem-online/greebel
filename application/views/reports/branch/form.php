@@ -3,13 +3,6 @@
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
-                <label for="select-Branch" class="col-sm-2 control-label"><?= lang("Branch") ?> :</label>
-                <div class="col-sm-4">
-                    <select id="select-Branch" class="form-control" name="fin_branch_id"></select>
-                    <div id="fin_branch_id_err" class="text-danger"></div>
-                </div>
-            </div>
-            <div class="form-group row">
             <label for="select-provinces" class="col-md-2 control-label"><?=lang("Province Name")?></label>
                 <div class="col-md-4">
                     <select id="select-provinces" class="form-control select2" name="fst_kode">
@@ -90,27 +83,6 @@
         // currentValue = myRadio.value;
     }         
     $(function() {
-        $("#select-Branch").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>master/warehouse/get_Branch',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value) {
-                        data2.push({
-                            "id": value.fin_branch_id,
-                            "text": value.fst_branch_name
-                        });
-                    });
-                    return {
-                        results: data2
-                    };
-                },
-                cache: true,
-            }
-        });
         $("#select-provinces").select2({
             width: '100%',
             ajax: {
