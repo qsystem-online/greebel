@@ -30,12 +30,18 @@ class Items_rpt_model extends CI_Model {
         if ($lob_id > "0") {
             $swhere .= " and a.fst_linebusiness_id = " . $lob_id;
         }
-        if (isset($start_itemCode)) {
-            $swhere .= " and a.fst_item_code >= '" . $start_itemCode;            
+        if ($start_itemCode > "0") {
+            $swhere .= " and a.fst_item_code >= '" . $start_itemCode . "'";            
         }
-        if (isset($end_itemCode)) {
-            $swhere .= " and a.fst_item_code <= '". $end_itemCode;
+        if ($end_itemCode > "0") {
+            $swhere .= " and a.fst_item_code <= '". $end_itemCode . "'";
         }
+        //if (isset($start_itemCode)) {
+        //    $swhere .= " and a.fst_item_code >= '" . $start_itemCode;            
+        //}
+        //if (isset($end_itemCode)) {
+        //    $swhere .= " and a.fst_item_code <= '". $end_itemCode;
+        //}
         if ($swhere != "") {
             $swhere = " where " . substr($swhere, 5);
         }
@@ -45,19 +51,25 @@ class Items_rpt_model extends CI_Model {
         
         switch($rptLayout) {
             case "1":
-                $ssql = "SELECT a.*,CONCAT(a.fst_linebusiness_id,'  -  ',c.fst_linebusiness_name) as vendorName1,
-                CONCAT(a.fin_item_group_id,'  -  ',b.fst_item_group_name) as itemGroup
+                $ssql = "SELECT a.*,b.fst_item_group_name as itemGroup,CONCAT(a.fst_linebusiness_id,'  -  ',c.fst_linebusiness_name)
                 FROM msitems a LEFT JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
-                LEFT JOIN mslinebusiness c ON REPLACE(a.fst_linebusiness_id,',','|') REGEXP  REPLACE(c.fin_linebusiness_id,',','|') " . $swhere . $sorderby;
+                LEFT JOIN mslinebusiness c ON a.fst_linebusiness_id = c.fin_linebusiness_id " . $swhere . $sorderby;
+                break;
+            case "2":
+                $ssql = "SELECT a.*,b.fst_item_group_name as itemGroup,CONCAT(a.fst_linebusiness_id,'  -  ',c.fst_linebusiness_name),
+                d.fst_unit,d.fbl_is_basic_unit,d.fdc_conv_to_basic_unit,d.fbl_is_selling,d.fbl_is_buying,d.fbl_is_production_output,d.fdc_price_list,d.fdc_het
+                FROM msitems a 
+                LEFT JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
+                LEFT JOIN mslinebusiness c ON a.fst_linebusiness_id = c.fin_linebusiness_id
+                LEFT JOIN msitemunitdetails d ON a.fin_item_id = d.fin_item_id " . $swhere . $sorderby;
                 break;
             default:
                 break;
         }
         
         $query = $this->db->query($ssql);
-        // $dataReturn["rows"]=$query->result();
-        // $fields = $query->list_fields();
-        // $dataReturn["fields"]=$fields;
+        //echo $this->db->last_query();
+        //die();
         return $query->result();
     }
 
