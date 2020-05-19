@@ -282,4 +282,24 @@ class Branch extends MY_Controller
         $this->Cell(30, 10, 'Percobaan Header Dan Footer With Page Number', 0, 0, 'C');
         $this->Cell(0, 10, 'Halaman ' . $this->PageNo() . ' dari {nb}', 0, 0, 'R');
     }
+
+    public function get_Province(){
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(REPLACE(fst_kode, '.', '')) = 2 ";
+		$qr = $this->db->query($ssql,[]);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_District($fst_kode){
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(REPLACE(fst_kode, '.', '')) = 4 and fst_kode like ? ";
+		$qr = $this->db->query($ssql,[$fst_kode .'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
 }
