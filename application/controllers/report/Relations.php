@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Items extends MY_Controller
+class Relations extends MY_Controller
 {
 
 	public $layout_columns =[]; 
@@ -10,7 +10,7 @@ class Items extends MY_Controller
 	{
 		parent::__construct();
 		$this->load->library('form_validation');
-		$this->load->model('vmodels/items_rpt_model');
+		$this->load->model('vmodels/relations_rpt_model');
 		$this->load->model('mslinebusiness_model');
 
 		$this->layout_columns = [

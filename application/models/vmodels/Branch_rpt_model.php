@@ -14,7 +14,7 @@ class Branch_rpt_model extends CI_Model {
         $swhere = "";
         $sorderby = "";
         if ($area_code > "0") {
-            $swhere .= " and a.fst_area_code = " . $area_code;
+            $swhere .= " and a.fst_area_code like '" . $area_code ."%'";
         }
         if ($swhere != "") {
             $swhere = " where " . substr($swhere, 5);

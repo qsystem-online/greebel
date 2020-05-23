@@ -178,10 +178,10 @@
             data = $("#rptBranch").serializeArray();
             url = "<?= site_url() ?>report/branch/process";
 
-            if ($("#select-provinces").val() == 0){
-                alert("<?=lang('Pilih Province Name ...!')?>");
-                return;
-            }
+            //if ($("#select-provinces").val() == 0){
+            //    alert("<?=lang('Pilih Province Name ...!')?>");
+            //    return;
+            //}
             
             // $("iframe").attr("src",url);
             $.ajax({

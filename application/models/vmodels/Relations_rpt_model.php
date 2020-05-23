@@ -1,12 +1,14 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Items_rpt_model extends CI_Model {
+class Relations_rpt_model extends CI_Model {
 
-    public $layout1Columns = ['No', 'Kode Item', 'Nama Item'];
+    public $layout1Columns = ['No', 'ID Relasi', 'Nama Relasi'];
 
-    public function queryComplete($data, $sorder_by="a.fst_item_code", $rptLayout="1") {
+    public function queryComplete($data, $sorder_by="a.fst_relation_name", $rptLayout="1") {
         
+        $area_code = "";
+        $branch_id = "";
         $group_id = "";
         $type_id = "";
         $lob_id = "";
