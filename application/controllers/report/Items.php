@@ -175,7 +175,7 @@ class Items extends MY_Controller
 		$data = [
 			"fin_item_group_id" => $this->input->post("fin_item_group_id"),
 			"fin_item_type_id" => $this->input->post("fin_item_type_id"),
-			"fst_linebusiness_id" => $this->input->post("fst_linebusiness_id"),
+			//"fst_linebusiness_id" => $this->input->post("fst_linebusiness_id"),
 			"fst_item_code" => $this->input->post("fst_item_code"),
 			"fst_item_code2" => $this->input->post("fst_item_code2"),
 			"fbl_is_batch_number" => $this->input->post("fbl_is_batch_number"),
@@ -184,6 +184,13 @@ class Items extends MY_Controller
 			"rpt_layout" => $this->input->post("rpt_layout"),
 			"selected_columns" => array($this->input->post("selected_columns"))
 		];
+
+		$fst_linebusiness_id = $this->input->post("fst_linebusiness_id");
+		if ($fst_linebusiness_id != "" ){
+            $data["fst_linebusiness_id"] = implode(",",$this->input->post("fst_linebusiness_id"));
+        }else{
+			$data["fst_linebusiness_id"] = $this->input->post("fst_linebusiness_id");
+		}
 		
 		// print_r($data['selected_columns'][0]);die;
 		

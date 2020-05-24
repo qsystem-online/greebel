@@ -11,92 +11,60 @@ class Relations extends MY_Controller
 		parent::__construct();
 		$this->load->library('form_validation');
 		$this->load->model('vmodels/relations_rpt_model');
+		$this->load->model('msarea_model');
+        $this->load->model('msbranches_model');
 		$this->load->model('mslinebusiness_model');
 
 		$this->layout_columns = [
             ['layout' => 1, 'label'=>'Nou.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-            ['layout' => 1, 'label'=>'Group', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Type', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'LoB', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Item Code', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Item Name', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Vendor Item Name', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'POS Item Name', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Rack Info', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'SNI', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Max Disc', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'MinAvg', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'MaxAvg', 'value'=>'12', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'isBatchNumber', 'value'=>'13', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'isSerialNumber', 'value'=>'14', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'isOnline', 'value'=>'15', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Memo', 'value'=>'16', 'selected'=>false,'sum_total'=>false],
+            ['layout' => 1, 'label'=>'Relation Type', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'LoB', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Business Type', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Branch', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Group', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Relation Induk', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Relation Name', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'NPWP', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Phone', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Fax', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Address', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Postal Code', 'value'=>'12', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Province', 'value'=>'13', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'District', 'value'=>'14', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'SubDistrict', 'value'=>'15', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Village', 'value'=>'16', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Pricing group', 'value'=>'17', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Sales Name', 'value'=>'18', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Credit Limit', 'value'=>'19', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'TOP', 'value'=>'20', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'TOP Commision', 'value'=>'21', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'TOP + Commision', 'value'=>'22', 'selected'=>false,'sum_total'=>false],
 			['layout' => 2, 'label'=>'Nou.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-            ['layout' => 2, 'label'=>'Group', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Type', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'LoB', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Item Code', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Item Name', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Vendor Item Name', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'POS Item Name', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Rack Info', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'SNI', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Max Disc', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'MinAvg', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'MaxAvg', 'value'=>'12', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'isBatchNumber', 'value'=>'13', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'isSerialNumber', 'value'=>'14', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'isOnline', 'value'=>'15', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Memo', 'value'=>'16', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Unit', 'value'=>'17', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'isBasic', 'value'=>'18', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Convertion', 'value'=>'19', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'isSelling', 'value'=>'20', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'isBuying', 'value'=>'21', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'isProduction', 'value'=>'22', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Price', 'value'=>'23', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'HET', 'value'=>'24', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Nou.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-            ['layout' => 3, 'label'=>'Group', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Type', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'LoB', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Item Code', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Item Name', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Vendor Item Name', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'POS Item Name', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Rack Info', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'SNI', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Max Disc', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'MinAvg', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'MaxAvg', 'value'=>'12', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'isBatchNumber', 'value'=>'13', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'isSerialNumber', 'value'=>'14', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'isOnline', 'value'=>'15', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Memo', 'value'=>'16', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'BOM Scale', 'value'=>'17', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Item Code BOM', 'value'=>'18', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Item Name BOM', 'value'=>'19', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Unit', 'value'=>'20', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Nou.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-            ['layout' => 4, 'label'=>'Group', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Type', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'LoB', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Item Code', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Item Name', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Vendor Item Name', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'POS Item Name', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Rack Info', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'SNI', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Max Disc', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'MinAvg', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'MaxAvg', 'value'=>'12', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'isBatchNumber', 'value'=>'13', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'isSerialNumber', 'value'=>'14', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'isOnline', 'value'=>'15', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Memo', 'value'=>'16', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Pricing Group', 'value'=>'17', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Unit', 'value'=>'18', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Selling Price', 'value'=>'19', 'selected'=>false,'sum_total'=>false],
+            ['layout' => 2, 'label'=>'Relation Type', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'LoB', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Business Type', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Branch', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Group', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Relation Induk', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Relation Name', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'NPWP', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Phone', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Fax', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Address', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Postal Code', 'value'=>'12', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Province', 'value'=>'13', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'District', 'value'=>'14', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'SubDistrict', 'value'=>'15', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Village', 'value'=>'16', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Pricing group', 'value'=>'17', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Sales Name', 'value'=>'18', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Credit Limit', 'value'=>'19', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'TOP', 'value'=>'20', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'TOP Commision', 'value'=>'21', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'TOP + Commision', 'value'=>'22', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Name', 'value'=>'23', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Area Kode', 'value'=>'24', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Shipping Address', 'value'=>'25', 'selected'=>false,'sum_total'=>false],
 		];
 
 	}
@@ -117,16 +85,13 @@ class Relations extends MY_Controller
 		$this->data["mystatus"]="OK";
 		$this->data["layout_columns"] = $this->layout_columns;
 
-		$this->data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>0], true);
         $this->data["linebusinessList"] =$this->mslinebusiness_model->get_data_linebusiness();
 		
 
-		$side_filter = $this->parser->parse('reports/items/form',$this->data, true);
+		$side_filter = $this->parser->parse('reports/relations/form',$this->data, true);
 		$this->data['REPORT_FILTER'] = $side_filter;
-		$this->data['TITLE'] = "ITEM LIST REPORT";
+		$this->data['TITLE'] = "RELATION LIST REPORT";
 		$mode = "Report";
-		// $this->data["mode"] = $mode;
-		// $this->data["title"] = $mode == "ADD" ? "Add Branch" : "Update Branch";
 		$report_filterbar = $this->parser->parse('inc/report_filterbar', $this->data, true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$page_content = null; // $this->parser->parse('template/standardList', $this->list, true);
@@ -146,8 +111,8 @@ class Relations extends MY_Controller
 	public function process()
 	{
 		// print_r('testing ajx-process');
-		$this->load->model('items_rpt_model');
-		$this->form_validation->set_rules($this->items_rpt_model->getRules());
+		$this->load->model('relations_rpt_model');
+		$this->form_validation->set_rules($this->relations_rpt_model->getRules());
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 
 		if ($this->form_validation->run() == FALSE) {
@@ -173,22 +138,37 @@ class Relations extends MY_Controller
 		// $dataReport = $this->sales_order_rpt_model->queryComplete($data,"a.fst_salesorder_no");
 		// print_r($dataReport);die();
 		$data = [
-			"fin_item_group_id" => $this->input->post("fin_item_group_id"),
-			"fin_item_type_id" => $this->input->post("fin_item_type_id"),
-			"fst_linebusiness_id" => $this->input->post("fst_linebusiness_id"),
-			"fst_item_code" => $this->input->post("fst_item_code"),
-			"fst_item_code2" => $this->input->post("fst_item_code2"),
-			"fbl_is_batch_number" => $this->input->post("fbl_is_batch_number"),
-			"fbl_is_serial_number" => $this->input->post("fbl_is_serial_number"),
-			"fbl_is_online" => $this->input->post("fbl_is_online"),
+			"fin_country_id" => $this->input->post("fin_country_id"),
+			"fst_area_code" => $this->input->post("fst_kode"),
+			"fin_branch_id" => $this->input->post("fin_branch_id"),
+			"fin_relation_group_id" => $this->input->post("fin_relation_group_id"),
+			//"fst_relation_type" => implode(",",$this->input->post("fst_relation_type")),
+			//"fst_linebusiness_id" => $this->input->post("fst_linebusiness_id"),
+			"fst_business_type" => $this->input->post("fst_business_type"),
+			"fin_parent_id" => $this->input->post("fin_parent_id"),
+			"fin_relation_id" => $this->input->post("fin_relation_id"),
+			"fin_relation_id2" => $this->input->post("fin_relation_id2"),
 			"rpt_layout" => $this->input->post("rpt_layout"),
 			"selected_columns" => array($this->input->post("selected_columns"))
 		];
+		$fst_relation_type = $this->input->post("fst_relation_type");
+		$fst_linebusiness_id = $this->input->post("fst_linebusiness_id");
+        if ($fst_relation_type != "" ){
+            $data["fst_relation_type"] = implode(",",$this->input->post("fst_relation_type"));
+        }else{
+			$data["fst_relation_type"] = $this->input->post("fst_relation_type");
+		}
+
+        if ($fst_linebusiness_id != "" ){
+            $data["fst_linebusiness_id"] = implode(",",$this->input->post("fst_linebusiness_id"));
+        }else{
+			$data["fst_linebusiness_id"] = $this->input->post("fst_linebusiness_id");
+		}
 		
 		// print_r($data['selected_columns'][0]);die;
 		
 
-		$dataReport = $this->items_rpt_model->queryComplete($data,"a.fst_item_code",$data['rpt_layout']);
+		$dataReport = $this->relations_rpt_model->queryComplete($data,"a.fst_relation_name",$data['rpt_layout']);
 
 		$arrMerged = [];  //row,ttlColType(full,sum)
 		if (isset($dataReport)) {
@@ -203,34 +183,22 @@ class Relations extends MY_Controller
 				$repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT;
 				switch ($data['rpt_layout']){
 					case "1":
-						$repTitle = "LAPORAN DAFTAR BARANG";
+						$repTitle = "LAPORAN DAFTAR RELASI";
 						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
                         $repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
-                        $fullColumn = 17;
+                        $fullColumn = 23;
 						break;
 					case "2":
-						$repTitle = "LAPORAN DAFTAR BARANG DETAIL UNIT SATUAN";
+						$repTitle = "LAPORAN DAFTAR RELASI DETAIL ALAMAT PENGIRIMAN";
 						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
 						$repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
-						$fullColumn = 25;
-						break;
-					case "3":
-						$repTitle = "LAPORAN DAFTAR BARANG DETAIL BOM";
-						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
-						$repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
-						$fullColumn = 21;
-						break;
-					case "4":
-						$repTitle = "LAPORAN DAFTAR BARANG DETAIL SPECIAL PRICING";
-						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
-						$repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
-						$fullColumn = 20;
+						$fullColumn = 26;
 						break;
 					default:
-						$repTitle = "LAPORAN DAFTAR BARANG";
+						$repTitle = "LAPORAN DAFTAR RELASI";
 						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
                         $repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
-                        $fullColumn = 17;
+                        $fullColumn = 23;
 						break;
 				}	
 
@@ -274,22 +242,28 @@ class Relations extends MY_Controller
 				//ini contoh report layout 1 az yang sudah dibuat
 				if  ($data['rpt_layout'] ==  1){
                     $sheet->setCellValue("A3","Nou.");
-                    $sheet->setCellValue("B3","Group");
-                    $sheet->setCellValue("C3","Type");
-                    $sheet->setCellValue("D3","LoB");
-                    $sheet->setCellValue("E3","Item Code");
-                    $sheet->setCellValue("F3","Item Name");
-                    $sheet->setCellValue("G3","Vendor Item Name");
-                    $sheet->setCellValue("H3","POS Item Name");
-                    $sheet->setCellValue("I3","Rack Info");
-                    $sheet->setCellValue("J3","SNI");
-                    $sheet->setCellValue("K3","Max Disc");
-					$sheet->setCellValue("L3","MinAvg");
-					$sheet->setCellValue("M3","MaxAvg");
-					$sheet->setCellValue("N3","isBatchNumber");
-					$sheet->setCellValue("O3","isSerial Number");
-					$sheet->setCellValue("P3","isOnline");
-					$sheet->setCellValue("Q3","Memo");
+                    $sheet->setCellValue("B3","Relation Type");
+                    $sheet->setCellValue("C3","LoB");
+                    $sheet->setCellValue("D3","Business Type");
+                    $sheet->setCellValue("E3","Branch");
+                    $sheet->setCellValue("F3","Group");
+                    $sheet->setCellValue("G3","Relation Induk");
+                    $sheet->setCellValue("H3","Relation Name");
+                    $sheet->setCellValue("I3","NPWP");
+                    $sheet->setCellValue("J3","Phone");
+                    $sheet->setCellValue("K3","Fax");
+					$sheet->setCellValue("L3","Address");
+					$sheet->setCellValue("M3","Postal Code");
+					$sheet->setCellValue("N3","Province");
+					$sheet->setCellValue("O3","District");
+					$sheet->setCellValue("P3","SubDistrict");
+					$sheet->setCellValue("Q3","Village");
+					$sheet->setCellValue("R3","Pricing Group");
+					$sheet->setCellValue("S3","Sales Name");
+					$sheet->setCellValue("T3","Credit Limit");
+					$sheet->setCellValue("U3","TOP");
+					$sheet->setCellValue("V3","TOP Commision");
+					$sheet->setCellValue("W3","TOP + Commision");
                     $sheet->getColumnDimension("A")->setAutoSize(false);
                     $sheet->getColumnDimension("B")->setAutoSize(true);
                     $sheet->getColumnDimension("C")->setAutoSize(true);
@@ -306,75 +280,47 @@ class Relations extends MY_Controller
                     $sheet->getColumnDimension("N")->setAutoSize(true);
                     $sheet->getColumnDimension("O")->setAutoSize(true);
                     $sheet->getColumnDimension("P")->setAutoSize(true);
-                    $sheet->getColumnDimension("Q")->setAutoSize(true);
+					$sheet->getColumnDimension("Q")->setAutoSize(true);
+					$sheet->getColumnDimension("R")->setAutoSize(true);
+					$sheet->getColumnDimension("S")->setAutoSize(true);
+                    $sheet->getColumnDimension("T")->setAutoSize(true);
+                    $sheet->getColumnDimension("U")->setAutoSize(true);
+                    $sheet->getColumnDimension("V")->setAutoSize(true);
+                    $sheet->getColumnDimension("W")->setAutoSize(true);
 					$nou = 0;
-					//$noSO = "";
 					$cellRow = 4;
-					//$subQty = 0;
-					//$subAmount = 0;
-					//$subDiscount = 0;
-					//$totalQty = 0;
-					//$totalDiscount = 0;
-					//$totalAmount = 0;
 					$numOfRecs = count($dataReport);
-					//$idx = 0;
 					
 					foreach($dataReport as $row){
-						//$idx++;
-						$type = $row->fin_item_type_id;
-						switch($type){
-							case 1:
-								$type = "Raw Material";
-								break;
-							case 2:
-								$type = "Semi Finished Material";
-								break;
-							case 3:
-								$type = "Supporting Material";
-								break;
-							case 4:
-								$type = "Ready Product";
-								break;
-							case 5:
-								$type = "Logistic";
-								break;
-							case 'ALL':
-								$type = "ALL";
-								break;
+						if($row->fst_business_type == 'P'){
+							$row->fst_business_type = 'Personal';
+						}else{
+							$row->fst_business_type = 'Corporate';
 						}
                         $nou++;
                         $sheet->setCellValue("A".$cellRow,$nou);
-                        $sheet->setCellValue("B".$cellRow,$row->itemGroup);
-                        $sheet->setCellValue("C".$cellRow,$type);
-                        $sheet->setCellValue("D".$cellRow,$row->fst_linebusiness_id);
-                        $sheet->setCellValue("E".$cellRow,$row->fst_item_code);
-                        $sheet->setCellValue("F".$cellRow,$row->fst_item_name);
-                        $sheet->setCellValue("G".$cellRow,$row->fst_name_on_pos);
-                        $sheet->setCellValue("H".$cellRow,$row->fst_vendor_item_name);
-                        $sheet->setCellValue("I".$cellRow,$row->fst_storage_rack_info);
-                        $sheet->setCellValue("J".$cellRow,$row->fst_sni_no);
-                        $sheet->setCellValue("K".$cellRow,$row->fst_max_item_discount);
-						$sheet->setCellValue("L".$cellRow,$row->fdc_min_basic_unit_avg_cost);
-						$sheet->setCellValue("M".$cellRow,$row->fdc_max_basic_unit_avg_cost);
-						if ($row->fbl_is_batch_number == 0){
-							$row->fbl_is_batch_number ="NO";
-						}else{
-							$row->fbl_is_batch_number ="YES";
-						}
-						if ($row->fbl_is_serial_number == 0){
-							$row->fbl_is_serial_number ="NO";
-						}else{
-							$row->fbl_is_serial_number ="YES";
-						}
-						if ($row->fbl_is_online == 0){
-							$row->fbl_is_online ="NO";
-						}else{
-							$row->fbl_is_online ="YES";
-						}
-						$sheet->setCellValue("N".$cellRow,$row->fbl_is_batch_number);
-						$sheet->setCellValue("O".$cellRow,$row->fbl_is_serial_number); 
-						$sheet->setCellValue("P".$cellRow,$row->fbl_is_online);
-						$sheet->setCellValue("Q".$cellRow,$row->fst_memo);                                
+                        $sheet->setCellValue("B".$cellRow,$row->fst_relation_type);
+                        $sheet->setCellValue("C".$cellRow,$row->fst_linebusiness_id);
+                        $sheet->setCellValue("D".$cellRow,$row->fst_business_type);
+                        $sheet->setCellValue("E".$cellRow,$row->fst_branch_name);
+                        $sheet->setCellValue("F".$cellRow,$row->fst_relation_group_name);
+                        $sheet->setCellValue("G".$cellRow,$row->ParentName);
+                        $sheet->setCellValue("H".$cellRow,$row->fst_relation_name);
+                        $sheet->setCellValue("I".$cellRow,$row->fst_npwp);
+                        $sheet->setCellValue("J".$cellRow,$row->fst_phone);
+                        $sheet->setCellValue("K".$cellRow,$row->fst_fax);
+						$sheet->setCellValue("L".$cellRow,$row->fst_address);
+						$sheet->setCellValue("M".$cellRow,$row->fst_postal_code);
+						$sheet->setCellValue("N".$cellRow,$row->fst_province_name);
+						$sheet->setCellValue("O".$cellRow,$row->fst_district_name); 
+						$sheet->setCellValue("P".$cellRow,$row->fst_subdistrict_name);
+						$sheet->setCellValue("Q".$cellRow,$row->fst_village_name);
+						$sheet->setCellValue("R".$cellRow,$row->fst_cust_pricing_group_name);
+						$sheet->setCellValue("S".$cellRow,$row->SalesName);
+						$sheet->setCellValue("T".$cellRow,$row->fdc_credit_limit);
+						$sheet->setCellValue("U".$cellRow,$row->fin_terms_payment); 
+						$sheet->setCellValue("V".$cellRow,$row->fin_top_komisi);
+						$sheet->setCellValue("W".$cellRow,$row->fin_top_plus_komisi);                                 
 						$cellRow++;
 				}
 					
@@ -399,7 +345,7 @@ class Relations extends MY_Controller
 							],
 						],
 					];
-					$sheet->getStyle('A3:Q'.$cellRow)->applyFromArray($styleArray);
+					$sheet->getStyle('A3:W'.$cellRow)->applyFromArray($styleArray);
 		
 					//FONT BOLD & Center
 					$styleArray = [
@@ -411,7 +357,7 @@ class Relations extends MY_Controller
 						]
 					];
 					// $sheet->getStyle('A2')->applyFromArray($styleArray);
-					$sheet->getStyle('A3:Q3')->applyFromArray($styleArray);
+					$sheet->getStyle('A3:W3')->applyFromArray($styleArray);
 					$sheet->getStyle('A3:A'.$cellRow)->applyFromArray($styleArray);
 
 					$styleArray = [
@@ -419,8 +365,8 @@ class Relations extends MY_Controller
 							'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1
 						]
 					];
-					$sheet->getStyle('L4:L'.$cellRow)->applyFromArray($styleArray);
-					$sheet->getStyle('L4:M'.$cellRow)->applyFromArray($styleArray);
+					$sheet->getStyle('T4:T'.$cellRow)->applyFromArray($styleArray);
+					//$sheet->getStyle('L4:M'.$cellRow)->applyFromArray($styleArray);
 
 					//$styleArray = [
 					//	'numberFormat'=> [
@@ -453,439 +399,31 @@ class Relations extends MY_Controller
 				} //end if layout 1
 				if  ($data['rpt_layout'] ==  2){
                     $sheet->setCellValue("A3","Nou.");
-                    $sheet->setCellValue("B3","Group");
-                    $sheet->setCellValue("C3","Type");
-                    $sheet->setCellValue("D3","LoB");
-                    $sheet->setCellValue("E3","Item Code");
-                    $sheet->setCellValue("F3","Item Name");
-                    $sheet->setCellValue("G3","Vendor Item Name");
-                    $sheet->setCellValue("H3","POS Item Name");
-                    $sheet->setCellValue("I3","Rack Info");
-                    $sheet->setCellValue("J3","SNI");
-                    $sheet->setCellValue("K3","Max Disc");
-					$sheet->setCellValue("L3","MinAvg");
-					$sheet->setCellValue("M3","MaxAvg");
-					$sheet->setCellValue("N3","isBatchNumber");
-					$sheet->setCellValue("O3","isSerial Number");
-					$sheet->setCellValue("P3","isOnline");
-					$sheet->setCellValue("Q3","Memo");
-					$sheet->setCellValue("R3","Unit");
-                    $sheet->setCellValue("S3","isBasic");
-					$sheet->setCellValue("T3","convertion");
-					$sheet->setCellValue("U3","isSelling");
-					$sheet->setCellValue("V3","isBuying");
-					$sheet->setCellValue("W3","isProduction");
-					$sheet->setCellValue("X3","Price");
-					$sheet->setCellValue("Y3","HET");
-                    $sheet->getColumnDimension("A")->setAutoSize(false);
-                    $sheet->getColumnDimension("B")->setAutoSize(true);
-                    $sheet->getColumnDimension("C")->setAutoSize(true);
-                    $sheet->getColumnDimension("D")->setAutoSize(true);
-                    $sheet->getColumnDimension("E")->setAutoSize(true);
-                    $sheet->getColumnDimension("F")->setAutoSize(true);
-                    $sheet->getColumnDimension("G")->setAutoSize(true);
-                    $sheet->getColumnDimension("H")->setAutoSize(true);
-                    $sheet->getColumnDimension("I")->setAutoSize(true);
-                    $sheet->getColumnDimension("J")->setAutoSize(true);
-                    $sheet->getColumnDimension("K")->setAutoSize(true);
-					$sheet->getColumnDimension("L")->setAutoSize(true);
-					$sheet->getColumnDimension("M")->setAutoSize(true);
-                    $sheet->getColumnDimension("N")->setAutoSize(true);
-                    $sheet->getColumnDimension("O")->setAutoSize(true);
-                    $sheet->getColumnDimension("P")->setAutoSize(true);
-					$sheet->getColumnDimension("Q")->setAutoSize(true);
-					$sheet->getColumnDimension("R")->setAutoSize(true);
-                    $sheet->getColumnDimension("S")->setAutoSize(true);
-					$sheet->getColumnDimension("T")->setAutoSize(true);
-					$sheet->getColumnDimension("U")->setAutoSize(true);
-                    $sheet->getColumnDimension("V")->setAutoSize(true);
-                    $sheet->getColumnDimension("W")->setAutoSize(true);
-                    $sheet->getColumnDimension("X")->setAutoSize(true);
-                    $sheet->getColumnDimension("Y")->setAutoSize(true);
-					$nou = 0;
-					$itemCode = "";
-					$cellRow = 4;
-					$numOfRecs = count($dataReport);
-					$idx = 0;
-					
-					foreach($dataReport as $row){
-						$idx++;
-						if ($itemCode != $row->fst_item_code){
-							$type = $row->fin_item_type_id;
-							switch($type){
-								case 1:
-									$type = "Raw Material";
-									break;
-								case 2:
-									$type = "Semi Finished Material";
-									break;
-								case 3:
-									$type = "Supporting Material";
-									break;
-								case 4:
-									$type = "Ready Product";
-									break;
-								case 5:
-									$type = "Logistic";
-									break;
-								case 'ALL':
-									$type = "ALL";
-									break;
-							}
-							$itemCode = $row->fst_item_code;
-							$nou++;
-							$sheet->setCellValue("A".$cellRow,$nou);
-							$sheet->setCellValue("B".$cellRow,$row->itemGroup);
-							$sheet->setCellValue("C".$cellRow,$type);
-							$sheet->setCellValue("D".$cellRow,$row->fst_linebusiness_id);
-							$sheet->setCellValue("E".$cellRow,$row->fst_item_code);
-							$sheet->setCellValue("F".$cellRow,$row->fst_item_name);
-							$sheet->setCellValue("G".$cellRow,$row->fst_name_on_pos);
-							$sheet->setCellValue("H".$cellRow,$row->fst_vendor_item_name);
-							$sheet->setCellValue("I".$cellRow,$row->fst_storage_rack_info);
-							$sheet->setCellValue("J".$cellRow,$row->fst_sni_no);
-							$sheet->setCellValue("K".$cellRow,$row->fst_max_item_discount);
-							$sheet->setCellValue("L".$cellRow,$row->fdc_min_basic_unit_avg_cost);
-							$sheet->setCellValue("M".$cellRow,$row->fdc_max_basic_unit_avg_cost);
-							if ($row->fbl_is_batch_number == 0){
-								$row->fbl_is_batch_number ="NO";
-							}else{
-								$row->fbl_is_batch_number ="YES";
-							}
-							if ($row->fbl_is_serial_number == 0){
-								$row->fbl_is_serial_number ="NO";
-							}else{
-								$row->fbl_is_serial_number ="YES";
-							}
-							if ($row->fbl_is_online == 0){
-								$row->fbl_is_online ="NO";
-							}else{
-								$row->fbl_is_online ="YES";
-							}
-							$sheet->setCellValue("N".$cellRow,$row->fbl_is_batch_number);
-							$sheet->setCellValue("O".$cellRow,$row->fbl_is_serial_number); 
-							$sheet->setCellValue("P".$cellRow,$row->fbl_is_online);
-							$sheet->setCellValue("Q".$cellRow,$row->fst_memo);                                
-							//$cellRow++;
-
-						}
-						if ($row->fbl_is_basic_unit == 0){
-							$row->fbl_is_basic_unit ="NO";
-						}else{
-							$row->fbl_is_basic_unit ="YES";
-						}
-						if ($row->fbl_is_selling == 0){
-							$row->fbl_is_selling ="NO";
-						}else{
-							$row->fbl_is_selling ="YES";
-						}
-						if ($row->fbl_is_buying == 0){
-							$row->fbl_is_buying ="NO";
-						}else{
-							$row->fbl_is_buying ="YES";
-						}
-						if ($row->fbl_is_production_output == 0 ){
-							$row->fbl_is_production_output ="NO";
-						}else{
-							$row->fbl_is_production_output ="YES";
-						}
-						$sheet->setCellValue("R".$cellRow,$row->fst_unit);
-						$sheet->setCellValue("S".$cellRow,$row->fbl_is_basic_unit); 
-						$sheet->setCellValue("T".$cellRow,$row->fdc_conv_to_basic_unit);
-						$sheet->setCellValue("U".$cellRow,$row->fbl_is_selling);
-						$sheet->setCellValue("V".$cellRow,$row->fbl_is_buying);
-						$sheet->setCellValue("W".$cellRow,$row->fbl_is_production_output); 
-						$sheet->setCellValue("X".$cellRow,$row->fdc_price_list);
-						$sheet->setCellValue("Y".$cellRow,$row->fdc_het);
-						$cellRow++; 
-					}
-					
-
-					$styleArray = [
-						'borders' => [
-							'allBorders' => [
-								//https://phpoffice.github.io/PhpSpreadsheet/1.1.0/PhpOffice/PhpSpreadsheet/Style/Border.html
-								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE
-							],
-						],
-					];
-					//$sheet->getStyle('A1:L'.$cellRow)->applyFromArray($styleArray);
-					//$sheet->getStyle('A1:IV65536'.$cellRow)->applyFromArray($styleArray);
-					$sheet->setShowGridlines(false);
-					//BORDER
-					$styleArray = [
-						'borders' => [
-							'allBorders' => [
-								//https://phpoffice.github.io/PhpSpreadsheet/1.1.0/PhpOffice/PhpSpreadsheet/Style/Border.html
-								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
-							],
-						],
-					];
-					$sheet->getStyle('A3:Y'.$cellRow)->applyFromArray($styleArray);
-		
-					//FONT BOLD & Center
-					$styleArray = [
-						'font' => [
-							'bold' => true,
-						],
-						'alignment' => [
-							'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-						]
-					];
-					// $sheet->getStyle('A2')->applyFromArray($styleArray);
-					$sheet->getStyle('A3:Y3')->applyFromArray($styleArray);
-					$sheet->getStyle('A3:A'.$cellRow)->applyFromArray($styleArray);
-
-					$styleArray = [
-						'numberFormat'=> [
-							'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1
-						]
-					];
-					$sheet->getStyle('L4:L'.$cellRow)->applyFromArray($styleArray);
-					$sheet->getStyle('L4:M'.$cellRow)->applyFromArray($styleArray);
-					$sheet->getStyle('X4:X'.$cellRow)->applyFromArray($styleArray);
-					$sheet->getStyle('X4:Y'.$cellRow)->applyFromArray($styleArray);
-
-					//$styleArray = [
-					//	'numberFormat'=> [
-					//		'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1
-					//	]
-					//];
-					//$sheet->getStyle('H4:H'.$cellRow)->applyFromArray($styleArray);
-					//$sheet->getStyle('J4:L'.$cellRow)->applyFromArray($styleArray);
-					$styleArray = [
-						'numberFormat'=> [
-							'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DDMMYYYY
-						]
-					];
-					$sheet->getStyle('F4:F'.$cellRow)->applyFromArray($styleArray);
-
-					$styleArray = [
-						'font' => [
-							'bold' => true,
-							'size' => 24,
-						],
-					
-					];
-					$sheet->getStyle('A1')->applyFromArray($styleArray);
-
-					$ttlSelectedCol = sizeof($data['selected_columns'][0]);
-					$sumCol = $this->phpspreadsheet->getSumColPosition($this->layout_columns,$data['rpt_layout'],$data['selected_columns'][0]);
-					$this->phpspreadsheet->cleanColumns($sheet,$fullColumn,$data['selected_columns'][0]);
-					$this->phpspreadsheet->mergedData($sheet,$arrMerged,$ttlSelectedCol,$sumCol);
-
-				} //End Of Layout 3
-				if  ($data['rpt_layout'] ==  3){
-                    $sheet->setCellValue("A3","Nou.");
-                    $sheet->setCellValue("B3","Group");
-                    $sheet->setCellValue("C3","Type");
-                    $sheet->setCellValue("D3","LoB");
-                    $sheet->setCellValue("E3","Item Code");
-                    $sheet->setCellValue("F3","Item Name");
-                    $sheet->setCellValue("G3","Vendor Item Name");
-                    $sheet->setCellValue("H3","POS Item Name");
-                    $sheet->setCellValue("I3","Rack Info");
-                    $sheet->setCellValue("J3","SNI");
-                    $sheet->setCellValue("K3","Max Disc");
-					$sheet->setCellValue("L3","MinAvg");
-					$sheet->setCellValue("M3","MaxAvg");
-					$sheet->setCellValue("N3","isBatchNumber");
-					$sheet->setCellValue("O3","isSerial Number");
-					$sheet->setCellValue("P3","isOnline");
-					$sheet->setCellValue("Q3","Memo");
-					$sheet->setCellValue("R3","BOM Scale");
-                    $sheet->setCellValue("S3","Item Code BOM");
-					$sheet->setCellValue("T3","Item Name BOM");
-					$sheet->setCellValue("U3","Unit BOM");
-                    $sheet->getColumnDimension("A")->setAutoSize(false);
-                    $sheet->getColumnDimension("B")->setAutoSize(true);
-                    $sheet->getColumnDimension("C")->setAutoSize(true);
-                    $sheet->getColumnDimension("D")->setAutoSize(true);
-                    $sheet->getColumnDimension("E")->setAutoSize(true);
-                    $sheet->getColumnDimension("F")->setAutoSize(true);
-                    $sheet->getColumnDimension("G")->setAutoSize(true);
-                    $sheet->getColumnDimension("H")->setAutoSize(true);
-                    $sheet->getColumnDimension("I")->setAutoSize(true);
-                    $sheet->getColumnDimension("J")->setAutoSize(true);
-                    $sheet->getColumnDimension("K")->setAutoSize(true);
-					$sheet->getColumnDimension("L")->setAutoSize(true);
-					$sheet->getColumnDimension("M")->setAutoSize(true);
-                    $sheet->getColumnDimension("N")->setAutoSize(true);
-                    $sheet->getColumnDimension("O")->setAutoSize(true);
-                    $sheet->getColumnDimension("P")->setAutoSize(true);
-					$sheet->getColumnDimension("Q")->setAutoSize(true);
-					$sheet->getColumnDimension("R")->setAutoSize(true);
-                    $sheet->getColumnDimension("S")->setAutoSize(true);
-					$sheet->getColumnDimension("T")->setAutoSize(true);
-					$sheet->getColumnDimension("U")->setAutoSize(true);
-					$nou = 0;
-					$itemCode = "";
-					$cellRow = 4;
-					$numOfRecs = count($dataReport);
-					$idx = 0;
-					
-					foreach($dataReport as $row){
-						$idx++;
-						if ($itemCode != $row->fst_item_code){
-							$type = $row->fin_item_type_id;
-							switch($type){
-								case 1:
-									$type = "Raw Material";
-									break;
-								case 2:
-									$type = "Semi Finished Material";
-									break;
-								case 3:
-									$type = "Supporting Material";
-									break;
-								case 4:
-									$type = "Ready Product";
-									break;
-								case 5:
-									$type = "Logistic";
-									break;
-								case 'ALL':
-									$type = "ALL";
-									break;
-							}
-							$itemCode = $row->fst_item_code;
-							$nou++;
-							$sheet->setCellValue("A".$cellRow,$nou);
-							$sheet->setCellValue("B".$cellRow,$row->itemGroup);
-							$sheet->setCellValue("C".$cellRow,$type);
-							$sheet->setCellValue("D".$cellRow,$row->fst_linebusiness_id);
-							$sheet->setCellValue("E".$cellRow,$row->fst_item_code);
-							$sheet->setCellValue("F".$cellRow,$row->fst_item_name);
-							$sheet->setCellValue("G".$cellRow,$row->fst_name_on_pos);
-							$sheet->setCellValue("H".$cellRow,$row->fst_vendor_item_name);
-							$sheet->setCellValue("I".$cellRow,$row->fst_storage_rack_info);
-							$sheet->setCellValue("J".$cellRow,$row->fst_sni_no);
-							$sheet->setCellValue("K".$cellRow,$row->fst_max_item_discount);
-							$sheet->setCellValue("L".$cellRow,$row->fdc_min_basic_unit_avg_cost);
-							$sheet->setCellValue("M".$cellRow,$row->fdc_max_basic_unit_avg_cost);
-							if ($row->fbl_is_batch_number == 0){
-								$row->fbl_is_batch_number ="NO";
-							}else{
-								$row->fbl_is_batch_number ="YES";
-							}
-							if ($row->fbl_is_serial_number == 0){
-								$row->fbl_is_serial_number ="NO";
-							}else{
-								$row->fbl_is_serial_number ="YES";
-							}
-							if ($row->fbl_is_online == 0){
-								$row->fbl_is_online ="NO";
-							}else{
-								$row->fbl_is_online ="YES";
-							}
-							$sheet->setCellValue("N".$cellRow,$row->fbl_is_batch_number);
-							$sheet->setCellValue("O".$cellRow,$row->fbl_is_serial_number); 
-							$sheet->setCellValue("P".$cellRow,$row->fbl_is_online);
-							$sheet->setCellValue("Q".$cellRow,$row->fst_memo);
-							$sheet->setCellValue("R".$cellRow,$row->fdc_scale_for_bom);                                
-							//$cellRow++;
-
-						}
-						$sheet->setCellValue("S".$cellRow,$row->itemCodeBOM); 
-						$sheet->setCellValue("T".$cellRow,$row->itemNameBOM);
-						$sheet->setCellValue("U".$cellRow,$row->unitBOM);
-						$cellRow++; 
-					}
-					
-
-					$styleArray = [
-						'borders' => [
-							'allBorders' => [
-								//https://phpoffice.github.io/PhpSpreadsheet/1.1.0/PhpOffice/PhpSpreadsheet/Style/Border.html
-								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE
-							],
-						],
-					];
-					//$sheet->getStyle('A1:L'.$cellRow)->applyFromArray($styleArray);
-					//$sheet->getStyle('A1:IV65536'.$cellRow)->applyFromArray($styleArray);
-					$sheet->setShowGridlines(false);
-					//BORDER
-					$styleArray = [
-						'borders' => [
-							'allBorders' => [
-								//https://phpoffice.github.io/PhpSpreadsheet/1.1.0/PhpOffice/PhpSpreadsheet/Style/Border.html
-								'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
-							],
-						],
-					];
-					$sheet->getStyle('A3:U'.$cellRow)->applyFromArray($styleArray);
-		
-					//FONT BOLD & Center
-					$styleArray = [
-						'font' => [
-							'bold' => true,
-						],
-						'alignment' => [
-							'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-						]
-					];
-					// $sheet->getStyle('A2')->applyFromArray($styleArray);
-					$sheet->getStyle('A3:U3')->applyFromArray($styleArray);
-					$sheet->getStyle('A3:A'.$cellRow)->applyFromArray($styleArray);
-
-					$styleArray = [
-						'numberFormat'=> [
-							'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1
-						]
-					];
-					$sheet->getStyle('L4:L'.$cellRow)->applyFromArray($styleArray);
-					$sheet->getStyle('L4:M'.$cellRow)->applyFromArray($styleArray);
-
-					//$styleArray = [
-					//	'numberFormat'=> [
-					//		'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1
-					//	]
-					//];
-					//$sheet->getStyle('H4:H'.$cellRow)->applyFromArray($styleArray);
-					//$sheet->getStyle('J4:L'.$cellRow)->applyFromArray($styleArray);
-					$styleArray = [
-						'numberFormat'=> [
-							'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_DDMMYYYY
-						]
-					];
-					$sheet->getStyle('F4:F'.$cellRow)->applyFromArray($styleArray);
-
-					$styleArray = [
-						'font' => [
-							'bold' => true,
-							'size' => 24,
-						],
-					
-					];
-					$sheet->getStyle('A1')->applyFromArray($styleArray);
-
-					$ttlSelectedCol = sizeof($data['selected_columns'][0]);
-					$sumCol = $this->phpspreadsheet->getSumColPosition($this->layout_columns,$data['rpt_layout'],$data['selected_columns'][0]);
-					$this->phpspreadsheet->cleanColumns($sheet,$fullColumn,$data['selected_columns'][0]);
-					$this->phpspreadsheet->mergedData($sheet,$arrMerged,$ttlSelectedCol,$sumCol);
-
-				} //End Of Layout 4
-				if  ($data['rpt_layout'] ==  4){
-                    $sheet->setCellValue("A3","Nou.");
-                    $sheet->setCellValue("B3","Group");
-                    $sheet->setCellValue("C3","Type");
-                    $sheet->setCellValue("D3","LoB");
-                    $sheet->setCellValue("E3","Item Code");
-                    $sheet->setCellValue("F3","Item Name");
-                    $sheet->setCellValue("G3","Vendor Item Name");
-                    $sheet->setCellValue("H3","POS Item Name");
-                    $sheet->setCellValue("I3","Rack Info");
-                    $sheet->setCellValue("J3","SNI");
-                    $sheet->setCellValue("K3","Max Disc");
-					$sheet->setCellValue("L3","MinAvg");
-					$sheet->setCellValue("M3","MaxAvg");
-					$sheet->setCellValue("N3","isBatchNumber");
-					$sheet->setCellValue("O3","isSerial Number");
-					$sheet->setCellValue("P3","isOnline");
-					$sheet->setCellValue("Q3","Memo");
+                    $sheet->setCellValue("B3","Relation Type");
+                    $sheet->setCellValue("C3","LoB");
+                    $sheet->setCellValue("D3","Business Type");
+                    $sheet->setCellValue("E3","Branch");
+                    $sheet->setCellValue("F3","Group");
+                    $sheet->setCellValue("G3","Relation Induk");
+                    $sheet->setCellValue("H3","Relation Name");
+                    $sheet->setCellValue("I3","NPWP");
+                    $sheet->setCellValue("J3","Phone");
+                    $sheet->setCellValue("K3","Fax");
+					$sheet->setCellValue("L3","Address");
+					$sheet->setCellValue("M3","Postal Code");
+					$sheet->setCellValue("N3","Province");
+					$sheet->setCellValue("O3","District");
+					$sheet->setCellValue("P3","SubDistrict");
+					$sheet->setCellValue("Q3","Village");
 					$sheet->setCellValue("R3","Pricing Group");
-                    $sheet->setCellValue("S3","Unit");
-					$sheet->setCellValue("T3","Selling Price");
+					$sheet->setCellValue("S3","Sales Name");
+					$sheet->setCellValue("T3","Credit Limit");
+					$sheet->setCellValue("U3","TOP");
+					$sheet->setCellValue("V3","TOP Commision");
+					$sheet->setCellValue("W3","TOP + Commision");
+					$sheet->setCellValue("X3","Name");
+					$sheet->setCellValue("Y3","Area Kode");
+					$sheet->setCellValue("Z3","Shipping Address");
                     $sheet->getColumnDimension("A")->setAutoSize(false);
                     $sheet->getColumnDimension("B")->setAutoSize(true);
                     $sheet->getColumnDimension("C")->setAutoSize(true);
@@ -904,78 +442,60 @@ class Relations extends MY_Controller
                     $sheet->getColumnDimension("P")->setAutoSize(true);
 					$sheet->getColumnDimension("Q")->setAutoSize(true);
 					$sheet->getColumnDimension("R")->setAutoSize(true);
-                    $sheet->getColumnDimension("S")->setAutoSize(true);
-					$sheet->getColumnDimension("T")->setAutoSize(true);
+					$sheet->getColumnDimension("S")->setAutoSize(true);
+                    $sheet->getColumnDimension("T")->setAutoSize(true);
+                    $sheet->getColumnDimension("U")->setAutoSize(true);
+                    $sheet->getColumnDimension("V")->setAutoSize(true);
+					$sheet->getColumnDimension("W")->setAutoSize(true);
+					$sheet->getColumnDimension("X")->setAutoSize(true);
+                    $sheet->getColumnDimension("Y")->setAutoSize(true);
+                    $sheet->getColumnDimension("Z")->setAutoSize(true);
 					$nou = 0;
-					$itemCode = "";
+					$relation_id = "";
 					$cellRow = 4;
 					$numOfRecs = count($dataReport);
 					$idx = 0;
 					
 					foreach($dataReport as $row){
 						$idx++;
-						if ($itemCode != $row->fst_item_code){
-							$type = $row->fin_item_type_id;
-							switch($type){
-								case 1:
-									$type = "Raw Material";
-									break;
-								case 2:
-									$type = "Semi Finished Material";
-									break;
-								case 3:
-									$type = "Supporting Material";
-									break;
-								case 4:
-									$type = "Ready Product";
-									break;
-								case 5:
-									$type = "Logistic";
-									break;
-								case 'ALL':
-									$type = "ALL";
-									break;
+						if ($relation_id != $row->fin_relation_id){
+
+							$relation_id = $row->fin_relation_id;
+							if($row->fst_business_type == 'P'){
+								$row->fst_business_type = 'Personal';
+							}else{
+								$row->fst_business_type = 'Corporate';
 							}
-							$itemCode = $row->fst_item_code;
 							$nou++;
 							$sheet->setCellValue("A".$cellRow,$nou);
-							$sheet->setCellValue("B".$cellRow,$row->itemGroup);
-							$sheet->setCellValue("C".$cellRow,$type);
-							$sheet->setCellValue("D".$cellRow,$row->fst_linebusiness_id);
-							$sheet->setCellValue("E".$cellRow,$row->fst_item_code);
-							$sheet->setCellValue("F".$cellRow,$row->fst_item_name);
-							$sheet->setCellValue("G".$cellRow,$row->fst_name_on_pos);
-							$sheet->setCellValue("H".$cellRow,$row->fst_vendor_item_name);
-							$sheet->setCellValue("I".$cellRow,$row->fst_storage_rack_info);
-							$sheet->setCellValue("J".$cellRow,$row->fst_sni_no);
-							$sheet->setCellValue("K".$cellRow,$row->fst_max_item_discount);
-							$sheet->setCellValue("L".$cellRow,$row->fdc_min_basic_unit_avg_cost);
-							$sheet->setCellValue("M".$cellRow,$row->fdc_max_basic_unit_avg_cost);
-							if ($row->fbl_is_batch_number == 0){
-								$row->fbl_is_batch_number ="NO";
-							}else{
-								$row->fbl_is_batch_number ="YES";
-							}
-							if ($row->fbl_is_serial_number == 0){
-								$row->fbl_is_serial_number ="NO";
-							}else{
-								$row->fbl_is_serial_number ="YES";
-							}
-							if ($row->fbl_is_online == 0){
-								$row->fbl_is_online ="NO";
-							}else{
-								$row->fbl_is_online ="YES";
-							}
-							$sheet->setCellValue("N".$cellRow,$row->fbl_is_batch_number);
-							$sheet->setCellValue("O".$cellRow,$row->fbl_is_serial_number); 
-							$sheet->setCellValue("P".$cellRow,$row->fbl_is_online);
-							$sheet->setCellValue("Q".$cellRow,$row->fst_memo);                                
+							$sheet->setCellValue("B".$cellRow,$row->fst_relation_type);
+							$sheet->setCellValue("C".$cellRow,$row->fst_linebusiness_id);
+							$sheet->setCellValue("D".$cellRow,$row->fst_business_type);
+							$sheet->setCellValue("E".$cellRow,$row->fst_branch_name);
+							$sheet->setCellValue("F".$cellRow,$row->fst_relation_group_name);
+							$sheet->setCellValue("G".$cellRow,$row->ParentName);
+							$sheet->setCellValue("H".$cellRow,$row->fst_relation_name);
+							$sheet->setCellValue("I".$cellRow,$row->fst_npwp);
+							$sheet->setCellValue("J".$cellRow,$row->fst_phone);
+							$sheet->setCellValue("K".$cellRow,$row->fst_fax);
+							$sheet->setCellValue("L".$cellRow,$row->fst_address);
+							$sheet->setCellValue("M".$cellRow,$row->fst_postal_code);
+							$sheet->setCellValue("N".$cellRow,$row->fst_province_name);
+							$sheet->setCellValue("O".$cellRow,$row->fst_district_name); 
+							$sheet->setCellValue("P".$cellRow,$row->fst_subdistrict_name);
+							$sheet->setCellValue("Q".$cellRow,$row->fst_village_name);
+							$sheet->setCellValue("R".$cellRow,$row->fst_cust_pricing_group_name);
+							$sheet->setCellValue("S".$cellRow,$row->SalesName);
+							$sheet->setCellValue("T".$cellRow,$row->fdc_credit_limit);
+							$sheet->setCellValue("U".$cellRow,$row->fin_terms_payment); 
+							$sheet->setCellValue("V".$cellRow,$row->fin_top_komisi);
+							$sheet->setCellValue("W".$cellRow,$row->fin_top_plus_komisi);                                
 							//$cellRow++;
 
 						}
-						$sheet->setCellValue("R".$cellRow,$row->fst_cust_pricing_group_name);
-						$sheet->setCellValue("S".$cellRow,$row->fst_unit); 
-						$sheet->setCellValue("T".$cellRow,$row->fdc_selling_price);
+						$sheet->setCellValue("X".$cellRow,$row->fst_name);
+						$sheet->setCellValue("Y".$cellRow,$row->fst_village_nameShipp);
+						$sheet->setCellValue("Z".$cellRow,$row->fst_shipping_address);
 						$cellRow++; 
 					}
 					
@@ -1000,7 +520,7 @@ class Relations extends MY_Controller
 							],
 						],
 					];
-					$sheet->getStyle('A3:T'.$cellRow)->applyFromArray($styleArray);
+					$sheet->getStyle('A3:Z'.$cellRow)->applyFromArray($styleArray);
 		
 					//FONT BOLD & Center
 					$styleArray = [
@@ -1012,7 +532,7 @@ class Relations extends MY_Controller
 						]
 					];
 					// $sheet->getStyle('A2')->applyFromArray($styleArray);
-					$sheet->getStyle('A3:T3')->applyFromArray($styleArray);
+					$sheet->getStyle('A3:Z3')->applyFromArray($styleArray);
 					$sheet->getStyle('A3:A'.$cellRow)->applyFromArray($styleArray);
 
 					$styleArray = [
@@ -1020,9 +540,8 @@ class Relations extends MY_Controller
 							'formatCode' => \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1
 						]
 					];
-					//$sheet->getStyle('L4:L'.$cellRow)->applyFromArray($styleArray);
-					$sheet->getStyle('L4:M'.$cellRow)->applyFromArray($styleArray);
 					$sheet->getStyle('T4:T'.$cellRow)->applyFromArray($styleArray);
+					//$sheet->getStyle('L4:M'.$cellRow)->applyFromArray($styleArray);
 
 					//$styleArray = [
 					//	'numberFormat'=> [
@@ -1052,10 +571,10 @@ class Relations extends MY_Controller
 					$this->phpspreadsheet->cleanColumns($sheet,$fullColumn,$data['selected_columns'][0]);
 					$this->phpspreadsheet->mergedData($sheet,$arrMerged,$ttlSelectedCol,$sumCol);
 
-				} //End Of Layout 4
+				} //End Of Layout 2
 
 				if ($isPreview != 1) {
-					$this->phpspreadsheet->save("Master Items.xls" ,$spreadsheet);
+					$this->phpspreadsheet->save("Master Relations.xls" ,$spreadsheet);
 					// $this->phpspreadsheet->savePDF();
 				}else {
 					//$this->phpspreadsheet->savePDF();

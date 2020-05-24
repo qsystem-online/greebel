@@ -257,7 +257,7 @@ class Relation extends MY_Controller{
             $data = [
 				"fin_relation_id" => $fin_relation_id,
                 "fst_name" => $item->fst_name,
-                "fst_area_code" => $item->fst_kode,
+                "fst_area_code" => $item->fst_area_code,
 				"fst_shipping_address" => $item->fst_shipping_address,
 				"fst_active" => 'A'
             ];

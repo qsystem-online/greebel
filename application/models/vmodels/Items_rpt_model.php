@@ -28,7 +28,7 @@ class Items_rpt_model extends CI_Model {
             $swhere .= " and a.fin_item_type_id = " . $type_id;
         }
         if ($lob_id > "0") {
-            $swhere .= " and a.fst_linebusiness_id = " . $lob_id;
+            $swhere .= " and a.fst_linebusiness_id in (" . $lob_id .")";
         }
         if ($start_itemCode > "0") {
             $swhere .= " and a.fst_item_code >= '" . $start_itemCode . "'";            
@@ -96,8 +96,8 @@ class Items_rpt_model extends CI_Model {
         $rules = [];
 
         $rules[] = [
-            'field' => 'fin_item_group_id',
-            'label' => 'Group',
+            'field' => 'fin_item_type_id',
+            'label' => 'Item Type',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
