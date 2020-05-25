@@ -17,10 +17,14 @@ class Relation extends MY_Controller{
 		$this->list['page_name'] = "Master Relations";
 		$this->list['list_name'] = "Master Relations List";
 		$this->list['addnew_ajax_url'] = site_url() . 'pr/relation/add';
+		$this->list['report_url'] = site_url() . 'report/relations';
 		$this->list['pKey'] = "id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/relation/fetch_list_data';
 		$this->list['delete_ajax_url'] = site_url() . 'pr/relation/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'pr/relation/edit/';
+		
+
+
 		$this->list['arrSearch'] = [
 			'fin_relation_id' => 'Relations ID',
 			'fst_relation_name' => 'Relations Name'
@@ -51,6 +55,7 @@ class Relation extends MY_Controller{
 			],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
+
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$page_content = $this->parser->parse('template/standardList', $this->list, true);

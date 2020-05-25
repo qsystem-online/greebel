@@ -28,6 +28,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<h3 class="box-title"><?=$list_name?></h3>
 				<div class="box-tools">
 					<a id="btnNew" data-toggle="confirmation" href="<?=$addnew_ajax_url?>" class="btn btn-primary btn-sm"><i class="fa fa-plus" aria-hidden="true"></i> New Record</a>
+					<?php if (isset($report_url)){ ?>
+						<a id="btnPrint" href="<?=$report_url?>" class="btn btn-primary btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Report </a>
+					<?php } ?>
+
 				</div>
 
 			</div>			
