@@ -41,10 +41,10 @@
                 </div>
                 <label for="select-CodeItem" class="col-md-2 control-label"><?= lang("s/d") ?></label>
                 <div class="col-md-4">
-                    <select id="select-ItemCode2" class="form-control" name="fst_item_code">
+                    <select id="select-ItemCode2" class="form-control" name="fst_item_code2">
                         <option value="0">--  <?= lang("select") ?>  --</option>
                     </select>
-                    <div id="fst_item_code_err" class="text-danger"></div>
+                    <div id="fst_item_code2_err" class="text-danger"></div>
                 </div>
             </div>
             <div class="form-group row">
@@ -157,55 +157,51 @@
             });
         });
 
-        function select_StartItem(){
-            $("#select-ItemCode").select2({
-                width: '100%',
-                ajax: {
-                    url: '<?= site_url() ?>master/item/get_data_ItemCode',
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function(data) {
-                        data2 = [];
-                        $.each(data, function(index, value){
-                            data2.push({
-                                "id": value.fst_item_code,
-                                "text": value.fst_item_code
-                            });
+        $("#select-ItemCode").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_ItemCode',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fst_item_code,
+                            "text": value.fst_item_code
                         });
-                        console.log(data2);
-                        return {
-                            results: data2
-                        };
-                    },
-                    cache: true,
-                }
-            });
-        }
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+        });
 
-        function select_EndItem(){
-            $("#select-ItemCode2").select2({
-                width: '100%',
-                ajax: {
-                    url: '<?= site_url() ?>master/item/get_data_ItemCode',
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function(data) {
-                        data2 = [];
-                        $.each(data, function(index, value){
-                            data2.push({
-                                "id": value.fst_item_code,
-                                "text": value.fst_item_code
-                            });
+        $("#select-ItemCode2").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_ItemCode',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value){
+                        data2.push({
+                            "id": value.fst_item_code,
+                            "text": value.fst_item_code
                         });
-                        console.log(data2);
-                        return {
-                            results: data2
-                        };
-                    },
-                    cache: true,
-                }
-            });
-        }
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+        });
 
         $("#btnProcess").click(function(event) {
             event.preventDefault();
