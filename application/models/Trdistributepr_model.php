@@ -23,6 +23,43 @@ class Trdistributepr_model extends MY_Model {
 		return $rules;
 	}
 
+	public function getDataById($finDistributePRId){
+		$ssql = "SELECT * 
+			FROM trdistributepr
+			WHERE fin_distributepr_id = ?
+		";
+
+		$qr = $this->db->query($ssql, [$finDistributePRId]);
+		$dataH = $qr->row();
+
+		
+		$ssql = "SELECT a.*,
+			c.fin_req_department_id,c.fst_pr_no,c.fdt_pr_datetime,c.fst_memo,
+			d.fst_department_name,
+			b.fin_item_id,e.fst_item_name,f.fst_warehouse_name,b.fdt_etd 						
+			FROM trdistributepritems a
+			INNER JOIN trpurchaserequestitems b on a.fin_pr_detail_id = b.fin_rec_id
+			INNER JOIN trpurchaserequest c on b.fin_pr_id = c.fin_pr_id 
+			INNER JOIN departments d on c.fin_req_department_id = d.fin_department_id
+			INNER JOIN msitems e on b.fin_item_id = e.fin_item_id 
+			INNER JOIN mswarehouse f on a.fin_source_warehouse_id = f.fin_warehouse_id 			
+			WHERE a.fin_distributepr_id = ?";
+
+		$qr = $this->db->query($ssql,[$finDistributePRId]);   
+		$dataDetails = $qr->result();
+		
+
+		$data = [
+			"dataH" => $dataH,
+			"dataDetails" => $dataDetails
+		];
+
+		return $data;
+	}
+
+
+
+
 	public function generateTransactionNo($trDate = null) {
 		$trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
 		$tahun = date("Y/m", strtotime ($trDate));
@@ -236,28 +273,7 @@ class Trdistributepr_model extends MY_Model {
 
 	
 
-	public function getDataById($finPRId){
-		$ssql = "SELECT a.*,b.fst_department_name as fst_req_department_name FROM " .$this->tableName. " a  
-			LEFT JOIN departments b ON a.fin_req_department_id = b.fin_department_id 
-			WHERE a.fin_pr_id = ? AND a.fst_active != 'D'";
-
-		$qr = $this->db->query($ssql, [$finPRId]);
-		$dataH = $qr->row();
-
-		$ssql = "SELECT a.*,b.fst_item_code,b.fst_item_name from trpurchaserequestitems a
-			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
-			WHERE a.fin_pr_id = ?";
-
-		$qr = $this->db->query($ssql,[$finPRId]);        
-		$dataDetails = $qr->result();
-
-		$data = [
-			"dataH" => $dataH,
-			"dataDetails" => $dataDetails
-		];
-
-		return $data;
-	}
+	
 
 	
 	public function isEditable($finPRId){       

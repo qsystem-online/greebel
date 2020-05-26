@@ -700,6 +700,9 @@ class Purchase_request extends MY_Controller{
 		$this->openDistributeForm("ADD");
 	}
 
+	public function distribute_edit($finDistributePRId){
+		$this->openDistributeForm("EDIT",$finDistributePRId);
+	}
 
 	private function openDistributeForm($mode = "ADD", $finDistributePRId = 0){
 		$this->load->library("menus");		
@@ -721,12 +724,12 @@ class Purchase_request extends MY_Controller{
 			$data["fst_distributepr_no"]=$this->trdistributepr_model->generateTransactionNo(); 
 			$data["mdlJurnal"] = "";
 			$page_content = $this->parser->parse('pages/tr/purchase/request/distribution_form', $data, true);
-		}
-		/* else if($mode == 'EDIT'){
-			$data["fst_pr_no"]="";	
+		}else if($mode == 'EDIT'){
+			$data["fst_distributepr_no"]= "";
 			$data["mdlJurnal"] = $jurnal_modal;
-			$page_content = $this->parser->parse('pages/tr/purchase/request/form', $data, true);
-		}else if ($mode == 'PROCESS'){
+			$page_content = $this->parser->parse('pages/tr/purchase/request/distribution_form', $data, true);
+		}
+		/*else if ($mode == 'PROCESS'){
 			$stock_modal = $this->parser->parse('template/mdlStock', [], true);
 			$data["title"] = $mode == "ADD" ? lang("Permintaan Pembelian") : lang("Proses Permintaan Pembelian");			
 			$data["mdlStock"] = $stock_modal;
@@ -807,6 +810,16 @@ class Purchase_request extends MY_Controller{
 		}
 	}
 
+	public function ajx_fetch_distibution($finDistributionPRId){
+		$this->load->model("trdistributepr_model");
+		$data = $this->trdistributepr_model->getDataById($finDistributionPRId);
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"message"=>"",
+			"data"=>$data
+		]);
+
+	}
 
 	private function prepareDistributeData(){
 		$fdt_distributepr_datetime = dBDateTimeFormat($this->input->post("fdt_distributepr_datetime"));

@@ -976,7 +976,56 @@
 			});
 		}
 		*/
-		
+
+		var finDistributePRId = $("#fin_distributepr_id").val();
+		if (finDistributePRId != 0){
+			App.blockUIOnAjaxRequest();
+			$.ajax({
+				url:"<?=site_url()?>tr/purchase/purchase_request/ajx_fetch_distibution/" + finDistributePRId,
+				method:"GET",
+			}).done(function(resp){
+				console.log(resp);
+				if (resp.status == "SUCCESS"){
+					var dataH = resp.data.dataH;
+					var dataDetails = resp.data.dataDetails;
+
+					App.autoFillForm(dataH);
+					$("#fdt_distributepr_datetime").val(dateTimeFormat(dataH.fdt_distributepr_datetime)).datetimepicker("update");
+
+					//var details =[];
+					var t = $('#tbldetails').DataTable();
+					$.each(dataDetails,function(i,v){
+						/*
+						var sstr = "<div> PR # :"+ data.fst_pr_no + " - " + data.fdt_pr_datetime + " </div>";
+								sstr += "<div> PR Notes :"+data.fst_memo+"</div>";
+								sstr += "<div> Distribution Notes :" +data.fst_notes + "</div>";
+						*/
+
+
+						t.row.add({
+							fin_rec_id:v.fin_rec_id,
+							fin_pr_detail_id:v.fin_pr_detail_id,
+							fst_pr_no:v.fst_pr_no,
+							fdt_pr_datetime:v.fdt_pr_datetime,
+							fst_memo:v.fst_memo,
+							fst_notes:v.fst_notes,
+							fin_req_department_id:v.fin_req_department_id,
+							fst_department_name:v.fst_department_name,
+							fin_item_id:v.fin_item_id,
+							fst_item_name:v.fst_item_name,
+							fst_unit:v.fst_unit,
+							fdb_qty_distribute:v.fdb_qty_distribute,
+							fin_source_warehouse_id:v.fin_source_warehouse_id,
+							fst_source_warehouse_name:v.fst_warehouse_name,
+							fdt_etd:v.fdt_etd,
+						});
+					});				
+					t.draw(false);
+
+
+				}
+			});
+		}		
 	}
 
 	function deleteAjax(confirmDelete){
