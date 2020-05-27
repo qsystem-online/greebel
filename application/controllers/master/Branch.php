@@ -22,6 +22,7 @@ class Branch extends MY_Controller
         $this->list['page_name'] = "Branch";
         $this->list['list_name'] = "Branch List";
         $this->list['addnew_ajax_url'] = site_url() . 'master/branch/add';
+        $this->list['report_url'] = site_url() . 'report/branch';
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/branch/fetch_list_data';
         $this->list['delete_ajax_url'] = site_url() . 'master/branch/delete/';

@@ -21,6 +21,7 @@ class User extends MY_Controller
 		$this->list['page_name'] = "User";
 		$this->list['list_name'] = "User List";
 		$this->list['addnew_ajax_url'] = site_url() . 'user/add';
+		$this->list['report_url'] = site_url() . 'report/users';
 		$this->list['pKey'] = "id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'user/fetch_list_data';
 		$this->list['delete_ajax_url'] = site_url() . 'user/delete/';

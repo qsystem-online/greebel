@@ -21,6 +21,8 @@ class Item extends MY_Controller
         $this->list['page_name'] = "Master Items";
         $this->list['list_name'] = "Master Items List";
         $this->list['addnew_ajax_url'] = site_url() . 'master/item/add';
+        $this->list['report_url'] = site_url() . 'report/items';
+
         $this->list['pKey'] = "fin_item_id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/item/fetch_list_data';
         $this->list['delete_ajax_url'] = site_url() . 'master/item/delete/';

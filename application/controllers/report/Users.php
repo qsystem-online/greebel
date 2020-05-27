@@ -171,13 +171,13 @@ class Users extends MY_Controller
 						$repTitle = "LAPORAN DAFTAR USER";
 						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
                         $repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
-                        $fullColumn = 11;
+                        $fullColumn = 12;
 						break;
 					default:
 						$repTitle = "LAPORAN DAFTAR USER";
 						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
                         $repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
-                        $fullColumn = 11;
+                        $fullColumn = 12;
 						break;
 				}	
 
@@ -272,7 +272,7 @@ class Users extends MY_Controller
                         $sheet->setCellValue("K".$cellRow,$row->fst_department_name);
                         $sheet->setCellValue("L".$cellRow,$row->fst_group_name);                             
 						$cellRow++;
-				}
+					}
 					
 
 					$styleArray = [
