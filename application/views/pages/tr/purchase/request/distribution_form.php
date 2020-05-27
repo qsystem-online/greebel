@@ -237,6 +237,7 @@
 					fst_notes:data.fst_notes,
 				}
 				*/
+				console.log(data);
 				mdlDetail.data = data;
 				var qtyToDistribute = data.fdb_qty_distribute;
 				$("#itemName").text(data.fst_item_code  + " - " + data.fst_item_name);
@@ -666,11 +667,7 @@
 						return row.fst_item_code + " - " +row.fst_item_name;
 					}
 				},
-				{"title" : "Unit","width": "50px",sortable:false,
-					render:function(data,type,row){
-						return "";
-					}
-				},
+				{"title" : "Unit",data:"fst_unit","width": "50px",sortable:false},
 				{"title" : "Distribute","width": "100px",sortable:false,className:'text-right',data:"fdb_qty_distribute",
 					render:function(data,type,row){
 						return App.money_format(row.fdb_qty_distribute);
@@ -1012,8 +1009,11 @@
 							fin_req_department_id:v.fin_req_department_id,
 							fst_department_name:v.fst_department_name,
 							fin_item_id:v.fin_item_id,
+							fst_item_code:v.fst_item_code,
 							fst_item_name:v.fst_item_name,
 							fst_unit:v.fst_unit,
+							fst_basic_unit:v.fst_basic_unit,
+							fin_conv_basic_unit:v.fin_conv_basic_unit,
 							fdb_qty_distribute:v.fdb_qty_distribute,
 							fin_source_warehouse_id:v.fin_source_warehouse_id,
 							fst_source_warehouse_name:v.fst_warehouse_name,

@@ -24,6 +24,8 @@ class Trdistributepr_model extends MY_Model {
 	}
 
 	public function getDataById($finDistributePRId){
+		$this->load->model("msitems_model");
+
 		$ssql = "SELECT * 
 			FROM trdistributepr
 			WHERE fin_distributepr_id = ?
@@ -34,9 +36,10 @@ class Trdistributepr_model extends MY_Model {
 
 		
 		$ssql = "SELECT a.*,
+			b.fin_item_id,b.fst_unit,
 			c.fin_req_department_id,c.fst_pr_no,c.fdt_pr_datetime,c.fst_memo,
 			d.fst_department_name,
-			b.fin_item_id,e.fst_item_name,f.fst_warehouse_name,b.fdt_etd 						
+			e.fst_item_code,e.fst_item_name,f.fst_warehouse_name,b.fdt_etd 						
 			FROM trdistributepritems a
 			INNER JOIN trpurchaserequestitems b on a.fin_pr_detail_id = b.fin_rec_id
 			INNER JOIN trpurchaserequest c on b.fin_pr_id = c.fin_pr_id 
@@ -47,6 +50,16 @@ class Trdistributepr_model extends MY_Model {
 
 		$qr = $this->db->query($ssql,[$finDistributePRId]);   
 		$dataDetails = $qr->result();
+
+		for($i =0 ;$i<sizeof($dataDetails) ;$i++){
+			$detail = $dataDetails[$i];
+
+			$detail->fst_basic_unit =  $this->msitems_model->getBasicUnit($detail->fin_item_id);
+			$detail->fin_conv_basic_unit = $this->msitems_model->getConversionUnit($detail->fin_item_id,$detail->fst_unit,$detail->fst_basic_unit);
+			$dataDetails[$i] = $detail;
+		}
+		
+		
 		
 
 		$data = [
