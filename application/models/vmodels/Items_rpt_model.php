@@ -13,11 +13,17 @@ class Items_rpt_model extends CI_Model {
         $sales_id = "";
         $start_itemCode = "";
         $end_itemCode = "";
+        $fbl_is_batch_number = "";
+        $fbl_is_serial_number = "";
+        $fbl_is_online = "";
         if (isset($data['fin_item_group_id'])) { $group_id = $data['fin_item_group_id'];}
         if (isset($data['fin_item_type_id'])) { $type_id = $data['fin_item_type_id'];}
         if (isset($data['fst_linebusiness_id'])) { $lob_id = $data['fst_linebusiness_id'];}
         if (isset($data['fst_item_code'])) { $start_itemCode = $data['fst_item_code'];}
         if (isset($data['fst_item_code2'])) { $end_itemCode = $data['fst_item_code2'];}
+        if (isset($data['fbl_is_batch_number'])) { $fbl_is_batch_number = $data['fbl_is_batch_number'];}
+        if (isset($data['fbl_is_serial_number'])) { $fbl_is_serial_number = $data['fbl_is_serial_number'];}
+        if (isset($data['fbl_is_online'])) { $fbl_is_online = $data['fbl_is_online'];}
 
         $swhere = "";
         $sorderby = "";
@@ -35,6 +41,15 @@ class Items_rpt_model extends CI_Model {
         }
         if ($end_itemCode > "0") {
             $swhere .= " and a.fst_item_code <= '". $end_itemCode . "'";
+        }
+        if ($fbl_is_batch_number == 1) {
+            $swhere .= " and a.fbl_is_batch_number = " . $fbl_is_batch_number;
+        }
+        if ($fbl_is_serial_number == 1) {
+            $swhere .= " and a.fbl_is_serial_number = " . $fbl_is_serial_number;
+        }
+        if ($fbl_is_online == 1) {
+            $swhere .= " and a.fbl_is_online = " . $fbl_is_online;
         }
         //if (isset($start_itemCode)) {
         //    $swhere .= " and a.fst_item_code >= '" . $start_itemCode;            
