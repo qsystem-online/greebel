@@ -22,6 +22,7 @@ class Glaccount extends MY_Controller
         $this->list['page_name'] = "Master GL Account";
         $this->list['list_name'] = "GL Account List";
         $this->list['addnew_ajax_url'] = site_url() . 'gl/glaccount/add';
+        $this->list['report_url'] = site_url() . 'report/glaccounts';
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'gl/glaccount/fetch_list_data';
         $this->list['delete_ajax_url'] = site_url() . 'gl/glaccount/delete/';
