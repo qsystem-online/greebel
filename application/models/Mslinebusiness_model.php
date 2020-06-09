@@ -44,4 +44,19 @@ class Mslinebusiness_model extends MY_Model {
         $rs = $qr->result();
         return $rs;
     }
+
+    public function getSetName($businessSetId , $separator = ","){
+        $arrLineBussiness =  explode(",",$businessSetId);        
+        $ssql = "SELECT * FROM mslinebusiness where fin_linebusiness_id IN ?";
+        $qr = $this->db->query($ssql,[$arrLineBussiness]);
+        $rs = $qr->result();
+        $setName = "";
+        foreach($rs as $rw ){
+            $setName .= $rw->fst_linebusiness_name . $separator;
+        }
+
+        $setName = rtrim($setName,$separator);
+
+        return $setName;
+    }
 }

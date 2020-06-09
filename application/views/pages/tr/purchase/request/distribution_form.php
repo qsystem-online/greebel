@@ -9,10 +9,14 @@
 	.form-group{
 		margin-bottom:10px;
 	}
+	.modal-body {
+		max-height: calc(100vh - 212px);
+		overflow-y: auto;
+	}	
 </style>
 
 <section class="content-header">
-	<h1><?=lang("Request - Pembelian")?><small><?=lang("form")?></small></h1>
+	<h1><?=lang("Distribusi PR")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
 		<li><a href="#"><?= lang("Pembelian") ?></a></li>
@@ -30,7 +34,7 @@
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
 						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-						<a id="btnJurnal" class="btn btn-primary" href="#" title="Jurnal" style="display:<?= $mode == "ADD" ? "none" : "none" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
+						<a id="btnJurnal" class="btn btn-primary" href="#" title="Jurnal" style="display:<?= $mode == "ADD" ? "none" : "unset" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
@@ -108,8 +112,8 @@
 	</div>
 </section>
 
-<div id="mdlDetail" class="amodal afade" role="dialog">
-	<div class="modal-dialog" style="display:table;width:700px">
+<div id="mdlDetail" class="modal fade" role="dialog">
+	<div class="modal-dialog" style="display:table;width:700px;overflow:auto">
 		<!-- modal content -->
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">			
 			<div class="modal-body">
@@ -124,13 +128,10 @@
 								</div>
 								<div class="form-group">
 									<label for="fst_unit" class="col-md-3 control-label">Unit :</label>
-									<label  class="col-md-9 control-label" style="text-align:left" id="itemUnit"> </label>
-								</div>
-								<div class="form-group">
+									<label  class="col-md-3 control-label" style="text-align:left" id="itemUnit"> </label>
 									<label class="col-md-3 control-label">To basic unit :</label>
-									<label class="col-md-9 control-label" id="toBasicUnit" style="text-align:left"> 1</label>
+									<label class="col-md-3 control-label" id="toBasicUnit" style="text-align:left"> 1</label>
 								</div>
-
 								<div class="form-group source-warehouse" >
 									<label for="fin_source_warehouse_id" class="col-md-3 control-label">Source Warehouse</label>
 									<div class="col-md-9">
@@ -217,27 +218,6 @@
 		var mdlDetail = {
 			show:function(data){
 				mdlDetail.clearForm();
-				/*
-				selectedItem = {
-					fin_rec_id:data.fin_rec_id,
-					fin_pr_detail_id:data.fin_pr_detail_id,
-					fin_req_department_id:data.fin_req_department_id,
-					fst_department_name:data.fst_department_name,
-					fin_item_id:data.fin_item_id,
-					fst_item_code:data.fst_item_code,
-					fst_item_name:data.fst_item_name,
-					fst_unit::data.fst_unit,
-					fin_item_type_id:data.fin_item_type_id,
-					fbl_stock:data.fbl_stock,
-					fbl_is_batch_number:data.fbl_is_batch_number,
-					fbl_is_serial_number:data.fbl_is_serial_number,
-					fdb_qty_request:data.fbl_qty_request,
-					fdb_qty_process:data.fbl_qty_process,
-					fdb_qty_distribute:data.fbl_qty_distribute,
-					fst_notes:data.fst_notes,
-				}
-				*/
-				console.log(data);
 				mdlDetail.data = data;
 				var qtyToDistribute = data.fdb_qty_distribute;
 				$("#itemName").text(data.fst_item_code  + " - " + data.fst_item_name);
@@ -245,26 +225,51 @@
 				$("#fdb_qty_distribute").val(App.money_format(qtyToDistribute));
 				$("#toBasicUnit").text(data.fin_conv_basic_unit + " " + data.fst_basic_unit);
 
-				if (data.fbl_stock == 1 && data.fin_item_type_id == 5 ){ //5:logistic	
+				//if (data.fbl_stock == 1 && data.fin_item_type_id == 5 ){ //5:logistic	
+				if (data.fbl_stock == 1){ //5:logistic	
 					$(".source-warehouse").show();
+					$("#fin_source_warehouse_id").val(data.fin_source_warehouse_id);
 				}else{
 					$(".source-warehouse").hide();
+					$("#fin_source_warehouse_id").val(null);
+					
 				}
 
 				if (data.fbl_is_batch_number == 1){
 					$(".batchNoBlock").show();
-					getBatchNoList(  $("#fin_source_warehouse_id").val(),  data.fin_item_id, function(){});
+					getBatchNoList(  $("#fin_source_warehouse_id").val(),  data.fin_item_id, function(){
+						if (selectedDetail != null){
+							$("#fstBatchNo").val(data.fst_batch_number);			
+							if (data.fbl_is_serial_number == 1){				
+								getSerialNoList(data.fin_source_warehouse_id,data.fin_item_id,data.fst_batch_number,function(){
+									if (selectedDetail != null){
+										$.each(data.fst_serial_number_list,function(i,serial){
+											$("#fstSerialNoList").append("<option value='"+serial+"'>"+serial+"</option>");
+										});	
+									}else{
+										$("#fstSerialNoList").empty();
+									}
+								});
+							}
+						}else{
+							$("#fstBatchNo").val(null);
+						}
+					});
+					//App.addOptionIfNotExist("<option value='"+data.fst_batch_number+"'>"+data.fst_batch_number+"</option>","fstBatchNo"); 
+
 				}else{
 					$(".batchNoBlock").hide();
+					$("#fstBatchNo").val(null);
 				}
 
 				if (data.fbl_is_serial_number == 1){				
 					$(".serialNoBlock").show();
 				}else{				
 					$(".serialNoBlock").hide();
+					$("#fstSerialNoList").empty();
 				}
 
-				//$("#mdlDetail").modal("show");				
+				$("#mdlDetail").modal("show");				
 			},
 			hide:function(){
 				$("#mdlDetail").modal("hide");
@@ -314,18 +319,18 @@
 				//selectedDetail.data(data);	
 				//t.draw(false);
 				
-				if(selectedItem == null){
+				if(selectedDetail == null){
 					//new data				
 					data.fin_rec_id = 0 ;	
 					t.row.add(data).draw(false);
 				}else{
 					//edit data
-					dataTbl = selectedItem.data();
+					dataTbl = selectedDetail.data();
 					selectedDetail.data(data).draw(false);
 				}	
 
 				t.draw(false);
-				selectedItem = null;
+				selectedDetail = null;
 				mdlDetail.clearForm();
 				mdlDetail.hide();				
 			},
@@ -346,22 +351,6 @@
 						batchNo = obj.fst_batch_no;
 						App.addOptionIfNotExist("<option value='"+batchNo+"'>"+batchNo+"</option>","fstBatchNo");						
 					});					
-					
-					if (selectedDetail != null){
-						selectedData = selectedDetail.data();
-						$("#fstBatchNo").val(selectedData.fst_batch_number);
-			
-						$("#fstSerialNoList").empty();
-						$.each(selectedData.arr_serial,function(i,serial){
-							$("#fstSerialNoList").prepend("<option value='"+serial+"'>"+serial+"</option>");
-						});		
-
-					}else{
-						$("#fstBatchNo").val(null);
-						$("#fstSerialNoList").empty();
-					}
-					
-
 					App.fixedSelect2();
 					callback();					
 				}
@@ -377,7 +366,7 @@
 				params:[finWarehouseId,finItemId,fstBatchNo],
 				wait_message: "<h5>Please wait !,trying to get batch no list....</h5>",
 				callback:function(value){
-					$("#fstSerialNoList").empty();
+					//$("#fstSerialNoList").empty();
 					$.each(value,function(i,obj){
 						availableSerialList.push(obj.fst_serial_no);
 					});
@@ -387,6 +376,7 @@
 			});
 			
 		}
+
 		function checkDuplicateSerialNo(serialNo){
 			isDuplicate = false;
 			$.each ($("#fstSerialNoList option"),function(i,v){
@@ -397,10 +387,10 @@
 			});
 			return isDuplicate;
 		}
+
 		function calculateTotalSerialNo(){
 			$("#ttlSerial").text($("#fstSerialNoList option").length);
 		}
-
 
 		$(function(){
 			//Form Detail
@@ -412,7 +402,9 @@
 			$("#fin_source_warehouse_id").change(function(e){
 				e.preventDefault();
 				//var data = selectedDetail.data();	
-				getBatchNoList(  $("#fin_source_warehouse_id").val(),  mdlDetail.data.fin_item_id, function(){});
+				getBatchNoList(  $("#fin_source_warehouse_id").val(),  mdlDetail.data.fin_item_id, function(){
+					$("#fstBatchNo").val(null);
+				});
 			});
 
 			$("#fstBatchNo").change(function(e){
@@ -465,13 +457,14 @@
 				calculateTotalSerialNo();
 			});
 						
-		});		
+		});
+
 	</script>
 </div>
 
 
 
-<div id="listNeedToDistribute" class="amodal afade" role="dialog">
+<div id="listNeedToDistribute" class="modal fade" role="dialog">
 	<div class="modal-dialog" style="display:table;width:700px">
 	<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">			
 			<div class="modal-body">
@@ -488,6 +481,8 @@
 		var selectedNeedToDistribute = null;
 
 		$(function(){
+			$("#listNeedToDistribute").modal("show");
+
 			<?php
 				$listNeedToDistribute = $this->trdistributepr_model->getNeedToDistribute();
 				foreach($listNeedToDistribute as $needDistribute){ ?>
@@ -515,7 +510,6 @@
 						fst_memo:"<?= $needDistribute->fst_memo ?>",
 					});					
 			<?php } ?>
-
 			$("#tblListNeedToDistribute").DataTable({
 				scrollY: "300px",
 				scrollX: true,			
@@ -580,8 +574,11 @@
 				
 				var data = selectedNeedToDistribute.data();
 				data.fdb_qty_distribute = data.fdb_qty_process - data.fdb_qty_distribute;
+				$("#listNeedToDistribute").modal("hide");
 				mdlDetail.show(data);
 			});
+
+			$("#listNeedToDistribute").modal("hide");
 
 		});
 
@@ -603,7 +600,7 @@
 		
 		$("#btnNew").click(function(e){
 			e.preventDefault();
-			window.location.href = "<?=site_url()?>tr/purchase/purchase_request/add";
+			window.location.href = "<?=site_url()?>tr/purchase/purchase_request/distribute_add";
 		});
 
 		$("#btnSubmitAjax").click(function(e){
@@ -613,7 +610,7 @@
 
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
-			MdlJurnal.showJurnalByRef("PRT",$("#fin_purchasereturn_id").val());
+			MdlJurnal.showJurnalByRef("PRD",$("#fin_distributepr_id").val());
 		});
 		
 		$("#btnDelete").click(function(e){
@@ -623,13 +620,18 @@
 		
 		$("#btnClose").click(function(e){
 			e.preventDefault();
-			window.location.href = "<?=site_url()?>tr/purchase/purchase_request/";
+			window.location.href = "<?=site_url()?>tr/purchase/purchase_request/distribute";
 		});		
 
 		
 		$("#btn-add-detail").click(function(e){
 			e.preventDefault();
 			mdlDetail.show();			
+		});
+
+		$("#btn-add-items").click(function(e){
+			e.preventDefault();
+			$("#listNeedToDistribute").modal("show");
 		});
 
 		
@@ -829,41 +831,40 @@
 		});
 
 		App.blockUIOnAjaxRequest("Please wait while saving data.....");
+
 		$.ajax({
 			type: "POST",
 			//enctype: 'multipart/form-data',
 			url: url,
 			data: dataSubmit,
-			timeout: 600000,
-			success: function (resp) {				
-				if (resp.message != "")	{
-					$.alert({
-						title: 'Message',
-						content: resp.message,
-						buttons : {
-							OK : function(){
-								if(resp.status == "SUCCESS"){									
-									$("#btnNew").trigger("click");
-								}
-							},
-						}
-					});
-				}
-				if(resp.status == "VALIDATION_FORM_FAILED" ){
-					//Show Error
-					errors = resp.data;
-					for (key in errors) {
-						$("#"+key+"_err").html(errors[key]);
+			timeout: 600000,	
+		}).done(function(resp){
+			if (resp.message != "")	{
+				$.alert({
+					title: 'Message',
+					content: resp.message,
+					buttons : {
+						OK : function(){
+							if(resp.status == "SUCCESS"){									
+								$("#btnNew").trigger("click");								
+							}
+						},
 					}
-				}else if(resp.status == "SUCCESS") {
-					data = resp.data;
-					$("#fin_distributepr_id").val(data.insert_id);
-					//Clear all previous error
-					$(".text-danger").html("");					
+				});
+			}
+
+			if(resp.status == "VALIDATION_FORM_FAILED" ){
+				//Show Error
+				errors = resp.data;
+				for (key in errors) {
+					$("#"+key+"_err").html(errors[key]);
 				}
-			},			
-		}).always(function(){
-			
+			}else if(resp.status == "SUCCESS") {
+				data = resp.data;
+				$("#fin_distributepr_id").val(data.insert_id);
+				//Clear all previous error
+				$(".text-danger").html("");					
+			}
 		});
 	}
 
@@ -981,7 +982,10 @@
 				url:"<?=site_url()?>tr/purchase/purchase_request/ajx_fetch_distibution/" + finDistributePRId,
 				method:"GET",
 			}).done(function(resp){
-				console.log(resp);
+				
+				if (resp.message != ""){
+					alert(resp.message);
+				}				
 				if (resp.status == "SUCCESS"){
 					var dataH = resp.data.dataH;
 					var dataDetails = resp.data.dataDetails;
@@ -1014,9 +1018,15 @@
 							fst_unit:v.fst_unit,
 							fst_basic_unit:v.fst_basic_unit,
 							fin_conv_basic_unit:v.fin_conv_basic_unit,
+							fbl_stock:v.fbl_stock,
+							fin_item_type_id:v.fin_item_type_id,
+							fbl_is_batch_number:v.fbl_is_batch_number,
+							fbl_is_serial_number:v.fbl_is_serial_number,
 							fdb_qty_distribute:v.fdb_qty_distribute,
 							fin_source_warehouse_id:v.fin_source_warehouse_id,
 							fst_source_warehouse_name:v.fst_warehouse_name,
+							fst_batch_number:v.fst_batch_number,
+							fst_serial_number_list:JSON.parse(v.fst_serial_number_list),
 							fdt_etd:v.fdt_etd,
 						});
 					});				
@@ -1024,6 +1034,7 @@
 
 
 				}
+
 			});
 		}		
 	}
@@ -1052,7 +1063,7 @@
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/purchase/purchase_request/delete/" + $("#fin_pr_id").val();
+		var url =  "<?= site_url() ?>tr/purchase/purchase_request/ajx_delete_distribute/" + $("#fin_distributepr_id").val();
 		$.ajax({
 			url:url,
 			method:"POST",

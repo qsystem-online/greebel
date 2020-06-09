@@ -98,11 +98,13 @@ class Purchase_return extends MY_Controller{
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
 		$jurnal_modal = $this->parser->parse('template/mdlJurnal', [], true);
+		$mdlPrint = $this->parser->parse('template/mdlPrint', [], true);
 
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Retur Pembelian") : lang("Update Retur Pembelian");
 		$data["fin_purchasereturn_id"] = $finPurchaseReturnId;
 		$data["mdlEditForm"] = $edit_modal;
+		$data["mdlPrint"] = $mdlPrint;
 
 		$data["arrExchangeRate"] = $this->mscurrencies_model->getArrRate();
 		
@@ -500,7 +502,24 @@ class Purchase_return extends MY_Controller{
 	}
 
 
+	public function print_voucher($finPurchaseReturnId){
+		$this->data = $this->trpurchasereturn_model->getDataVoucher($finPurchaseReturnId);
+		//$data=[];
+		$this->data["title"] = "Purchase Return";		
+		$page_content = $this->parser->parse('pages/tr/purchase/return/voucher', $this->data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;	
 
+		
+		$strHtml = $this->parser->parse('template/voucher_pdf', $this->data, true);
+
+		//$this->parser->parse('template/voucher', $this->data);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;		
+		//echo $strHtml;
+
+		$mpdf->WriteHTML($strHtml);	
+		$mpdf->Output();
+	}
 
 
 

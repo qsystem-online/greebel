@@ -309,7 +309,9 @@
 </div>
 
 <?php echo $mdlEditForm ?>
+<?php echo $mdlPrint ?>
 <?php echo $mdlJurnal ?>
+
 
 <script type="text/javascript" info="event">
 	$(function(){
@@ -317,6 +319,10 @@
 		$("#btnNew").click(function(e){
 			e.preventDefault();
 			window.location.href = "<?=site_url()?>tr/purchase/purchase_request/add";
+		});
+
+		$("#btnPrint").click(function(e){
+			frameVoucher.print("<?=site_url()?>tr/purchase/purchase_request/print_voucher/" + $("#fin_pr_id").val());
 		});
 
 		$("#btnSubmitAjax").click(function(e){

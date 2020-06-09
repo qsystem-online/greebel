@@ -203,6 +203,7 @@
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlJurnal ?>
+<?php echo $mdlPrint ?>
 
 <script type="text/javascript" info="event">
 	$(function(){
@@ -215,7 +216,10 @@
 			e.preventDefault();
 			submitAjax(0);
 		});
-
+		$("#btnPrint").click(function(e){
+			//window.open("<=site_url()?>tr/purchase/invoice/print_voucher/" + $("#fin_lpbpurchase_id").val(),"_blank","width=600,menubar=0,toolbar=0");
+			frameVoucher.print("<?=site_url()?>tr/purchase/invoice/print_voucher/" + $("#fin_lpbpurchase_id").val());
+		});
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
 			MdlJurnal.showJurnalByRef("PINV",$("#fin_lpbpurchase_id").val());

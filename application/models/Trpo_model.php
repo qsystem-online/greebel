@@ -555,9 +555,10 @@ class Trpo_model extends MY_Model {
 			$ssql = "select * from trinventory where fst_trx_code ='LPB' and fin_trx_id = ? and fin_trx_detail_id = ? and fst_active ='A'";
 			$qr = $this->db->query($ssql,[$rw->fin_lpbgudang_id,$rw->fin_rec_id]);
 			$rwInv = $qr->row();
-
-			$cost = ((float) $rw->fdc_m3 / $ttlKubik) * $ttlCost;
-			$this->trinventory_model->updateById($rwInv->fin_rec_id,null,null,null,null,$cost);
+			if($rwInv != null){
+				$cost = ((float) $rw->fdc_m3 / $ttlKubik) * $ttlCost;
+				$this->trinventory_model->updateById($rwInv->fin_rec_id,null,null,null,null,$cost);
+			}
 		}      
 
 		//Sampe sini berarti sukses semua proses
@@ -621,4 +622,27 @@ class Trpo_model extends MY_Model {
 
 		return $rs;
 	}    
+
+	public function getDataVoucher($finPOId){
+		$ssql ="SELECT a.*,b.fst_relation_name as fst_supplier_name,c.fst_curr_name FROM trpo a
+			INNER JOIN msrelations b on a.fin_supplier_id = b.fin_relation_id
+			INNER JOIN mscurrencies c on a.fst_curr_code = c.fst_curr_code 
+			WHERE fin_po_id = ?";
+		$qr = $this->db->query($ssql,[$finPOId]);
+		$header = $qr->row_array();
+
+		$ssql = "SELECT a.*,b.fst_item_code FROM trpodetails a
+			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
+			WHERE fin_po_id = ?";
+
+		$qr = $this->db->query($ssql,[$finPOId]);
+
+
+		$details = $qr->result_array();
+
+		return [
+			"header"=>$header,
+			"details"=>$details
+		];
+	}
 }

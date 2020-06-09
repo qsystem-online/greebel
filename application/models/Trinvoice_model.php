@@ -394,7 +394,7 @@ class Trinvoice_model extends MY_Model {
             "fst_info"=>"PPN",
         ];
 
-
+        
         //var_dump($dataJurnal);
        // die();
    

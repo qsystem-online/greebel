@@ -118,7 +118,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-                        <label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Line Of Business")?></label>
+                            <label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Line Of Business")?></label>
                             <div class="col-md-10">
                                 <select class="form-control select2" id="select-lineBusiness" name="fst_linebusiness_id[]"  multiple="multiple">
                                 <?php foreach ($linebusinessList as $linebusiness) {    ?>
@@ -131,27 +131,28 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 
                         <div class="form-group">
-                            <div class="col-md-10" style="left: 18px;">				
-                                <label for="fdc_scale_for_bom" class="col-md-2 control-label"><?= lang("Scale For BOM") ?></label>
-                                <div class="col-md-5">
-                                    <input type="text" class="form-control" id="fdc_scale_for_bom" placeholder="<?= lang(" 1 : ") ?>" name="fdc_scale_for_bom">
-                                    <div id="fdc_scale_for_bom_err" class="text-danger"></div>
-                                </div>
-                            </div>				
+                            <label for="fdc_scale_for_bom" class="col-md-2 control-label"><?= lang("Scale For BOM") ?></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="fdc_scale_for_bom" placeholder="<?= lang(" 1 : ") ?>" name="fdc_scale_for_bom">
+                                <div id="fdc_scale_for_bom_err" class="text-danger"></div>
+                            </div>
+
+                            <div class="checkbox col-sm-2">
+                                <label><input id="fbl_stock" type="checkbox" name="fbl_stock" value="1"><?= lang("Stock") ?></label>
+                            </div>
                             <div class="checkbox col-sm-2">
                                 <label><input id="fbl_is_batch_number" type="checkbox" name="fbl_is_batch_number" value="1"><?= lang("Batch Number") ?></label>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-10" style="left: 18px;">				
-                                <label for="fst_storage_rack_info" class="col-md-2 control-label"><?= lang("Storage Rack Info") ?></label>
-                                <div class="col-md-5">
-                                    <input type="text" class="form-control" id="fst_storage_rack_info" placeholder="<?= lang("Storage Rack Info") ?>" name="fst_storage_rack_info">
-                                    <div id="fst_storage_rack_info_err" class="text-danger"></div>
-                                </div>
-                            </div>				
                             <div class="checkbox col-sm-2">
                                 <label><input id="fbl_is_serial_number" type="checkbox" name="fbl_is_serial_number" value="1"><?= lang("Serial Number") ?></label>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="fst_storage_rack_info" class="col-md-2 control-label"><?= lang("Storage Rack Info") ?></label>
+                            <div class="col-md-5">
+                                <input type="text" class="form-control" id="fst_storage_rack_info" placeholder="<?= lang("Storage Rack Info") ?>" name="fst_storage_rack_info">
+                                <div id="fst_storage_rack_info_err" class="text-danger"></div>
                             </div>
                         </div>
 
@@ -200,7 +201,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                         <div class="form-group">
                             <div class="col-md-1">
-                                <input type="text" class="form-control" id="fin_ttl_invnetory" placeholder="<?= lang("TTL Inventory") ?>" name="fin_ttl_invnetory">
+                                <input type="hidden" class="form-control" id="fin_ttl_invnetory" placeholder="<?= lang("TTL Inventory") ?>" name="fin_ttl_invnetory">
                                 <div id="fin_ttl_invnetory_err" class="text-danger"></div>
                             </div>
                         </div>
@@ -1477,6 +1478,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
+
+                console.log(resp);
+                if (resp.ms_items.fbl_stock == 1){
+                    $("#fbl_stock").prop("checked",true);
+                }else{
+                    $("#fbl_stock").prop("checked",false);
+                }
+
+
                 // menampilkan data di select2
                 var newOption = new Option(resp.ms_items.fst_item_group_name, resp.ms_items.fin_item_group_id, true, true);
                 // Append it to the select

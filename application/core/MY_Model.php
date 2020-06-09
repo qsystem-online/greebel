@@ -106,9 +106,9 @@ class MY_Model extends CI_Model
 				"fst_trans_id"=> $key,
 				"fst_notes"=>$fstNotesEdit, 
 				"fin_request_by_id"=>$finUserIdReqEdit, 
-				"fin_insert_id"=>$data["fin_insert_id"] = $this->aauth->get_user_id(),
+				"fin_insert_id"=>$this->aauth->get_user_id(),
 				"fdt_insert_datetime"=>date("Y-m-d H:i:s"), 
-				"fin_update_id"=>$data["fin_insert_id"] = $this->aauth->get_user_id(), 
+				"fin_update_id"=>$this->aauth->get_user_id(), 
 				"fdt_update_datetime"=>date("Y-m-d H:i:s")
 			];
 			$this->db->insert("log_table_transaction",$dataLog);

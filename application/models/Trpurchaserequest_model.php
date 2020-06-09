@@ -164,6 +164,28 @@ class Trpurchaserequest_model extends MY_Model {
 		return $rs;
 						
 	}
+
+	public function getDataVoucher($finPRId){
+		$ssql ="SELECT a.*,b.fst_department_name as fst_req_department_name FROM trpurchaserequest a 
+			INNER JOIN departments b on a.fin_req_department_id = b.fin_department_id 
+			where a.fin_pr_id = ?";
+		$qr = $this->db->query($ssql,[$finPRId]);
+		$header = $qr->row_array();
+
+		$ssql = "SELECT a.*,b.fst_item_code,b.fst_item_name FROM trpurchaserequestitems a
+			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
+			WHERE fin_pr_id = ?";
+
+		$qr = $this->db->query($ssql,[$finPRId]);
+
+
+		$details = $qr->result_array();
+
+		return [
+			"header"=>$header,
+			"details"=>$details
+		];
+	}
 	
 	
 	

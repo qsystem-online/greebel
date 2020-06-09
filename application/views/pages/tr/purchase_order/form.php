@@ -32,9 +32,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		font-weight:700;
 	}
 </style>
-<?php
-	//echo $mdlPrint;
-?>
 
 <section class="content-header">
 	<h1><?=lang("Purchase Order")?><small><?=lang("form")?></small></h1>
@@ -572,6 +569,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <?php
 	echo $mdlJurnal;
+	echo $mdlPrint;
 ?>
 
 <script type="text/javascript" info="BIND">
@@ -594,16 +592,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$("#btnPrint").click(function(e){
-			layoutColumn = [
-				{column: "Kode",hidden:false,id:"fst_kode"},
-				{column: "Nama",hidden:false,id:"fst_nama"},
-				{column: "Harga Beli",hidden:true,id:"fdc_harga_beli"},
-				{column: "Satuan",hidden:true,id:"fst_unit"},
-				{column: "Harga Jual",hidden:true,id:"fdc_harga_jual"},
-			];
-			url = "<?= site_url() ?>tr/purchase_order/print_po";
-			MdlPrint.showPrint(layoutColumn,url);
-			
+			//window.open("<=site_url()?>tr/purchase_order/print_voucher/" + $("#fin_po_id").val(),"_blank","width=600,menubar=0,toolbar=0");
+			//window.open("<=site_url()?>tr/purchase_order/test/" + $("#fin_po_id").val(),"_blank","width=600,menubar=0,toolbar=0");
+			frameVoucher.print("<?=site_url()?>tr/purchase_order/print_voucher/" + $("#fin_po_id").val());
+
 		});
 
 		$("#btnJurnal").click(function(e){

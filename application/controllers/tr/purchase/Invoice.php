@@ -122,11 +122,13 @@ class Invoice extends MY_Controller{
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
 		$jurnal_modal = $this->parser->parse('template/mdlJurnal', [], true);
+		$mdlPrint =$this->parser->parse('template/mdlPrint.php', [], true);
 
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Faktur Pembelian") : lang("Update Faktur Pembelian");
 		$data["fin_lpbpurchase_id"] = $finLPBPurchaseId;
 		$data["mdlEditForm"] = $edit_modal;
+		$data["mdlPrint"] = $mdlPrint;
 		$data["arrExchangeRate"] = $this->mscurrencies_model->getArrRate();
 			
 		if($mode == 'ADD'){
@@ -471,6 +473,29 @@ class Invoice extends MY_Controller{
 			$this->json_output();
 			return;
 		}
+
+	}
+
+	public function print_voucher($finLPBPurchaseId){
+		$this->data = $this->trlpbpurchase_model->getDataVoucher($finLPBPurchaseId);
+		//$data=[];
+		$this->data["title"] = "Invoice";		
+		$page_content = $this->parser->parse('pages/tr/purchase/invoice/voucher', $this->data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;	
+		$strHtml = $this->parser->parse('template/voucher_pdf', $this->data, true);
+
+		//$this->parser->parse('template/voucher', $this->data);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;				
+		
+		$mpdf->WriteHTML($strHtml);	
+		//$mpdf->SetHTMLHeaderByName('MyFooter');
+
+		//echo $data;
+		$mpdf->Output();
+
+
+
 
 	}
 }    

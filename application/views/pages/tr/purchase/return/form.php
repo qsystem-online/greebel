@@ -357,6 +357,7 @@
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlJurnal ?>
+<?php echo $mdlPrint ?>
 
 <script type="text/javascript" info="event">
 	$(function(){
@@ -370,6 +371,11 @@
 			e.preventDefault();
 			submitAjax(0);
 		});
+
+		$("#btnPrint").click(function(e){
+			e.preventDefault();
+			frameVoucher.print("<?=site_url()?>tr/purchase/purchase_return/print_voucher/" + $("#fin_purchasereturn_id").val());
+		})
 
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();

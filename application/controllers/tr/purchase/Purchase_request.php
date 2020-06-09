@@ -105,6 +105,8 @@ class Purchase_request extends MY_Controller{
         $data["title"] = $mode == "ADD" ? lang("Permintaan Pembelian") : lang("Update Permintaan Pembelian");
 		$data["fin_pr_id"] = $finPRId;
 		$data["mdlEditForm"] = $edit_modal;
+		$mdlPrint =$this->parser->parse('template/mdlPrint.php', [], true);
+
 
 		$data["arrExchangeRate"] = $this->mscurrencies_model->getArrRate();
 		
@@ -116,6 +118,8 @@ class Purchase_request extends MY_Controller{
 		}else if($mode == 'EDIT'){
 			$data["fst_pr_no"]="";	
 			$data["mdlJurnal"] = $jurnal_modal;
+			$data["mdlPrint"] = $mdlPrint;
+
 			$page_content = $this->parser->parse('pages/tr/purchase/request/form', $data, true);
         } else if ($mode == 'PROCESS'){
 			$stock_modal = $this->parser->parse('template/mdlStock', [], true);
@@ -693,8 +697,83 @@ class Purchase_request extends MY_Controller{
 	}
 
 	public function distribute(){
-		//List Transaksi	
+		$this->load->library('menus');
+        $this->list['page_name'] = "Purchase Request Distribution";
+        $this->list['list_name'] = "Distribution List";
+        $this->list['boxTools'] = [
+			"<a id='btnNew'  href='".site_url()."tr/purchase/purchase_request/distribute_add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
+		];
+        $this->list['pKey'] = "id";
+        $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/purchase/purchase_request/fetch_distribute_list_data';
+        $this->list['arrSearch'] = [
+			'fst_distributepr_no' => 'No Request',			
+        ];
+
+        $this->list['breadcrumbs'] = [
+            ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
+            ['title' => 'Purchase', 'link' => '#', 'icon' => ''],
+            ['title' => 'Return', 'link' => NULL, 'icon' => ''],
+		];
+		
+
+        $this->list['columns'] = [
+			['title' => 'Id', 'width' => '10px','visible'=>'false', 'data' => 'fin_distributepr_id'],
+            ['title' => 'Transaction No', 'width' => '120px', 'data' => 'fst_distributepr_no'],
+            ['title' => 'Tanggal', 'width' => '120px', 'data' => 'fdt_distributepr_datetime'],
+			['title' => 'Memo', 'width' => '150px', 'data' => 'fst_distributepr_notes'],
+			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
+				'render'=>"function(data,type,row){
+					action = '<div style=\"font-size:16px\">';
+					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/purchase/purchase_request/distribute_edit/' + row.fin_distributepr_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
+					action += '<div>';
+					return action;
+				}"
+			]
+		];
+		$this->list['jsfile'] = $this->parser->parse('pages/tr/purchase/request/distribute_listjs', [], true);
+		//$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		//$this->list['mdlEditForm'] = $edit_modal;
+        $main_header = $this->parser->parse('inc/main_header', [], true);
+        $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+        $page_content = $this->parser->parse('template/standardList_v2_0_0', $this->list, true);
+        $main_footer = $this->parser->parse('inc/main_footer', [], true);
+        $control_sidebar = null;
+        $this->data['ACCESS_RIGHT'] = "A-C-R-U-D-P";
+        $this->data['MAIN_HEADER'] = $main_header;
+        $this->data['MAIN_SIDEBAR'] = $main_sidebar;
+        $this->data['PAGE_CONTENT'] = $page_content;
+        $this->data['MAIN_FOOTER'] = $main_footer;
+		$this->parser->parse('template/main', $this->data);
+		
 	}
+
+	public function fetch_distribute_list_data(){
+		$this->load->library("datatables");
+        $this->datatables->setTableName("(
+			select * from trdistributepr 
+			) a");
+
+        $selectFields = "a.*";
+        $this->datatables->setSelectFields($selectFields);
+
+        $Fields = $this->input->get('optionSearch');
+        $searchFields = [$Fields];
+        $this->datatables->setSearchFields($searchFields);
+        
+        // Format Data
+        $datasources = $this->datatables->getData();
+        $arrData = $datasources["data"];
+        $arrDataFormated = [];
+        foreach ($arrData as $data) {        
+            $arrDataFormated[] = $data;
+        }
+        $datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+		
+	}
+
+
+
 
 	public function distribute_add(){
 		$this->openDistributeForm("ADD");
@@ -777,8 +856,7 @@ class Purchase_request extends MY_Controller{
 			$dataH["fst_distributepr_no"] = $fst_distributepr_no;
 			unset($dataH["fin_distributepr_id"]);
 			$dataDetails = $dataPrepared["dataDetails"];						
-			$this->validateDistributeData($dataH,$dataDetails);
-			echo "after validate";
+			$this->validateDistributeData($dataH,$dataDetails);			
 			//SAVE
 			$this->db->trans_start(); 						
 			$insertId = $this->trdistributepr_model->insert($dataH);
@@ -810,6 +888,170 @@ class Purchase_request extends MY_Controller{
 		}
 	}
 
+	public function ajx_distribute_edit_save(){
+		$this->load->model('trdistributepr_model');
+		$this->load->model('trdistributepritems_model');
+
+		$finDistributePRId = $this->input->post("fin_distributepr_id");
+
+		try{
+			
+			//CEK if editable
+			$dataHOld = $this->trdistributepr_model->getDataHeaderById($finDistributePRId);
+
+			if ($dataHOld == null){
+				throw new CustomException(lang("ID Distribute PR tidak dikenal!",3003,"FAILED",["fin_distributepr_id"=>$finDistributePRId]));
+			}
+
+			//CEK tgl lock dari transaksi tersimpan
+			$resp = dateIsLock($dataHOld->fdt_distributepr_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+			//CEK tgl lock dari transaksi yg di kirim
+			$fdt_distributepr_datetime = dBDateTimeFormat($this->input->post("fdt_distributepr_datetime"));					
+			$resp = dateIsLock($fdt_distributepr_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+			//CEK iseditable 
+			$resp = $this->trdistributepr_model->isEditable($dataHOld->fin_distributepr_id);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();			
+			return;
+		}
+
+
+		try{
+
+			$this->db->trans_start(); 
+
+			//UNPOSTING
+			$this->trdistributepr_model->unposting($finDistributePRId);
+
+			//DELETE DETAIL DATA
+			$this->trdistributepr_model->deleteDetail($finDistributePRId);
+
+
+			$dataPrepared = $this->prepareDistributeData();	
+			$dataH = $dataPrepared["dataH"];
+			$dataDetails = $dataPrepared["dataDetails"];
+			
+			$dataH["fin_distributepr_id"] = $finDistributePRId;
+			$dataH["fst_distributepr_no"] = $dataHOld->fst_distributepr_no;
+
+			//VALIDATION
+			$this->validateDistributeData($dataH,$dataDetails);
+
+			//SAVE
+			$this->trdistributepr_model->update($dataH);
+
+			foreach($dataDetails as $dataD){
+				$dataD["fin_distributepr_id"] = $finDistributePRId;
+				$dataD["fst_serial_number_list"] = json_encode($dataD["fst_serial_number_list"]);
+				$this->trdistributepritems_model->insert($dataD);
+			}
+
+			//POSTING
+			$this->trdistributepr_model->posting($finDistributePRId);
+						
+			$this->db->trans_complete();
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Saved !";
+			$this->ajxResp["data"]["insert_id"] = $finDistributePRId;
+			$this->json_output();
+
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();			
+			$this->db->trans_rollback();
+			return;
+		}
+
+
+
+
+	}
+
+	public function ajx_delete_distribute($finDistributePRId){
+		$this->load->model('trdistributepr_model');
+		$this->load->model('trdistributepritems_model');
+
+		
+
+		try{
+			
+			//CEK if editable
+			$dataHOld = $this->trdistributepr_model->getDataHeaderById($finDistributePRId);
+
+			if ($dataHOld == null){
+				throw new CustomException(lang("ID Distribute PR tidak dikenal!",3003,"FAILED",["fin_distributepr_id"=>$finDistributePRId]));
+			}
+
+			//CEK tgl lock dari transaksi tersimpan
+			$resp = dateIsLock($dataHOld->fdt_distributepr_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+		
+			//CEK iseditable 
+			$resp = $this->trdistributepr_model->isEditable($dataHOld->fin_distributepr_id);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],null);
+			}
+
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();			
+			return;
+		}
+
+
+		try{
+
+			$this->db->trans_start(); 
+
+			//UNPOSTING
+			$this->trdistributepr_model->unposting($finDistributePRId);
+
+			//DELETE HEADER
+			$this->trdistributepr_model->delete($finDistributePRId,true);
+
+			//DELETE DETAIL DATA
+			$this->trdistributepr_model->deleteDetail($finDistributePRId);
+
+			
+			$this->db->trans_complete();
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "Data Deleted !";
+			//$this->ajxResp["data"]= $finDistributePRId;
+			$this->json_output();
+
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();			
+			$this->db->trans_rollback();
+			return;
+		}
+
+	}
+
+
 	public function ajx_fetch_distibution($finDistributionPRId){
 		$this->load->model("trdistributepr_model");
 		$data = $this->trdistributepr_model->getDataById($finDistributionPRId);
@@ -827,7 +1069,9 @@ class Purchase_request extends MY_Controller{
 			"fin_distributepr_id"=>$this->input->post("fin_distributepr_id"),
 			"fst_distributepr_no"=>$this->input->post("fst_distributepr_no"),
 			"fdt_distributepr_datetime"=> $fdt_distributepr_datetime,
-			"fst_distributepr_notes"=>$this->input->post("fst_distributepr_notes")
+			"fst_distributepr_notes"=>$this->input->post("fst_distributepr_notes"),
+			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
+			"fst_active"=>"A",
 		];
 
 		$postDetails = $this->input->post("details");
@@ -839,7 +1083,7 @@ class Purchase_request extends MY_Controller{
 				"fin_distributepr_id"=>$dataH["fin_distributepr_id"], 
 				"fin_pr_detail_id"=>$detail->fin_pr_detail_id, 
 				"fdb_qty_distribute"=>$detail->fdb_qty_distribute, 
-				"fin_source_warehouse_id"=>$detail->fin_source_warehouse_id, 
+				"fin_source_warehouse_id"=>isset($detail->fin_source_warehouse_id) ? $detail->fin_source_warehouse_id : null, 
 				"fst_batch_number"=>$detail->fst_batch_number,
 				"fst_serial_number_list" =>$detail->fst_serial_number_list,
 				"fst_notes"=>$detail->fst_notes, 
@@ -918,5 +1162,26 @@ class Purchase_request extends MY_Controller{
             }
 		
 		}
+	}
+
+	public function print_voucher($finPRId){
+		$data = $this->trpurchaserequest_model->getDataVoucher($finPRId);
+
+		$data["title"]= "Purchase Request";
+		$this->data["title"]= $data["title"];
+
+		$page_content = $this->parser->parse('pages/tr/purchase/request/voucher_pr', $data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;		
+		
+		
+		$mpdf->WriteHTML($data);	
+		//$mpdf->SetHTMLHeaderByName('MyFooter');
+
+		//echo $data;
+		$mpdf->Output();
+
 	}
 }    

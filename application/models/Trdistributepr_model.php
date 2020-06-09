@@ -36,16 +36,17 @@ class Trdistributepr_model extends MY_Model {
 
 		
 		$ssql = "SELECT a.*,
-			b.fin_item_id,b.fst_unit,
+			b.fin_item_id,b.fst_unit,b.fdt_etd,
 			c.fin_req_department_id,c.fst_pr_no,c.fdt_pr_datetime,c.fst_memo,
 			d.fst_department_name,
-			e.fst_item_code,e.fst_item_name,f.fst_warehouse_name,b.fdt_etd 						
+			e.fst_item_code,e.fst_item_name,e.fbl_stock,e.fin_item_type_id,e.fbl_is_batch_number,e.fbl_is_serial_number,
+			f.fst_warehouse_name 
 			FROM trdistributepritems a
 			INNER JOIN trpurchaserequestitems b on a.fin_pr_detail_id = b.fin_rec_id
 			INNER JOIN trpurchaserequest c on b.fin_pr_id = c.fin_pr_id 
 			INNER JOIN departments d on c.fin_req_department_id = d.fin_department_id
 			INNER JOIN msitems e on b.fin_item_id = e.fin_item_id 
-			INNER JOIN mswarehouse f on a.fin_source_warehouse_id = f.fin_warehouse_id 			
+			LEFT JOIN mswarehouse f on a.fin_source_warehouse_id = f.fin_warehouse_id 			
 			WHERE a.fin_distributepr_id = ?";
 
 		$qr = $this->db->query($ssql,[$finDistributePRId]);   
@@ -70,7 +71,12 @@ class Trdistributepr_model extends MY_Model {
 		return $data;
 	}
 
+	public function getDataHeaderById($finDistributePRId){
+		$ssql ="SELECT * FROM trdistributepr where fin_distributepr_id = ?";
+		$qr = $this->db->query($ssql,[$finDistributePRId]);
+		return $qr->row();
 
+	}
 
 
 	public function generateTransactionNo($trDate = null) {
@@ -125,6 +131,7 @@ class Trdistributepr_model extends MY_Model {
 	}
 	
 	public function posting($finDistributePRId){
+		$this->load->model("glledger_model");
 
 		$ssql = "SELECT * from trdistributepr where fin_distributepr_id = ?";
 		$qr = $this->db->query($ssql,[$finDistributePRId]);
@@ -133,12 +140,13 @@ class Trdistributepr_model extends MY_Model {
 			throw new CustomException("Invalid Distribute PR ID",3003,"FAILED",[]);
 		}
 
-		$ssql = "SELECT a.*,b.fin_item_id,b.fst_unit,c.fin_item_type_id,c.fbl_stock,c.fin_item_group_id,d.fin_department_id,e.fst_department_type,
+		$ssql = "SELECT a.*,b.fin_item_id,b.fst_unit,c.fin_item_type_id,c.fbl_stock,c.fin_item_group_id,
+			d.fin_req_department_id,e.fst_department_type
 			FROM trdistributepritems a 
 			INNER JOIN trpurchaserequestitems b on a.fin_pr_detail_id = b.fin_rec_id
 			INNER JOIN msitems c on b.fin_item_id = c.fin_item_id
-			INNER JOIN trpurchasereques d on b.fin_pr_id = d.fin_pr_id
-			INNER JOIN departments e on d.fin_department_id = e.fin_department_id 
+			INNER JOIN trpurchaserequest d on b.fin_pr_id = d.fin_pr_id
+			INNER JOIN departments e on d.fin_req_department_id = e.fin_department_id 
 			where a.fin_distributepr_id = ?";
 
 		$qr = $this->db->query($ssql,[$finDistributePRId]);
@@ -197,25 +205,26 @@ class Trdistributepr_model extends MY_Model {
 				$accBiaya = getLogisticGLConfig($rw->fin_item_group_id,$typeBiaya);
 				$accPersediaan =getLogisticGLConfig($rw->fin_item_group_id,"PERSEDIAAN");
 				$cost = $this->trinventory_model->getLastHPP($rw->fin_item_id,$rw->fin_source_warehouse_id);
-
+				$cost = $cost  * $rw->fdb_qty_distribute;
+				
 				//Biaya Pada Persediaan Supplies
 				$dataJurnal[] =[ 
 					"fin_branch_id"=>$dataH->fin_branch_id,
 					"fst_account_code"=>$accBiaya ,
 					"fdt_trx_datetime"=>$dataH->fdt_distributepr_datetime,
 					"fst_trx_sourcecode"=>"PRD",
-					"fin_trx_id"=>$dataH->fin_distributionpr_id,
-					"fst_trx_no"=>$dataH->fst_distributionpr_no,
+					"fin_trx_id"=>$dataH->fin_distributepr_id,
+					"fst_trx_no"=>$dataH->fst_distributepr_no,
 					"fst_reference"=>$rw->fst_notes,
 					"fdc_debit"=> $cost,
 					"fdc_origin_debit"=>$cost,
 					"fdc_credit"=>0,
 					"fdc_origin_credit"=>0,
-					"fst_orgi_curr_code"=>getDefaultCurrency(),
+					"fst_orgi_curr_code"=>getDefaultCurrency()["CurrCode"],
 					"fdc_orgi_rate"=>1,
 					"fst_no_ref_bank"=>null,
 					"fin_pcc_id"=>$rwItemGroup->fin_pcc_id,
-					"fin_pc_divisi_id"=>$rw->fin_department_id,
+					"fin_pc_divisi_id"=>$rw->fin_req_department_id,
 					"fin_relation_id"=>NULL,
 					"fst_active"=>"A",
 					"fst_info"=>"Biaya Distribute logistik stock",
@@ -226,14 +235,14 @@ class Trdistributepr_model extends MY_Model {
 					"fst_account_code"=>$accPersediaan ,
 					"fdt_trx_datetime"=>$dataH->fdt_distributepr_datetime,
 					"fst_trx_sourcecode"=>"PRD",
-					"fin_trx_id"=>$dataH->fin_distributionpr_id,
-					"fst_trx_no"=>$dataH->fst_distributionpr_no,
+					"fin_trx_id"=>$dataH->fin_distributepr_id,
+					"fst_trx_no"=>$dataH->fst_distributepr_no,
 					"fst_reference"=>$rw->fst_notes,
 					"fdc_debit"=> 0,
 					"fdc_origin_debit"=>0,
 					"fdc_credit"=>$cost,
 					"fdc_origin_credit"=>$cost,
-					"fst_orgi_curr_code"=>getDefaultCurrency(),
+					"fst_orgi_curr_code"=>getDefaultCurrency()["CurrCode"],
 					"fdc_orgi_rate"=>1,
 					"fst_no_ref_bank"=>null,
 					"fin_pcc_id"=>null,
@@ -242,73 +251,106 @@ class Trdistributepr_model extends MY_Model {
 					"fst_active"=>"A",
 					"fst_info"=>"Biaya Distribute logistik stock",
 				];
-			}
-			
-
-
+			}			
 		}
 
-		
-		
-		
-
+		//var_dump($dataJurnal);
+		$this->glledger_model->createJurnal($dataJurnal);
 	}
 
-	public function unposting($finDistributePRId){
+	public function unposting($finDistributePRId){		
+		$this->load->model("trinventory_model");
+		$this->load->model("glledger_model");
+
+		$unpostingDateTime = date("Y-m-d H:i:s");
+		
+		$ssql = "SELECT a.*,b.fin_item_id,b.fst_unit,
+			c.fin_item_type_id,c.fbl_stock,c.fin_item_group_id,
+			d.fin_req_department_id,e.fst_department_type 
+			FROM trdistributepritems a 
+			INNER JOIN trpurchaserequestitems b ON a.fin_pr_detail_id = b.fin_rec_id
+			INNER JOIN msitems c ON b.fin_item_id = c.fin_item_id
+			INNER JOIN trpurchaserequest d ON b.fin_pr_id = d.fin_pr_id
+			INNER JOIN departments e ON d.fin_req_department_id = e.fin_department_id 
+			WHERE a.fin_distributepr_id = ?";
+
+		$qr = $this->db->query($ssql,[$finDistributePRId]);
+		$rs = $qr->result();
+		$dataJurnal = [];
+		foreach($rs as $rw){
+			//update trpurchaserequestitems
+			$ssql = "UPDATE trpurchaserequestitems set fdb_qty_distribute = fdb_qty_distribute - ? WHERE fin_rec_id = ?";
+			$this->db->query($ssql,[$rw->fdb_qty_distribute ,$rw->fin_pr_detail_id]);	
+			if ($this->db->error()["code"]	!= 0){
+				throw new CustomException($this->db->error()["message"],"3003","FAILED",[]);
+			}			
+		}
+
+		//Update kartu stock
+		$invCode ="PRD";
+
+		$this->trinventory_model->deleteByCodeId($invCode,$finDistributePRId);
+		$this->trinventory_model->deleteInsertSerial($invCode,$finDistributePRId);
+
+		//Jurnal
+		$this->glledger_model->cancelJurnal("PRD",$finDistributePRId,$unpostingDateTime);
 	}
 
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-	
-
-	
 	public function isEditable($finPRId){       
 		/**
 		 * FALSE CONDITION
 		 * 1. kalau sudah publish tidak bisa diedit
 		 * 
 		 */
-		$dataH = $this->getDataHeaderById($finPRId);
-		if ($dataH->fdt_publish_datetime != null){
-			return ["status"=>"FAILED","message"=>"Purchase request yang sudah di publish tidak bisa di rubah.."];
-		}
+		//$dataH = $this->getDataHeaderById($finPRId);
+		//if ($dataH->fdt_publish_datetime != null){
+		//	return ["status"=>"FAILED","message"=>"Purchase request yang sudah di publish tidak bisa di rubah.."];
+		//}
+
 		$resp =["status"=>"SUCCESS","message"=>""];
 		return $resp;
     }
-    
 
 	public function deleteDetail($finPRId){
-		$ssql ="delete from trpurchaserequestitems where fin_pr_id = ?";
+		$ssql ="delete from trdistributepritems where fin_distributepr_id = ?";
 		$this->db->query($ssql,[$finPRId]);
 		throwIfDBError();        
 	}
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+	
+
+	
+	
+    
+
+	
 	public function update($data){
 		//Delete Field yang tidak boleh berubah
 		parent::update($data);        

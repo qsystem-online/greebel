@@ -524,6 +524,35 @@ class Trlpbpurchase_model extends MY_Model {
 		$this->db->query($ssql,[$finLPBPurchaseId]);
 		throwIfDBError();
 	}
+	
+	
+	
+	public function getDataVoucher($finLPBPurchaseId){
+		$ssql = "SELECT a.*,b.fst_relation_name as fst_supplier_name,
+			c.fst_po_no,c.fdt_po_datetime
+			FROM trlpbpurchase a 
+			INNER JOIN msrelations b on a.fin_supplier_id = b.fin_relation_id
+			INNER JOIN trpo c on a.fin_po_id = c.fin_po_id
+			WHERE fin_lpbpurchase_id = ?";
+		$qr = $this->db->query($ssql,[$finLPBPurchaseId]);			
+		$header = $qr->row_array();
+
+		$ssql = "SELECT a.*,
+			b.fst_item_code,b.fst_item_name  
+			FROM trlpbpurchaseitems a 
+			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
+			WHERE fin_lpbpurchase_id = ?";
+		$qr = $this->db->query($ssql,[$finLPBPurchaseId]);
+		$details = $qr->result_array();
+
+		
+		return [
+			"header"=>$header,
+			"details"=>$details
+		];
+	}
+
+
 }
 
 

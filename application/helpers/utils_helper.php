@@ -281,3 +281,29 @@
 		var_dump($object);
 		die();
 	}
+
+
+	function getMpdfSetting(){
+		$defaultConfig = (new Mpdf\Config\ConfigVariables())->getDefaults();
+		$fontDirs = $defaultConfig['fontDir'];
+		
+		$defaultFontConfig = (new Mpdf\Config\FontVariables())->getDefaults();
+		$fontData = $defaultFontConfig['fontdata'];	
+
+		return [
+			"format"=>[215.9,139.7],
+			"margin_left"=>5,
+			"margin_top"=>5,
+			"margin_right"=>10,
+			"margin_bottom"=>8,
+			"margin_footer"=>3,	
+			'fontDir' => array_merge($fontDirs, [
+				FCPATH . 'assets/fonts/PT_Mono/',
+			]),
+			'fontdata' => $fontData + [
+				'pt-mono' => [
+					'R' => 'PTMono-Regular.ttf',
+				]
+			],					
+		];
+	}
