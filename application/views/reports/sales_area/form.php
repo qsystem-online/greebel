@@ -1,29 +1,29 @@
 <!-- form start -->
-<form id="rptBranch" action="<?= site_url() ?>report/branch/process" method="POST" enctype="multipart/form-data">
+<form id="rptSalesarea" action="<?= site_url() ?>report/sales_area/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
-            <label for="select-provinces" class="col-md-2 control-label"><?=lang("Province Name")?></label>
+                <label for="select-RegionalStart" class="col-md-2 control-label"><?=lang("Sales Regional Name")?></label>
                 <div class="col-md-4">
-                    <select id="select-provinces" class="form-control select2" name="fst_kode">
+                    <select id="select-RegionalStart" class="form-control" name="fin_sales_regional_id">
                         <option value="0">-- <?=lang("select")?> --</option>
                     </select>
-                    <div id="fst_nama_err" class="text-danger"></div>
+                    <div id="fin_sales_regional_id_err" class="text-danger"></div>
                 </div>
-            
-            <label for="select-district" class="col-md-2 control-label"><?=lang("District Name")?></label>
+
+                <label for="select-RegionalEnd" class="col-md-2 control-label"><?=lang("Sales Regional Name")?></label>
                 <div class="col-md-4">
-                    <select id="select-district" class="form-control select2" name="fst_kode">
+                    <select id="select-RegionalEnd" class="form-control" name="fin_sales_regional_id2">
                         <option value="0">-- <?=lang("select")?> --</option>
                     </select>
-                    <div id="fst_nama_err" class="text-danger"></div>
+                    <div id="fin_sales_regional_id2_err" class="text-danger"></div>
                 </div>
             </div>
         
             <div class="form-group row">
                 <label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
                 <div class="col-sm-4">								
-                    <label class="radio-inline"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Daftar Cabang")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Daftar Sales Area")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -49,6 +49,7 @@
             </div>
     </div>
 </form>
+
 <script type="text/javascript">
     $(document).ready(function() {
        // $('#multiple-columns').multiselect();
@@ -82,70 +83,62 @@
         
         // currentValue = myRadio.value;
     }         
+
     $(function() {
-        $("#select-provinces").select2({
+        $("#select-RegionalStart").select2({
             width: '100%',
             ajax: {
-                url: '<?=site_url()?>master/branch/get_Province/',
+                url: '<?=site_url()?>master/sales_area/get_Regional',
                 dataType: 'json',
                 delay: 250,
                 processResults: function (data){
-                    items = [];
+                    data2 = [];
                     data = data.data;
                     $.each(data,function(index,value){
-                        items.push({
-                            "id" : value.fst_kode,
-                            "text" : value.fst_nama
+                        data2.push({
+                            "id" : value.fin_sales_regional_id,
+                            "text" : value.fst_name
                         });
                     });
-                    console.log(items);
+                    console.log(data2);
                     return {
-                        results: items
+                        results: data2
                     };
                 },
                 cache: true,
             }
         });
 
-        $("#select-provinces").change(function(event){
-            event.preventDefault();
-            $('#select-district').val(null).trigger('change');
-            $("#select-district").select2({
-                width: '100%',
-                ajax: {
-                    url: '<?=site_url()?>master/branch/get_District/'+ $("#select-provinces").val(),
-                    dataType: 'json',
-                    delay: 250,
-                    processResults: function (data){
-                        data2 = [];
-                        data = data.data;
-                        $.each(data,function(index,value){
-                            data2.push({
-                                "id" : value.fst_kode,
-                                "text" : value.fst_nama
-                            });
+        $("#select-RegionalEnd").select2({
+            width: '100%',
+            ajax: {
+                url: '<?=site_url()?>master/sales_area/get_Regional',
+                dataType: 'json',
+                delay: 250,
+                processResults: function (data){
+                    data2 = [];
+                    data = data.data;
+                    $.each(data,function(index,value){
+                        data2.push({
+                            "id" : value.fin_sales_regional_id,
+                            "text" : value.fst_name
                         });
-                        console.log(data2);
-                        return {
-                            results: data2
-                        };
-                    },
-                    cache: true,
-                }
-            });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
         });
 
         $("#btnProcess").click(function(event) {
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#rptBranch").serializeArray();
-            url = "<?= site_url() ?>report/branch/process";
-
-            //if ($("#select-provinces").val() == 0){
-            //    alert("<?=lang('Pilih Province Name ...!')?>");
-            //    return;
-            //}
+            data = $("#rptSalesarea").serializeArray();
+            url = "<?= site_url() ?>report/sales_area/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -153,6 +146,9 @@
                 //enctype: 'multipart/form-data',
                 url: url,
                 data: data,
+                //processData: false,
+                //contentType: false,
+                //cache: false,
                 timeout: 600000,
                 success: function(resp) {
                     if (resp.message != "") {
@@ -184,12 +180,12 @@
                         // 
                         //Clear all previous error
                         $(".text-danger").html("");
-                        url = "<?= site_url() ?>report/branch/generateexcel";
+                        url = "<?= site_url() ?>report/sales_area/generateexcel";
                         //alert(url);
                         //$("iframe").attr("src",url);
-                        $("#rptBranch").attr('action', url);
-                        $("#rptBranch").attr('target', 'rpt_iframe');
-                        $("#rptBranch").submit();
+                        $("#rptSalesarea").attr('action', url);
+                        $("#rptSalesarea").attr('target', 'rpt_iframe');
+                        $("#rptSalesarea").submit();
                         $("a#toggle-window").click();
                         // Change to Edit mode
                         // $("#frm-mode").val("EDIT"); //ADD|EDIT
@@ -211,8 +207,8 @@
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while downloading excel file.....");
             //data = new FormData($("#frmBranch")[0]);
-            resp = $("#rptBranch").serializeArray();
-            url = "<?= site_url() ?>report/branch/process";
+            resp = $("#rptSalesarea").serializeArray();
+            url = "<?= site_url() ?>report/sales_area/process";
             
 
             data = JSON.stringify(resp);
@@ -220,14 +216,16 @@
             
             //Clear all previous error
             $(".text-danger").html("");
-            url = "<?= site_url() ?>report/branch/generateexcel/0";
+            url = "<?= site_url() ?>report/sales_area/generateexcel/0";
             //alert(url);
             //$("iframe").attr("src",url);
-            $("#rptBranch").attr('action', url);
-            $("#rptBranch").attr('target', 'rpt_iframe');
-            $("#rptBranch").submit();
+            $("#rptSalesarea").attr('action', url);
+            $("#rptSalesarea").attr('target', 'rpt_iframe');
+            $("#rptSalesarea").submit();
             $("a#toggle-window").click();
 
-        });        
+        });
     });
+
 </script>
+

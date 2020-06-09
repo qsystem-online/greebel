@@ -23,6 +23,7 @@ class Sales_area extends MY_Controller{
         $this->list['page_name'] = "Master Sales Area";
         $this->list['list_name'] = "Sales Area List";
         $this->list['addnew_ajax_url'] = site_url() . 'master/sales_area/add_area';
+        $this->list['report_url'] = site_url() . 'report/sales_area';
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/sales_area/fetch_list_data';
         $this->list['delete_ajax_url'] = site_url() . 'master/sales_area/delete_area/';
