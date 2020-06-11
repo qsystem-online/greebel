@@ -791,11 +791,13 @@ class Purchase_request extends MY_Controller{
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
 		$jurnal_modal = $this->parser->parse('template/mdlJurnal', [], true);
+		$mdlPrint = $this->parser->parse('template/mdlPrint', [], true);
 
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Distrubusi Permohonan Pembelian") : lang("Update Distrubusi Permohonan Pembelian");
 		$data["fin_distributepr_id"] = $finDistributePRId;
 		$data["mdlEditForm"] = $edit_modal;
+		$data["mdlPrint"] = $mdlPrint;
 
 		$data["arrExchangeRate"] = $this->mscurrencies_model->getArrRate();
 		
@@ -1183,5 +1185,25 @@ class Purchase_request extends MY_Controller{
 		//echo $data;
 		$mpdf->Output();
 
+	}
+
+	public function print_distribute_voucher($finDistributePRId){
+		$this->load->model("trdistributepr_model");
+		$this->data = $this->trdistributepr_model->getDataVoucher($finDistributePRId);
+		//$data=[];
+		$this->data["title"] = "Distribution Purchase Request";		
+		$page_content = $this->parser->parse('pages/tr/purchase/request/voucher_distributepr', $this->data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;	
+
+		
+		$strHtml = $this->parser->parse('template/voucher_pdf', $this->data, true);
+
+		//$this->parser->parse('template/voucher', $this->data);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;		
+		//echo $strHtml;
+
+		$mpdf->WriteHTML($strHtml);	
+		$mpdf->Output();		
 	}
 }    

@@ -232,22 +232,22 @@ class Trpurchasecost_model extends MY_Model {
 
 	public function getDataVoucher($finPurchaseCostId){
 		$ssql ="SELECT a.*,b.fst_relation_name AS fst_supplier_name,c.fst_curr_name,
-			d.fst_lpbpurchase_no,d.fdt_lpbpurchase_datetime 
-			FROM trpurchasereturn a
+			d.fst_po_no,d.fdt_po_datetime 
+			FROM trpurchasecost a
 			INNER JOIN msrelations b ON a.fin_supplier_id = b.fin_relation_id
 			INNER JOIN mscurrencies c ON a.fst_curr_code = c.fst_curr_code 
-			LEFT JOIN trlpbpurchase d ON a.fin_lpbpurchase_id = d.fin_lpbpurchase_id
-			WHERE fin_purchasereturn_id = ?";
+			LEFT JOIN trpo d ON a.fin_po_id = d.fin_po_id
+			WHERE fin_purchasecost_id = ?";
 			
 		$qr = $this->db->query($ssql,[$finPurchaseCostId]);
 		$header = $qr->row_array();
 		
-		$ssql = "SELECT a.*,b.fst_item_code FROM trpurchasereturnitems a
-			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
-			WHERE fin_purchasereturn_id = ?";
+		$ssql = "SELECT a.*,b.fst_glaccount_name FROM trpurchasecostitems a
+			INNER JOIN glaccounts b on a.fst_glaccount_code = b.fst_glaccount_code
+			WHERE fin_purchasecost_id = ?";
 
 		$qr = $this->db->query($ssql,[$finPurchaseCostId]);
-
+		var_dump($this->db->error());
 
 		$details = $qr->result_array();
 

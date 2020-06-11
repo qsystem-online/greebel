@@ -317,7 +317,37 @@ class Trdistributepr_model extends MY_Model {
 		throwIfDBError();        
 	}
     
+	public function getDataVoucher($finDistributePRId){
+		$ssql ="SELECT a.*
+			FROM trdistributepr a
+			WHERE fin_distributepr_id = ?";
+			
+		$qr = $this->db->query($ssql,[$finDistributePRId]);
+		$header = $qr->row_array();
+		
+		$ssql = "SELECT a.*,
+			b.fdt_etd,b.fst_unit,
+			c.fst_pr_no,c.fin_req_department_id,
+			d.fst_department_name AS fst_req_department_name,
+			e.fst_item_code,e.fst_item_name,
+			f.fst_warehouse_name AS fst_source_warehouse_name
+			FROM trdistributepritems a
+			INNER JOIN trpurchaserequestitems b ON a.fin_pr_detail_id = b.fin_rec_id
+			INNER JOIN trpurchaserequest c ON b.fin_pr_id = c.fin_pr_id
+			INNER JOIN departments d ON c.fin_req_department_id = d.fin_department_id 
+			INNER JOIN msitems e ON b.fin_item_id = e.fin_item_id
+			LEFT JOIN mswarehouse f ON a.fin_source_warehouse_id = f.fin_warehouse_id 
+			WHERE fin_distributepr_id = ?";
 
+		$qr = $this->db->query($ssql,[$finDistributePRId]);
+
+		$details = $qr->result_array();
+
+		return [
+			"header"=>$header,
+			"details"=>$details
+		];
+	}
 
 
 

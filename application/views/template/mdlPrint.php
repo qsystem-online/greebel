@@ -2,7 +2,8 @@
 <script type="text/javascript">
 	var frameVoucher = {
 		print:function(url){
-			window.open(url,"_blank","width=200,height=100,menubar=0,toolbar=0");
+			var left = (screen.width - 800) / 2;
+			window.open(url,"_blank","width=800,height=550,menubar=0,toolbar=0,top=50,left="+left);
 			return;
 			$.blockUI({ message:"please wait..."});
 			$("#frameVoucher").attr("src",url);

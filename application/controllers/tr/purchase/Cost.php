@@ -649,8 +649,8 @@ class Cost extends MY_Controller{
 		
 		$this->data = $this->trpurchasecost_model->getDataVoucher($finPurchaseCostId);
 		//$data=[];
-		$this->data["title"] = "Purchase Return";		
-		$page_content = $this->parser->parse('pages/tr/purchase/return/voucher', $this->data, true);
+		$this->data["title"] = "Purchase Cost";		
+		$page_content = $this->parser->parse('pages/tr/purchase/cost/voucher', $this->data, true);
 		$this->data["PAGE_CONTENT"] = $page_content;	
 
 		

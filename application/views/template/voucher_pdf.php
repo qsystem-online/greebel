@@ -34,7 +34,7 @@
 				border-spacing:0px;
     			border-collapse: separate;
 			}
-			.table tr th{
+			.table thead tr th{
 				font-size:10pt;
 				border-bottom:solid 2px #000;
 				text-align:left;
@@ -52,6 +52,10 @@
 			.table tr.have-detail td{				
 				border-bottom:solid 0px #999;
 			}
+
+			.table tr.total td{
+				font-size:10pt;
+			}	
 
 			.text-right{
 				text-align:right;
@@ -72,6 +76,16 @@
 			.inline{
 				float:left;
 			}	
+
+			.notes{
+				text-align:justify;
+				font-style:italic;
+				margin-top:10px;
+				font-size:8pt;
+			}
+			
+
+
 		</style>
 	</head>	
 	<body>

@@ -64,7 +64,7 @@
 
 	<div class="row" style="margin-top:10px">
 		<div class="col" style="text-align:justify;font-style:italic;font-size:8pt">
-			Notes: asd asdasd asdasdasdasdjasd asdasdasaksda sadasdasdasdadasd asdasdjasdaksdakjsdjasdjaskdjasdasd asdaskdasjkdajsdajsdjasd asd asd asdasdasdkasd asda sdasd asdasdasdasdasd asdasdasdas dasdasd<?=$header["fst_memo"]?>
+			<?=$header["fst_memo"]?>
 		</div>
 	</div>
 

@@ -594,6 +594,7 @@
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlJurnal ?>
+<?php echo $mdlPrint?>
 
 <script type="text/javascript" info="event">
 	$(function(){
@@ -606,6 +607,10 @@
 		$("#btnSubmitAjax").click(function(e){
 			e.preventDefault();
 			submitAjax(0);
+		});
+
+		$("#btnPrint").click(function(e){
+			frameVoucher.print("<?=site_url()?>tr/purchase/purchase_request/print_distribute_voucher/" + $("#fin_distributepr_id").val());
 		});
 
 		$("#btnJurnal").click(function(e){
