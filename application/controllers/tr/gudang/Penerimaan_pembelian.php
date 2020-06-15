@@ -122,11 +122,14 @@ class Penerimaan_pembelian extends MY_Controller{
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		$mdlPrint = $this->parser->parse('template/mdlPrint.php', [], true);
+
 
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Penerimaan Pembelian Barang") : lang("Update Penerimaan Pembelian Barang");
 		$data["fin_lpbgudang_id"] = $finLPBGudangId;
 		$data["mdlEditForm"] = $edit_modal;
+		$data["mdlPrint"] = $mdlPrint;
 		
 		
 		if($mode == 'ADD'){
@@ -467,5 +470,24 @@ class Penerimaan_pembelian extends MY_Controller{
 		]);		
 	}
 
+	public function print_voucher($finLPBGudangId){
+		$data = $this->trlpbgudang_model->getDataVoucher($finLPBGudangId);
 
+		$data["title"]= "Penerimaan Barang";
+		$this->data["title"]= $data["title"];
+
+		$page_content = $this->parser->parse('pages/tr/gudang/penerimaan_pembelian/voucher', $data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;		
+		
+		//echo $data;
+
+			
+		//$mpdf->SetHTMLHeaderByName('MyFooter');
+		$mpdf->WriteHTML($data);
+		$mpdf->Output();
+
+	}
 }    

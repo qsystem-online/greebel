@@ -395,6 +395,7 @@
 </div>
 
 <?php echo $mdlEditForm ?>
+<?php echo $mdlPrint ?>
 
 
 
@@ -562,6 +563,12 @@
 			e.preventDefault();
 			window.location.href = "<?=site_url()?>tr/gudang/penerimaan_pembelian/add";
 		});
+
+		$("#btnPrint").click(function(e){
+			e.preventDefault();
+			frameVoucher.print("<?=site_url()?>tr/gudang/penerimaan_pembelian/print_voucher/" + $("#fin_lpbgudang_id").val());
+		});
+
 
 		$("#btnSubmitAjax").click(function(e){
 			e.preventDefault();

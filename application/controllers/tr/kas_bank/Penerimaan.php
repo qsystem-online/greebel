@@ -122,13 +122,15 @@ class Penerimaan extends MY_Controller{
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		$mdlPrint = $this->parser->parse('template/mdlPrint', [], true);
 		
 
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Penerimaan") : lang("Update Penerimaan");
 		$data["fin_cbreceive_id"] = $finCBReceiveId;
 		$data["mdlEditForm"] = $edit_modal;
-		
+		$data["mdlPrint"] = $mdlPrint;
+
 		if($mode == 'ADD'){
 			$data["mdlJurnal"] = "";
 		}else if($mode == 'EDIT'){
@@ -357,7 +359,16 @@ class Penerimaan extends MY_Controller{
 		$detailsReceive = json_decode($detailsReceive);
 		
 		for($i = 0; $i < sizeof($detailsReceive) ; $i++){
+
+			$detailsReceive[$i]->fin_pcc_id =  $detailsReceive[$i]->fin_pcc_id == "" ? null : $detailsReceive[$i]->fin_pcc_id;
+			$detailsReceive[$i]->fin_pc_divisi_id =  $detailsReceive[$i]->fin_pc_divisi_id == "" ? null : $detailsReceive[$i]->fin_pc_divisi_id;
+			$detailsReceive[$i]->fin_pc_customer_id =  $detailsReceive[$i]->fin_pc_customer_id == "" ? null : $detailsReceive[$i]->fin_pc_customer_id;
+			$detailsReceive[$i]->fin_pc_project_id =  $detailsReceive[$i]->fin_pc_project_id == "" ? null : $detailsReceive[$i]->fin_pc_project_id;
+			$detailsReceive[$i]->fin_relation_id =  $detailsReceive[$i]->fin_relation_id == "" ? null : $detailsReceive[$i]->fin_relation_id;
+
+
 			$detailsReceive[$i]->fdt_clear_date = dBDateFormat($detailsReceive[$i]->fdt_clear_date);			
+
 			// Validate itemType Details
 			if ($detailsReceive[$i]->fst_cbreceive_type == "TUNAI" ||$detailsReceive[$i]->fst_cbreceive_type == "TRANSFER"){
 				$acc = $this->kasbank_model->getDataById($dataH["fin_kasbank_id"]);
@@ -553,6 +564,23 @@ class Penerimaan extends MY_Controller{
 
 	}
 
+	
+	public function print_voucher($finCBReceiveId){
+		$data = $this->trcbreceive_model->getDataVoucher($finCBReceiveId);
+		$data["title"]= "Penerimaan Kas & Bank";
+		$this->data["title"]= $data["title"];				
+		$page_content = $this->parser->parse('pages/tr/kas_bank/penerimaan/voucher', $data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;		
+		
+		//echo $data;				
+		//$mpdf->SetHTMLHeaderByName('MyFooter');
+		$mpdf->WriteHTML($data);
+		$mpdf->Output();
+
+	}
 
 
 }    

@@ -126,12 +126,14 @@ class Pengeluaran_lain extends MY_Controller{
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		$mdlPrint = $this->parser->parse('template/mdlPrint', [], true);
 		
 
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Pengeluaran Lain") : lang("Update Pengeluaran Lain");
 		$data["fin_cbpaymentoth_id"] = $finCBPaymentOthId;
 		$data["mdlEditForm"] = $edit_modal;
+		$data["mdlPrint"] = $mdlPrint;
 		
 		if($mode == 'ADD'){
 			$data["mdlJurnal"] = "";
@@ -499,6 +501,21 @@ class Pengeluaran_lain extends MY_Controller{
 
 	}
 
+	public function print_voucher($finCBPaymentOthId){
+		$data = $this->trcbpaymentother_model->getDataVoucher($finCBPaymentOthId);
+		$data["title"]= "Pengeluaran Lain-lain Kas & Bank";
+		$this->data["title"]= $data["title"];				
+		$page_content = $this->parser->parse('pages/tr/kas_bank/pengeluaran_lain/voucher', $data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;		
+		
+		//echo $data;				
+		//$mpdf->SetHTMLFooterByName('MyFooter');
+		$mpdf->WriteHTML($data);
+		$mpdf->Output();
 
+	}
 
 }    

@@ -145,11 +145,9 @@
 									<?=lang("Tambah Transaksi")?>
 								</button>
 							</div>
-							<div class="col-md-12">
-							
+							<div class="col-md-12">							
 							<table id="tblcbpaymentitems" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
-							</div>
-							
+							</div>							
 						</div>
 						
 						
@@ -630,7 +628,7 @@
 					t.row(rowPaymentItemType).data(data).draw(false);
 				}
 				
-				calculateRincianPenerimaan();
+				calculateRincianPembayaran();
 				$("#mdlPaymentType").modal("hide");
 			},			
 		};
@@ -741,6 +739,7 @@
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlJurnal ?>
+<?php echo $mdlPrint ?>
 
 
 <script type="text/javascript">
@@ -759,6 +758,7 @@
 		});
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
+			frameVoucher.print("<?=site_url()?>tr/kas_bank/pengeluaran/print_voucher/" + $("#fin_cbpayment_id").val());
 		});
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();

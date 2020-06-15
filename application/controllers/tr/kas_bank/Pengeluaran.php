@@ -123,12 +123,14 @@ class Pengeluaran extends MY_Controller{
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		$mdlPrint = $this->parser->parse('template/mdlPrint', [], true);
 		
 
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Pengeluaran") : lang("Update Pengeluaran");
 		$data["fin_cbpayment_id"] = $finCBPaymentId;
 		$data["mdlEditForm"] = $edit_modal;
+		$data["mdlPrint"] = $mdlPrint;
 		
 		if($mode == 'ADD'){
 			$data["mdlJurnal"] = "";
@@ -248,6 +250,14 @@ class Pengeluaran extends MY_Controller{
 		for($i = 0; $i < sizeof($detailsPayment) ; $i++){
 			$item = $detailsPayment[$i];
 			$detailsPayment[$i]->fdt_clear_date = dBDateFormat($item->fdt_clear_date);
+			$detailsPayment[$i]->fin_pcc_id = $detailsPayment[$i]->fin_pcc_id == "" ? NULL : $detailsPayment[$i]->fin_pcc_id;
+			$detailsPayment[$i]->fin_pc_divisi_id =  $detailsPayment[$i]->fin_pc_divisi_id == "" ? NULL : $detailsPayment[$i]->fin_pc_divisi_id;
+			$detailsPayment[$i]->fin_pc_customer_id = $detailsPayment[$i]->fin_pc_customer_id ==""  ? NULL : $detailsPayment[$i]->fin_pc_customer_id;
+			$detailsPayment[$i]->fin_pc_project_id = $detailsPayment[$i]->fin_pc_project_id == "" ? NULL : $detailsPayment[$i]->fin_pc_project_id;
+			$detailsPayment[$i]->fin_relation_id = $detailsPayment[$i]->fin_relation_id == "" ? NULL : $detailsPayment[$i]->fin_relation_id;
+
+
+
 			// Validate itemType Details
 			if ($detailsPayment[$i]->fst_cbpayment_type == "TUNAI" ||$detailsPayment[$i]->fst_cbpayment_type == "TRANSFER"){
 				$acc = $this->kasbank_model->getDataById($dataH["fin_kasbank_id"]);
@@ -515,6 +525,13 @@ class Pengeluaran extends MY_Controller{
 			$item = $detailsPayment[$i];
 			// Validate itemType Details
 			$detailsPayment[$i]->fdt_clear_date = dBDateFormat($item->fdt_clear_date);
+			$detailsPayment[$i]->fin_pcc_id = $detailsPayment[$i]->fin_pcc_id == "" ? NULL : $detailsPayment[$i]->fin_pcc_id;
+			$detailsPayment[$i]->fin_pc_divisi_id =  $detailsPayment[$i]->fin_pc_divisi_id == "" ? NULL : $detailsPayment[$i]->fin_pc_divisi_id;
+			$detailsPayment[$i]->fin_pc_customer_id = $detailsPayment[$i]->fin_pc_customer_id ==""  ? NULL : $detailsPayment[$i]->fin_pc_customer_id;
+			$detailsPayment[$i]->fin_pc_project_id =$detailsPayment[$i]->fin_pc_project_id == "" ? NULL : $detailsPayment[$i]->fin_pc_project_id;
+			$detailsPayment[$i]->fin_relation_id =$detailsPayment[$i]->fin_relation_id == "" ? NULL : $detailsPayment[$i]->fin_relation_id;
+			
+
 			if ($detailsPayment[$i]->fst_cbpayment_type == "TUNAI" ||$detailsPayment[$i]->fst_cbpayment_type == "TRANSFER"){
 				$acc = $this->kasbank_model->getDataById($dataH["fin_kasbank_id"]);
 				$acc = $acc["ms_kasbank"];
@@ -754,6 +771,22 @@ class Pengeluaran extends MY_Controller{
 
 	}
 
+	public function print_voucher($finCBReceiveId){
+		$data = $this->trcbpayment_model->getDataVoucher($finCBReceiveId);
+		$data["title"]= "Pengeluaran Kas & Bank";
+		$this->data["title"]= $data["title"];				
+		$page_content = $this->parser->parse('pages/tr/kas_bank/pengeluaran/voucher', $data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;		
+		
+		//echo $data;				
+		//$mpdf->SetHTMLFooterByName('MyFooter');
+		$mpdf->WriteHTML($data);
+		$mpdf->Output();
+
+	}
 
 
 }    

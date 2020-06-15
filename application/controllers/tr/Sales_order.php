@@ -1067,4 +1067,25 @@ class Sales_order extends MY_Controller{
 		$this->json_output();
 		return;
 	}
+
+	public function print_voucher($finSalesOrderId){
+		$data = $this->trsalesorder_model->getDataVoucher($finSalesOrderId);
+
+		$data["title"]= "Sales Order";
+		$this->data["title"]= $data["title"];
+
+		$page_content = $this->parser->parse('pages/tr/sales_order/voucher', $data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;		
+		
+		//echo $data;
+
+			
+		//$mpdf->SetHTMLHeaderByName('MyFooter');
+		$mpdf->WriteHTML($data);
+		$mpdf->Output();
+
+	}
 }
