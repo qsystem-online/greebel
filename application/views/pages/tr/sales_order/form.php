@@ -32,9 +32,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		font-weight:700;
 	}
 </style>
-<?php
-	echo $mdlPrint;	
-?>
 
 <section class="content-header">
 	<h1><?=lang("Sales Order")?><small><?=lang("form")?></small></h1>
@@ -279,8 +276,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
 							<fieldset style="padding:10px">
 				
-								<form id="form-detail" class="form-horizontal">
-								<input type='hidden' id='fin_rec_id'/>
+								<form class="form-horizontal">
+									<input type='hidden' id='fin_rec_id'/>
 									<div class="form-group">
 										<label for="select-items" class="col-md-3 control-label"><?=lang("Items")?></label>
 										<div class="col-md-9">
@@ -586,6 +583,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	echo $mdlJurnal;
 	echo $mdlConfirmAuthorize;
 	echo $mdlEditForm;
+	echo $mdlPrint;	
 ?>
 
 
@@ -606,7 +604,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$("#btnPrint").click(function(e){
-			$("#mdlPrint").modal("toggle");
+			frameVoucher.print("<?=site_url()?>tr/sales_order/print_voucher/" + $("#fin_salesorder_id").val());
 		});		
 
 		$("#btnSubmitAjax").click(function(event){

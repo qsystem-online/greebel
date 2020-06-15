@@ -888,6 +888,8 @@
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlJurnal ?>
+<?php echo $mdlPrint ?>
+
 
 <script type="text/javascript" info="bind">
 	$(function(){
@@ -919,6 +921,8 @@
 		});
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
+			frameVoucher.print("<?=site_url()?>tr/kas_bank/penerimaan/print_voucher/" + $("#fin_cbreceive_id").val());
+
 		});
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();

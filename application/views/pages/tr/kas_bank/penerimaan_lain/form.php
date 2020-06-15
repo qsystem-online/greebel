@@ -558,6 +558,7 @@
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlJurnal ?>
+<?php echo $mdlPrint ?>
 
 <script type="text/javascript" info="bind">
 	$(function(){
@@ -588,6 +589,7 @@
 		});
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
+			frameVoucher.print("<?=site_url()?>tr/kas_bank/penerimaan_lain/print_voucher/" + $("#fin_cbreceiveoth_id").val());
 		});
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
@@ -814,8 +816,13 @@
 					$("#fdt_cbreceiveoth_datetime").val(dateTimeFormat(dataH.fdt_cbreceiveoth_datetime)).datetimepicker("update");	
 					App.addOptionIfNotExist("<option value='"+dataH.fin_kasbank_id+"'>"+dataH.fst_kasbank_name+"</option>","fin_kasbank_id");
 					
-					fin_kasbank_id
-					$("#fdt_clear_date").val(dateFormat(dataH.fdt_clear_date)).datepicker("update");
+					$(".cls-nominal").trigger("change");
+					if(dataH.fdt_clear_date != null){
+						$("#fdt_clear_date").val(dateFormat(dataH.fdt_clear_date)).datepicker("update");
+					}else{
+						$("#fdt_clear_date").val(null);
+					}
+					
 
 					t = $("#tblcbreceiveotheritems").DataTable();
 					dataItems = [];

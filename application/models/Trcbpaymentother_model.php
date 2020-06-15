@@ -251,7 +251,33 @@ class Trcbpaymentother_model extends MY_Model {
         parent::delete($finCBPaymentOthId,$softDelete,$data);            
     }
 
-    
+    public function getDataVoucher($finCBPaymentOthId){
+		$ssql ="SELECT a.*,
+			b.fst_kasbank_name,
+			d.fst_curr_name 
+			FROM trcbpaymentother a
+			INNER JOIN mskasbank b on a.fin_kasbank_id = b.fin_kasbank_id 
+			INNER JOIN mscurrencies d on a.fst_curr_code = d.fst_curr_code 
+			WHERE a.fin_cbpaymentoth_id = ?";
+			
+		$qr = $this->db->query($ssql,[$finCBPaymentOthId]);
+		$header = $qr->row_array();
+		$details =[];
+		if ($header != null){      
+			$ssql = "SELECT a.*,b.fst_glaccount_name
+				FROM trcbpaymentotheritems a
+				INNER JOIN glaccounts b ON a.fst_glaccount_code =b.fst_glaccount_code
+				WHERE a.fin_cbpaymentoth_id = ?";
+
+			$qr = $this->db->query($ssql,[$finCBPaymentOthId]);
+
+			$details = $qr->result_array();
+		}
+		return [
+			"header"=>$header,
+			"details"=>$details,
+		];
+	}
 
 }
 

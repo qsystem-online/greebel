@@ -24,7 +24,7 @@ class Penerimaan_lain extends MY_Controller{
         $this->list['page_name'] = "Cash Bank - Receive Other";
         $this->list['list_name'] = "Cash & Bank Receive Other List";
         $this->list['boxTools'] = [
-			"<a id='btnNew'  href='".site_url()."tr/kas_bank/penerimaan/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
+			"<a id='btnNew'  href='".site_url()."tr/kas_bank/penerimaan_lain/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 		];
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/kas_bank/penerimaan_lain/fetch_list_data';
@@ -126,12 +126,15 @@ class Penerimaan_lain extends MY_Controller{
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		$mdlPrint = $this->parser->parse('template/mdlPrint', [], true);
 		
 
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Penerimaan Lain") : lang("Update Penerimaan Lain");
 		$data["fin_cbreceiveoth_id"] = $finCBReceiveOthId;
 		$data["mdlEditForm"] = $edit_modal;
+		$data["mdlPrint"] = $mdlPrint;
+
 		
 		if($mode == 'ADD'){
 			$data["mdlJurnal"] = "";
@@ -499,6 +502,21 @@ class Penerimaan_lain extends MY_Controller{
 
 	}
 
+	public function print_voucher($finCBReceiveOthId){
+		$data = $this->trcbreceiveother_model->getDataVoucher($finCBReceiveOthId);
+		$data["title"]= "Penerimaan Lain-lain Kas & Bank";
+		$this->data["title"]= $data["title"];				
+		$page_content = $this->parser->parse('pages/tr/kas_bank/penerimaan_lain/voucher', $data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;		
+		
+		//echo $data;				
+		//$mpdf->SetHTMLFooterByName('MyFooter');
+		$mpdf->WriteHTML($data);
+		$mpdf->Output();
 
+	}
 
 }    

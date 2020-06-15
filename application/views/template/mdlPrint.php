@@ -1,4 +1,4 @@
-<iframe id="frameVoucher" src="" style="display:unset"></iframe>
+<iframe id="frameVoucher" style="display:none"></iframe>
 <script type="text/javascript">
 	var frameVoucher = {
 		print:function(url){

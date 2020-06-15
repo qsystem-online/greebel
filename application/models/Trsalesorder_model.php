@@ -1228,6 +1228,40 @@ class Trsalesorder_model extends MY_Model {
         parent::update($data);
        
     }
+
+    public function getDataVoucher($finSalesOrderId){
+		$ssql ="SELECT a.*,
+            b.fst_relation_name as fst_cust_name,
+            c.fst_curr_name,
+            d.fst_shipping_address 
+			FROM trsalesorder a
+            INNER JOIN msrelations b on a.fin_relation_id = b.fin_relation_id 
+            INNER JOIN mscurrencies c on a.fst_curr_code = c.fst_curr_code
+            INNER JOIN msshippingaddress d on a.fin_shipping_address_id = d.fin_shipping_address_id 
+			WHERE a.fin_salesorder_id = ? and a.fst_active = 'A' ";
+			
+        $qr = $this->db->query($ssql,[$finSalesOrderId]);
+        $header = $qr->row_array();
+        $details =[];
+		if ($header != null){      
+            $ssql = "SELECT a.*,
+                b.fst_item_code,b.fst_item_name
+                FROM trsalesorderdetails a
+                INNER JOIN msitems b ON a.fin_item_id = b.fin_item_id
+                WHERE fin_salesorder_id = ?";
+
+            $qr = $this->db->query($ssql,[$finSalesOrderId]);
+
+            $details = $qr->result_array();
+        }
+		return [
+			"header"=>$header,
+			"details"=>$details
+		];
+    }
+    
+
+
 }
 
 

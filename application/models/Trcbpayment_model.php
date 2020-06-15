@@ -674,6 +674,43 @@ class Trcbpayment_model extends MY_Model {
         return ["status"=>"SUCCESS","message"=>""];
     }
 
+
+    public function getDataVoucher($finCBPaymentId){
+		$ssql ="SELECT a.*,
+			b.fst_kasbank_name,
+			c.fst_relation_name,
+			d.fst_curr_name 
+			FROM trcbpayment a
+			INNER JOIN mskasbank b on a.fin_kasbank_id = b.fin_kasbank_id 
+			INNER JOIN msrelations c on a.fin_supplier_id = c.fin_relation_id 
+			INNER JOIN mscurrencies d on a.fst_curr_code = d.fst_curr_code 
+			WHERE a.fin_cbpayment_id = ?";
+			
+		$qr = $this->db->query($ssql,[$finCBPaymentId]);
+		$header = $qr->row_array();
+		$details =[];
+		if ($header != null){      
+			$ssql = "SELECT a.* 
+				FROM trcbpaymentitems a
+				WHERE a.fin_cbpayment_id = ?";
+			$qr = $this->db->query($ssql,[$finCBPaymentId]);
+
+			$details = $qr->result_array();
+
+			$ssql ="select a.* from trcbpaymentitemstype a WHERE a.fin_cbpayment_id = ?";
+			$qr = $this->db->query($ssql,[$finCBPaymentId]);
+			$details2 = $qr->result_array();
+		}
+		return [
+			"header"=>$header,
+			"details"=>$details,
+			"details2"=>$details2
+		];
+    }
+    
+
+
+
 }
 
 

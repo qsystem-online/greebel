@@ -558,6 +558,7 @@
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlJurnal ?>
+<?php echo $mdlPrint ?>
 
 <script type="text/javascript" info="bind">
 	$(function(){
@@ -588,6 +589,7 @@
 		});
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
+			frameVoucher.print("<?=site_url()?>tr/kas_bank/pengeluaran_lain/print_voucher/" + $("#fin_cbpaymentoth_id").val());
 		});
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
