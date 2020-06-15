@@ -229,6 +229,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
         </div>
 </section>
 
+<?php echo $mdlPrint ?>
+
 <div id="mdlItemDetails" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:40%;min-width:400px;max-width:100%">
         <!-- Modal content-->
@@ -1227,8 +1229,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		});
 
         $("#btnPrint").click(function(e){
-            e.preventDefault();
-			window.open("<?= site_url() ?>master/promotion/form_promotion_pdf/" + $("#fin_promo_id").val());
+            //e.preventDefault();
+			//window.open("<?= site_url() ?>master/promotion/form_promotion_pdf/" + $("#fin_promo_id").val());
+            frameVoucher.print("<?=site_url()?>master/promotion/print_voucher/" + $("#fin_promo_id").val());
         });
 
 		$("#btnList").click(function(e){

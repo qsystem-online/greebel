@@ -66,12 +66,14 @@ class Promotion extends MY_Controller
 
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+        $mdlPrint =$this->parser->parse('template/mdlPrint.php', [], true);
 
         $data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? "Add Sales Promotion" : "Update Sales Promotion";
         $data["fin_promo_id"] = $fin_promo_id;
         $data["arrBranch"] = $this->msbranches_model->getAllList();
         $data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>true], true);
+        $data["mdlPrint"] = $mdlPrint;
 
 
         $page_content = $this->parser->parse('pages/master/promotion/form', $data, true);
@@ -557,5 +559,27 @@ class Promotion extends MY_Controller
         //$this->parser->parse('pages/master/promotion/promotionForm.php',$formPromotion);
         //$this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
 		//$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+    }
+    public function print_voucher($fin_promo_id){
+		$this->data = $this->mspromo_model->getDataById($fin_promo_id);
+		//$data=[];
+		$this->data["title"] = "Promo";		
+		$page_content = $this->parser->parse('pages/master/promotion/voucher', $this->data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;	
+		$strHtml = $this->parser->parse('template/voucher_pdf', $this->data, true);
+
+		//$this->parser->parse('template/voucher', $this->data);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;				
+		
+		$mpdf->WriteHTML($strHtml);	
+		//$mpdf->SetHTMLHeaderByName('MyFooter');
+
+		//echo $data;
+		$mpdf->Output();
+
+
+
+
 	}
 }
