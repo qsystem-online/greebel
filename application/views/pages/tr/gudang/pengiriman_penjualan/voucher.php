@@ -83,7 +83,7 @@
 
 		<tbody>
 			<?php foreach($details as $detail){ ?>
-				<?php for($i =0; $i < 15 ; $i++){ ?>
+				<?php for($i =0; $i < 13 ; $i++){ ?>
 				<?php
 					$detail = (array) $detail;
 				?>							
