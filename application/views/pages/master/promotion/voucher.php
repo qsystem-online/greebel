@@ -1,6 +1,6 @@
 <?php
-	var_dump($mspromo);
-	var_dump($promoTerms);
+	//var_dump($mspromo);
+	//var_dump($promoTerms);
 ?>
 <style>
 	.first-col{
@@ -24,9 +24,9 @@
 			<div class="inline"><?=$mspromo["fst_promo_name"]?></div>
 		</div>		
 		<div class="col" style="width:30%">
-			<div class="inline first-col">Periode</div>			
+            <div class="inline first-col">Cashback</div>			
 			<div class="inline" style="width:15px">:</div>
-			<div class="inline text-right"><?=date("d-M-Y",strtotime($mspromo["fdt_start"]))?></div>
+			<div class="inline text-right"><?=number_format($mspromo["fdc_cashback"])?></div>
 		</div>
 	</div>
 	<div class="row">
@@ -36,16 +36,45 @@
 			<div class="inline"><?=$mspromo["fst_item_name"] ?></div>
 		</div>
 		<div class="col" style="width:30%">
-			<div class="inline first-col">s/d Periode</div>
+			<div class="inline first-col">Periode</div>
 			<div class="inline" style="width:15px">:</div>
-			<div class="inline text-right"><?=date("d-M-Y",strtotime($mspromo["fdt_end"]))?></div>
+			<div class="inline text-right"><?=$mspromo["fst_other_prize"]?></div>
 		</div>
 	</div>
-	<div class="row">
-		<div class="col" style="width:100%">
-			<div class="inline first-col">&nbsp;</div>
-			<div class="inline" style="width:15px">&nbsp;</div>
-			<div class="inline"><?=$mspromo["fst_promo_unit"]?></div>
+    <div class="row">
+		<div class="col" style="width:70%">
+			<div class="inline first-col">Qty</div>
+			<div class="inline" style="width:15px">:</div>
+			<div class="inline"><?=$mspromo["fdb_promo_qty"] ?></div>
+		</div>
+		<div class="col" style="width:30%">
+			<div class="inline first-col">Nilai</div>
+			<div class="inline" style="width:15px">:</div>
+			<div class="inline text-right"><?=number_format($mspromo["fdc_other_prize_in_value"])?></div>
+		</div>
+	</div>
+    <div class="row">
+		<div class="col" style="width:70%">
+			<div class="inline first-col">Satuan</div>
+			<div class="inline" style="width:15px">:</div>
+			<div class="inline"><?=$mspromo["fst_promo_unit"] ?></div>
+		</div>
+		<div class="col" style="width:30%">
+			<div class="inline first-col">Periode</div>
+			<div class="inline" style="width:15px">:</div>
+			<div class="inline text-right"><?=date("d-M-Y",strtotime($mspromo["fdt_start"]))?></div>
+		</div>
+	</div>
+    <div class="row">
+		<div class="col" style="width:70%">
+			<div class="inline first-col">Type</div>
+			<div class="inline" style="width:15px">:</div>
+			<div class="inline"><?=$mspromo["fst_promo_type"] ?></div>
+		</div>
+		<div class="col" style="width:30%">
+			<div class="inline first-col">s/d</div>
+			<div class="inline" style="width:15px">:</div>
+			<div class="inline text-right"><?=date("d-M-Y",strtotime($mspromo["fdt_end"]))?></div>
 		</div>
 	</div>
 
@@ -54,69 +83,72 @@
 	<table class="table  table-condensed" style="width:100%;padding-bottom:0px">
 		<thead>
 			<tr>
-				<th style="width:45%">Item Code - Name</th>
+				<th style="width:75%">Type - Item Terms</th>
 				<th style="width:5%">Unit</th>
-				<th class="text-right" style="width:12%">Price</th>
-				<th class="text-center" style="width:5%">Disc</th>
-				<th style="width:10%;text-align:right">Disc - Amount</th>
-				<th style="width:8%;text-align:right">Qty</th>
-				<th style="width:15%;text-align:right">Total</th>
+				<!--<th class="text-right" style="width:12%">Price</th>
+				<th class="text-center" style="width:5%">Disc</th>-->
+				<th style="width:10%;text-align:right">Qty</th>
 			</tr>
 		</thead>
 
 		<tbody>
-			<?php
-				$totalFooter =0;
-				$ttlDisc =0;
-			?>
 
 			<?php foreach($promoTerms as $promoTerm){ ?>
-				
-				<?php					
-					for($i =0 ;$i < 1;$i++){
-					$totalPerRow = $promoTerm["fdb_qty"];
-					$totalFooter += $totalPerRow ;
-					$disc = $promoTerm["fdb_qty"];
-					$ttlDisc += $disc;
-				?>
+			
 				<tr>
 					<td><?= $promoTerm["fst_item_type"]  ." - " . $promoTerm["ItemTerms"] ?></td>
 					<td><?= $promoTerm["fst_unit"]?> </td>
 					<td class="text-right"><?= $promoTerm["fdb_qty"]?> </td>
-					<td class="text-right"><?= formatNumber($totalPerRow) ?> </td>
 				</tr>
-				<?php } ?>
 			<?php }?>	
 
-			<tr class="total">
-				<td class="text-right" colspan="6">Sub Total</td>
-				<td class="text-right"><?=formatNumber($totalFooter)?></td>
-			</tr>
-			<?php if ($ttlDisc > 0) { ?>
-				<tr class="total">
-					<td class="text-right" colspan="6">Total Disc</td>
-					<td class="text-right"><?=formatNumber($ttlDisc)?></td>
-				</tr>		
-			<?php } ?>
-
-			<?php if ($mspromo["fdc_cashback"] > 0) { ?>
-				<tr class="total">
-					<td class="text-right" colspan="6">Ppn <?= $mspromo["fdc_cashback"] ?> % </td>
-					<td class="text-right"><?=formatNumber($mspromo["fdc_cashback"])?></td>
-				</tr>		
-			<?php } ?>
-
-			<tr class="total">
-				<?php
-					$total  = $totalFooter - $ttlDisc + $mspromo["fdc_cashback"];
-				?>
-				<td class="text-right" colspan="6">Total</td>
-				<td class="text-right"><?=formatNumber($total)?></td>
-			</tr>
 		</tbody>	
 	</table>
 
-	
+	<!-- Detail 2 -->
+	<table class="table  table-condensed" style="width:100%;padding-bottom:0px">
+		<thead>
+			<tr>
+				<th style="width:75%">Type - Participant Name</th>
+			</tr>
+		</thead>
+
+		<tbody>
+
+			<?php foreach($promoParticipants as $promoParticipant){ ?>
+				
+				<tr>
+					<td><?= $promoParticipant["fst_participant_type"]  ." - " . $promoParticipant["ParticipantName"] ?></td>
+				</tr>
+			<?php }?>	
+		</tbody>	
+	</table>
+	<!-- Detail 2 -->
+	<table class="table  table-condensed" style="width:100%;padding-bottom:0px">
+		<thead>
+			<tr>
+				<th style="width:65%">Item Name Discount</th>
+				<th style="width:10%">Qty</th>
+				<th style="width:5%">Unit</th>
+				<th class="text-center" style="width:5%">Disc</th>
+				<th class="text-right" style="width:12%">Disc Amount</th>
+			</tr>
+		</thead>
+
+		<tbody>
+
+			<?php foreach($promodiscItems as $promodiscItem){ ?>
+				
+				<tr>
+					<td><?= $promodiscItem["fst_item_name"]?></td>
+					<td><?= $promodiscItem["fin_qty"]?></td>
+					<td><?= $promodiscItem["fst_unit"]?> </td>
+					<td class="text-right"><?= $promodiscItem["fdc_disc_persen"]?> </td>
+					<td class="text-right"><?= formatNumber($promodiscItem["fdc_disc_value"])?> </td>
+				</tr>
+			<?php }?>	
+		</tbody>	
+	</table>
 	
 </div>
 
