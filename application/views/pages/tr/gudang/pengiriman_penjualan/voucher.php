@@ -83,7 +83,7 @@
 
 		<tbody>
 			<?php foreach($details as $detail){ ?>
-				<?php for($i =0; $i < 13 ; $i++){ ?>
+				<?php for($i =0; $i < 31 ; $i++){ ?>
 				<?php
 					$detail = (array) $detail;
 				?>							
@@ -95,12 +95,6 @@
 			<?php }}?>
 		</tbody>	
 	</table>
-
-	
-	
-</div>
-
-<htmlpagefooter name="AssigmentFooter">							
 	<table class="assignment" style="page-break-inside: avoid;width:100%">
 		<tr>
 			<td style="width:50%">Dibuat,</td>					
@@ -115,6 +109,13 @@
 			<td>.................</td>
 		</tr>		
 	</table>
+
+	
+	
+</div>
+
+<htmlpagefooter name="AssigmentFooter">							
+	
 	<table width="100%">
 		<tr>
 			<td width="100%" align="right">Hal: {PAGENO}/{nbpg}</td>
