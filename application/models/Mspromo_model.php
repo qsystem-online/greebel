@@ -17,14 +17,14 @@ class Mspromo_model extends MY_Model
         left join msbranches c on a.fst_list_branch_id = c.fin_branch_id  
         where a.fin_promo_id = ? and a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$fin_promo_id]);
-        $rwPromo = $qr->row();
+        $rwPromo = $qr->row_array();
 
         $ssql = "SELECT a.*,IF (a.fst_item_type ='ITEM',b.fst_item_name,c.fst_item_group_name) AS ItemTerms FROM mspromoitems a 
         LEFT JOIN msitems b ON a.fin_item_id = b.fin_item_id
         LEFT JOIN msgroupitems c ON a.fin_item_id = c.fin_item_group_id 
         WHERE a.fin_promo_id = ?";
         $qr = $this->db->query($ssql, [$fin_promo_id]);
-        $rsPromoTerms = $qr->result();
+        $rsPromoTerms = $qr->result_array();
 
         $ssql = "SELECT a.*, IF (a.fst_participant_type ='RELATION',b.fst_relation_name, IF(a.fst_participant_type ='RELATION GROUP',c.fst_relation_group_name,d.fst_member_group_name)) AS ParticipantName FROM mspromoitemscustomer a 
         LEFT JOIN msrelations b ON a.fin_customer_id = b.fin_relation_id
