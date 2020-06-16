@@ -295,7 +295,7 @@
 			"margin_left"=>5,
 			"margin_top"=>5,
 			"margin_right"=>10,
-			"margin_bottom"=>8,
+			"margin_bottom"=>23,
 			"margin_footer"=>3,	
 			'fontDir' => array_merge($fontDirs, [
 				FCPATH . 'assets/fonts/PT_Mono/',
