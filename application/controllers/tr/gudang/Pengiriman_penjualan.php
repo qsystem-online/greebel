@@ -124,7 +124,9 @@ class Pengiriman_penjualan extends MY_Controller{
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Add Delivery Order") : lang("Update Delivery Order");
         $edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+        $mdlPrint = $this->parser->parse('template/mdlPrint', [], true);
         $data["mdlEditForm"] = $edit_modal;
+        $data["mdlPrint"] = $mdlPrint;
 
 		if($mode == 'ADD'){
 			$data["fin_sj_id"] = 0;
@@ -500,5 +502,22 @@ class Pengiriman_penjualan extends MY_Controller{
         $this->ajxResp["data"] = $rs;
         $this->json_output();        
     }
+
+    public function print_voucher($fin_sj_id){
+		$data = $this->trsuratjalan_model->getDataVoucher($fin_sj_id);
+		$data["title"]= "Surat Jalan";
+		$this->data["title"]= $data["title"];				
+		$page_content = $this->parser->parse('pages/tr/gudang/pengiriman_penjualan/voucher', $data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;		
+		
+		//echo $data;				
+		//$mpdf->SetHTMLFooterByName('MyFooter');
+		$mpdf->WriteHTML($data);
+		$mpdf->Output();
+
+	}
 
 }
