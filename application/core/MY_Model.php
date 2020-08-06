@@ -172,6 +172,19 @@ class MY_Model extends CI_Model
 		];
 	}
 
+	public function getValue($id,$column,$where=""){
+		if ($where == ""){
+			$where = " WHERE $this->pkey = ?";
+		}else{
+			$where = " WHERE $where";
+		}
+		$ssql = "SELECT $column FROM $this->tableName $where";
+		$qr = $this->db->query($ssql,$id);
+		$rw = $qr->row();
+		return $rw->$column;
+
+	}
+
 	public function throwIfDBError($db = null){
 		if ($db==null){
 			$dbError  = $this->db->error();
@@ -187,5 +200,5 @@ class MY_Model extends CI_Model
 			}			
 			throw new CustomException($dbError["message"],$dbError["code"],"DB_FAILED",$data);	
 		}		
-	}
+	}	
 }

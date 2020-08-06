@@ -98,6 +98,7 @@ class Jurnal_umum extends MY_Controller{
         $data["mdlPrint"] = $mdlPrint;
         $data["mdlEditForm"] = $edit_modal;
         
+        
 		if($mode == 'ADD'){
 			$data["fin_journal_id"] = 0;
 			$data["fst_journal_no"] = "";			
@@ -412,7 +413,20 @@ class Jurnal_umum extends MY_Controller{
         }
 	}
 
-	
+	public function print_voucher($finJournalId){
+		$data = $this->gltrjournal_model->getDataVoucher($finJournalId);
+		$data["title"] = "Jurnal Umum";	
+		$this->data["title"]= $data["title"];	
+		$page_content = $this->parser->parse('pages/tr/jurnal_umum/voucher', $data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;
+		//$mpdf->simpleTables = true;
+		$mpdf->WriteHTML($data);	
+		//echo $data;
+		$mpdf->Output();
+	}
 
 
 }

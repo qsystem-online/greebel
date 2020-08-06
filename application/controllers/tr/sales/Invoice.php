@@ -100,6 +100,8 @@ class Invoice extends MY_Controller{
         $data["mdlJurnal"] = $mdlJurnal;
         $edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
         $data["mdlEditForm"] = $edit_modal;
+        $mdlPrint = $this->parser->parse('template/mdlPrint', [], true);
+        $data["mdlPrint"] = $mdlPrint;
        
        
 		if($mode == 'ADD'){
@@ -219,7 +221,7 @@ class Invoice extends MY_Controller{
             $ttlDisc = 0;
             $subTotalDPP = 0;
             $ppnTotal =0;
-            $discTotal =0;
+            $ttlDisc =0;
             $total = 0;
                         
             $detailData = $this->trinvoice_model->getDetailSJ($this->input->post("fst_sj_id_list"));
@@ -256,8 +258,8 @@ class Invoice extends MY_Controller{
             $dataH["fdc_dpp_amount"] = $subTotalDPP;
             $dataH["fdc_disc_amount"] = $ttlDisc;
             $dataH["fdc_ppn_amount"] = $subTotalDPP * ($dataH["fdc_ppn_percent"] / 100);
-            $dataH["fdc_total"] = $ttlNoDisc - $discTotal + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
-            
+            $dataH["fdc_total"] = $ttlNoDisc - $ttlDisc + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
+                        
             //VALIDASI DATA
             $this->validation_data($dataH,$detailData,$dataItemList,$salesOrder);
             
@@ -387,7 +389,7 @@ class Invoice extends MY_Controller{
             $ttlDisc = 0;
             $subTotalDPP = 0;
             $ppnTotal =0;
-            $discTotal =0;
+            $ttlDisc =0;
             $total = 0;
                     
             $detailData = $this->trinvoice_model->getDetailSJ($this->input->post("fst_sj_id_list"));
@@ -423,7 +425,7 @@ class Invoice extends MY_Controller{
             $dataH["fdc_dpp_amount"] = $subTotalDPP;
             $dataH["fdc_disc_amount"] = $ttlDisc;
             $dataH["fdc_ppn_amount"] = $subTotalDPP * ($dataH["fdc_ppn_percent"] / 100);
-            $dataH["fdc_total"] = $ttlNoDisc - $discTotal + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
+            $dataH["fdc_total"] = $ttlNoDisc - $ttlDisc + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
             
             //VALIDASI DATA
             $this->validation_data($dataH,$detailData,$dataItemList,$salesOrder);
@@ -535,4 +537,22 @@ class Invoice extends MY_Controller{
 
 
     }
+
+    public function print_voucher($finInvId){
+		$this->data = $this->trinvoice_model->getDataVoucher($finInvId);
+		//$data=[];
+		$this->data["title"] = "Invoice";		
+		$page_content = $this->parser->parse('pages/tr/sales/invoice/voucher', $this->data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;	
+		$strHtml = $this->parser->parse('template/voucher_pdf', $this->data, true);
+
+		//$this->parser->parse('template/voucher', $this->data);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;				
+		
+        $mpdf->WriteHTML($strHtml);	
+        $mpdf->Output();		
+		//echo $strHtml;
+    }
+    
 }

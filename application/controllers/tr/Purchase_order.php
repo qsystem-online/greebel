@@ -827,21 +827,12 @@ class Purchase_order extends MY_Controller{
 		$data = $this->trpo_model->getDataVoucher($finPOId);
 		$data["title"] = "Purchase Order";	
 		$this->data["title"]= $data["title"];	
-		$page_content = $this->parser->parse('pages/tr/purchase_order/voucher_pdf', $data, true);
+		$page_content = $this->parser->parse('pages/tr/purchase_order/voucher', $data, true);
 		$this->data["PAGE_CONTENT"] = $page_content;
 		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
 		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
 		$mpdf->useSubstitutions = false;
 		//$mpdf->simpleTables = true;
-		
-		$mpdf->SetHTMLFooter('
-			<table width="100%">
-				<tr>
-					<td width="100%" align="right">Hal : {PAGENO}/{nbpg}</td>
-				</tr>
-			</table>
-		');
-
 		$mpdf->WriteHTML($data);	
 		//echo $data;
 		$mpdf->Output();

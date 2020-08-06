@@ -18,13 +18,13 @@ class Ekspedisi extends MY_Controller{
     }
     public function lizt(){
 		$this->load->library('menus');
-		$this->list['page_name'] = "Invoice ";
-		$this->list['list_name'] = "Invoice List";
-		$this->list['addnew_ajax_url'] = site_url() . 'tr/sales/invoice/add';
-		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales/invoice/fetch_list_data';
-		$this->list['delete_ajax_url'] = site_url() . 'tr/sales/invoice/delete/';
-		$this->list['edit_ajax_url'] = site_url() . 'tr/sales/invoice/edit/';
+		$this->list['page_name'] = "Ekspedisi";
+		$this->list['list_name'] = "Ekspedisi List";
+		$this->list['addnew_ajax_url'] = site_url() . 'tr/sales/ekspedisi/add';
+		$this->list['pKey'] = "fin_salesekspedisi_id";
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales/ekspedisi/fetch_list_data';
+		$this->list['delete_ajax_url'] = site_url() . 'tr/sales/ekspedisi/delete/';
+		$this->list['edit_ajax_url'] = site_url() . 'tr/sales/ekspedisi/edit/';
 		$this->list['arrSearch'] = [
             'fst_inv_no' => 'Invoice No',
             'fst_relation_name'=>'Customer'            
@@ -36,11 +36,12 @@ class Ekspedisi extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Invoice ID', 'width' => '10%', 'data' => 'fin_inv_id'],
-			['title' => 'Invoice No', 'width' => '10%', 'data' => 'fst_inv_no'],
-            ['title' => 'Invoice Date', 'width' => '15%', 'data' => 'fdt_inv_datetime'],
-            ['title' => 'Customer', 'width' => '20%', 'data' => 'fst_relation_name'],
-            ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_inv_memo'],
+			['title' => 'Ekspedisi ID', 'width' => '10%', 'data' => 'fin_salesekspedisi_id'],
+			['title' => 'Ekspedisi No', 'width' => '10%', 'data' => 'fst_salesekspedisi_no'],
+            ['title' => 'Date', 'width' => '15%', 'data' => 'fdt_salesekspedisi_datetime'],
+            ['title' => 'Customer', 'width' => '20%', 'data' => 'fst_customer_name'],
+            ['title' => 'Ekspedisi', 'width' => '20%', 'data' => 'fst_ekspedisi_name'],
+            ['title' => 'Total', 'width' => '20%', 'data' => 'fdc_total'],
             ['title' => 'Action', 'width' => '10%', 'sortable' => false, 'className' => 'dt-body-center text-center',
                 'render'=>'function( data, type, row, meta ) {
                     //return "<div style=\'font-size:16px\'><a data-id=\'" + row.fin_inv_id + "\' class=\'btn-edit\' href=\'#\'><i class=\'fa fa-pencil\'></i></a><a class=\'btn-delete\' href=\'#\'><i class=\'fa fa-trash\'></i></a></div>";
@@ -63,9 +64,17 @@ class Ekspedisi extends MY_Controller{
 
     public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("(select a.*,b.fst_relation_name from trinvoice a inner join msrelations b on a.fin_relation_id = b.fin_relation_id) a");
+        $this->datatables->setTableName("(
+            select a.*,
+            b.fst_relation_name as fst_customer_name,
+            c.fst_relation_name as fst_ekspedisi_name 
+            from trsalesekspedisi a 
+            inner join msrelations b on a.fin_customer_id = b.fin_relation_id
+            inner join msrelations c on a.fin_supplier_id = c.fin_relation_id
+        ) a");
 
-		$selectFields = "a.fin_inv_id,a.fst_inv_no,a.fdt_inv_datetime,a.fst_inv_memo,a.fst_relation_name";
+        $selectFields = "a.fin_salesekspedisi_id,a.fst_salesekspedisi_no,a.fdt_salesekspedisi_datetime,
+        a.fst_memo,a.fst_customer_name,a.fst_ekspedisi_name,a.fdc_total";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];
@@ -81,7 +90,9 @@ class Ekspedisi extends MY_Controller{
 
 		$datasources["data"] = $arrDataFormated;
 		$this->json_output($datasources);
-	}
+    }
+    
+
 
     private function openForm($mode = "ADD", $fin_salesekspedisi_id = 0){
         $this->load->library("menus");		
@@ -94,7 +105,8 @@ class Ekspedisi extends MY_Controller{
         $data["mdlJurnal"] = $mdlJurnal;
         $edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
         $data["mdlEditForm"] = $edit_modal;
-       
+        $mdlPrint = $this->parser->parse('template/mdlPrint', [], true);
+        $data["mdlPrint"] = $mdlPrint;
        
 		if($mode == 'ADD'){
 			$data["fin_salesekspedisi_id"] = 0;
@@ -126,7 +138,6 @@ class Ekspedisi extends MY_Controller{
     }
 
     public function fetch_data($fin_salesekspedisi_id){
-		$this->load->model("trinvoice_model");
 		$data = $this->trsalesekspedisi_model->getDataById($fin_salesekspedisi_id);		
 		$this->json_output($data);
 	}
@@ -388,5 +399,22 @@ class Ekspedisi extends MY_Controller{
                 "sjList"=>$sjList,
             ]        
         ]);
+    }
+
+    public function print_voucher($finSalesekspedisiId){
+		$this->data = $this->trsalesekspedisi_model->getDataVoucher($finSalesekspedisiId);
+		//$data=[];
+		$this->data["title"] = "Sales Ekspedisi";
+		$page_content = $this->parser->parse('pages/tr/sales/ekspedisi/voucher', $this->data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;	
+		$strHtml = $this->parser->parse('template/voucher_pdf', $this->data, true);
+
+		//$this->parser->parse('template/voucher', $this->data);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;				
+		
+        $mpdf->WriteHTML($strHtml);	
+        $mpdf->Output();		
+		//echo $strHtml;		
     }
 }

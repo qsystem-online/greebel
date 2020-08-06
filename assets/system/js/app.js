@@ -199,7 +199,8 @@ var App = {
 	},
 
 	fixedSelect2: function(){
-		$(".select2-container").addClass("form-control"); 
+		/*
+		$(".select2-container").addClass("form-control"); 		
 		$(".select2-selection--single , .select2-selection--multiple").css({
 			"border":"0px solid #000",
 			"padding":"0px 0px 0px 0px",
@@ -211,6 +212,7 @@ var App = {
 			"margin-top" : "-5px",
 			"background-color":"unset"
 		});
+		*/
 		
 	},
 

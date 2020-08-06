@@ -231,6 +231,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <?php
 	echo $mdlJurnal;
 	echo $mdlEditForm;
+	echo $mdlPrint;
 ?>
 
 <script type="text/javascript" info="bind">
@@ -249,7 +250,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		$("#btnNew").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/sales/invoice/add");
+			window.location.replace("<?=site_url()?>tr/sales/ekspedisi/add");
 		});
 
 		$("#btnSubmitAjax").click(function(e){
@@ -258,15 +259,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$("#btnPrint").click(function(e){
-			alert("print");
-			//data = $("#fin_shipping_address_id").select2("data");
-			data = $("#fin_customer_id").select2("data");
-			console.log(data);
+			e.preventDefault();
+			frameVoucher.print("<?=site_url()?>tr/sales/ekspedisi/print_voucher/" + $("#fin_salesekspedisi_id").val());
 		});
 
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
-			MdlJurnal.showJurnalByRef("SIV",$("#fin_inv_id").val());			
+			MdlJurnal.showJurnalByRef("EXP",$("#fin_salesekspedisi_id").val());			
 
 		});
 
@@ -274,6 +273,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btnDelete").click(function(e){
 			e.preventDefault();
 			deleteAjax(0);
+		});
+		$("#btnList").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>tr/sales/ekspedisi");
 		});
 
 		$("#fin_customer_id").change(function(e){

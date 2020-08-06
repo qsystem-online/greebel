@@ -167,4 +167,17 @@ class Glaccounts_model extends MY_Model
         $rs = $qr->result();
         return $rs;
     }
+
+    public function getAccountListByGroup($group){
+
+        $groupId = $group;
+        if (strtolower($group) == "asset"){
+            $groupId ="1";
+        }else if (strtolower($group) == "biaya"){
+            $groupId ="6";
+        }
+        $ssql = "SELECT * FROM glaccounts where fin_glaccount_maingroup_id = ? and fst_glaccount_level = 'DT' and fst_active != 'D'";
+        $qr = $this->db->query($ssql,[$groupId]);
+        return $qr->result();
+    }
 }

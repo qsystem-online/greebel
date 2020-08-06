@@ -83,6 +83,9 @@
         padding:5px;
 		/*border:1px solid #1aa3ff;*/
     }
+	textarea {
+		resize: none;
+	}
 	</style>
 
 	<body class="hold-transition skin-blue sidebar-mini <?= $sidebarCollapse?>" style="overflow-x:auto">

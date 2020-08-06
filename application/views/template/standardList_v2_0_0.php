@@ -122,7 +122,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     
 </script>
 
-<?php echo $jsfile ?>
+<?php 
+	echo $jsfile;	
+?>
 
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>

@@ -226,13 +226,32 @@
 		if ($tgl < $lockDate){
 			return [
 				"status"=>"VALIDATION_FORM_FAILED",
-				"message"=>sprintf(lang("Tanggal transaksi telah dikunci %s"),gmdate(DATEPICKER_FORMAT_ALIAS,$lockDate))
+				"message"=>sprintf(lang("Tanggal transaksi telah dikunci %s"),gmdate(DATEPICKER_FORMAT_ALIAS,$lockDate)),
+				"data"=>[
+					"lock_date"=>date("Y-m-d",$lockDate),
+					"compare_date"=>date("Y-m-d",$tgl),
+				]
 			];
 		}else{
 			return [
 				"status"=>"SUCCESS",
-				"message"=>""
+				"message"=>"",
+				"data"=>[
+					"lock_date"=>date("Y-m-d",$lockDate),
+					"compare_date"=>date("Y-m-d",$tgl),
+				]
 			];
+		}
+	}
+
+	function dateBeforeSystem($tgl){
+		$startDate = getDbConfig("start_program");
+		$startDate = strtotime($startDate);	
+		$tgl = strtotime($tgl);
+		if ($tgl < $startDate){
+			return true;
+		}else{
+			return false;
 		}
 	}
 
@@ -306,4 +325,98 @@
 				]
 			],					
 		];
+	}
+
+
+	function getPeriod($date=null,$mode="month"){
+		if ($date==null){
+			if ($mode == "year"){
+				return date("Y-12");
+			}
+			return date_format($date,"Y-m");
+		}else{
+			$date = date_create($date);
+			if ($mode == "year"){
+				return date_format($date,"Y-12");
+			}			
+			return date_format($date,"Y-m");
+		}
+	}
+
+
+	function nextPeriod($strPeriod,$mode="month"){
+		$arrPeriod = explode("-",$strPeriod);
+
+		$th = $arrPeriod[0];
+		$bln = $arrPeriod[1];
+
+		if ($mode == "year"){
+			return $th + 1 ."-12";
+		}
+
+		$nextBln = $bln+ 1;
+		if ($nextBln == 13){
+			$nextBln = 1;
+			$th = $th + 1;
+		}
+
+		$nextBln = "00" . $nextBln;
+		$nextBln = substr($nextBln,strlen($nextBln)-2);
+		$th = "0000" . $th;
+		$th = substr($th,strlen($th)-4);
+		return $th."-".$nextBln;
+
+	}
+	
+	function addPeriod($strPeriod,$addPeriod,$mode="month"){
+		for($i=0;$i<$addPeriod -1;$i++){
+			$strPeriod = nextPeriod($strPeriod,$mode);
+		}
+		return $strPeriod;
+	}
+
+	function periodIsEndOfYear($strPeriod){
+		$arrPeriod = explode("-",$strPeriod);
+		$th = $arrPeriod[0];
+		$bln = $arrPeriod[1];
+
+		if ($bln==12){
+			return true;
+		}
+		return false;
+
+	}
+
+	function diffPeriod($startPeriod,$endPeriod,$mode="month"){
+		//$dateStart=date_create($startPeriod . "-01");
+		//$dateEnd=date_create($endPeriod."-01");
+
+
+		if ($mode=="year"){
+			return date_format($dateEnd,"Y") - date_format($dateStart,"Y");
+		}
+
+		$arrStart =explode("-",$startPeriod);
+		$arrEnd =explode("-",$endPeriod);
+		
+		$diffTh = $arrEnd[0] -$arrStart[0];
+		$diffMonth = $arrEnd[1] -$arrStart[1];
+		return ($diffTh*12 ) + $diffMonth;
+		
+		/*
+		$diff=date_diff($dateStart,$dateEnd);
+		if ($diff == false){
+			return 0;
+		}
+		return ($diff->y *12) + $diff->m;		
+		*/
+	}
+
+	function getPeriodDate($strPeriod){
+		//last day of month
+		$strPeriod = nextPeriod($strPeriod);
+		$date = date_create($strPeriod . "-01");
+		date_add($date,date_interval_create_from_date_string("-1 days"));
+		return date_format($date,"Y-m-d");
+
 	}

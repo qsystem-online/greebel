@@ -297,4 +297,17 @@ class Currency extends MY_Controller {
 		//$this->ajxResp["data"]["insert_id"] = $insertId;
 		$this->json_output();
 	}
+
+	public function ajxGetList(){
+		$this->load->model("mscurrencies_model");
+		$date =$this->input->get("trxDateTime");
+		$rs = $this->mscurrencies_model->getCurrencyList($date);
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"messages"=>"",
+			"data"=>$rs,
+		]);
+
+
+	}
 }

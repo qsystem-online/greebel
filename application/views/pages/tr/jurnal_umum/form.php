@@ -510,6 +510,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <?php
 	echo $mdlJurnal;
 	echo $mdlEditForm;
+	echo $mdlPrint;
 ?>
 
 <script type="text/javascript" info="bind">
@@ -538,10 +539,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$("#btnPrint").click(function(e){
-			alert("print");
-			//data = $("#fin_shipping_address_id").select2("data");
-			data = $("#fin_customer_id").select2("data");
-			console.log(data);
+			e.preventDefault()
+			frameVoucher.print("<?=site_url()?>tr/jurnal_umum/print_voucher/" + $("#fin_journal_id").val());
 		});
 
 		$("#btnJurnal").click(function(e){

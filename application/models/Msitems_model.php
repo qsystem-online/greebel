@@ -91,16 +91,14 @@ class Msitems_model extends MY_Model
         return $rules;
     }
 
-    public function getAllList($filter=null){
-        
+    public function getAllList($filter=null,$selectCol = "fin_item_id,fst_item_code,fst_item_name"){        
         if ($filter ==null){
-            $ssql = "select fin_item_id,fst_item_code,fst_item_name from " . $this->tableName . " where fst_active = 'A' order by fst_item_name";
+            $ssql = "select $selectCol  from " . $this->tableName . " where fst_active = 'A' order by fst_item_name";
             $qr = $this->db->query($ssql, []);
         }else{
-            $ssql = "select fin_item_id,fst_item_code,fst_item_name from " . $this->tableName . " where fst_active = 'A' and (fst_item_code like ? or fst_item_name like ?) order by fst_item_name";
+            $ssql = "select $selectCol from " . $this->tableName . " where fst_active = 'A' and (fst_item_code like ? or fst_item_name like ?) order by fst_item_name";
             $qr = $this->db->query($ssql, ["%$filter%","%$filter%"]);
         }
-                
         $rs = $qr->result();
         return $rs;
     }
@@ -229,9 +227,7 @@ class Msitems_model extends MY_Model
         $ssql ="select * from msitems where fin_item_id = ?";
         $qr=$this->db->query($ssql,[$fin_item_id]);
         return $qr->row();
-    }
-
-    
+    }    
 
     public function getQtyConvertUnit($itemId,$qtyToConvert,$fromUnit,$toUnit){
         $conversion = $this->getConversionUnit($itemId,$fromUnit,$toUnit);        
@@ -298,5 +294,11 @@ class Msitems_model extends MY_Model
     }
 
 
-    
+    public function getItemList($filter){
+        $ssql = "SELECT fin_item_id,fst_item_code,fst_item_name FROM msitems where fst_item_code like ? or fst_item_name like ? and fst_active = 'A' ";
+        $filter = "%$filter%";
+        $qr = $this->db->query($ssql,[$filter,$filter]);
+
+        return $qr->result();
+    }
 }

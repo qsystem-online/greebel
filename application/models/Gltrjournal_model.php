@@ -99,7 +99,9 @@ class Gltrjournal_model extends MY_Model {
     }
 
     public function getDataById($finJournalId){
-        $ssql = "select a.* from gltrjournal a where a.fin_journal_id = ? and a.fst_active != 'D'";
+        $ssql = "select a.*,b.fst_curr_name from gltrjournal a
+            INNER JOIN mscurrencies b on a.fst_curr_code = b.fst_curr_code 
+            where a.fin_journal_id = ? and a.fst_active != 'D'";
 
         $qr = $this->db->query($ssql, [$finJournalId]);
         $dataH = $qr->row();
@@ -166,6 +168,14 @@ class Gltrjournal_model extends MY_Model {
 
 
         return ["status"=>"SUCCESS","message"=>""];
+    }
+
+    public function getDataVoucher($finJournalId){
+        $data = $this->getDataById($finJournalId);
+        return [
+            "header"=>(array) $data["trJournal"],
+            "details"=>(array) $data["trJournalItems"]
+        ];
     }
 }
 

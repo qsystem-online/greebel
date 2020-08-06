@@ -7,8 +7,10 @@
 			var data = t.row(trRow).data();
             //console.log(data);
             deleteAjax(data.fin_salesorder_id,0);
-        });
+		});
+		
 		$("#tblList").on("change",".isClosed",function(e){
+			alert("Change");
 			e.preventDefault;
 			var element = $(this);
 			t= $("#tblList").DataTable();            
@@ -39,6 +41,7 @@
 					}					
 				});
 			}
+			
 			if (isChecked){
 				MdlPopupNotes.showNotes("",callback);
 			}else{

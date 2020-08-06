@@ -337,6 +337,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <?php
 	echo $mdlJurnal;
 	echo $mdlEditForm;
+	echo $mdlPrint;
 ?>
 
 <script type="text/javascript" info="bind">
@@ -369,6 +370,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             submitAjax(0);
 		});
 		
+		$("#btnPrint").click(function(e){
+			e.preventDefault();
+			frameVoucher.print("<?=site_url()?>tr/sales/invoice/print_voucher/" + $("#fin_inv_id").val());
+		});
+
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
 			MdlJurnal.showJurnalByRef("SIV",$("#fin_inv_id").val());

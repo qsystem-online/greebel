@@ -31,6 +31,7 @@ class Sales_order extends MY_Controller{
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales_order/fetch_list_data';
 		$this->list['delete_ajax_url'] = site_url() . 'tr/sales_order/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'tr/sales_order/edit/';
+
 		$this->list['arrSearch'] = [
 			'fst_salesorder_no' => 'Sales Order No',
 			'fst_customer' => 'Customer'
@@ -1066,6 +1067,29 @@ class Sales_order extends MY_Controller{
 		$this->ajxResp["data"] = $needAuthorizeList;
 		$this->json_output();
 		return;
+	}
+
+	public function close_status_po($isChecked){
+		$finSalesOrderId = $this->input->post("fin_salesorder_id");
+		$fstClosedNote = $this->input->post("fst_closed_note");
+		$this->trsalesorder_model->closeManual($finSalesOrderId,$fstClosedNote,$isChecked);
+		try{
+			throwIfDBError();
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "";
+			$this->ajxResp["data"] = "";
+			$this->json_output();
+			return;
+
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
+			$this->json_output();
+			return;
+		}
+		
+	
 	}
 
 	public function print_voucher($finSalesOrderId){

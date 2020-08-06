@@ -230,6 +230,7 @@
 												<option value="RETURN_SO">Return Penjualan Non Faktur</option>
 												<option value="PAYMENT_OVER">Kelebihan Bayaran</option>
 												<option value="CLAIM_PAYMENT_OVER">Klaim Kelebihan Bayaran</option>
+												<option value="SELL_FIXED_ASSET">Penjualan Fixed Asset</option>
 												<option value="CLAIM_PAYMENT_UNKNOWN">Klaim DP tidak dikenal</option>
 											</select>
 										</div>
@@ -453,6 +454,29 @@
 
 							if(typeof callback !== "undefined"){
 								callback(glList);
+							}
+							
+						}
+					});
+					break;
+
+				case "SELL_FIXED_ASSET":
+					App.getValueAjax({
+						site_url:"<?=site_url()?>",
+						model:"trfadisposal_model",
+						func:"getSellFixedAssetList",
+						params:[$("#fin_customer_id").val(),$("#fst_curr_code").val()],
+						callback:function(faSellList){
+							$("#fin_trans_id").empty();
+							console.log(faSellList);
+							$.each(faSellList,function(i,v){
+								//var dp = parseFloat(lpbPurchase.fdc_downpayment);					
+								$("#fin_trans_id").append("<option value='"+v.fin_fa_disposal_id +"' data-ttl_amount='" + parseFloat(v.fdc_sell_total) +"' data-ttl_paid='" +  parseFloat(v.fdc_sell_total_paid) +  "' data-ttl_return='0'>"+v.fst_fa_disposal_no+"</option>");
+							});
+							$("#fin_trans_id").val(null);
+
+							if(typeof callback !== "undefined"){
+								callback(faSellList);
 							}
 							
 						}
@@ -1043,6 +1067,9 @@
 							case "CLAIM_PAYMENT_UNKNOWN":
 								return "Klaim DP tidak dikenal";
 								break;
+							case "SELL_FIXED_ASSET":
+								return "Penjualan Fixed Asset";
+								break;
 							default:
 								return "";
 						}
@@ -1398,6 +1425,8 @@
 							fst_pc_customer_name:v.fst_pc_customer_name,
 							fin_pc_project_id:v.fin_pc_project_id,
 							fst_pc_project_name:v.fst_pc_project_name,
+							fin_relation_id:v.fin_relation_id,
+							fst_relation_name:v.fin_relation_name,
 							fdc_amount:v.fdc_amount,
 							fst_referensi:v.fst_referensi,
 							fst_bilyet_no:v.fst_bilyet_no,

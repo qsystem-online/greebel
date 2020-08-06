@@ -98,7 +98,7 @@
 	</div>	
 </div>
 
-<htmlpagefooter name="myFooter">
+<div class="assignment">
 	<table class="assignment">
 		<tr>
 			<td style="width:50%">Dibuat,</td>					
@@ -114,10 +114,4 @@
 		</tr>
 		
 	</table>
-	<table width="100%">
-		<tr>
-			<td width="100%" align="right">Hal: {PAGENO}/{nbpg}</td>
-		</tr>
-	</table>
-</htmlpagefooter>
-<sethtmlpagefooter name="myFooter" value="on"/>
+</div>

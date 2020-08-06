@@ -110,4 +110,10 @@ class Msitemunitdetails_model extends MY_Model
         }
         return $rw->fst_unit;
     }
+
+    public function getItemListUnits($finItemId){
+        $ssql = "SELECT * FROM msitemunitdetails where fin_item_id = ? and fst_active != 'D'";
+        $qr = $this->db->query($ssql,[$finItemId]);
+        return $qr->result();
+    }
 }

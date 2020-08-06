@@ -127,6 +127,12 @@ class Trcbreceive_model extends MY_Model {
 				$ssql ="UPDATE glledger set fbl_claimed_cashbank_receive_unknown = false where fin_rec_id =?";
 				$this->db->query($ssql,[$dataItem->fin_trans_id]);
 				throwIfDBError();
+			
+			}else if ($dataItem->fst_trans_type == "SELL_FIXED_ASSET"){
+				$ssql = "update trfadisposal set fdc_sell_total_paid = fdc_sell_total_paid -  ? where fin_fa_disposal_id = ?";
+				$this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);
+				throwIfDBError();
+
 			}else{
 				throw new CustomException("Invalid detail cash bank transaction type $dataItem->fst_trans_type",9009,"FAILED",null);
 			}
@@ -204,8 +210,13 @@ class Trcbreceive_model extends MY_Model {
 				$ssql ="UPDATE glledger set fbl_claimed_cashbank_receive_unknown = true where fin_rec_id =?";
 				$this->db->query($ssql,[$dataItem->fin_trans_id]);
 				throwIfDBError();
-				
-			}else{               
+			}else if ($dataItem->fst_trans_type == "SELL_FIXED_ASSET"){
+				$tmpArr = $this->getDataJurnalPostingSellFixedAsset($dataItem,$dataH);
+				$ssql ="UPDATE trfadisposal set fdc_sell_total_paid = fdc_sell_total_paid + ? where fin_fa_disposal_id = ?";
+
+				$this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);
+				throwIfDBError();
+			}else{
 				throw new CustomException("Unknow Detail Transaction Type $dataItem->fst_trans_type",9009,"FAILED",null);
 			}
 			
@@ -764,6 +775,90 @@ class Trcbreceive_model extends MY_Model {
 		return $dataJurnal;
 	}
 
+	public function getDataJurnalPostingSellFixedAsset($dataItem,$dataH){
+		$ssql = "select * from trfadisposal where fin_fa_disposal_id = ? ";
+		$qr =$this->db->query($ssql,[$dataItem->fin_trans_id]);
+		$dataD = $qr->row();
+		if($dataD == null){
+			throw new CustomException("ID Penjualan Disposal tidak dikenal !",9009,"FAILED",null);
+		}
+
+		$maxClaim = abs((float) $dataD->fdc_sell_total);
+		if ($maxClaim < (float) $dataItem->fdc_receive_amount){
+			throw new CustomException(sprintf(lang("Maksimum klaim kelebihan pembayaran %s"),formatNumber($maxClaim)),3003,"FAILED",null);
+		}
+
+		$dataJurnal = [];
+		//Jurnal Piutang dagang Lokal atau Import
+		$accPiutangSellFA = getGLConfig("PIUTANG_PENJUALAN_FIXED_ASSET");   
+		$glAccountInfo = "PEMBAYARAN PIUTANG FA";
+				
+		$dataJurnal[] = [
+			"fin_branch_id"=>$dataH->fin_branch_id,
+			"fst_account_code"=>$accPiutangSellFA,
+			"fdt_trx_datetime"=>$dataH->fdt_cbreceive_datetime,
+			"fst_trx_sourcecode"=>"CBIN",
+			"fin_trx_id"=>$dataH->fin_cbreceive_id, 
+			"fst_trx_no"=>$dataH->fst_cbreceive_no,
+			"fst_reference"=>$dataH->fst_memo,
+			"fdc_debit"=> 0,
+			"fdc_origin_debit"=>0,
+			"fdc_credit"=> $dataItem->fdc_receive_amount * $dataD->fdc_sell_exchange_rate_idr,
+			"fdc_origin_credit"=> $dataItem->fdc_receive_amount * 1,
+			"fst_orgi_curr_code"=>$dataH->fst_curr_code,
+			"fdc_orgi_rate"=>$dataD->fdc_sell_exchange_rate_idr,
+			"fst_no_ref_bank"=>null,
+			"fin_pcc_id"=>null,
+			"fin_relation_id"=>$dataH->fin_customer_id,
+			"fst_active"=>"A",
+			"fst_info"=>$glAccountInfo,
+		];        
+
+		//Jurnal Selisih Kurs     
+		if ($dataH->fdc_exchange_rate_idr  != $dataD->fdc_sell_exchange_rate_idr){
+
+			$receiveAmount = abs($dataItem->fdc_receive_amount*1);
+			$selisih = ( $receiveAmount * $dataD->fdc_sell_exchange_rate_idr) - ($receiveAmount * $dataH->fdc_exchange_rate_idr);
+
+			if ($selisih < 0){
+				$fstAccountCode =  getGLConfig("SELISIH_KURS_UNTUNG");
+				$glAccountInfo = "SELISIH KURS UNTUNG";                               
+			}else{
+				$fstAccountCode =  getGLConfig("SELISIH_KURS_RUGI");
+				$glAccountInfo = "SELISIH KURS RUGI";                 
+			}
+				
+			$debet = 0;
+			$credit = abs($selisih);
+						
+			$dataJurnal[] = [
+				"fin_branch_id"=>$dataD->fin_branch_id,
+				"fst_account_code"=>$fstAccountCode,
+				"fdt_trx_datetime"=>$dataH->fdt_cbreceive_datetime,
+				"fst_trx_sourcecode"=>"CBIN",
+				"fin_trx_id"=>$dataItem->fin_cbreceive_id,
+				"fst_trx_no"=>$dataH->fst_cbreceive_no,
+				"fst_reference"=>$dataD->fst_fa_disposal_no . " | " . $dataH->fst_memo,
+				"fdc_debit"=> $debet,
+				"fdc_origin_debit"=>$debet,
+				"fdc_credit"=>$credit,
+				"fdc_origin_credit"=>$credit,
+				"fst_orgi_curr_code"=>"IDR",
+				"fdc_orgi_rate"=>1,
+				"fst_no_ref_bank"=>null,
+				"fin_pcc_id"=>null,
+				"fin_relation_id"=>null,
+				"fst_active"=>"A",
+				"fst_info"=>$glAccountInfo
+			];
+		}
+
+
+
+		return $dataJurnal;
+	}
+
+	
 
 	public function getDataById($finCBReceiveId){
 		$ssql = "select a.*,b.fst_type as fst_kasbank_type from " .$this->tableName. " a 
@@ -793,13 +888,15 @@ class Trcbreceive_model extends MY_Model {
 		$ssql = "select a.*,b.fst_glaccount_name,c.fst_pcc_name,
 			d.fst_department_name as fst_pc_divisi_name,
 			e.fst_relation_name as fst_pc_customer_name,
-			f.fst_project_name as fst_pc_project_name 
+			f.fst_project_name as fst_pc_project_name,
+			g.fst_relation_name 
 			from trcbreceiveitemstype a 
 			INNER JOIN glaccounts b on a.fst_glaccount_code = b.fst_glaccount_code 
 			LEFT JOIN msprofitcostcenter c on a.fin_pcc_id = c.fin_pcc_id  
 			LEFT JOIN departments d on a.fin_pc_divisi_id = d.fin_department_id  
 			LEFT JOIN msrelations e on a.fin_pc_customer_id = e.fin_relation_id  
 			LEFT JOIN msprojects f on a.fin_pc_project_id = f.fin_project_id  
+			LEFT JOIN msrelations g on a.fin_relation_id = g.fin_relation_id  
 			WHERE a.fin_cbreceive_id = ?";
 
 		$qr = $this->db->query($ssql,[$finCBReceiveId]);
@@ -920,6 +1017,25 @@ class Trcbreceive_model extends MY_Model {
 					"fdc_return_amount"=>0,
 				];
 			}
+		}else if($transType == "SELL_FIXED_ASSET"){
+			$ssql = "Select * from trfadisposal where fin_fa_disposal_id = ?";
+			$qr = $this->db->query($ssql,[$transId]);
+			$rw = $qr->row();
+			if ($rw == null){
+				return [
+					"fst_trans_no"=>null,
+					"fdc_trans_amount"=>0,
+					"fdc_paid_amount"=>0,
+					"fdc_return_amount"=>0
+				];
+			}else{
+				return [
+					"fst_trans_no"=>$rw->fst_fa_disposal_no,
+					"fdc_trans_amount"=>$rw->fdc_sell_total,
+					"fdc_paid_amount"=>$rw->fdc_sell_total_paid,
+					"fdc_return_amount"=>0
+				];
+			}
 		}
 
 	}
@@ -970,6 +1086,8 @@ class Trcbreceive_model extends MY_Model {
 		return $qr->result();
 
 	}
+
+	
 
 	public function delete($finCBReceiveId,$softDelete=TRUE,$data=null){
 		if($softDelete){

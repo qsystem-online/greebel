@@ -149,7 +149,7 @@
 	
 </div>
 
-<htmlpagefooter name="AssigmentFooter">							
+<div class="assignment">
 	<table class="assignment" style="page-break-inside: avoid;width:100%">
 		<tr>
 			<td style="width:50%">Dibuat,</td>					
@@ -164,10 +164,4 @@
 			<td>.................</td>
 		</tr>		
 	</table>
-	<table width="100%">
-		<tr>
-			<td width="100%" align="right">Hal: {PAGENO}/{nbpg}</td>
-		</tr>
-	</table>
-</htmlpagefooter>
-<sethtmlpagefooter name="AssigmentFooter" value="ON"/>
+</div>

@@ -236,10 +236,7 @@
 										<div class="col-md-6">
 											<input type="text" class="form-control text-right" id="fdc_ppn_amount" value="0.00" disabled>
 										</div>																				
-									</div>
-									
-									
-									
+									</div>								
 
 									<div class="form-group">
 										<label for="fdc_subtotal" class="col-md-3 control-label">Sub total</label>
@@ -289,7 +286,8 @@
 				var price = $("#fdc_price").val();
 				var strDisc = $("#fst_disc_item").val();
 				var ttlBfDisc = qty * price;				
-				var discAmount = App.calculateDisc(ttlBfDisc, strDisc);
+				var discAmount = App.calculateDisc(ttlBfDisc, strDisc);				
+
 				if($("#fbl_is_vat_include").prop("checked") ){
 					var dpp = (price * qty) / (1 + ($("#fdc_ppn_percent").val() / 100));
 				}else{
@@ -302,7 +300,7 @@
 				$("#fdc_disc_amount").val(App.money_format(discAmount));
 				$("#fdc_dpp_amount").val(App.money_format(dpp));
 				$("#fdc_ppn_amount").val(App.money_format(ppn));				
-				$("#fdc_subtotal").val(App.money_format(dpp-discAmount+ppn));				
+				$("#fdc_subtotal").val(App.money_format(dpp-discAmount+ppn));
 			},
 			setUnitToSelect2:function(){
 				$("#fst_unit").select2({
@@ -504,7 +502,7 @@
 					fdc_disc_amount_per_item: discPerItem,
 					fdc_dpp_amount: dpp,
 					fdc_ppn_percent: $("#fdc_ppn_percent").val(),
-					fdc_ppn_amount: dpp * ($("#fdc_ppn_percent").val() /100)					
+					fdc_ppn_amount: dpp * ($("#fdc_ppn_percent").val() /100),
 				};
 				
 				if ( $("#fbl_non_faktur").prop("checked") == false && $("#fin_inv_id").val() == null){
@@ -545,6 +543,8 @@
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlJurnal ?>
+<?php echo $mdlPrint ?>
+
 
 <script type="text/javascript" info="event">
 	$(function(){
@@ -558,6 +558,12 @@
 			e.preventDefault();
 			submitAjax(0);
 		});
+
+		$("#btnPrint").click(function(e){
+			e.preventDefault();
+			frameVoucher.print("<?=site_url()?>tr/sales/sales_return/print_voucher/" + $("#fin_salesreturn_id").val());			
+		});
+
 
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
@@ -661,7 +667,6 @@
 						return App.money_format(row.fdc_ppn_amount);
 					}
 				},
-
 				{"title" : "Total","width": "100px",sortable:false,className:'text-right',
 					render:function(data,type,row){						
 						return App.money_format(parseFloat(row.fdc_dpp_amount) + parseFloat(row.fdc_ppn_amount));

@@ -75,7 +75,7 @@ class Trinvoice_model extends MY_Model {
     }
 
     public function getDataById($invId){
-        $ssql ="SELECT a.*,b.fst_salesorder_no,c.fst_relation_name as fst_customer_name,(b.fdc_downpayment_paid - b.fdc_downpayment_claimed) as fdc_downpayment_rest from trinvoice a 
+        $ssql ="SELECT a.*,b.fst_salesorder_no,b.fdt_salesorder_datetime,c.fst_relation_name as fst_customer_name,(b.fdc_downpayment_paid - b.fdc_downpayment_claimed) as fdc_downpayment_rest from trinvoice a 
             inner join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id 
             inner join msrelations c on a.fin_relation_id = c.fin_relation_id 
             where a.fin_inv_id = ? and a.fst_active != 'D'";
@@ -396,8 +396,7 @@ class Trinvoice_model extends MY_Model {
 
         
         //var_dump($dataJurnal);
-       // die();
-   
+        //die();
         $this->glledger_model->createJurnal($dataJurnal);        
     }
 
@@ -510,4 +509,53 @@ class Trinvoice_model extends MY_Model {
         }
 
     }
+
+
+    public function getDataVoucher($finInvId){
+
+        $data = $this->getDataById($finInvId);
+
+        $ssql = "select a.*,b.fst_item_code from trinvoiceitems a 
+            INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
+            where a.fin_inv_id = ?";
+        $qr = $this->db->query($ssql,[$finInvId]);
+        $rsDetails = $qr->result_array();
+        return [
+            "header"=>(array) $data["trinvoice"],
+            "details"=>$rsDetails,
+        ];
+        
+        /*
+
+		$ssql ="SELECT a.*,
+			b.fst_relation_name,
+			c.fst_warehouse_name 
+			FROM trinvoice a
+			INNER JOIN msrelations b on a.fin_relation_id = b.fin_relation_id 
+			INNER JOIN mswarehouse c on a.fin_warehouse_id = c.fin_warehouse_id 
+			WHERE a.fin_lpbgudang_id = ?";
+			
+		$qr = $this->db->query($ssql,[$finLPBGudangId]);
+		$header = $qr->row_array();
+		$details =[];
+		if ($header != null){      
+			$ssql = "SELECT a.*,
+				b.fst_item_code,b.fst_item_name
+				FROM trlpbgudangitems a
+				INNER JOIN msitems b ON a.fin_item_id = b.fin_item_id
+				WHERE a.fin_lpbgudang_id = ?";
+
+			$qr = $this->db->query($ssql,[$finLPBGudangId]);
+
+			$details = $qr->result_array();
+		}
+		return [
+			"header"=>$header,
+			"details"=>$details
+        ];
+        */
+    }
+    
+
+
 }

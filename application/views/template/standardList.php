@@ -67,6 +67,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		echo $mdlEditForm;
 	}
 ?>
+<?php
+	if(isset($jsfile)){
+		echo $jsfile;
+	}
+?>
 <script type="text/javascript">
 	var t;
 	var trRow;

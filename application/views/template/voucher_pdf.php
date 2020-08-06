@@ -60,11 +60,16 @@
 			.text-right{
 				text-align:right;
 			}
+			div.assignment{
+				position:fixed;
+				bottom:0px;
+			}
 
 			table.assignment{
 				margin-top:20px;
 				border:1px dotted #000;
-				width:100%
+				width:100%;
+				
 			}
 			table.assignment tr td{
 				border:none;
@@ -89,16 +94,14 @@
 		</style>
 	</head>	
 	<body>
-		<div class="container" style="width:100%">
-			<htmlpagefooter name="myFooter">
-				<table width="100%">
-					<tr>
-						<td width="100%" align="right">Hal: {PAGENO}/{nbpg}</td>
-					</tr>
-				</table>
-			</htmlpagefooter>
-			<sethtmlpagefooter name="myFooter" value="ON" page="ALL"/>			
-			{PAGE_CONTENT}			
-		</div>			
+		<htmlpagefooter name="myFooter">
+			<table width="100%">
+				<tr>
+					<td width="100%" align="right">Hal: {PAGENO}/{nbpg}</td>
+				</tr>
+			</table>
+		</htmlpagefooter>
+		<sethtmlpagefooter name="myFooter" value="ON" page="ALL"/>
+		{PAGE_CONTENT}			
 	</body>
 </html>

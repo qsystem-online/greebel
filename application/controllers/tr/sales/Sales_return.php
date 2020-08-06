@@ -98,12 +98,14 @@ class Sales_return extends MY_Controller{
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+		$mdlPrint = $this->parser->parse('template/mdlPrint', [], true);
 		$jurnal_modal = $this->parser->parse('template/mdlJurnal', [], true);
 
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Retur Penjualan") : lang("Update Retur Penjualan");
 		$data["fin_salesreturn_id"] = $finSalesReturnId;
 		$data["mdlEditForm"] = $edit_modal;
+		$data["mdlPrint"] = $mdlPrint;
 
 		$data["arrExchangeRate"] = $this->mscurrencies_model->getArrRate();
 		
@@ -406,8 +408,7 @@ class Sales_return extends MY_Controller{
 
 			
 		if($dataH["fbl_non_faktur"] == false){
-			//Return langsung mengurangi tagihan
-			
+			//Return langsung mengurangi tagihan			
 			foreach($dataDetails as $dataD){				
 				$dInv = $this->trinvoiceitems_model->getDataById($dataD["fin_inv_detail_id"]);				
 				//Invoice tidak boleh kosong
@@ -419,7 +420,7 @@ class Sales_return extends MY_Controller{
 					throw new CustomException(sprintf(lang("Invoice %s sudah dilakukan pembayaran !"),$dInv->fst_inv_no),3003,"FAILED",null);
 				}
 				//Cek total retur tidak boleh melebihi total_invoice - (total_pembayaran + total_yang_telah_di_retur)	
-				$maxReturn = ($dInv->fdc_total -  $dInv->fdc_total_paid + $dInv->fdc_total_return);
+				$maxReturn = ($dInv->fdc_total + $dInv->fdc_downpayment_claim) -  ($dInv->fdc_total_paid + $dInv->fdc_total_return);				
 				if ($dataH["fdc_total"] > $maxReturn ){
 					throw new CustomException(sprintf(lang("Total return Invoice %s tidak boleh melebihi %s"),$dInv->fst_inv_no,formatNumber($maxReturn)),3003,"FAILED",null);
 				}
@@ -428,6 +429,7 @@ class Sales_return extends MY_Controller{
 				if ($dataD["fdb_qty"] > $maxQtyReturn ){
 					throw new CustomException(sprintf(lang("Total qty return Invoice %s tidak boleh melebihi %s"),$dInv->fst_inv_no,$maxQtyReturn),3003,"FAILED",null);
 				}
+				
 			}						
 		}else{
 			//Return tidak mengurangi tagihan dan harus digunakan sebagai voucher return
@@ -601,6 +603,24 @@ class Sales_return extends MY_Controller{
 		//params.finCustomerId = $("#fin_customer_id").val();
 		//params.finItemId =$("#fin_item_id").val();
 
+
+	}
+
+	public function print_voucher($finSalesReturnId){
+		$data = $this->trsalesreturn_model->getDataVoucher($finSalesReturnId);
+
+		$data["title"]= "Sales Return";
+		$this->data["title"]= $data["title"];
+
+		$page_content = $this->parser->parse('pages/tr/sales/return/voucher', $data, true);
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;		
+		
+		//echo $data;	
+		$mpdf->WriteHTML($data);
+		$mpdf->Output();
 
 	}
 

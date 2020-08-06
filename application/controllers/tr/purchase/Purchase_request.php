@@ -100,13 +100,13 @@ class Purchase_request extends MY_Controller{
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
 		$jurnal_modal = $this->parser->parse('template/mdlJurnal', [], true);
-
+		
 		$data["mode"] = $mode;
         $data["title"] = $mode == "ADD" ? lang("Permintaan Pembelian") : lang("Update Permintaan Pembelian");
 		$data["fin_pr_id"] = $finPRId;
 		$data["mdlEditForm"] = $edit_modal;
 		$mdlPrint =$this->parser->parse('template/mdlPrint.php', [], true);
-
+		$data["mdlPrint"] = $mdlPrint;
 
 		$data["arrExchangeRate"] = $this->mscurrencies_model->getArrRate();
 		

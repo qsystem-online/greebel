@@ -113,6 +113,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <option value='3'><?= lang("Supporting Material") ?></option>
                                     <option value='4'><?= lang("Ready Product") ?></option>
                                     <option value='5'><?= lang("Logistic") ?></option>
+                                    <option value='6'><?= lang("Fixed Asset") ?></option>
                                 </select>
                             </div>
                         </div>
@@ -239,7 +240,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                         <div class="box-footer text-right">
                             
-                        </div>
+                    </div>
                         <!-- end box-footer -->
                 </form>
             </div>

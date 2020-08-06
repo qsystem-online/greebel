@@ -837,4 +837,5 @@ class Item extends MY_Controller
         $this->ajxResp["data"]["stock_list"] = $listStock;
         $this->json_output();
     }
+
 }

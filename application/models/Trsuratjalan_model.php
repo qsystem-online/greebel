@@ -300,6 +300,47 @@ class Trsuratjalan_model extends MY_Model {
 	
 	private function postingSOType($dataH,$dataDetails){
 
+		if (getDbConfig("update_stock_on_delivery") == 0){
+			$this->updateInventorySOType($dataH->fin_sj_id);
+		}
+
+		foreach($dataDetails as $dataD){			
+			//Update data SO detail 
+			$ssql = "UPDATE trsalesorderdetails SET fdb_qty_out = fdb_qty_out +  ? WHERE fin_rec_id = ?";
+			$query = $this->db->query($ssql,[$dataD->fdb_qty,$dataD->fin_salesorder_detail_id]);
+			throwIfDBError();
+		}
+
+		//Cek All Data valid after Process
+		$this->trsalesorder_model->updateClosedStatus($dataH->fin_trans_id);
+
+		//Data SO detail  still valid
+		$ssql = "SELECT * FROM trsalesorderdetails WHERE fin_salesorder_id = ? AND fdb_qty < (fdb_qty_out + fdb_qty_return)";
+		$qr = $this->db->query($ssql,$dataH->fin_trans_id);
+		$rw = $qr->row();
+
+		if ($rw != null){
+			throw new CustomException(lang("Qty sales order detail not balance !"),3003,"FAILED",null);            
+		}
+	}
+
+	public function updateInventorySOType($sjId){
+		$ssql = "select * from trsuratjalan where fin_sj_id = ? and fst_active != 'D'";
+		$qr = $this->db->query($ssql,[$sjId]);
+		$dataH = $qr->row();
+		if ($dataH == null){
+			throw new CustomException(lang("invalid SJ id"),404,"FAILED",[]);	
+		}else{
+			if ($dataH->fbl_update_stock == 1){
+				return;
+			}
+		}
+
+
+		$ssql = "SELECT * FROM trsuratjalandetails WHERE fin_sj_id = ?";
+		$qr = $this->db->query($ssql,[$sjId]);
+		$dataDetails = $qr->result();
+
 		foreach($dataDetails as $dataD){
 			//Update msitemdetails dan msitemdetailssummary
 			//$strArrSerial  = $dataD["fst_serial_number_list"];                       
@@ -334,30 +375,56 @@ class Trsuratjalan_model extends MY_Model {
 				"fdc_price_in"=>0,
 				"fst_active"=>"A"
 			];
-			$this->trinventory_model->insert($data);
-
-			//Update data SO detail 
-			$ssql = "UPDATE trsalesorderdetails SET fdb_qty_out = fdb_qty_out +  ? WHERE fin_rec_id = ?";
-			$query = $this->db->query($ssql,[$dataD->fdb_qty,$dataD->fin_salesorder_detail_id]);
+			$this->trinventory_model->insert($data);			
 			throwIfDBError();
 		}
 
-		//Cek All Data valid after Process
-		$this->trsalesorder_model->updateClosedStatus($dataH->fin_trans_id);
+		$ssql ="UPDATE trsuratjalan set fbl_update_stock = 1,fdt_delivery_datetime = now() where fin_sj_id = ?";
+		$this->db->query($ssql,[$finSJId]);
 
-		//Data SO detail  still valid
-		$ssql = "SELECT * FROM trsalesorderdetails WHERE fin_salesorder_id = ? AND fdb_qty < (fdb_qty_out + fdb_qty_return)";
-		$qr = $this->db->query($ssql,$dataH->fin_trans_id);
-		$rw = $qr->row();
-		if ($rw != null){
-			throw new CustomException(lang("Qty sales order detail not balance !"),3003,"FAILED",null);            
-		}
 	}
 	
 	private function postingPOReturnType($dataH,$dataDetails){
-
 		$this->load->model("trpurchasereturn_model");
 
+		if (getDbConfig("update_stock_on_delivery") == 0){
+			$this->updateInventoryPOReturnType($dataH->fin_sj_id);
+		}
+
+		foreach($dataDetails as $dataD){
+			//Update data SO detail 
+			$ssql = "UPDATE trpurchasereturnitems SET fdb_qty_out = fdb_qty_out +  ? WHERE fin_rec_id = ?";
+			$query = $this->db->query($ssql,[$dataD->fdb_qty,$dataD->fin_trans_detail_id]);
+			throwIfDBError();
+		}
+		
+		//Cek All Data valid after Process
+		$this->trpurchasereturn_model->updateClosedStatus($dataH->fin_trans_id);
+
+		//Data PURCHASE RETURN detail  still valid
+		$ssql = "SELECT * FROM trpurchasereturnitems WHERE fin_purchasereturn_id = ? AND fdb_qty < fdb_qty_out";
+		$qr = $this->db->query($ssql,$dataH->fin_trans_id);
+		$rw = $qr->row();
+		if ($rw != null){
+			throw new CustomException(lang("Qty Purchase return detail not balance !"),3003,"FAILED",null);            
+		}    
+	}
+
+	public function updateInventoryPOReturnType($sjId){
+		$ssql = "select * from trsuratjalan where fin_sj_id = ? and fst_active != 'D'";
+		$qr = $this->db->query($ssql,[$sjId]);
+		$dataH = $qr->row();
+		if ($dataH == null){
+			throw new CustomException(lang("invalid SJ id"),404,"FAILED",[]);	
+		}else{
+			if ($dataH->fbl_update_stock == 1){
+				return;
+			}
+		}
+
+		$ssql = "SELECT * FROM trsuratjalandetails WHERE fin_sj_id = ?";
+		$qr = $this->db->query($ssql,[$sjId]);
+		$dataDetails = $qr->result();
 		foreach($dataDetails as $dataD){
 			$dataSerial = [
 				"fin_warehouse_id"=>$dataH->fin_warehouse_id,
@@ -400,25 +467,12 @@ class Trsuratjalan_model extends MY_Model {
 				"fdc_price_in"=>(float) $lpbPurchaseItem->fdc_price - (float) $lpbPurchaseItem->fdc_disc_amount_per_item, 
 				"fst_active"=>"A" 
 			];
-			$this->trinventory_model->insert($dataStock);
-
-			 //Update data SO detail 
-			 $ssql = "UPDATE trpurchasereturnitems SET fdb_qty_out = fdb_qty_out +  ? WHERE fin_rec_id = ?";
-			 $query = $this->db->query($ssql,[$dataD->fdb_qty,$dataD->fin_trans_detail_id]);
+			$this->trinventory_model->insert($dataStock);			
 			 throwIfDBError();
-
 		}
-		
-		//Cek All Data valid after Process
-		$this->trpurchasereturn_model->updateClosedStatus($dataH->fin_trans_id);
 
-		//Data PURCHASE RETURN detail  still valid
-		$ssql = "SELECT * FROM trpurchasereturnitems WHERE fin_purchasereturn_id = ? AND fdb_qty < fdb_qty_out";
-		$qr = $this->db->query($ssql,$dataH->fin_trans_id);
-		$rw = $qr->row();
-		if ($rw != null){
-			throw new CustomException(lang("Qty Purchase return detail not balance !"),3003,"FAILED",null);            
-		}    
+		$ssql ="UPDATE trsuratjalan set fbl_update_stock = 1,fdt_delivery_datetime = now() where fin_sj_id = ?";
+		$this->db->query($ssql,[$finSJId]);
 	}
 
 	public function delete($key, $softdelete = TRUE,$data=null){

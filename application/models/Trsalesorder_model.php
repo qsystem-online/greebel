@@ -863,7 +863,7 @@ class Trsalesorder_model extends MY_Model {
                 ];
 
             }
-            
+           
             $result = $this->glledger_model->createJurnal($dataJurnal);
             if($result["status"] != "SUCCESS"){
                 throw new CustomException("Error Create Jurnal !", 3001,"FAILED",$dataJurnal);
@@ -1260,6 +1260,10 @@ class Trsalesorder_model extends MY_Model {
 		];
     }
     
+    public function closeManual($finSalesOrderId,$fstClosedNote,$isClosed){
+        $ssql = "UPDATE trsalesorder set fbl_is_closed = ?, fdt_closed_datetime = now(),fst_closed_notes = ? where fin_salesorder_id = ?";
+        $this->db->query($ssql,[$isClosed,$fstClosedNote,$finSalesOrderId]);
+    }
 
 
 }
