@@ -51,9 +51,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fst_assembling_no_err" class="text-danger"></div>
 						</div>								
 
-						<label for="fdt_fa_disposal_datetime" class="col-md-2 control-label"><?=lang("Tgl Dis/Assembling")?></label>
+						<label for="fdt_assembling_datetime" class="col-md-2 control-label"><?=lang("Tgl Dis/Assembling")?></label>
 						<div class="col-md-4">
-							<input type="text" class="form-control datetimepicker text-right" id="fdt_fa_disposal_datetime" placeholder="<?=lang("Mutasi Datetime")?>" name="fdt_fa_disposal_datetime" value=""/>
+							<input type="text" class="form-control datetimepicker text-right" id="fdt_assembling_datetime" placeholder="<?=lang("Mutasi Datetime")?>" name="fdt_assembling_datetime" value=""/>
 							<div id="fdt_fa_disposal_datetime_err" class="text-danger"></div>
 						</div>								
                     </div>  
@@ -146,51 +146,41 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
 </section>
 
-<div id="mdlDetail" class="modal fade in" role="dialog" style="display: none">
+<div id="mdlDetail" class="amodal afade in" role="dialog" style="display: unset">
 	<div class="modal-dialog" style="display:table;width:600px">
 		<!-- modal content -->
 		<div class="modal-content">
 			<div class="modal-header" style="padding:7px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 5px;border-top-right-radius: 5px;">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title"><?=lang("Tambah Fixed Asset")?></h4>
+				<h4 class="modal-title"><?=lang("Tambah Detail")?></h4>
 			</div>
 
 			<div class="modal-body">				        
-				<form id="form-detail-penerimaan-gudang" class="form-horizontal">
+				<form id="form-detail" class="form-horizontal">
 				
 					<div class="form-group">										
-						<label class="col-md-2 control-label "><?=lang("FA Code")?></label>						
+						<label class="col-md-2 control-label "><?=lang("Item")?></label>						
 						<div class="col-md-10">																		
-							<select id="fst_fa_profile_code" class="form-control" style="width:100%"> </select>
+							<select id="fin_item_id_d" class="form-control" style="width:100%"> </select>
 						</div>
 					</div>
 					<div class="form-group">										
-						<label class="col-md-2 control-label "><?=lang("Perolehan")?></label>						
-						<div class="col-md-4">																		
-							<input type="text" id="fdc_aquisition_price" class="form-control money" value="0.00" readonly/>
-						</div>
-						<label class="col-md-2 control-label "><?=lang("Susut")?></label>	
-						<div class="col-md-4">																		
-							<input type="text" id="fdc_depre_amount" class="form-control money" value="0.00" readonly/>
-						</div>
+						<label class="col-md-2 control-label "><?=lang("Unit")?></label>						
+						<div class="col-md-10">
+							<select id="fst_unit_d" class="form-control" style="width:100%"> </select>
+						</div>						
 					</div>
-					
 					<div class="form-group">										
-						<label class="col-md-2 control-label "><?=lang("Nilai Buku")?></label>						
+						<label class="col-md-2 control-label "><?=lang("Qty")?></label>						
 						<div class="col-md-10">																		
-							<input type="text" id="fdc_book_amount" class="form-control money" value="0.00" readonly/>
-						</div>
+							<input id="fdb_qty_d" class="form-control money" value="1"/>
+						</div>						
 					</div>
-					<div class="form-group type-jual">										
-						<label class="col-md-2 control-label "><?=lang("Harga Jual")?></label>						
-						<div class="col-md-10">																		
-							<input type="text" id="fdc_sell_price" class="form-control money" value="0.00"/> 
-						</div>
-					</div>
+										
 					<div class="form-group">										
 						<label class="col-md-2 control-label "><?=lang("Notes")?></label>						
 						<div class="col-md-10">																		
-						<textarea id="fst_detail_notes" class="form-control"> </textarea>
+							<textarea id="fst_notes_d" class="form-control"> </textarea>
 						</div>
 					</div>		
 				
@@ -285,40 +275,54 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 	</script>
 	<script type="text/javascript" info="init">
-		$(function(){
-			$("#fst_fa_profile_code").select2({
-				placeholder: 'Profile Code',
-				allowClear:true,				
-				ajax: {
-					delay: 250,
-					minimumInputLength: 0,
-					url: '<?=site_url()?>tr/fixed_asset/disposal/ajxListFixedAsset',
-					dataType: 'json',
-					data: function (params) {
-						//params.fin_wa_id = $("#fin_from_warehouse_id").val();
-						return params
-					},
+		$(function(){			
+			$("#fin_item_id_d").select2({
+				minimumInputLength: 2,
+				ajax:{
+					delay:250,
+					url:"<?=site_url()?>tr/production/assembling/ajxGetItemList",
 					processResults: function (resp) {
+						console.log(resp);
 						if (resp.status == "SUCCESS"){
-							var data = resp.data;
-							var arrData = $.map(data,function(obj){
-								obj.id = obj.fin_fa_profile_rec_id;
-								obj.text = obj.fst_fa_profile_code + " - " +obj.fst_fa_profile_name;
-								return obj;
+							data = resp.data;
+							var list  = $.map(data,function(v,i){
+								v.id = v.fin_item_id;
+								v.text = v.fst_item_code + " - " +v.fst_item_name;
+								return v;
 							});
-
 							return {
-								results: arrData
-							};								
-
+								results:list
+							}							
 						}
-						return;
-					},
-					
-
+					}
 				}
 			});
-
+			
+			$("#fst_unit_d").select2({
+				minimumInputLength: 0,
+				minimumResultsForSearch: -1,
+				ajax:{
+					delay:250,
+					url:function(params){
+						return "<?=site_url()?>tr/production/assembling/ajxGetUnits/" + $("#fin_item_id_d").val();
+					},
+					processResults: function (resp) {
+						console.log(resp);
+						if (resp.status == "SUCCESS"){
+							data = resp.data;
+							var list  = $.map(data,function(v,i){
+								v.id = v.fst_unit;
+								v.text = v.fst_unit;
+								return v;
+							});
+							return {
+								results:list
+							}							
+						}
+					}
+				}
+			});
+			
 		});
 
 	</script>
@@ -435,68 +439,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#fin_source_warehouse_id,#fin_target_warehouse_id").select2();
 
-		$("#fst_sell_curr_code").select2({
-			minimumResultsForSearch: -1,
-			ajax:{
-				delay:250,
-				minimumInputLength: 0,
-				url:"<?=site_url()?>master/currency/ajxGetList",
-				data:function(params){
-					params.proses_datetime = $("#fdt_fa_disposal_datetime").val();
-					return params;
-				},
-				processResults: function (resp) {
-					console.log(resp);
-					if (resp.status == "SUCCESS"){
-						data = resp.data;
-						var list  = $.map(data,function(v,i){
-							v.id = v.fst_curr_code;
-							v.text = v.fst_curr_name;
-							return v;
-						});
-						return {
-							results:list
-						}							
-					}
-
-
-				}
-
-			}
-		}).on("select2:select",function(e){
-			curr = e.params.data;
-			$("#fdc_sell_exchange_rate_idr").val(curr.fdc_exchange_rate_to_idr);
-
-
-		});
-
-		$("#fin_to_branch_id").select2();
-
-		$("#fin_customer_id").select2({
-
-			minimumInputLength: 1,
-			ajax:{
-				url:"<?=site_url()?>tr/fixed_asset/disposal/ajxListRelation",
-				dataType: 'json',
-				delay: 250,
-				processResults: function (resp) {
-					if (resp.status == "SUCCESS"){
-						data = resp.data;
-						var customerList = $.map(data,function(v,i){
-							v.id = v.fin_relation_id;
-							v.text =v.fst_relation_name;
-							return v;
-						});
-						return {
-							results: customerList,
-						};	
-					}      				
-					return;
-    			},
-    			cache: true,
-			}
-		});
-
+		
 		$('#tbldetails').on('preXhr.dt', function ( e, settings, data ) {
 			data.sessionId = "TEST SESSION ID";
 		}).DataTable({
@@ -506,7 +449,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			order: [],
 			columns:[
 				{"title" : "id","width": "0px",sortable:false,data:"fin_rec_id",visible:false},
-				{"title" : "Fixed Asset","width": "300px",sortable:false,data:"fa_profile",
+				{"title" : "Item","width": "300px",sortable:false,data:"fin_item_id",
+					"render":function(data,type,row){
+						var faProfile = row.fa_profile;
+						return faProfile.fst_fa_profile_code + " - " + faProfile.fst_fa_profile_name;
+					}
+				},
+				{"title" : "Unit","width": "300px",sortable:false,data:"fst_unit",
+					"render":function(data,type,row){
+						var faProfile = row.fa_profile;
+						return faProfile.fst_fa_profile_code + " - " + faProfile.fst_fa_profile_name;
+					}
+				},
+				{"title" : "Qty","width": "300px",sortable:false,data:"fdb_qty",
 					"render":function(data,type,row){
 						var faProfile = row.fa_profile;
 						return faProfile.fst_fa_profile_code + " - " + faProfile.fst_fa_profile_name;
