@@ -1,3 +1,4 @@
+Ini Mau di pindah ke Multi
 [9:58 PM, 4/29/2019] ANDY SHUE2: Jadi ada 2 table :
 
 1.Master verifikasi (isi nya controller+Jenis Verifikasi+DepCode+UserLevel)
