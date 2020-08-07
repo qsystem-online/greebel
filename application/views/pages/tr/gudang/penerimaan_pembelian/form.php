@@ -182,7 +182,7 @@
 									<div class="form-group">
 										<label for="" class="col-md-3 control-label"><?=lang("M3")?> :</label>
 										<div class="col-md-9">
-											<input type='TEXT' id="fdcM3" class="money form-control" value="0"/>
+											<input type='TEXT' id="fdcM3" class="money form-control" value="1"/>
 										</div>
 									</div>	
 

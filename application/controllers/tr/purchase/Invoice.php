@@ -52,7 +52,6 @@ class Invoice extends MY_Controller{
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/purchase/invoice/edit/' + row.fin_lpbpurchase_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
-					action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
 					action += '<div>';
 					return action;
 				}"

@@ -69,8 +69,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | The $query_builder variables lets you determine whether or not to load
 | the query builder class.
 */
-$active_group = 'default_local'; 
+$active_group = 'multi_qsystem'; 
 $query_builder = TRUE;
+
+$db['multi_qsystem'] = array(
+	'dsn'	=> '',
+	'hostname' => 'qsystem-online.com', //'qsystem-online.com',
+	'username' => 'u5538790_user', //'u5538790_edoc',
+	'password' => 'passuser', //'passedoc',
+	'database' => 'u5538790_multi', //'u5538790_edoc',
+	'dbdriver' => 'mysqli',
+	'dbprefix' => '',
+	'pconnect' => FALSE,
+	'db_debug' => TRUE, //(ENVIRONMENT !== 'production'),
+	'cache_on' => FALSE,
+	'cachedir' => '',
+	'char_set' => 'utf8',
+	'dbcollat' => 'utf8_general_ci',
+	'swap_pre' => '',
+	'encrypt' => FALSE,
+	'compress' => TRUE,
+	'stricton' => FALSE,
+	'failover' => array(),
+	'save_queries' => TRUE,
+	'options'=> array(PDO::ATTR_TIMEOUT => 5)
+);
 
 $db['default_qsystem'] = array(
 	'dsn'	=> '',
