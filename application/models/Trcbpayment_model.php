@@ -560,7 +560,7 @@ class Trcbpayment_model extends MY_Model {
             WHERE a.fin_supplier_id = ? AND a.fst_curr_code = ? 
             AND (a.fdc_total > (a.fdc_total_paid + a.fdc_total_return) ) 
             AND ifnull(b.fbl_is_closed,1) = 1 
-            AND a.fst_active = 'A' and b.fst_active != 'D'";
+            AND a.fst_active = 'A' and IFNULL(b.fst_active,'A') != 'D'";
 
         $qr = $this->db->query($ssql,[$finSupplierId,$fstCurrCode]);
         //echo $this->db->last_query();
