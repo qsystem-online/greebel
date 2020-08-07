@@ -32,7 +32,7 @@ class Trfadisposal_model extends MY_Model{
 	public function getDataById($finFADisposalId){
 		$ssql ="SELECT a.*,b.fst_relation_name as fst_customer_name,c.fst_curr_name as fst_sell_curr_name  FROM trfadisposal a 
 			LEFT JOIN msrelations b on a.fin_customer_id = b.fin_relation_id 
-			INNER JOIN mscurrencies c on a.fst_sell_curr_code = c.fst_curr_code 
+			LEFT JOIN mscurrencies c on a.fst_sell_curr_code = c.fst_curr_code 
 			WHERE a.fin_fa_disposal_id = ?";
 		$qr = $this->db->query($ssql,[$finFADisposalId]);		
 		$dataH = $qr->row();

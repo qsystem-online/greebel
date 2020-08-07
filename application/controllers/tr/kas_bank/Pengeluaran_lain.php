@@ -24,7 +24,7 @@ class Pengeluaran_lain extends MY_Controller{
         $this->list['page_name'] = "Cash Bank - Receive Other";
         $this->list['list_name'] = "Cash & Bank Receive Other List";
         $this->list['boxTools'] = [
-			"<a id='btnNew'  href='".site_url()."tr/kas_bank/penerimaan/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
+			"<a id='btnNew'  href='".site_url()."tr/kas_bank/pengeluaran_lain/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 		];
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/kas_bank/pengeluaran_lain/fetch_list_data';
