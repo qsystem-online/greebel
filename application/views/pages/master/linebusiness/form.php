@@ -55,7 +55,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 
 					<div class="form-group">
-                    <label for="fin_linebusiness_id" class="col-sm-3 control-label"><?=lang("Line Of Business ID")?> #</label>
+                    	<label for="fin_linebusiness_id" class="col-sm-3 control-label"><?=lang("Line Of Business ID")?> #</label>
 						<div class="col-sm-9">
 							<input type="text" class="form-control" id="fin_linebusiness_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_linebusiness_id" value="<?=$fin_linebusiness_id?>" readonly>
 							<div id="fin_linebusiness_id_err" class="text-danger"></div>
@@ -63,7 +63,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-                    <label for="fst_linebusiness_name" class="col-sm-3 control-label"><?=lang("Line Of Business Name")?> *</label>
+                    	<label for="fst_linebusiness_name" class="col-sm-3 control-label"><?=lang("Line Of Business Name")?> *</label>
 						<div class="col-sm-9">
 							<input type="text" class="form-control" id="fst_linebusiness_name" placeholder="<?=lang("Line Of Business Name")?>" name="fst_linebusiness_name">
 							<div id="fst_linebusiness_name_err" class="text-danger"></div>
@@ -89,9 +89,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			data = new FormData($("#frmLinebusiness")[0]);
-
+			data = new FormData($("#frmlinebusiness")[0]);
+			console.log(data);
+			
 			mode = $("#frm-mode").val();
+
 			if (mode == "ADD"){
 				url =  "<?= site_url() ?>master/linebusiness/ajx_add_save";
 			}else{
