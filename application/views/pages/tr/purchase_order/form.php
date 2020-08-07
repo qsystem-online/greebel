@@ -445,6 +445,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				amount = price * qty;
 				disc_amount = App.calculateDisc (qty * price,disc_persen);
 
+				if(unit == null){
+					alert("<?=lang('Unit harus diisi !')?>");
+					return;
+				}
 
 				data = {
 					fin_po_detail_id:$("#fin_po_detail_id").val(),
