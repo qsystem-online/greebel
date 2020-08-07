@@ -316,6 +316,7 @@ class Purchase_order extends MY_Controller{
 			}
 
 			$this->trpo_model->posting($dataH["fin_po_id"]);
+			$this->db->trans_complete();
 			
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
