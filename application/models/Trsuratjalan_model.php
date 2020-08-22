@@ -74,19 +74,21 @@ class Trsuratjalan_model extends MY_Model {
 
 	public function getDataById($fin_sj_id){
 		$ssql = "SELECT a.*,
-			IFNULL(b.fst_salesorder_no,c.fst_purchasereturn_no) as fst_trans_no ,
-			IFNULL(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime) as fdt_trans_datetime,            
+			IFNULL(IFNULL(b.fst_salesorder_no,c.fst_purchasereturn_no),g.fst_assembling_no) as fst_trans_no ,
+			IFNULL(IFNULL(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime),g.fdt_assembling_datetime) as fdt_trans_datetime,            
 			d.fin_relation_id,d.fst_relation_name,e.fst_name as fst_shipping_name,e.fst_shipping_address,
 			f.fst_warehouse_name 
 			FROM trsuratjalan a
 			LEFT JOIN trsalesorder b on a.fin_trans_id = b.fin_salesorder_id and a.fst_sj_type = 'SO' 
 			LEFT JOIN trpurchasereturn c on a.fin_trans_id = c.fin_purchasereturn_id and a.fst_sj_type = 'PO_RETURN' 
-			INNER JOIN msrelations d on IFNULL(b.fin_relation_id,c.fin_supplier_id)  = d.fin_relation_id 
-			INNER JOIN msshippingaddress e on a.fin_shipping_address_id = e.fin_shipping_address_id 
+			LEFT JOIN trassembling g on a.fin_trans_id = g.fin_assembling_id and a.fst_sj_type = 'ASSEMBLING_OUT'  
+			LEFT JOIN msrelations d on IFNULL(b.fin_relation_id,c.fin_supplier_id)  = d.fin_relation_id 
+			LEFT JOIN msshippingaddress e on a.fin_shipping_address_id = e.fin_shipping_address_id 
 			INNER JOIN mswarehouse f on a.fin_warehouse_id = f.fin_warehouse_id 
 			where a.fin_sj_id = ? and a.fst_active !='D' ";
 
 		$qr = $this->db->query($ssql, [$fin_sj_id]);      
+		
 		throwIfDBError();  
 		$rwSJ = $qr->row();
 
@@ -114,6 +116,16 @@ class Trsuratjalan_model extends MY_Model {
 				FROM trsuratjalandetails a 
 				INNER JOIN trpurchasereturnitems b on a.fin_trans_detail_id = b.fin_rec_id 
 				INNER JOIN msitems c on b.fin_item_id = c.fin_item_id  
+				LEFT JOIN msitemunitdetails d on c.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1
+				WHERE a.fin_sj_id = ?";
+
+		}else if ($rwSJ->fst_sj_type == "ASSEMBLING_OUT"){
+			$ssql = "SELECT a.*,
+				0 as fin_promo_id,c.fst_item_name as fst_custom_item_name,
+				c.fbl_is_batch_number,c.fbl_is_serial_number,c.fst_item_code,c.fst_item_name,
+				d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit 
+				FROM trsuratjalandetails a 
+				INNER JOIN msitems c on a.fin_item_id = c.fin_item_id  
 				LEFT JOIN msitemunitdetails d on c.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1
 				WHERE a.fin_sj_id = ?";
 
@@ -190,6 +202,9 @@ class Trsuratjalan_model extends MY_Model {
 				}
 
 				break;
+			case "ASSEMBLING_OUT":
+				//NO Partial no need check
+				return 999999999;
 			default:
 				throw new CustomException("Invalid SJ Type",3003,"FAILED",["fst_sj_type"=>$sjType]);
 
@@ -228,6 +243,8 @@ class Trsuratjalan_model extends MY_Model {
 
 			$this->unpostingPOReturnType($dataH,$dataDetails);
 
+		}else if ($dataH->fst_sj_type == "ASSEMBLING_OUT"){
+			$this->unpostingAssemblingType($dataH,$dataDetails);
 		}else{
 			throw new CustomException("Invalid SJ Type :$dataH->fst_sj_type",3003,"FAILED",NULL);
 		}
@@ -270,6 +287,18 @@ class Trsuratjalan_model extends MY_Model {
 
 	}
 
+	private function unpostingAssemblingType($dataH,$dataDetails){
+		//Cancel kartu stock
+		$this->trinventory_model->deleteByCodeId("ASO",$dataH->fin_sj_id);
+
+		//Cancel serial no
+		$this->trinventory_model->deleteInsertSerial("ASO",$dataH->fin_sj_id);                
+
+		$ssql ="UPDATE trassembling set fin_sj_id = null where fin_assembling_id = ?";
+		$query = $this->db->query($ssql,[$dataH->fin_trans_id]);		           
+		$this->trpurchasereturn_model->updateClosedStatus($dataH->fin_trans_id);
+	}
+
 	public function posting($sjId){
 		$this->load->model("trinventory_model");  
 		$this->load->model("msitems_model");
@@ -291,6 +320,8 @@ class Trsuratjalan_model extends MY_Model {
 			$this->postingSOType($dataH,$dataDetails);
 		}else if ($dataH->fst_sj_type == "PO_RETURN"){
 			$this->postingPOReturnType($dataH,$dataDetails);
+		}else if ($dataH->fst_sj_type == "ASSEMBLING_OUT"){
+			$this->postingAssemblingType($dataH,$dataDetails);		
 		}else{
 			throw new CustomException("Invalid SJ Type",3003,"FAILED",[$dataH]);
 		}
@@ -475,6 +506,74 @@ class Trsuratjalan_model extends MY_Model {
 		$this->db->query($ssql,[$finSJId]);
 	}
 
+	private function postingAssemblingType($dataH,$dataDetails){
+		$this->load->model("trassembling_model");
+
+		if (getDbConfig("update_stock_on_delivery") == 0){
+			$this->updateInventoryAssemblingType($dataH->fin_sj_id);
+		}		
+		$ssql = "UPDATE trassembling SET fin_sj_id = ? WHERE fin_assembling_id = ?";
+		$qr = $this->db->query($ssql,[$dataH->fin_sj_id ,$dataH->fin_trans_id]);		    
+	}
+
+	public function updateInventoryAssemblingType($sjId){
+		$ssql = "select * from trsuratjalan where fin_sj_id = ? and fst_active != 'D'";
+		$qr = $this->db->query($ssql,[$sjId]);
+		$dataH = $qr->row();
+		if ($dataH == null){
+			throw new CustomException(lang("invalid SJ id"),404,"FAILED",[]);	
+		}else{
+			if ($dataH->fbl_update_stock == 1){
+				return;
+			}
+		}
+
+		$ssql = "SELECT * FROM trsuratjalandetails WHERE fin_sj_id = ?";
+		$qr = $this->db->query($ssql,[$sjId]);
+		$dataDetails = $qr->result();
+		foreach($dataDetails as $dataD){
+			$dataSerial = [
+				"fin_warehouse_id"=>$dataH->fin_warehouse_id,
+				"fin_item_id"=>$dataD->fin_item_id,
+				"fst_unit"=>$dataD->fst_unit,
+				"fst_serial_number_list"=>$dataD->fst_serial_number_list,
+				"fst_batch_no"=>$dataD->fst_batch_number,
+				"fst_trans_type"=>"ASO", 
+				"fin_trans_id"=>$dataH->fin_sj_id,
+				"fst_trans_no"=>$dataH->fst_sj_no,
+				"fin_trans_detail_id"=>$dataD->fin_rec_id,
+				"fdb_qty"=>$dataD->fdb_qty,
+				"in_out"=>"OUT",
+			];            
+			$this->trinventory_model->insertSerial($dataSerial);
+
+			
+
+			$dataStock = [
+				"fin_warehouse_id"=>$dataH->fin_warehouse_id,
+				"fdt_trx_datetime"=>$dataH->fdt_sj_datetime,
+				"fst_trx_code"=>"ASO", 
+				"fin_trx_id"=>$dataH->fin_sj_id, 
+				"fin_trx_detail_id"=>$dataD->fin_rec_id, 
+				"fst_trx_no"=>$dataH->fst_sj_no, 
+				"fst_referensi"=>$dataH->fst_sj_memo, 
+				"fin_item_id"=>$dataD->fin_item_id, 
+				"fst_unit"=>$dataD->fst_unit, 
+				"fdb_qty_in"=>0,
+				"fdb_qty_out"=>$dataD->fdb_qty, 
+				"fdc_price_in"=>0, 
+				"fst_active"=>"A" 
+			];
+			$this->trinventory_model->insert($dataStock);			
+			 throwIfDBError();
+		}
+
+		$ssql ="UPDATE trsuratjalan set fbl_update_stock = 1,fdt_delivery_datetime = now() where fin_sj_id = ?";
+		$this->db->query($ssql,[$finSJId]);
+	}
+
+
+
 	public function delete($key, $softdelete = TRUE,$data=null){
 		if ($softdelete){
 			$ssql = "UPDATE trsuratjalandetails SET fst_active ='D' WHERE fin_sj_id = ?";
@@ -600,6 +699,21 @@ class Trsuratjalan_model extends MY_Model {
 				$qr = $this->db->query($ssql,["%".$term."%","%".$term."%"]);                                
 				return $qr->result();
 				break;
+			case "ASSEMBLING_OUT":
+				//$ssql = "SELECT a.fin_assembling_id as fin_trans_id,a.fst_assembling_no as fst_trans_no,0 as fin_relation_id,a.fdt_assembling_datetime as fdt_trans_datetime,";
+				$ssql = "SELECT a.* FROM trassembling a 
+					WHERE fin_sj_id is NULL 
+					AND a.fst_assembling_no like ? and a.fst_active ='A' ";
+				$qr = $this->db->query($ssql,["%".$term."%"]);
+				$rs =  $qr->result();
+				for($i = 0;$i < sizeof($rs);$i++){
+					$rw = $rs[$i];					
+					$rw->fin_warehouse_id = $rw->fin_source_warehouse_id;
+					$rs[$i] = $rw;
+					//$rw->fin_warehouse_id = $rw->fin_target_warehouse_id;
+				}
+				return $rs;
+				break;
 			default:
 				return null;
 		}
@@ -652,6 +766,45 @@ class Trsuratjalan_model extends MY_Model {
 				return $rs;                
 				
 				break;
+			case "ASSEMBLING_OUT" :
+				$ssql = "SELECT * FROM trassembling where fin_assembling_id = ?";
+				$qr = $this->db->query($ssql,[$transId]);
+				$rw = $qr->row();
+				
+				if ($rw != NULL){
+					if ($rw->fst_type == "ASSEMBLING"){
+						//item out dari detail assembling
+						$ssql = "SELECT a.fin_item_id,a.fst_unit,a.fdb_qty,
+							b.fbl_is_batch_number,b.fbl_is_serial_number,
+							b.fst_item_name as fst_custom_item_name,b.fst_item_name,b.fst_item_code,
+							0 as fin_promo_id,a.fin_rec_id as fin_trans_detail_id 
+							FROM trassemblingitems a 
+							inner join msitems b on a.fin_item_id = b.fin_item_id  
+							where a.fin_assembling_id = ?";
+					}else{
+						$ssql = "SELECT a.fin_item_id,a.fst_unit,a.fdb_qty,
+							b.fbl_is_batch_number,b.fbl_is_serial_number,
+							b.fst_item_name as fst_custom_item_name,b.fst_item_name,b.fst_item_code,
+							0 as fin_promo_id,fin_assembling_id as fin_trans_detail_id 							
+							FROM trassembling  a 
+							inner join msitems b on a.fin_item_id = b.fin_item_id 
+							where a.fin_assembling_id = ?";
+					}
+					$qr = $this->db->query($ssql,[$transId]);					
+
+					$rs = $qr->result();
+					for($i=0;$i<sizeof($rs);$i++){
+						$rw = $rs[$i];
+						$rw->fst_basic_unit = $this->msitems_model->getBasicUnit($rw->fin_item_id);
+						$rw->fdc_conv_to_basic_unit = $this->msitems_model->getConversionUnit($rw->fin_item_id,$rw->fst_unit,$rw->fst_basic_unit);
+						$rs[$i] = $rw;						
+					}
+					return $rs;					
+				}else{
+					return [];
+				}
+
+				break;
 			default :
 				return [];
 		}
@@ -674,5 +827,6 @@ class Trsuratjalan_model extends MY_Model {
 		];
 
 	}
+
 
 }

@@ -716,4 +716,11 @@ class Trinventory_model extends MY_Model
 		return $rs;
 		
 	}
+
+	public function getTotalHPP($finItemId,$fstUnit,$fdbQty,$finWarehouseId){
+		$this->load->model("msitems_model");
+		$basicUnitLastHPP = $this->getLastHPP($finItemId,$finWarehouseId);
+		$qtyInBasicUnit = $this->msitems_model->getQtyConvertToBasicUnit($finItemId,$fdbQty,$fstUnit);
+		return $qtyInBasicUnit * $basicUnitLastHPP;
+	}
 }

@@ -4,23 +4,24 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Assembling extends MY_Controller{
 	public function __construct(){
 		parent::__construct();
-		$this->load->library('form_validation');		
-		$this->load->model("trassembling_model");		
-		$this->load->model("mswarehouse_model");		
+		$this->load->library('form_validation');
+		$this->load->model("trassembling_model");
+		$this->load->model("trassemblingitems_model");
+		$this->load->model("mswarehouse_model");	
 		
 	}
 
 	public function index(){
 
 		$this->load->library('menus');
-		$this->list['page_name'] = "Disposal Fixed Asset";
-		$this->list['list_name'] = "Disposal Fixed Asset List";
+		$this->list['page_name'] = "Assembling / Diassembling";
+		$this->list['list_name'] = "Assembling / Diassembling List";
 		$this->list['boxTools'] = [
 			"<a id='btnNew'  href='".site_url()."tr/fixed_asset/disposal/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 			//"<a id='btnPrint'  href='".site_url()."tr/gudang/penerimaan_pembelian/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> Print </a>"
 		];
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/fixed_asset/disposal/fetch_list_data';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/production/assembling/fetch_list_data';
 		$this->list['arrSearch'] = [
             'fst_fa_disposal_no' => 'No.',
 		];
@@ -33,15 +34,15 @@ class Assembling extends MY_Controller{
 		
 
 		$this->list['columns'] = [
-			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_fa_disposal_id'],
-			['title' => 'No.', 'width' => '60px', 'data' => 'fst_fa_disposal_no'],
-            ['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_fa_disposal_datetime'],
-			['title' => 'Type', 'width' => '50px', 'data' => 'fst_disposal_type'],
+			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_assembling_id'],
+			['title' => 'No.', 'width' => '60px', 'data' => 'fst_assembling_no'],
+            ['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_assembling_datetime'],
+			['title' => 'Type', 'width' => '50px', 'data' => 'fst_type'],
 			['title' => 'Notes', 'width' => '50px', 'data' => 'fst_notes'],
             ['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
-					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/fixed_asset/disposal/edit/' + row.fin_fa_disposal_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
+					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/production/assembling/edit/' + row.fin_assembling_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
 					//action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
 					action += '<div>';
 					return action;
@@ -70,7 +71,7 @@ class Assembling extends MY_Controller{
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("(
-				select * from trfadisposal where fst_active != 'D'
+				select * from trassembling where fst_active != 'D'
 			) a");
 
 		$selectFields = "a.*";
@@ -140,19 +141,17 @@ class Assembling extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
-		//$this->load->model("msitems_model");		
 		try{			
 			$dataPrepared = $this->prepareData();
 			$dataH = $dataPrepared["dataH"];
 			$details =$dataPrepared["details"];
 
-			unset($dataH["fin_fa_disposal_id"]);
-			$dataH["fst_fa_disposal_no"] = $this->trfadisposal_model->generateTransactionNo();
-			$resp = dateIsLock($dataH["fdt_fa_disposal_datetime"]);
+			unset($dataH["fin_assembling_id"]);
+			$dataH["fst_assembling_no"] = $this->trassembling_model->generateTransactionNo();
+			$resp = dateIsLock($dataH["fdt_assembling_datetime"]);
 			if($resp["status"] != "SUCCESS"){
 				throw new CustomException($resp["message"],3003,"FAILED",[]);
-			}
-						
+			}						
 			$this->validateData($dataH,$details);
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
@@ -164,16 +163,15 @@ class Assembling extends MY_Controller{
 
 		try{
 			$this->db->trans_start();
-			$insertId = $this->trfadisposal_model->insert($dataH);
+			$insertId = $this->trassembling_model->insert($dataH);
 
 			foreach($details as $dataD){
 				$dataD = (array)$dataD;
-				$dataD["fin_fa_disposal_id"] = $insertId;
-				$this->trfadisposalitems_model->insert($dataD);
+				$dataD["fin_assembling_id"] = $insertId;
+				$this->trassemblingitems_model->insert($dataD);
 			}
 			
-			$this->trfadisposal_model->posting($insertId);
-
+			//$this->trfadisposal_model->posting($insertId);
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
@@ -190,20 +188,20 @@ class Assembling extends MY_Controller{
 
 	}
 
-	public function ajx_edit_save(){
-        $finFADisposalId = $this->input->post("fin_fa_disposal_id");
+	public function ajx_edit_save(){		
+        $finAssemblingId = $this->input->post("fin_assembling_id");
 		try{
-            $dataHOld = $this->trfadisposal_model->getDataHeader($finFADisposalId);
+            $dataHOld = $this->trassembling_model->getDataHeader($finAssemblingId);
             if ($dataHOld == null){
                 show_404();
             }
 			
-			$resp = dateIsLock($dataHOld->fdt_fa_disposal_datetime);
+			$resp = dateIsLock($dataHOld->fdt_assembling_datetime);
 			if($resp["status"] != "SUCCESS"){
 				throw new CustomException($resp["message"],3003,"FAILED",[]);
 			}
 
-            $this->trfadisposal_model->isEditable($finFADisposalId);
+            $this->trassembling_model->isEditable($finAssemblingId);
                         
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
@@ -218,34 +216,34 @@ class Assembling extends MY_Controller{
 			$dataH = $preparedData["dataH"];
 			$details = $preparedData["details"];
 			
-			$dataH["fin_fa_disposal_id"] = $finFADisposalId;
-			$dataH["fst_fa_disposal_no"] = $dataHOld->fst_fa_disposal_no;
+			$dataH["fin_assembling_id"] = $finAssemblingId;
+			$dataH["fst_assembling_no"] = $dataHOld->fst_assembling_no;
 			
 
 
 			$this->db->trans_start();
 			
 
-			$this->trfadisposal_model->unposting($finFADisposalId);
-			$this->trfadisposal_model->deleteDetail($finFADisposalId);
+			//$this->trfadisposal_model->unposting($finAssemblingId);
+			$this->trassembling_model->deleteDetail($finAssemblingId);
 			
 			$this->validateData($dataH,$details);
 
-			$this->trfadisposal_model->update($dataH);
+			$this->trassembling_model->update($dataH);
 
 			foreach($details as $dataD){
 				$dataD = (array)$dataD;
-				$dataD["fin_fa_disposal_id"] = $finFADisposalId;
-				$this->trfadisposalitems_model->insert($dataD);
+				$dataD["fin_assembling_id"] = $finAssemblingId;
+				$this->trassemblingitems_model->insert($dataD);
 			}
-			$this->trfadisposal_model->posting($finFADisposalId);
+			//$this->trassembling_model->posting($finFADisposalId);
 
 
 			
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
-			$this->ajxResp["data"]["insert_id"] = $finFADisposalId;
+			$this->ajxResp["data"]["insert_id"] = $finAssemblingId;
 			$this->json_output();			
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
@@ -259,90 +257,52 @@ class Assembling extends MY_Controller{
 	}
 
 	private function prepareData(){
-		$disposalType = $this->input->post("fst_disposal_type");
-
-		$fstDestroyBA = null;
-		$finRelationId = null;
-		$fdcPpnPercent = 0;
-		$finToBranchId = null;
-		$fstSellCurrCode = null;
-		$fstSellExchangeRate = 1;
-		$fdcSellSubTotal =0;
-		$fdcSellTotal =0;
-
-		if($disposalType == "DESTROY"){
-			$fstDestroyBA = $this->input->post("fst_destroy_ba");
-		}else if($disposalType == "JUAL"){
-			$finRelationId = $this->input->post("fin_customer_id");
-			$fdcPpnPercent = $this->input->post("fdc_ppn_percent");		
-			$fstSellCurrCode = $this->input->post("fst_sell_curr_code");
-			$fstSellExchangeRate = parseNumber($this->input->post("fdc_sell_exchange_rate_idr"));
-		
-
-		}else if($disposalType == "MUTASI"){
-			$finToBranchId = $this->input->post("fin_to_branch_id");
-		}
-
 		$dataH = [
-			"fin_fa_disposal_id"=>$this->input->post("fin_fa_mutasiout_id"),
-			"fst_fa_disposal_no"=>$this->input->post("fst_fa_mutasiout_no"),
-			"fdt_fa_disposal_datetime"=>dBDateTimeFormat($this->input->post("fdt_fa_disposal_datetime")),
-			"fst_disposal_type"=>$disposalType,
-			"fst_sell_curr_code"=>$fstSellCurrCode,
-			"fdc_sell_exchange_rate_idr"=>$fstSellExchangeRate,
-			"fst_destroy_ba"=>$fstDestroyBA,
-			"fin_customer_id"=>$finRelationId,			
-			"fdc_ppn_percent"=>$fdcPpnPercent,						
+			"fin_assembling_id"=>$this->input->post("fin_assembling_id"),
+			"fst_assembling_no"=>$this->input->post("fst_assembling_no"),
+			"fdt_assembling_datetime"=>dBDateTimeFormat($this->input->post("fdt_assembling_datetime")),
+			"fst_type"=>$this->input->post("fst_type"),
+			"fin_item_id"=>$this->input->post("fin_item_id"),
+			"fst_unit"=>$this->input->post("fst_unit"),
+			"fdb_qty"=>$this->input->post("fdb_qty"),
+			"fin_source_warehouse_id"=>$this->input->post("fin_source_warehouse_id"),
+			"fin_target_warehouse_id"=>$this->input->post("fin_target_warehouse_id"),
+			"fdc_hpp_header"=>$this->input->post("fdc_hpp_header"),
+			"fst_notes"=>$this->input->post("fst_notes"),
 			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
-			"fin_to_branch_id"=>$this->input->post("fin_to_branch_id"),
-            "fst_notes"=>$this->input->post("fst_notes"),
             "fst_active"=>'A',			
 		];
+
+		if ($dataH["fst_type"] != "ASSEMBLING"){
+			$dataH["fdc_hpp_header"] = 0;
+		}
 
 		$dataDetails = $this->input->post("details");
 		$dataDetails = json_decode($dataDetails);		
 		$details = [];
 		$totalNilaiJual = 0;
+		$ttlHPPD = 0;
 		foreach($dataDetails as $detail){
-			$aquisitionPrice = 0;
-			$profileInfo = $this->trfaprofilesitems_model->getInfoById($detail->fin_fa_profile_detail_id);
-			if ($profileInfo == null){
-				throw new CustomException("Invalid profile detail id ". $detail->fin_fa_profile_detail_id , 404,"FAILED",[]);
-			}
-
-			$aquisitionPrice = $profileInfo->fdc_aquisition_price;
-			$depreAmount = $profileInfo->fdc_depre_amount;
-			if ($dataH["fst_disposal_type"] == "JUAL"){
-				$sellPrice = $detail->fdc_sell_price;
-				$totalNilaiJual += $sellPrice;
-			}else{
-				$sellPrice = 0;
-			}
-
+			$hpp = $detail->fdc_hpp;
+			$ttlHPPD += $hpp;
 			$tmp = [
 				"fin_rec_id"=>$detail->fin_rec_id,				
-				"fin_fa_profile_detail_id"=>$detail->fin_fa_profile_detail_id,
-				"fdc_aquisition_price"=>$aquisitionPrice,
-				"fdc_deprecated_amount"=>$depreAmount,
-				"fdc_sell_price"=>$sellPrice,
+				"fin_item_id"=>$detail->fin_item_id,
+				"fst_unit"=>$detail->fst_unit,
+				"fdb_qty"=>$detail->fdb_qty,
+				"fdc_hpp"=>$hpp,
 				"fst_notes"=>$detail->fst_notes,
 			];
 			$details[]=(object) $tmp;
 		}
 
-
-		if($disposalType == "JUAL"){
-			$dataH["fdc_sell_subtotal"] = $totalNilaiJual;			
-			$dataH["fdc_ppn_amount"] = $totalNilaiJual * ($dataH["fdc_ppn_percent"] /100);
-			$dataH["fdc_sell_total"] = $dataH["fdc_sell_subtotal"] + $dataH["fdc_ppn_amount"];
-
-		}else{
-			$dataH["fdc_sell_subtotal"] = 0;			
-			$dataH["fdc_ppn_amount"] = 0;
-			$dataH["fdc_sell_total"] = 0;
-
+		/** tip asembling total hpp header dihitung dari detail, kalau total 0 ambil dari input user 
+		 * deasembling header hiutng hpp pada saat barang keluar, hpp barang diambil dari perhitungan di web
+		*/
+		if ($dataH["fst_type"] == "ASSEMBLING" && $ttlHPPD > 0){
+			$dataH["fdc_hpp_header"] = $ttlHPPD;
 		}
-		
+
 		return[
 			"dataH"=>$dataH,
 			"details"=>$details,
@@ -351,28 +311,18 @@ class Assembling extends MY_Controller{
 	}
 	
 	private function validateData($dataH,$details){
-		$this->form_validation->set_rules($this->trfadisposal_model->getRules("ADD", 0));
+		$this->form_validation->set_rules($this->trassembling_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		$this->form_validation->set_data($dataH);
 		
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
 			throw new CustomException("Error Validation Header",3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
-		}
-
-		//Validate all Detail is valid
-		foreach($details as $dataD){
-			$ssql ="SELECT * FROM trfaprofilesitems where fin_rec_id = ? and fbl_disposal = 0 and fst_active ='A'";
-			$qr = $this->db->query($ssql,[$dataD->fin_fa_profile_detail_id]);
-			$rw = $qr->row();
-			if ($rw == null){
-				throw new CustomException("ValidateData - Invalid profile detail id " .$dataD->fin_fa_profile_detail_id ,404,"FAILED",[]);
-			}
 		}			
 	}
 
 	public function fetch_data($finId){
-		$data = $this->trfadisposal_model->getDataById($finId);	
+		$data = $this->trassembling_model->getDataById($finId);	
 		if ($data == null){
 			$resp = ["status"=>"FAILED","message"=>"DATA NOT FOUND !"];
 		}else{
@@ -385,18 +335,18 @@ class Assembling extends MY_Controller{
 	}
 
 
-	public function delete($finFADisposalId){
+	public function delete($finId){
 
 		try{
-            $dataHOld = $this->trfadisposal_model->getDataHeader($finFADisposalId);
+            $dataHOld = $this->trassembling_model->getDataHeader($finId);
             if ($dataHOld == null){
                 show_404();
 			}
-			$resp = dateIsLock($dataHOld->fdt_fa_disposal_datetime);
+			$resp = dateIsLock($dataHOld->fdt_assembling_datetime);
 			if($resp["status"] != "SUCCESS"){
 				throw new CustomException($resp["message"],3003,"FAILED",[]);
 			}
-            $this->trfadisposal_model->isEditable($finFADisposalId);                        
+            $this->trassembling_model->isEditable($finId);
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
 			$this->ajxResp["message"] = $e->getMessage();
@@ -407,15 +357,11 @@ class Assembling extends MY_Controller{
 
 		try{
 			$this->db->trans_start();			
-			$this->trfadisposal_model->unposting($finFADisposalId);			
-			$resp = $this->trfadisposal_model->delete($finFADisposalId,true,null);	
-
-			$this->db->trans_complete();	
-
+			$resp = $this->trassembling_model->delete($finId,true,null);	
+			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "";
 			$this->json_output();
-
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
 			$this->ajxResp["status"] = $e->getStatus();
@@ -448,14 +394,12 @@ class Assembling extends MY_Controller{
 	public function ajxGetItemList(){
 		$this->load->model("msitems_model");
 		$term =  $this->input->get("term");
-
 		$list = $this->msitems_model->getItemList($term);
 		$this->json_output([
 			"status"=>"SUCCESS",
 			"messages"=>"",
 			"data"=>$list
 		]);
-
 	}
 
 	public function ajxGetUnits($finItemId){
@@ -466,6 +410,22 @@ class Assembling extends MY_Controller{
 			"messages"=>"",
 			"data"=>$list,
 		]);
+	}	
 
+	public function ajxGetTotalHPP(){
+		$finItemId = $this->input->get("fin_item_id");
+		$fstUnit = $this->input->get("fst_unit");
+		$fdbQty =  $this->input->get("fdb_qty");
+		$finWarehouseId  = $this->input->get("fin_warehouse_id");
+
+		$this->load->model("trinventory_model");
+		$totalHpp = $this->trinventory_model->getTotalHPP($finItemId,$fstUnit,$fdbQty,$finWarehouseId);
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"messages"=>"",
+			"data"=>[
+				"HPP"=>$totalHpp,
+			]
+		]);
 	}
 }    

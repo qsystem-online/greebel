@@ -80,11 +80,12 @@ class Pengiriman_penjualan extends MY_Controller{
 		$this->load->library("datatables");
 		$this->datatables->setTableName("(
             SELECT a.*,
-            ifnull(b.fst_salesorder_no,c.fst_purchasereturn_no) as fst_trans_no,
-            ifnull(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime) as fdt_trans_datetime         
+            ifnull(ifnull(b.fst_salesorder_no,c.fst_purchasereturn_no),d.fst_assembling_no) as fst_trans_no,
+            ifnull(ifnull(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime),d.fdt_assembling_datetime) as fdt_trans_datetime         
             from trsuratjalan a 
             LEFT JOIN trsalesorder b on a.fin_trans_id = b.fin_salesorder_id and a.fst_sj_type ='SO' 
             LEFT JOIN trpurchasereturn c on a.fin_trans_id = c.fin_purchasereturn_id and a.fst_sj_type ='PO_RETURN' 
+            LEFT JOIN trassembling d on a.fin_trans_id = d.fin_assembling_id and a.fst_sj_type ='ASSEMBLING_OUT'             
         ) a");
 
 		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fst_sj_type,a.fdt_sj_datetime,a.fst_sj_memo,a.fst_trans_no,a.fdt_trans_datetime";
@@ -316,6 +317,42 @@ class Pengiriman_penjualan extends MY_Controller{
         $details = $details = $this->input->post("detail");
         $details = json_decode($details);
 
+        //if assembling out get detail from assembling table(NO Partial, used only serial no and batch no )
+        if ($dataH["fst_sj_type"] == "ASSEMBLING_OUT"){
+            $rs = $this->trsuratjalan_model->getPendingDetailTrans("ASSEMBLING_OUT",$dataH["fin_trans_id"]);            
+            $tblDetails = [];
+            foreach($rs as $rw){
+                $findArr = null;
+                foreach($details as $detail){
+                    if ($detail->fin_trans_detail_id == $rw->fin_trans_detail_id){
+                        $findArr = $detail;
+                        break;
+                    }
+                }
+
+                if ($findArr == null){
+                    throw new CustomException("Trans detail id " .$rw->fin_trans_detail_id ." not found !",3003,"FAILED",[]);
+                }
+
+                $basicUnit = $this->msitems_model->getBasicUnit($rw->fin_item_id);
+                $conversion = $this->msitems_model->getConversionUnit($rw->fin_item_id,$rw->fst_unit,$basicUnit);
+
+                $tblDetails[] = (object) [
+                    "fin_trans_detail_id"=>$rw->fin_trans_detail_id,
+                    "fin_item_id"=>$rw->fin_item_id,
+                    "fdb_qty"=>$rw->fdb_qty,
+                    "fst_unit"=>$rw->fst_unit,
+                    "fin_conversion"=>$conversion,
+                    "fst_memo_item"=>null,
+                    "fst_batch_number"=>$findArr->fst_batch_number,
+                    "fst_serial_number_list"=>$findArr->fst_serial_number_list,
+                    "fst_active"=>"A",
+                ];
+            }
+            $details = $tblDetails;
+        }
+
+
         return ([
             "dataH"=>$dataH,
             "dataDetails"=>$details
@@ -332,7 +369,6 @@ class Pengiriman_penjualan extends MY_Controller{
         }
 
         $arrItem = $this->msitems_model->getDetailbyArray(array_column($dataDetails, 'fin_item_id'));
-
         foreach($dataDetails as $detail){
             $this->form_validation->set_rules($this->trsuratjalandetails_model->getRules("ADD", 0));
             $this->form_validation->set_data((array) $detail);            
@@ -343,7 +379,6 @@ class Pengiriman_penjualan extends MY_Controller{
                 ];
                 throw new CustomException("Error Validation Forms",3009,"VALIDATION_FORM_FAILED",$error);
             }
-
 
             //Validation is valid batch number & serial number (qty, serial number exist)
             $item = $arrItem[$detail->fin_item_id];

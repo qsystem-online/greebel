@@ -72,32 +72,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<select id="fst_sj_type" class="form-control" name="fst_sj_type" style="width:100%" >
 								<option value='SO'>Sales Order</option>
 								<option value='PO_RETURN'>Purchase Return</option>
+								<option value='ASSEMBLING_OUT'>Assembling /Dissembling Out</option>
 							</select>
 							<div id="fst_sj_type_err" class="text-danger"></div>
 						</div>					
 					</div>
-					<div class="form-group">						
+
+					<div class="form-group">
 						<label for="fin_trans_id" class="col-md-2 control-label"><?=lang("No. Transaksi")?></label>
 						<div class="col-md-10">
 							<select id="fin_trans_id" class="form-control" name="fin_trans_id" style="width:100%" ></select>
 							<div id="fin_trans_id_err" class="text-danger"></div>
 						</div>					
 					</div>
-					<div class="form-group">						
+
+					<div class="form-group non-assembling">
 						<label for="fin_trans_id" class="col-md-10 col-md-offset-2">
 							<label id="fst_relation_name"> Relation Name</label>						
 						</label>									
 					</div>
 
 
-					<div class="form-group">
+					<div class="form-group non-assembling">
 						<div class="checkbox col-md-10 col-md-offset-2">
-							<label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label>							
+							<label><input id="fbl_is_hold" class="" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label>							
 						</div>
 					</div>
 					
 
-					<div class="form-group">
+					<div class="form-group non-assembling">
 						
 						<label for="fin_driver_id" class="col-md-2 control-label"><?=lang("Sopir")?></label>
 						<div class="col-md-4">
@@ -133,14 +136,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>						
 					</div>
 
-                    <div class="form-group">
+                    <div class="form-group non-assembling">
                         <label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?></label>
 						<div class="col-md-10">
 							<select class="select2 form-control" name="fin_shipping_address_id" id="fin_shipping_address_id" style="width:100%"></select>
 							<div id="fst_shipping_address_err" class="text-danger"></div>
 						</div>														
 					</div>
-					<div class="form-group">
+
+					<div class="form-group non-assembling">
 						<label class="col-md-2 control-label"></label>
                         <div class="col-md-10">
 							<textarea class="form-control" id="fst_shipping_address" style="width:100%" rows="5" readonly></textarea>
@@ -150,7 +154,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     
 					
 						
-					<div class="form-group" style="margin-bottom:0px">
+					<div class="form-group non-assembling" style="margin-bottom:0px">
 						<div class="col-md-12" style="text-align:right">
 							<button id="btn-add-items" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;Tambah Item</button>
 						</div>
@@ -558,6 +562,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			mdlDetail.show();
 			mdlDetail.clear();
 		});
+
+		$("#fst_sj_type").change(function(e){
+			if ($(this).val()  == "ASSEMBLING_OUT"){
+				$(".non-assembling").hide();
+				$("#fdbQty").prop("readonly",true);				
+			}else{
+				$(".non-assembling").show();
+				$("#fdbQty").prop("readonly",false);
+			}
+		});
 		
 	});
 </script>
@@ -565,6 +579,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		$("#fdt_sj_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		
+		
+
 		$("#fin_trans_id").select2({
 			dropdownAutoWidth : true,
 			ajax:{
@@ -575,20 +591,43 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					return params;
 				},
                 processResults: function (resp) {
+					
                     arrData = resp.data;
                     sel2Data =[];
-                    $.each(arrData,function(i,v){
-                        sel2Data.push({
-                            id: v.fin_trans_id,
-                            text: v.fst_trans_no,
-                            fdt_trans_datetime : v.fdt_trans_datetime,
-                            fin_relation_id : v.fin_relation_id,
-                            fst_relation_name : v.fst_relation_name,
-                            fin_shipping_address_id : v.fin_shipping_address_id,
-                            fst_shipping_address : v.fst_shipping_address,
-                            fin_warehouse_id: v.fin_warehouse_id
-                        });
-                    });                    
+					if ($("#fst_sj_type").val() != "ASSEMBLING_OUT"){
+						$.each(arrData,function(i,v){
+							sel2Data.push({
+								id: v.fin_trans_id,
+								text: v.fst_trans_no,
+								fdt_trans_datetime : v.fdt_trans_datetime,
+								fin_relation_id : v.fin_relation_id,
+								fst_relation_name : v.fst_relation_name,
+								fin_shipping_address_id : v.fin_shipping_address_id,
+								fst_shipping_address : v.fst_shipping_address,
+								fin_warehouse_id: v.fin_warehouse_id
+							});
+						});     
+					}else{
+						$.each(arrData,function(i,v){							
+							var warehouseId = 0;
+							if (v.fst_type= 'ASSEMBLING'){
+								warehouseId = v.fin_target_warehouse
+							}else{
+								warehouseId = v.fin_source_warehouse
+							}
+							sel2Data.push({
+								id: v.fin_assembling_id,
+								text: v.fst_assembling_no,
+								fdt_trans_datetime : v.fdt_assembling_datetime,
+								fin_relation_id : 0,
+								fst_relation_name : '',
+								fin_shipping_address_id : 0,
+								fst_shipping_address : '',
+								fin_warehouse_id: v.fin_warehouse_id
+							});
+						});
+						//console.log(arrData);						
+					}
                     return {
                         results: sel2Data
                     };
@@ -605,8 +644,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			data = e.params.data;
 			selectedTrans = data;
             $("#fst_relation_name").html(data.fst_relation_name);            
-			//$("#fdt_salesorder_datetime").val(dateTimeFormat(data.fdt_salesorder_datetime)).datetimepicker("update");			
+			//$("#fdt_salesorder_datetime").val(dateTimeFormat(data.fdt_salesorder_datetime)).datetimepicker("update");						
 			$("#fin_warehouse_id").val(data.fin_warehouse_id);
+			$("#fin_warehouse_id").trigger("change");
+
 			if ( data.fin_shipping_address_id != null){
 				$("#fin_shipping_address_id").empty();
 				App.addOptionIfNotExist("<option value='" + data.fin_shipping_address_id + "'>"+ data.fst_address_name +"</option>");
@@ -686,6 +727,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			fnRowCallback: function( nRow, aData, iDisplayIndex ) {},
 		}).on('draw',function(){						
 			calculateTotal();
+			if ($("#fst_sj_type").val() == "ASSEMBLING_OUT"){
+				$(".btn-delete").hide();
+			}else{
+				$(".btn-delete").show();
+			}
+
 		}).on("click",".btn-delete",function(event){
 			event.preventDefault();
 			t = $('#tblSJDetails').DataTable();
@@ -836,7 +883,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			App.blockUIOnAjaxRequest();
 			$.ajax({
 				url:"<?= site_url() ?>tr/gudang/pengiriman_penjualan/fetch_data/" + $("#fin_sj_id").val(),
-			}).done(function(resp){
+			}).done(function(resp){				
 				dataH = resp.sj;
 				if (dataH == null){
 					alert("<?=lang("ID transaksi tidak dikenal")?>");
@@ -845,11 +892,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 				
 				App.autoFillForm(dataH);
+
+
 				$("#fdt_sj_datetime").val(dateTimeFormat(dataH.fdt_sj_datetime)).datetimepicker("update");
 				
 				
 				App.addOptionIfNotExist("<option value='"+dataH.fin_trans_id+"' selected>"+dataH.fst_trans_no+"</option>","fin_trans_id");
 				$("#fin_trans_id").trigger("change.select2");
+				
+				$("#fst_sj_type").trigger("change");
+				
 				/*
 				$("#fin_trans_id").trigger({
 					type:"select2:select",

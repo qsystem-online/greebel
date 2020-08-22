@@ -61,7 +61,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="fst_type" class="col-md-2 control-label"><?=lang("Tipe")?></label>
 						<div class="col-md-4">
-							<select  class="form-control" id="fst_type" placeholder="<?=lang("Tipe Process")?>" name="fst_type">
+							<select  class="form-control hpp-header" id="fst_type" placeholder="<?=lang("Tipe Process")?>" name="fst_type">
 								<option value='ASSEMBLING'>Assembling</option>
 								<option value='DISASSEMBLING'>Dissassembling</option>
 							</select>
@@ -72,7 +72,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">					
 						<label for="fin_item_id" class="col-md-2 control-label"><?=lang("Item")?></label>
 						<div class="col-md-10">
-							<select  class="form-control" id="fin_item_id" placeholder="<?=lang("Item")?>" name="fin_item_id" style="width:100%"></select>
+							<select  class="form-control hpp-header" id="fin_item_id" placeholder="<?=lang("Item")?>" name="fin_item_id" style="width:100%"></select>
 							<div id="fin_item_id_err" class="text-danger"></div>
 						</div>
                     </div>  
@@ -80,12 +80,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">					
 						<label for="fst_unit" class="col-md-2 control-label"><?=lang("Unit")?></label>
 						<div class="col-md-4">
-							<select  class="form-control" id="fst_unit" placeholder="<?=lang("Unit")?>" name="fst_unit" style="width:100%"></select>
+							<select  class="form-control hpp-header" id="fst_unit" placeholder="<?=lang("Unit")?>" name="fst_unit" style="width:100%"></select>
 							<div id="fin_item_id_err" class="text-danger"></div>
 						</div>
 						<label for="fdb_qty" class="col-md-2 control-label"><?=lang("Qty")?></label>
 						<div class="col-md-4">
-							<input type='TEXT' class="form-control money" id="fdb_qty" name="fdb_qty" value="1"/>
+							<input type='TEXT' class="form-control hpp-header money" id="fdb_qty" name="fdb_qty" value="1"/>
 							<div id="fdb_qty_err" class="text-danger"></div>
 						</div>
                     </div>  
@@ -96,7 +96,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						?>
 						<label for="fin_source_warehouse_id" class="col-md-2 control-label"><?=lang("Gudang Asal")?></label>
 						<div class="col-md-4">
-							<select  class="form-control" id="fin_source_warehouse_id" placeholder="<?=lang("Gudang Asal")?>" name="fin_source_warehouse_id" style="width:100%">
+							<select  class="form-control hpp-header" id="fin_source_warehouse_id" placeholder="<?=lang("Gudang Asal")?>" name="fin_source_warehouse_id" style="width:100%">
 								<?php
 									foreach($warehouseList as $warehouse){
 										echo "<option value='$warehouse->fin_warehouse_id'>$warehouse->fst_warehouse_name</option>";
@@ -107,7 +107,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						<label for="fin_target_warehouse_id" class="col-md-2 control-label"><?=lang("Gudang Tujuan")?></label>
 						<div class="col-md-4">
-							<select  class="form-control" id="fin_target_warehouse_id" placeholder="<?=lang("Gudang Tujuan")?>" name="fin_target_warehouse_id" style="width:100%">
+							<select  class="form-control hpp-header" id="fin_target_warehouse_id" placeholder="<?=lang("Gudang Tujuan")?>" name="fin_target_warehouse_id" style="width:100%">
 								<?php
 									foreach($warehouseList as $warehouse){
 										echo "<option value='$warehouse->fin_warehouse_id'>$warehouse->fst_warehouse_name</option>";
@@ -117,7 +117,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fin_target_warehouse_id_err" class="text-danger"></div>
 						</div>
                     </div>  
-					
+					<div class="form-group">
+						<label for="fst_notes" class="col-md-2 control-label"><?=lang("Harga Pokok Penjualan")?></label>
+						<div class="col-md-10">
+							<input type="text" class="form-control money" id="fdc_hpp_header" name="fdc_hpp_header" value="0"/>
+							<div id="fdc_hpp_header_err" class="text-danger"></div>
+						</div>		
+					</div>  
+
 					<div class="form-group">
 						<label for="fst_notes" class="col-md-2 control-label"><?=lang("Notes")?></label>
 						<div class="col-md-10">
@@ -146,7 +153,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </div>
 </section>
 
-<div id="mdlDetail" class="amodal afade in" role="dialog" style="display: unset">
+<div id="mdlDetail" class="modal fade in" role="dialog" style="display: none">
 	<div class="modal-dialog" style="display:table;width:600px">
 		<!-- modal content -->
 		<div class="modal-content">
@@ -156,28 +163,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-body">				        
-				<form id="form-detail" class="form-horizontal">
+				<form class="form-horizontal">
 				
-					<div class="form-group">										
-						<label class="col-md-2 control-label "><?=lang("Item")?></label>						
+					<div class="form-group">
+						<label class="col-md-2 control-label"><?=lang("Item")?></label>						
 						<div class="col-md-10">																		
-							<select id="fin_item_id_d" class="form-control" style="width:100%"> </select>
+							<select id="fin_item_id_d" class="form-control hpp-detail" style="width:100%"> </select>
 						</div>
 					</div>
-					<div class="form-group">										
+					<div class="form-group">
 						<label class="col-md-2 control-label "><?=lang("Unit")?></label>						
 						<div class="col-md-10">
-							<select id="fst_unit_d" class="form-control" style="width:100%"> </select>
+							<select id="fst_unit_d" class="form-control hpp-detail" style="width:100%"> </select>
 						</div>						
 					</div>
-					<div class="form-group">										
+					<div class="form-group">
 						<label class="col-md-2 control-label "><?=lang("Qty")?></label>						
 						<div class="col-md-10">																		
-							<input id="fdb_qty_d" class="form-control money" value="1"/>
+							<input id="fdb_qty_d" class="form-control money hpp-detail" value="1"/>
+						</div>						
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label "><?=lang("HPP")?></label>						
+						<div class="col-md-10">																		
+							<input id="fdc_hpp_d" class="form-control money" value="0"/>
 						</div>						
 					</div>
 										
-					<div class="form-group">										
+					<div class="form-group">
 						<label class="col-md-2 control-label "><?=lang("Notes")?></label>						
 						<div class="col-md-10">																		
 							<textarea id="fst_notes_d" class="form-control"> </textarea>
@@ -195,32 +208,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 
 	<script type="text/javascript" info="define">
-		var selectedAsset;
+		var selectedItemD;
 
 		mdlDetail = {			
 			show:function(){
 				if (selectedDetail != null){
 					var data = selectedDetail.data();
-					selectedAsset = data.fa_profile;
 
-					//console.log(data);
-					//$("#fst_fa_profile_code").val(data.fst_fa_profile_code + " - " +data.fst_fa_profile_name).trigger("change.select2");
-
-					App.addOptionIfNotExist("<option value='"+selectedAsset.fin_fa_profile_rec_id+"'>"+selectedAsset.fst_fa_profile_code + " - " +selectedAsset.fst_fa_profile_name+"</option>","fst_fa_profile_code");
-					//$("#fst_fa_profile_code").trigger("change");									
-					$("#fst_fa_profile_code").trigger({
+					console.log(data);
+					selectedItemD = data.item;					
+					App.addOptionIfNotExist("<option value='"+selectedItemD.id+"'>"+selectedItemD.text+"</option>","fin_item_id_d");
+					$("#fin_item_id_d").trigger({
 						type: 'select2:select',
-    					params: {
-        					data: selectedAsset
-    					}
+						params: {
+							data: selectedItemD
+						}
 					});
-					
-					//fst_notes:$("#fst_detail_notes").val(),										
-					//};
-					//$("#fst_fa_profile_code").val(selectedAsset.fin_rec_id).trigger("change");
-					$("#fdc_sell_price").val(data.fdc_sell_price);
-					$("#fst_detail_notes").val(data.fst_notes);
+					$("#fin_item_id_d").trigger("change");
 
+					App.addOptionIfNotExist("<option value='"+data.fst_unit+"'>"+data.fst_unit+"</option>","fst_unit_d");
+					$("#fst_unit_d").trigger("change");
+					$("#fdb_qty_d").val(data.fdb_qty);
+					$("#fdc_hpp_d").val(data.fdc_hpp);
+					$("#fst_notes_d").val(data.fst_notes);				
 				}				
 				$("#mdlDetail").modal("show");
 			},
@@ -228,39 +238,73 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#mdlDetail").modal("hide");
 			},
 			clear:function(){
-				$("#fst_fa_profile_code").val(null).trigger("change.select2");
-				$("#fdc_aquisition_price").val(0);
-				$("#fdc_depre_amount").val(0);
-				$("#fdc_book_amount").val(0);
-				selectedAsset = null;
-				$("#fst_detail_notes").val(null);
+				$("#fin_item_id_d").val(null).trigger("change.select2");
+				$("#fst_unit_d").val(null).trigger("change.select2");
+				$("#fdb_qty_d").val(1);
+				$("#fdc_hpp_d").val(0);
+				$("#fst_notes_d").val(null);
+				selectedItemD = null;			
 				selectedDetail = null;
 			},			
 		};
 
 	</script>
 
-	<script type="text/javascript" info="event">
-		
+	<script type="text/javascript" info="event">		
 		$(function(){
-			$("#fst_fa_profile_code").on("select2:select",function(e){
-				selectedAsset = e.params.data;
-				$("#fdc_aquisition_price").val(selectedAsset.fdc_aquisition_price);
-				$("#fdc_depre_amount").val(selectedAsset.fdc_depre_amount);
-				$("#fdc_book_amount").val(selectedAsset.fdc_aquisition_price - selectedAsset.fdc_depre_amount);
-				//$("fdc_aquisition_price").val(selectedAsset.fdc_aquisition_price);
-				
+
+			//selectedItemD
+			$("#fin_item_id_d").on("select2:select",function(e){
+				selectedItemD = e.params.data;
+
+			});
+
+
+			$(".hpp-detail").change(function(e){
+				e.preventDefault();				
+
+				if ($("#fin_item_id_d").val() == null || $("#fst_unit_d").val() == null){
+					return;
+				}
+
+				var finWarehouseId;
+				if ($("#fst_type").val() == "ASSEMBLING"){
+					finWarehouseId = $("#fin_source_warehouse_id").val();
+				}else{
+					finWarehouseId = $("#fin_target_warehouse_id").val();
+				}
+
+				data = {
+					"fin_item_id":$("#fin_item_id_d").val(),
+					"fst_unit":$("#fst_unit_d").val(),
+					"fdb_qty":$("#fdb_qty_d").val(),
+					"fin_warehouse_id":finWarehouseId
+				};
+
+				$.ajax({
+					url:"<?=site_url()?>tr/production/assembling/ajxGetTotalHPP",
+					method:"GET",
+					data:data,
+
+				}).done(function(resp){
+					
+					if (resp.status == "SUCCESS"){
+						data = resp.data;				
+						$("#fdc_hpp_d").val(data.HPP);
+					}
+				});
 
 			});
 
 			$("#btn-save-detail").click(function(e){
-
 				t = $("#tbldetails").DataTable();
 				var data = {
-					fin_rec_id:0,					
-					fa_profile:selectedAsset,
-					fdc_sell_price:$("#fdc_sell_price").val(),
-					fst_notes:$("#fst_detail_notes").val(),
+					fin_rec_id:0,
+					item: selectedItemD,
+					fst_unit:$("#fst_unit_d").val(),
+					fdb_qty:$("#fdb_qty_d").val(),
+					fdc_hpp:$("#fdc_hpp_d").val(),
+					fst_notes:$("#fst_notes_d").val(),			
 				};
 
 				if (selectedDetail == null){
@@ -376,13 +420,53 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/fixed_asset/disposal");
+			window.location.replace("<?=site_url()?>tr/production/assembling");
 		});	
 
 		$("#btn-add-items").click(function(e){
 			e.preventDefault();
 			mdlDetail.show();
 		});
+
+		$(".hpp-header").change(function(e){
+			e.preventDefault();
+			calculateHPPHeader();
+
+			if ($("#fdc_hpp_header").val() != 0){
+				return;
+			}
+
+			if ($("#fin_item_id").val() == null || $("#fst_unit").val() == null){
+				return;
+			}
+			
+
+			var finWarehouseId;
+			if ($("#fst_type").val() == "ASSEMBLING"){
+				finWarehouseId = $("#fin_target_warehouse_id").val();				
+			}else{
+				finWarehouseId = $("#fin_source_warehouse_id").val();
+			}
+
+			data = {
+				"fin_item_id":$("#fin_item_id").val(),
+				"fst_unit":$("#fst_unit").val(),
+				"fdb_qty":$("#fdb_qty").val(),
+				"fin_warehouse_id":finWarehouseId
+			};
+
+			$.ajax({
+				url:"<?=site_url()?>tr/production/assembling/ajxGetTotalHPP",
+				method:"GET",
+				data:data,
+
+			}).done(function(resp){				
+				if (resp.status == "SUCCESS"){
+					data = resp.data;
+					$("#fdc_hpp_header").val(data.HPP);
+				}
+			});
+		})
 		
 	});
 </script>
@@ -449,28 +533,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			order: [],
 			columns:[
 				{"title" : "id","width": "0px",sortable:false,data:"fin_rec_id",visible:false},
-				{"title" : "Item","width": "300px",sortable:false,data:"fin_item_id",
+				{"title" : "Item","width": "70%",sortable:false,data:"fin_item_id",
 					"render":function(data,type,row){
-						var faProfile = row.fa_profile;
-						return faProfile.fst_fa_profile_code + " - " + faProfile.fst_fa_profile_name;
+						return row.item.text + "<br><i>" + row.fst_notes + "</i>"; 
 					}
 				},
-				{"title" : "Unit","width": "300px",sortable:false,data:"fst_unit",
-					"render":function(data,type,row){
-						var faProfile = row.fa_profile;
-						return faProfile.fst_fa_profile_code + " - " + faProfile.fst_fa_profile_name;
+				{"title" : "Unit","width": "10%",sortable:false,data:"fst_unit"},
+				{"title" : "Qty","width": "10%",sortable:false,data:"fdb_qty"},
+				{"title" : "HPP","width": "10%",sortable:false,data:"fdc_hpp",className:'text-right',
+					render:function(data,type,row){
+						return money_format(data);
 					}
 				},
-				{"title" : "Qty","width": "300px",sortable:false,data:"fdb_qty",
-					"render":function(data,type,row){
-						var faProfile = row.fa_profile;
-						return faProfile.fst_fa_profile_code + " - " + faProfile.fst_fa_profile_name;
-					}
-				},
-				{"title" : "Notes","width": "0px",sortable:false,data:"fst_notes"},
-				{"title" : "Sell Price","width": "150px",sortable:false,data:"fdc_sell_price",className:'text-right'},
-
-				{"title" : "Action","width": "40px",sortable:false,className:'dt-body-center text-center',
+				{"title" : "Action","width": "10%",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){
 						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';												
 						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';						
@@ -487,24 +562,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).on('draw',function(){
 			$(".dataTables_scrollHeadInner").css("min-width","100%");
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
-			calculateTotal();
+			calculateHPPHeader();
 		}).on('click','.btn-edit',function(e){
 			e.preventDefault();						
 			t = $("#tbldetails").DataTable();
 			var trRow = $(this).parents('tr');
 			selectedDetail = t.row(trRow);
-
 			mdlDetail.show();
 
 		}).on('click','.btn-delete',function(e){
 			e.preventDefault();
 			t = $('#tbldetails').DataTable();
 			var trRow = $(this).parents('tr');
-			t.row(trRow).remove().draw();
+			t.row(trRow).remove().draw(false);
 		});
 
         App.fixedSelect2();
-		//initForm();
+		initForm();
 	});
 </script>
 <script type="text/javascript" info="function">
@@ -512,7 +586,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	function submitAjax(confirmEdit){     
 		var mode = "<?=$mode?>";   
 		var dataDetails = new Array();	
-
 		if (mode == "EDIT" && confirmEdit == 0){
 			MdlEditForm.saveCallBack = function(){
 				submitAjax(1);
@@ -533,10 +606,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		var datas = t.data();
 
 		$.each(datas,function(i,v){
-
-			//var faProfile = v.fa_profile; 
-			v.fin_fa_profile_detail_id = v.fa_profile.fin_fa_profile_rec_id,
-			delete v.fa_profile;			
+			v.fin_item_id = v.item.id;
+			delete v.item;
 			dataDetails.push(v);
 		});
 
@@ -546,11 +617,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		if (mode == "ADD"){
-			url = "<?=site_url()?>tr/fixed_asset/disposal/ajx_add_save";
-		}else{
-			
-
-			url = "<?=site_url()?>tr/fixed_asset/disposal/ajx_edit_save";
+			url = "<?=site_url()?>tr/production/assembling/ajx_add_save";
+		}else{			
+			url = "<?=site_url()?>tr/production/assembling/ajx_edit_save";
 		}		
 
 		App.blockUIOnAjaxRequest("<h5>Please wait....</h5>");
@@ -582,14 +651,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				}else if(resp.status == "SUCCESS") {
 					data = resp.data;
-					$("#fin_sj_id").val(data.insert_id);
-
-					//Clear all previous error
-					$(".text-danger").html("");
-					// Change to Edit mode
-					$("#frm-mode").val("EDIT");  //ADD|EDIT
-					$('#fst_sj_no').prop('readonly', true);
-					$("#tabs-so-detail").show();
+					$("#fin_assembling_id").val(data.insert_id);					
 				}
         });
 
@@ -600,7 +662,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if (mode == "EDIT"){			
 			App.blockUIOnAjaxRequest();
 			$.ajax({
-				url:"<?= site_url() ?>tr/fixed_asset/disposal/fetch_data/<?=$fin_assembling_id?>",
+				url:"<?= site_url() ?>tr/production/assembling/fetch_data/<?=$fin_assembling_id?>",
 			}).done(function(resp){				
 				dataH =  resp.data.header;
 				if (dataH == null){
@@ -610,45 +672,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				
                 App.autoFillForm(dataH);
 				//$("#fdt_fa_disposal_datetime").val(dataH.fst_accum_account_code).trigger("change");
-				$("#fdt_fa_disposal_datetime").val(dateTimeFormat(dataH.fdt_fa_disposal_datetime)).datetimepicker("update");
-				$("#fst_disposal_type").trigger("change");
-
-				//$("#fin_customer_id")
-				App.addOptionIfNotExist("<option value='"+dataH.fin_customer_id+"' selected>"+dataH.fst_customer_name+"</option>","fin_customer_id");
-				
-				App.addOptionIfNotExist("<option value='"+dataH.fst_sell_curr_code+"' selected>"+dataH.fst_sell_curr_name+"</option>","fst_sell_curr_code");
+				$("#fdt_assembling_datetime").val(dateTimeFormat(dataH.fdt_assembling_datetime)).datetimepicker("update");				
+				App.addOptionIfNotExist("<option value='"+dataH.fin_item_id +"'>"+dataH.fst_item_code +" - " + dataH.fst_item_name +"</option>","fin_item_id");
+				App.addOptionIfNotExist("<option value='"+dataH.fst_unit +"'>"+dataH.fst_unit +"</option>","fst_unit");
 
 				t = $("#tbldetails").DataTable();
 				$.each(resp.data.details,function(i,v){
-					var fixedAsset = {
-						"id":v.fin_fa_profile_detail_id,
-						"text":v.fst_fa_profile_code + " - " + v.fst_fa_profile_name,
-						"fin_fa_profile_rec_id":v.fin_fa_profile_detail_id,						
-						"fst_fa_profile_code":v.fst_fa_profile_code,
-						"fst_fa_profile_name":v.fst_fa_profile_name,		
-						"fdc_aquisition_price":v.fdc_aquisition_price,
-						"fdc_depre_amount":v.fdc_deprecated_amount
+					var item = {
+						"id":v.fin_item_id,
+						"text":v.fst_item_code + " - " + v.fst_item_name,
 					};
 					var data = {
 						fin_rec_id:v.fin_rec_id,					
-						fa_profile:fixedAsset,
-						fdc_sell_price:v.fdc_sell_price,
+						item:item,
+						fst_unit:v.fst_unit,
+						fdb_qty:v.fdb_qty,
+						fdc_hpp:v.fdc_hpp,
 						fst_notes:v.fst_notes,
 					};
 					t.row.add(data);
 				});
 
 				t.draw(false);
-
-				
-
-				
-					
-
-
-
-
-
 			});
 		}
 	}    
@@ -677,7 +722,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/fixed_asset/disposal/delete/" + $("#fin_fa_disposal_id").val();
+		var url =  "<?= site_url() ?>tr/production/assembling/delete/" + $("#fin_assembling_id").val();
 		$.ajax({
 			url:url,
 			method:"POST",
@@ -693,19 +738,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	}
 
-	function calculateTotal(){
+	function calculateHPPHeader(){
 		var t = $('#tbldetails').DataTable();
 		var datas = t.data();
 
-		var ttlSell =0;
+		var ttlHPP =0;
 		$.each(datas,function(i,v){
-			ttlSell += parseFloat(v.fdc_sell_price);
+			ttlHPP += parseFloat(v.fdc_hpp);
 		});
 
-		var ttlPpn = (parseFloat($("#fdc_ppn_percent").val()) /100) * ttlSell;
-		$("#subtotal-sell").text(App.money_format(ttlSell));
-		$("#fdc_ppn_amount").text(App.money_format(ttlPpn));
-		$("#total-sell").text(App.money_format(ttlPpn + ttlSell));
+		if (ttlHPP  == 0){
+			$("#fdc_hpp_header").prop("readonly",0);
+		}else{	
+			$("#fdc_hpp_header").prop("readonly",1);
+		}
+		$("#fdc_hpp_header").val(App.money_format(ttlHPP));
 	}
 
 </script>
