@@ -25,7 +25,7 @@ class Stock_rpt_model extends CI_Model {
 		
 		switch($rptLayout) {
 			case "1":
-				return getLayoutKartuStock();
+				return $this->getLayoutKartuStock($data);
 				break;
 			case "2":
 				$ssql = "SELECT a.*,b.fst_item_group_name as itemGroup,CONCAT(a.fst_linebusiness_id,'  -  ',c.fst_linebusiness_name),
@@ -95,18 +95,23 @@ class Stock_rpt_model extends CI_Model {
 		
 	}
 
-	public function getLayoutKartuStock(){
+	public function getLayoutKartuStock($data){
 		//Item Group, item
 		//filter by line bussiness, material 
-		$fdtStart="2000-01-01";
-		$fdtEnd="2020-12-31";
-		
-		$ssql ="SELECT * FROM trinventory a 
-		INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
-		WHERE CAST(a.fdt_trx_datetime AS DATE) ?  BETWEEN ?
-		ORDER BY fin_item_group_id,fin_item_id";
+		$fdtStart= $data["fdt_from"] == "" ? "2000-01-01" : $data["fdt_from"] ;
+		$fdtEnd= $data["fdt_to"] == "" ? "3000-01-01" : $data["fdt_to"] ;
+		$finWarehouseId = $data["fin_warehouse_id"];
 
-		$qr = $this->db->query($ssql,[$fdtStart,$fdtEnd]);
+
+		
+		$ssql ="SELECT a.*,b.fst_item_name,b.fin_item_group_id,c.fst_item_group_name FROM trinventory a 
+		INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
+		INNER JOIN msgroupitems c on b.fin_item_group_id = c.fin_item_group_id 
+		WHERE CAST(a.fdt_trx_datetime AS DATE) BETWEEN ? AND ?
+		AND fin_warehouse_id = ? 
+		ORDER BY b.fin_item_group_id,b.fin_item_id,a.fdt_trx_datetime";
+
+		$qr = $this->db->query($ssql,[$fdtStart,$fdtEnd,$finWarehouseId]);
 		return $qr->result();
 
 	}

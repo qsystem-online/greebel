@@ -35,8 +35,9 @@ class Phpspreadsheet extends Spreadsheet {
 			default:
 				$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xls");
 				$fileEXT = "xls";
-		}		
+		}
 		
+		$writer->setPreCalculateFormulas(false);
 		$filename = $filename; //. "." . $fileEXT;
 
 		//header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");		

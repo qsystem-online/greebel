@@ -296,7 +296,7 @@ class Trsuratjalan_model extends MY_Model {
 
 		$ssql ="UPDATE trassembling set fin_sj_id = null where fin_assembling_id = ?";
 		$query = $this->db->query($ssql,[$dataH->fin_trans_id]);		           
-		$this->trpurchasereturn_model->updateClosedStatus($dataH->fin_trans_id);
+		//$this->trpurchasereturn_model->updateClosedStatus($dataH->fin_trans_id);
 	}
 
 	public function posting($sjId){
@@ -569,7 +569,7 @@ class Trsuratjalan_model extends MY_Model {
 		}
 
 		$ssql ="UPDATE trsuratjalan set fbl_update_stock = 1,fdt_delivery_datetime = now() where fin_sj_id = ?";
-		$this->db->query($ssql,[$finSJId]);
+		$this->db->query($ssql,[$sjId]);
 	}
 
 

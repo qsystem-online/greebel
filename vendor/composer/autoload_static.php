@@ -9,6 +9,7 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         'abede361264e2ae69ec1eee813a101af' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/abs.php',
         '21a5860fbef5be28db5ddfbc3cca67c4' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/acos.php',
         '1546e3f9d127f2a9bb2d1b6c31c26ef1' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/acosh.php',
@@ -78,12 +79,17 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
         array (
             'phpDocumentor\\Reflection\\' => 25,
         ),
+        'Z' => 
+        array (
+            'ZipStream\\' => 10,
+        ),
         'W' => 
         array (
             'Webmozart\\Assert\\' => 17,
         ),
         'S' => 
         array (
+            'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Yaml\\' => 23,
             'Svg\\' => 4,
@@ -92,11 +98,15 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
         array (
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
+            'Psr\\Http\\Message\\' => 17,
+            'Psr\\Http\\Client\\' => 16,
+            'Psr\\Cache\\' => 10,
             'Prophecy\\' => 9,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
         ),
         'M' => 
         array (
+            'MyCLabs\\Enum\\' => 13,
             'Mpdf\\' => 5,
             'Matrix\\' => 7,
         ),
@@ -113,6 +123,14 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
         'C' => 
         array (
             'Complex\\' => 8,
+            'Cache\\TagInterop\\' => 17,
+            'Cache\\Hierarchy\\' => 16,
+            'Cache\\Adapter\\Redis\\' => 20,
+            'Cache\\Adapter\\Common\\' => 21,
+        ),
+        'B' => 
+        array (
+            'Box\\Spout\\' => 10,
         ),
     );
 
@@ -127,9 +145,17 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
             1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
+        'ZipStream\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
+        ),
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
+        ),
+        'Symfony\\Polyfill\\Mbstring\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
@@ -151,6 +177,19 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
+        'Psr\\Http\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-client/src',
+        ),
+        'Psr\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/cache/src',
+        ),
         'Prophecy\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpspec/prophecy/src/Prophecy',
@@ -158,6 +197,10 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
         'PhpOffice\\PhpSpreadsheet\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
+        ),
+        'MyCLabs\\Enum\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
         ),
         'Mpdf\\' => 
         array (
@@ -187,6 +230,26 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
         ),
+        'Cache\\TagInterop\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/cache/tag-interop',
+        ),
+        'Cache\\Hierarchy\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/cache/hierarchical-cache',
+        ),
+        'Cache\\Adapter\\Redis\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/cache/redis-adapter',
+        ),
+        'Cache\\Adapter\\Common\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/cache/adapter-common',
+        ),
+        'Box\\Spout\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/box/spout/src/Spout',
+        ),
     );
 
     public static $prefixesPsr0 = array (
@@ -207,8 +270,8 @@ class ComposerStaticInitd227da7cd4505d9ec19e15291196b00b
     );
 
     public static $classMap = array (
-        'Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
         'Datamatrix' => __DIR__ . '/..' . '/tecnickcom/tcpdf/include/barcodes/datamatrix.php',
+        'Dompdf\\Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
         'File_Iterator' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Iterator.php',
         'File_Iterator_Facade' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Facade.php',
         'File_Iterator_Factory' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Factory.php',

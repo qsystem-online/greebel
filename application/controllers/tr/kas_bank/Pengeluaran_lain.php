@@ -21,8 +21,8 @@ class Pengeluaran_lain extends MY_Controller{
 	public function index(){
 
 		$this->load->library('menus');
-        $this->list['page_name'] = "Cash Bank - Receive Other";
-        $this->list['list_name'] = "Cash & Bank Receive Other List";
+        $this->list['page_name'] = "Cash Bank - Payment Other";
+        $this->list['list_name'] = "Cash & Bank Payment Other List";
         $this->list['boxTools'] = [
 			"<a id='btnNew'  href='".site_url()."tr/kas_bank/pengeluaran_lain/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 		];

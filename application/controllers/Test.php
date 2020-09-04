@@ -1,5 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
+use Box\Spout\Common\Entity\Row;
 
 class Test extends CI_Controller {
 
@@ -397,5 +399,42 @@ class Test extends CI_Controller {
 		$mpdf = new \Mpdf\Mpdf();
 		$mpdf->WriteHTML('<h1>Hello world!</h1>');
 		$mpdf->Output();
+	}
+
+
+	public function test3(){
+		
+		$writer = WriterEntityFactory::createXLSXWriter();
+		$fileName = "test3.xlsx";
+		
+		//$writer->openToFile($filePath); // write data to a file or to a PHP stream
+		$writer->openToBrowser($fileName); // stream data directly to the browser
+
+		$cells = [
+			WriterEntityFactory::createCell('Carl'),
+			WriterEntityFactory::createCell('is'),
+			WriterEntityFactory::createCell('great!'),
+		];
+
+		/** add a row at a time */
+		$singleRow = WriterEntityFactory::createRow($cells);
+		$writer->addRow($singleRow);
+
+		/** add multiple rows at a time */
+		$multipleRows = [
+			WriterEntityFactory::createRow($cells),
+			WriterEntityFactory::createRow($cells),
+		];
+		$writer->addRows($multipleRows); 
+
+		/** Shortcut: add a row from an array of values */
+		$values = ['Carl', 'is', 'great!'];
+		$rowFromValues = WriterEntityFactory::createRowFromArray($values);
+		$writer->addRow($rowFromValues);
+
+		$writer->close();
+
+
+
 	}
 }

@@ -56,7 +56,7 @@ class Pengiriman_penjualan extends MY_Controller{
             ['title' => 'Memo', 'width' => '100px', 'data' => 'fst_sj_memo'],
             ['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'dt-body-center text-center',
                 'render'=>'function( data, type, row, meta ) {
-                    return "<div style=\'font-size:16px\'><a data-id=\'" + row.fin_sj_id + "\' class=\'btn-edit\' href=\'#\'><i class=\'fa fa-pencil\'></i></a><a class=\'btn-delete\' href=\'#\'><i class=\'fa fa-trash\'></i></a></div>";
+                    return "<div style=\'font-size:16px\'><a data-id=\'" + row.fin_sj_id + "\' class=\'btn-edit\' href=\'#\'><i class=\'fa fa-pencil\'></i></a></div>";
                 }',
             ]
         ];

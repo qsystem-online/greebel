@@ -43,8 +43,6 @@
 						<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">	
 						<input type="hidden" class="form-control" id="fin_lpbgudang_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_lpbgudang_id" value="<?=$fin_lpbgudang_id?>" readonly>
 
-
-
                         <div class="form-group">
 							<label for="fst_lpbgudang_no" class="col-md-2 control-label"><?=lang("No. Penerimaan")?> #</label>	
 							<div class="col-md-4">				
@@ -71,6 +69,7 @@
 								<select id="fst_lpb_type" class="form-control non-editable" name="fst_lpb_type">
 									<option value='PO'>Purchase Order</option>
 									<option value='SO_RETURN'>Sales Return</option>
+									<option value='ASSEMBLING_IN'>Assembling /Disassembling In</option>
 								</select>
 								<div id="fst_lpb_type_err" class="text-danger"></div>
 							</div>							
@@ -103,7 +102,7 @@
 
 						<div class="form-group" style="margin-bottom:0px">
 							<div class="col-md-12" style="text-align:right">
-								<button id="btn-add-items" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;Tambah Item</button>
+								<button id="btn-add-items" class="btn btn-primary btn-sm non-assembling"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;Tambah Item</button>
 							</div>
 						</div>
 
@@ -237,8 +236,7 @@
 					dataD.id = dataD.fin_item_id;
 					dataD.text = dataD.fst_custom_item_name;
 					return dataD;
-				});
-				App.log(arrItems);
+				});				
 				$("#fstItem").select2({
 					data: arrItems
 				});
@@ -269,7 +267,6 @@
 				//var data = $('#fstItem').find(':selected');
 				var data = $('#fstItem').select2('data');
 				data = data[0];		
-				App.log(data);
 				$("#fstUnit").text(data.fst_unit);
 				$("#fdcConvBasicUnit").text(data.fdc_conv_to_basic_unit);
 				$("#fstBasicUnit").text(data.fst_basic_unit);
@@ -343,7 +340,6 @@
 				
 				var arrSerial = [];
 				$.each($("#fstSerialNoList option"),function(i,serial){
-					App.log(serial);
 					arrSerial.push($(serial).val());
 				});
 
@@ -378,7 +374,6 @@
 				data.fst_batch_no = $("#fstBatchNo").val();
 				data.arr_serial = arrSerial;			
 				if (rowDetail == null){
-					App.log(data);
 					t.row.add(data).draw(false);
 				}else{
 					t.row(rowDetail).data(data).draw(false);
@@ -396,6 +391,7 @@
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlPrint ?>
+
 
 
 
@@ -430,10 +426,7 @@
 	$(function(){
 		$("#fdt_lpbgudang_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		
-		$("#fst_lpb_type").change(function(e){
-			$("#fin_trans_id").val(null).trigger("change.select2");
-		});
-
+		
 		$("#fin_trans_id").select2({
 			ajax:{
 				delay:500,
@@ -450,6 +443,7 @@
 							fdt_trans_datetime:trans.fdt_trans_datetime,
 							fin_pr_process_id:trans.fin_pr_process_id,
 							fst_relation_name:trans.fst_relation_name,
+							fin_warehouse_id:trans.fin_warehouse_id,
 						}
 					});
 					return {
@@ -461,7 +455,6 @@
 				if (typeof trans.fst_trans_no == "undefined"){
 					return trans.text;
 				}
-
 				return $("<span style='display:inline-block;width:150px'>" + trans.fst_trans_no +"</span><span style='display:inline-block;width:150px'>"+trans.fdt_trans_datetime+"</span><span>"+trans.fst_relation_name+"</span>");
 			}
 		}).on("select2:select",function(e){
@@ -479,6 +472,12 @@
 					App.addOptionIfNotExist("<option value='"+v.id+"'>"+v.text+"</option>","fin_warehouse_id");
 				});
 			}
+
+			if(typeof data.fin_warehouse_id !== "undefined") {
+				$("#fin_warehouse_id").val(data.fin_warehouse_id);
+			}
+
+			//$("#fin_warehouse_id").empty();
 
 			getDetailTransaction();
 		});
@@ -509,7 +508,11 @@
 				{"title" : "Action","width": "40px",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){
 						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';												
-						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';						
+
+						if($("#fst_lpb_type").val() != "ASSEMBLING_IN"){
+							action += '<a class="btn-delete non-assembling" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';						
+						}
+
 						return action;
 					}
 				},								
@@ -585,69 +588,31 @@
 			window.location.href = "<?=site_url()?>tr/gudang/penerimaan_pembelian/";
 		});
 
-		/*
-		$("#fin_po_id").change(function(e){
-			e.preventDefault();
-			getPOInfo($("#fin_po_id").val(),function(resp){
-				header = resp.po;
-				$("#fdt_po_datetime").val(dateTimeFormat(header.fdt_po_datetime)).datetimepicker("update");
-				$("#fst_supplier_name").val(header.fst_supplier_name);
-				$("#fin_warehouse_id").val(header.fin_warehouse_id);
+		$("#fst_lpb_type").change(function(e){
+			$("#fin_trans_id").val(null).trigger("change.select2");
 
-				details = resp.po_details;
-				
-				t= $('#tbldetails').DataTable();
-				t.rows().remove();
-				$("#fstItem").empty();
-				
-				arrItems =[];
-				$.each(details,function(i,detail){
-					var data = {
-						fin_rec_id:0,
-						fin_po_detail_id:detail.fin_po_detail_id,
-						fin_item_id: detail.fin_item_id,
-						fst_item_code:detail.fst_item_code,
-						fst_custom_item_name:detail.fst_custom_item_name,
-						fst_unit:detail.fst_unit,
-						fdb_qty_po: detail.fdb_qty,
-						fdb_qty_po_received: detail.fdb_qty_lpb,
-						fdb_qty:detail.fdb_qty - detail.fdb_qty_lpb,
-						fdc_m3: null,
-						fst_batch_no: "",
-						arr_serial: []
-					}
-					arrItems.push({
-						fin_po_detail_id:detail.fin_po_detail_id,
-						id: detail.fin_item_id,						
-						fst_item_code: detail.fst_item_code,
-						text:detail.fst_custom_item_name,
-						fst_unit:detail.fst_unit,
-						fdb_qty_po: detail.fdb_qty,
-						fdb_qty_po_received: detail.fdb_qty_lpb,						
-						fbl_is_batch_number:detail.fbl_is_batch_number,
-						fbl_is_serial_number:detail.fbl_is_serial_number,
-						fdc_conv_to_basic_unit:detail.fdc_conv_to_basic_unit,
-						fst_basic_unit:detail.fst_basic_unit
-					});
-					t.row.add(data);
-				});
-				App.log(arrItems);
-				$("#fstItem").select2({data:arrItems});
-
-				App.fixedSelect2();
-				t.draw(false);
-				calculateTotalQty();
-
-			});
+			if($("#fst_lpb_type").val() == "ASSEMBLING_IN"){
+				$(".non-assembling").hide();
+				$("#fdbQty").prop("readonly",true);
+				$("#fdcM3").prop("readonly",true);
+			}else{
+				$(".non-assembling").show();
+				$("#fdbQty").prop("readonly",false);
+				$("#fdcM3").prop("readonly",false);
+			}
 		});
-		*/
-		
+
+
 		$("#btn-add-items").click(function(e){
 			e.preventDefault();
 			rowDetail = null;
 			mdlDetail.show();
 			mdlDetail.clear();			
 		});
+
+
+		
+
 	});
 </script>
 
@@ -669,7 +634,7 @@
 				arrDetails = dataDetails.map(function(dataD){
 					dataD.fin_rec_id = 0;
 					dataD.fdb_qty = dataD.fdb_qty_trans - dataD.fdb_qty_lpb;
-					dataD.fdc_m3 = 0;
+					dataD.fdc_m3 = 1;
 					dataD.fst_batch_no="";
 					dataD.arr_serial=[];
 
@@ -717,10 +682,28 @@
 		var dataDetails = new Array();	
 		var tDetails = $('#tbldetails').DataTable();
 		var datas = tDetails.data();
+		var isValidData =true;
 
+		
 		$.each(datas,function(i,v){
+			console.log(v);
+
+			if ((v.fbl_is_batch_number == "1") && (v.fst_batch_no == null || v.fst_batch_no =="")){
+				isValidData = false;
+				alert ("Batch number " + v.fst_custom_item_name  + " tidak boleh kosong !");
+				return false;
+			}
+			if ((v.fbl_is_serial_number == 1) && (v.fst_serial_number_list == null || v.fst_serial_number_list =="")){
+				isValidData = false;
+				alert ("Serial number " + v.fst_custom_item_name  + " tidak boleh kosong !");
+				return false;
+			}			
 			dataDetails.push(v);
 		});
+
+		if (isValidData == false){				
+			return;
+		}
 
 		dataSubmit.push({
 			name:"details",
@@ -853,8 +836,7 @@
 						}		
 						arrDataDetails.push(data);						
 					});	
-					App.log(arrDataDetails);
-
+					
 					t.rows.add(arrDataDetails).draw(false);
 					mdlDetail.setDataItems(arrDataDetails);
 					

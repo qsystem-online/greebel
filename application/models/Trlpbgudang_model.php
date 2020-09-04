@@ -27,8 +27,8 @@ class Trlpbgudang_model extends MY_Model {
 
 	public function getDataById($finLPBGudangId){
 		$ssql = "SELECT a.*,c.fst_relation_name,b.fst_warehouse_name,b.fst_delivery_address  FROM " .$this->tableName. " a 
-			INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id 
-			INNER JOIN msrelations c on a.fin_relation_id = c.fin_relation_id             
+			LEFT JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id 
+			LEFT JOIN msrelations c on a.fin_relation_id = c.fin_relation_id             
 			WHERE a.fin_lpbgudang_id = ? and a.fst_active != 'D' ";
 
 		$qr = $this->db->query($ssql, [$finLPBGudangId]);        
@@ -66,6 +66,19 @@ class Trlpbgudang_model extends MY_Model {
 					INNER JOIN msitemunitdetails e ON (b.fin_item_id = e.fin_item_id and e.fbl_is_basic_unit = 1)                       
 					WHERE fin_lpbgudang_id = ?";        
 				break;
+			case "ASSEMBLING_IN":
+				$ssql = "SELECT a.fin_rec_id,a.fin_trans_detail_id,a.fin_item_id,a.fst_custom_item_name,a.fst_unit,a.fdb_qty,a.fst_batch_number,a.fst_serial_number_list,a.fdc_m3,
+					a.fdb_qty as fdb_qty_trans,a.fdb_qty as fdb_qty_lpb,
+					c.fst_item_code,c.fbl_is_batch_number,c.fbl_is_serial_number,
+					d.fdc_conv_to_basic_unit,
+					e.fst_unit as fst_basic_unit 
+					FROM trlpbgudangitems a
+					INNER JOIN msitems c ON a.fin_item_id = c.fin_item_id 
+					INNER JOIN msitemunitdetails d ON (a.fin_item_id = d.fin_item_id and a.fst_unit = d.fst_unit)  
+					INNER JOIN msitemunitdetails e ON (a.fin_item_id = e.fin_item_id and e.fbl_is_basic_unit = 1)                       
+					WHERE a.fin_lpbgudang_id = ?";        
+				break;
+				
 			default:
 				return [
 					"lpbGudang" => null,
@@ -185,11 +198,68 @@ class Trlpbgudang_model extends MY_Model {
 		return $soReturnDetails;
 
 	}
+
+	public function getAssemblingInList(){
+		$ssql = "SELECT a.fin_assembling_id as fin_trans_id,a.fst_assembling_no as fst_trans_no,
+			a.fdt_assembling_datetime as fdt_trans_datetime,0 as fin_pr_process_id,'' as fst_relation_name,
+			a.fin_target_warehouse_id as fin_warehouse_id 
+			FROM trassembling a 
+			WHERE fin_lpbgudang_id IS NULL";
+
+		$qr = $this->db->query($ssql,[]);
+		return $qr->result();
+	}
+
+	public function getAssemblingInDetail($finAssemblingId){
+		$ssql ="SELECT * FROM trassembling where fin_assembling_id = ?";
+		$qr = $this->db->query($ssql,[$finAssemblingId]);
+		$rw =$qr->row();
+		if($rw == null){
+			return [];
+		}
+
+		if ($rw->fst_type == "ASSEMBLING"){
+			$this->load->model("msitems_model");
+			$rs = [];
+			$item = $this->msitems_model->geSimpletDataById($rw->fin_item_id);
+			$basicUnit = $this->msitems_model->getBasicUnit($rw->fin_item_id);
+			$rs[] = (object) [
+				"fin_trans_detail_id"=>$rw->fin_assembling_id,
+				"fdb_qty_trans"=>$rw->fdb_qty,
+				"fst_unit"=>$rw->fst_unit,
+				"fdb_qty_lpb"=>0,
+				"fin_item_id"=>$rw->fin_item_id,
+				"fst_custom_item_name"=>$item->fst_item_name,
+				"fst_item_code"=>$item->fst_item_code,
+				"fst_item_name"=>$item->fst_item_name,
+				"fbl_is_batch_number"=>$item->fbl_is_batch_number,
+				"fbl_is_serial_number"=>$item->fbl_is_serial_number,
+				"fdc_conv_to_basic_unit"=>$this->msitems_model->getConversionUnit($rw->fin_item_id,$rw->fst_unit,$basicUnit),
+				"fst_basic_unit"=>$basicUnit
+			];
+
+		}else{
+			$ssql = "SELECT a.fin_rec_id as fin_trans_detail_id,a.fdb_qty as fdb_qty_trans,a.fst_unit,0 as fdb_qty_lpb,a.fin_item_id,b.fst_item_name as fst_custom_item_name,
+				b.fst_item_code,b.fst_item_name,b.fbl_is_batch_number,b.fbl_is_serial_number, 
+				c.fdc_conv_to_basic_unit, d.fst_unit AS fst_basic_unit
+				FROM trassemblingitems a
+				INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
+				INNER JOIN msitemunitdetails c on (a.fin_item_id = c.fin_item_id and a.fst_unit = c.fst_unit) 
+				INNER JOIN msitemunitdetails d on (a.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1)  
+				WHERE  a.fin_assembling_id = ?";
+
+			$qr = $this->db->query($ssql,[$finAssemblingId]);
+			$rs = $qr->result();
+		}
+		return $rs;
+
+	}
+
+
    
 	public function unposting($finLPBGudangId,$unpostingDateTime =""){
 		$this->load->model("trinventory_model");               
 		$unpostingDateTime = $unpostingDateTime == "" ? date("Y-m-d H:i:s") : $unpostingDateTime;
-
 
 		$ssql ="select * from trlpbgudang where fin_lpbgudang_id = ?";        
 		$qr = $this->db->query($ssql,[$finLPBGudangId]);        
@@ -216,6 +286,12 @@ class Trlpbgudang_model extends MY_Model {
 				$invCode =  "SRT";
 				$invDetailCode ="SRT";
 				$this->unpostingLPBSOReturn($listItems,$dataH);
+				break;
+			case "ASSEMBLING_IN":
+				$invCode =  "ASI";
+				$invDetailCode ="ASI";
+				$this->unpostingAssemblingIn($dataH);
+
 				break;
 			default:
 				throw new CustomException("Invalid LPB Type",3003,"FAILED",["fst_lpb_type"=>$dataH->fst_lpb_type]);
@@ -254,6 +330,13 @@ class Trlpbgudang_model extends MY_Model {
 		$this->trsalesreturn_model->updateClosedStatus($dataH->fin_trans_id);          
 	}
 
+	private function unpostingAssemblingIn($dataH){		
+		//Update lpbgudang ID di assembling
+		$ssql = "UPDATE trassembling set fin_lpbgudang_id = null where fin_assembling_id = ?";
+		$this->db->query($ssql,[$dataH->fin_trans_id]);
+		throwIfDBError();			
+	}
+
 
 	public function posting($finLPBGudangId){
 		$this->load->model("trinventory_model");
@@ -270,6 +353,8 @@ class Trlpbgudang_model extends MY_Model {
 			$this->postingLPBPO($dataH);
 		}else if($dataH->fst_lpb_type == "SO_RETURN"){
 			$this->postingLPBSOReturn($dataH);
+		}else if($dataH->fst_lpb_type == "ASSEMBLING_IN"){
+			$this->postingAssemblingIn($dataH);
 		}else{
 			throw new CustomException("Invalid LPB type",3003,"FAILED",$dataH);
 		}
@@ -446,6 +531,80 @@ class Trlpbgudang_model extends MY_Model {
 		$this->trsalesreturn_model->updateClosedStatus($finSOReturnId);  
 	}
 
+	private function postingAssemblingIn($dataH){
+		$finAssemblingId = $dataH->fin_trans_id;
+
+
+		$ssql = "SELECT a.* 
+			FROM trassembling a 
+			where a.fin_assembling_id =? and fin_lpbgudang_id is null";
+		$qr = $this->db->query($ssql,[$finAssemblingId]);
+		$dataHA =  $qr->row();
+		if ($dataHA == null ){
+			throw new CustomException("Invalid assembling ID",3003,'FAILED',[]);
+		}
+
+		if ($dataHA->fst_type == "ASSEMBLING"){
+			//DETAIL FROM HEADER ASSEMBLING
+			$ssql = "SELECT a.*,b.fdc_hpp as fdc_price_in FROM trlpbgudangitems a
+				inner join trassembling b on a.fin_trans_detail_id = b.fin_assembling_id
+				where a.fin_lpbgudang_id = ?";
+		}else{
+			$ssql = "SELECT a.*,b.fdc_hpp as fdc_price_in FROM trlpbgudangitems a
+				inner join trassemblingitems b on a.fin_trans_detail_id = b.fin_rec_id
+				where a.fin_lpbgudang_id = ?";			
+		}
+
+		$qr = $this->db->query($ssql,[$dataH->fin_lpbgudang_id]);		
+		$details = $qr->result();
+		
+		foreach($details as $detail){			
+			//Update kartu stock
+			$dataStock = [
+				//`fin_rec_id`, 
+				"fin_warehouse_id"=>$dataH->fin_warehouse_id,
+				"fdt_trx_datetime"=>$dataH->fdt_lpbgudang_datetime,
+				"fst_trx_code"=>"ASI", 
+				"fin_trx_id"=>$dataH->fin_lpbgudang_id,
+				"fin_trx_detail_id"=>$detail->fin_rec_id,
+				"fst_trx_no"=>$dataH->fst_lpbgudang_no, 
+				"fst_referensi"=>null, 
+				"fin_item_id"=>$detail->fin_item_id, 
+				"fst_unit"=>$detail->fst_unit, 
+				"fdb_qty_in"=>$detail->fdb_qty, 
+				"fdb_qty_out"=>0, 
+				//"fdc_price_in"=> $this->trinventory_model->getLastHPP($detail->fin_item_id,$dataH->fin_warehouse_id), //Ambil HPP TERAKHIR//(float) $detail->fdc_price - (float) calculateDisc($detail->fst_disc_item,$detail->fdc_price),
+				"fdc_price_in"=>$detail->fdc_price_in,
+				"fst_active"=>"A" 
+			];
+			$this->trinventory_model->insert($dataStock);
+
+			
+
+			//Update msitemdetails & summary
+			$dataSerial = [
+				"fin_warehouse_id"=>$dataH->fin_warehouse_id,
+				"fin_item_id"=>$detail->fin_item_id,
+				"fst_unit"=>$detail->fst_unit,
+				"fst_serial_number_list"=>$detail->fst_serial_number_list,
+				"fst_batch_no"=>$detail->fst_batch_number,
+				"fst_trans_type"=>"ASI", //SALES RETURN 
+				"fin_trans_id"=>$dataH->fin_lpbgudang_id,
+				"fst_trans_no"=>$dataH->fst_lpbgudang_no,
+				"fin_trans_detail_id"=>$detail->fin_rec_id,
+				"fdb_qty"=>$detail->fdb_qty,
+				"in_out"=>"IN",
+			];
+			
+			$this->trinventory_model->insertSerial($dataSerial);						
+		}
+		
+		//Update lpbgudang ID di assembling
+		$ssql = "UPDATE trassembling set fin_lpbgudang_id = ? where fin_assembling_id = ?";
+		$this->db->query($ssql,[$dataH->fin_lpbgudang_id,$finAssemblingId]);
+		throwIfDBError();		
+	}
+
 	public function update($data){
 		//Cancel Transaksi
 		$ssql ="delete from trlpbgudangitems where fin_lpbgudang_id = ?";
@@ -455,8 +614,8 @@ class Trlpbgudang_model extends MY_Model {
 
 	}
    
-   public function delete($finLPBGudangId,$softDelete = true,$data=null){
-	   
+	public function delete($finLPBGudangId,$softDelete = true,$data=null){
+		
 		//Delete detail transaksi
 		if ($softDelete){
 			$ssql ="update trlpbgudangitems set fst_active ='D' where fin_lpbgudang_id = ?";
@@ -469,16 +628,16 @@ class Trlpbgudang_model extends MY_Model {
 			throwIfDBError();
 		}   
 		parent::delete($finLPBGudangId,$softDelete,$data);    
-   }
+	}
 
-   public function deleteDetail($finLPBGudangId){
-	   $ssql = "DELETE from trlpbgudangitems where fin_lpbgudang_id = ?";
-	   $this->db->query($ssql,[$finLPBGudangId]);
-	   throwIfDBError();
-   }
+	public function deleteDetail($finLPBGudangId){
+		$ssql = "DELETE from trlpbgudangitems where fin_lpbgudang_id = ?";
+		$this->db->query($ssql,[$finLPBGudangId]);
+		throwIfDBError();
+	}
 
-   public function isEditable($finLPBGudangId,$dataH){
-	   /**
+	public function isEditable($finLPBGudangId,$dataH){
+		/**
 		* FAILED CONDITION
 		* + PO Sudah terbit faktur
 		* + PO bila  serial_number atau batch_no sudah terpakai
@@ -528,28 +687,33 @@ class Trlpbgudang_model extends MY_Model {
 
 			case "SO_RETURN":
 				break;
+			case "ASSEMBLIN_IN":
+				break;
 			default:
-
 		}
 
 		
 		$resp =["status"=>"SUCCESS","message"=>""];
 		return $resp;
-   }
+	}
 
-   public function getTransactionList($lpbType){
+	public function getTransactionList($lpbType){
 		if ($lpbType == "PO"){
 			return $this->getPOList();
 		}else if($lpbType == "SO_RETURN"){
 			return $this->getSOReturnList();
+		}else if($lpbType == "ASSEMBLING_IN"){
+			return $this->getAssemblingInList();
 		}
-   }
+	}
 
 	public function getTransDetail($lpbType,$finTransId){
 		if ($lpbType == "PO"){
 			return $this->getPODetail($finTransId);
 		}else if($lpbType == "SO_RETURN"){
 			return $this->getSOReturnDetail($finTransId);
+		}else if($lpbType == "ASSEMBLING_IN"){
+			return $this->getAssemblingInDetail($finTransId);
 		}
 	}
 

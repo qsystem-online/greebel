@@ -11,6 +11,7 @@ class Penerimaan_pembelian extends MY_Controller{
 		$this->load->model('mswarehouse_model');
 		$this->load->model('trpo_model');
 		$this->load->model('trsalesreturn_model');		
+		$this->load->model('trassembling_model');		
 		$this->load->model("msitems_model");		
     }
 
@@ -52,7 +53,7 @@ class Penerimaan_pembelian extends MY_Controller{
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/gudang/penerimaan_pembelian/edit/' + row.fin_lpbgudang_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
-					action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
+					//action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
 					action += '<div>';
 					return action;
 				}"
@@ -80,10 +81,14 @@ class Penerimaan_pembelian extends MY_Controller{
 	public function fetch_list_data(){
 		$this->load->library("datatables");
         $this->datatables->setTableName("(
-				SELECT a.*,b.fin_supplier_id,ifnull(c.fst_salesreturn_no,b.fst_po_no) as fst_trans_no2,d.fst_relation_name from trlpbgudang a 
-				LEFT join trpo b on a.fin_trans_id = b.fin_po_id and a.fst_lpb_type = 'PO'
-				LEFT join trsalesreturn c on a.fin_trans_id = c.fin_salesreturn_id and a.fst_lpb_type = 'SO_RETURN'
-				INNER JOIN msrelations d on ifnull(b.fin_supplier_id,c.fin_customer_id) = d.fin_relation_id
+				SELECT a.*,b.fin_supplier_id,
+				ifnull(ifnull(c.fst_salesreturn_no,b.fst_po_no),e.fst_assembling_no) as fst_trans_no2,
+				d.fst_relation_name 
+				from trlpbgudang a 
+				LEFT JOIN trpo b on a.fin_trans_id = b.fin_po_id and a.fst_lpb_type = 'PO'
+				LEFT JOIN trsalesreturn c on a.fin_trans_id = c.fin_salesreturn_id and a.fst_lpb_type = 'SO_RETURN'
+				LEFT JOIN trassembling e on a.fin_trans_id = e.fin_assembling_id and a.fst_lpb_type = 'ASSEMBLING_IN'				
+				LEFT JOIN msrelations d on ifnull(b.fin_supplier_id,c.fin_customer_id) = d.fin_relation_id
 			) a");
 
         $selectFields = "a.fin_lpbgudang_id,a.fst_lpbgudang_no,a.fdt_lpbgudang_datetime,a.fst_lpb_type,a.fst_trans_no2,a.fst_relation_name,a.fst_memo";
@@ -321,12 +326,19 @@ class Penerimaan_pembelian extends MY_Controller{
 				$fstTransNo = $soReturn->fst_salesreturn_no;
 				$finRelationId = $soReturn->fin_customer_id;
 				break;
+			case "ASSEMBLING_IN":
+				$assembling = $this->trassembling_model->getDataHeader($finTransId);
+				if ($assembling == null){
+					throw new CustomException("Invalid Assembling ID",3003,"FAILED",["fin_assembling_id"=>$finTransId]);
+				}
+				$fstTransNo = $assembling->fst_assembling_no;
+				$finRelationId = 0;				
+				break;
 			default:
 				throw new CustomException("Invalid LPB Type",3003,"FAILED",["fst_lpb_type"=>$lpbType]);
 		}
 
-
-		$ssql = "";
+		//$ssql = "";
 
 		$dataH = [
 			"fst_lpbgudang_no"=>$fst_lpbgudang_no,
@@ -343,8 +355,7 @@ class Penerimaan_pembelian extends MY_Controller{
 
 
 		$dataDetails = $this->input->post("details");
-		$dataDetails = json_decode($dataDetails);
-
+		$dataDetails = json_decode($dataDetails);		
 		return[
 			"dataH"=>$dataH,
 			"dataDetails"=>$dataDetails

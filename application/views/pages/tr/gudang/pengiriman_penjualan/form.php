@@ -72,7 +72,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<select id="fst_sj_type" class="form-control" name="fst_sj_type" style="width:100%" >
 								<option value='SO'>Sales Order</option>
 								<option value='PO_RETURN'>Purchase Return</option>
-								<option value='ASSEMBLING_OUT'>Assembling /Dissembling Out</option>
+								<option value='ASSEMBLING_OUT'>Assembling /Disassembling Out</option>
 							</select>
 							<div id="fst_sj_type_err" class="text-danger"></div>
 						</div>					
@@ -564,6 +564,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$("#fst_sj_type").change(function(e){
+			$("#fin_trans_id").val(null).trigger("change");
 			if ($(this).val()  == "ASSEMBLING_OUT"){
 				$(".non-assembling").hide();
 				$("#fdbQty").prop("readonly",true);				
@@ -787,15 +788,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	});
 </script>
 <script type="text/javascript" info="function">
-	function submitAjax(confirmEdit){        
+	function submitAjax(confirmEdit){
+		if ($("#fin_trans_id").val() == "" || $("#fin_trans_id").val() == null ){
+			alert("No Transaksi tidak boleh kosong !");
+			return;
+		}
+
         data = $("#frmDeliveryOrder").serializeArray();
 		detail = new Array();		
-
 		t = $('#tblSJDetails').DataTable();
 		datas = t.data();
 		var isValidData = true;
 		$.each(datas,function(i,v){
-			App.log(v);
 			if ((v.fbl_is_batch_number == "1") && (v.fst_batch_number == null || v.fst_batch_number =="")){
 				isValidData = false;
 				alert ("Batch number " + v.fst_custom_item_name  + " tidak boleh kosong !");
@@ -895,12 +899,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 				$("#fdt_sj_datetime").val(dateTimeFormat(dataH.fdt_sj_datetime)).datetimepicker("update");
-				
-				
+				$("#fst_sj_type").trigger("change");				
 				App.addOptionIfNotExist("<option value='"+dataH.fin_trans_id+"' selected>"+dataH.fst_trans_no+"</option>","fin_trans_id");
 				$("#fin_trans_id").trigger("change.select2");
 				
-				$("#fst_sj_type").trigger("change");
+				
 				
 				/*
 				$("#fin_trans_id").trigger({
