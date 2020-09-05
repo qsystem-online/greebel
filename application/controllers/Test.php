@@ -437,4 +437,33 @@ class Test extends CI_Controller {
 
 
 	}
+
+
+
+	public function testExcel2(){
+		$this->load->library("phpspreadsheet");
+		$spreadsheet = $this->phpspreadsheet->load();
+		$sheet = $spreadsheet->getActiveSheet();
+
+		$sheet->getPageSetup()->setFitToWidth(1);
+		$sheet->getPageSetup()->setFitToHeight(0);
+		$sheet->getPageMargins()->setTop(1);
+		$sheet->getPageMargins()->setRight(0.5);
+		$sheet->getPageMargins()->setLeft(0.5);
+		$sheet->getPageMargins()->setBottom(1);
+
+		$dataArr = [];
+		for($i=0;$i<3000;$i++){
+			$arr = [];
+			for($j=0;$j<20;$j++){
+				$col = $this->phpspreadsheet->getNameFromNumber($j);
+				$sheet->setCellValue("$col$i","Ini row $i col $col " . date("Ymd His"));
+				//$arr[] = "Ini row $i col $col " . date("Ymd His");
+			}			
+			//$dataArr[] = $arr;
+		}
+
+		//$sheet->fromArray($dataArr,null,"A1");		
+		$this->phpspreadsheet->save("hasil.xls" ,$spreadsheet);
+	}
 }
