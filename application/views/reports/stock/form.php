@@ -295,7 +295,8 @@
 			//var table_div = document.getElementById('bodyReport');
 			var table_div = document.getElementById('rpt_iframe').contentWindow.document.getElementById('bodyReport');
 
-            var table_html = table_div.outerHTML.replace(/ /g, '%20');
+			var table_html = table_div.outerHTML.replace(/ /g, '%20');
+			table_html = table_html.replace(/#/g,'%23');
 
             var a = document.createElement('a');
             a.href = data_type + ', ' + table_html;

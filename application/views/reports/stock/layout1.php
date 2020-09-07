@@ -7,13 +7,11 @@
 	<body id="bodyReport">
 		<style>
 			table{
-				border:1px solid #000;
-				
+				border:1px solid #000;				
 			}
 			th,td{
 				border:1px solid #000;
-			}
-			
+			}			
 		</style>
 		<div>Laporans Stock Barang</div>
 		<br>
