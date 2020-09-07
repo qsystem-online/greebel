@@ -51,7 +51,7 @@
 							$groupItemId = $row->fin_item_group_id;
 							echoIfColSelected(0,$selectedCols,"<td class='col-0'>$row->fst_item_group_name</td>");
 						}else{
-							echo "<td class='col-0'></td>";
+							echoIfColSelected(0,$selectedCols,"<td class='col-0'></td>");
 						}
 
 						$ttlItemIn += $row->fdb_qty_in;
@@ -64,7 +64,7 @@
 							$itemId = $row->fin_item_id;	   
 							echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->fst_item_name</td>");
 						}else{
-							echo "<td class='col-0'></td>";
+							echoIfColSelected(1,$selectedCols,"<td class='col-0'></td>");
 						}
 
 
@@ -82,7 +82,7 @@
 						if ($sumPerItem == true){
 							if (in_array(7,$selectedCols) || in_array(8,$selectedCols) ){
 								echo "<tr>";
-								echo "<td colspan='".totalSelectedCol(6,$selectedCols)."'>Total/Item</td>";
+								echo "<td colspan='".totalSelectedCol(6,$selectedCols)."'>Total/Item:".totalSelectedCol(6,$selectedCols)."</td>";
 								echoIfColSelected(6,$selectedCols,"<td class='col-6'></td>");
 								echoIfColSelected(7,$selectedCols,"<td class='col-7'>$ttlItemIn</td>");
 								echoIfColSelected(8,$selectedCols,"<td class='col-8'>$ttlItemOut</td>");
