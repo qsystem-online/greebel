@@ -466,4 +466,12 @@ class Test extends CI_Controller {
 		//$sheet->fromArray($dataArr,null,"A1");		
 		$this->phpspreadsheet->save("hasil.xls" ,$spreadsheet);
 	}
+
+	public function testExcel3(){
+	
+		$this->parser->parse('test/excel3',[]);
+	
+	}
+
+
 }

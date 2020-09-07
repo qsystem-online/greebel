@@ -420,3 +420,20 @@
 		return date_format($date,"Y-m-d");
 
 	}
+
+	function echoIfColSelected($colNo,$selectedCols,$sstrExist,$sstrNotExist=""){
+		if (in_array($colNo,$selectedCols)){
+			echo $sstrExist;
+		}else{
+			echo $sstrNotExist;
+		}
+	}
+	function totalSelectedCol($untilCol,$selectedCols){
+		$ttl = 0;
+		for($i=0;$i<$untilCol;$i++){
+			if (in_array($i,$selectedCols)){
+				$ttl += 1;
+			}
+		}
+		return $ttl;
+	}

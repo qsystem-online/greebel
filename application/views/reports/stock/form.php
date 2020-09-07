@@ -132,7 +132,8 @@
 		// }
 		
 		// currentValue = myRadio.value;
-	}         
+	}     
+
 	$(function() {
 		$("#select-GroupItemId").select2({
 			width: '100%',
@@ -216,7 +217,7 @@
 			event.preventDefault();
 			App.blockUIOnAjaxRequest("Please wait while processing data.....");
 			//data = new FormData($("#frmBranch")[0]);
-			data = $("#rptItems").serializeArray();
+			data = $("#rptItems").serializeArray();			
 			url = "<?= site_url() ?>report/stock/process";
 			
 			// $("iframe").attr("src",url);
@@ -259,7 +260,8 @@
 						// 
 						//Clear all previous error
 						$(".text-danger").html("");
-						url = "<?= site_url() ?>report/stock/generateexcel";
+						//url = "<= site_url() ?>report/stock/generateexcel";
+						url = "<?= site_url() ?>report/stock/generatereport";
 						//alert(url);
 						//$("iframe").attr("src",url);
 						$("#rptItems").attr('action', url);
@@ -284,25 +286,23 @@
 
 		$("#btnExcel").click(function(event) {
 			event.preventDefault();
-			App.blockUIOnAjaxRequest("Please wait while downloading excel file.....");
-			//data = new FormData($("#frmBranch")[0]);
-			resp = $("#rptUsers").serializeArray();
-			url = "<?= site_url() ?>report/stock/process";
-			
 
-			data = JSON.stringify(resp);
-			// $("#fin_branch_id").val(data.insert_id);
-			
-			//Clear all previous error
-			$(".text-danger").html("");
-			url = "<?= site_url() ?>report/stock/generateexcel/0";
-			//alert(url);
-			//$("iframe").attr("src",url);
-			$("#rptItems").attr('action', url);
-			$("#rptItems").attr('target', 'rpt_iframe');
-			$("#rptItems").submit();
-			$("a#toggle-window").click();
+			var iframe = $('#rpt_iframe'); // or some other selector to get the iframe
+			//var data_type = 'data:application/vnd.ms-excel';
+			var data_type = 'data:application/pdf';
 
+			//var table_div = document.getElementById('tblReport');
+			//var table_div = document.getElementById('bodyReport');
+			var table_div = document.getElementById('rpt_iframe').contentWindow.document.getElementById('bodyReport');
+
+            var table_html = table_div.outerHTML.replace(/ /g, '%20');
+
+            var a = document.createElement('a');
+            a.href = data_type + ', ' + table_html;
+			//a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
+			a.download = 'Laporan_stock' + '.xls';
+			a.click();                        			
+			return;
 		});        
 	});
 

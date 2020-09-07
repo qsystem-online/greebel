@@ -27,6 +27,7 @@ class Stock extends MY_Controller
 			['layout' => 1, 'label'=>'Q.Masuk', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Q.Keluar', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Q.Sisa', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Basic Unit', 'value'=>'10', 'selected'=>false,'sum_total'=>false],						
 			['layout' => 2, 'label'=>'Nou.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
             ['layout' => 2, 'label'=>'Group', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
 			['layout' => 2, 'label'=>'Type', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
@@ -882,6 +883,38 @@ class Stock extends MY_Controller
 		}
 	}
 	
+	public function generateReport($isPreview = 1){		
+		//var_dump($this->input->post());
+		$data = [
+			"fin_item_group_id" => $this->input->post("fin_item_group_id"),
+			"fin_item_type_id" => $this->input->post("fin_item_type_id"),
+			"fin_warehouse_id"=> $this->input->post("fin_warehouse_id"),
+			"fdt_from"=>dbDateFormat($this->input->post("fdt_from")),
+			"fdt_to"=>dbDateFormat($this->input->post("fdt_to")),
+			"fst_item_code" => $this->input->post("fst_item_code"),
+			"fst_item_code2" => $this->input->post("fst_item_code2"),
+			"rpt_layout" => $this->input->post("rpt_layout"),
+			"selected_columns" => array($this->input->post("selected_columns"))
+		];		
+		$dataReport = $this->stock_rpt_model->queryComplete($data,$data['rpt_layout']);
+
+		$selectedCols =$this->input->post("selected_columns");
+		if ($dataReport==[]) {
+			echo "Data Not Found !";
+			return;
+		}else{
+			$totalColumn = sizeof($data["selected_columns"]);			
+		}
+
+		if ($data['rpt_layout'] == 1){
+			$this->parser->parse('reports/stock/layout1', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+		}
+		
+		//echo "<div id='tstdiv'>Show Report</div>";//
+	}
+
+
+
 	private function buildKartuStock($dataReport){
 		$groupItemId ="";
 		$itemId = "";
