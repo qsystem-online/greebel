@@ -97,15 +97,18 @@ class Trsalesorder_model extends MY_Model {
     public function getDataById($fin_salesorder_id){
         $this->load->model("trinventory_model");
         $ssql = "select a.*,
-            b.fst_relation_name,b.fin_sales_id,a.fin_shipping_address_id,b.fin_cust_pricing_group_id,
+            b.fst_relation_name,a.fin_shipping_address_id,b.fin_cust_pricing_group_id,
             c.fst_fullname as fst_sales_name,d.fst_name as fst_address_name,d.fst_shipping_address 
             from trsalesorder a
             inner join msrelations b on a.fin_relation_id  = b.fin_relation_id 
             inner join users c on a.fin_sales_id  = c.fin_user_id   
-            inner join msshippingaddress d on a.fin_shipping_address_id = d.fin_shipping_address_id         
+            LEFT join msshippingaddress d on a.fin_shipping_address_id = d.fin_shipping_address_id         
             where a.fin_salesorder_id = ?";
         $qr = $this->db->query($ssql, [$fin_salesorder_id]);
         $rwSalesOrder = $qr->row();
+
+        //echo($this->db->last_query());
+        //die();
 
         $ssql = "select a.*,b.fst_item_name,b.fst_item_code,b.fst_max_item_discount from trsalesorderdetails a 
         left join msitems b on a.fin_item_id = b.fin_item_id

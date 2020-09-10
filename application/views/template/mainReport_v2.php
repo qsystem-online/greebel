@@ -4,7 +4,7 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<title>AdminLTE 2 | Dashboard</title>
+		<title>Report</title>
 		<!-- Tell the browser to be responsive to screen width -->
 		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 		<!-- JQUERY-UI -->
@@ -113,9 +113,7 @@
 				{REPORT_FOOTER}
 			</footer>
 
-			{CONTROL_SIDEBAR}
-		
-		  
+			{CONTROL_SIDEBAR}				  
 		</div>
 		<!-- ./wrapper -->
 

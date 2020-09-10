@@ -149,6 +149,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
 
                         </div>
+
                         <div class="form-group">
                             <label for="fst_storage_rack_info" class="col-md-2 control-label"><?= lang("Storage Rack Info") ?></label>
                             <div class="col-md-5">
@@ -169,6 +170,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fst_max_item_discount_err" class="text-danger"></div>
                             </div>
                         </div>
+
                         <div class='form-group'>
                             <label for="fdc_min_basic_unit_avg_cost" class="col-md-2 control-label"><?= lang("Min AvgCost") ?></label>
                             <div class="col-md-4">
@@ -182,12 +184,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fdc_max_basic_unit_avg_cost_err" class="text-danger"></div>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="fst_memo" class="col-md-2 control-label"><?= lang("Memo") ?></label>
                             <div class="col-md-10">
                                 <textarea rows="4" style="width:100%" class="form-control" id="fst_memo" placeholder="<?= lang("Memo") ?>" name="fst_memo"></textarea>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label for="fst_image" class="col-sm-2 control-label"><?= lang("Image") ?></label>
                             <div class="col-sm-4">
@@ -238,13 +242,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
                         <!-- /.tab-content -->
 
-                        <div class="box-footer text-right">
-                            
-                    </div>
+                        <div class="box-footer text-right">                            
+                        </div>
                         <!-- end box-footer -->
+                    </div>
                 </form>
             </div>
         </div>
+    </div>
 </section>
 
 <div id="mdlUnitDetails" class="modal fade in" role="dialog" style="display: none">

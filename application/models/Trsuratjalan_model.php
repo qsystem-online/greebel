@@ -259,7 +259,7 @@ class Trsuratjalan_model extends MY_Model {
 		$this->trinventory_model->deleteByCodeId("DO",$dataH->fin_sj_id);
 
 		//Cancel serial no
-		$this->trinventory_model->deleteInsertSerial("PPJ",$sjId);                
+		$this->trinventory_model->deleteInsertSerial("PPJ",$dataH->fin_sj_id);                
 
 		foreach($dataDetails as $dataD){
 			$finSalesorderDetailId = $dataD->fin_trans_detail_id;
@@ -338,7 +338,7 @@ class Trsuratjalan_model extends MY_Model {
 		foreach($dataDetails as $dataD){			
 			//Update data SO detail 
 			$ssql = "UPDATE trsalesorderdetails SET fdb_qty_out = fdb_qty_out +  ? WHERE fin_rec_id = ?";
-			$query = $this->db->query($ssql,[$dataD->fdb_qty,$dataD->fin_salesorder_detail_id]);
+			$query = $this->db->query($ssql,[$dataD->fdb_qty,$dataD->fin_trans_detail_id]);
 			throwIfDBError();
 		}
 
@@ -411,7 +411,7 @@ class Trsuratjalan_model extends MY_Model {
 		}
 
 		$ssql ="UPDATE trsuratjalan set fbl_update_stock = 1,fdt_delivery_datetime = now() where fin_sj_id = ?";
-		$this->db->query($ssql,[$finSJId]);
+		$this->db->query($ssql,[$sjId]);
 
 	}
 	
