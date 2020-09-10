@@ -45,19 +45,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- form start -->
             <form id="frmHeader" class="form-horizontal" action="" method="POST" >
 				<div class="box-body">
-					<input type="hidden" id="fin_assembling_id" name="fin_assembling_id" value="<?=$fin_assembling_id?>"/>
+					<input type="hidden" id="fin_mts_id" name="fin_mts_id" value="<?=$fin_mts_id?>"/>
 
 					<div class="form-group">
 						<label for="fst_assembling_no" class="col-md-2 control-label"><?=lang("MTS")?> #</label>
 						<div class="col-md-4">
-							<input type="text" class="form-control" id="fst_assembling_no" placeholder="<?=lang("Assembling No")?>" name="fst_assembling_no" value="<?=$fst_assembling_no?>"/>
-							<div id="fst_assembling_no_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_mts_no" placeholder="<?=lang("MTS No")?>" name="fst_mts_no" value="<?=$fst_mts_no?>"/>
+							<div id="fst_mts_no_err" class="text-danger"></div>
 						</div>								
 
-						<label for="fdt_assembling_datetime" class="col-md-2 control-label"><?=lang("Tanggal")?></label>
+						<label for="fdt_mts_datetime" class="col-md-2 control-label"><?=lang("Tanggal")?></label>
 						<div class="col-md-4">
-							<input type="text" class="form-control datetimepicker text-right" id="fdt_assembling_datetime" placeholder="<?=lang("Mutasi Datetime")?>" name="fdt_assembling_datetime" value=""/>
-							<div id="fdt_fa_disposal_datetime_err" class="text-danger"></div>
+							<input type="text" class="form-control datetimepicker text-right" id="fdt_mts_datetime" name="fdt_mts_datetime" value=""/>
+							<div id="fdt_mts_datetime_err" class="text-danger"></div>
 						</div>								
                     </div>  
 
@@ -72,8 +72,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">					
 						<label for="fin_item_id" class="col-md-2 control-label"><?=lang("Group Item")?></label>
 						<div class="col-md-10">
-							<select  class="form-control hpp-header" id="fin_item_id" placeholder="<?=lang("Item")?>" name="fin_item_id" style="width:100%"></select>
-							<div id="fin_item_id_err" class="text-danger"></div>
+							<select  class="form-control hpp-header" id="fin_item_group_id" placeholder="<?=lang("Group Item")?>" name="fin_item_group_id" style="width:100%"></select>
+							<div id="fin_item_group_id_err" class="text-danger"></div>
 						</div>
                     </div>  					
 
@@ -121,6 +121,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
     </div>
 </section>
+<?php
+    echo $mdlItemGroup;
+?>
 
 <div id="mdlDetail" class="modal fade in" role="dialog" style="display: none">
 	<div class="modal-dialog" style="display:table;width:600px">
@@ -410,7 +413,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlPrint ?>
-<?php echo $mdlJurnal ?>
 
 <script type="text/javascript" info="define">
 	var selectedDetail;	
@@ -462,102 +464,46 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			e.preventDefault();
 			mdlDetail.show();
 		});
-
-		$(".hpp-header").change(function(e){
-			e.preventDefault();
-			calculateHPPHeader();
-
-			if ($("#fdc_hpp_header").val() != 0){
-				return;
-			}
-
-			if ($("#fin_item_id").val() == null || $("#fst_unit").val() == null){
-				return;
-			}
-			
-
-			var finWarehouseId;
-			if ($("#fst_type").val() == "ASSEMBLING"){
-				finWarehouseId = $("#fin_target_warehouse_id").val();				
-			}else{
-				finWarehouseId = $("#fin_source_warehouse_id").val();
-			}
-
-			data = {
-				"fin_item_id":$("#fin_item_id").val(),
-				"fst_unit":$("#fst_unit").val(),
-				"fdb_qty":$("#fdb_qty").val(),
-				"fin_warehouse_id":finWarehouseId
-			};
-
-			$.ajax({
-				url:"<?=site_url()?>tr/production/assembling/ajxGetTotalHPP",
-				method:"GET",
-				data:data,
-
-			}).done(function(resp){				
-				if (resp.status == "SUCCESS"){
-					data = resp.data;
-					$("#fdc_hpp_header").val(data.HPP);
-				}
-			});
-		})
-		
+	
 	});
 </script>
 <script type="text/javascript" info="init">
 	$(function(){		
-		$("#fdt_assembling_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
-		$("#fin_item_id").select2({
-			minimumInputLength: 2,
-			ajax:{
-				delay:250,
-				url:"<?=site_url()?>tr/production/assembling/ajxGetItemList",
-				processResults: function (resp) {
-					console.log(resp);
-					if (resp.status == "SUCCESS"){
-						data = resp.data;
-						var list  = $.map(data,function(v,i){
-							v.id = v.fin_item_id;
-							v.text = v.fst_item_code + " - " +v.fst_item_name;
-							return v;
-						});
-						return {
-							results:list
-						}							
-					}
-				}
-			}
-		});
-		
-		$("#fst_unit").select2({
-			minimumInputLength: 0,
-			minimumResultsForSearch: -1,
-			ajax:{
-				delay:250,
-				url:function(params){
-					return "<?=site_url()?>tr/production/assembling/ajxGetUnits/" + $("#fin_item_id").val();
-				},
-				processResults: function (resp) {
-					console.log(resp);
-					if (resp.status == "SUCCESS"){
-						data = resp.data;
-						var list  = $.map(data,function(v,i){
-							v.id = v.fst_unit;
-							v.text = v.fst_unit;
-							return v;
-						});
-						return {
-							results:list
-						}							
-					}
-				}
-			}
-		});
-		
+		$("#fdt_mts_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 
-		$("#fin_source_warehouse_id,#fin_target_warehouse_id").select2();
-
+		$("#fin_item_group_id").select2({
+            width: '100%',
+            ajax: {
+                url: '<?= site_url() ?>master/item/get_data_ItemGroupId',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(data) {
+                    data2 = [];
+                    $.each(data, function(index, value) {
+                        data2.push({
+                            "id": value.fin_item_group_id,
+                            "text": value.fst_item_group_name
+                        });
+                    });
+                    console.log(data2);
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+        }).on("select2:open",function(e){
+            e.preventDefault();
+			$(this).select2("close");
+			var leafOnly =true;
+            showItemGroup(leafOnly,function(node){
+                //consoleLog(node);                
+                $("#fin_item_group_id").empty();
+                var newOption = new Option(node.text,node.id, false, false);
+				$('#fin_item_group_id').append(newOption).trigger('change');
+				fillDetail();
+            });
+		});
 		
 		$('#tbldetails').on('preXhr.dt', function ( e, settings, data ) {
 			data.sessionId = "TEST SESSION ID";
@@ -717,7 +663,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if (mode == "EDIT"){			
 			App.blockUIOnAjaxRequest();
 			$.ajax({
-				url:"<?= site_url() ?>tr/production/assembling/fetch_data/<?=$fin_assembling_id?>",
+				url:"<?= site_url() ?>tr/production/assembling/fetch_data/<?=$fin_mts_id?>",
 			}).done(function(resp){				
 				dataH =  resp.data.header;
 				if (dataH == null){
@@ -793,21 +739,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	}
 
-	function calculateHPPHeader(){
-		var t = $('#tbldetails').DataTable();
-		var datas = t.data();
-
-		var ttlHPP =0;
-		$.each(datas,function(i,v){
-			ttlHPP += parseFloat(v.fdc_hpp);
-		});
-
-		if (ttlHPP  == 0){
-			$("#fdc_hpp_header").prop("readonly",0);
-		}else{	
-			$("#fdc_hpp_header").prop("readonly",1);
-		}
-		$("#fdc_hpp_header").val(App.money_format(ttlHPP));
+	function fillDetail(){
+		alert("Isi detail table");
 	}
 
 </script>

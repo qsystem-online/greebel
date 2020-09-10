@@ -114,20 +114,20 @@ class Mts extends MY_Controller{
 
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
-		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
-		$jurnal_modal = $this->parser->parse('template/mdlJurnal', [], true);
+		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);		
+		$data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>1], true);
 		$mdlPrint = $this->parser->parse('template/mdlPrint.php', [], true);
 
 
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? lang("Add Master Target Sales") : lang("Update Master Target Sales");
-		$data["fin_assembling_id"] = $finId;
+		$data["fin_mts_id"] = $finId;
 		$data["mdlEditForm"] = $edit_modal;
 		$data["mdlPrint"] = $mdlPrint;				
-		$data["mdlJurnal"] = $jurnal_modal;			
+		//$data["mdlJurnal"] = $jurnal_modal;			
 
 		$fstAssemblingNo = $this->trassembling_model->generateTransactionNo();
-		$data["fst_assembling_no"] = $fstAssemblingNo;	
+		$data["fst_mts_no"] = $fstAssemblingNo;	
 		$page_content = $this->parser->parse('pages/tr/production/mts/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 
@@ -391,41 +391,19 @@ class Mts extends MY_Controller{
 	}
 
 
-	public function ajxGetItemList(){
-		$this->load->model("msitems_model");
-		$term =  $this->input->get("term");
-		$list = $this->msitems_model->getItemList($term);
+	public function ajxGetDetailItems($finItemGroupId){
+
+		$ssql ="SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,b.fst_unit FROM msitems a
+			INNER JOIN (SELECT fin_item_id, FROM msitemunitdetails b on a.fin_item_id = b.fin_item_id				
+			WHERE a.fin_item_type_id = 4 and a.fin_item_group_id = ? and b.fbl_is_basic_unit = 1" ;
+		$qr = $this->db->query($ssql,[$finItemGroupId]);
+
+		$rs = $qr->result();
 		$this->json_output([
 			"status"=>"SUCCESS",
-			"messages"=>"",
-			"data"=>$list
+			"message"=>"",
+			"data"=>$rs
 		]);
-	}
 
-	public function ajxGetUnits($finItemId){
-		$this->load->model("msitemunitdetails_model");
-		$list = $this->msitemunitdetails_model->getItemListUnits($finItemId);
-		$this->json_output([
-			"status"=>"SUCCESS",
-			"messages"=>"",
-			"data"=>$list,
-		]);
-	}	
-
-	public function ajxGetTotalHPP(){
-		$finItemId = $this->input->get("fin_item_id");
-		$fstUnit = $this->input->get("fst_unit");
-		$fdbQty =  $this->input->get("fdb_qty");
-		$finWarehouseId  = $this->input->get("fin_warehouse_id");
-
-		$this->load->model("trinventory_model");
-		$totalHpp = $this->trinventory_model->getTotalHPP($finItemId,$fstUnit,$fdbQty,$finWarehouseId);
-		$this->json_output([
-			"status"=>"SUCCESS",
-			"messages"=>"",
-			"data"=>[
-				"HPP"=>$totalHpp,
-			]
-		]);
 	}
 }    

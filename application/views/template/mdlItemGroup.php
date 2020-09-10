@@ -260,7 +260,11 @@
     });
 
 	function showItemGroup(leafOnly,callback){
-       
+        if (g_ReadOnly == true){
+            $("#btnCreateRoot").hide();
+        }else{
+            $("#btnCreateRoot").show();
+        }
 		$("#mdlItemGroup").modal({
 			backdrop:"static",
 		});    
