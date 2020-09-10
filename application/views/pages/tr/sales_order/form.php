@@ -753,7 +753,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				},
 				{"title" : "Disc (%)",width:"50px",
 					data:"fst_disc_item",
-					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
+					//render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
 				},
 				{"title" : "Disc / Item",width:"80px",data:"fdc_disc_amount_per_item",
