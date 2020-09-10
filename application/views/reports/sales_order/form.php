@@ -3,15 +3,31 @@
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
-                <label for="select-Branch" class="col-sm-2 control-label"><?= lang("Branch") ?> :</label>
+                <label for="active_branch_id" class="col-sm-2 control-label"><?= lang("Branch") ?> :</label>
                 <div class="col-sm-4">
-                    <select id="select-Branch" class="form-control" name="fin_branch_id"></select>
+                    <?php
+                    $active_user = $this->session->userdata("active_user");			
+                    $branchs = $this->msbranches_model->getAllList();
+                    $disabledSelect = ($active_user->fbl_is_hq == 1) ? "" : "disabled";
+                    //$disabledSelect = ($active_user->fin_level <= getDbConfig("change_branch_level")) ? "" : "disabled";
+                    ?>
+                    <select id="fin_branch_id" class="form-control" name="fin_branch_id" <?= $disabledSelect ?>>
+                    <option value='0'>All</option>
+                        <?php
+                        //print_r($branchs);
+                        $activeBranchId = $this->session->userdata("fin_branch_id");
+                        foreach ($branchs as $branch) {
+                            $isActive = ($branch->fin_branch_id == $activeBranchId) ? "selected" : "";
+                            echo "<option value=" . $branch->fin_branch_id . " $isActive >" . $branch->fst_branch_name . "</option>";
+                        }
+                        ?>
+                    </select>
                     <div id="fin_branch_id_err" class="text-danger"></div>
                 </div>
                 <label for="select-warehouse" class="col-sm-2 control-label"><?=lang("Warehouse")?> :</label>
                 <div class="col-sm-4">
                     <select id="select-warehouse" class="form-control" name="fin_warehouse_id">
-                        <option value=''>--select--</option>
+                        <option value='0'>All</option>
                         <?php
                             $warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
                             foreach($warehouseList as $warehouse){
@@ -26,14 +42,13 @@
                 <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?> :</label>
                 <div class="col-sm-4">
                     <select id="select-relations" class="form-control non-editable" name="fin_relation_id">
-                        <option value="0">-- <?=lang("select")?> --</option>
                     </select>
                     <div id="fin_relation_id_err" class="text-danger"></div>
                 </div>            
                 <label for="select-sales" class="col-sm-2 control-label"><?=lang("Sales")?> :</label>
                 <div class="col-sm-4">
                     <select id="select-sales" class="form-control" name="fin_sales_id">
-                        <option value=''>--select--</option>
+                        <option value='0'>All</option>
                         <?php
                             $salesList = $this->users_model->getSalesList();
                             foreach($salesList as $sales){
@@ -100,7 +115,8 @@
             <div class="form-group">
                 <div class="checkbox col-md-12">
                     <label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label>
-                </div>                        
+                    <label><input id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("PPN Include") ?></label>
+                </div>                  
             </div>
     </div>
 </form>
@@ -130,6 +146,8 @@
 
         console.log(newArray);
         $('#multiple-columns').multiselect('dataprovider', newArray);
+        $('#multiple-columns').multiselect('selectAll',false);
+		$('#multiple-columns').multiselect('updateButtonText');
         // for(var i=0; i<newArray.length; i++){
         //     alert(newArray[i].label);
         //     console.log(newArray[i].label);
@@ -138,36 +156,6 @@
         // currentValue = myRadio.value;
     }         
     $(function() {
-        $("#select-Branch").select2({
-            width: '100%',
-            ajax: {
-                url: '<?= site_url() ?>master/warehouse/get_Branch',
-                dataType: 'json',
-                delay: 250,
-                processResults: function(data) {
-                    data2 = [];
-                    $.each(data, function(index, value) {
-                        data2.push({
-                            "id": value.fin_branch_id,
-                            "text": value.fst_branch_name
-                        });
-                    });
-                    return {
-                        results: data2
-                    };
-                },
-                cache: true,
-            }
-        });
-
-		// $("#fdt_salesorder_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");		
-		// $("#fdt_salesorder_datetime").val(dateTimeFormat("<?= date("Y-m-d")?>")).datetimepicker("update");		
-        // $("#fdt_salesorder_datetime").datepicker('update'));
-
-		// $("#btnList").click(function(e){
-		// 	e.preventDefault();
-		// 	window.location.replace("<?=site_url()?>master/branch/lizt");
-        // });
         $("#select-relations").select2({
 			width: '100%',
 			ajax: {
@@ -177,15 +165,14 @@
 				processResults: function (data){
 					items = [];
 					data = data.data;
+                    items.push({
+							"id" : "0",
+							"text" : "ALL",					
+						});
 					$.each(data,function(index,value){
 						items.push({
 							"id" : value.fin_relation_id,
-							"text" : value.fst_relation_name,
-							"fin_sales_id" : value.fin_sales_id,
-							"fst_shipping_address":value.fst_shipping_address,
-							"fin_warehouse_id":value.fin_warehouse_id,
-							"fin_terms_payment":value.fin_terms_payment,
-							"fin_cust_pricing_group_id" :value.fin_cust_pricing_group_id					
+							"text" : value.fst_relation_name,					
 						});
 					});					
 					return {
@@ -251,7 +238,8 @@
                         // 
                         //Clear all previous error
                         $(".text-danger").html("");
-                        url = "<?= site_url() ?>report/sales_order/generateexcel";
+                        //url = "<?= site_url() ?>report/sales_order/generateexcel";
+                        url = "<?= site_url() ?>report/sales_order/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
                         $("#rptSalesOrder").attr('action', url);
@@ -275,27 +263,26 @@
         });
 
         $("#btnExcel").click(function(event) {
-            event.preventDefault();
-            App.blockUIOnAjaxRequest("Please wait while downloading excel file.....");
-            //data = new FormData($("#frmBranch")[0]);
-            resp = $("#rptSalesOrder").serializeArray();
-            url = "<?= site_url() ?>report/sales_order/process";
-            
+			event.preventDefault();
 
-            data = JSON.stringify(resp);
-            // $("#fin_branch_id").val(data.insert_id);
-            
-            //Clear all previous error
-            $(".text-danger").html("");
-            url = "<?= site_url() ?>report/sales_order/generateexcel/0";
-            //alert(url);
-            //$("iframe").attr("src",url);
-            $("#rptSalesOrder").attr('action', url);
-            $("#rptSalesOrder").attr('target', 'rpt_iframe');
-            $("#rptSalesOrder").submit();
-            $("a#toggle-window").click();
+			var iframe = $('#rpt_iframe'); // or some other selector to get the iframe
+			//var data_type = 'data:application/vnd.ms-excel';
+			var data_type = 'data:application/pdf';
 
-        });        
+			//var table_div = document.getElementById('tblReport');
+			//var table_div = document.getElementById('bodyReport');
+			var table_div = document.getElementById('rpt_iframe').contentWindow.document.getElementById('bodyReport');
+
+			var table_html = table_div.outerHTML.replace(/ /g, '%20');
+			table_html = table_html.replace(/#/g,'%23');
+
+            var a = document.createElement('a');
+            a.href = data_type + ', ' + table_html;
+			//a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
+			a.download = 'Laporan_SO_Detail' + '.xls';
+			a.click();                        			
+			return;
+		});      
     });
 
 </script>

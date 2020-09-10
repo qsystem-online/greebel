@@ -4,7 +4,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Sales_order extends MY_Controller
 {
 
-	public $layout_columns =[]; 
+	public $layout_columns =[];
+	public $spreadsheet; 
 
 	public function __construct()
 	{
@@ -13,26 +14,35 @@ class Sales_order extends MY_Controller
 		$this->load->model('vmodels/sales_order_rpt_model');
 		$this->load->model('users_model');
 		$this->load->model('mswarehouse_model');
+		$this->load->model('msrelations_model');
 
 		$this->layout_columns = [
-			['layout' => 1, 'label'=>'Nou.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Pelanggan/Customer', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'No.SO', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Tgl.SO', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Pelanggan', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Sales', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Kode Barang', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Nama Barang', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Qty', 'value'=>'7', 'selected'=>false,'sum_total'=>true],
-			['layout' => 1, 'label'=>'Unit', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Harga', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Diskon', 'value'=>'10', 'selected'=>false,'sum_total'=>true],
-			['layout' => 1, 'label'=>'Jumlah', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
-			['layout' => 2, 'label'=>'Nou.', 'value'=>'A', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'No.SO', 'value'=>'B', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Tgl.SO', 'value'=>'C', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Pelanggan', 'value'=>'D', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Sales', 'value'=>'E', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Nilai SO', 'value'=>'F', 'selected'=>false,'sum_total'=>true]
+			['layout' => 1, 'label'=>'TOP', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'GUD', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Sales', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Kode Barang', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Nama Barang', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Qty', 'value'=>'8', 'selected'=>false,'sum_total'=>true],
+			['layout' => 1, 'label'=>'Unit', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Harga', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Diskon', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
+			['layout' => 1, 'label'=>'Jumlah', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
+			['layout' => 2, 'label'=>'No.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'No.SO', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Tgl.SO', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'TOP', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'GUD', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Sales', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Kode Barang', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Nama Barang', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Qty', 'value'=>'8', 'selected'=>false,'sum_total'=>true],
+			['layout' => 2, 'label'=>'Unit', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Harga', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Diskon', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
+			['layout' => 2, 'label'=>'Jumlah', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
 		];
 
 	}
@@ -45,48 +55,6 @@ class Sales_order extends MY_Controller
 	public function loadForm()
 	{
 		$this->load->library('menus');
-		// $this->list['page_name'] = "Branch";
-		// $this->list['list_name'] = "Branch List";
-		// $this->list['addnew_ajax_url'] = site_url() . 'master/branch/add';
-		// $this->list['pKey'] = "id";
-		// $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/branch/fetch_list_data';
-		// $this->list['delete_ajax_url'] = site_url() . 'master/branch/delete/';
-		// $this->list['edit_ajax_url'] = site_url() . 'master/branch/edit/';
-		// $this->list['arrSearch'] = [
-		//     'fin_branch_id' => 'Branch ID',
-		//     'fst_branch_name' => 'Branch Name'
-		// ];
-
-		// $this->list['breadcrumbs'] = [
-		//     ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-		//     ['title' => 'Branch', 'link' => '#', 'icon' => ''],
-		//     ['title' => 'List', 'link' => NULL, 'icon' => ''],
-		// ];
-		// $this->list['columns'] = [
-		//     ['title' => 'Branch ID', 'width' => '5%', 'data' => 'fin_branch_id'],
-		//     ['title' => 'Branch Name', 'width' => '15%', 'data' => 'fst_branch_name'],
-		//     ['title' => 'Phone', 'width' => '10%', 'data' => 'fst_branch_phone'],
-		//     ['title' => 'Notes', 'width' => '15%', 'data' => 'fst_notes'],
-		//     ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-center']
-		// ];
-		
-
-
-		// $layout_columns = [['layout' => 1, 'label'=>'Nou.', 'title'=>'Nou.','value'=>1, 'selected'=>true],
-		//                 ['layout' => 1, 'label'=>'No.SO', 'title'=>'No.SO','value'=>2, 'selected'=>true],
-		//                 ['layout' => 1, 'label'=>'Tgl.SO', 'title'=>'Tgl.SO','value'=>3, 'selected'=>true],
-		//                 ['layout' => 1, 'label'=>'Pelanggan', 'title'=>'Pelanggan','value'=>4, 'selected'=>true],
-		//                 ['layout' => 1, 'label'=>'Sales', 'title'=>'Sales','value'=>5, 'selected'=>true],
-		//                 ['layout' => 1, 'label'=>'Kode Barang', 'title'=>'Kode Barang','value'=>6, 'selected'=>true],
-		//                 ['layout' => 1, 'label'=>'Nama Barang', 'title'=>'Nama Barang','value'=>7, 'selected'=>true],
-		//                 ['layout' => 1, 'label'=>'Qty', 'title'=>'Qty','value'=>8, 'selected'=>true],
-		//                 ['layout' => 2, 'label'=>'Nou.', 'title'=>'Nomor','value'=>1, 'selected'=>true],
-		//                 ['layout' => 2, 'label'=>'No.SO', 'title'=>'No.SO','value'=>2, 'selected'=>true],
-		//                 ['layout' => 2, 'label'=>'Tgl.SO', 'title'=>'Tgl.SO','value'=>3, 'selected'=>true],
-		//                 ['layout' => 2, 'label'=>'Pelanggan', 'title'=>'Pelanggan','value'=>4, 'selected'=>true],
-		//                 ['layout' => 2, 'label'=>'Sales', 'title'=>'Sales','value'=>5, 'selected'=>true],
-		//                 ['layout' => 2, 'label'=>'Nilai SO', 'title'=>'Nilai SO','value'=>6, 'selected'=>true]
-		//                 ];
 						
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$fin_branch_id = 0;
@@ -866,4 +834,40 @@ class Sales_order extends MY_Controller
 		$this->Cell(30, 10, 'Percobaan Header Dan Footer With Page Number', 0, 0, 'C');
 		$this->Cell(0, 10, 'Halaman ' . $this->PageNo() . ' dari {nb}', 0, 0, 'R');
 	}
+
+	public function generateReport($isPreview = 1){		
+		//var_dump($this->input->post());
+		//$activeBranchId = $this->session->userdata("active_branch_id");
+		$data = [
+			"fin_branch_id" => $this->input->post("fin_branch_id"),
+			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
+			"fin_relation_id" => $this->input->post("fin_relation_id"),
+			"fin_sales_id" => $this->input->post("fin_sales_id"),
+			"fdt_salesorder_datetime" => $this->input->post("fdt_salesorder_datetime"),
+			"fdt_salesorder_datetime2" => $this->input->post("fdt_salesorder_datetime2"),
+			"fbl_is_vat_include" => $this->input->post("fbl_is_vat_include"),
+			"rpt_layout" => $this->input->post("rpt_layout"),
+			"selected_columns" => array($this->input->post("selected_columns"))
+		];
+
+				
+		$dataReport = $this->sales_order_rpt_model->queryComplete($data,"a.fin_salesorder_id",$data['rpt_layout']);
+
+		$selectedCols =$this->input->post("selected_columns");
+		if ($dataReport==[]) {
+			echo "Data Not Found !";
+			return;
+		}else{
+			$totalColumn = sizeof($data["selected_columns"]);			
+		}
+
+		if ($data['rpt_layout'] == 1){
+			$this->parser->parse('reports/sales_order/layout1', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+		}else if($data['rpt_layout'] == 2){
+			$this->parser->parse('reports/sales_order/layout2', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+		}
+		
+		//echo "<div id='tstdiv'>Show Report</div>";//
+	}
+
 }
