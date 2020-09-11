@@ -135,10 +135,6 @@
 							echoIfColSelected(6,$selectedCols,"<td class='col-6'></td>");
 							echoIfColSelected(7,$selectedCols,"<td class='col-7'></td>");	
 						}
-
-
-						
-						
 						echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->fst_sj_no</td>");
 						echoIfColSelected(9,$selectedCols,"<td class='col-9'>$row->fdt_sj_datetime</td>");
 						echoIfColSelected(10,$selectedCols,"<td class='col-10'>$row->qty_sj</td>");
@@ -151,23 +147,18 @@
 					$ttl_qty_sj += $row->qty_sj;
 					$ttl_qty_os = $row->Qty - $ttl_qty_sj;
 
+					/*
 					echo "<tr>";
 					echo "<td colspan='10' style='text-align: right;font-weight: bold'>Total</td>";
 					echo "<td style='text-align: right;font-weight: bold'>$ttl_qty_sj</td>";									
 					echo "<td style='text-align: right;font-weight: bold'>$ttl_qty_os</td>";
-					echo "</tr>";
+					echo "</tr>";*/
 
-					/*
 					echo "<tr>";
-					echo "<td colspan='".totalSelectedCol(10,$selectedCols)."'style='text-align: right;font-weight: bold'></td>";
-                    echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: right'>$ttl_qty_sj</td>");
-                    echoIfColSelected(11,$selectedCols,"<td class='col-11' style='font-weight: bold;text-align: right'>$ttl_qty_os</td>");
-					//echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$ttl_dpp_amountNew</td>");
-					//echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: right'>$ttl_vat_amountNew</td>");
-					//echoIfColSelected(11,$selectedCols,"<td class='col-11' style='font-weight: bold;text-align: right'>$ttl_totalNew</td>");
-					//echoIfColSelected(12,$selectedCols,"<td class='col-12' style='font-weight: bold;text-align: right'>$ttl_downpaymentNew</td>");									
+					echoIfColSelected(11,$selectedCols,"<td colspan='".totalSelectedCol(10,$selectedCols)."' style='text-align: right;font-weight: bold'>Total</td>");
+					echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_sj</td>");
+					echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_os</td>");															
 					echo "</tr>";
-					*/
 
 				?>
 			</tbody>

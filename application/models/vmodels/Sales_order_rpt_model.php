@@ -27,27 +27,76 @@ class Sales_order_rpt_model extends CI_Model {
         // if ($area_code > 0) {
         //     $swhere += " and a.fin_sales_area_id = " . $sales_area_id;
         // }
-        if ($branch_id > "0") {
-            $swhere .= " and a.fin_branch_id = " . $this->db->escape($branch_id);
+        if ($rptLayout == "1"){
+            if ($branch_id > "0") {
+                $swhere .= " and a.fin_branch_id = " . $this->db->escape($branch_id);
+            }
+            if ($warehouse_id > "0" ) {
+                $swhere .= " and a.fin_warehouse_id = " . $this->db->escape($warehouse_id);
+            }
+            if ($relation_id > "0") {
+                $swhere .= " and a.fin_relation_id = " . $this->db->escape($relation_id);
+            }
+            if ($sales_id > "0") {
+                $swhere .= " and a.fin_sales_id = " . $this->db->escape($sales_id);
+            }
+            if (isset($start_date)) {
+                $swhere .= " and a.fdt_salesorder_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
+            }
+            if (isset($end_date)) {
+                $swhere .= " and a.fdt_salesorder_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
+            }
+            if ($fbl_is_vat_include == 1) {
+                $swhere .= " and a.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
+            }
         }
-        if ($warehouse_id > "0" ) {
-            $swhere .= " and a.fin_warehouse_id = " . $this->db->escape($warehouse_id);
+        if ($rptLayout == "2"){
+            if ($branch_id > "0") {
+                $swhere .= " and a.fin_branch_id = " . $this->db->escape($branch_id);
+            }
+            if ($warehouse_id > "0" ) {
+                $swhere .= " and a.fin_warehouse_id = " . $this->db->escape($warehouse_id);
+            }
+            if ($relation_id > "0") {
+                $swhere .= " and a.fin_relation_id = " . $this->db->escape($relation_id);
+            }
+            if ($sales_id > "0") {
+                $swhere .= " and a.fin_sales_id = " . $this->db->escape($sales_id);
+            }
+            if (isset($start_date)) {
+                $swhere .= " and a.fdt_salesorder_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
+            }
+            if (isset($end_date)) {
+                $swhere .= " and a.fdt_salesorder_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
+            }
+            if ($fbl_is_vat_include == 1) {
+                $swhere .= " and a.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
+            }
         }
-        if ($relation_id > "0") {
-            $swhere .= " and a.fin_relation_id = " . $this->db->escape($relation_id);
+        if ($rptLayout == "3"){
+            if ($branch_id > "0") {
+                $swhere .= " and b.fin_branch_id = " . $this->db->escape($branch_id);
+            }
+            if ($warehouse_id > "0" ) {
+                $swhere .= " and b.fin_warehouse_id = " . $this->db->escape($warehouse_id);
+            }
+            if ($relation_id > "0") {
+                $swhere .= " and b.fin_relation_id = " . $this->db->escape($relation_id);
+            }
+            if ($sales_id > "0") {
+                $swhere .= " and b.fin_sales_id = " . $this->db->escape($sales_id);
+            }
+            if (isset($start_date)) {
+                $swhere .= " and b.fdt_salesorder_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
+            }
+            if (isset($end_date)) {
+                $swhere .= " and b.fdt_salesorder_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
+            }
+            if ($fbl_is_vat_include == 1) {
+                $swhere .= " and b.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
+            }
         }
-        if ($sales_id > "0") {
-            $swhere .= " and a.fin_sales_id = " . $this->db->escape($sales_id);
-        }
-        if (isset($start_date)) {
-            $swhere .= " and a.fdt_salesorder_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
-        }
-        if (isset($end_date)) {
-            $swhere .= " and a.fdt_salesorder_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
-        }
-        if ($fbl_is_vat_include == 1) {
-            $swhere .= " and a.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
-        }
+
         if ($swhere != "") {
             $swhere = " where " . substr($swhere, 5);
         }
@@ -79,6 +128,19 @@ class Sales_order_rpt_model extends CI_Model {
                 on a.fin_sales_id = d.fin_user_id " . $swhere . $sorderby;
                 break;
             case "3":
+                $ssql = "SELECT b.fin_salesorder_id as Id_SO,b.fst_salesorder_no as No_SO, b.fdt_salesorder_datetime as SO_Date, b.fin_terms_payment as TOP,b.fin_warehouse_id as Warehouse_Id,b.fin_sales_id as Sales_Id,
+                a.fst_username as Sales_Name,c.fst_relation_name as Relation_Name,f.fin_rec_id as ID_DetailSO, f.fin_item_id as Item_Id,g.fst_item_code as Item_Code,f.fst_custom_item_name as Item_Name,
+                f.fdb_qty as Qty, f.fst_unit as Unit, e.fst_sj_no as fst_sj_no, e.fdt_sj_datetime as fdt_sj_datetime,d.fdb_qty as qty_sj,h.fst_warehouse_name as Warehouse
+                FROM users a RIGHT OUTER JOIN 
+                trsalesorder b ON a.fin_user_id = b.fin_sales_id LEFT OUTER JOIN 
+                msrelations c ON b.fin_relation_id = c.fin_relation_id LEFT OUTER JOIN 
+                (SELECT a.fin_trans_id,a.fin_sj_id,b.fin_trans_detail_id,b.fin_item_id,b.fdb_qty FROM trsuratjalan a LEFT OUTER JOIN trsuratjalandetails b ON a.fin_sj_id = b.fin_sj_id) d LEFT OUTER JOIN
+                trsuratjalan e ON d.fin_sj_id = e.fin_sj_id RIGHT OUTER JOIN 
+                trsalesorderdetails f ON d.fin_trans_id = f.fin_salesorder_id AND d.fin_trans_detail_id = f.fin_rec_id AND d.fin_item_id = f.fin_item_id LEFT OUTER JOIN 
+                msitems g ON f.fin_item_id = g.fin_item_id ON b.fin_salesorder_id = f.fin_salesorder_id LEFT OUTER JOIN
+                mswarehouse h ON b.fin_warehouse_id = h.fin_warehouse_id $swhere ORDER BY b.fin_salesorder_id";
+                break;
+            case "4":
                 $ssql = "select a.fin_salesorder_id as Id_SO,a.fst_salesorder_no as No_SO, a.fdt_salesorder_datetime as SO_Date, a.fin_terms_payment as TOP,
                 a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,c.fst_relation_name as Relation_Name, a.fin_sales_id as Sales_Id, e.fst_username as Sales_Name,
                 b.fin_rec_id as ID_DetailSO, b.fin_item_id as Item_Id, f.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,
