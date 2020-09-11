@@ -56,11 +56,11 @@
 		<div>Tanggal S/O: <?= $this->input->post("fdt_salesorder_datetime") ?>  s/d <?= $this->input->post("fdt_salesorder_datetime2") ?></div> 
         <div>Customer: <?= $name_relations ?> </div>
         <div>Sales: <?= $name_sales ?></div>                            
-		<table id="tblReport" cellpadding="0" cellspacing="0">      
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1700px">      
 			<thead>
 				<tr style="background-color:RoyalBlue;color:white">
 					<?php
-						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:200px'>Pelanggan/Customer</th>");
+						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:300px'>Pelanggan/Customer</th>");
 						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:150px'>No.S/O</th>");
 						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:150px'>Tgl S/O</th>");
 						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:50px'>TOP</th>");
@@ -97,7 +97,7 @@
 								$totalQty += $subQty;
 								$totalDiscount += $subDiscount;
                                 $totalAmount += $subAmount;
-                                $newtotalAmount = number_format ($totalAmount, 2, '.', ',');                               
+                                $newtotalAmount = formatNumber($totalAmount,2);                               
                                 //tulis subtotal per-group
                                     echo "<tr>";
                                     echo "<td colspan='".totalSelectedCol(12,$selectedCols)."'style='text-align: right;font-weight: bold'>Total Per-S/O :</td>";
@@ -124,8 +124,8 @@
                             echoIfColSelected(4,$selectedCols,"<td class='col-4'></td>");
                             echoIfColSelected(5,$selectedCols,"<td class='col-5'></td>");
                         }
-                        $Price = number_format ($row->Price, 2, '.', ',');
-                        $Amount = number_format ($row->Amount, 2, '.', ',');
+                        $Price = formatNumber ($row->Price,2);
+                        $Amount = formatNumber ($row->Amount,2);
 						echoIfColSelected(6,$selectedCols,"<td class='col-6'>$row->Item_Code</td>");
 						echoIfColSelected(7,$selectedCols,"<td class='col-7'>$row->Item_Name</td>");
 						echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->Qty</td>");
@@ -135,11 +135,11 @@
                         echoIfColSelected(12,$selectedCols,"<td class='col-12' style='text-align: right'>$Amount</td>");											                                                                                                                                                                      
                         echo "</tr>";
                         $subAmount += $row->Amount;
-                        $subAmountNew = number_format ($subAmount, 2, '.', ',');
+                        $subAmountNew = formatNumber ($subAmount,2);
 					}
 					$totalDiscount += $subDiscount;
 					$totalAmount += $subAmount;
-					$newtotalAmount = number_format ($totalAmount, 2, '.', ',');  
+					$newtotalAmount = formatNumber ($totalAmount,2);  
 
 					echo "<tr>";
 					echo "<td colspan='".totalSelectedCol(12,$selectedCols)."'style='text-align: right;font-weight: bold'>Total Per-S/O : </td>";

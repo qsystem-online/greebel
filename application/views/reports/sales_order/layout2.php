@@ -56,7 +56,7 @@
 		<div>Tanggal S/O: <?= $this->input->post("fdt_salesorder_datetime") ?>  s/d <?= $this->input->post("fdt_salesorder_datetime2") ?></div> 
         <div>Customer: <?= $name_relations ?> </div>
         <div>Sales: <?= $name_sales ?></div>                            
-		<table id="tblReport" cellpadding="0" cellspacing="0">      
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1700px">       
 			<thead>
 				<tr style="background-color:RoyalBlue;color:white">
 					<?php
@@ -66,12 +66,12 @@
 						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:50px'>TOP</th>");
 						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:100px'>GUD</th>");
 						echoIfColSelected(5,$selectedCols,"<th class='col-5' style='width:100px'>Sales</th>");
-						echoIfColSelected(6,$selectedCols,"<th class='col-6' style='width:300px'>Customer</th>");
+						echoIfColSelected(6,$selectedCols,"<th class='col-6' style='width:400px'>Customer</th>");
 						echoIfColSelected(7,$selectedCols,"<th class='col-7' style='width:150px'>Sub Total</th>");
 						echoIfColSelected(8,$selectedCols,"<th class='col-8' style='width:100px'>Diskon</th>");
 						echoIfColSelected(9,$selectedCols,"<th class='col-9' style='width:150px'>Dpp</th>");
                         echoIfColSelected(10,$selectedCols,"<th class='col-10' style='width:100px'>Ppn</th>");
-                        echoIfColSelected(11,$selectedCols,"<th class='col-11' style='width:100px'>Total</th>");
+                        echoIfColSelected(11,$selectedCols,"<th class='col-11' style='width:150px'>Total</th>");
                         echoIfColSelected(12,$selectedCols,"<th class='col-12' style='width:100px'>DP</th>");	
 					?>
 				</tr>

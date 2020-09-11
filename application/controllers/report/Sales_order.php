@@ -43,6 +43,18 @@ class Sales_order extends MY_Controller
 			['layout' => 2, 'label'=>'Harga', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
 			['layout' => 2, 'label'=>'Diskon', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
 			['layout' => 2, 'label'=>'Jumlah', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
+			['layout' => 3, 'label'=>'No.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'No.SO', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Tgl.SO', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'TOP', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'GUD', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Sales', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Kode Barang', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Nama Barang', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Sales', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Kode Barang', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Nama Barang', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Qty O/S', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
 		];
 
 	}
@@ -865,6 +877,8 @@ class Sales_order extends MY_Controller
 			$this->parser->parse('reports/sales_order/layout1', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
 		}else if($data['rpt_layout'] == 2){
 			$this->parser->parse('reports/sales_order/layout2', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+		}else if($data['rpt_layout'] == 3){
+			$this->parser->parse('reports/sales_order/layout3', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
 		}
 		
 		//echo "<div id='tstdiv'>Show Report</div>";//

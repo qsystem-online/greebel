@@ -78,6 +78,21 @@ class Sales_order_rpt_model extends CI_Model {
                 on a.fin_warehouse_id = c.fin_warehouse_id left join users d
                 on a.fin_sales_id = d.fin_user_id " . $swhere . $sorderby;
                 break;
+            case "3":
+                $ssql = "select a.fin_salesorder_id as Id_SO,a.fst_salesorder_no as No_SO, a.fdt_salesorder_datetime as SO_Date, a.fin_terms_payment as TOP,
+                a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,c.fst_relation_name as Relation_Name, a.fin_sales_id as Sales_Id, e.fst_username as Sales_Name,
+                b.fin_rec_id as ID_DetailSO, b.fin_item_id as Item_Id, f.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,
+                b.fdb_qty as Qty, b.fst_unit as Unit, g.fst_sj_no as fst_sj_no, g.fdt_sj_datetime as fdt_sj_datetime,h.fdb_qty as qty_sj
+                from trsalesorder a left join trsalesorderdetails b 
+                on a.fin_salesorder_id = b.fin_salesorder_id left join msrelations c
+                on a.fin_relation_id = c.fin_relation_id left join mswarehouse d
+                on a.fin_warehouse_id = d.fin_warehouse_id left join users e
+                on a.fin_sales_id = e.fin_user_id left join msitems f
+                on b.fin_item_id = f.fin_item_id left join trsuratjalan g
+                on a.fin_salesorder_id = g.fin_trans_id left join trsuratjalandetails h
+                on g.fin_sj_id = h.fin_sj_id left join trsalesorderdetails i
+                on h.fin_trans_detail_id = i.fin_rec_id " . $swhere . $sorderby;
+                break;
             default:
                 break;
         }
