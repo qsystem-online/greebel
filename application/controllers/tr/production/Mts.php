@@ -6,6 +6,7 @@ class Mts extends MY_Controller{
 		parent::__construct();
 		$this->load->library('form_validation');
 		$this->load->model("trmts_model");
+		$this->load->model("trmtsitems_model");
 		$this->load->model("trassemblingitems_model");
 		$this->load->model("mswarehouse_model");	
 		
@@ -140,21 +141,17 @@ class Mts extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 
-	public function ajx_add_save(){	
-
-		
-
+	public function ajx_add_save(){
 		try{			
 			$dataPrepared = $this->prepareData();
 			$dataH = $dataPrepared["dataH"];
 			$details =$dataPrepared["details"];
 
+			
+
 			unset($dataH["fin_mts_id"]);
-			$dataH["fst_mts_no"] = $this->trmts_model->generateTransactionNo();
-			//$resp = dateIsLock($dataH["fdt_assembling_datetime"]);
-			//if($resp["status"] != "SUCCESS"){
-			//	throw new CustomException($resp["message"],3003,"FAILED",[]);
-			//}						
+			$dataH["fst_mts_no"] = $this->trmts_model->generateTransactionNo();			
+			
 			$this->validateData($dataH,$details);
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
@@ -166,12 +163,11 @@ class Mts extends MY_Controller{
 
 		try{
 			$this->db->trans_start();
-			$insertId = $this->trassembling_model->insert($dataH);
-
+			$insertId = $this->trmts_model->insert($dataH);
 			foreach($details as $dataD){
 				$dataD = (array)$dataD;
-				$dataD["fin_assembling_id"] = $insertId;
-				$this->trassemblingitems_model->insert($dataD);
+				$dataD["fin_mts_id"] = $insertId;
+				$this->trmtsitems_model->insert($dataD);
 			}
 			
 			//$this->trfadisposal_model->posting($insertId);
@@ -261,15 +257,17 @@ class Mts extends MY_Controller{
 
 	private function prepareData(){
 		$dataH = [
-			"fin_mts_id"=>$this->input->post["fin_mts_id"],
-			"fst_mts_no"=>$this->input->post["fst_mts_no"],
-			"fdt_mts_datetime"=>$this->input->post["fdt_mts_datetime"],
-			"fin_year"=>$this->input->post["fin_year"],
-			"fin_item_group_id"=>$this->input->post["fin_item_group_id"],
-			"fst_hist_type"=>$this->input->post["fst_hist_type"],
-			"fst_notes"=>$this->input->post["fst_notes"],
+			"fin_mts_id"=>$this->input->post("fin_mts_id"),
+			"fst_mts_no"=>$this->input->post("fst_mts_no"),
+			"fdt_mts_datetime"=>$this->input->post("fdt_mts_datetime"),
+			"fin_year"=>$this->input->post("fin_year"),
+			"fin_item_group_id"=>$this->input->post("fin_item_group_id"),
+			"fst_history_type"=>$this->input->post("fst_history_type"),
+			"fst_notes"=>$this->input->post("fst_notes"),
+			"fst_active"=>"A"
 		];
 
+		//var_dump($dataH);
 		
 		$dataDetails = $this->input->post("details");
 		$dataDetails = json_decode($dataDetails);		
@@ -291,17 +289,10 @@ class Mts extends MY_Controller{
 				"fdb_qty_m10"=>$detail->fdb_qty_m10,
 				"fdb_qty_m11"=>$detail->fdb_qty_m11,
 				"fdb_qty_m12"=>$detail->fdb_qty_m12,
+				"fst_active"=>"A"
 			];
 			$details[]=(object) $tmp;
-		}
-
-		/** tip asembling total hpp header dihitung dari detail, kalau total 0 ambil dari input user 
-		 * deasembling header hiutng hpp pada saat barang keluar, hpp barang diambil dari perhitungan di web
-		*/
-		if ($dataH["fst_type"] == "ASSEMBLING" && $ttlHPPD > 0){
-			$dataH["fdc_hpp_header"] = $ttlHPPD;
-		}
-
+		}		
 		return[
 			"dataH"=>$dataH,
 			"details"=>$details,
@@ -323,8 +314,9 @@ class Mts extends MY_Controller{
 		if ($rw != null){
 			throw new CustomException("Tahun & Item Group Harus Unik",3003,"FAILED",["fin_year"=>$dataH["fin_year"],"fin_item_group_id"=>$dataH["fin_item_group_id"]]);
 		}
-		
-		$this->form_validation->set_rules($this->trassembling_model->getRules("ADD", 0));
+				
+
+		$this->form_validation->set_rules($this->trmts_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		$this->form_validation->set_data($dataH);
 		
@@ -335,7 +327,7 @@ class Mts extends MY_Controller{
 	}
 
 	public function fetch_data($finId){
-		$data = $this->trassembling_model->getDataById($finId);	
+		$data = $this->trmts_model->getDataById($finId);	
 		if ($data == null){
 			$resp = ["status"=>"FAILED","message"=>"DATA NOT FOUND !"];
 		}else{

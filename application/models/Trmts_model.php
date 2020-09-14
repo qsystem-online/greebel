@@ -24,7 +24,30 @@ class Trmts_model extends MY_Model{
                 'required' => '%s tidak boleh kosong',
 				//'is_unique' => '%s unik'
 			),
-        ];        
+        ];      
+        $rules[] = [
+            'field' => 'fin_year',
+            'label' => 'Tahun MTS',
+            'rules' => array(
+                'required',
+			),
+			'errors' => array(
+                'required' => '%s tidak boleh kosong',				
+			),
+        ];   
+
+        $rules[] = [
+            'field' => 'fin_item_group_id',
+            'label' => 'Group Item',
+            'rules' => array(
+                'required',
+			),
+			'errors' => array(
+                'required' => '%s tidak boleh kosong',
+			),
+        ]; 
+
+
         return $rules;
     }
 
@@ -37,7 +60,8 @@ class Trmts_model extends MY_Model{
 			$branchCode = $activeBranch->fst_branch_code;
 		}
 		$prefix = getDbConfig("mts_prefix") . "/" . $branchCode ."/";
-		$query = $this->db->query("SELECT MAX(mts_prefix) as max_id FROM trmts where fst_mts_no like '".$prefix.$tahun."%'");
+        $query = $this->db->query("SELECT MAX(fst_mts_no) as max_id FROM trmts where fst_mts_no like '".$prefix.$tahun."%'");
+        
 		$row = $query->row_array();        
 		$max_id = $row['max_id']; 		
 		$max_id1 =(int) substr($max_id,strlen($max_id)-5);		
@@ -46,6 +70,29 @@ class Trmts_model extends MY_Model{
 		return $max_tr_no;
     }
     
+    public function getDataById($finMTSId){
+        $ssql = "SELECT a.*,b.fst_item_group_name FROM trmts a 
+            INNER JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
+            WHERE fin_mts_id = ? ";
+
+        $qr = $this->db->query($ssql,[$finMTSId]);
+        $dataH = $qr->row();
+
+        if ($dataH == null){
+            return null;
+        }
+        
+        $ssql = "SELECT a.*,b.fst_item_name,b.fst_item_code FROM trmtsitems a 
+            INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
+            WHERE fin_mts_id = ?";
+        $qr = $this->db->query($ssql,[$finMTSId]);
+        $details = $qr->result();
+
+        return [
+            "header"=>$dataH,
+            "details"=>$details
+        ];
+    }
 
     public function getSalesHistory($finItemId,$fstUnit,$histType,$mNumber,$currYear){
         $this->load->model("msitemunitdetails_model");        
