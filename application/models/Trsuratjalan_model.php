@@ -259,7 +259,7 @@ class Trsuratjalan_model extends MY_Model {
 		$this->trinventory_model->deleteByCodeId("DO",$dataH->fin_sj_id);
 
 		//Cancel serial no
-		$this->trinventory_model->deleteInsertSerial("PPJ",$sjId);                
+		$this->trinventory_model->deleteInsertSerial("PPJ",$dataH->fin_sj_id);                
 
 		foreach($dataDetails as $dataD){
 			$finSalesorderDetailId = $dataD->fin_trans_detail_id;
