@@ -179,10 +179,10 @@ class Trinvoice_model extends MY_Model {
 
     public function detailBySJ($fin_sj_id){
         $ssql = "select a.*,
-        b.fst_custom_item_name,b.fdc_price,b.fst_disc_item,
-        b.fbl_is_promo_disc,b.fin_promo_id            
-        from trsuratjalandetails a
-            inner join trsalesorderdetails b on a.fin_salesorder_detail_id = b.fin_rec_id
+            b.fst_custom_item_name,b.fdc_price,b.fst_disc_item,
+            b.fbl_is_promo_disc,b.fin_promo_id            
+            from trsuratjalandetails a
+            inner join trsalesorderdetails b on a.fin_trans_detail_id = b.fin_rec_id
             where a.fin_sj_id = ?";
         $qr = $this->db->query($ssql,[$fin_sj_id]);
         $rsDetail = $qr->result();

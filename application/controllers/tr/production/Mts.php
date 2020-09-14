@@ -5,7 +5,7 @@ class Mts extends MY_Controller{
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
-		$this->load->model("trassembling_model");
+		$this->load->model("trmts_model");
 		$this->load->model("trassemblingitems_model");
 		$this->load->model("mswarehouse_model");	
 		
@@ -126,8 +126,8 @@ class Mts extends MY_Controller{
 		$data["mdlPrint"] = $mdlPrint;				
 		//$data["mdlJurnal"] = $jurnal_modal;			
 
-		$fstAssemblingNo = $this->trassembling_model->generateTransactionNo();
-		$data["fst_mts_no"] = $fstAssemblingNo;	
+		$fstMTSNo = $this->trmts_model->generateTransactionNo();
+		$data["fst_mts_no"] = $fstMTSNo;	
 		$page_content = $this->parser->parse('pages/tr/production/mts/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 
@@ -141,17 +141,20 @@ class Mts extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
+
+		
+
 		try{			
 			$dataPrepared = $this->prepareData();
 			$dataH = $dataPrepared["dataH"];
 			$details =$dataPrepared["details"];
 
-			unset($dataH["fin_assembling_id"]);
-			$dataH["fst_assembling_no"] = $this->trassembling_model->generateTransactionNo();
-			$resp = dateIsLock($dataH["fdt_assembling_datetime"]);
-			if($resp["status"] != "SUCCESS"){
-				throw new CustomException($resp["message"],3003,"FAILED",[]);
-			}						
+			unset($dataH["fin_mts_id"]);
+			$dataH["fst_mts_no"] = $this->trmts_model->generateTransactionNo();
+			//$resp = dateIsLock($dataH["fdt_assembling_datetime"]);
+			//if($resp["status"] != "SUCCESS"){
+			//	throw new CustomException($resp["message"],3003,"FAILED",[]);
+			//}						
 			$this->validateData($dataH,$details);
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
@@ -258,40 +261,36 @@ class Mts extends MY_Controller{
 
 	private function prepareData(){
 		$dataH = [
-			"fin_assembling_id"=>$this->input->post("fin_assembling_id"),
-			"fst_assembling_no"=>$this->input->post("fst_assembling_no"),
-			"fdt_assembling_datetime"=>dBDateTimeFormat($this->input->post("fdt_assembling_datetime")),
-			"fst_type"=>$this->input->post("fst_type"),
-			"fin_item_id"=>$this->input->post("fin_item_id"),
-			"fst_unit"=>$this->input->post("fst_unit"),
-			"fdb_qty"=>$this->input->post("fdb_qty"),
-			"fin_source_warehouse_id"=>$this->input->post("fin_source_warehouse_id"),
-			"fin_target_warehouse_id"=>$this->input->post("fin_target_warehouse_id"),
-			"fdc_hpp_header"=>$this->input->post("fdc_hpp_header"),
-			"fst_notes"=>$this->input->post("fst_notes"),
-			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
-            "fst_active"=>'A',			
+			"fin_mts_id"=>$this->input->post["fin_mts_id"],
+			"fst_mts_no"=>$this->input->post["fst_mts_no"],
+			"fdt_mts_datetime"=>$this->input->post["fdt_mts_datetime"],
+			"fin_year"=>$this->input->post["fin_year"],
+			"fin_item_group_id"=>$this->input->post["fin_item_group_id"],
+			"fst_hist_type"=>$this->input->post["fst_hist_type"],
+			"fst_notes"=>$this->input->post["fst_notes"],
 		];
 
-		if ($dataH["fst_type"] != "ASSEMBLING"){
-			$dataH["fdc_hpp_header"] = 0;
-		}
-
+		
 		$dataDetails = $this->input->post("details");
 		$dataDetails = json_decode($dataDetails);		
-		$details = [];
-		$totalNilaiJual = 0;
-		$ttlHPPD = 0;
-		foreach($dataDetails as $detail){
-			$hpp = $detail->fdc_hpp;
-			$ttlHPPD += $hpp;
+		$details = [];		
+		foreach($dataDetails as $detail){			
 			$tmp = [
 				"fin_rec_id"=>$detail->fin_rec_id,				
 				"fin_item_id"=>$detail->fin_item_id,
 				"fst_unit"=>$detail->fst_unit,
-				"fdb_qty"=>$detail->fdb_qty,
-				"fdc_hpp"=>$hpp,
-				"fst_notes"=>$detail->fst_notes,
+				"fdb_qty_m01"=>$detail->fdb_qty_m01,
+				"fdb_qty_m02"=>$detail->fdb_qty_m02,
+				"fdb_qty_m03"=>$detail->fdb_qty_m03,
+				"fdb_qty_m04"=>$detail->fdb_qty_m04,
+				"fdb_qty_m05"=>$detail->fdb_qty_m05,
+				"fdb_qty_m06"=>$detail->fdb_qty_m06,
+				"fdb_qty_m07"=>$detail->fdb_qty_m07,
+				"fdb_qty_m08"=>$detail->fdb_qty_m08,
+				"fdb_qty_m09"=>$detail->fdb_qty_m09,
+				"fdb_qty_m10"=>$detail->fdb_qty_m10,
+				"fdb_qty_m11"=>$detail->fdb_qty_m11,
+				"fdb_qty_m12"=>$detail->fdb_qty_m12,
 			];
 			$details[]=(object) $tmp;
 		}
@@ -311,6 +310,20 @@ class Mts extends MY_Controller{
 	}
 	
 	private function validateData($dataH,$details){
+
+		if (!isset($dataH["fin_mts_id"])){
+			//Data Baru year dan item group harus unique
+			$ssql ="SELECT * FROM trmts where fin_year = ? and fin_item_group_id = ? and fst_active != 'A'";
+			$qr = $this->db->query($ssql,[$dataH["fin_year"],$dataH["fin_item_group_id"]]);
+		}else{
+			$ssql ="SELECT * FROM trmts where fin_year = ? and fin_item_group_id = ? and fin_mts_id != ? and fst_active != 'A'";
+			$qr = $this->db->query($ssql,[$dataH["fin_year"],$dataH["fin_item_group_id"],$dataH["fin_mts_id"]]);
+		}
+		$rw = $qr->row();
+		if ($rw != null){
+			throw new CustomException("Tahun & Item Group Harus Unik",3003,"FAILED",["fin_year"=>$dataH["fin_year"],"fin_item_group_id"=>$dataH["fin_item_group_id"]]);
+		}
+		
 		$this->form_validation->set_rules($this->trassembling_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		$this->form_validation->set_data($dataH);
@@ -393,17 +406,82 @@ class Mts extends MY_Controller{
 
 	public function ajxGetDetailItems($finItemGroupId){
 
-		$ssql ="SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,b.fst_unit FROM msitems a
-			INNER JOIN (SELECT fin_item_id, FROM msitemunitdetails b on a.fin_item_id = b.fin_item_id				
-			WHERE a.fin_item_type_id = 4 and a.fin_item_group_id = ? and b.fbl_is_basic_unit = 1" ;
-		$qr = $this->db->query($ssql,[$finItemGroupId]);
+		$ssql ="SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,c.fst_unit FROM msitems a
+			INNER JOIN (
+				SELECT fin_item_id,min(fin_rec_id) detailUnitId FROM msitemunitdetails
+				WHERE fbl_is_selling = 1
+				GROUP BY fin_item_id
+			) b on a.fin_item_id = b.fin_item_id
+			INNER JOIN msitemunitdetails c on b.detailUnitId = c.fin_rec_id
+			WHERE a.fin_item_type_id = 4 and a.fin_item_group_id = ?" ;
 
+
+		$histType = strtoupper($this->input->get("fst_history_type"));
+		$currYear = $this->input->get("fin_year");
+		if ($currYear == null){
+			$currYear = date("Y");
+		}
+
+		$qr = $this->db->query($ssql,[$finItemGroupId]);
 		$rs = $qr->result();
+
+		for($i = 0 ;$i < sizeof($rs);$i++){
+			$rw = $rs[$i];			
+			$rw->fdb_hist_m1_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,1,$currYear);
+			$rw->fdb_hist_m2_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,2,$currYear);
+			$rw->fdb_hist_m3_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,3,$currYear);
+			$rw->fdb_hist_m4_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,4,$currYear);
+			$rw->fdb_hist_m5_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,5,$currYear);
+			$rw->fdb_hist_m6_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,6,$currYear);
+			$rw->fdb_hist_m7_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,7,$currYear);
+			$rw->fdb_hist_m8_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,8,$currYear);
+			$rw->fdb_hist_m9_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,9,$currYear);
+			$rw->fdb_hist_m10_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,10,$currYear);
+			$rw->fdb_hist_m11_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,11,$currYear);
+			$rw->fdb_hist_m12_qty = $this->trmts_model->getSalesHistory($rw->fin_item_id,$rw->fst_unit,$histType,12,$currYear);
+		}		
 		$this->json_output([
 			"status"=>"SUCCESS",
 			"message"=>"",
 			"data"=>$rs
 		]);
 
+	}
+
+	public function ajxGetUnits($finItemId){
+		$ssql = "SELECT fst_unit FROM msitemunitdetails where fin_item_id = ? and fbl_is_selling = 1 and fst_active ='A'";
+		$qr = $this->db->query($ssql,[$finItemId]);
+		$rs = $qr->result();
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"messages"=>"",
+			"data"=>$rs
+		]);
+
+	}
+
+	public function ajxGetHistMTS(){
+		$finItemId =  $this->input->get("fin_item_id");
+		$fstUnit = $this->input->get("fst_unit");
+		$histType = strtoupper($this->input->get("fst_hist_type"));
+		$currYear = $this->input->get("fin_year");
+		$rw = (object)[];
+		$rw->fdb_hist_m1_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,1,$currYear);
+		$rw->fdb_hist_m2_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,2,$currYear);
+		$rw->fdb_hist_m3_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,3,$currYear);
+		$rw->fdb_hist_m4_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,4,$currYear);
+		$rw->fdb_hist_m5_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,5,$currYear);
+		$rw->fdb_hist_m6_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,6,$currYear);
+		$rw->fdb_hist_m7_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,7,$currYear);
+		$rw->fdb_hist_m8_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,8,$currYear);
+		$rw->fdb_hist_m9_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,9,$currYear);
+		$rw->fdb_hist_m10_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,10,$currYear);
+		$rw->fdb_hist_m11_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,11,$currYear);
+		$rw->fdb_hist_m12_qty = $this->trmts_model->getSalesHistory($finItemId,$fstUnit,$histType,12,$currYear);
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"messages"=>"",
+			"data"=>$rw
+		]);
 	}
 }    
