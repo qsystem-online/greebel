@@ -362,7 +362,7 @@ class User extends MY_Controller
 	public function get_department()
 	{
 		$term = $this->input->get("term");
-		$ssql = "select fin_department_id, fst_department_name from departments";
+		$ssql = "select fin_department_id, fst_department_name from departments where fst_department_name like ? order by fst_department_name ";
 		$qr = $this->db->query($ssql, ['%' . $term . '%']);
 		$rs = $qr->result();
 

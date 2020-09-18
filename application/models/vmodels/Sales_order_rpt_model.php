@@ -3,7 +3,7 @@ if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 class Sales_order_rpt_model extends CI_Model {
 
-    public $layout1Columns = ['Pelanggan/Customer', 'Sales Order No', 'Tanggal S/O'];
+    public $layout1Columns = ['Pelanggan/Customer', 'No S/O', 'Tanggal S/O'];
 
     public function queryComplete($data, $sorder_by="a.fin_salesorder_id", $rptLayout="1") {
         
@@ -96,22 +96,53 @@ class Sales_order_rpt_model extends CI_Model {
                 $swhere .= " and b.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
             }
         }
-
-        if ($swhere != "") {
-            $swhere = " where " . substr($swhere, 5);
+        if ($rptLayout == "4"){
+            if ($branch_id > "0") {
+                $swhere .= " and b.fin_branch_id = " . $this->db->escape($branch_id);
+            }
+            if ($warehouse_id > "0" ) {
+                $swhere .= " and b.fin_warehouse_id = " . $this->db->escape($warehouse_id);
+            }
+            if ($relation_id > "0") {
+                $swhere .= " and b.fin_relation_id = " . $this->db->escape($relation_id);
+            }
+            if ($sales_id > "0") {
+                $swhere .= " and b.fin_sales_id = " . $this->db->escape($sales_id);
+            }
+            if (isset($start_date)) {
+                $swhere .= " and b.fdt_salesorder_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
+            }
+            if (isset($end_date)) {
+                $swhere .= " and b.fdt_salesorder_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
+            }
+            if ($fbl_is_vat_include == 1) {
+                $swhere .= " and b.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
+            }
         }
+        if ($rptLayout == "4"){
+            if ($swhere != "") {
+                $swhere = " and " . substr($swhere, 5);
+            }else{
+                if ($swhere != "") {
+                    $swhere = " where " . substr($swhere, 5);
+                }
+            }
+        }
+        //if ($swhere != "") {
+        //    $swhere = " where " . substr($swhere, 5);
+        //}
         if ($sorder_by != "") {
             $sorderby = " order by " .$sorder_by;
         }
         
         switch($rptLayout) {
             case "1":
-                $ssql = "select a.fst_salesorder_no as No_SO, a.fdt_salesorder_datetime as SO_Date, a.fin_terms_payment as TOP,
+                $ssql = "SELECT a.fst_salesorder_no as No_SO, a.fdt_salesorder_datetime as SO_Date, a.fin_terms_payment as TOP,
                 a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,c.fst_relation_name as Relation_Name, a.fin_sales_id as Sales_Id, e.fst_username as Sales_Name,
                 b.fin_rec_id as Rec_Id, b.fin_item_id as Item_Id, f.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,
                 b.fdb_qty as Qty, b.fst_unit as Unit, b.fdc_price as Price, b.fst_disc_item as Disc_Item, b.fdc_disc_amount_per_item as Disc_Amount,
                 (b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) as Amount  
-                from trsalesorder a left join trsalesorderdetails b 
+                FROM (SELECT * FROM trsalesorder WHERE fst_active !='D') a left join trsalesorderdetails b 
                 on a.fin_salesorder_id = b.fin_salesorder_id left join msrelations c
                 on a.fin_relation_id = c.fin_relation_id left join mswarehouse d
                 on a.fin_warehouse_id = d.fin_warehouse_id left join users e
@@ -119,10 +150,10 @@ class Sales_order_rpt_model extends CI_Model {
                 on b.fin_item_id = f.fin_item_id " . $swhere . $sorderby;
                 break;
             case "2":
-                $ssql = "select a.fst_salesorder_no as No_SO, a.fdt_salesorder_datetime as SO_Date, a.fin_terms_payment as TOP, a.fdc_subttl as fdc_subttl, a.fdc_disc_amount as fdc_disc_amount, a.fdc_total as fdc_total, a.fdc_downpayment as fdc_downpayment,
+                $ssql = "SELECT a.fst_salesorder_no as No_SO, a.fdt_salesorder_datetime as SO_Date, a.fin_terms_payment as TOP, a.fdc_subttl as fdc_subttl, a.fdc_disc_amount as fdc_disc_amount, a.fdc_total as fdc_total, a.fdc_downpayment as fdc_downpayment,
                 a.fdc_downpayment_paid as fdc_downpayment_paid, a.fdc_downpayment_claimed as fdc_downpayment_claimed, a.fdc_dpp_amount as fdc_dpp_amount, a.fdc_vat_amount as fdc_vat_amount,
                 a.fin_warehouse_id as Warehouse_Id, c.fst_warehouse_name as Warehouse,b.fst_relation_name as Relation_Name, a.fin_sales_id as Sales_Id, d.fst_username as Sales_Name
-                from trsalesorder a left join msrelations b
+                FROM (SELECT * FROM trsalesorder WHERE fst_active !='D') a left join msrelations b
                 on a.fin_relation_id = b.fin_relation_id left join mswarehouse c
                 on a.fin_warehouse_id = c.fin_warehouse_id left join users d
                 on a.fin_sales_id = d.fin_user_id " . $swhere . $sorderby;
@@ -132,7 +163,7 @@ class Sales_order_rpt_model extends CI_Model {
                 a.fst_username as Sales_Name,c.fst_relation_name as Relation_Name,f.fin_rec_id as ID_DetailSO, f.fin_item_id as Item_Id,g.fst_item_code as Item_Code,f.fst_custom_item_name as Item_Name,
                 f.fdb_qty as Qty, f.fst_unit as Unit, e.fst_sj_no as fst_sj_no, e.fdt_sj_datetime as fdt_sj_datetime,d.fdb_qty as qty_sj,h.fst_warehouse_name as Warehouse
                 FROM users a RIGHT OUTER JOIN 
-                trsalesorder b ON a.fin_user_id = b.fin_sales_id LEFT OUTER JOIN 
+                (SELECT * FROM trsalesorder WHERE fst_active !='D') b ON a.fin_user_id = b.fin_sales_id LEFT OUTER JOIN 
                 msrelations c ON b.fin_relation_id = c.fin_relation_id LEFT OUTER JOIN 
                 (SELECT a.fin_trans_id,a.fin_sj_id,b.fin_trans_detail_id,b.fin_item_id,b.fdb_qty FROM trsuratjalan a LEFT OUTER JOIN trsuratjalandetails b ON a.fin_sj_id = b.fin_sj_id) d LEFT OUTER JOIN
                 trsuratjalan e ON d.fin_sj_id = e.fin_sj_id RIGHT OUTER JOIN 
@@ -141,19 +172,16 @@ class Sales_order_rpt_model extends CI_Model {
                 mswarehouse h ON b.fin_warehouse_id = h.fin_warehouse_id $swhere ORDER BY b.fin_salesorder_id";
                 break;
             case "4":
-                $ssql = "select a.fin_salesorder_id as Id_SO,a.fst_salesorder_no as No_SO, a.fdt_salesorder_datetime as SO_Date, a.fin_terms_payment as TOP,
-                a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,c.fst_relation_name as Relation_Name, a.fin_sales_id as Sales_Id, e.fst_username as Sales_Name,
-                b.fin_rec_id as ID_DetailSO, b.fin_item_id as Item_Id, f.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,
-                b.fdb_qty as Qty, b.fst_unit as Unit, g.fst_sj_no as fst_sj_no, g.fdt_sj_datetime as fdt_sj_datetime,h.fdb_qty as qty_sj
-                from trsalesorder a left join trsalesorderdetails b 
-                on a.fin_salesorder_id = b.fin_salesorder_id left join msrelations c
-                on a.fin_relation_id = c.fin_relation_id left join mswarehouse d
-                on a.fin_warehouse_id = d.fin_warehouse_id left join users e
-                on a.fin_sales_id = e.fin_user_id left join msitems f
-                on b.fin_item_id = f.fin_item_id left join trsuratjalan g
-                on a.fin_salesorder_id = g.fin_trans_id left join trsuratjalandetails h
-                on g.fin_sj_id = h.fin_sj_id left join trsalesorderdetails i
-                on h.fin_trans_detail_id = i.fin_rec_id " . $swhere . $sorderby;
+                $ssql = "SELECT b.fin_salesorder_id as Id_SO,b.fst_salesorder_no as No_SO, b.fdt_salesorder_datetime as SO_Date, b.fin_terms_payment as TOP,b.fin_warehouse_id as Warehouse_Id,b.fin_sales_id as Sales_Id,
+                c.fst_username as Sales_Name,a.fst_relation_name as Relation_Name,e.fin_rec_id as ID_DetailSO, e.fin_item_id as Item_Id,d.fst_item_code as Item_Code,e.fst_custom_item_name as Item_Name,
+                (e.fdb_qty - e.fdb_qty_out) as Qty_OS, e.fst_unit as Unit,(e.fdc_price - e.fdc_disc_amount_per_item) as Harga_Netto, ((e.fdb_qty - e.fdb_qty_out) * (e.fdc_price - e.fdc_disc_amount_per_item)) as Amount,f.fst_warehouse_name as Warehouse
+                FROM msrelations a RIGHT OUTER JOIN 
+                (SELECT * FROM trsalesorder WHERE fst_active !='D') b LEFT OUTER JOIN 
+                users c ON b.fin_sales_id = c.fin_user_id ON a.fin_relation_id = b.fin_relation_id LEFT OUTER JOIN
+                msitems d RIGHT OUTER JOIN 
+                trsalesorderdetails e ON d.fin_item_id = e.fin_item_id ON b.fin_salesorder_id = e.fin_salesorder_id LEFT OUTER JOIN
+                mswarehouse f ON b.fin_warehouse_id = f.fin_warehouse_id
+                WHERE (e.fdb_qty - e.fdb_qty_out) >0 $swhere ORDER BY b.fin_salesorder_id";
                 break;
             default:
                 break;

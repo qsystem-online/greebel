@@ -55,6 +55,16 @@ class Sales_order extends MY_Controller
 			['layout' => 3, 'label'=>'Tgl S/J', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
 			['layout' => 3, 'label'=>'Qty S/J', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
 			['layout' => 3, 'label'=>'Qty O/S', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'GUD', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Customer', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Sales', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'No.S/O', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Tgl S/O', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Nama Barang', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Qty O/S', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Unit', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Harga Netto', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Jumlah', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
 		];
 
 	}
@@ -879,6 +889,8 @@ class Sales_order extends MY_Controller
 			$this->parser->parse('reports/sales_order/layout2', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
 		}else if($data['rpt_layout'] == 3){
 			$this->parser->parse('reports/sales_order/layout3', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+		}else if($data['rpt_layout'] == 4){
+			$this->parser->parse('reports/sales_order/layout4', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
 		}
 		
 		//echo "<div id='tstdiv'>Show Report</div>";//
