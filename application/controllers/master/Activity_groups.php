@@ -37,9 +37,9 @@ class Activity_groups extends MY_Controller
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'ActivityGroups ID', 'width' => '10%', 'data' => 'fin_activity_group_id'],
+            ['title' => 'ActivityGroups ID', 'width' => '5%', 'data' => 'fin_activity_group_id'],
             ['title' => 'ActivityGroups Name', 'width' => '20%', 'data' => 'fst_activity_group_name'],
-            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
+            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);

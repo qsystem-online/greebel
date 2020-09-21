@@ -28,7 +28,8 @@ class Activity_teams extends MY_Controller
         $this->list['edit_ajax_url'] = site_url() . 'master/activity_teams/edit/';
         $this->list['arrSearch'] = [
             'fin_team_id' => 'Team ID',
-            'fst_team_name' => 'Team Name'
+            'fst_team_name' => 'Team Name',
+            'headteam' => 'Head Team'
         ];
 
         $this->list['breadcrumbs'] = [
@@ -37,10 +38,10 @@ class Activity_teams extends MY_Controller
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'Team ID', 'width' => '10%', 'data' => 'fin_team_id'],
+            ['title' => 'Team ID', 'width' => '5%', 'data' => 'fin_team_id'],
             ['title' => 'Team Name', 'width' => '20%', 'data' => 'fst_team_name'],
-            ['title' => 'Head Team', 'width' => '20%', 'data' => 'fin_headteam_id'],
-            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
+            ['title' => 'Head Team', 'width' => '10%', 'data' => 'headteam'],
+            ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
@@ -237,9 +238,9 @@ class Activity_teams extends MY_Controller
     public function fetch_list_data()
     {
         $this->load->library("datatables");
-        $this->datatables->setTableName("msactivityteams");
+        $this->datatables->setTableName("(SELECT a.*,b.fst_username as headteam FROM msactivityteams a LEFT JOIN users b ON a.fin_headteam_id = b.fin_user_id) a");
 
-        $selectFields = "fin_team_id,fst_team_name,fin_headteam_id,'action' as action";
+        $selectFields = "fin_team_id,fst_team_name,headteam,'action' as action";
         $this->datatables->setSelectFields($selectFields);
 
         $searchFields = [];

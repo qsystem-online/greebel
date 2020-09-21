@@ -200,7 +200,8 @@ class Item extends MY_Controller
             $data = [
                 "fin_item_id" => $insertId,
                 "fin_item_id_bom" => $item->fin_item_id_bom,
-                "fst_unit" => $item->fst_unit
+                "fst_unit" => $item->fst_unit,
+                "fdb_qty" => $item->fdb_qty
             ];
             $this->msitembomdetails_model->insert($data);
             $dbError  = $this->db->error();
@@ -336,7 +337,8 @@ class Item extends MY_Controller
             $data = [
                 "fin_item_id" => $fin_item_id,
                 "fin_item_id_bom" => $item->fin_item_id_bom,
-                "fst_unit" => $item->fst_unit
+                "fst_unit" => $item->fst_unit,
+                "fdb_qty" => $item->fdb_qty
             ];
             $this->msitembomdetails_model->insert($data);
             $dbError  = $this->db->error();

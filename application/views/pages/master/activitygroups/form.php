@@ -43,7 +43,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     <div class="btn-group btn-group-sm  pull-right">					
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
@@ -56,38 +55,31 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
-                        <div class='form-group'>
-                            <label for="fin_activity_group_id" class="col-md-2 control-label"><?= lang("Groups ID") ?></label>
-                            <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="fin_activity_group_id" class="col-md-2 control-label"><?= lang("Groups ID") ?>:</label>
+                            <div class="col-md-10">
                                 <input type="text" class="form-control" id="fin_activity_group_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_activity_group_id" value="<?= $fin_activity_group_id ?>" readonly>
                                 <div id="fin_activity_group_id_err" class="text-danger"></div>
                             </div>
-                            <label for="fst_activity_group_name" class="col-md-2 control-label"><?= lang("Groups Name") ?></label>
-                            <div class="col-md-6">
+                        </div>
+                        <div class="form-group">
+                            <label for="fst_activity_group_name" class="col-md-2 control-label"><?= lang("Groups Name") ?>:</label>
+                            <div class="col-md-10">
                                 <input type="text" class="form-control" id="fst_activity_group_name" placeholder="<?= lang("Groups Name") ?>" name="fst_activity_group_name">
                                 <div id="fst_activity_group_name_err" class="text-danger"></div>
                             </div>
                         </div>
                         <!-- end box body -->
-                        <div class="nav-tabs-custom" style="display:unset">
-                            <ul class="nav nav-tabs">
-                                <li class="active"><a href="#activity_group_detail" data-toggle="tab" aria-expanded="true"><?= lang("Groups Detail") ?></a></li>
-                            </ul>
-                            <div class="tab-content">
-                                <div class="tab-pane active" id="activity_group_detail">
-                                    <form class="form-horizontal edit-mode ">	
-                                        <div class="form-group">
-                                            <div class="col-md-12">
-                                            <button id="btn-add-group-detail" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Detail") ?></button>
-                                            </div>						
-                                        </div>
-                                    </form>
-                                    <table id="tbl_groups_detail" class="table table-bordered table-hover" style="width:100%;"></table>
+                        <form class="form-horizontal edit-mode ">	
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <button id="btn-add-group-detail" class="btn btn-primary btn-sm pull-right edit-mode"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Detail") ?></button>
                                 </div>
+                                <div class="col-md-12">
+                                <table id="tbl_groups_detail" class="table table-bordered table-hover" style="width:100%;"></table>
+                                </div>							
                             </div>
-                            <!-- /.tab-pane -->
-                        </div>
-                        <!-- /.tab-content -->
+                        </form>
 
                         <div class="box-footer text-right">
                             
@@ -150,7 +142,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     },*/
                     {
                         "title": "<?= lang("Activity ID") ?>",
-                        "width": "10%",
+                        "width": "5%",
                         data: "fin_activity_id",
                         visible: true,
                     },

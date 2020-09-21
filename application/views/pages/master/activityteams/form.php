@@ -55,45 +55,38 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
-                        <div class='form-group'>
-                            <label for="fin_team_id" class="col-md-2 control-label"><?= lang("Team ID") ?></label>
-                            <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="fin_team_id" class="col-md-2 control-label"><?= lang("Team ID") ?>:</label>
+                            <div class="col-md-10">
                                 <input type="text" class="form-control" id="fin_team_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_team_id" value="<?= $fin_team_id ?>" readonly>
                                 <div id="fin_team_id_err" class="text-danger"></div>
                             </div>
-                            <label for="fst_team_name" class="col-md-2 control-label"><?= lang("Team Name") ?></label>
-                            <div class="col-md-6">
+                        </div>
+                        <div class="form-group">
+                            <label for="fst_team_name" class="col-md-2 control-label"><?= lang("Team Name") ?>:</label>
+                            <div class="col-md-10">
                                 <input type="text" class="form-control" id="fst_team_name" placeholder="<?= lang("Team Name") ?>" name="fst_team_name">
                                 <div id="fst_team_name_err" class="text-danger"></div>
                             </div>
                         </div>
-                        <div class='form-group'>
-                            <label for="fin_headteam_id" class="col-md-2 control-label"><?= lang("Head Team") ?></label>
+                        <div class="form-group">
+                            <label for="fin_headteam_id" class="col-md-2 control-label"><?= lang("Head Team") ?>:</label>
                             <div class="col-md-4">
                                 <select id="fin_headteam_id" class="form-control" name="fin_headteam_id"></select>
                                 <div id="fin_headteam_id_err" class="text-danger"></div>
                             </div>
                         </div>
                         <!-- end box body -->
-                        <div class="nav-tabs-custom" style="display:unset">
-                            <ul class="nav nav-tabs">
-                                <li class="active"><a href="#activity_team_detail" data-toggle="tab" aria-expanded="true"><?= lang("Team Detail") ?></a></li>
-                            </ul>
-                            <div class="tab-content">
-                                <div class="tab-pane active" id="activity_team_detail">
-                                    <form class="form-horizontal edit-mode ">	
-                                        <div class="form-group">
-                                            <div class="col-md-12">
-                                            <button id="btn-add-team-detail" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Detail") ?></button>
-                                            </div>						
-                                        </div>
-                                    </form>
-                                    <table id="tbl_teams_detail" class="table table-bordered table-hover" style="width:100%;"></table>
+                        <form class="form-horizontal edit-mode ">	
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <button id="btn-add-team-detail" class="btn btn-primary btn-sm pull-right edit-mode"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Personel") ?></button>
                                 </div>
+                                <div class="col-md-12">
+                                    <table id="tbl_teams_detail" class="table table-bordered table-hover" style="width:100%;"></table>
+                                </div>							
                             </div>
-                            <!-- /.tab-pane -->
-                        </div>
-                        <!-- /.tab-content -->
+                        </form>
 
                         <div class="box-footer text-right">
                             
@@ -119,7 +112,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <fieldset style="padding:10px">
                                 <form class="form-horizontal ">
                                     <div class="form-group">
-                                        <label for="select-fin_user_id" class="col-md-3 control-label"><?=lang("Anggota")?></label>
+                                        <label for="select-fin_user_id" class="col-md-3 control-label"><?=lang("Personel")?></label>
                                         <div class="col-md-9">
                                             <select id="fin_user_id" class="form-control" name="fin_user_id"></select>
                                             <div id="fin_user_id_err" class="text-danger"></div>
@@ -156,7 +149,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     },*/
                     {
                         "title": "<?= lang("Personel ID") ?>",
-                        "width": "10%",
+                        "width": "5%",
                         data: "fin_user_id",
                         visible: true,
                     },

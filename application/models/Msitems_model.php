@@ -301,4 +301,15 @@ class Msitems_model extends MY_Model
 
         return $qr->result();
     }
+
+    public function getItemList_report(){
+        $term = $this->input->get("term");
+        $term = "%".$term."%";
+        $ssql = "SELECT CONCAT_WS('->',fst_item_code,fst_item_name) AS fst_item_name,fst_item_code,fin_item_id FROM msitems WHERE fst_item_name LIKE ?";
+
+        $query = $this->db->query($ssql, [$term]);
+        $rs = $query->result();
+        return $rs;
+
+    }
 }

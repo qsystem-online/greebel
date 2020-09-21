@@ -46,9 +46,6 @@ class Surat_jalan_rpt_model extends CI_Model {
         if ($swhere != "") {
             $swhere = " WHERE " . substr($swhere, 5);
         }
-        //if ($swhere != "") {
-        //    $swhere = " where " . substr($swhere, 5);
-        //}
         if ($sorder_by != "") {
             $sorderby = " order by " .$sorder_by;
         }

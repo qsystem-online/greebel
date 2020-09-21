@@ -57,28 +57,30 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="fin_activity_id" class="col-md-2 control-label"><?= lang("Activity ID") ?> #</label>
-                            <div class="col-md-2">
+                            <label for="fin_activity_id" class="col-md-3 control-label"><?= lang("Activity ID") ?> :</label>
+                            <div class="col-md-9">
                                 <input type="text" class="form-control" id="fin_activity_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_activity_id" value="<?= $fin_activity_id ?>" readonly>
                                 <div id="fin_activity_id_err" class="text-danger"></div>
                             </div>
-                            <label for="fst_name" class="col-md-2 control-label"><?= lang("Activity Name") ?> *</label>
-                            <div class="col-md-6">
+                        </div>
+                        <div class='form-group'>
+                            <label for="fst_name" class="col-md-3 control-label"><?= lang("Activity Name") ?> :</label>
+                            <div class="col-md-9">
                                 <input type="text" class="form-control" id="fst_name" placeholder="<?= lang("Activity Name") ?>" name="fst_name">
                                 <div id="fst_name_err" class="text-danger"></div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="fst_team" class="col-md-2 control-label"><?= lang("Team") ?></label>
+                            <label for="fst_team" class="col-md-3 control-label"><?= lang("Team") ?> :</label>
                             <div class="col-md-2">
                                 <select id="fst_team" class="form-control" name="fst_team">
                                     <option value='PERSON'><?= lang("PERSON") ?></option>
                                     <option value='TEAM'><?= lang("TEAM") ?></option>
                                 </select>
                             </div>
-                            <label for="fst_type" class="col-md-2 control-label"><?= lang("Type") ?></label>
-                            <div class="col-md-4">
+                            <label for="fst_type" class="col-md-2 control-label"><?= lang("Type") ?> :</label>
+                            <div class="col-md-3">
                                 <select id="fst_type" class="form-control" name="fst_type">
                                     <option value='BORONGAN'><?= lang("BORONGAN") ?></option>
                                     <option value='HARIAN'><?= lang("HARIAN") ?></option>
@@ -86,8 +88,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fst_type_err" class="text-danger"></div>
                             </div>
                         </div>
-                        <div class='form-group'>
-                            <label for="fdc_cost_per_day" class="col-md-2 control-label"><?= lang("Cost/Day") ?></label>
+                        <div class="form-group cost_per_day" style="display:none">
+                            <label for="fdc_cost_per_day" class="col-md-3 control-label"><?= lang("Cost/Day") ?> :</label>
                             <div class="col-md-2">
                                 <input type="text" class="form-control money" id="fdc_cost_per_day" placeholder="<?= lang("0") ?>" name="fdc_cost_per_day">
                                 <div id="fdc_cost_per_day_err" class="text-danger"></div>
@@ -103,7 +105,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <form class="form-horizontal edit-mode ">	
                                         <div class="form-group">
                                             <div class="col-md-12">
-                                            <button id="btn-add-borongan-detail" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Detail") ?></button>
+                                            <button id="btn-add-borongan-detail" class="btn btn-primary btn-sm pull-right edit-mode"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Detail") ?></button>
                                             </div>						
                                         </div>
                                     </form>
@@ -153,7 +155,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="fdc_cost" class="col-md-3 control-label"><?=lang("Cost")?></label>
+                                        <label for="fdc_cost" class="col-md-3 control-label"><?=lang("Cost Value")?></label>
                                         <div class="col-md-9">
                                             <input type="text" class="form-control text-right money" id="fdc_cost" value="0">
                                             <div id="fdc_cost_err" class="text-danger"></div>
@@ -179,7 +181,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 event.preventDefault();
                 var type = $("#fst_type").val();
                 if (type == "HARIAN") {
-                    $("#fst_type_err").html("Add detail just for type BORONGAN");
+                    $("#fst_type_err").html("Detail just for 'BORONGAN'");
                     $("#fst_type_err").show();
                 } else {
                     $("#fst_type_err").hide();
@@ -353,6 +355,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
         });
 
+        $("#fst_type").change(function(){
+            type = $(this).val();
+            if(type == "BORONGAN"){
+                $(".cost_per_day").hide();
+            }else if(type == "HARIAN"){
+                $(".cost_per_day").show();
+            }
+        });
+
         $("#btnNew").click(function(e){
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>master/activity/add")
@@ -434,6 +445,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             console.log(val);
                     }
                 });
+
+                if (resp.msactivity.fst_type == "BORONGAN"){
+					$(".cost_per_day").hide();
+				}else{
+					$(".cost_per_day").show();
+				}
 
                 $.each(resp.borongandetail, function(name, val) {
                     console.log(val);
