@@ -1,5 +1,5 @@
 <!-- form start -->
-<form id="rptSalesOrder" action="<?= site_url() ?>report/sales_order/process" method="POST" enctype="multipart/form-data">
+<form id="rptSuratJalan" action="<?= site_url() ?>report/surat_jalan/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
@@ -44,52 +44,47 @@
                     <select id="select-relations" class="form-control non-editable" name="fin_relation_id">
                     </select>
                     <div id="fin_relation_id_err" class="text-danger"></div>
-                </div>            
-                <label for="select-sales" class="col-sm-2 control-label"><?=lang("Sales")?> :</label>
-                <div class="col-sm-4">
-                    <select id="select-sales" class="form-control" name="fin_sales_id">
-                        <option value='0'>All</option>
-                        <?php
-                            $salesList = $this->users_model->getSalesList();
-                            foreach($salesList as $sales){
-                                echo "<option value='$sales->fin_user_id'>$sales->fst_username</option>";
-                            }                            
-                        ?>
-                    </select>
-                    <div id="fin_sales_id_err" class="text-danger"></div>
                 </div>
+                <label for="select-type" class="col-sm-2 control-label"><?=lang("Type")?> :</label>
+                <div class="col-sm-4">
+                    <select id="select-type" class="form-control non-editable" name="fst_sj_type">
+                        <option value='SO'><?=lang("SO")?></option>
+						<option value='PO_RETURN'><?=lang("PO_RETURN")?></option>
+                        <option value='ASSEMBLING_OUT'><?=lang("ASSEMBLING_OUT")?></option>
+                    </select>
+                    <div id="fst_sj_type_err" class="text-danger"></div>
+                </div>               
             </div>
             <div class="form-group row">
-                <label for="fdt_salesorder_datetime" class="col-sm-2 control-label"><?=lang("Sales Order Date")?> *</label>
+                <label for="fdt_sj_datetime" class="col-sm-2 control-label"><?=lang("Sales Order Date")?> *</label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_salesorder_datetime" name="fdt_salesorder_datetime"/>
+                        <input type="text" class="form-control datepicker" id="fdt_sj_datetime" name="fdt_sj_datetime"/>
                     </div>
-                    <div id="fdt_salesorder_datetime_err" class="text-danger"></div>
+                    <div id="fdt_sj_datetime_err" class="text-danger"></div>
                     <!-- /.input group -->
                 </div>
-                <label for="fdt_salesorder_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
+                <label for="fdt_sj_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_salesorder_datetime2" name="fdt_salesorder_datetime2"/>
+                        <input type="text" class="form-control datepicker" id="fdt_sj_datetime2" name="fdt_sj_datetime2"/>
                     </div>
-                    <div id="fdt_salesorder_datetime2_err" class="text-danger"></div>
+                    <div id="fdt_sj_datetime2_err" class="text-danger"></div>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
             <div class="form-group row">
                 <label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
                 <div class="col-sm-4">								
-                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Detail")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Ringkas")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Outstanding S/J")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Lost Of Sales")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Surat Jalan")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Surat Jalan dan No.Faktur Penjualan")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Surat Jalan (Jumlah Print)")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -112,11 +107,6 @@
                         <option value=".net">.Net</option> -->
                     </select>             
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox col-md-12">
-                    <label><input id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("PPN Include") ?></label>
-                </div>                  
             </div>
     </div>
 </form>
@@ -148,6 +138,12 @@
         $('#multiple-columns').multiselect('dataprovider', newArray);
         $('#multiple-columns').multiselect('selectAll',false);
 		$('#multiple-columns').multiselect('updateButtonText');
+        if (myRadio.value == "2"){
+            $('#select-type').val("SO");
+            $('#select-type').prop('disabled',true);
+        }else{
+            $('#select-type').prop('disabled',false);
+        }
         // for(var i=0; i<newArray.length; i++){
         //     alert(newArray[i].label);
         //     console.log(newArray[i].label);
@@ -159,7 +155,7 @@
         $("#select-relations").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>tr/sales_order/get_customers',
+				url: '<?=site_url()?>report/surat_jalan/get_customers',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -195,8 +191,8 @@
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#rptSalesOrder").serializeArray();
-            url = "<?= site_url() ?>report/sales_order/process";
+            data = $("#rptSuratJalan").serializeArray();
+            url = "<?= site_url() ?>report/surat_jalan/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -238,13 +234,13 @@
                         // 
                         //Clear all previous error
                         $(".text-danger").html("");
-                        //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/sales_order/generatereport";
+                        //url = "<?= site_url() ?>report/surat_jalan/generateexcel";
+                        url = "<?= site_url() ?>report/surat_jalan/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
-                        $("#rptSalesOrder").attr('action', url);
-                        $("#rptSalesOrder").attr('target', 'rpt_iframe');
-                        $("#rptSalesOrder").submit();
+                        $("#rptSuratJalan").attr('action', url);
+                        $("#rptSuratJalan").attr('target', 'rpt_iframe');
+                        $("#rptSuratJalan").submit();
                         $("a#toggle-window").click();
                         // Change to Edit mode
                         // $("#frm-mode").val("EDIT"); //ADD|EDIT

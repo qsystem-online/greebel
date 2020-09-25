@@ -1,5 +1,5 @@
 <!-- form start -->
-<form id="rptSalesOrder" action="<?= site_url() ?>report/sales_order/process" method="POST" enctype="multipart/form-data">
+<form id="rptInvoice" action="<?= site_url() ?>report/invoice/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
@@ -59,37 +59,46 @@
                     <div id="fin_sales_id_err" class="text-danger"></div>
                 </div>
             </div>
+            <div class="form-group row">						
+                <label for="select-items" class="col-sm-2 control-label"><?=lang("Item")?> :</label>
+                <div class="col-sm-4">
+                    <select id="select-items" class="form-control non-editable" name="fin_item_id">
+                    </select>
+                    <div id="fin_item_id_err" class="text-danger"></div>
+                </div>            
+            </div>
             <div class="form-group row">
-                <label for="fdt_salesorder_datetime" class="col-sm-2 control-label"><?=lang("Sales Order Date")?> *</label>
+                <label for="fdt_inv_datetime" class="col-sm-2 control-label"><?=lang("Invoice Date")?> *</label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_salesorder_datetime" name="fdt_salesorder_datetime"/>
+                        <input type="text" class="form-control datepicker" id="fdt_inv_datetime" name="fdt_inv_datetime"/>
                     </div>
-                    <div id="fdt_salesorder_datetime_err" class="text-danger"></div>
+                    <div id="fdt_inv_datetime_err" class="text-danger"></div>
                     <!-- /.input group -->
                 </div>
-                <label for="fdt_salesorder_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
+                <label for="fdt_inv_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_salesorder_datetime2" name="fdt_salesorder_datetime2"/>
+                        <input type="text" class="form-control datepicker" id="fdt_inv_datetime2" name="fdt_inv_datetime2"/>
                     </div>
-                    <div id="fdt_salesorder_datetime2_err" class="text-danger"></div>
+                    <div id="fdt_inv_datetime2_err" class="text-danger"></div>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
             <div class="form-group row">
                 <label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
                 <div class="col-sm-4">								
-                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Detail")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Ringkas")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Outstanding S/J")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Lost Of Sales")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Faktur Penjualan Detail")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Faktur Penjualan Ringkas")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Penjualan Per-Item Per-Customer")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Penjualan Per-Item Per-Sales")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout5" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Saldo Piutang Faktur Penjualan dan Umur Piutang")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -159,7 +168,7 @@
         $("#select-relations").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>tr/sales_order/get_customers',
+				url: '<?=site_url()?>report/invoice/get_customers',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -189,14 +198,43 @@
 			// $("#select-sales").val(selectedCustomer.fin_sales_id).trigger("change.select2");
 			// $("#select-warehouse").val(selectedCustomer.fin_warehouse_id).trigger("change.select2");
 			//current_pricing_group_id = selectedCustomer.current_pricing_group_id;			
+        });
+        
+        $("#select-items").select2({
+			width: '100%',
+			ajax: {
+				url: '<?=site_url()?>report/invoice/get_data_items',
+				dataType: 'json',
+				delay: 250,
+				processResults: function (data){
+					items = [];
+					data = data.data;
+                    items.push({
+							"id" : "0",
+							"text" : "ALL",					
+						});
+					$.each(data,function(index,value){
+						items.push({
+							"id" : value.fin_item_id,
+							"text" : value.fst_item_name,					
+						});
+					});					
+					return {
+						results: items
+					};
+				},
+				cache: true,
+			}
+		}).on('select2:select',function(e){
+
 		});
 
         $("#btnProcess").click(function(event) {
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#rptSalesOrder").serializeArray();
-            url = "<?= site_url() ?>report/sales_order/process";
+            data = $("#rptInvoice").serializeArray();
+            url = "<?= site_url() ?>report/invoice/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -239,12 +277,12 @@
                         //Clear all previous error
                         $(".text-danger").html("");
                         //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/sales_order/generatereport";
+                        url = "<?= site_url() ?>report/invoice/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
-                        $("#rptSalesOrder").attr('action', url);
-                        $("#rptSalesOrder").attr('target', 'rpt_iframe');
-                        $("#rptSalesOrder").submit();
+                        $("#rptInvoice").attr('action', url);
+                        $("#rptInvoice").attr('target', 'rpt_iframe');
+                        $("#rptInvoice").submit();
                         $("a#toggle-window").click();
                         // Change to Edit mode
                         // $("#frm-mode").val("EDIT"); //ADD|EDIT
@@ -279,7 +317,7 @@
             var a = document.createElement('a');
             a.href = data_type + ', ' + table_html;
 			//a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
-			a.download = 'Laporan_SO_Detail' + '.xls';
+			a.download = 'Laporan_Faktur_Penjualan' + '.xls';
 			a.click();                        			
 			return;
 		});      

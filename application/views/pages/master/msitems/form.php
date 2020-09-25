@@ -642,6 +642,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         </div>
                                     </div>
 
+                                    <div class="form-group">
+                                        <label for="fdb_qty" class="col-md-3 control-label"><?= lang("Qty") ?></label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control text-right numeric" id="fdb_qty" value="1">
+                                            <span id="fdb_qty_error" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
                                 </form>
 
                                 <div class="modal-footer">
@@ -696,6 +704,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         "width": "5%",
                         data: "fst_unit",
                         visible: true,
+                    },
+                    {
+                        "title": "<?= lang("Qty") ?>",
+                        "width": "7%",
+                        data: "fdb_qty"
                     },
                     {
                         "title": "<?= lang("Action") ?>",
@@ -778,10 +791,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
             $("#btn-add-bom-details").click(function(event) {
                 event.preventDefault();
+                addRow = true;
                 var itemBom = $("#fin_item_id_bom").val();
                 if (itemBom == null || itemBom == "") {
                     $("#fin_item_id_bom_error").html("Please select Item");
                     $("#fin_item_id_bom_error").show();
+                    addRow = false;
+                    return;
                 } else {
                     $("#fin_item_id_bom_error").hide();
                 }
@@ -789,8 +805,19 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 if (unitBom == null || unitBom == "") {
                     $("#fst_unit-bom_error").html("Please select Unit");
                     $("#fst_unit-bom_error").show();
+                    addRow = false;
+                    return;
                 } else {
                     $("#fst_unit-bom_error").hide();
+                }
+                var qtyBom = $("#fdb_qty").val();
+                if (qtyBom == null || qtyBom == "" || qtyBom < 0 ) {
+                    $("#fdb_qty_error").html("Qty must be greater than or same as 0 ");
+                    $("#fdb_qty_error").show();
+                    addRow = false;
+                    return;
+                } else {
+                    $("#fdb_qty_error").hide();
                 }
                 t = $('#tbl_bom_details').DataTable();
                 t.row.add({
@@ -799,6 +826,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     fin_item_id_bom: selected_bom.id,
                     BomName: selected_bom.text,
                     fst_unit: selected_unitbom.text,
+                    fdb_qty: $("#fdb_qty").val(),
                     action: action
                 }).draw(false);
             });
@@ -840,6 +868,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         <label for="fdc_selling_price" class="col-md-3 control-label"><?= lang("Selling Price") ?></label>
                                         <div class="col-md-9">
                                             <input type="text" class="form-control text-right money" id="fdc_selling_price" value="0">
+                                            <span id="fdc_selling_price_error" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </form>
@@ -983,10 +1012,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });
             $("#btn-add-special-pricing").click(function(event) {
                 event.preventDefault();
+                addRow = true;
                 var pricingGroup = $("#fin_cust_pricing_group_id").val();
                 if (pricingGroup == null || pricingGroup == "") {
                     $("#fin_cust_pricing_group_id_error").html("Please select Pricing Group");
                     $("#fin_cust_pricing_group_id_error").show();
+                    addRow = false;
+                    return;
                 } else {
                     $("#fin_cust_pricing_group_id_error").hide();
                 }
@@ -994,11 +1026,22 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 if (unitPricing == null || unitPricing == "") {
                     $("#fst_unit_pricing_error").html("Please select Unit");
                     $("#fst_unit_pricing_error").show();
+                    addRow = false;
+                    return;
                 } else {
                     $("#fst_unit_pricing_error").hide();
                 }
-                t = $('#tbl_special_pricing').DataTable();
+                var price = $("#fdc_selling_price").val();
+                if (price == null || price == "" || price < 0) {
+                    $("#fdc_selling_price_error").html("Price must be greater than or same as 0");
+                    $("#fdc_selling_price_error").show();
+                    addRow = false;
+                    return;
+                } else {
+                    $("#fdc_selling_price_error").hide();
+                }
                 var sellingPrice = numeral($("#fdc_selling_price").val());
+                t = $('#tbl_special_pricing').DataTable();
                 t.row.add({
                     fin_rec_id: 0,
                     fin_item_id: 0,
@@ -1548,6 +1591,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         fin_item_id_bom: val.fin_item_id_bom,
                         BomName: val.fst_item_name,
                         fst_unit: val.fst_unit,
+                        fdb_qty: val.fdb_qty,
                         action: action
                     }).draw(false);
                 })

@@ -1,16 +1,17 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Sales_order_rpt_model extends CI_Model {
+class Invoice_rpt_model extends CI_Model {
 
-    public $layout1Columns = ['Pelanggan/Customer', 'No S/O', 'Tanggal S/O'];
+    public $layout1Columns = ['Pelanggan/Customer', 'No.Faktur', 'Tanggal Faktur'];
 
-    public function queryComplete($data, $sorder_by="a.fin_salesorder_id", $rptLayout="1") {
+    public function queryComplete($data, $sorder_by="a.fst_inv_no", $rptLayout="1") {
         
         $warehouse_id = "";
         $branch_id = "";
         $relation_id = "";
         $sales_id = "";
+        $item_id = "";
         $start_date = "";
         $end_date = "";
         $fbl_is_vat_include = "";
@@ -18,8 +19,9 @@ class Sales_order_rpt_model extends CI_Model {
         if (isset($data['fin_warehouse_id'])) { $warehouse_id = $data['fin_warehouse_id'];}
         if (isset($data['fin_relation_id'])) { $relation_id = $data['fin_relation_id'];}
         if (isset($data['fin_sales_id'])) { $sales_id = $data['fin_sales_id'];}
-        if (isset($data['fdt_salesorder_datetime'])) { $start_date = $data['fdt_salesorder_datetime'];}
-        if (isset($data['fdt_salesorder_datetime2'])) { $end_date = $data['fdt_salesorder_datetime2'];}
+        if (isset($data['fin_item_id'])) { $item_id = $data['fin_item_id'];}
+        if (isset($data['fdt_inv_datetime'])) { $start_date = $data['fdt_inv_datetime'];}
+        if (isset($data['fdt_inv_datetime2'])) { $end_date = $data['fdt_inv_datetime2'];}
         if (isset($data['fbl_is_vat_include'])) { $fbl_is_vat_include = $data['fbl_is_vat_include'];}
 
         $swhere = "";
@@ -40,11 +42,14 @@ class Sales_order_rpt_model extends CI_Model {
             if ($sales_id > "0") {
                 $swhere .= " and a.fin_sales_id = " . $this->db->escape($sales_id);
             }
+            if ($item_id > "0") {
+                $swhere .= " and a.fin_item_id = " . $this->db->escape($item_id);
+            }
             if (isset($start_date)) {
-                $swhere .= " and a.fdt_salesorder_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
+                $swhere .= " and a.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
             }
             if (isset($end_date)) {
-                $swhere .= " and a.fdt_salesorder_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
+                $swhere .= " and a.fdt_inv_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
             }
             if ($fbl_is_vat_include == 1) {
                 $swhere .= " and a.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
@@ -64,10 +69,10 @@ class Sales_order_rpt_model extends CI_Model {
                 $swhere .= " and a.fin_sales_id = " . $this->db->escape($sales_id);
             }
             if (isset($start_date)) {
-                $swhere .= " and a.fdt_salesorder_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
+                $swhere .= " and a.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
             }
             if (isset($end_date)) {
-                $swhere .= " and a.fdt_salesorder_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
+                $swhere .= " and a.fdt_inv_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
             }
             if ($fbl_is_vat_include == 1) {
                 $swhere .= " and a.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
@@ -86,11 +91,14 @@ class Sales_order_rpt_model extends CI_Model {
             if ($sales_id > "0") {
                 $swhere .= " and b.fin_sales_id = " . $this->db->escape($sales_id);
             }
+            if ($item_id > "0") {
+                $swhere .= " and b.fin_item_id = " . $this->db->escape($item_id);
+            }
             if (isset($start_date)) {
-                $swhere .= " and b.fdt_salesorder_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
+                $swhere .= " and b.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
             }
             if (isset($end_date)) {
-                $swhere .= " and b.fdt_salesorder_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
+                $swhere .= " and b.fdt_inv_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
             }
             if ($fbl_is_vat_include == 1) {
                 $swhere .= " and b.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
@@ -109,11 +117,14 @@ class Sales_order_rpt_model extends CI_Model {
             if ($sales_id > "0") {
                 $swhere .= " and b.fin_sales_id = " . $this->db->escape($sales_id);
             }
+            if ($item_id > "0") {
+                $swhere .= " and b.fin_item_id = " . $this->db->escape($item_id);
+            }
             if (isset($start_date)) {
-                $swhere .= " and b.fdt_salesorder_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
+                $swhere .= " and b.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
             }
             if (isset($end_date)) {
-                $swhere .= " and b.fdt_salesorder_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
+                $swhere .= " and b.fdt_inv_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
             }
             if ($fbl_is_vat_include == 1) {
                 $swhere .= " and b.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
@@ -137,39 +148,38 @@ class Sales_order_rpt_model extends CI_Model {
         
         switch($rptLayout) {
             case "1":
-                $ssql = "SELECT a.fst_salesorder_no as No_SO, a.fdt_salesorder_datetime as SO_Date, a.fin_terms_payment as TOP,
-                a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,c.fst_relation_name as Relation_Name, a.fin_sales_id as Sales_Id, e.fst_username as Sales_Name,
-                b.fin_rec_id as Rec_Id, b.fin_item_id as Item_Id, f.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,
-                b.fdb_qty as Qty, b.fst_unit as Unit, b.fdc_price as Price, b.fst_disc_item as Disc_Item, b.fdc_disc_amount_per_item as Disc_Amount,
+                $ssql = "SELECT a.fin_inv_id,a.fst_inv_no as No_Inv, a.fst_salesorder_no as No_SO, a.fdt_inv_datetime as Inv_Date, a.fin_terms_payment as TOP,CAST(DATE_ADD(a.fdt_inv_datetime, INTERVAL a.fin_terms_payment DAY) as DATE) as Jt_Date,
+                a.fst_inv_memo as Inv_Memo,a.fdc_dpp_amount as Dpp,a.fdc_ppn_amount as Ppn,a.fdc_subttl as fdc_subttl,a.fdc_total as fdc_total,a.fdc_disc_amount as Disc_Total,a.fst_curr_code as Mata_Uang,a.fdc_exchange_rate_idr as Rate_Idr,
+                a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,a.fin_relation_id as fin_relation_id,c.fst_relation_name as Relation_Name, a.fin_sales_id as Sales_Id, e.fst_username as Sales_Name,
+                b.fin_rec_id as Rec_Id, b.fin_item_id as Item_Id, f.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,b.fst_memo_item as Memo_Item,
+                b.fdb_qty as Qty, b.fst_unit as Unit, b.fdc_price as Price,(b.fdc_price - b.fdc_disc_amount_per_item) as Price_Netto, b.fst_disc_item as Disc_Item, b.fdc_disc_amount_per_item as Disc_Amount,
                 (b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) as Amount  
-                FROM (SELECT * FROM trsalesorder WHERE fst_active !='D') a left join trsalesorderdetails b 
-                on a.fin_salesorder_id = b.fin_salesorder_id left join msrelations c
-                on a.fin_relation_id = c.fin_relation_id left join mswarehouse d
-                on a.fin_warehouse_id = d.fin_warehouse_id left join users e
-                on a.fin_sales_id = e.fin_user_id left join msitems f
+                FROM (SELECT a.*,b.fst_salesorder_no FROM trinvoice a LEFT OUTER JOIN trsalesorder b ON a.fin_salesorder_id = b.fin_salesorder_id WHERE a.fst_active !='D') a LEFT OUTER JOIN trinvoiceitems b 
+                on a.fin_inv_id = b.fin_inv_id LEFT OUTER JOIN msrelations c
+                on a.fin_relation_id = c.fin_relation_id LEFT OUTER JOIN mswarehouse d
+                on a.fin_warehouse_id = d.fin_warehouse_id LEFT OUTER JOIN users e
+                on a.fin_sales_id = e.fin_user_id LEFT OUTER JOIN msitems f
                 on b.fin_item_id = f.fin_item_id " . $swhere . $sorderby;
                 break;
             case "2":
-                $ssql = "SELECT a.fst_salesorder_no as No_SO, a.fdt_salesorder_datetime as SO_Date, a.fin_terms_payment as TOP, a.fdc_subttl as fdc_subttl, a.fdc_disc_amount as fdc_disc_amount, a.fdc_total as fdc_total, a.fdc_downpayment as fdc_downpayment,
-                a.fdc_downpayment_paid as fdc_downpayment_paid, a.fdc_downpayment_claimed as fdc_downpayment_claimed, a.fdc_dpp_amount as fdc_dpp_amount, a.fdc_vat_amount as fdc_vat_amount,
-                a.fin_warehouse_id as Warehouse_Id, c.fst_warehouse_name as Warehouse,b.fst_relation_name as Relation_Name, a.fin_sales_id as Sales_Id, d.fst_username as Sales_Name
-                FROM (SELECT * FROM trsalesorder WHERE fst_active !='D') a left join msrelations b
+                $ssql = "SELECT a.fin_inv_id,a.fst_inv_no as No_Inv,a.fst_salesorder_no as No_SO, a.fdt_inv_datetime as Inv_Date, a.fin_terms_payment as TOP,CAST(DATE_ADD(a.fdt_inv_datetime, INTERVAL a.fin_terms_payment DAY) as DATE) as Jt_Date,
+                a.fst_inv_memo as Inv_Memo,a.fdc_dpp_amount as Dpp,a.fdc_ppn_amount as Ppn,a.fdc_subttl as fdc_subttl,a.fdc_total as fdc_total,a.fdc_disc_amount as Disc_Total,a.fst_curr_code as Mata_Uang,a.fdc_exchange_rate_idr as Rate_Idr,
+                a.fin_warehouse_id as Warehouse_Id, c.fst_warehouse_name as Warehouse,a.fin_relation_id as fin_relation_id,b.fst_relation_name as Relation_Name, a.fin_sales_id as Sales_Id, d.fst_username as Sales_Name
+                FROM (SELECT a.*,b.fst_salesorder_no FROM trinvoice a LEFT OUTER JOIN trsalesorder b ON a.fin_salesorder_id = b.fin_salesorder_id WHERE a.fst_active !='D') a LEFT OUTER JOIN  msrelations b
                 on a.fin_relation_id = b.fin_relation_id left join mswarehouse c
                 on a.fin_warehouse_id = c.fin_warehouse_id left join users d
                 on a.fin_sales_id = d.fin_user_id " . $swhere . $sorderby;
                 break;
             case "3":
-                $ssql = "SELECT b.fin_salesorder_id as Id_SO,b.fst_salesorder_no as No_SO, b.fdt_salesorder_datetime as SO_Date, b.fin_terms_payment as TOP,b.fin_warehouse_id as Warehouse_Id,b.fin_sales_id as Sales_Id,
+                $ssql = "SELECT b.fin_inv_id,b.fst_inv_no as No_Inv,b.fin_salesorder_id as Id_SO,b.fst_salesorder_no as No_SO, b.fdt_salesorder_datetime as SO_Date, b.fin_terms_payment as TOP,b.fin_warehouse_id as Warehouse_Id,b.fin_sales_id as Sales_Id,
                 a.fst_username as Sales_Name,c.fst_relation_name as Relation_Name,f.fin_rec_id as ID_DetailSO, f.fin_item_id as Item_Id,g.fst_item_code as Item_Code,f.fst_custom_item_name as Item_Name,
                 f.fdb_qty as Qty, f.fst_unit as Unit, e.fst_sj_no as fst_sj_no, e.fdt_sj_datetime as fdt_sj_datetime,d.fdb_qty as qty_sj,h.fst_warehouse_name as Warehouse
-                FROM users a RIGHT OUTER JOIN 
-                (SELECT * FROM trsalesorder WHERE fst_active !='D') b ON a.fin_user_id = b.fin_sales_id LEFT OUTER JOIN 
-                msrelations c ON b.fin_relation_id = c.fin_relation_id LEFT OUTER JOIN 
-                (SELECT a.fin_trans_id,a.fin_sj_id,b.fin_trans_detail_id,b.fin_item_id,b.fdb_qty FROM trsuratjalan a LEFT OUTER JOIN trsuratjalandetails b ON a.fin_sj_id = b.fin_sj_id) d LEFT OUTER JOIN
-                trsuratjalan e ON d.fin_sj_id = e.fin_sj_id RIGHT OUTER JOIN 
-                trsalesorderdetails f ON d.fin_trans_id = f.fin_salesorder_id AND d.fin_trans_detail_id = f.fin_rec_id AND d.fin_item_id = f.fin_item_id LEFT OUTER JOIN 
-                msitems g ON f.fin_item_id = g.fin_item_id ON b.fin_salesorder_id = f.fin_salesorder_id LEFT OUTER JOIN
-                mswarehouse h ON b.fin_warehouse_id = h.fin_warehouse_id $swhere ORDER BY b.fin_salesorder_id";
+                FROM msrelations a RIGHT OUTER JOIN 
+                (SELECT * FROM trinvoice WHERE fst_active !='D') b ON a.fin_relation_id = b.fin_relation_id LEFT OUTER JOIN
+                trinvoiceitems c ON b.fin_inv_id = c.fin_inv_id LEFT OUTER JOIN
+                msrelations d ON b.fin_relation_id = d.fin_relation_id LEFT OUTER JOIN 
+                msitems e ON c.fin_item_id = e.fin_item_id  $swhere ORDER BY b.fin_salesorder_id";
+                //GROUP BY fstTitle,fstCustCode,fstCustName,fstItemCode,fstItemName,fstSatuan,fmnRate
                 break;
             case "4":
                 $ssql = "SELECT b.fin_salesorder_id as Id_SO,b.fst_salesorder_no as No_SO, b.fdt_salesorder_datetime as SO_Date, b.fin_terms_payment as TOP,b.fin_warehouse_id as Warehouse_Id,b.fin_sales_id as Sales_Id,
@@ -234,8 +244,8 @@ class Sales_order_rpt_model extends CI_Model {
         ];
 
         $rules[] = [
-            'field' => 'fdt_salesorder_datetime',
-            'label' => 'Tgl SO',
+            'field' => 'fdt_inv_datetime',
+            'label' => 'Tgl Faktur',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
@@ -243,8 +253,8 @@ class Sales_order_rpt_model extends CI_Model {
         ];
 
         $rules[] = [
-            'field' => 'fdt_salesorder_datetime2',
-            'label' => 'Tgl SO',
+            'field' => 'fdt_inv_datetime2',
+            'label' => 'Tgl Faktur',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'
@@ -266,7 +276,7 @@ class Sales_order_rpt_model extends CI_Model {
         // } else {
         //     $reportData = $this->parser->parse('reports/sales_order/rpt',[], true);
         // }
-        $reportData = $this->parser->parse('reports/sales_order/rpt',["rows"=>$dataReport['rows']], true);
+        $reportData = $this->parser->parse('reports/invoice/rpt',["rows"=>$dataReport['rows']], true);
         // var_dump($reportData);die();
         // return $reportData;
         return $reportData;
