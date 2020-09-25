@@ -184,7 +184,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</div>
 						</div>
 
-						<div class="form-group">
+						<div class="form-group" >
 							<div class="col-md-12" style='text-align:right'>
 								<button id="btn-add-detail" class="btn btn-primary btn-sm">
 									<i class="fa fa-cart-plus" aria-hidden="true"></i>
@@ -192,8 +192,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</button>
 							</div>
 						</div>
-
 						<table id="tblSODetails" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+
+						
 						<div id="detail_err" class="text-danger"></div>
 
 						<br>

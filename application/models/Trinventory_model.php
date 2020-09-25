@@ -175,7 +175,13 @@ class Trinventory_model extends MY_Model
 				throw new CustomException(sprintf(lang("Stock %s tidak boleh kurang dari nol"),$itemName),3003,"FAILED");            
 			}
 
-			parent::update($data);
+			//parent::update($data);
+			//insert ulang agar dapat id lebih besar
+			$this->db->query("delete from trinventory where fin_rec_id = ?",[$data->fin_rec_id]);
+			unset($data["fin_rec_id"]);
+			parent::insert($data);
+
+			
 			$rwPrev = $data;
 		}
 
@@ -666,12 +672,7 @@ class Trinventory_model extends MY_Model
 		$ssql = "select distinct fst_serial_no from msitemdetailssummary where fin_warehouse_id = ? and fin_item_id = ? and fst_batch_no = ?  and fdb_qty_in > fdb_qty_out and fst_active ='A'";
 		$qr = $this->db->query($ssql,[$finWarehouseId,$finItemId,$fstBatchNo]);
 		return $qr->result();
-	}
-
-	public function test_exception(){
-		throw new CustomException("INI BAGIAN MESSAGE",100,"FAILED",["data1"=>"Ini Data 1","data2"=>"ini datat 2"]);
-
-	}
+	}	
 
 	public function getLastHPP($finItemId,$finWarehouseId){
 		$ssql = "select * from trinventory where fin_item_id = ? and fin_warehouse_id = ? 
@@ -689,7 +690,8 @@ class Trinventory_model extends MY_Model
 	public function getListStock($finItemId,$fstUnit,$finBranchId){
 		$this->load->model("msitems_model");
 
-		$ssql = "SELECT a.fin_rec_id,a.fin_warehouse_id,b.fst_warehouse_name,a.fin_item_id,a.fst_basic_unit as fst_unit,a.fdb_qty_balance_after FROM trinventory a 
+		$ssql = "SELECT a.fin_rec_id,a.fin_warehouse_id,a.fin_item_id,a.fst_basic_unit as fst_unit,a.fdb_qty_balance_after,
+			b.fst_warehouse_name FROM trinventory a 
 			INNER JOIN 
 				(
 					SELECT a.fin_warehouse_id,b.fst_warehouse_name,MAX(a.fdt_trx_datetime) AS fdt_trx_datetime 
@@ -722,5 +724,29 @@ class Trinventory_model extends MY_Model
 		$basicUnitLastHPP = $this->getLastHPP($finItemId,$finWarehouseId);
 		$qtyInBasicUnit = $this->msitems_model->getQtyConvertToBasicUnit($finItemId,$fdbQty,$fstUnit);
 		return $qtyInBasicUnit * $basicUnitLastHPP;
+	}
+
+
+	public function getLastStockAllBranch($finItemId,$lastDate=null){
+		//Last Stock in basic unit		
+		if ($lastDate == null){
+			$lastDate = date("Y-m-d H:i:s");			
+		}
+
+		$ssql = "SELECT a.fin_item_id,sum(fdb_qty_balance_after) as fdb_last_stock FROM trinventory a
+			INNER JOIN (
+				SELECT fin_warehouse_id,fin_item_id,MAX(fin_rec_id) AS fin_rec_id  FROM trinventory 
+				WHERE fdt_trx_datetime < ? AND fin_item_id = ? GROUP BY fin_warehouse_id,fin_item_id
+			) b ON a.fin_rec_id = b.fin_rec_id
+			GROUP BY a.fin_item_id" ;
+		
+		$qr = $this->db->query($ssql,[$lastDate,$finItemId]);
+		$rw = $qr->row();
+		if ($rw == null){
+			return 0;
+		}else{
+			return $rw->fdb_last_stock;
+		}
+		
 	}
 }

@@ -450,7 +450,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/production/assembling");
+			window.location.replace("<?=site_url()?>tr/production/mts");
 		});	
 
 	
@@ -662,11 +662,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			App.blockUIOnAjaxRequest();
 			$.ajax({
 				url:"<?= site_url() ?>tr/production/mts/fetch_data/<?=$fin_mts_id?>",
-			}).done(function(resp){				
+			}).done(function(resp){							
 				dataH =  resp.data.header;
 				if (dataH == null){
 					alert("<?=lang("ID transaksi tidak dikenal")?>");
-					return false;
+					$("#btnNew").trigger("click");
 				}
 				
 				App.autoFillForm(dataH);
@@ -754,7 +754,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/production/assembling/delete/" + $("#fin_assembling_id").val();
+		var url =  "<?= site_url() ?>tr/production/mts/delete/" + $("#fin_mts_id").val();
 		$.ajax({
 			url:url,
 			method:"POST",

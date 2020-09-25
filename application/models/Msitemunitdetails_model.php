@@ -116,4 +116,10 @@ class Msitemunitdetails_model extends MY_Model
         $qr = $this->db->query($ssql,[$finItemId]);
         return $qr->result();
     }
+
+    public function getProductionListUnit($fin_item_id){
+        $ssql = "SELECT * FROM msitemunitdetails where fin_item_id = ? and fbl_is_production_output = 1 and fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$fin_item_id]);
+        return $qr->result();
+    }
 }

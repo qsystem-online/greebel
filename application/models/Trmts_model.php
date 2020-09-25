@@ -73,7 +73,7 @@ class Trmts_model extends MY_Model{
     public function getDataById($finMTSId){
         $ssql = "SELECT a.*,b.fst_item_group_name FROM trmts a 
             INNER JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
-            WHERE fin_mts_id = ? ";
+            WHERE fin_mts_id = ? and a.fst_active != 'D'";
 
         $qr = $this->db->query($ssql,[$finMTSId]);
         $dataH = $qr->row();
@@ -93,6 +93,14 @@ class Trmts_model extends MY_Model{
             "details"=>$details
         ];
     }
+
+    public function getDataHeader($finMTSId){
+        $ssql = "SELECT * FROM trmts WHERE fin_mts_id = ? ";
+        $qr = $this->db->query($ssql,[$finMTSId]);
+        $dataH = $qr->row();
+        return $dataH;
+    }
+
 
     public function getSalesHistory($finItemId,$fstUnit,$histType,$mNumber,$currYear){
         $this->load->model("msitemunitdetails_model");        
@@ -133,6 +141,24 @@ class Trmts_model extends MY_Model{
         }
         return round($ttlQty,4);
     }
+
+    public function deleteDetail($finMTSId){
+        $ssql ="DELETE FROM trmtsitems where fin_mts_id = ?";
+        $this->db->query($ssql,[$finMTSId]);
+    }
+
+    public function delete($finId,$softDelete=true,$data=null){
+		parent::delete($finId,$softDelete);
+		if(!$softDelete){
+			$this->db->delete("trmtsitems",array("fin_mts_id"=>$finId));
+        }else{
+            $this->db->query("update trmtsitems set fst_active ='D' where fin_mts_id = ?",[$finId]);
+        }        		
+		return [
+			"status"=>true,
+			"message"=>"",
+		];
+	}
     
 
 
