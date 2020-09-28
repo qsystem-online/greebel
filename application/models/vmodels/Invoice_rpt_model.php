@@ -43,7 +43,7 @@ class Invoice_rpt_model extends CI_Model {
                 $swhere .= " and a.fin_sales_id = " . $this->db->escape($sales_id);
             }
             if ($item_id > "0") {
-                $swhere .= " and a.fin_item_id = " . $this->db->escape($item_id);
+                $swhere .= " and b.fin_item_id = " . $this->db->escape($item_id);
             }
             if (isset($start_date)) {
                 $swhere .= " and a.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
@@ -82,17 +82,11 @@ class Invoice_rpt_model extends CI_Model {
             if ($branch_id > "0") {
                 $swhere .= " and b.fin_branch_id = " . $this->db->escape($branch_id);
             }
-            if ($warehouse_id > "0" ) {
-                $swhere .= " and b.fin_warehouse_id = " . $this->db->escape($warehouse_id);
-            }
             if ($relation_id > "0") {
                 $swhere .= " and b.fin_relation_id = " . $this->db->escape($relation_id);
             }
-            if ($sales_id > "0") {
-                $swhere .= " and b.fin_sales_id = " . $this->db->escape($sales_id);
-            }
             if ($item_id > "0") {
-                $swhere .= " and b.fin_item_id = " . $this->db->escape($item_id);
+                $swhere .= " and c.fin_item_id = " . $this->db->escape($item_id);
             }
             if (isset($start_date)) {
                 $swhere .= " and b.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
@@ -108,9 +102,6 @@ class Invoice_rpt_model extends CI_Model {
             if ($branch_id > "0") {
                 $swhere .= " and b.fin_branch_id = " . $this->db->escape($branch_id);
             }
-            if ($warehouse_id > "0" ) {
-                $swhere .= " and b.fin_warehouse_id = " . $this->db->escape($warehouse_id);
-            }
             if ($relation_id > "0") {
                 $swhere .= " and b.fin_relation_id = " . $this->db->escape($relation_id);
             }
@@ -118,7 +109,7 @@ class Invoice_rpt_model extends CI_Model {
                 $swhere .= " and b.fin_sales_id = " . $this->db->escape($sales_id);
             }
             if ($item_id > "0") {
-                $swhere .= " and b.fin_item_id = " . $this->db->escape($item_id);
+                $swhere .= " and c.fin_item_id = " . $this->db->escape($item_id);
             }
             if (isset($start_date)) {
                 $swhere .= " and b.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
@@ -130,18 +121,31 @@ class Invoice_rpt_model extends CI_Model {
                 $swhere .= " and b.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
             }
         }
-        if ($rptLayout == "4"){
-            if ($swhere != "") {
-                $swhere = " and " . substr($swhere, 5);
+
+        if ($rptLayout == "5"){
+            if ($branch_id > "0") {
+                $swhere .= " and b.fin_branch_id = " . $this->db->escape($branch_id);
             }
-        }else{
-            if ($swhere != "") {
-                $swhere = " where " . substr($swhere, 5);
+            if ($relation_id > "0") {
+                $swhere .= " and b.fin_relation_id = " . $this->db->escape($relation_id);
+            }
+            if ($sales_id > "0") {
+                $swhere .= " and b.fin_sales_id = " . $this->db->escape($sales_id);
+            }
+            if (isset($start_date)) {
+                $swhere .= " and b.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
+            }
+            if (isset($end_date)) {
+                $swhere .= " and b.fdt_inv_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
+            }
+            if ($fbl_is_vat_include == 1) {
+                $swhere .= " and b.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
             }
         }
-        //if ($swhere != "") {
-        //    $swhere = " where " . substr($swhere, 5);
-        //}
+        if ($swhere != "") {
+            $swhere = " where " . substr($swhere, 5);
+        }
+
         if ($sorder_by != "") {
             $sorderby = " order by " .$sorder_by;
         }
@@ -171,27 +175,30 @@ class Invoice_rpt_model extends CI_Model {
                 on a.fin_sales_id = d.fin_user_id " . $swhere . $sorderby;
                 break;
             case "3":
-                $ssql = "SELECT b.fin_inv_id,b.fst_inv_no as No_Inv,b.fin_salesorder_id as Id_SO,b.fst_salesorder_no as No_SO, b.fdt_salesorder_datetime as SO_Date, b.fin_terms_payment as TOP,b.fin_warehouse_id as Warehouse_Id,b.fin_sales_id as Sales_Id,
-                a.fst_username as Sales_Name,c.fst_relation_name as Relation_Name,f.fin_rec_id as ID_DetailSO, f.fin_item_id as Item_Id,g.fst_item_code as Item_Code,f.fst_custom_item_name as Item_Name,
-                f.fdb_qty as Qty, f.fst_unit as Unit, e.fst_sj_no as fst_sj_no, e.fdt_sj_datetime as fdt_sj_datetime,d.fdb_qty as qty_sj,h.fst_warehouse_name as Warehouse
+                $ssql = "SELECT b.fin_relation_id as Relation_Id,a.fst_relation_name as Relation_Name,c.fin_item_id as Item_Id,d.fst_item_code as Item_Code,c.fst_custom_item_name as Item_Name,
+                c.fst_unit as Unit,SUM(c.fdb_qty) as Ttl_Qty,SUM((c.fdb_qty * (c.fdc_price - c.fdc_disc_amount_per_item))) as fdc_jumlah 
                 FROM msrelations a RIGHT OUTER JOIN 
                 (SELECT * FROM trinvoice WHERE fst_active !='D') b ON a.fin_relation_id = b.fin_relation_id LEFT OUTER JOIN
                 trinvoiceitems c ON b.fin_inv_id = c.fin_inv_id LEFT OUTER JOIN
-                msrelations d ON b.fin_relation_id = d.fin_relation_id LEFT OUTER JOIN 
-                msitems e ON c.fin_item_id = e.fin_item_id  $swhere ORDER BY b.fin_salesorder_id";
-                //GROUP BY fstTitle,fstCustCode,fstCustName,fstItemCode,fstItemName,fstSatuan,fmnRate
+                msitems d ON c.fin_item_id = d.fin_item_id  $swhere GROUP BY b.fin_relation_id,a.fst_relation_name,c.fin_item_id,d.fst_item_code,c.fst_custom_item_name,c.fst_unit";
                 break;
             case "4":
-                $ssql = "SELECT b.fin_salesorder_id as Id_SO,b.fst_salesorder_no as No_SO, b.fdt_salesorder_datetime as SO_Date, b.fin_terms_payment as TOP,b.fin_warehouse_id as Warehouse_Id,b.fin_sales_id as Sales_Id,
-                c.fst_username as Sales_Name,a.fst_relation_name as Relation_Name,e.fin_rec_id as ID_DetailSO, e.fin_item_id as Item_Id,d.fst_item_code as Item_Code,e.fst_custom_item_name as Item_Name,
-                (e.fdb_qty - e.fdb_qty_out) as Qty_OS, e.fst_unit as Unit,(e.fdc_price - e.fdc_disc_amount_per_item) as Harga_Netto, ((e.fdb_qty - e.fdb_qty_out) * (e.fdc_price - e.fdc_disc_amount_per_item)) as Amount,f.fst_warehouse_name as Warehouse
-                FROM msrelations a RIGHT OUTER JOIN 
-                (SELECT * FROM trsalesorder WHERE fst_active !='D') b LEFT OUTER JOIN 
-                users c ON b.fin_sales_id = c.fin_user_id ON a.fin_relation_id = b.fin_relation_id LEFT OUTER JOIN
-                msitems d RIGHT OUTER JOIN 
-                trsalesorderdetails e ON d.fin_item_id = e.fin_item_id ON b.fin_salesorder_id = e.fin_salesorder_id LEFT OUTER JOIN
-                mswarehouse f ON b.fin_warehouse_id = f.fin_warehouse_id
-                WHERE (e.fdb_qty - e.fdb_qty_out) >0 $swhere ORDER BY b.fin_salesorder_id";
+                $ssql = "SELECT b.fin_sales_id as Sales_Id,a.fst_username as Sales_Name,c.fin_item_id as Item_Id,d.fst_item_code as Item_Code,c.fst_custom_item_name as Item_Name,
+                c.fst_unit as Unit,SUM(c.fdb_qty) as Ttl_Qty,SUM((c.fdb_qty * (c.fdc_price - c.fdc_disc_amount_per_item))) as fdc_jumlah 
+                FROM users a RIGHT OUTER JOIN 
+                (SELECT * FROM trinvoice WHERE fst_active !='D') b ON a.fin_user_id = b.fin_sales_id LEFT OUTER JOIN
+                trinvoiceitems c ON b.fin_inv_id = c.fin_inv_id LEFT OUTER JOIN
+                msitems d ON c.fin_item_id = d.fin_item_id  $swhere GROUP BY b.fin_sales_id,a.fst_username,c.fin_item_id,d.fst_item_code,c.fst_custom_item_name,c.fst_unit";
+                break;
+            case "5":
+                $ssql = "SELECT b.fin_sales_id as Sales_Id,a.fst_username as Sales_Name,b.fin_relation_id as Relation_Id,d.fst_relation_name as Relation_Name,b.fst_inv_no as No_Inv,b.fst_salesorder_no as No_SO,c.fst_sj_no as No_SJ, b.fdt_inv_datetime as Inv_Date, b.fin_terms_payment as TOP,
+                CAST(DATE_ADD(b.fdt_inv_datetime, INTERVAL b.fin_terms_payment DAY) as DATE) as Jt_Date,b.fdc_total as fdc_total,b.fst_curr_code as Mata_Uang, b.fdc_total_return as fdc_total_return, b.fdc_total_paid as fdc_total_paid,
+                ((b.fdc_total - b.fdc_total_return) - b.fdc_total_paid) as Saldo_Piutang,datediff(current_date(),CAST(DATE_ADD(b.fdt_inv_datetime, INTERVAL b.fin_terms_payment DAY) as DATE)) as Menunggak_Hari,e.fst_warehouse_name as Warehouse
+                FROM users a RIGHT OUTER JOIN 
+                (SELECT a.*,b.fst_salesorder_no FROM trinvoice a LEFT OUTER JOIN trsalesorder b ON a.fin_salesorder_id = b.fin_salesorder_id WHERE a.fst_active !='D') b ON a.fin_user_id = b.fin_sales_id LEFT OUTER JOIN
+                trsuratjalan c ON b.fin_sj_id = c.fin_sj_id LEFT OUTER JOIN
+                msrelations d ON b.fin_relation_id = d.fin_relation_id LEFT OUTER JOIN
+                mswarehouse e ON b.fin_warehouse_id = e.fin_warehouse_id  $swhere ORDER BY a.fst_username,d.fst_relation_name,b.fst_inv_no";
                 break;
             default:
                 break;

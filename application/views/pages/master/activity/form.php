@@ -143,14 +143,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <div class="form-group">
                                         <label for="fdb_qty_start" class="col-md-3 control-label"><?=lang("Start Qty")?></label>
                                         <div class="col-md-9">
-                                            <input type="number" class="form-control text-right numeric" id="fdb_qty_start" value="0">
+                                            <input type="number" class="form-control text-right numeric" id="fdb_qty_start" value="1">
                                             <div id="fdb_qty_start_err" class="text-danger"></div>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="fdb_qty_end" class="col-md-3 control-label"><?=lang("End Qty")?></label>
                                         <div class="col-md-9">
-                                            <input type="number" class="form-control text-right numeric" id="fdb_qty_end" value="0">
+                                            <input type="number" class="form-control text-right numeric" id="fdb_qty_end" value="1">
                                             <div id="fdb_qty_end_err" class="text-danger"></div>
                                         </div>
                                     </div>

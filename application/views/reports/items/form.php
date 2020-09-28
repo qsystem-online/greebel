@@ -117,6 +117,8 @@
 
         console.log(newArray);
         $('#multiple-columns').multiselect('dataprovider', newArray);
+        $('#multiple-columns').multiselect('selectAll',false);
+		$('#multiple-columns').multiselect('updateButtonText');
         // for(var i=0; i<newArray.length; i++){
         //     alert(newArray[i].label);
         //     console.log(newArray[i].label);
