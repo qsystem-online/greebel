@@ -100,9 +100,15 @@ class Activity extends MY_Controller
             "fst_name" => $this->input->post("fst_name"),
             "fst_team" => $this->input->post("fst_team"),
             "fst_type" => $this->input->post("fst_type"),
-            "fdc_cost_per_day" => $this->input->post("fdc_cost_per_day"),
+            //"fdc_cost_per_day" => $this->input->post("fdc_cost_per_day"),
             "fst_active" => 'A'
         ];
+
+        if ($this->input->post("fst_type") == "BORONGAN"){
+            $data["fdc_cost_per_day"] = 0;
+        }else{
+            $data["fdc_cost_per_day"] = $this->input->post("fdc_cost_per_day");
+        }
         
         $this->load->model('msactivity_model');
         $this->form_validation->set_data($data);
@@ -130,7 +136,7 @@ class Activity extends MY_Controller
             return;
         }
 
-        //Save Promo Terms
+        //Save Borongan Detail
 
         $this->load->model("msactivityborongandetails_model");
         $details = $this->input->post("borongandetail");
@@ -181,9 +187,15 @@ class Activity extends MY_Controller
             "fst_name" => $this->input->post("fst_name"),
             "fst_team" => $this->input->post("fst_team"),
             "fst_type" => $this->input->post("fst_type"),
-            "fdc_cost_per_day" => $this->input->post("fdc_cost_per_day"),
+            //"fdc_cost_per_day" => $this->input->post("fdc_cost_per_day"),
             "fst_active" => 'A'
         ];
+
+        if ($this->input->post("fst_type") == "BORONGAN"){
+            $data["fdc_cost_per_day"] = 0;
+        }else{
+            $data["fdc_cost_per_day"] = $this->input->post("fdc_cost_per_day");
+        }
 
         $this->form_validation->set_data($data);
         $this->form_validation->set_rules($this->msactivity_model->getRules("EDIT", $fin_activity_id));

@@ -129,6 +129,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             $("#btn-add-group-detail").click(function(event) {
                 event.preventDefault();
                 $("#mdlGroupDetail").modal('show');
+                $("#fin_activity_id").empty();
             });
             $("#tbl_groups_detail").DataTable({
                 searching: false,

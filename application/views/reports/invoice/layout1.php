@@ -86,19 +86,16 @@
 					$subDiscount = 0;
 					$totalDiscount = 0;
 					$totalAmount = 0;
+					$fdc_subttl = 0;
+					$Disc_Total = 0;
+					$Dpp = 0;
+					$Ppn = 0;
+					$fdc_total = 0;
 					foreach ($dataReport as $row){
 						echo "<tr>";
-						if ( $idInv != $row->No_Inv ){
+						if ( $idInv != $row->fin_inv_id ){
                             if ($idInv != "") {
-								//akumulasi total keseluruhan                            
-								$totalDiscount += $subDiscount;
-                                $totalAmount += $subAmount;
-                                $newtotalAmount = formatNumber($totalAmount,2);
-                                $fdc_subttl = formatNumber ($row->fdc_subttl,2);
-                                $Disc_Total = formatNumber ($row->Disc_Total,2);
-                                $Dpp = formatNumber ($row->Dpp,2);
-                                $Ppn = formatNumber ($row->Ppn,2);
-                                $fdc_total = formatNumber ($row->fdc_total,2);                                
+								//akumulasi total keseluruhan                                                        
                                 //tulis subtotal per-group
                                     echo "<tr>";
                                     echo "<td colspan='".totalSelectedCol(15,$selectedCols)."'style='text-align: right;font-weight: bold'>Sub total :</td>";
@@ -148,7 +145,8 @@
                             echoIfColSelected(5,$selectedCols,"<td class='col-5'></td>");
                             echoIfColSelected(6,$selectedCols,"<td class='col-6'></td>");
                             echoIfColSelected(7,$selectedCols,"<td class='col-7'></td>");
-                            echoIfColSelected(8,$selectedCols,"<td class='col-8'></td>");
+							echoIfColSelected(8,$selectedCols,"<td class='col-8'></td>");
+							
                         }
                         $Price_Netto = formatNumber ($row->Price_Netto,2);
                         $Amount = formatNumber ($row->Amount,2);
@@ -161,11 +159,42 @@
                         echoIfColSelected(15,$selectedCols,"<td class='col-15' style='text-align: right'>$Amount</td>");											                                                                                                                                                                      
                         echo "</tr>";
                         $subAmount += $row->Amount;
-                        $subAmountNew = formatNumber ($subAmount,2);
+						$subAmountNew = formatNumber ($subAmount,2);
+						
+						$totalDiscount += $subDiscount;
+						$totalAmount += $subAmount;
+						$newtotalAmount = formatNumber($totalAmount,2);
+						$fdc_subttl = formatNumber ($row->fdc_subttl,2);
+						$Disc_Total = formatNumber ($row->Disc_Total,2);
+						$Dpp = formatNumber ($row->Dpp,2);
+						$Ppn = formatNumber ($row->Ppn,2);
+						$fdc_total = formatNumber ($row->fdc_total,2);
 					}
-					$totalDiscount += $subDiscount;
-					$totalAmount += $subAmount;
-					$newtotalAmount = formatNumber ($totalAmount,2);  
+					
+					echo "<tr>";
+					echo "<td colspan='".totalSelectedCol(15,$selectedCols)."'style='text-align: right;font-weight: bold'>Sub total :</td>";
+					echoIfColSelected(15,$selectedCols,"<td class='col-15' style='font-weight: bold;text-align: right'>$fdc_subttl</td>");							
+					echo "</tr>";
+
+					echo "<tr>";
+					echo "<td colspan='".totalSelectedCol(15,$selectedCols)."'style='text-align: right;font-weight: bold'>Discount :</td>";
+					echoIfColSelected(15,$selectedCols,"<td class='col-15' style='font-weight: bold;text-align: right'>$Disc_Total</td>");							
+					echo "</tr>";
+
+					echo "<tr>";
+					echo "<td colspan='".totalSelectedCol(15,$selectedCols)."'style='text-align: right;font-weight: bold'>Dpp :</td>";
+					echoIfColSelected(15,$selectedCols,"<td class='col-15' style='font-weight: bold;text-align: right'>$Dpp</td>");							
+					echo "</tr>";
+
+					echo "<tr>";
+					echo "<td colspan='".totalSelectedCol(15,$selectedCols)."'style='text-align: right;font-weight: bold'>Ppn :</td>";
+					echoIfColSelected(15,$selectedCols,"<td class='col-15' style='font-weight: bold;text-align: right'>$Ppn</td>");							
+					echo "</tr>";
+
+					echo "<tr>";
+					echo "<td colspan='".totalSelectedCol(15,$selectedCols)."'style='text-align: right;font-weight: bold'>Nilai Total :</td>";
+					echoIfColSelected(15,$selectedCols,"<td class='col-15' style='font-weight: bold;text-align: right'>$fdc_total</td>");							
+					echo "</tr>";
 
                     echo "<tr>";
                     echo "<td colspan='".totalSelectedCol(15,$selectedCols)."'style='text-align: right;font-weight: bold'>Total Keseluruhan : </td>";

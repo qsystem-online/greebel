@@ -98,7 +98,7 @@
                     <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Faktur Penjualan Ringkas")?></label>
                     <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Penjualan Per-Item Per-Customer")?></label>
                     <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Penjualan Per-Item Per-Sales")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout5" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Saldo Piutang Faktur Penjualan dan Umur Piutang")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout5" class="rpt_layout" name="rpt_layout" value="5" onclick="handleRadioClick(this);"><?=lang("Laporan Saldo Piutang Faktur Penjualan dan Umur Piutang")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -157,6 +157,18 @@
         $('#multiple-columns').multiselect('dataprovider', newArray);
         $('#multiple-columns').multiselect('selectAll',false);
 		$('#multiple-columns').multiselect('updateButtonText');
+
+        if (myRadio.value == "3"){
+            $('#select-sales').val("0");
+            //$('#select-sales').hide();
+            //$('#select-sales').prop('disabled',true);
+        //}else{
+            //$('#select-sales').show();
+        }
+        if (myRadio.value == "4"){
+            $('#select-relations').empty();
+            $('#select-relations').append('<option value="0">All</option>');
+        }
         // for(var i=0; i<newArray.length; i++){
         //     alert(newArray[i].label);
         //     console.log(newArray[i].label);
@@ -167,7 +179,7 @@
     $(function() {
         $("#select-relations").select2({
 			width: '100%',
-			ajax: {
+			ajax:{
 				url: '<?=site_url()?>report/invoice/get_customers',
 				dataType: 'json',
 				delay: 250,
@@ -176,7 +188,7 @@
 					data = data.data;
                     items.push({
 							"id" : "0",
-							"text" : "ALL",					
+							"text" : "All",					
 						});
 					$.each(data,function(index,value){
 						items.push({
@@ -200,7 +212,7 @@
 			//current_pricing_group_id = selectedCustomer.current_pricing_group_id;			
         });
         
-        $("#select-items").select2({
+        /*$("#select-items").select2({
 			width: '100%',
 			ajax: {
 				url: '<?=site_url()?>report/invoice/get_data_items',
@@ -211,7 +223,7 @@
 					data = data.data;
                     items.push({
 							"id" : "0",
-							"text" : "ALL",					
+							"text" : "All",					
 						});
 					$.each(data,function(index,value){
 						items.push({
@@ -227,7 +239,45 @@
 			}
 		}).on('select2:select',function(e){
 
-		});
+		});*/
+
+        $("#select-items").select2({
+            minimumInputLength: 2,
+            placeholder:{
+                id: '0', // the value of the option
+                text: 'All'
+            },
+            allowClear: true,
+            ajax:{
+                delay: 250,
+                url: "<?=site_url()?>/report/invoice/ajxListItem",
+                dataType: 'json',
+                processResults: function (result) {
+                    if (result.status == "SUCCESS"){
+                        var data = $.map(result.data, function (obj) {
+                            obj.id = obj.fin_item_id,  
+                            obj.text = obj.fst_item_code + " - "  + obj.fst_item_name;
+                            //obj.fbl_is_batch_number
+                            //obj.fbl_is_serial_number
+                            return obj;
+                        });
+
+                        return {
+                            results: data
+                        };
+                    }else{
+                        return {
+                            result:[]
+                        }
+                    }
+                }
+            }
+        }).on('select2:select',function(e){
+            var data = e.params.data;
+            selectedItem = data;
+            //$("#fstUnit").empty().trigger("change.select2");
+            //showHideBatchSerial();
+        });
 
         $("#btnProcess").click(function(event) {
             event.preventDefault();
@@ -254,7 +304,7 @@
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        $("#btnNew").trigger("click");
+                                        $("#btnProcess").trigger("click");
                                         alert('OK');
                                         return;
                                     }

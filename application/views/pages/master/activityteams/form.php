@@ -136,6 +136,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             $("#btn-add-team-detail").click(function(event) {
                 event.preventDefault();
                 $("#mdlTeamDetail").modal('show');
+                $("#fin_user_id").empty();
             });
             $("#tbl_teams_detail").DataTable({
                 searching: false,
@@ -216,7 +217,23 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     addRow = false;
                     return;
                 } else {
-                    $("#fin_user_id_err").hide();
+                    data = t.rows().data();
+                    console.log(data);
+                    var valid = true;
+                    $.each(data, function(i, v) {
+                        if (v.fin_user_id == personel) {
+                            $("#fin_user_id_err").html("Selected Personil is already exist!");
+                            $("#fin_user_id_err").show();
+                            addRow = false;
+                            valid = false;
+                            return false;
+                        } else {
+                            $("#fin_user_id_err").hide();
+                        }
+                    });
+                    if (valid == false){
+                        return;
+                    }
                 }
                 t.row.add({
                     fin_id: 0,

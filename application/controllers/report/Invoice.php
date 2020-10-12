@@ -45,29 +45,32 @@ class Invoice extends MY_Controller
 			['layout' => 2, 'label'=>'Subtotal', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
 			['layout' => 2, 'label'=>'Rate', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
 			['layout' => 2, 'label'=>'Total IDR', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
-			['layout' => 3, 'label'=>'Kode Barang', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Nama Barang', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Qty', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Unit', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Jumlah', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Kode Barang', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Nama Barang', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Qty', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Unit', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Jumlah', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Pelanggan/Customer', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'No.Faktur', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Tgl.Faktur', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Jatuh Tempo', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'No.S/J', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'No.S/O', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'GUD', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'M.U', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Nilai Faktur', 'value'=>'8', 'selected'=>false,'sum_total'=>true],
-			['layout' => 5, 'label'=>'Total Retur', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Pembayaran', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Nilai Netto', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
-			['layout' => 5, 'label'=>'Menunggak(hari)', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
+			['layout' => 3, 'label'=>'Pelanggan/Customer', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Kode Barang', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Nama Barang', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Qty', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Unit', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Jumlah', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Sales', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Kode Barang', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Nama Barang', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Qty', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Unit', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Jumlah', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'Sales', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'Pelanggan/Customer', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'No.Faktur', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'Tgl.Faktur', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'Jatuh Tempo', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'No.S/J', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'No.S/O', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'GUD', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'M.U', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'Nilai Faktur', 'value'=>'9', 'selected'=>false,'sum_total'=>true],
+			['layout' => 5, 'label'=>'Total Retur', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'Pembayaran', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
+			['layout' => 5, 'label'=>'Nilai Netto', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
+			['layout' => 5, 'label'=>'Menunggak(hari)', 'value'=>'13', 'selected'=>false,'sum_total'=>true],
 		];
 
 	}
@@ -144,6 +147,7 @@ class Invoice extends MY_Controller
 			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),
 			"fin_relation_id" => $this->input->post("fin_relation_id"),
 			"fin_sales_id" => $this->input->post("fin_sales_id"),
+			"fin_item_id" => $this->input->post("fin_item_id"),
 			"fdt_inv_datetime" => $this->input->post("fdt_inv_datetime"),
 			"fdt_inv_datetime2" => $this->input->post("fdt_inv_datetime2"),
 			"fbl_is_vat_include" => $this->input->post("fbl_is_vat_include"),
@@ -215,6 +219,16 @@ class Invoice extends MY_Controller
 		$this->ajxResp["data"] = $this->msitems_model->getItemList_report();
 		$this->json_output();
 
-    }
+	}
+	
+	public function ajxListItem(){
+		$this->load->model("msitems_model");
+		$searchKey = $this->input->get("term");
+		$result = $this->msitems_model->getAllList($searchKey,"fin_item_id,fst_item_code,fst_item_name");        
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"data"=> $result
+		]);
+	}
 
 }

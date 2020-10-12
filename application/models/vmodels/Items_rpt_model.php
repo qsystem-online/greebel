@@ -80,7 +80,7 @@ class Items_rpt_model extends CI_Model {
                 break;
             case "3":
                 $ssql = "SELECT a.*,b.fst_item_group_name as itemGroup,CONCAT(a.fst_linebusiness_id,'  -  ',c.fst_linebusiness_name),
-                d.fst_unit as unitBOM,e.fst_item_code as itemCodeBOM,e.fst_item_name as itemNameBOM
+                d.fst_unit as unitBOM,d.fdb_qty as qtyBOM,e.fst_item_code as itemCodeBOM,e.fst_item_name as itemNameBOM
                 FROM msitems a 
                 LEFT JOIN msgroupitems b on a.fin_item_group_id = b.fin_item_group_id
                 LEFT JOIN mslinebusiness c ON a.fst_linebusiness_id = c.fin_linebusiness_id

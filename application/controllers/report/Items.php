@@ -76,7 +76,8 @@ class Items extends MY_Controller
 			['layout' => 3, 'label'=>'BOM Scale', 'value'=>'17', 'selected'=>false,'sum_total'=>false],
 			['layout' => 3, 'label'=>'Item Code BOM', 'value'=>'18', 'selected'=>false,'sum_total'=>false],
 			['layout' => 3, 'label'=>'Item Name BOM', 'value'=>'19', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Unit', 'value'=>'20', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Qty BOM', 'value'=>'20', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Unit BOM', 'value'=>'21', 'selected'=>false,'sum_total'=>false],
 			['layout' => 4, 'label'=>'Nou.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
             ['layout' => 4, 'label'=>'Group', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
 			['layout' => 4, 'label'=>'Type', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
@@ -225,7 +226,7 @@ class Items extends MY_Controller
 						$repTitle = "LAPORAN DAFTAR BARANG DETAIL BOM";
 						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
 						$repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
-						$fullColumn = 21;
+						$fullColumn = 22;
 						break;
 					case "4":
 						$repTitle = "LAPORAN DAFTAR BARANG DETAIL SPECIAL PRICING";
@@ -703,7 +704,8 @@ class Items extends MY_Controller
 					$sheet->setCellValue("R3","BOM Scale");
                     $sheet->setCellValue("S3","Item Code BOM");
 					$sheet->setCellValue("T3","Item Name BOM");
-					$sheet->setCellValue("U3","Unit BOM");
+					$sheet->setCellValue("U3","Qty");
+					$sheet->setCellValue("V3","Unit BOM");
                     $sheet->getColumnDimension("A")->setAutoSize(false);
                     $sheet->getColumnDimension("B")->setAutoSize(true);
                     $sheet->getColumnDimension("C")->setAutoSize(true);
@@ -725,6 +727,7 @@ class Items extends MY_Controller
                     $sheet->getColumnDimension("S")->setAutoSize(true);
 					$sheet->getColumnDimension("T")->setAutoSize(true);
 					$sheet->getColumnDimension("U")->setAutoSize(true);
+					$sheet->getColumnDimension("V")->setAutoSize(true);
 					$nou = 0;
 					$itemCode = "";
 					$cellRow = 4;
@@ -795,7 +798,8 @@ class Items extends MY_Controller
 						}
 						$sheet->setCellValue("S".$cellRow,$row->itemCodeBOM); 
 						$sheet->setCellValue("T".$cellRow,$row->itemNameBOM);
-						$sheet->setCellValue("U".$cellRow,$row->unitBOM);
+						$sheet->setCellValue("U".$cellRow,$row->qtyBOM);
+						$sheet->setCellValue("V".$cellRow,$row->unitBOM);
 						$cellRow++; 
 					}
 					
@@ -820,7 +824,7 @@ class Items extends MY_Controller
 							],
 						],
 					];
-					$sheet->getStyle('A3:U'.$cellRow)->applyFromArray($styleArray);
+					$sheet->getStyle('A3:V'.$cellRow)->applyFromArray($styleArray);
 		
 					//FONT BOLD & Center
 					$styleArray = [
@@ -832,7 +836,7 @@ class Items extends MY_Controller
 						]
 					];
 					// $sheet->getStyle('A2')->applyFromArray($styleArray);
-					$sheet->getStyle('A3:U3')->applyFromArray($styleArray);
+					$sheet->getStyle('A3:V3')->applyFromArray($styleArray);
 					$sheet->getStyle('A3:A'.$cellRow)->applyFromArray($styleArray);
 
 					$styleArray = [
