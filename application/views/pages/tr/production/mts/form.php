@@ -325,11 +325,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				data.fdb_qty_m07  = $("#m7").val();
 				data.fdb_qty_m08  = $("#m8").val();
 				data.fdb_qty_m09  = $("#m9").val();
-				data.fdb_qty_m010  = $("#m10").val();
-				data.fdb_qty_m011  = $("#m11").val();
-				data.fdb_qty_m012  = $("#m12").val();
+				data.fdb_qty_m10  = $("#m10").val();
+				data.fdb_qty_m11  = $("#m11").val();
+				data.fdb_qty_m12  = $("#m12").val();
 
-
+				console.log(data);
 				tbldetails.row(selectedDetail).data(data).draw(false);
 
 				mdlDetail.clear();	
@@ -362,52 +362,39 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 					}
 				}
-			}).on("select2:select",function(e){			
-				$.ajax({
-					//$finItemId,$fstUnit,$histType,$currYear
-					url:"<?=site_url()?>tr/production/mts/ajxGetHistMTS",
-					method:"GET",		
-					data:{
-						fin_item_id:$("#fin_item_id").val(),
-						fst_unit:$("#dUnit").val(),
-						fst_hist_type:$("#fst_history_type").val(),
-						fin_year:$("#fin_year").val()
-					}			
-				}).done(function(resp){
-					if (resp.status == "SUCCESS"){
-						var hist = resp.data;
-						var data = selectedDetail.data();
+			}).on("select2:select",function(e){	
+				
+				getSalesHistory($("#fin_item_id").val(),$("#dUnit").val(),$("#fst_history_type").val(),$("#fin_year").val(),function(hist){
+					var data = selectedDetail.data();
+					data.fst_unit = $("#dUnit").val();
+					data.fdb_qty_hm01 = hist.fdb_hist_m1_qty;
+					data.fdb_qty_hm02 = hist.fdb_hist_m2_qty;
+					data.fdb_qty_hm03 = hist.fdb_hist_m3_qty;
+					data.fdb_qty_hm04 = hist.fdb_hist_m4_qty;
+					data.fdb_qty_hm05 = hist.fdb_hist_m5_qty;
+					data.fdb_qty_hm06 = hist.fdb_hist_m6_qty;
+					data.fdb_qty_hm07 = hist.fdb_hist_m7_qty;
+					data.fdb_qty_hm08 = hist.fdb_hist_m8_qty;
+					data.fdb_qty_hm09 = hist.fdb_hist_m9_qty;
+					data.fdb_qty_hm10 = hist.fdb_hist_m10_qty;
+					data.fdb_qty_hm11 = hist.fdb_hist_m11_qty;
+					data.fdb_qty_hm12 = hist.fdb_hist_m12_qty;
 
-						data.fst_unit = $("#dUnit").val();
-						data.fdb_qty_hm01 = hist.fdb_hist_m1_qty;
-						data.fdb_qty_hm02 = hist.fdb_hist_m2_qty;
-						data.fdb_qty_hm03 = hist.fdb_hist_m3_qty;
-						data.fdb_qty_hm04 = hist.fdb_hist_m4_qty;
-						data.fdb_qty_hm05 = hist.fdb_hist_m5_qty;
-						data.fdb_qty_hm06 = hist.fdb_hist_m6_qty;
-						data.fdb_qty_hm07 = hist.fdb_hist_m7_qty;
-						data.fdb_qty_hm08 = hist.fdb_hist_m8_qty;
-						data.fdb_qty_hm09 = hist.fdb_hist_m9_qty;
-						data.fdb_qty_hm10 = hist.fdb_hist_m10_qty;
-						data.fdb_qty_hm11 = hist.fdb_hist_m11_qty;
-						data.fdb_qty_hm12 = hist.fdb_hist_m12_qty;
+					$("#hm1").text(data.fdb_qty_hm01);
+					$("#hm2").text(data.fdb_qty_hm02);
+					$("#hm3").text(data.fdb_qty_hm03);
+					$("#hm4").text(data.fdb_qty_hm04);
+					$("#hm5").text(data.fdb_qty_hm05);
+					$("#hm6").text(data.fdb_qty_hm06);
+					$("#hm7").text(data.fdb_qty_hm07);
+					$("#hm8").text(data.fdb_qty_hm08);
+					$("#hm9").text(data.fdb_qty_hm09);
+					$("#hm10").text(data.fdb_qty_hm10);
+					$("#hm11").text(data.fdb_qty_hm11);
+					$("#hm12").text(data.fdb_qty_hm12);
 
-						$("#hm1").text(data.fdb_qty_hm01);
-						$("#hm2").text(data.fdb_qty_hm02);
-						$("#hm3").text(data.fdb_qty_hm03);
-						$("#hm4").text(data.fdb_qty_hm04);
-						$("#hm5").text(data.fdb_qty_hm05);
-						$("#hm6").text(data.fdb_qty_hm06);
-						$("#hm7").text(data.fdb_qty_hm07);
-						$("#hm8").text(data.fdb_qty_hm08);
-						$("#hm9").text(data.fdb_qty_hm09);
-						$("#hm10").text(data.fdb_qty_hm10);
-						$("#hm11").text(data.fdb_qty_hm11);
-						$("#hm12").text(data.fdb_qty_hm12);
-
-						tbldetails.row(selectedDetail).data(data);
-					}
-				})
+					tbldetails.row(selectedDetail).data(data);
+				});
 			});
 			
 		});
@@ -421,6 +408,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript" info="define">
 	var selectedDetail;	
+	var tbldetails;
 </script>
 
 <script type="text/javascript" info="bind">
@@ -434,7 +422,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		$("#btnNew").click(function(e){
 			//e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/fixed_asset/disposal/add");
+			window.location.replace("<?=site_url()?>tr/production/mts/add");
 		});
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
@@ -462,20 +450,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/production/assembling");
+			window.location.replace("<?=site_url()?>tr/production/mts");
 		});	
 
 	
 		$("#fin_year, #fst_history_type").change(function(e){
 			e.preventDefault();
-			fillDetail();
+			//fillDetail();
+			updateHistoryDetail();
 		})		
 	});
 </script>
-<script type="text/javascript" info="init">
-	
-	var tbldetails;
 
+<script type="text/javascript" info="init">
 	$(function(){		
 		$("#fdt_mts_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 
@@ -554,12 +541,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "M12","width": "10px",sortable:false,data:"fdb_qty_m12",className:'text-right'},
 				{"title" : "H.ttl","width": "10px",sortable:false,className:'text-right',
 					render:function(data,type,row){
-						return row.fdb_qty_hm01 + row.fdb_qty_hm02+ row.fdb_qty_hm03+row.fdb_qty_hm04+row.fdb_qty_hm05+row.fdb_qty_hm06+row.fdb_qty_hm07+row.fdb_qty_hm08+row.fdb_qty_hm09 +row.fdb_qty_hm10 +row.fdb_qty_hm11 + row.fdb_qty_hm12;						
+						return parseFloat(row.fdb_qty_hm01) + parseFloat(row.fdb_qty_hm02) + parseFloat(row.fdb_qty_hm03) + parseFloat(row.fdb_qty_hm04) + parseFloat(row.fdb_qty_hm05) + parseFloat(row.fdb_qty_hm06) + parseFloat(row.fdb_qty_hm07) + parseFloat(row.fdb_qty_hm08) + parseFloat(row.fdb_qty_hm09) + parseFloat(row.fdb_qty_hm10) + parseFloat(row.fdb_qty_hm11) + parseFloat(row.fdb_qty_hm12);						
 					}
 				},
 				{"title" : "M.ttl","width": "10px",sortable:false,className:'text-right',
 					render:function(data,type,row){
-						return row.fdb_qty_m01 + row.fdb_qty_m02+ row.fdb_qty_m03+row.fdb_qty_m04+row.fdb_qty_m05+row.fdb_qty_m06+row.fdb_qty_m07+row.fdb_qty_m08+row.fdb_qty_m09 +row.fdb_qty_m10 +row.fdb_qty_m11 + row.fdb_qty_m12;				
+						return parseFloat(row.fdb_qty_m01) + parseFloat(row.fdb_qty_m02) + parseFloat(row.fdb_qty_m03) + parseFloat(row.fdb_qty_m04) + parseFloat(row.fdb_qty_m05) + parseFloat(row.fdb_qty_m06) + parseFloat(row.fdb_qty_m07) + parseFloat(row.fdb_qty_m08) + parseFloat(row.fdb_qty_m09) + parseFloat(row.fdb_qty_m10) + parseFloat(row.fdb_qty_m11) + parseFloat(row.fdb_qty_m12);				
 					}
 				},
 				{"title" : "Action","width": "80px",sortable:false,className:'dt-body-center text-center',
@@ -596,6 +583,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		initForm();
 	});
 </script>
+
 <script type="text/javascript" info="function">
 	
 	function submitAjax(confirmEdit){     
@@ -673,21 +661,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if (mode == "EDIT"){			
 			App.blockUIOnAjaxRequest();
 			$.ajax({
-				url:"<?= site_url() ?>tr/production/assembling/fetch_data/<?=$fin_mts_id?>",
-			}).done(function(resp){				
+				url:"<?= site_url() ?>tr/production/mts/fetch_data/<?=$fin_mts_id?>",
+			}).done(function(resp){							
 				dataH =  resp.data.header;
 				if (dataH == null){
 					alert("<?=lang("ID transaksi tidak dikenal")?>");
-					return false;
+					$("#btnNew").trigger("click");
 				}
 				
-                App.autoFillForm(dataH);
-				//$("#fdt_fa_disposal_datetime").val(dataH.fst_accum_account_code).trigger("change");
-				$("#fdt_assembling_datetime").val(dateTimeFormat(dataH.fdt_assembling_datetime)).datetimepicker("update");				
-				App.addOptionIfNotExist("<option value='"+dataH.fin_item_id +"'>"+dataH.fst_item_code +" - " + dataH.fst_item_name +"</option>","fin_item_id");
-				App.addOptionIfNotExist("<option value='"+dataH.fst_unit +"'>"+dataH.fst_unit +"</option>","fst_unit");
+				App.autoFillForm(dataH);
+				
+				App.addOptionIfNotExist("<option value='"+dataH.fin_item_group_id+"'>"+dataH.fst_item_group_name +"</option>","fin_item_group_id");
+				$("fin_item_group_id").val(dataH.fin_item_group_id).trigger("change");
 
-				t = $("#tbldetails").DataTable();
+				//$("fst_history_type").val(dataH.fin_item_group_id).trigger("change");
+
+								
+				
 				$.each(resp.data.details,function(i,v){
 					var item = {
 						"id":v.fin_item_id,
@@ -701,10 +691,41 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						fdc_hpp:v.fdc_hpp,
 						fst_notes:v.fst_notes,
 					};
-					t.row.add(data);
-				});
 
-				t.draw(false);
+					tbldetails.row.add({
+						fin_rec_id:v.fin_rec_id,
+						fin_item_id:v.fin_item_id,
+						fst_item_code:v.fst_item_code,
+						fst_item_name:v.fst_item_name,
+						fst_unit:v.fst_unit,
+						fdb_qty_hm01:0,
+						fdb_qty_m01:v.fdb_qty_m01,
+						fdb_qty_hm02:0,
+						fdb_qty_m02:v.fdb_qty_m02,
+						fdb_qty_hm03:0,
+						fdb_qty_m03:v.fdb_qty_m03,
+						fdb_qty_hm04:0,
+						fdb_qty_m04:v.fdb_qty_m04,
+						fdb_qty_hm05:0,
+						fdb_qty_m05:v.fdb_qty_m05,
+						fdb_qty_hm06:0,
+						fdb_qty_m06:v.fdb_qty_m06,
+						fdb_qty_hm07:0,
+						fdb_qty_m07:v.fdb_qty_m07,
+						fdb_qty_hm08:0,
+						fdb_qty_m08:v.fdb_qty_m08,
+						fdb_qty_hm09:0,
+						fdb_qty_m09:v.fdb_qty_m09,
+						fdb_qty_hm10:0,
+						fdb_qty_m10:v.fdb_qty_m10,
+						fdb_qty_hm11:0,
+						fdb_qty_m11:v.fdb_qty_m11,
+						fdb_qty_hm12:0,
+						fdb_qty_m12:v.fdb_qty_m12,
+					});					
+				});
+				tbldetails.draw(false);
+				updateHistoryDetail();
 			});
 		}
 	}    
@@ -733,7 +754,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/production/assembling/delete/" + $("#fin_assembling_id").val();
+		var url =  "<?= site_url() ?>tr/production/mts/delete/" + $("#fin_mts_id").val();
 		$.ajax({
 			url:url,
 			method:"POST",
@@ -807,6 +828,53 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		})
 	}
+
+	function updateHistoryDetail(){
+		var datas = tbldetails.data();	
+
+		$.each(datas,function(i,v){
+			data = tbldetails.row(i).data();
+			getSalesHistory(data.fin_item_id,data.fst_unit,$("#fst_history_type").val(),$("#fin_year").val(),function(hist){
+				data.fdb_qty_hm01 = hist.fdb_hist_m1_qty;
+				data.fdb_qty_hm02 = hist.fdb_hist_m2_qty;
+				data.fdb_qty_hm03 = hist.fdb_hist_m3_qty;
+				data.fdb_qty_hm04 = hist.fdb_hist_m4_qty;
+				data.fdb_qty_hm05 = hist.fdb_hist_m5_qty;
+				data.fdb_qty_hm06 = hist.fdb_hist_m6_qty;
+				data.fdb_qty_hm07 = hist.fdb_hist_m7_qty;
+				data.fdb_qty_hm08 = hist.fdb_hist_m8_qty;
+				data.fdb_qty_hm09 = hist.fdb_hist_m9_qty;
+				data.fdb_qty_hm10 = hist.fdb_hist_m10_qty;
+				data.fdb_qty_hm11 = hist.fdb_hist_m11_qty;
+				data.fdb_qty_hm12 = hist.fdb_hist_m12_qty;
+
+				tbldetails.row(i).data(data).draw(false);
+
+			});
+			
+		});
+
+	}
+
+	function getSalesHistory(itemId,unit,historyType,currentYear,callback){
+
+		$.ajax({
+			//$finItemId,$fstUnit,$histType,$currYear
+			url:"<?=site_url()?>tr/production/mts/ajxGetHistMTS",
+			method:"GET",		
+			data:{
+				fin_item_id:itemId,
+				fst_unit:unit,
+				fst_hist_type:historyType,
+				fin_year:currentYear
+			}			
+		}).done(function(resp){
+			if (resp.status == "SUCCESS"){				
+				var hist = resp.data;
+				callback(hist);								
+			}
+		})
+	}	
 
 </script>
 <!-- Select2 -->

@@ -35,7 +35,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
 					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-					<a id="btnJurnal" class="btn btn-primary" href="#" title="Jurnal" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
+					<a id="btnJurnal" class="btn btn-primary hide" href="#" title="Jurnal" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
 					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Group")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 				</div>
@@ -45,45 +45,45 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <!-- form start -->
             <form id="frmHeader" class="form-horizontal" action="" method="POST" >
 				<div class="box-body">
-					<input type="hidden" id="fin_assembling_id" name="fin_assembling_id" value="<?=$fin_assembling_id?>"/>
+					<input type="hidden" id="fin_mrp_id" name="fin_mrp_id" value="<?=$fin_mrp_id?>"/>
 
 					<div class="form-group">
-						<label for="fst_assembling_no" class="col-md-2 control-label"><?=lang("MRP")?> #</label>
+						<label for="fst_mrp_no" class="col-md-2 control-label"><?=lang("MRP")?> #</label>
 						<div class="col-md-4">
-							<input type="text" class="form-control" id="fst_assembling_no" placeholder="<?=lang("Assembling No")?>" name="fst_assembling_no" value="<?=$fst_assembling_no?>"/>
-							<div id="fst_assembling_no_err" class="text-danger"></div>
+							<input type="text" class="form-control" id="fst_mrp_no" placeholder="<?=lang("MRP No")?>" name="fst_mrp_no" value="<?=$fst_mrp_no?>"/>
+							<div id="fst_mrp_no_err" class="text-danger"></div>
 						</div>								
 
-						<label for="fdt_assembling_datetime" class="col-md-2 control-label"><?=lang("Tanggal")?></label>
+						<label for="fdt_mrp_datetime" class="col-md-2 control-label"><?=lang("Tanggal")?></label>
 						<div class="col-md-4">
-							<input type="text" class="form-control datetimepicker text-right" id="fdt_assembling_datetime" placeholder="<?=lang("Mutasi Datetime")?>" name="fdt_assembling_datetime" value=""/>
-							<div id="fdt_fa_disposal_datetime_err" class="text-danger"></div>
+							<input type="text" class="form-control datetimepicker text-right" id="fdt_mrp_datetime" placeholder="<?=lang("MRP Datetime")?>" name="fdt_mrp_datetime" value=""/>
+							<div id="fdt_mrp_datetime_err" class="text-danger"></div>
 						</div>								
                     </div>  
 
 					<div class="form-group">
-						<label for="fin_year" class="col-md-2 control-label"><?=lang("MPS #")?></label>
+						<label for="fin_mps_id" class="col-md-2 control-label"><?=lang("MPS #")?></label>
 						<div class="col-md-4">
-							<input type='TEXT' name='fin_year' class='form-control text-right' id='fin_year' value='2020'/>
+							<select  name='fin_mps_id' class='form-control text-right' id='fin_mps_id' style="width:100%"></select>
 							<div id="fst_type_err" class="text-danger"></div>
 						</div>					
-						<label for="fin_year" class="col-md-2 control-label"><?=lang("Month")?></label>
+						<label for="fin_mps_month" class="col-md-2 control-label"><?=lang("Month")?></label>
 						<div class="col-md-4">
-							<select class='form-control text-right' id='fin_year'>
-								<option value='M1'><?=lang("Januari")?></option>
-								<option value='M2'><?=lang("Febuari")?></option>
-								<option value='M3'><?=lang("Maret")?></option>
-								<option value='M4'><?=lang("April")?></option>
-								<option value='M5'><?=lang("Mei")?></option>
-								<option value='M6'><?=lang("Juni")?></option>
-								<option value='M7'><?=lang("Juli")?></option>
-								<option value='M8'><?=lang("Agustus")?></option>
-								<option value='M9'><?=lang("September")?></option>
-								<option value='M10'><?=lang("Oktober")?></option>
-								<option value='M11'><?=lang("November")?></option>
-								<option value='M12'><?=lang("Desember")?></option>								
+							<select class='form-control text-right' id='fin_mps_month' name='fin_mps_month'>
+								<option value='1'><?=lang("Januari")?></option>
+								<option value='2'><?=lang("Febuari")?></option>
+								<option value='3'><?=lang("Maret")?></option>
+								<option value='4'><?=lang("April")?></option>
+								<option value='5'><?=lang("Mei")?></option>
+								<option value='6'><?=lang("Juni")?></option>
+								<option value='7'><?=lang("Juli")?></option>
+								<option value='8'><?=lang("Agustus")?></option>
+								<option value='9'><?=lang("September")?></option>
+								<option value='10'><?=lang("Oktober")?></option>
+								<option value='11'><?=lang("November")?></option>
+								<option value='12'><?=lang("Desember")?></option>								
 							</select>
-							<div id="fst_type_err" class="text-danger"></div>
+							<div id="fin_mps_month_err" class="text-danger"></div>
 						</div>
 					</div>
 
@@ -96,11 +96,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>  
 					
 					<div class="form-group">							
-						<div class="col-md-12" style="text-align:right">
-							<button id="btn-add-items" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;Tambah Item</button>
-						</div>
 						<div class="col-sm-12">
 							<table id="tbldetails" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+						</div>
+						<div class="col-sm-12" style="text-align:right">
+							<button id="btnProcess1" class="btn btn-primary btn-process" data-level="0">Process</button>
 						</div>
 					</div>
 					
@@ -108,21 +108,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="col-md-12">
 							<label class="control-label text-left">Detail Bill Of Materials</label>
 						</div>	
-						
-
+					</div
+					>
+					<div class="form-group">												
 						<div class="col-sm-12">
-							<ul class="nav nav-tabs">
-								<li class="active"><a data-toggle="tab" href="#detailw1">Week 1</a></li>
-								<li><a data-toggle="tab" href="#detailw2">Week 2</a></li>
-								<li><a data-toggle="tab" href="#detailw2">Week 3</a></li>
-								<li><a data-toggle="tab" href="#detailw2">Week 4</a></li>
-								<li><a data-toggle="tab" href="#detailw2">Week 5</a></li>
+							<ul class="nav nav-tabs" id="tabLevel">
+								
+								<!--
+								<li class="active"><a data-toggle="tab" href="#detailL1">Level 1</a></li>																
+								<li><a data-toggle="tab" href="#detailw2">Level 2</a></li>
+								<li><a data-toggle="tab" href="#detailw2">Level 3</a></li>
+								<li><a data-toggle="tab" href="#detailw2">Level 4</a></li>
+								<li><a data-toggle="tab" href="#detailw2">Level 5</a></li>
+								-->
 							</ul>
 
-							<div class="tab-content">
-								<div id="detailw1" class="tab-pane fade in active">
-									<table id="tbldetailsw1" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+							<div class="tab-content" style="padding:5px" id="tabContentLevel">
+								<!--
+								<div id="detailL1" class="tab-pane fade in active">
+									<button class="btn btn-primary btn-process" data-level="1">Next Level</button>
+									<table id="tbldetailsL1" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
 								</div>
+								
 								<div id="detailw2" class="tab-pane fade">
 									<table id="tbldetailsw2" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
 								</div>
@@ -135,12 +142,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="detailw5" class="tab-pane fade">
 									<table id="tbldetailsw5" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
 								</div>
-
-							</div>
-							
+								-->
+							</div>							
 						</div>
-					</div>
-					
+					</div>					
                 </div>
 				<!-- end box body -->
 
@@ -167,122 +172,58 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				
 					<div class="form-group">
 						<label class="col-md-2 control-label"><?=lang("Item")?>:</label>						
-						<label class="col-md-10 control-label">Pencil warna greebel - Box</label>
+						<label class="col-md-10 control-label" id="fst_item">Pencil warna greebel - Box</label>
 					</div>
 
 					<div class="form-group">
-						<label class="col-md-2 control-label "><?=lang("Buffer")?></label>
-						<label class="col-md-2 control-label hm">50</label>				
+						<label class="col-md-2 control-label "><?=lang("Qty MPS")?>: </label>
+						<label class="col-md-2 col-md-offset-8 control-label" id="fdb_qty_mps">50</label>				
 					</div>
 
 					<div class="form-group">
-						<label class="col-md-4 control-label"><?=lang("Balance")?></label>
-						<label class="col-md-4 control-label"><?=lang("MTS")?></label>
-						<label class="col-md-4 control-label"><?=lang("Qty")?></label>						
+						<label class="col-md-4 control-label"><?=lang("Week")?></label>
+						<label class="col-md-4 col-md-offset-4 control-label"><?=lang("Qty")?></label>						
 					</div>
 
 					<div class="form-group">
-						<label class="col-md-1 control-label">1</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right" value="400"/>
+						<label class="col-md-4 control-label">1</label>
+						<div class="col-md-4 col-md-offset-4">
+							<input type='TEXT' id="fdb_qty_w1" class="form-control text-right" value="0"/>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-md-1 control-label">2</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right" value="400"/>
+						<label class="col-md-4 control-label">2</label>
+						<div class="col-md-4 col-md-offset-4">
+							<input type='TEXT' id="fdb_qty_w2" class="form-control text-right" value="400"/>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-md-1 control-label">3</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right" value="400"/>
+						<label class="col-md-4 control-label">3</label>
+						<div class="col-md-4 col-md-offset-4">
+							<input type='TEXT' id="fdb_qty_w3" class="form-control text-right" value="400"/>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-md-1 control-label">4</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right" value="400"/>
+						<label class="col-md-4 control-label">4</label>
+						<div class="col-md-4 col-md-offset-4">
+							<input type='TEXT' id="fdb_qty_w4" class="form-control text-right" value="400"/>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-md-1 control-label">5</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right" value="400"/>
+						<label class="col-md-4 control-label">5</label>
+						<div class="col-md-4 col-md-offset-4">
+							<input type='TEXT' id="fdb_qty_w5" class="form-control text-right" value="400"/>
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-md-1 control-label">6</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right" value="400"/>
+						<label class="col-md-4 control-label">Total</label>
+						<div class="col-md-4 col-md-offset-4">
+							<input type='TEXT' id="fdb_qty_total" readonly class="form-control text-right" value="400"/>
 						</div>
 					</div>
-					<div class="form-group">
-						<label class="col-md-1 control-label">7</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right" value="400"/>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-md-1 control-label">8</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right" value="400"/>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-md-1 control-label">9</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right" value="400"/>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-md-1 control-label">10</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right" value="400"/>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-md-1 control-label">11</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right " value="400"/>
-						</div>
-					</div>
-					<div class="form-group">
-						<label class="col-md-1 control-label">12</label>
-						<label class="col-md-3 control-label">50</label>
-						<label class="col-md-4 control-label">500</label>
-						<div class="col-md-4">
-							<input type='TEXT' id="" class="form-control text-right" value="400"/>
-						</div>
-					</div>
-
-
+					
 
 					
-					
-				
 				</form>				
 			</div>
 
@@ -294,29 +235,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 
 	<script type="text/javascript" info="define">
-		var selectedItemD;
-
 		mdlDetail = {			
 			show:function(){
 				if (selectedDetail != null){
 					var data = selectedDetail.data();
-
-					console.log(data);
-					selectedItemD = data.item;					
-					App.addOptionIfNotExist("<option value='"+selectedItemD.id+"'>"+selectedItemD.text+"</option>","fin_item_id_d");
-					$("#fin_item_id_d").trigger({
-						type: 'select2:select',
-						params: {
-							data: selectedItemD
-						}
-					});
-					$("#fin_item_id_d").trigger("change");
-
-					App.addOptionIfNotExist("<option value='"+data.fst_unit+"'>"+data.fst_unit+"</option>","fst_unit_d");
-					$("#fst_unit_d").trigger("change");
-					$("#fdb_qty_d").val(data.fdb_qty);
-					$("#fdc_hpp_d").val(data.fdc_hpp);
-					$("#fst_notes_d").val(data.fst_notes);				
+					//console.log(data);
+					$("#fst_item").text(data.fst_item_code + " - " + data.fst_item_name + "(" + data.fst_unit +")" );
+					$("#fdb_qty_mps").text(data.fdb_qty_mps);
+					$("#fdb_qty_w1").val(data.fdb_qty_w1);
+					$("#fdb_qty_w2").val(data.fdb_qty_w2);
+					$("#fdb_qty_w3").val(data.fdb_qty_w3);
+					$("#fdb_qty_w4").val(data.fdb_qty_w4);
+					$("#fdb_qty_w5").val(data.fdb_qty_w5);
+					
 				}				
 				$("#mdlDetail").modal("show");
 			},
@@ -324,12 +255,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#mdlDetail").modal("hide");
 			},
 			clear:function(){
-				$("#fin_item_id_d").val(null).trigger("change.select2");
-				$("#fst_unit_d").val(null).trigger("change.select2");
-				$("#fdb_qty_d").val(1);
-				$("#fdc_hpp_d").val(0);
-				$("#fst_notes_d").val(null);
-				selectedItemD = null;			
 				selectedDetail = null;
 			},			
 		};
@@ -337,127 +262,314 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</script>
 
 	<script type="text/javascript" info="event">		
-		$(function(){
+		$(function(){		
+			$("#fdb_qty_w1,#fdb_qty_w2,#fdb_qty_w3,#fdb_qty_w4,#fdb_qty_w5").change(function(e){
+				e.preventDefault();
+				var total = parseFloat($("#fdb_qty_w1").val()) + parseFloat($("#fdb_qty_w2").val()) + parseFloat($("#fdb_qty_w3").val()) + parseFloat($("#fdb_qty_w4").val()) + parseFloat($("#fdb_qty_w5").val());
+				var ttlMPS = parseFloat($("#fdb_qty_mps").text());
 
-			//selectedItemD
-			$("#fin_item_id_d").on("select2:select",function(e){
-				selectedItemD = e.params.data;
+				$("#fdb_qty_total").val(total);
 
-			});
-
-
-			$(".hpp-detail").change(function(e){
-				e.preventDefault();				
-
-				if ($("#fin_item_id_d").val() == null || $("#fst_unit_d").val() == null){
-					return;
-				}
-
-				var finWarehouseId;
-				if ($("#fst_type").val() == "ASSEMBLING"){
-					finWarehouseId = $("#fin_source_warehouse_id").val();
+				if (total < ttlMPS){
+					$("#fdb_qty_total").css("color","red");
 				}else{
-					finWarehouseId = $("#fin_target_warehouse_id").val();
+					$("#fdb_qty_total").css("color","#555");
 				}
-
-				data = {
-					"fin_item_id":$("#fin_item_id_d").val(),
-					"fst_unit":$("#fst_unit_d").val(),
-					"fdb_qty":$("#fdb_qty_d").val(),
-					"fin_warehouse_id":finWarehouseId
-				};
-
-				$.ajax({
-					url:"<?=site_url()?>tr/production/assembling/ajxGetTotalHPP",
-					method:"GET",
-					data:data,
-
-				}).done(function(resp){
-					
-					if (resp.status == "SUCCESS"){
-						data = resp.data;				
-						$("#fdc_hpp_d").val(data.HPP);
-					}
-				});
-
 			});
 
 			$("#btn-save-detail").click(function(e){
-				t = $("#tbldetails").DataTable();
-				var data = {
-					fin_rec_id:0,
-					item: selectedItemD,
-					fst_unit:$("#fst_unit_d").val(),
-					fdb_qty:$("#fdb_qty_d").val(),
-					fdc_hpp:$("#fdc_hpp_d").val(),
-					fst_notes:$("#fst_notes_d").val(),			
-				};
+				var data = selectedDetail.data();
+				data.fdb_qty_w1 = parseFloat($("#fdb_qty_w1").val());
+				data.fdb_qty_w2 = parseFloat($("#fdb_qty_w2").val());
+				data.fdb_qty_w3 = parseFloat($("#fdb_qty_w3").val());
+				data.fdb_qty_w4 = parseFloat($("#fdb_qty_w4").val());
+				data.fdb_qty_w5 = parseFloat($("#fdb_qty_w5").val());
+				
+				tblDetails.row(selectedDetail).data(data).draw(false);
 
-				if (selectedDetail == null){
-					t.row.add(data).draw(false);
-				}else{
-					t.row(selectedDetail).data(data).draw(false);
-				}
 				mdlDetail.clear();	
 				mdlDetail.hide();		
 			});
 
 		});
 	</script>
-	<script type="text/javascript" info="init">
-		$(function(){			
-			$("#fin_item_id_d").select2({
-				minimumInputLength: 2,
-				ajax:{
-					delay:250,
-					url:"<?=site_url()?>tr/production/assembling/ajxGetItemList",
-					processResults: function (resp) {
-						console.log(resp);
-						if (resp.status == "SUCCESS"){
-							data = resp.data;
-							var list  = $.map(data,function(v,i){
-								v.id = v.fin_item_id;
-								v.text = v.fst_item_code + " - " +v.fst_item_name;
-								return v;
-							});
-							return {
-								results:list
-							}							
-						}
-					}
-				}
-			});
-			
-			$("#fst_unit_d").select2({
-				minimumInputLength: 0,
-				minimumResultsForSearch: -1,
-				ajax:{
-					delay:250,
-					url:function(params){
-						return "<?=site_url()?>tr/production/assembling/ajxGetUnits/" + $("#fin_item_id_d").val();
-					},
-					processResults: function (resp) {
-						console.log(resp);
-						if (resp.status == "SUCCESS"){
-							data = resp.data;
-							var list  = $.map(data,function(v,i){
-								v.id = v.fst_unit;
-								v.text = v.fst_unit;
-								return v;
-							});
-							return {
-								results:list
-							}							
-						}
-					}
-				}
-			});
-			
-		});
 
+	<script type="text/javascript" info="init">
+		$(function(){									
+		});
 	</script>
 
 </div>
+
+
+<div id="mdlDetail2" class="modal fade in" role="dialog" style="display: none">
+	<div class="modal-dialog" style="display:table;width:600px">
+		<!-- modal content -->
+		<div class="modal-content">
+			<div class="modal-header" style="padding:7px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 5px;border-top-right-radius: 5px;">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><?=lang("Tambah Detail")?></h4>
+			</div>
+
+			<div class="modal-body">				        
+				<form class="form-horizontal">
+				
+					<div class="form-group">
+						<label class="col-md-2 control-label"><?=lang("Item")?>:</label>						
+						<label class="col-md-10 control-label" id="fst_item_d2">Pencil warna greebel - Box</label>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label"><?=lang("Week")?></label>
+						<div class="col-md-2 text-right">
+							<label class="control-label"><?=lang("Balance")?></label>
+						</div>
+						<div class="col-md-2 text-right">
+							<label class="control-label"><?=lang("Request")?></label>
+						</div>
+						<div class="col-md-2 text-right">
+							<label class="control-label"><?=lang("Diff")?></label>
+						</div>
+						<div class="col-md-2 text-right">
+							<label class="control-label"><?=lang("PO")?></label>
+						</div>
+						<div class="col-md-2 text-right">
+							<label class="control-label"><?=lang("WO")?></label>						
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label">1</label>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_qty_balance" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_qty_rq_w1" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_qty_diff_w1" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' id="fdb_qty_po_w1" class="powo form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' id="fdb_qty_wo_w1" class="powo form-control text-right" value="0"/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label">2</label>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_bow1" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_qty_rq_w2" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_qty_diff_w2" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' id="fdb_qty_po_w2" class="powo form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' id="fdb_qty_wo_w2" class="powo form-control text-right" value="0"/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label">3</label>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_bow2" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_qty_rq_w3" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_qty_diff_w3" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' id="fdb_qty_po_w3" class="powo form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' id="fdb_qty_wo_w3" class="powo form-control text-right" value="0"/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label">4</label>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_bow3" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_qty_rq_w4" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_qty_diff_w4" class="powo form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' id="fdb_qty_po_w4" class="powo form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' id="fdb_qty_wo_w4" class="powo form-control text-right" value="0"/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 control-label">5</label>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_bow4" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_qty_rq_w5" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' readonly id="fdb_qty_diff_w5" class="form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' id="fdb_qty_po_w5" class="powo form-control text-right" value="0"/>
+						</div>
+						<div class="col-md-2">
+							<input type='TEXT' id="fdb_qty_wo_w5" class="powo form-control text-right" value="0"/>
+						</div>
+					</div>
+
+				</form>				
+			</div>
+
+
+			<div class="modal-footer">
+				<button id="btn-save-detail2" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+				<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" info="define">
+		mdlDetail2 = {			
+			tbl:null,
+			selectedDetail:null,
+			show:function(tbl,detail){
+				mdlDetail2.tbl = tbl;
+				mdlDetail2.selectedDetail = detail;
+
+				var data = detail.data();
+				$("#fst_item_d2").text(data.fst_item_code + " - " + data.fst_item_name + "(" + data.fst_unit +")" );
+				$("#fdb_qty_balance").val(data.fdb_qty_balance);
+				$("#fdb_qty_rq_w1").val(data.fdb_qty_rq_w1);								
+				$("#fdb_qty_po_w1").val(data.fdb_qty_po_w1);
+				$("#fdb_qty_wo_w1").val(data.fdb_qty_wo_w1);
+				$("#fdb_qty_rq_w2").val(data.fdb_qty_rq_w2);				
+				$("#fdb_qty_po_w2").val(data.fdb_qty_po_w2);
+				$("#fdb_qty_wo_w2").val(data.fdb_qty_wo_w2);
+				$("#fdb_qty_rq_w3").val(data.fdb_qty_rq_w3);
+				$("#fdb_qty_po_w3").val(data.fdb_qty_po_w3);
+				$("#fdb_qty_wo_w3").val(data.fdb_qty_wo_w3)
+				$("#fdb_qty_rq_w4").val(data.fdb_qty_rq_w4);;
+				$("#fdb_qty_po_w4").val(data.fdb_qty_po_w4);
+				$("#fdb_qty_wo_w4").val(data.fdb_qty_wo_w4);
+				$("#fdb_qty_rq_w5").val(data.fdb_qty_rq_w5);
+				$("#fdb_qty_po_w5").val(data.fdb_qty_po_w5);
+				$("#fdb_qty_wo_w5").val(data.fdb_qty_wo_w5);
+
+				mdlDetail2.refresh();
+
+
+				//$("#fdb_qty_mps").text(data.fdb_qty_mps);
+				//$("#fdb_qty_w1").val(data.fdb_qty_w1);
+				//$("#fdb_qty_w2").val(data.fdb_qty_w2);
+				//$("#fdb_qty_w3").val(data.fdb_qty_w3);
+				//$("#fdb_qty_w4").val(data.fdb_qty_w4);
+				//$("#fdb_qty_w5").val(data.fdb_qty_w5);
+				
+				$("#mdlDetail2").modal("show");
+			},
+			refresh:function(){
+
+				var diff1 = parseFloat($("#fdb_qty_balance").val()) - parseFloat($("#fdb_qty_rq_w1").val());
+				$("#fdb_qty_diff_w1").val(diff1);				
+				var powo1 = parseFloat($("#fdb_qty_po_w1").val()) + parseFloat($("#fdb_qty_wo_w1").val());
+				var bow1 = diff1 + powo1;
+				$("#fdb_bow1").val(bow1);
+
+				var diff2 = bow1 - parseFloat($("#fdb_qty_rq_w2").val());
+				$("#fdb_qty_diff_w2").val(diff2);
+				var powo2 = parseFloat($("#fdb_qty_po_w2").val()) + parseFloat($("#fdb_qty_wo_w2").val());
+				var bow2 = diff2 + powo2;
+				$("#fdb_bow2").val(bow2);
+
+				var diff3 = bow2 - parseFloat($("#fdb_qty_rq_w3").val());
+				$("#fdb_qty_diff_w3").val(diff3);
+				var powo3 = parseFloat($("#fdb_qty_po_w3").val()) + parseFloat($("#fdb_qty_wo_w3").val());
+				var bow3 = diff3 + powo3;
+				$("#fdb_bow3").val(bow3);
+
+				var diff4 = bow3 - parseFloat($("#fdb_qty_rq_w4").val());
+				$("#fdb_qty_diff_w4").val(diff4);
+				var powo4 = parseFloat($("#fdb_qty_po_w4").val()) + parseFloat($("#fdb_qty_wo_w4").val());
+				var bow4 = diff4 + powo4;
+				$("#fdb_bow4").val(bow4);
+
+				var diff5 = bow4 - parseFloat($("#fdb_qty_rq_w5").val());
+				$("#fdb_qty_diff_w5").val(diff5);
+				var powo5 = parseFloat($("#fdb_qty_po_w5").val()) + parseFloat($("#fdb_qty_wo_w5").val());
+				var bow5 = diff5 + powo5;
+				$("#fdb_bow5").val(bow5);
+			},
+
+			hide:function(){
+				$("#mdlDetail2").modal("hide");
+			},
+			clear:function(){
+				mdlDetail2.tbl = null;
+				mdlDetail2.selectedDetail = null;
+			},			
+		};
+
+	</script>
+
+	<script type="text/javascript" info="event">		
+		$(function(){		
+			
+			$(".powo ").change(function(e){
+				e.preventDefault();
+				mdlDetail2.refresh();
+			})
+
+			$("#btn-save-detail2").click(function(e){
+				e.preventDefault();
+				var tbl = mdlDetail2.tbl;
+				var data = mdlDetail2.selectedDetail.data();
+				console.log(data);
+
+				data.fdb_qty_po_w1 = parseFloat($("#fdb_qty_po_w1").val());
+				data.fdb_qty_wo_w1 = parseFloat($("#fdb_qty_wo_w1").val());
+				data.fdb_qty_po_w2 = parseFloat($("#fdb_qty_po_w2").val());
+				data.fdb_qty_wo_w2 = parseFloat($("#fdb_qty_wo_w2").val());
+				data.fdb_qty_po_w3 = parseFloat($("#fdb_qty_po_w3").val());
+				data.fdb_qty_wo_w3 = parseFloat($("#fdb_qty_wo_w3").val());
+				data.fdb_qty_po_w4 = parseFloat($("#fdb_qty_po_w4").val());
+				data.fdb_qty_wo_w4 = parseFloat($("#fdb_qty_wo_w4").val());
+				data.fdb_qty_po_w5 = parseFloat($("#fdb_qty_po_w5").val());
+				data.fdb_qty_wo_w5 = parseFloat($("#fdb_qty_wo_w5").val());
+				
+				tbl.row(mdlDetail2.selectedDetail).data(data).draw(false);		
+				
+				mdlDetail2.clear();
+				mdlDetail2.hide();
+			})
+
+		});
+	</script>
+
+	<script type="text/javascript" info="init">
+		$(function(){									
+		});
+	</script>
+
+</div>
+
+
+
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlPrint ?>
@@ -465,6 +577,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript" info="define">
 	var selectedDetail;	
+	var tblDetails;
 </script>
 
 <script type="text/javascript" info="bind">
@@ -474,11 +587,121 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 
 
+<script type="text/javascript" info="init">
+	$(function(){		
+		$("#fdt_mrp_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
+		
+
+		$("#fin_mps_id").select2({
+			width: '100%',
+			ajax:{
+				url:"<?=site_url()?>tr/production/mrp/ajxGetMPS",
+				dataType: 'json',
+                delay: 250,
+                processResults: function(resp) {
+					if (resp.status == "SUCCESS"){
+						var data = resp.data;
+						data2 = [];
+						$.each(data, function(index, value) {
+							data2.push({
+								"id": value.fin_mps_id,
+								"text": value.fst_mps_no
+							});
+						});
+						return {
+							results: data2
+						};
+					}else{
+						alert(resp.messages);
+					}                    
+                },
+                cache: true,
+			}
+		})
+
+
+		tblDetails = $('#tbldetails').on('preXhr.dt', function ( e, settings, data ) {
+			data.sessionId = "TEST SESSION ID";
+		}).DataTable({
+			scrollY: "300px",
+			scrollX: true,			
+			scrollCollapse: true,	
+			order: [],
+			columns:[
+				{"title" : "id","width": "0px",sortable:false,data:"fin_rec_id",visible:false},
+				{"title" : "Item","width": "300px",sortable:false,data:"fin_item_id",
+					"render":function(data,type,row){
+						return row.fst_item_code + " - " + row.fst_item_name; 
+					}
+				},
+				{"title" : "Unit","width": "50px",sortable:false,data:"fst_unit"},
+				{"title" : "Q.MPS","width": "50px",sortable:false,className:'text-right',data:"fdb_qty_mps"},
+				{"title" : "Q.W1","width": "50px",sortable:false,className:'text-right',data:"fdb_qty_w1"},
+				{"title" : "Q.W2","width": "50px",sortable:false,className:'text-right',data:"fdb_qty_w2"},
+				{"title" : "Q.W3","width": "50px",sortable:false,className:'text-right',data:"fdb_qty_w3"},
+				{"title" : "Q.W4","width": "50px",sortable:false,className:'text-right',data:"fdb_qty_w4"},
+				{"title" : "Q.W5","width": "50px",sortable:false,className:'text-right',data:"fdb_qty_w5"},
+				{"title" : "Q.Ttl","width": "50px",sortable:false,className:'text-right',
+					render:function(data,type,row){
+						console.log(data);
+						console.log(row);
+						
+
+						var total = row.fdb_qty_w1 + row.fdb_qty_w2 +row.fdb_qty_w3 +row.fdb_qty_w4 +row.fdb_qty_w5;
+						var color = "unset";
+
+						if (total < row.fdb_qty_mps){
+							color = "red";
+						}
+						return "<span style='color:"+ color +"'>" + total + "</span>";
+					}
+				},			
+				{"title" : "Action","width": "80px",sortable:false,className:'dt-body-center text-center',
+					render: function(data,type,row){
+						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';												
+						//action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';						
+						return action;
+					}
+				},								
+			],
+			processing: true,
+			serverSide: false,
+			searching: false,
+			lengthChange: false,
+			paging: false,
+			info:false,				
+		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");			
+		}).on('click','.btn-edit',function(e){
+			e.preventDefault();						
+			//t = $("#tbldetails").DataTable();
+			t = tblDetails;
+			var trRow = $(this).parents('tr');
+			selectedDetail = t.row(trRow);
+			mdlDetail.show();
+
+		}).on('click','.btn-delete',function(e){
+			e.preventDefault();
+			t = $('#tbldetails').DataTable();
+			var trRow = $(this).parents('tr');
+			t.row(trRow).remove().draw(false);
+		});
+
+
+
+		
+
+        App.fixedSelect2();
+		initForm();
+	});
+</script>
+
 <script type="text/javascript" info="event">
 	$(function(){
 		$("#btnNew").click(function(e){
 			//e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/fixed_asset/disposal/add");
+			window.location.replace("<?=site_url()?>tr/production/mrp/add");
 		});
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
@@ -506,7 +729,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/production/assembling");
+			window.location.replace("<?=site_url()?>tr/production/mrp");
 		});	
 
 		$("#btn-add-items").click(function(e){
@@ -514,220 +737,120 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			mdlDetail.show();
 		});
 
-		$(".hpp-header").change(function(e){
-			e.preventDefault();
-			calculateHPPHeader();
-
-			if ($("#fdc_hpp_header").val() != 0){
-				return;
-			}
-
-			if ($("#fin_item_id").val() == null || $("#fst_unit").val() == null){
-				return;
-			}
-			
-
-			var finWarehouseId;
-			if ($("#fst_type").val() == "ASSEMBLING"){
-				finWarehouseId = $("#fin_target_warehouse_id").val();				
-			}else{
-				finWarehouseId = $("#fin_source_warehouse_id").val();
-			}
-
-			data = {
-				"fin_item_id":$("#fin_item_id").val(),
-				"fst_unit":$("#fst_unit").val(),
-				"fdb_qty":$("#fdb_qty").val(),
-				"fin_warehouse_id":finWarehouseId
-			};
+		$("#fin_mps_id,#fin_mps_month").change(function(e){
 
 			$.ajax({
-				url:"<?=site_url()?>tr/production/assembling/ajxGetTotalHPP",
-				method:"GET",
-				data:data,
+				url:"<?=site_url()?>tr/production/mrp/ajxGetMPSDetails",
+				data:{
+					fin_mps_id:$("#fin_mps_id").val(),
+					fin_mps_month:$("#fin_mps_month").val()
+				},
+				method:"GET"
+			}).done(function(resp){
+				console.log(resp);
+				if (resp.status== "SUCCESS"){
+					tblDetails.clear();
+					var details = resp.data;
+					$.each(details,function(i,v){
+						var data = {
+							fin_rec_id:0,
+							fin_item_id:v.fin_item_id,
+							fst_item_code:v.fst_item_code,
+							fst_item_name:v.fst_item_name,
+							fst_unit:v.fst_unit,
+							fdb_qty_mps:v.fdb_qty_mps,
+							fdb_qty_w1:0,
+							fdb_qty_w2:0,
+							fdb_qty_w3:0,
+							fdb_qty_w4:0,
+							fdb_qty_w5:0,
+						};
 
-			}).done(function(resp){				
-				if (resp.status == "SUCCESS"){
-					data = resp.data;
-					$("#fdc_hpp_header").val(data.HPP);
+						tblDetails.row.add(data);
+					});
+					tblDetails.draw(false);
 				}
 			});
-		})
+
+		});
 		
+		//$(".btn-process").click(function(e){
+		$(document).on("click",".btn-process",function(e){
+			e.preventDefault();
+			var lvlProcess = $(this).data("level");
+			var details = [];
+
+			if (lvlProcess == 0){
+				datas = tblDetails.data();
+				$.each(datas,function(i,v){
+					var tmp = {
+						fin_item_id:v.fin_item_id,
+						fst_unit:v.fst_unit,
+						fdb_qty_w1:v.fdb_qty_w1,
+						fdb_qty_w2:v.fdb_qty_w2,						
+						fdb_qty_w3:v.fdb_qty_w3,
+						fdb_qty_w4:v.fdb_qty_w4,
+						fdb_qty_w5:v.fdb_qty_w5
+					}
+					details.push(tmp);
+				})
+			}else{
+				tbl = $("#tbldetailsL" + lvlProcess).DataTable();
+				datas = tbl.data()
+				$.each(datas,function(i,v){
+					var ttlWO = v.fdb_qty_wo_w1 + v.fdb_qty_wo_w2 + v.fdb_qty_wo_w3 + v.fdb_qty_wo_w4 + v.fdb_qty_wo_w5;
+					if (ttlWO > 0){
+						var tmp = {
+							fin_item_id:v.fin_item_id,
+							fst_unit:v.fst_unit,
+							fdb_qty_w1:v.fdb_qty_wo_w1,
+							fdb_qty_w2:v.fdb_qty_wo_w2,						
+							fdb_qty_w3:v.fdb_qty_wo_w3,
+							fdb_qty_w4:v.fdb_qty_wo_w4,
+							fdb_qty_w5:v.fdb_qty_wo_w5
+						}
+						details.push(tmp);
+					}
+				});				
+			}
+
+			if(details.length == 0){
+				alert("process done !");
+				return;
+			}
+
+
+			$.ajax({
+				url:"<?=site_url()?>tr/production/mrp/ajxGetMaterialDetails",
+				method:"GET",
+				data:{
+					details:details,
+					fin_mps_id:$("#fin_mps_id").val(),
+					fin_mps_month:$("#fin_mps_month").val()
+				}
+			}).done(function(resp){
+				if (resp.status == "SUCCESS"){					
+					generateMaterialDetails(lvlProcess +1,resp.data);
+				}								
+			});
+		});
+		
+
+		$(document).on("shown.bs.tab","#tabLevel a",function(e){			
+			var level = $(this).data("level");
+			$($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
+		});
+
 	});
 </script>
-<script type="text/javascript" info="init">
-	$(function(){		
-		$("#fdt_assembling_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
-		$("#fin_item_id").select2({
-			minimumInputLength: 2,
-			ajax:{
-				delay:250,
-				url:"<?=site_url()?>tr/production/assembling/ajxGetItemList",
-				processResults: function (resp) {
-					console.log(resp);
-					if (resp.status == "SUCCESS"){
-						data = resp.data;
-						var list  = $.map(data,function(v,i){
-							v.id = v.fin_item_id;
-							v.text = v.fst_item_code + " - " +v.fst_item_name;
-							return v;
-						});
-						return {
-							results:list
-						}							
-					}
-				}
-			}
-		});
-		
-		$("#fst_unit").select2({
-			minimumInputLength: 0,
-			minimumResultsForSearch: -1,
-			ajax:{
-				delay:250,
-				url:function(params){
-					return "<?=site_url()?>tr/production/assembling/ajxGetUnits/" + $("#fin_item_id").val();
-				},
-				processResults: function (resp) {
-					console.log(resp);
-					if (resp.status == "SUCCESS"){
-						data = resp.data;
-						var list  = $.map(data,function(v,i){
-							v.id = v.fst_unit;
-							v.text = v.fst_unit;
-							return v;
-						});
-						return {
-							results:list
-						}							
-					}
-				}
-			}
-		});
-		
 
-		$("#fin_source_warehouse_id,#fin_target_warehouse_id").select2();
 
-		
-		$('#tbldetails').on('preXhr.dt', function ( e, settings, data ) {
-			data.sessionId = "TEST SESSION ID";
-		}).DataTable({
-			scrollY: "300px",
-			scrollX: true,			
-			scrollCollapse: true,	
-			order: [],
-			columns:[
-				{"title" : "id","width": "0px",sortable:false,data:"fin_rec_id",visible:false},
-				{"title" : "Item","width": "300px",sortable:false,data:"fin_item_id",
-					"render":function(data,type,row){
-						return row.item.text + "<br><i>" + row.fst_notes + "</i>"; 
-					}
-				},
-				{"title" : "Unit","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Q.MPS","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Q.W1","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Q.W2","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Q.W3","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Q.W4","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Q.W5","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Q.Ttl","width": "50px",sortable:false,data:"fst_unit"},			
-				{"title" : "Action","width": "80px",sortable:false,className:'dt-body-center text-center',
-					render: function(data,type,row){
-						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';												
-						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';						
-						return action;
-					}
-				},								
-			],
-			processing: true,
-			serverSide: false,
-			searching: false,
-			lengthChange: false,
-			paging: false,
-			info:false,				
-		}).on('draw',function(){
-			$(".dataTables_scrollHeadInner").css("min-width","100%");
-			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
-			calculateHPPHeader();
-		}).on('click','.btn-edit',function(e){
-			e.preventDefault();						
-			t = $("#tbldetails").DataTable();
-			var trRow = $(this).parents('tr');
-			selectedDetail = t.row(trRow);
-			mdlDetail.show();
-
-		}).on('click','.btn-delete',function(e){
-			e.preventDefault();
-			t = $('#tbldetails').DataTable();
-			var trRow = $(this).parents('tr');
-			t.row(trRow).remove().draw(false);
-		});
-
-		$('#tbldetailsw1').on('preXhr.dt', function ( e, settings, data ) {
-			data.sessionId = "TEST SESSION ID";
-		}).DataTable({
-			scrollY: "300px",
-			scrollX: true,			
-			scrollCollapse: true,	
-			order: [],
-			columns:[
-				{"title" : "id","width": "0px",sortable:false,data:"fin_rec_id",visible:false},
-				{"title" : "BOM Item","width": "300px",sortable:false,data:"fin_item_id",
-					"render":function(data,type,row){
-						return row.item.text + "<br><i>" + row.fst_notes + "</i>"; 
-					}
-				},
-				{"title" : "Unit","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Balance","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Q.Req","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Diff","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Q.PO","width": "50px",sortable:false,data:"fst_unit"},
-				{"title" : "Q.WO","width": "50px",sortable:false,data:"fst_unit"},
-				
-				
-				
-				{"title" : "Action","width": "80px",sortable:false,className:'dt-body-center text-center',
-					render: function(data,type,row){
-						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';												
-						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';						
-						return action;
-					}
-				},								
-			],
-			processing: true,
-			serverSide: false,
-			searching: false,
-			lengthChange: false,
-			paging: false,
-			info:false,				
-		}).on('draw',function(){
-			$(".dataTables_scrollHeadInner").css("min-width","100%");
-			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
-			calculateHPPHeader();
-		}).on('click','.btn-edit',function(e){
-			e.preventDefault();						
-			t = $("#tbldetails").DataTable();
-			var trRow = $(this).parents('tr');
-			selectedDetail = t.row(trRow);
-			mdlDetail.show();
-
-		}).on('click','.btn-delete',function(e){
-			e.preventDefault();
-			t = $('#tbldetails').DataTable();
-			var trRow = $(this).parents('tr');
-			t.row(trRow).remove().draw(false);
-		});
-
-        App.fixedSelect2();
-		initForm();
-	});
-</script>
 <script type="text/javascript" info="function">
 	
-	function submitAjax(confirmEdit){     
-		var mode = "<?=$mode?>";   
-		var dataDetails = new Array();	
+	function submitAjax(confirmEdit){   
+		
+		var mode = "<?=$mode?>";   		
+		var dataDetails = new Array();			
 		if (mode == "EDIT" && confirmEdit == 0){
 			MdlEditForm.saveCallBack = function(){
 				submitAjax(1);
@@ -744,12 +867,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			value: SECURITY_VALUE
 		});	
 		
-		var t = $('#tbldetails').DataTable();
+		var t =  tblDetails; //$('#tbldetails').DataTable();		
 		var datas = t.data();
 
 		$.each(datas,function(i,v){
-			v.fin_item_id = v.item.id;
-			delete v.item;
 			dataDetails.push(v);
 		});
 
@@ -758,10 +879,47 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			value: JSON.stringify(dataDetails)
 		});
 
+		var dataDetails2 = new Array();	
+		var ttlLevel = $("#tabLevel > li").length;
+		var i;
+		for (i = 1; i <= ttlLevel ; i++) {
+			t2 = $('#tbldetailsL' + i).DataTable();
+			var datas = t2.data();
+			$.each(datas,function(idx,v){
+				var data = {
+					fin_rec_id:v.fin_rec_id,
+					fin_level:i,
+					fin_item_id:v.fin_item_id,
+					fst_unit:v.fst_unit,
+					fdb_qty_rq_w1:v.fdb_qty_rq_w1,
+					fdb_qty_po_w1:v.fdb_qty_po_w1,
+					fdb_qty_wo_w1:v.fdb_qty_wo_w1,
+					fdb_qty_rq_w2:v.fdb_qty_rq_w2,
+					fdb_qty_po_w2:v.fdb_qty_po_w2,
+					fdb_qty_wo_w2:v.fdb_qty_wo_w2,
+					fdb_qty_rq_w3:v.fdb_qty_rq_w3,
+					fdb_qty_po_w3:v.fdb_qty_po_w3,
+					fdb_qty_wo_w3:v.fdb_qty_wo_w3,
+					fdb_qty_rq_w4:v.fdb_qty_rq_w4,
+					fdb_qty_po_w4:v.fdb_qty_po_w4,
+					fdb_qty_wo_w4:v.fdb_qty_wo_w4,
+					fdb_qty_rq_w5:v.fdb_qty_rq_w5,
+					fdb_qty_po_w5:v.fdb_qty_po_w5,
+					fdb_qty_wo_w5:v.fdb_qty_wo_w5										
+				}
+
+				dataDetails2.push(data);
+			});
+		}
+		data.push({
+			name:"details2",
+			value: JSON.stringify(dataDetails2)
+		});
+
 		if (mode == "ADD"){
-			url = "<?=site_url()?>tr/production/assembling/ajx_add_save";
+			url = "<?=site_url()?>tr/production/mrp/ajx_add_save";
 		}else{			
-			url = "<?=site_url()?>tr/production/assembling/ajx_edit_save";
+			url = "<?=site_url()?>tr/production/mrp/ajx_edit_save";
 		}		
 
 		App.blockUIOnAjaxRequest("<h5>Please wait....</h5>");
@@ -804,20 +962,87 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if (mode == "EDIT"){			
 			App.blockUIOnAjaxRequest();
 			$.ajax({
-				url:"<?= site_url() ?>tr/production/assembling/fetch_data/<?=$fin_assembling_id?>",
+				url:"<?= site_url() ?>tr/production/mrp/fetch_data/<?=$fin_mrp_id?>",
 			}).done(function(resp){				
-				dataH =  resp.data.header;
-				if (dataH == null){
-					alert("<?=lang("ID transaksi tidak dikenal")?>");
-					return false;
+				if (resp.status == "SUCCESS"){
+					data = resp.data;
+					dataH =  data.header;
+					if (dataH == null){
+						alert("<?=lang("ID transaksi tidak dikenal")?>");
+						return false;
+					}				
+					App.autoFillForm(dataH);
+					App.addOptionIfNotExist("<option value='"+dataH.fin_mps_id+"'>"+dataH.fst_mps_no+"</option>","fin_mps_id");
+
+					weekDetails =  data.weekDetails;
+					$.each(weekDetails,function(i,v){
+						var data = {
+							fin_rec_id:v.fin_rec_id,
+							fin_item_id:v.fin_item_id,
+							fst_item_code:v.fst_item_code,
+							fst_item_name:v.fst_item_name,
+							fst_unit:v.fst_unit,
+							fdb_qty_mps: parseFloat(v.fdb_qty_mps),
+							fdb_qty_w1:parseFloat(v.fdb_qty_w1),
+							fdb_qty_w2:parseFloat(v.fdb_qty_w2),
+							fdb_qty_w3:parseFloat(v.fdb_qty_w3),
+							fdb_qty_w4:parseFloat(v.fdb_qty_w4),
+							fdb_qty_w5:parseFloat(v.fdb_qty_w5),
+						};
+						tblDetails.row.add(data);
+					});
+					tblDetails.draw(false);
+
+					materialDetails =  data.materialDetails;
+					var tabActive =0;
+					var details = [];
+					$.each(materialDetails,function(i,v){
+						if (tabActive == 0 ){
+							tabActive = v.fin_level;
+						}
+
+						if (v.fin_level != tabActive){
+							generateMaterialDetails(tabActive,details);
+							details = [];
+							tabActive = v.fin_level; 
+						}		
+						var data = {
+							fin_rec_id:v.fin_rec_id,
+							fin_item_id:v.fin_item_id,
+							fst_item_code:v.fst_item_code,
+							fst_item_name:v.fst_item_name,
+							fst_unit:v.fst_unit,
+							fdb_qty_balance:v.fdb_qty_balance,
+							fdb_qty_rq_w1:v.fdb_qty_rq_w1,
+							fdb_qty_po_w1:v.fdb_qty_po_w1,
+							fdb_qty_wo_w1:v.fdb_qty_wo_w1,
+							fdb_qty_rq_w2:v.fdb_qty_rq_w2,
+							fdb_qty_po_w2:v.fdb_qty_po_w2,
+							fdb_qty_wo_w2:v.fdb_qty_wo_w2,
+							fdb_qty_rq_w3:v.fdb_qty_rq_w3,
+							fdb_qty_po_w3:v.fdb_qty_po_w3,
+							fdb_qty_wo_w3:v.fdb_qty_wo_w3,
+							fdb_qty_rq_w4:v.fdb_qty_rq_w4,
+							fdb_qty_po_w4:v.fdb_qty_po_w4,
+							fdb_qty_wo_w4:v.fdb_qty_wo_w4,
+							fdb_qty_rq_w5:v.fdb_qty_rq_w5,
+							fdb_qty_po_w5:v.fdb_qty_po_w5,
+							fdb_qty_wo_w5:v.fdb_qty_wo_w5,
+						};
+						details.push(data);														
+					});
+					generateMaterialDetails(tabActive,details);
 				}
 				
-                App.autoFillForm(dataH);
+				
+
+
+				
+				/*
 				//$("#fdt_fa_disposal_datetime").val(dataH.fst_accum_account_code).trigger("change");
 				$("#fdt_assembling_datetime").val(dateTimeFormat(dataH.fdt_assembling_datetime)).datetimepicker("update");				
 				App.addOptionIfNotExist("<option value='"+dataH.fin_item_id +"'>"+dataH.fst_item_code +" - " + dataH.fst_item_name +"</option>","fin_item_id");
 				App.addOptionIfNotExist("<option value='"+dataH.fst_unit +"'>"+dataH.fst_unit +"</option>","fst_unit");
-
 				t = $("#tbldetails").DataTable();
 				$.each(resp.data.details,function(i,v){
 					var item = {
@@ -834,8 +1059,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					};
 					t.row.add(data);
 				});
-
 				t.draw(false);
+				*/
+
+
 			});
 		}
 	}    
@@ -880,24 +1107,199 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	}
 
-	function calculateHPPHeader(){
-		var t = $('#tbldetails').DataTable();
-		var datas = t.data();
 
-		var ttlHPP =0;
-		$.each(datas,function(i,v){
-			ttlHPP += parseFloat(v.fdc_hpp);
+	function generateMaterialDetails(level,details){
+
+
+		if ($.fn.DataTable.isDataTable('#tbldetailsL' + level) ) {
+			$('#tbldetailsL' + level).DataTable().destroy();
+		}
+		$("#li-level-" +level).remove();
+		$("#detailL" +level).remove();
+
+	
+		//Add Tab List
+		$("#tabLevel").append("<li id='li-level-" +level +"'><a data-level='"+level+"' data-toggle='tab' href='#detailL" + level +"'>Level " + level +"</a></li>");
+
+
+		//add tab content
+		var sstr ="";
+		sstr += '<div id="detailL'+level+'" class="tab-pane fade in">';
+		sstr += '<button class="btn btn-primary btn-process" data-level="'+level+'">Next Level</button>';
+		sstr += '<table id="tbldetailsL'+level+'" class="table table-bordered table-hover table-striped nowarp row-border" style="width:2000px"></table>';
+		sstr += '</div>';
+		$("#tabContentLevel").append(sstr);
+		$('#tabLevel a:last').tab('show');
+
+		
+		//Init Tabel
+		$('#tbldetailsL' +level ).on('preXhr.dt', function ( e, settings, data ) {
+			data.sessionId = "TEST SESSION ID";
+		}).DataTable({
+			scrollY: "300px",
+			scrollX: true,			
+			scrollCollapse: true,	
+			order: [],
+			columns:[
+				{"title" : "id","width": "0px",sortable:false,data:"fin_rec_id",visible:false},
+				{"title" : "BOM Item","width": "300px",sortable:false,data:"fin_item_id",
+					"render":function(data,type,row){
+						return row.fst_item_code + " - " + row.fst_item_name; 
+					}
+				},
+				{"title" : "Unit","width": "50px",sortable:false,data:"fst_unit"},
+				{"title" : "Balance","width": "50px",sortable:false,className:"text-right",data:"fdb_qty_balance"},
+				{"title" : "Q.Req W1","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_rq_w1"},
+				{"title" : "Q.PO W1","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_po_w1"},
+				{"title" : "Q.WO W1","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_wo_w1"},
+				{"title" : "Balance W1","width": "80px",sortable:false,className:"text-right",
+					render:function(data,type,row){
+						var balance =  parseFloat(row.fdb_qty_balance);
+						var reqW1= parseFloat(row.fdb_qty_rq_w1);
+						var diff1 = balance -reqW1;
+						var powo1 = parseFloat(row.fdb_qty_po_w1) +  parseFloat(row.fdb_qty_wo_w1);
+						var bow1 = diff1 + powo1;
+						return bow1;
+					}
+				},
+				{"title" : "Q.Req W2","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_rq_w2"},
+				{"title" : "Q.PO W2","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_po_w2"},
+				{"title" : "Q.WO W2","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_wo_w2"},
+				{"title" : "Balance W2","width": "80px",sortable:false,className:"text-right",
+					render:function(data,type,row){
+						var balance =  parseFloat(row.fdb_qty_balance);
+						var reqW1= parseFloat(row.fdb_qty_rq_w1);
+						var diff1 = balance -reqW1;
+						var powo1 = parseFloat(row.fdb_qty_po_w1) +  parseFloat(row.fdb_qty_wo_w1);
+						var bow1 = diff1 + powo1;
+
+						var reqW2= parseFloat(row.fdb_qty_rq_w2);
+						var powo2 = parseFloat(row.fdb_qty_po_w2) +  parseFloat(row.fdb_qty_wo_w2);
+						var bow2 = bow1 - reqW2 + powo2
+						return bow2;
+					}
+				},
+				{"title" : "Q.Req W3","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_rq_w3"},
+				{"title" : "Q.PO W3","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_po_w3"},
+				{"title" : "Q.WO W3","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_wo_w3"},
+				{"title" : "Balance W3","width": "80px",sortable:false,className:"text-right",
+					render:function(data,type,row){
+						var balance =  parseFloat(row.fdb_qty_balance);
+						var reqW1= parseFloat(row.fdb_qty_rq_w1);
+						var diff1 = balance -reqW1;
+						var powo1 = parseFloat(row.fdb_qty_po_w1) +  parseFloat(row.fdb_qty_wo_w1);
+						var bow1 = diff1 + powo1;
+
+						var reqW2= parseFloat(row.fdb_qty_rq_w2);
+						var powo2 = parseFloat(row.fdb_qty_po_w2) +  parseFloat(row.fdb_qty_wo_w2);
+						var bow2 = bow1 - reqW2 + powo2
+
+						var reqW3= parseFloat(row.fdb_qty_rq_w3);
+						var powo3 = parseFloat(row.fdb_qty_po_w3) +  parseFloat(row.fdb_qty_wo_w3);
+						var bow3 = bow2 - reqW3 + powo3
+
+						return bow3;
+
+					}
+				},
+				{"title" : "Q.Req W4","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_rq_w4"},
+				{"title" : "Q.PO W4","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_po_w4"},
+				{"title" : "Q.WO W4","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_wo_w4"},
+				{"title" : "Balance W4","width": "80px",sortable:false,className:"text-right",
+					render:function(data,type,row){
+						var balance =  parseFloat(row.fdb_qty_balance);
+						var reqW1= parseFloat(row.fdb_qty_rq_w1);
+						var diff1 = balance -reqW1;
+						var powo1 = parseFloat(row.fdb_qty_po_w1) +  parseFloat(row.fdb_qty_wo_w1);
+						var bow1 = diff1 + powo1;
+
+						var reqW2= parseFloat(row.fdb_qty_rq_w2);
+						var powo2 = parseFloat(row.fdb_qty_po_w2) +  parseFloat(row.fdb_qty_wo_w2);
+						var bow2 = bow1 - reqW2 + powo2
+
+						var reqW3= parseFloat(row.fdb_qty_rq_w3);
+						var powo3 = parseFloat(row.fdb_qty_po_w3) +  parseFloat(row.fdb_qty_wo_w3);
+						var bow3 = bow2 - reqW3 + powo3
+
+						var reqW4= parseFloat(row.fdb_qty_rq_w4);
+						var powo4 = parseFloat(row.fdb_qty_po_w4) +  parseFloat(row.fdb_qty_wo_w4);
+						var bow4 = bow3 - reqW4 + powo4
+
+						return bow4;
+					}
+				},
+				{"title" : "Q.Req W5","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_rq_w5"},
+				{"title" : "Q.PO W5","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_po_w5"},
+				{"title" : "Q.WO W5","width": "80px",sortable:false,className:"text-right",data:"fdb_qty_wo_w5"},												
+				{"title" : "Action","width": "80px",sortable:false,className:'dt-body-center text-center',
+					render: function(data,type,row){
+						var action = '<a class="btn-edit2" href="#" data-level="'+level+'"><i class="fa fa-pencil"></i></a>&nbsp;';												
+						//action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';						
+						return action;
+					}
+				},								
+			],
+			processing: true,
+			serverSide: false,
+			searching: false,
+			lengthChange: false,
+			paging: false,
+			info:false,				
+		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+		}).on('click','.btn-edit2',function(e){
+			e.preventDefault();				
+			var level = $(this).data("level");		
+			t = $("#tbldetailsL" + level).DataTable();
+			//t = $("#tbldetails2").DataTable();
+			var trRow = $(this).parents('tr');
+			//selectedDetail2 = t.row(trRow);
+			var detail = t.row(trRow);
+			mdlDetail2.show(t,detail);
+		}).on('click','.btn-delete',function(e){
+			e.preventDefault();
+			t = $('#tbldetails').DataTable();
+			var trRow = $(this).parents('tr');
+			t.row(trRow).remove().draw(false);
 		});
 
-		if (ttlHPP  == 0){
-			$("#fdc_hpp_header").prop("readonly",0);
-		}else{	
-			$("#fdc_hpp_header").prop("readonly",1);
-		}
-		$("#fdc_hpp_header").val(App.money_format(ttlHPP));
+		var tbl  =$('#tbldetailsL' +level ).DataTable();
+
+		$.each(details,function(i,v){
+			var data = {
+				fin_rec_id:0,
+				fin_item_id:v.fin_item_id,
+				fst_item_code:v.fst_item_code,
+				fst_item_name:v.fst_item_name,
+				fst_unit:v.fst_unit,
+				fdb_qty_balance:v.fdb_qty_balance,
+				fdb_qty_rq_w1:v.fdb_qty_rq_w1,
+				fdb_qty_po_w1: (typeof v.fdb_qty_po_w1 === "undefined") ? 0 : v.fdb_qty_po_w1,
+				fdb_qty_wo_w1: (typeof v.fdb_qty_wo_w1 === "undefined") ? 0 : v.fdb_qty_wo_w1,
+				fdb_qty_rq_w2:v.fdb_qty_rq_w2,
+				fdb_qty_po_w2:(typeof v.fdb_qty_po_w2 === "undefined") ? 0 : v.fdb_qty_po_w2,
+				fdb_qty_wo_w2:(typeof v.fdb_qty_wo_w2 === "undefined") ? 0 : v.fdb_qty_wo_w2,
+				fdb_qty_rq_w3:v.fdb_qty_rq_w3,
+				fdb_qty_po_w3:(typeof v.fdb_qty_po_w3 === "undefined") ? 0 : v.fdb_qty_po_w3,
+				fdb_qty_wo_w3:(typeof v.fdb_qty_wo_w3 === "undefined") ? 0 : v.fdb_qty_wo_w3,
+				fdb_qty_rq_w4:v.fdb_qty_rq_w4,
+				fdb_qty_po_w4:(typeof v.fdb_qty_po_w4 === "undefined") ? 0 : v.fdb_qty_po_w4,
+				fdb_qty_wo_w4:(typeof v.fdb_qty_wo_w4 === "undefined") ? 0 : v.fdb_qty_wo_w4,
+				fdb_qty_rq_w5:v.fdb_qty_rq_w5,
+				fdb_qty_po_w5:(typeof v.fdb_qty_po_w5 === "undefined") ? 0 : v.fdb_qty_po_w5,
+				fdb_qty_wo_w5:(typeof v.fdb_qty_wo_w5 === "undefined") ? 0 : v.fdb_qty_wo_w5,			
+			};
+			tbl.row.add(data);
+			
+		});
+		tbl.draw(false);
 	}
+	
 
 </script>
+
+
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>
 <!-- DataTables -->

@@ -650,7 +650,8 @@ class Trsalesorder_model extends MY_Model {
                                 $subTotalDPP = $subTotal;
                             }
                             $ttlDPP += $subTotalDPP;
-                            $ttlQtyPromoUnit += $this->msitems_model->getQtyConvertUnit($dataD->fin_item_id,$dataD->fdb_qty,$dataD->fst_unit,$promo->fst_promo_unit);
+                            //$ttlQtyPromoUnit += $this->msitems_model->getQtyConvertUnit($dataD->fin_item_id,$dataD->fdb_qty,$dataD->fst_unit,$promo->fst_promo_unit);
+                            $ttlQtyPromoUnit += $this->msitems_model->getQtyConvertUnit($dataD->fin_item_id,$dataD->fdb_qty,$dataD->fst_unit,$promo->fst_unit_gabungan);
                         }                        
                     }
                 }

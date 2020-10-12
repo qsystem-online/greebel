@@ -1,8 +1,8 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Trmtsitems_model extends MY_Model{
-    public $tableName = "trmtsitems";
+class Trmrpmaterialdetails_model extends MY_Model{
+    public $tableName = "trmrpmaterialdetails";
     public $pkey = "fin_rec_id";
 
     public function __construct()
@@ -15,8 +15,8 @@ class Trmtsitems_model extends MY_Model{
         $rules = [];
 
         $rules[] = [
-            'field' => 'fin_mts_id',
-            'label' => 'MTS ID',
+            'field' => 'fin_mrp_id',
+            'label' => 'MRP ID',
             'rules' => array(
                 'required',
 			),

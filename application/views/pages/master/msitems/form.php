@@ -438,7 +438,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         "title": "<?= lang("Action") ?>",
                         "width": "7%",
                         render: function(data, type, row) {
-                            action = "<a class='btn-delete-unit-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+                            action = "<a class='btn-edit-unit-details edit-mode' href='#'><i class='fa fa-pencil'></i></a>&nbsp;";
+                            action += "<a class='btn-delete-unit-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
                             //action += "<a class='btn-view-document-items' href='#'><i class='fa fa-folder-open' aria-hidden='true'></i></a>";
                             return action;
                         },
@@ -447,6 +448,47 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }
                 ],
             });
+
+            $("#tbl_unit_details").on("click", ".btn-edit-unit-details", function(event) {
+                event.preventDefault();
+                t = $("#tbl_unit_details").DataTable();
+                var trRow = $(this).parents('tr');
+                selectedUnit = trRow;
+                unit_detail = t.row(trRow);
+                row = unit_detail.data();
+                selectedRow = row;
+
+                App.addOptionIfNotExist("<option value='"+row.fst_unit+"'>"+row.fst_unit+"</option>","fst_unit");
+
+                //$("#fst_unit").val(row.fst_unit).trigger("change");
+                $("#fdc_conv_to_basic_unit").val(row.fdc_conv_to_basic_unit);
+                $("#fdc_price_list").val(row.fdc_price_list);
+                $("#fdc_het").val(row.fdc_het);
+
+                $("#fbl_is_basic_unit").prop("checked",false);
+                $("#fbl_is_production_output").prop("checked",false);
+                $("#fbl_is_selling").prop("checked",false);
+                $("#fbl_is_buying").prop("checked",false);
+
+                if (row.fbl_is_basic_unit == 1){
+                    $("#fbl_is_basic_unit").prop("checked",true);
+                }
+                if (row.fbl_is_production_output == 1){
+                    $("#fbl_is_production_output").prop("checked",true);
+                }
+                if (row.fbl_is_selling == 1){
+                    $("#fbl_is_selling").prop("checked",true);
+                }
+                if (row.fbl_is_buying == 1){
+                    $("#fbl_is_buying").prop("checked",true);
+                }                
+
+                console.log(row);
+                $("#mdlUnitDetails").modal('show');
+                
+            });
+
+
             $("#tbl_unit_details").on("click", ".btn-delete-unit-details", function(event) {
                 event.preventDefault();
 
@@ -496,6 +538,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 var data = e.params.data;
                 selected_unit = data;
             });
+
+
             $("#btn-add-unit").click(function(event) {
                 event.preventDefault();
                 t = $('#tbl_unit_details').DataTable();
@@ -519,26 +563,28 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     addRow = false;
                     return;
                 } else {
-                    //$("#fst_unit_error").hide();
-                    data = t.rows().data();
-                    console.log(data);
-                    var valid = true;
-                    $.each(data, function(i, v) {
-                        if (v.fst_unit == unit) {
-                            $("#fst_unit_error").html("Unit is already exist!");
-                            $("#fst_unit_error").show();
-                            addRow = false;
-                            valid = false;
-                            return false;
-                        } else {
-                            $("#fst_unit_error").hide();
-                        }
-                    });
+                    if (unit_detail == null){
+                        data = t.rows().data();
+                        var valid = true;
+                        $.each(data, function(i, v) {
+                            if (v.fst_unit == unit) {
+                                $("#fst_unit_error").html("Unit is already exist!");
+                                $("#fst_unit_error").show();
+                                addRow = false;
+                                valid = false;
+                                return false;
+                            } else {
+                                $("#fst_unit_error").hide();
+                            }
+                        });
 
-                    if (valid == false){
-                        return;
+                        if (valid == false){
+                            return;
+                        }
                     }
                 }
+
+
                 var priceList = $("#fdc_price_list").val();
                 if (priceList == null || priceList == "") {
                     $("#fdc_price_list_error").html("required");
@@ -562,7 +608,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     data = t.rows().data();
                     console.log(data);
                     $.each(data, function(i, v) {
-                        if (v.fbl_is_basic_unit == "1") {
+                        if (v.fbl_is_basic_unit == "1" && v.fst_unit != $("#fst_unit").val() ) {
                             if (confirm("Basic unit telah didefinisikan untuk " + v.fst_unit + ", ganti basic unit ?")) {
                                 v.fbl_is_basic_unit = false;
                                 console.log(data);
@@ -578,7 +624,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     data = t.rows().data();
                     console.log(data);
                     $.each(data, function(i, v) {
-                        if (v.fbl_is_production_output == "1") {
+                        if (v.fbl_is_production_output == "1" && v.fst_unit != $("#fst_unit").val()) {
                             if (confirm("Production unit telah didefinisikan untuk " + v.fst_unit + ", ganti production unit ?")) {
                                 v.fbl_is_production_output = false;
                                 console.log(data);
@@ -590,11 +636,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         }
                     });
                 }
+
                 if (addRow) {
-                    t.row.add({
+                    
+                    var dataUnit = {
                         fin_rec_id: 0,
                         fin_item_id: 0,
-                        fst_unit: selected_unit.text,
+                        fst_unit: $("#fst_unit").val(),
                         fbl_is_basic_unit: $("#fbl_is_basic_unit").prop("checked"),
                         fdc_conv_to_basic_unit: $("#fdc_conv_to_basic_unit").val(),
                         fbl_is_selling: $("#fbl_is_selling").prop("checked"),
@@ -603,7 +651,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         fdc_price_list: PriceList.value(),
                         fdc_het: HET.value(),
                         action: action
-                    }).draw(false);
+                    }
+
+                    if (unit_detail == null){
+                        t.row.add(dataUnit).draw(false);
+                    }else{
+                        //update row
+                        dataUnit.fin_rec_id = row.fin_rec_id;
+                        t.row(unit_detail).data(dataUnit).draw(false);
+                    }
                 }
             });
         });

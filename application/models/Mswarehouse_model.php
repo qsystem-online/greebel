@@ -137,5 +137,38 @@ class Mswarehouse_model extends MY_Model
 		}
 	}
 
-	
+	public function getMainWarehouseId($finBranchId){
+		$ssql = "SELECT * FROM mswarehouse WHERE fin_branch_id = ? AND  fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$finBranchId]);
+		$rw = $qr->row();
+		if ($rw == null){
+			return 0;
+		}else{
+			return $rw->fin_warehouse_id;
+		}
+	}
+
+	public function getProductionWarehouseList(){
+		$branchId = $this->aauth->get_active_branch_id();
+		$ssql = "select * from " . $this->tableName . " where fbl_is_production = 1 and  fst_active = 'A' and fin_branch_id = ? ";
+		$qr = $this->db->query($ssql, [$branchId]);
+		$rs = $qr->result();
+		return $rs;
+	}
+
+	public function getALLWarehouseList($branchId = null){
+		if ($branchId == null){
+			$branchId = $this->aauth->get_active_branch_id();
+		}
+		
+		if ($branchId == "ALL"){
+			$ssql = "select * from " . $this->tableName . " where  fst_active = 'A'";
+			$qr = $this->db->query($ssql,[]);
+		}else{
+			$ssql = "select * from " . $this->tableName . " where fst_active = 'A' and fin_branch_id = ?";
+			$qr = $this->db->query($ssql, [$branchId]);
+		}		
+		$rs = $qr->result();
+		return $rs;
+	}
 }

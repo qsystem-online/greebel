@@ -6,6 +6,7 @@ class Mts extends MY_Controller{
 		parent::__construct();
 		$this->load->library('form_validation');
 		$this->load->model("trmts_model");
+		$this->load->model("trmtsitems_model");
 		$this->load->model("trassemblingitems_model");
 		$this->load->model("mswarehouse_model");	
 		
@@ -14,16 +15,18 @@ class Mts extends MY_Controller{
 	public function index(){
 
 		$this->load->library('menus');
-		$this->list['page_name'] = "Assembling / Diassembling";
-		$this->list['list_name'] = "Assembling / Diassembling List";
+		$this->list['page_name'] = "Master Target Sales";
+		$this->list['list_name'] = "Master Target Sales List";
 		$this->list['boxTools'] = [
-			"<a id='btnNew'  href='".site_url()."tr/fixed_asset/disposal/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
+			"<a id='btnNew'  href='".site_url()."tr/production/mts/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 			//"<a id='btnPrint'  href='".site_url()."tr/gudang/penerimaan_pembelian/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> Print </a>"
 		];
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/production/assembling/fetch_list_data';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/production/mts/fetch_list_data';
 		$this->list['arrSearch'] = [
-            'fst_fa_disposal_no' => 'No.',
+			'fst_mts_no' => 'No.',
+			"fin_year" => 'Tahun',
+			"fst_item_group_name" => 'Group Item'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -34,16 +37,16 @@ class Mts extends MY_Controller{
 		
 
 		$this->list['columns'] = [
-			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_assembling_id'],
-			['title' => 'No.', 'width' => '60px', 'data' => 'fst_assembling_no'],
-            ['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_assembling_datetime'],
-			['title' => 'Type', 'width' => '50px', 'data' => 'fst_type'],
+			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_mts_id'],
+			['title' => 'No.', 'width' => '60px', 'data' => 'fst_mts_no'],
+			['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_mts_datetime'],
+			['title' => 'Tahun', 'width' => '60px', 'data' => 'fin_year'],
+			['title' => 'Item Group', 'width' => '50px', 'data' => 'fst_item_group_name'],
 			['title' => 'Notes', 'width' => '50px', 'data' => 'fst_notes'],
             ['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
-					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/production/assembling/edit/' + row.fin_assembling_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
-					//action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
+					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/production/mts/edit/' + row.fin_mts_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
 					action += '<div>';
 					return action;
 				}"
@@ -71,8 +74,9 @@ class Mts extends MY_Controller{
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("(
-				select * from trassembling where fst_active != 'D'
-			) a");
+			select a.*,b.fst_item_group_name from trmts a inner join msgroupitems b on a.fin_item_group_id = b.fin_item_group_id 
+			where a.fst_active != 'D'
+		) a");
 
 		$selectFields = "a.*";
 		$this->datatables->setSelectFields($selectFields);
@@ -140,21 +144,17 @@ class Mts extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 
-	public function ajx_add_save(){	
-
-		
-
+	public function ajx_add_save(){
 		try{			
 			$dataPrepared = $this->prepareData();
 			$dataH = $dataPrepared["dataH"];
 			$details =$dataPrepared["details"];
 
+			
+
 			unset($dataH["fin_mts_id"]);
-			$dataH["fst_mts_no"] = $this->trmts_model->generateTransactionNo();
-			//$resp = dateIsLock($dataH["fdt_assembling_datetime"]);
-			//if($resp["status"] != "SUCCESS"){
-			//	throw new CustomException($resp["message"],3003,"FAILED",[]);
-			//}						
+			$dataH["fst_mts_no"] = $this->trmts_model->generateTransactionNo();			
+			
 			$this->validateData($dataH,$details);
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
@@ -166,12 +166,11 @@ class Mts extends MY_Controller{
 
 		try{
 			$this->db->trans_start();
-			$insertId = $this->trassembling_model->insert($dataH);
-
+			$insertId = $this->trmts_model->insert($dataH);
 			foreach($details as $dataD){
 				$dataD = (array)$dataD;
-				$dataD["fin_assembling_id"] = $insertId;
-				$this->trassemblingitems_model->insert($dataD);
+				$dataD["fin_mts_id"] = $insertId;
+				$this->trmtsitems_model->insert($dataD);
 			}
 			
 			//$this->trfadisposal_model->posting($insertId);
@@ -192,19 +191,19 @@ class Mts extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){		
-        $finAssemblingId = $this->input->post("fin_assembling_id");
+		$finMTSId = $this->input->post("fin_mts_id");
+		
 		try{
-            $dataHOld = $this->trassembling_model->getDataHeader($finAssemblingId);
+            $dataHOld = $this->trmts_model->getDataHeader($finMTSId);
             if ($dataHOld == null){
                 show_404();
             }
 			
-			$resp = dateIsLock($dataHOld->fdt_assembling_datetime);
-			if($resp["status"] != "SUCCESS"){
-				throw new CustomException($resp["message"],3003,"FAILED",[]);
-			}
-
-            $this->trassembling_model->isEditable($finAssemblingId);
+			//$resp = dateIsLock($dataHOld->fdt_assembling_datetime);
+			//if($resp["status"] != "SUCCESS"){
+			//	throw new CustomException($resp["message"],3003,"FAILED",[]);
+			//}
+            //$this->trassembling_model->isEditable($finAssemblingId);
                         
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
@@ -219,25 +218,22 @@ class Mts extends MY_Controller{
 			$dataH = $preparedData["dataH"];
 			$details = $preparedData["details"];
 			
-			$dataH["fin_assembling_id"] = $finAssemblingId;
-			$dataH["fst_assembling_no"] = $dataHOld->fst_assembling_no;
+			$dataH["fin_mts_id"] = $finMTSId;
+			$dataH["fst_mts_no"] = $dataHOld->fst_mts_no;
 			
-
 
 			$this->db->trans_start();
 			
-
-			//$this->trfadisposal_model->unposting($finAssemblingId);
-			$this->trassembling_model->deleteDetail($finAssemblingId);
+			$this->trmts_model->deleteDetail($finMTSId);
 			
-			$this->validateData($dataH,$details);
+			//$this->validateData($dataH,$details);
 
-			$this->trassembling_model->update($dataH);
+			$this->trmts_model->update($dataH);
 
 			foreach($details as $dataD){
 				$dataD = (array)$dataD;
-				$dataD["fin_assembling_id"] = $finAssemblingId;
-				$this->trassemblingitems_model->insert($dataD);
+				$dataD["fin_mts_id"] = $finMTSId;
+				$this->trmtsitems_model->insert($dataD);
 			}
 			//$this->trassembling_model->posting($finFADisposalId);
 
@@ -246,7 +242,7 @@ class Mts extends MY_Controller{
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
-			$this->ajxResp["data"]["insert_id"] = $finAssemblingId;
+			$this->ajxResp["data"]["insert_id"] = $finMTSId;
 			$this->json_output();			
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
@@ -261,15 +257,17 @@ class Mts extends MY_Controller{
 
 	private function prepareData(){
 		$dataH = [
-			"fin_mts_id"=>$this->input->post["fin_mts_id"],
-			"fst_mts_no"=>$this->input->post["fst_mts_no"],
-			"fdt_mts_datetime"=>$this->input->post["fdt_mts_datetime"],
-			"fin_year"=>$this->input->post["fin_year"],
-			"fin_item_group_id"=>$this->input->post["fin_item_group_id"],
-			"fst_hist_type"=>$this->input->post["fst_hist_type"],
-			"fst_notes"=>$this->input->post["fst_notes"],
+			"fin_mts_id"=>$this->input->post("fin_mts_id"),
+			"fst_mts_no"=>$this->input->post("fst_mts_no"),
+			"fdt_mts_datetime"=>dBDateFormat($this->input->post("fdt_mts_datetime")),
+			"fin_year"=>$this->input->post("fin_year"),
+			"fin_item_group_id"=>$this->input->post("fin_item_group_id"),
+			"fst_history_type"=>$this->input->post("fst_history_type"),
+			"fst_notes"=>$this->input->post("fst_notes"),
+			"fst_active"=>"A"
 		];
 
+		//var_dump($dataH);
 		
 		$dataDetails = $this->input->post("details");
 		$dataDetails = json_decode($dataDetails);		
@@ -291,17 +289,10 @@ class Mts extends MY_Controller{
 				"fdb_qty_m10"=>$detail->fdb_qty_m10,
 				"fdb_qty_m11"=>$detail->fdb_qty_m11,
 				"fdb_qty_m12"=>$detail->fdb_qty_m12,
+				"fst_active"=>"A"
 			];
 			$details[]=(object) $tmp;
-		}
-
-		/** tip asembling total hpp header dihitung dari detail, kalau total 0 ambil dari input user 
-		 * deasembling header hiutng hpp pada saat barang keluar, hpp barang diambil dari perhitungan di web
-		*/
-		if ($dataH["fst_type"] == "ASSEMBLING" && $ttlHPPD > 0){
-			$dataH["fdc_hpp_header"] = $ttlHPPD;
-		}
-
+		}		
 		return[
 			"dataH"=>$dataH,
 			"details"=>$details,
@@ -313,18 +304,19 @@ class Mts extends MY_Controller{
 
 		if (!isset($dataH["fin_mts_id"])){
 			//Data Baru year dan item group harus unique
-			$ssql ="SELECT * FROM trmts where fin_year = ? and fin_item_group_id = ? and fst_active != 'A'";
+			$ssql ="SELECT * FROM trmts where fin_year = ? and fin_item_group_id = ? and fst_active != 'D'";
 			$qr = $this->db->query($ssql,[$dataH["fin_year"],$dataH["fin_item_group_id"]]);
 		}else{
-			$ssql ="SELECT * FROM trmts where fin_year = ? and fin_item_group_id = ? and fin_mts_id != ? and fst_active != 'A'";
+			$ssql ="SELECT * FROM trmts where fin_year = ? and fin_item_group_id = ? and fin_mts_id != ? and fst_active != 'D'";
 			$qr = $this->db->query($ssql,[$dataH["fin_year"],$dataH["fin_item_group_id"],$dataH["fin_mts_id"]]);
 		}
 		$rw = $qr->row();
 		if ($rw != null){
 			throw new CustomException("Tahun & Item Group Harus Unik",3003,"FAILED",["fin_year"=>$dataH["fin_year"],"fin_item_group_id"=>$dataH["fin_item_group_id"]]);
 		}
-		
-		$this->form_validation->set_rules($this->trassembling_model->getRules("ADD", 0));
+				
+
+		$this->form_validation->set_rules($this->trmts_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		$this->form_validation->set_data($dataH);
 		
@@ -335,9 +327,9 @@ class Mts extends MY_Controller{
 	}
 
 	public function fetch_data($finId){
-		$data = $this->trassembling_model->getDataById($finId);	
+		$data = $this->trmts_model->getDataById($finId);	
 		if ($data == null){
-			$resp = ["status"=>"FAILED","message"=>"DATA NOT FOUND !"];
+			$resp = ["status"=>"FAILED","message"=>"DATA NOT FOUND !","data"=>["header"=>null]];
 		}else{
 			$resp["status"] = "SUCCESS";
 			$resp["message"] = "";
@@ -351,15 +343,15 @@ class Mts extends MY_Controller{
 	public function delete($finId){
 
 		try{
-            $dataHOld = $this->trassembling_model->getDataHeader($finId);
+            $dataHOld = $this->trmts_model->getDataHeader($finId);
             if ($dataHOld == null){
                 show_404();
 			}
-			$resp = dateIsLock($dataHOld->fdt_assembling_datetime);
-			if($resp["status"] != "SUCCESS"){
-				throw new CustomException($resp["message"],3003,"FAILED",[]);
-			}
-            $this->trassembling_model->isEditable($finId);
+			//$resp = dateIsLock($dataHOld->fdt_assembling_datetime);
+			//if($resp["status"] != "SUCCESS"){
+			//	throw new CustomException($resp["message"],3003,"FAILED",[]);
+			//}
+            //$this->trassembling_model->isEditable($finId);
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
 			$this->ajxResp["message"] = $e->getMessage();
@@ -370,7 +362,7 @@ class Mts extends MY_Controller{
 
 		try{
 			$this->db->trans_start();			
-			$resp = $this->trassembling_model->delete($finId,true,null);	
+			$resp = $this->trmts_model->delete($finId,true,null);	
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "";

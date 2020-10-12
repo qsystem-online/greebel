@@ -45,6 +45,38 @@ class Trmag_model extends MY_Model {
 		return $max_tr_no;
 	}
 
+
+	public function GenerateProductionNo($trDate = null,$withWO=false) {
+		$trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
+		$tahun = date("Y/m", strtotime ($trDate));
+		$activeBranch = $this->aauth->get_active_branch();
+		$branchCode = "";
+		if($activeBranch){
+			$branchCode = $activeBranch->fst_branch_code;
+		}
+
+		if ($withWO){
+			$prefix = getDbConfig("magp_wo_prefix") . "/" . $branchCode ."/";
+		}else{			
+			$prefix = getDbConfig("magp_nowo_prefix") . "/" . $branchCode ."/";
+		}
+		
+		$query = $this->db->query("SELECT MAX(fst_mag_no) as max_id FROM trmag where fst_mag_no like '".$prefix.$tahun."%'");
+		$row = $query->row_array();
+
+		$max_id = $row['max_id']; 
+		
+		$max_id1 =(int) substr($max_id,strlen($max_id)-5);
+		
+		$fst_tr_no = $max_id1 +1;
+		
+		$max_tr_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_tr_no);
+		
+		return $max_tr_no;
+	}
+
+
+
 	public function GenerateConfirmNo($trDate = null) {
 		$trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
 		$tahun = date("Y/m", strtotime ($trDate));
@@ -70,9 +102,10 @@ class Trmag_model extends MY_Model {
 	public function getDataById($finMagId){
 		$this->load->model("msitemunitdetails_model");
 
-		$ssql = "SELECT a.*,b.fst_warehouse_name as fst_from_warehouse_name,c.fst_warehouse_name as fst_to_warehouse_name FROM trmag a 
+		$ssql = "SELECT a.*,b.fst_warehouse_name as fst_from_warehouse_name,c.fst_warehouse_name as fst_to_warehouse_name,d.fst_wo_no FROM trmag a 
 			INNER JOIN mswarehouse b on a.fin_from_warehouse_id = b.fin_warehouse_id
 			INNER JOIN mswarehouse c on a.fin_to_warehouse_id = c.fin_warehouse_id
+			LEFT JOIN trwo d on a.fin_wo_id = d.fin_wo_id 
 			where a.fin_mag_id = ? and a.fst_active != 'D'";
 
 		$qr = $this->db->query($ssql,[$finMagId]);
@@ -119,7 +152,7 @@ class Trmag_model extends MY_Model {
 
 	public function posting($finMagId){
 		if (getDbConfig("update_stock_on_delivery") == 0){
-			updateInventory($finMagId);
+			$this->updateInventory($finMagId);
 		}			
 	}
 
@@ -165,7 +198,7 @@ class Trmag_model extends MY_Model {
 			$data = [
 				"fin_warehouse_id"=>$dataH->fin_from_warehouse_id,
 				"fdt_trx_datetime"=>$dataH->fdt_mag_datetime,
-				"fst_trx_code"=>"MAGOT", //MAG_OUT
+				"fst_trx_code"=>"MAPOT", //MAG_PRODUKSI_OUT
 				"fin_trx_id"=>$dataH->fin_mag_id,
 				"fst_trx_no"=>$dataH->fst_mag_no,
 				"fin_trx_detail_id"=>$dataD->fin_rec_id,
@@ -187,7 +220,7 @@ class Trmag_model extends MY_Model {
 			$data = [
 				"fin_warehouse_id"=>$bufferWarehouse,
 				"fdt_trx_datetime"=>$dataH->fdt_mag_datetime,
-				"fst_trx_code"=>"MAGBI", //MAG_BUFFER_IN
+				"fst_trx_code"=>"MAPBI", //MAG_PRODUKSI_BUFFER_IN
 				"fin_trx_id"=>$dataH->fin_mag_id,
 				"fst_trx_no"=>$dataH->fst_mag_no,
 				"fin_trx_detail_id"=>$dataD->fin_rec_id,
@@ -222,8 +255,8 @@ class Trmag_model extends MY_Model {
 		}
 
 		//delete Inventory
-		$this->trinventory_model->deleteByCodeId("MAGOT",$finMagId);
-		$this->trinventory_model->deleteByCodeId("MAGBI",$finMagId);
+		$this->trinventory_model->deleteByCodeId("MAPOT",$finMagId);
+		$this->trinventory_model->deleteByCodeId("MAPBI",$finMagId);
 
 		//Delete itemdetails
 		$this->trinventory_model->deleteInsertSerial("MAG",$finMagId);
@@ -236,6 +269,15 @@ class Trmag_model extends MY_Model {
 	}
 
 	public function isEditable($finMagId){
+
+		//Kalau sudah ada di confirm tidak bisa di rubah
+
+		$ssql = "SELECT * FROM trmagconfirm where fin_mag_id = ? and fst_active != 'D'";
+		$qr = $this->db->query($ssql,[$finMagId]);
+		$rw = $qr->row();
+		if ($rw != null){
+			throw new CustomException(lang("MAG tidak dapat di rubah karena sudah dilakukan PAG"),3003,"FAILED",[]);
+		}
 		return [
 			"status"=>"SUCCESS"
 		];
