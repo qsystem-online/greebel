@@ -46,7 +46,29 @@
 					$sumPerItem = false;
 					$ttlItemIn =0 ;
 					$ttlItemOut =0 ;
+					$newItem = true;
 					foreach ($dataReport as $row){
+						if ( $itemId != $row->fin_item_id  && $itemId != ""){
+							//Cetak Total
+							if (in_array(7,$selectedCols) || in_array(8,$selectedCols) ){
+								echo "<tr>";
+								//echo "<td colspan='".totalSelectedCol(6,$selectedCols)."' style='text-align:right'>Total/Item:".totalSelectedCol(6,$selectedCols)."</td>";
+								echo "<td colspan='".totalSelectedCol(6,$selectedCols)."' style='text-align:right'>Total/Item </td>";
+								echoIfColSelected(6,$selectedCols,"<td class='col-6'></td>");
+								echoIfColSelected(7,$selectedCols,"<td class='col-7'>$ttlItemIn</td>");
+								echoIfColSelected(8,$selectedCols,"<td class='col-8'>$ttlItemOut</td>");
+								echoIfColSelected(9,$selectedCols,"<td class='col-9'></td>");
+								echoIfColSelected(10,$selectedCols,"<td class='col-10'></td>");								
+								echo "</tr>";
+							}
+							$ttlItemIn =0;
+							$ttlItemOut =0;	
+						}
+
+						$ttlItemIn += $row->fdb_qty_in;
+						$ttlItemOut += $row->fdb_qty_out;
+
+
 						echo "<tr>";
 						if ( $groupItemId != $row->fin_item_group_id){
 							$groupItemId = $row->fin_item_group_id;
@@ -55,19 +77,13 @@
 							echoIfColSelected(0,$selectedCols,"<td class='col-0'></td>");
 						}
 
-						$ttlItemIn += $row->fdb_qty_in;
-						$ttlItemOut += $row->fdb_qty_out;
-
-						if ( $itemId != $row->fin_item_id ){			
-							if ($itemId != ""){
-								$sumPerItem = true;
-							}
-							$itemId = $row->fin_item_id;	   
+						
+						if ( $itemId != $row->fin_item_id){
 							echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->fst_item_name</td>");
+							$itemId = $row->fin_item_id;
 						}else{
 							echoIfColSelected(1,$selectedCols,"<td class='col-0'></td>");
 						}
-
 
 						echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->fdt_trx_datetime</td>");
 						echoIfColSelected(3,$selectedCols,"<td class='col-3'>$row->fst_trx_code</td>");
@@ -78,23 +94,21 @@
 						echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->fdb_qty_out</td>");
 						echoIfColSelected(9,$selectedCols,"<td class='col-9'>$row->fdb_qty_balance_after</td>");
 						echoIfColSelected(10,$selectedCols,"<td class='col-10'>$row->fst_basic_unit</td>");											                                                                                                                                                                      
-						echo "</tr>";
+						echo "</tr>";	
+					}
 
-						if ($sumPerItem == true){
-							if (in_array(7,$selectedCols) || in_array(8,$selectedCols) ){
-								echo "<tr>";
-								echo "<td colspan='".totalSelectedCol(6,$selectedCols)."'>Total/Item:".totalSelectedCol(6,$selectedCols)."</td>";
-								echoIfColSelected(6,$selectedCols,"<td class='col-6'></td>");
-								echoIfColSelected(7,$selectedCols,"<td class='col-7'>$ttlItemIn</td>");
-								echoIfColSelected(8,$selectedCols,"<td class='col-8'>$ttlItemOut</td>");
-								echoIfColSelected(9,$selectedCols,"<td class='col-9'></td>");
-								echoIfColSelected(10,$selectedCols,"<td class='col-10'></td>");								
-								echo "</tr>";
-							}
-							$ttlItemIn =0;
-							$ttlItemOut =0;							
-						}
-					}  
+					if (in_array(7,$selectedCols) || in_array(8,$selectedCols) ){
+						echo "<tr>";
+						echo "<td colspan='".totalSelectedCol(6,$selectedCols)."' style='text-align:right'>Total/Item</td>";
+						echoIfColSelected(6,$selectedCols,"<td class='col-6'></td>");
+						echoIfColSelected(7,$selectedCols,"<td class='col-7'>$ttlItemIn</td>");
+						echoIfColSelected(8,$selectedCols,"<td class='col-8'>$ttlItemOut</td>");
+						echoIfColSelected(9,$selectedCols,"<td class='col-9'></td>");
+						echoIfColSelected(10,$selectedCols,"<td class='col-10'></td>");								
+						echo "</tr>";
+					}
+
+
 				?>
 			</tbody>
 		</table>

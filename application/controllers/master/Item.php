@@ -307,6 +307,7 @@ class Item extends MY_Controller
         $details = json_decode($details);
         foreach ($details as $item) {
             $data = [
+                "fin_rec_id"=>$item->fin_rec_id,
                 "fin_item_id" => $fin_item_id,
                 "fst_unit" => $item->fst_unit,
                 "fbl_is_basic_unit" => $item->fbl_is_basic_unit,
@@ -839,5 +840,7 @@ class Item extends MY_Controller
         $this->ajxResp["data"]["stock_list"] = $listStock;
         $this->json_output();
     }
+
+    
 
 }

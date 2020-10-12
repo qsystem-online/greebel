@@ -474,4 +474,21 @@ class Test extends CI_Controller {
 	}
 
 
+
+	public function testSize(){
+		//var_dump(PHP_OS);
+		//var_dump(FCPATH );
+		//die();
+		$path = FCPATH . ".." ."/eticketing/assets/app/tickets/image" ;
+		$path = str_replace("/",DIRECTORY_SEPARATOR,$path);
+		var_dump($path);		
+		//die();
+		$total_size = foldersize($path);//$this->dirSize($path);
+		var_dump(format_size($total_size,"MB"));		
+		//var_dump($total_size);		
+	}
+	
+	
+
+
 }

@@ -2,98 +2,98 @@
 <form id="rptItems" action="<?= site_url() ?>report/items/process" method="POST" enctype="multipart/form-data">
 	<div class="box-body">
 		<input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
-			<div class="form-group row">
-				<label for="select-GroupItemId" class="col-md-2 control-label"><?= lang("Group") ?></label>
-				<div class="col-md-4">
-					<select id="select-GroupItemId" class="form-control" name="fin_item_group_id"></select>
-					<div id="fin_item_group_id_err" class="text-danger"></div>
-				</div>
-				<label for="fin_item_type_id" class="col-md-2 control-label"><?= lang("Item Type") ?></label>
-				<div class="col-md-4">
-					<select class="form-control" id="fin_item_type_id" name="fin_item_type_id">
-						<option value='1'><?= lang("Raw Material") ?></option>
-						<option value='2'><?= lang("Semi Finished Material") ?></option>
-						<option value='3'><?= lang("Supporting Material") ?></option>
-						<option value='4'><?= lang("Ready Product") ?></option>
-						<option value='5'><?= lang("Logistic") ?></option>
-					</select>
-				</div>
+		<div class="form-group row">
+			<label for="select-GroupItemId" class="col-md-2 control-label"><?= lang("Group") ?></label>
+			<div class="col-md-4">
+				<select id="select-GroupItemId" class="form-control" name="fin_item_group_id"></select>
+				<div id="fin_item_group_id_err" class="text-danger"></div>
 			</div>
-
-			<div class="form-group row">
-				<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("From")?></label>
-				<div class="col-md-4">
-					<input type="text" class="form-control datepicker text-right" id="fdt_from" name="fdt_from" />
-					
-				</div>
-				<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("To")?></label>
-				<div class="col-md-4">
-				<input type="text" class="form-control datepicker text-right" id="fdt_to" name="fdt_to" />
-				</div>
+			<label for="fin_item_type_id" class="col-md-2 control-label"><?= lang("Item Type") ?></label>
+			<div class="col-md-4">
+				<select class="form-control" id="fin_item_type_id" name="fin_item_type_id">
+					<option value='1'><?= lang("Raw Material") ?></option>
+					<option value='2'><?= lang("Semi Finished Material") ?></option>
+					<option value='3'><?= lang("Supporting Material") ?></option>
+					<option value='4'><?= lang("Ready Product") ?></option>
+					<option value='5'><?= lang("Logistic") ?></option>
+				</select>
 			</div>
+		</div>
+
+		<div class="form-group row">
+			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("From")?></label>
+			<div class="col-md-4">
+				<input type="text" class="form-control datepicker text-right" id="fdt_from" name="fdt_from" />
+				
+			</div>
+			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("To")?></label>
+			<div class="col-md-4">
+			<input type="text" class="form-control datepicker text-right" id="fdt_to" name="fdt_to" />
+			</div>
+		</div>
 
 
-			<div class="form-group row">
-				<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
-				<div class="col-md-10">
-					<select class="form-control select2" id="fin_warehouse_id" name="fin_warehouse_id">
+		<div class="form-group row">
+			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
+			<div class="col-md-10">
+				<select class="form-control select2" id="fin_warehouse_id" name="fin_warehouse_id">
+				<?php
+					$listWarehouse = $this->mswarehouse_model->getALLWarehouseList();
+					foreach($listWarehouse as $wh){
+						echo "<option value='$wh->fin_warehouse_id'>$wh->fst_warehouse_name</option>";
+					}
+				?>
+				</select>
+			</div>
+		</div>			
+
+		<div class="form-group row">
+			<label for="select-ItemCode" class="col-md-2 control-label"><?= lang("Item Code") ?></label>
+			<div class="col-md-4">
+				<select id="select-ItemCode" class="form-control" name="fst_item_code">
+					<option value="0">--  <?= lang("select") ?>  --</option>
+				</select>
+				<div id="fst_item_code_err" class="text-danger"></div>
+			</div>
+			<label for="select-CodeItem" class="col-md-2 control-label"><?= lang("s/d") ?></label>
+			<div class="col-md-4">
+				<select id="select-ItemCode2" class="form-control" name="fst_item_code2">
+					<option value="0">--  <?= lang("select") ?>  --</option>
+				</select>
+				<div id="fst_item_code2_err" class="text-danger"></div>
+			</div>
+		</div>          
+	
+		<div class="form-group row">
+			<label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
+			<div class="col-sm-4">								
+				<label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Kartu Stock")?></label>
+				<label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Daftar Barang Detail Unit Satuan")?></label>
+				<label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Daftar Barang Detail BOM")?></label>
+				<label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Daftar Barang Detail Special Pricing")?></label>
+			</div>
+			<label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
+			<div class="container col-sm-4">
+				<select id="multiple-columns" multiple="multiple" name="selected_columns[]">
 					<?php
-						$listWarehouse = $this->mswarehouse_model->getWarehouseList();
-						foreach($listWarehouse as $wh){
-							echo "<option value='$wh->fin_warehouse_id'>$wh->fst_warehouse_name</option>";
-						}
+						foreach($layout_columns as $row) {
+							if ($row['layout']==1){
+								$caption = $row['label'];
+								$colNo = $row['value'];
+								echo "<option value='$colNo'>$caption</option>";
+							}
+						};
+
 					?>
-					</select>
-				</div>
-			</div>			
-
-			<div class="form-group row">
-				<label for="select-ItemCode" class="col-md-2 control-label"><?= lang("Item Code") ?></label>
-				<div class="col-md-4">
-					<select id="select-ItemCode" class="form-control" name="fst_item_code">
-						<option value="0">--  <?= lang("select") ?>  --</option>
-					</select>
-					<div id="fst_item_code_err" class="text-danger"></div>
-				</div>
-				<label for="select-CodeItem" class="col-md-2 control-label"><?= lang("s/d") ?></label>
-				<div class="col-md-4">
-					<select id="select-ItemCode2" class="form-control" name="fst_item_code2">
-						<option value="0">--  <?= lang("select") ?>  --</option>
-					</select>
-					<div id="fst_item_code2_err" class="text-danger"></div>
-				</div>
-			</div>          
-		
-			<div class="form-group row">
-				<label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
-				<div class="col-sm-4">								
-					<label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Kartu Stock")?></label>
-					<label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Daftar Barang Detail Unit Satuan")?></label>
-					<label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Daftar Barang Detail BOM")?></label>
-					<label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Daftar Barang Detail Special Pricing")?></label>
-				</div>
-				<label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
-				<div class="container col-sm-4">
-					<select id="multiple-columns" multiple="multiple" name="selected_columns[]">
-						<?php
-							foreach($layout_columns as $row) {
-								if ($row['layout']==1){
-									$caption = $row['label'];
-									$colNo = $row['value'];
-									echo "<option value='$colNo'>$caption</option>";
-								}
-							};
-
-						?>
-						<!-- <option value="php">PHP</option>
-						<option value="javascript">JavaScript</option>
-						<option value="java">Java</option>
-						<option value="sql">SQL</option>
-						<option value="jquery">Jquery</option>
-						<option value=".net">.Net</option> -->
-					</select>             
-				</div>
+					<!-- <option value="php">PHP</option>
+					<option value="javascript">JavaScript</option>
+					<option value="java">Java</option>
+					<option value="sql">SQL</option>
+					<option value="jquery">Jquery</option>
+					<option value=".net">.Net</option> -->
+				</select>             
 			</div>
+		</div>
 	</div>
 <?php
 	echo $mdlItemGroup;

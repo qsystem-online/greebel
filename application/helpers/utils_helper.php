@@ -437,3 +437,58 @@
 		}
 		return $ttl;
 	}
+
+	function foldersize($path) {
+		//$path = FCPATH . ".." ."/eticketing/assets/app/tickets/image" ;
+		//$path = str_replace("/",DIRECTORY_SEPARATOR,$path);
+		$total_size = 0;
+		$files = scandir($path);
+		$cleanPath = rtrim($path, '/'). '/';
+	
+		foreach($files as $t) {
+			if ($t<>"." && $t<>"..") {
+				$currentFile = $cleanPath . $t;
+				if (is_dir($currentFile)) {
+					$size = foldersize($currentFile);
+					$total_size += $size;
+				}
+				else {
+					$size = filesize($currentFile);
+					$total_size += $size;
+				}
+			}   
+		}	
+		return $total_size;
+	}
+
+	function format_size($size,$sizeType="") {
+		global $units;
+		$units = [
+			"B","KB","MB","GB","TB"
+		];
+
+		$mod = 1024;
+		if ($sizeType == ""){			
+			for ($i = 0; $size > $mod; $i++) {
+				$size /= $mod;
+			}	
+			$endIndex = strpos($size, ".") + 3;	
+			//return substr( $size, 0, $endIndex).' '.$units[$i];
+			return (double) substr($size, 0, $endIndex);
+		}else{
+			if ($sizeType == "B"){
+				return (double) $size;// .' bytes';
+			}
+			$idx = array_search($sizeType,$units);
+			for ($i = 0; $i < $idx; $i++) {
+				$size /= $mod;
+			}
+			
+			$endIndex = strpos($size, ".") + 3;	
+			//return substr( $size, 0, $endIndex).' '.$sizeType;
+			return (double) substr( $size, 0, $endIndex);
+
+		}
+
+		
+	}
