@@ -95,12 +95,12 @@
 					foreach ($dataReport as $row){
                         $nou++;
 						echo "<tr>";
-						$fdc_subttl = number_format ($row->fdc_subttl, 2, '.', ',');
-						$fdc_disc_amount = number_format ($row->fdc_disc_amount, 2, '.', ',');
-						$fdc_dpp_amount = number_format ($row->fdc_dpp_amount, 2, '.', ',');
-						$fdc_vat_amount = number_format ($row->fdc_vat_amount, 2, '.', ',');
-						$fdc_total = number_format ($row->fdc_total, 2, '.', ',');
-						$fdc_downpayment = number_format ($row->fdc_downpayment, 2, '.', ',');
+						$fdc_subttl = formatNumber ($row->fdc_subttl, 2);
+						$fdc_disc_amount = formatNumber ($row->fdc_disc_amount, 2);
+						$fdc_dpp_amount = formatNumber ($row->fdc_dpp_amount, 2);
+						$fdc_vat_amount = formatNumber ($row->fdc_vat_amount, 2);
+						$fdc_total = formatNumber ($row->fdc_total, 2);
+						$fdc_downpayment = formatNumber ($row->fdc_downpayment, 2);
                         echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");	   
                         echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->No_SO</td>");
                         echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->SO_Date</td>");
@@ -124,17 +124,17 @@
 
 					}
                     $subttlNew += $subttl;
-                    $subttlNew = number_format ($subttlNew, 2, '.', ',');
+                    $subttlNew = formatNumber ($subttlNew, 2);
                     $ttl_disc_amountNew += $ttl_disc_amount;
-					$ttl_disc_amountNew = number_format ($ttl_disc_amountNew, 2, '.', ',');
+					$ttl_disc_amountNew = formatNumber ($ttl_disc_amountNew, 2);
 					$ttl_dpp_amountNew += $ttl_dpp_amount;
-					$ttl_dpp_amountNew = number_format ($ttl_dpp_amountNew, 2, '.', ',');
+					$ttl_dpp_amountNew = formatNumber ($ttl_dpp_amountNew, 2);
 					$ttl_vat_amountNew += $ttl_vat_amount;
-                    $ttl_vat_amountNew = number_format ($ttl_vat_amountNew, 2, '.', ',');
+                    $ttl_vat_amountNew = formatNumber ($ttl_vat_amountNew, 2);
 					$ttl_totalNew += $ttl_total;
-					$ttl_totalNew = number_format ($ttl_totalNew, 2, '.', ',');
+					$ttl_totalNew = formatNumber ($ttl_totalNew, 2);
 					$ttl_downpaymentNew += $ttl_downpayment;
-					$ttl_downpaymentNew = number_format ($ttl_downpaymentNew, 2, '.', ',');   
+					$ttl_downpaymentNew = formatNumber ($ttl_downpaymentNew, 2);   
 
 					echo "<tr>";
 					echo "<td colspan='".totalSelectedCol(7,$selectedCols)."'style='text-align: right;font-weight: bold'>Total : </td>";

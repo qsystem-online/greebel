@@ -99,6 +99,9 @@
                     <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Penjualan Per-Item Per-Customer")?></label>
                     <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Penjualan Per-Item Per-Sales")?></label>
                     <label class="radio"><input type="radio" id="rpt_layout5" class="rpt_layout" name="rpt_layout" value="5" onclick="handleRadioClick(this);"><?=lang("Laporan Saldo Piutang Faktur Penjualan dan Umur Piutang")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout6" class="rpt_layout" name="rpt_layout" value="6" onclick="handleRadioClick(this);"><?=lang("Laporan Sales Per-Faktur Penjualan")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout7" class="rpt_layout" name="rpt_layout" value="7" onclick="handleRadioClick(this);"><?=lang("Laporan Jumlah Print Faktur Penjualan")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout8" class="rpt_layout" name="rpt_layout" value="8" onclick="handleRadioClick(this);"><?=lang("Laporan Faktur Penjualan dengan barang hadiah")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
