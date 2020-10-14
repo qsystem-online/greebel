@@ -17,7 +17,7 @@
 				border-color: rgb(0,0,255,0.25);
 			}		
 		</style>
-		<div>LAPORAN FAKTUR PENJUALAN RINGKAS</div>
+		<div>LAPORAN JUMLAH PRINT FAKTUR PENJUALAN RINGKAS</div>
 		<br>
 		<?php
 		$fin_warehouse_id = $this->input->post("fin_warehouse_id");
@@ -69,27 +69,19 @@
 						echoIfColSelected(6,$selectedCols,"<th class='col-6' style='width:100px'>Sales</th>");
 						echoIfColSelected(7,$selectedCols,"<th class='col-7' style='width:400px'>Pelanggan/Customer</th>");
 						echoIfColSelected(8,$selectedCols,"<th class='col-8' style='width:50px'>M.U</th>");
-						echoIfColSelected(9,$selectedCols,"<th class='col-9' style='width:150px'>Subtotal</th>");
-                        echoIfColSelected(10,$selectedCols,"<th class='col-10' style='width:100px'>Rate</th>");
-                        echoIfColSelected(11,$selectedCols,"<th class='col-11' style='width:150px'>Total IDR</th>");
+						echoIfColSelected(9,$selectedCols,"<th class='col-9' style='width:150px'>Total IDR</th>");
+                        echoIfColSelected(10,$selectedCols,"<th class='col-10' style='width:100px'>Entry By</th>");
+                        echoIfColSelected(11,$selectedCols,"<th class='col-11' style='width:150px'>Update By</th>");
 					?>
 				</tr>
 			</thead>
 			<tbody>
 				<?php
                     $nou = 0;
-					$subttl = 0;
-					$rate = 0;
-					$ttl_total = 0;
-					$ttl_downpayment = 0;
-					$subttlNew = 0;
-					$ttl_totalNew = 0;
 					//$numOfRecs = count($dataReport);
 					foreach ($dataReport as $row){
                         $nou++;
 						echo "<tr>";
-                        $fdc_subttl = number_format ($row->fdc_subttl, 2, '.', ',');
-                        $rate_idr = number_format ($row->Rate_Idr, 2, '.', ',');
 						$fdc_total = number_format ($row->fdc_total, 2, '.', ',');
                         echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");	   
                         echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->No_Inv</td>");
@@ -100,24 +92,11 @@
 						echoIfColSelected(6,$selectedCols,"<td class='col-6'>$row->Sales_Name</td>");
 						echoIfColSelected(7,$selectedCols,"<td class='col-7'>$row->Relation_Name</td>");
 						echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->Mata_Uang</td>");
-                        echoIfColSelected(9,$selectedCols,"<td class='col-9'style='text-align: right'>$fdc_subttl</td>");
-                        echoIfColSelected(10,$selectedCols,"<td class='col-10'style='text-align: right'>$rate_idr</td>");
-                        echoIfColSelected(11,$selectedCols,"<td class='col-11'style='text-align: right'>$fdc_total</td>");										                                                                                                                                                                      
+                        echoIfColSelected(9,$selectedCols,"<td class='col-9'style='text-align: right'>$fdc_total</td>");
+                        echoIfColSelected(10,$selectedCols,"<td class='col-10'style='text-align: right'>$row->Entry_BY</td>");
+                        echoIfColSelected(11,$selectedCols,"<td class='col-11'style='text-align: right'>$row->Update_BY</td>");										                                                                                                                                                                      
                         echo "</tr>";
-                        $subttl += $row->fdc_subttl;
-						$ttl_total += $row->fdc_total;
 					}
-                    $subttlNew += $subttl;
-                    $subttlNew = number_format ($subttlNew, 2, '.', ',');
-					$ttl_totalNew += $ttl_total;
-					$ttl_totalNew = number_format ($ttl_totalNew, 2, '.', ','); 
-
-					echo "<tr>";
-					echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Total : </td>";
-					echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$subttlNew</td>");
-					echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: right'></td>");
-					echoIfColSelected(11,$selectedCols,"<td class='col-11' style='font-weight: bold;text-align: right'>$ttl_totalNew</td>");									
-					echo "</tr>";
 				?>
 			</tbody>
 		</table>

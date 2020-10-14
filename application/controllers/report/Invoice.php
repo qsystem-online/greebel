@@ -71,6 +71,44 @@ class Invoice extends MY_Controller
 			['layout' => 5, 'label'=>'Pembayaran', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
 			['layout' => 5, 'label'=>'Nilai Netto', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
 			['layout' => 5, 'label'=>'Menunggak(hari)', 'value'=>'13', 'selected'=>false,'sum_total'=>true],
+			['layout' => 6, 'label'=>'Sales', 'value'=>'0', 'selected'=>true,'sum_total'=>false],
+			['layout' => 6, 'label'=>'No.', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 6, 'label'=>'No.Faktur', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 6, 'label'=>'Tgl.Faktur', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 6, 'label'=>'Jatuh Tempo', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 6, 'label'=>'No.S/O', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 6, 'label'=>'GUD', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 6, 'label'=>'Pelanggan/Customer', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 6, 'label'=>'Total IDR', 'value'=>'8', 'selected'=>false,'sum_total'=>true],
+			['layout' => 7, 'label'=>'No.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 7, 'label'=>'No.Faktur', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 7, 'label'=>'Tgl.Faktur', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 7, 'label'=>'Jatuh Tempo', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 7, 'label'=>'No.S/O', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 7, 'label'=>'GUD', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 7, 'label'=>'Sales', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 7, 'label'=>'Pelanggan/Customer', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 7, 'label'=>'M.U', 'value'=>'8', 'selected'=>false,'sum_total'=>true],
+			['layout' => 7, 'label'=>'Total IDR', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
+			['layout' => 7, 'label'=>'Entry By', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
+			['layout' => 7, 'label'=>'Update By', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
+
+			['layout' => 8, 'label'=>'Pelanggan/Customer', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 8, 'label'=>'No.Faktur', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 8, 'label'=>'Tgl.Faktur', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 8, 'label'=>'TOP', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 8, 'label'=>'Jatuh Tempo', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 8, 'label'=>'No.S/O', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 8, 'label'=>'GUD', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 8, 'label'=>'Sales', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 8, 'label'=>'Memo', 'value'=>'8', 'selected'=>false,'sum_total'=>true],
+			['layout' => 8, 'label'=>'Kode Barang', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
+			['layout' => 8, 'label'=>'Nama Barang', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
+			['layout' => 8, 'label'=>'Qty', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
+			['layout' => 8, 'label'=>'Unit', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
+			['layout' => 8, 'label'=>'Disc%', 'value'=>'13', 'selected'=>false,'sum_total'=>true],
+			['layout' => 8, 'label'=>'Harga', 'value'=>'14', 'selected'=>false,'sum_total'=>true],
+			['layout' => 8, 'label'=>'Jumlah', 'value'=>'15', 'selected'=>false,'sum_total'=>true],
 		];
 
 	}
@@ -190,6 +228,15 @@ class Invoice extends MY_Controller
 				break;
 			case "5":
 				$this->parser->parse('reports/invoice/layout5', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+				break;
+			case "6":
+				$this->parser->parse('reports/invoice/layout6', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+				break;
+			case "7":
+				$this->parser->parse('reports/invoice/layout7', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+				break;
+			case "8":
+				$this->parser->parse('reports/invoice/layout8', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
 				break;
 			default:
 				$this->parser->parse('reports/invoice/layout1', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);

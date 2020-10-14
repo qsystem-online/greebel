@@ -71,6 +71,9 @@
                         echo "<tr>";
                         if ($sj_type == "ASSEMBLING_OUT"){
                             $row->Relation_Name = "ASSEMBLING_OUT";
+						}
+						if ($row->Print_No == "" || $row->Print_No == null ){
+                            $row->Print_No = "0";
                         }
 						echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");
 						echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->No_SJ</td>");	   

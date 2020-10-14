@@ -916,7 +916,6 @@ class Trsalesorder_model extends MY_Model {
         and fst_active='A'" ;
 
         $qr = $this->db->query($ssql,[$finSalesOrderId]);
-
         $rw = $qr->row();
         if ($rw == false){
             $this->posting($finSalesOrderId);
