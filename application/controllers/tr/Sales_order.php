@@ -622,6 +622,7 @@ class Sales_order extends MY_Controller{
 					$dataD->fdc_price = 1;
 					$dataD->fst_disc_item = 100;
 					$dataD->fdc_disc_amount = 1;
+					$dataD->fdc_disc_amount_per_item = 1;
 					$dataD->fst_memo_item = "";
 					$dataD->total = 0;
 					$dataD->real_stock = 0;
@@ -644,6 +645,7 @@ class Sales_order extends MY_Controller{
 					$dataD->fdc_price = 1;
 					$dataD->fst_disc_item = 100;
 					$dataD->fdc_disc_amount = 1;
+					$dataD->fdc_disc_amount_per_item = 1;
 					$dataD->fst_memo_item = "";
 					$dataD->total = 0;
 					$dataD->real_stock = 0;
@@ -668,9 +670,10 @@ class Sales_order extends MY_Controller{
 				}
 			}
 
-			//Insert Data Detail
+			//Insert Data Detail			
 			foreach ($details as $item) {
 				//$dataDetail = (array) $item;
+
 				$dataDetail =[
 					"fin_salesorder_id"=>$insertId,
 					"fin_item_id"=>$item->fin_item_id,
