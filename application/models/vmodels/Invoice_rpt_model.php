@@ -241,25 +241,26 @@ class Invoice_rpt_model extends CI_Model {
                 users f ON b.fin_sales_id = f.fin_user_id $swhere ORDER BY b.fst_inv_no";
                 break;
             case "8":
-                $ssql = "SELECT a.fin_inv_id,a.fst_inv_no as No_Inv, a.fdt_inv_datetime as Inv_Date,a.fin_promo_id as No_SO, a.fin_terms_payment as TOP,CAST(DATE_ADD(a.fdt_inv_datetime, INTERVAL a.fin_terms_payment DAY) as DATE) as Jt_Date,
+                $ssql = "SELECT a.fin_inv_id,a.fst_inv_no as No_Inv, a.fdt_inv_datetime as Inv_Date,g.fst_salesorder_no as No_SO, a.fin_terms_payment as TOP,CAST(DATE_ADD(a.fdt_inv_datetime, INTERVAL a.fin_terms_payment DAY) as DATE) as Jt_Date,
                 a.fst_inv_memo as Inv_Memo,a.fdc_dpp_amount as Dpp,a.fdc_ppn_amount as Ppn,a.fdc_subttl as fdc_subttl,a.fdc_total as fdc_total,a.fdc_disc_amount as Disc_Total,a.fst_curr_code as Mata_Uang,a.fdc_exchange_rate_idr as Rate_Idr,
                 a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,a.fin_relation_id as fin_relation_id,c.fst_relation_name as Relation_Name, a.fin_sales_id as Sales_Id, e.fst_username as Sales_Name,
                 b.fin_rec_id as Rec_Id, b.fin_item_id as Item_Id, f.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,b.fst_memo_item as Memo_Item,
                 b.fdb_qty as Qty, b.fst_unit as Unit, b.fdc_price as Price,(b.fdc_price - b.fdc_disc_amount_per_item) as Price_Netto, b.fst_disc_item as Disc_Item, b.fdc_disc_amount_per_item as Disc_Amount,
                 (b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) as Amount  
-                FROM (SELECT a.*,b.fin_promo_id FROM trinvoice a LEFT OUTER JOIN trsalesorderdetails b ON a.fin_salesorder_id = b.fin_salesorder_id WHERE a.fst_active !='D' and b.fin_promo_id = 0) a LEFT OUTER JOIN trinvoiceitems b 
-                on a.fin_inv_id = b.fin_inv_id LEFT OUTER JOIN msrelations c
-                on a.fin_relation_id = c.fin_relation_id LEFT OUTER JOIN mswarehouse d
-                on a.fin_warehouse_id = d.fin_warehouse_id LEFT OUTER JOIN users e
-                on a.fin_sales_id = e.fin_user_id LEFT OUTER JOIN msitems f
-                on b.fin_item_id = f.fin_item_id " . $swhere . $sorderby;
+                FROM (SELECT a.*,b.fin_promo_id FROM trinvoice a LEFT OUTER JOIN trinvoiceitems b ON a.fin_inv_id = b.fin_inv_id WHERE a.fst_active !='D' and b.fin_promo_id > 0) a LEFT OUTER JOIN 
+                trinvoiceitems b on a.fin_inv_id = b.fin_inv_id LEFT OUTER JOIN 
+                msrelations c on a.fin_relation_id = c.fin_relation_id LEFT OUTER JOIN 
+                mswarehouse d on a.fin_warehouse_id = d.fin_warehouse_id LEFT OUTER JOIN 
+                users e on a.fin_sales_id = e.fin_user_id LEFT OUTER JOIN 
+                msitems f on b.fin_item_id = f.fin_item_id LEFT OUTER JOIN 
+                trsalesorder g on a.fin_salesorder_id = g.fin_salesorder_id $swhere ORDER BY a.fst_inv_no";
                 break;
             default:
                 break;
         }
         $query = $this->db->query($ssql);
-        echo $this->db->last_query();
-        die();
+        //echo $this->db->last_query();
+        //die();
         return $query->result();
     }
 
