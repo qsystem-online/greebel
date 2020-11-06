@@ -55,8 +55,9 @@
 		<div>Gudang : <?= $name_wareHouse ?></div>
 		<div>Tgl Faktur: <?= $this->input->post("fdt_inv_datetime") ?>  s/d <?= $this->input->post("fdt_inv_datetime2") ?></div> 
         <div>Customer: <?= $name_relations ?> </div>
-        <div>Sales: <?= $name_sales ?></div>                            
-		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:2300px">      
+        <div>Sales: <?= $name_sales ?></div>
+		<div>Mata Uang : <?= $this->input->post("fst_curr_code") ?></div>                              
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:2400px">      
 			<thead>
 				<tr style="background-color:RoyalBlue;color:white">
 					<?php
@@ -75,13 +76,15 @@
                         echoIfColSelected(12,$selectedCols,"<th class='col-12' style='width:50px'>Unit</th>");
                         echoIfColSelected(13,$selectedCols,"<th class='col-13' style='width:50px'>Disc%</th>");
                         echoIfColSelected(14,$selectedCols,"<th class='col-14' style='width:100px'>Harga</th>");
-                        echoIfColSelected(15,$selectedCols,"<th class='col-15' style='width:150px'>Jumlah</th>");
+						echoIfColSelected(15,$selectedCols,"<th class='col-15' style='width:150px'>Jumlah</th>");
+						echoIfColSelected(16,$selectedCols,"<th class='col-16' style='width:100px'>Voucher</th>");
 					?>
 				</tr>
 			</thead>
 			<tbody>
 				<?php
 					$idInv = "";
+					$id_Voucher = "";
 					$subAmount = 0;
 					$subDiscount = 0;
 					$totalDiscount = 0;
@@ -91,6 +94,8 @@
 					$Dpp = 0;
 					$Ppn = 0;
 					$fdc_total = 0;
+					$total_Voucher = 0;
+					$total_VoucherNew = 0;
 					foreach ($dataReport as $row){
 						echo "<tr>";
 						if ( $idInv != $row->fin_inv_id ){
@@ -135,7 +140,7 @@
                             echoIfColSelected(5,$selectedCols,"<td class='col-5'>$row->No_SO</td>");
                             echoIfColSelected(6,$selectedCols,"<td class='col-6'>$row->Warehouse</td>");
                             echoIfColSelected(7,$selectedCols,"<td class='col-7'>$row->Sales_Name</td>");
-                            echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->Inv_Memo</td>");
+							echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->Inv_Memo</td>");
 						}else{
                             echoIfColSelected(0,$selectedCols,"<td class='col-0'></td>");
                             echoIfColSelected(1,$selectedCols,"<td class='col-1'></td>");
@@ -149,17 +154,30 @@
 							
                         }
                         $Price_Netto = formatNumber ($row->Price_Netto,2);
-                        $Amount = formatNumber ($row->Amount,2);
+						$Amount = formatNumber ($row->Amount,2);
+						if ($row->Voucher_Amount == "" | $row->Voucher_Amount == null){
+							$row->Voucher_Amount = 0;
+						}
+						$Voucher_Amount = formatNumber ($row->Voucher_Amount,2);
 						echoIfColSelected(9,$selectedCols,"<td class='col-9'>$row->Item_Code</td>");
 						echoIfColSelected(10,$selectedCols,"<td class='col-10'>$row->Item_Name</td>");
 						echoIfColSelected(11,$selectedCols,"<td class='col-11'>$row->Qty</td>");
                         echoIfColSelected(12,$selectedCols,"<td class='col-12'>$row->Unit</td>");
                         echoIfColSelected(13,$selectedCols,"<td class='col-13'>$row->Disc_Item</td>");
                         echoIfColSelected(14,$selectedCols,"<td class='col-14' style='text-align: right'>$Price_Netto</td>");
-                        echoIfColSelected(15,$selectedCols,"<td class='col-15' style='text-align: right'>$Amount</td>");											                                                                                                                                                                      
+						echoIfColSelected(15,$selectedCols,"<td class='col-15' style='text-align: right'>$Amount</td>");
+						if ($id_Voucher != $row->fin_transaction_id){
+							$id_Voucher = $row->fin_transaction_id;
+							echoIfColSelected(16,$selectedCols,"<td class='col-16' style='text-align: right'>$Voucher_Amount</td>");
+						}else{
+							echoIfColSelected(16,$selectedCols,"<td class='col-16'></td>");
+							$row->Voucher_Amount = 0;
+						}											                                                                                                                                                                      
                         echo "</tr>";
                         $subAmount += $row->Amount;
 						$subAmountNew = formatNumber ($subAmount,2);
+						$total_Voucher += $row->Voucher_Amount;
+						$total_VoucherNew = formatNumber ($total_Voucher,2);
 						
 						$totalDiscount += $subDiscount;
 						$totalAmount += $subAmount;
@@ -198,8 +216,9 @@
 
                     echo "<tr>";
                     echo "<td colspan='".totalSelectedCol(15,$selectedCols)."'style='text-align: right;font-weight: bold'>Total Keseluruhan : </td>";
-                    echoIfColSelected(15,$selectedCols,"<td class='col-15'style='font-weight: bold;text-align: right'>$newtotalAmount</td>");							
-                    echo "</tr>";  
+					echoIfColSelected(15,$selectedCols,"<td class='col-15'style='font-weight: bold;text-align: right'>$newtotalAmount</td>");
+					echoIfColSelected(16,$selectedCols,"<td class='col-16'style='font-weight: bold;text-align: right'>$total_VoucherNew</td>");							
+					echo "</tr>";
 				?>
 			</tbody>
 		</table>

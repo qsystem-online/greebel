@@ -15,6 +15,7 @@ class Invoice extends MY_Controller
 		$this->load->model('users_model');
 		$this->load->model('mswarehouse_model');
 		$this->load->model('msrelations_model');
+		$this->load->model('mscurrencies_model');
 
 		$this->layout_columns = [
 			['layout' => 1, 'label'=>'Pelanggan/Customer', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
@@ -92,7 +93,6 @@ class Invoice extends MY_Controller
 			['layout' => 7, 'label'=>'Total IDR', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
 			['layout' => 7, 'label'=>'Entry By', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
 			['layout' => 7, 'label'=>'Update By', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
-
 			['layout' => 8, 'label'=>'Pelanggan/Customer', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
 			['layout' => 8, 'label'=>'No.Faktur', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
 			['layout' => 8, 'label'=>'Tgl.Faktur', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
@@ -109,6 +109,7 @@ class Invoice extends MY_Controller
 			['layout' => 8, 'label'=>'Disc%', 'value'=>'13', 'selected'=>false,'sum_total'=>true],
 			['layout' => 8, 'label'=>'Harga', 'value'=>'14', 'selected'=>false,'sum_total'=>true],
 			['layout' => 8, 'label'=>'Jumlah', 'value'=>'15', 'selected'=>false,'sum_total'=>true],
+			['layout' => 8, 'label'=>'Voucher', 'value'=>'16', 'selected'=>false,'sum_total'=>true],
 		];
 
 	}
@@ -128,6 +129,7 @@ class Invoice extends MY_Controller
 		$this->data["fin_branch_id"] = $fin_branch_id;
 		$this->data["mystatus"]="OK";
 		$this->data["layout_columns"] = $this->layout_columns;
+		$this->data["default_currency"] = getDefaultCurrency();
 		
 
 		$side_filter = $this->parser->parse('reports/invoice/form',$this->data, true);
@@ -186,6 +188,7 @@ class Invoice extends MY_Controller
 			"fin_relation_id" => $this->input->post("fin_relation_id"),
 			"fin_sales_id" => $this->input->post("fin_sales_id"),
 			"fin_item_id" => $this->input->post("fin_item_id"),
+			"fst_curr_code" => $this->input->post("fst_curr_code"),
 			"fdt_inv_datetime" => $this->input->post("fdt_inv_datetime"),
 			"fdt_inv_datetime2" => $this->input->post("fdt_inv_datetime2"),
 			"fbl_is_vat_include" => $this->input->post("fbl_is_vat_include"),

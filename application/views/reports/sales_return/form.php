@@ -10,7 +10,7 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptInvoice" action="<?= site_url() ?>report/invoice/process" method="POST" enctype="multipart/form-data">
+<form id="rptSalesReturn" action="<?= site_url() ?>report/sales_return/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
@@ -49,13 +49,7 @@
                     <div id="fin_warehouse_id_err" class="text-danger"></div>
                 </div>
             </div>
-            <div class="form-group row">						
-                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?></label>
-                <div class="col-sm-4">
-                    <select id="select-relations" class="form-control non-editable" name="fin_relation_id">
-                    </select>
-                    <div id="fin_relation_id_err" class="text-danger"></div>
-                </div>            
+            <div class="form-group row">						          
                 <label for="select-sales" class="col-sm-2 control-label"><?=lang("Sales")?></label>
                 <div class="col-sm-4">
                     <select id="select-sales" class="form-control" name="fin_sales_id">
@@ -68,13 +62,6 @@
                         ?>
                     </select>
                     <div id="fin_sales_id_err" class="text-danger"></div>
-                </div>
-            </div>
-            <div class="form-group row">						
-                <label for="select-items" class="col-sm-2 control-label"><?=lang("Item")?></label>
-                <div class="col-sm-4">
-                    <select id="select-items" class="form-control non-editable" name="fin_item_id"></select>
-                    <div id="fin_item_id_err" class="text-danger"></div>
                 </div>
                 <label for="fst_curr_code" class="col-sm-2 control-label"><?=lang("Mata Uang")?></label>
                 <div class="col-sm-4">
@@ -91,43 +78,46 @@
                         <option value="<?=$default_currency['CurrCode']?>"><?=$default_currency['CurrName']?></option>
                     </select>
                     <div id="fst_curr_code_err" class="text-danger"></div>
-                </div>            
+                </div>   
             </div>
             <div class="form-group row">
-                <label for="fdt_inv_datetime" class="col-sm-2 control-label"><?=lang("Invoice Date")?> *</label>
+                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?></label>
+                <div class="col-sm-10">
+                    <select id="select-relations" class="form-control non-editable" name="fin_relation_id">
+                    </select>
+                    <div id="fin_relation_id_err" class="text-danger"></div>
+                </div>  						         
+            </div>
+            <div class="form-group row">
+                <label for="fdt_salesreturn_datetime" class="col-sm-2 control-label"><?=lang("Retur Date")?> *</label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_inv_datetime" name="fdt_inv_datetime"/>
+                        <input type="text" class="form-control datepicker" id="fdt_salesreturn_datetime" name="fdt_salesreturn_datetime"/>
                     </div>
-                    <div id="fdt_inv_datetime_err" class="text-danger"></div>
+                    <div id="fdt_salesreturn_datetime_err" class="text-danger"></div>
                     <!-- /.input group -->
                 </div>
-                <label for="fdt_inv_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
+                <label for="fdt_salesreturn_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_inv_datetime2" name="fdt_inv_datetime2"/>
+                        <input type="text" class="form-control datepicker" id="fdt_salesreturn_datetime2" name="fdt_salesreturn_datetime2"/>
                     </div>
-                    <div id="fdt_inv_datetime2_err" class="text-danger"></div>
+                    <div id="fdt_salesreturn_datetime2_err" class="text-danger"></div>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
             <div class="form-group row">
                 <label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
                 <div class="col-sm-4">								
-                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Faktur Penjualan Detail")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Faktur Penjualan Ringkas")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Penjualan Per-Item Per-Customer")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Penjualan Per-Item Per-Sales")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout5" class="rpt_layout" name="rpt_layout" value="5" onclick="handleRadioClick(this);"><?=lang("Laporan Saldo Piutang Faktur Penjualan dan Umur Piutang")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout6" class="rpt_layout" name="rpt_layout" value="6" onclick="handleRadioClick(this);"><?=lang("Laporan Sales Per-Faktur Penjualan")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout7" class="rpt_layout" name="rpt_layout" value="7" onclick="handleRadioClick(this);"><?=lang("Laporan Jumlah Print Faktur Penjualan")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout8" class="rpt_layout" name="rpt_layout" value="8" onclick="handleRadioClick(this);"><?=lang("Laporan Faktur Penjualan dengan barang hadiah")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Retur Penjualan Detail")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Retur Penjualan Ringkas")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Penerimaan Retur Penjualan")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -142,12 +132,6 @@
                             };
 
                         ?>
-                        <!-- <option value="php">PHP</option>
-                        <option value="javascript">JavaScript</option>
-                        <option value="java">Java</option>
-                        <option value="sql">SQL</option>
-                        <option value="jquery">Jquery</option>
-                        <option value=".net">.Net</option> -->
                     </select>             
                 </div>
             </div>
@@ -187,17 +171,18 @@
         $('#multiple-columns').multiselect('selectAll',false);
 		$('#multiple-columns').multiselect('updateButtonText');
 
-        if (myRadio.value == "3"){
+        if (myRadio.value == "2"){
             $('#select-sales').val("0");
+            $('#select-warehouse').val("0");
             //$('#select-sales').hide();
             //$('#select-sales').prop('disabled',true);
         //}else{
             //$('#select-sales').show();
         }
-        if (myRadio.value == "4"){
-            $('#select-relations').empty();
-            $('#select-relations').append('<option value="0">All</option>');
-        }
+        //if (myRadio.value == "4"){
+        //    $('#select-relations').empty();
+        //    $('#select-relations').append('<option value="0">All</option>');
+        //}
         // for(var i=0; i<newArray.length; i++){
         //     alert(newArray[i].label);
         //     console.log(newArray[i].label);
@@ -240,80 +225,13 @@
 			// $("#select-warehouse").val(selectedCustomer.fin_warehouse_id).trigger("change.select2");
 			//current_pricing_group_id = selectedCustomer.current_pricing_group_id;			
         });
-        
-        /*$("#select-items").select2({
-			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>report/invoice/get_data_items',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data){
-					items = [];
-					data = data.data;
-                    items.push({
-							"id" : "0",
-							"text" : "All",					
-						});
-					$.each(data,function(index,value){
-						items.push({
-							"id" : value.fin_item_id,
-							"text" : value.fst_item_name,					
-						});
-					});					
-					return {
-						results: items
-					};
-				},
-				cache: true,
-			}
-		}).on('select2:select',function(e){
-
-		});*/
-
-        $("#select-items").select2({
-            minimumInputLength: 2,
-            placeholder:{
-                id: '0', // the value of the option
-                text: 'All'
-            },
-            allowClear: true,
-            ajax:{
-                delay: 250,
-                url: "<?=site_url()?>/report/invoice/ajxListItem",
-                dataType: 'json',
-                processResults: function (result) {
-                    if (result.status == "SUCCESS"){
-                        var data = $.map(result.data, function (obj) {
-                            obj.id = obj.fin_item_id,  
-                            obj.text = obj.fst_item_code + " - "  + obj.fst_item_name;
-                            //obj.fbl_is_batch_number
-                            //obj.fbl_is_serial_number
-                            return obj;
-                        });
-
-                        return {
-                            results: data
-                        };
-                    }else{
-                        return {
-                            result:[]
-                        }
-                    }
-                }
-            }
-        }).on('select2:select',function(e){
-            var data = e.params.data;
-            selectedItem = data;
-            //$("#fstUnit").empty().trigger("change.select2");
-            //showHideBatchSerial();
-        });
 
         $("#btnProcess").click(function(event) {
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#rptInvoice").serializeArray();
-            url = "<?= site_url() ?>report/invoice/process";
+            data = $("#rptSalesReturn").serializeArray();
+            url = "<?= site_url() ?>report/sales_return/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -356,17 +274,12 @@
                         //Clear all previous error
                         $(".text-danger").html("");
                         //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/invoice/generatereport";
-                        //alert(url);
-                        //$("iframe").attr("src",url);
-                        $("#rptInvoice").attr('action', url);
-                        $("#rptInvoice").attr('target', 'rpt_iframe');
-                        $("#rptInvoice").submit();
+                        url = "<?= site_url() ?>report/sales_return/generatereport";
+
+                        $("#rptSalesReturn").attr('action', url);
+                        $("#rptSalesReturn").attr('target', 'rpt_iframe');
+                        $("#rptSalesReturn").submit();
                         $("a#toggle-window").click();
-                        // Change to Edit mode
-                        // $("#frm-mode").val("EDIT"); //ADD|EDIT
-                        // $('#fst_branch_name').prop('readonly', true);
-                        // updateIFrame(resp.data);
 
                     }
                 },
@@ -396,7 +309,7 @@
             var a = document.createElement('a');
             a.href = data_type + ', ' + table_html;
 			//a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
-			a.download = 'Laporan_Faktur_Penjualan' + '.xls';
+			a.download = 'Laporan_Retur_Penjualan' + '.xls';
 			a.click();                        			
 			return;
 		});      
