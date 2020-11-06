@@ -12,14 +12,17 @@ class Invoice_rpt_model extends CI_Model {
         $relation_id = "";
         $sales_id = "";
         $item_id = "";
+        $curr_code = "";
         $start_date = "";
         $end_date = "";
         $fbl_is_vat_include = "";
+
         if (isset($data['fin_branch_id'])) { $branch_id = $data['fin_branch_id'];}
         if (isset($data['fin_warehouse_id'])) { $warehouse_id = $data['fin_warehouse_id'];}
         if (isset($data['fin_relation_id'])) { $relation_id = $data['fin_relation_id'];}
         if (isset($data['fin_sales_id'])) { $sales_id = $data['fin_sales_id'];}
         if (isset($data['fin_item_id'])) { $item_id = $data['fin_item_id'];}
+        if (isset($data['fst_curr_code'])) { $curr_code = $data['fst_curr_code'];}
         if (isset($data['fdt_inv_datetime'])) { $start_date = $data['fdt_inv_datetime'];}
         if (isset($data['fdt_inv_datetime2'])) { $end_date = $data['fdt_inv_datetime2'];}
         if (isset($data['fbl_is_vat_include'])) { $fbl_is_vat_include = $data['fbl_is_vat_include'];}
@@ -45,6 +48,9 @@ class Invoice_rpt_model extends CI_Model {
             if ($item_id > "0") {
                 $swhere .= " and b.fin_item_id = " . $this->db->escape($item_id);
             }
+            if ($curr_code != "") {
+                $swhere .= " and a.fst_curr_code = " . $this->db->escape($curr_code);
+            }
             if (isset($start_date)) {
                 $swhere .= " and a.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
             }
@@ -68,6 +74,9 @@ class Invoice_rpt_model extends CI_Model {
             if ($sales_id > "0") {
                 $swhere .= " and a.fin_sales_id = " . $this->db->escape($sales_id);
             }
+            if ($curr_code != "") {
+                $swhere .= " and a.fst_curr_code = " . $this->db->escape($curr_code);
+            }
             if (isset($start_date)) {
                 $swhere .= " and a.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
             }
@@ -87,6 +96,9 @@ class Invoice_rpt_model extends CI_Model {
             }
             if ($item_id > "0") {
                 $swhere .= " and c.fin_item_id = " . $this->db->escape($item_id);
+            }
+            if ($curr_code != "") {
+                $swhere .= " and b.fst_curr_code = " . $this->db->escape($curr_code);
             }
             if (isset($start_date)) {
                 $swhere .= " and b.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
@@ -111,6 +123,9 @@ class Invoice_rpt_model extends CI_Model {
             if ($item_id > "0") {
                 $swhere .= " and c.fin_item_id = " . $this->db->escape($item_id);
             }
+            if ($curr_code != "") {
+                $swhere .= " and b.fst_curr_code = " . $this->db->escape($curr_code);
+            }
             if (isset($start_date)) {
                 $swhere .= " and b.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
             }
@@ -132,6 +147,9 @@ class Invoice_rpt_model extends CI_Model {
             if ($sales_id > "0") {
                 $swhere .= " and b.fin_sales_id = " . $this->db->escape($sales_id);
             }
+            if ($curr_code != "") {
+                $swhere .= " and b.fst_curr_code = " . $this->db->escape($curr_code);
+            }
             if (isset($start_date)) {
                 $swhere .= " and b.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
             }
@@ -150,6 +168,9 @@ class Invoice_rpt_model extends CI_Model {
             if ($relation_id > "0") {
                 $swhere .= " and b.fin_relation_id = " . $this->db->escape($relation_id);
             }
+            if ($curr_code != "") {
+                $swhere .= " and b.fst_curr_code = " . $this->db->escape($curr_code);
+            }
             if (isset($start_date)) {
                 $swhere .= " and b.fdt_inv_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "'";            
             }
@@ -162,11 +183,11 @@ class Invoice_rpt_model extends CI_Model {
         }
 
         if ($swhere != "") {
-            $swhere = " where " . substr($swhere, 5);
+            $swhere = " WHERE " . substr($swhere, 5);
         }
 
         if ($sorder_by != "") {
-            $sorderby = " order by " .$sorder_by;
+            $sorderby = " ORDER BY " .$sorder_by;
         }
         
         switch($rptLayout) {
@@ -246,14 +267,15 @@ class Invoice_rpt_model extends CI_Model {
                 a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,a.fin_relation_id as fin_relation_id,c.fst_relation_name as Relation_Name, a.fin_sales_id as Sales_Id, e.fst_username as Sales_Name,
                 b.fin_rec_id as Rec_Id, b.fin_item_id as Item_Id, f.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,b.fst_memo_item as Memo_Item,
                 b.fdb_qty as Qty, b.fst_unit as Unit, b.fdc_price as Price,(b.fdc_price - b.fdc_disc_amount_per_item) as Price_Netto, b.fst_disc_item as Disc_Item, b.fdc_disc_amount_per_item as Disc_Amount,
-                (b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) as Amount  
-                FROM (SELECT a.*,b.fin_promo_id FROM trinvoice a LEFT OUTER JOIN trinvoiceitems b ON a.fin_inv_id = b.fin_inv_id WHERE a.fst_active !='D' and b.fin_promo_id > 0) a LEFT OUTER JOIN 
+                (b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) as Amount, h.fin_transaction_id, h.fdc_value as Voucher_Amount 
+                FROM (SELECT a.*,b.fin_promo_id FROM trinvoice a LEFT OUTER JOIN trinvoiceitems b ON a.fin_inv_id = b.fin_inv_id WHERE a.fst_active !='D' and b.fin_promo_id > 0 GROUP BY a.fin_inv_id,b.fin_promo_id) a LEFT OUTER JOIN 
                 trinvoiceitems b on a.fin_inv_id = b.fin_inv_id LEFT OUTER JOIN 
                 msrelations c on a.fin_relation_id = c.fin_relation_id LEFT OUTER JOIN 
                 mswarehouse d on a.fin_warehouse_id = d.fin_warehouse_id LEFT OUTER JOIN 
                 users e on a.fin_sales_id = e.fin_user_id LEFT OUTER JOIN 
                 msitems f on b.fin_item_id = f.fin_item_id LEFT OUTER JOIN 
-                trsalesorder g on a.fin_salesorder_id = g.fin_salesorder_id $swhere ORDER BY a.fst_inv_no";
+                trsalesorder g on a.fin_salesorder_id = g.fin_salesorder_id LEFT OUTER JOIN
+                trvoucher h on g.fin_salesorder_id = h.fin_transaction_id $swhere ORDER BY a.fst_inv_no";
                 break;
             default:
                 break;
@@ -298,6 +320,15 @@ class Invoice_rpt_model extends CI_Model {
         $rules[] = [
             'field' => 'fin_sales_id',
             'label' => 'Sales',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong'
+            )
+        ];
+
+        $rules[] = [
+            'field' => 'fst_curr_code',
+            'label' => 'Mata Uang',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s tidak boleh kosong'

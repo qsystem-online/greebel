@@ -55,8 +55,9 @@
 		<div>Gudang : <?= $name_wareHouse ?></div>
 		<div>Tanggal S/O: <?= $this->input->post("fdt_inv_datetime") ?>  s/d <?= $this->input->post("fdt_inv_datetime2") ?></div> 
         <div>Customer: <?= $name_relations ?> </div>
-        <div>Sales: <?= $name_sales ?></div>                            
-		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1900px">       
+        <div>Sales: <?= $name_sales ?></div>
+		<div>Mata Uang : <?= $this->input->post("fst_curr_code") ?></div>                            
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:2000px">       
 			<thead>
 				<tr style="background-color:RoyalBlue;color:white">
 					<?php
@@ -101,7 +102,7 @@
                                 echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: right'>$subttl_returnNew</td>");
                                 echoIfColSelected(11,$selectedCols,"<td class='col-11' style='font-weight: bold;text-align: right'>$subttl_paidNew</td>");
                                 echoIfColSelected(12,$selectedCols,"<td class='col-12' style='font-weight: bold;text-align: right'>$subttl_piutangNew</td>");
-                                echoIfColSelected(13,$selectedCols,"<td class='col-13'>_</td>");										
+                                echoIfColSelected(13,$selectedCols,"<td class='col-13'></td>");										
                                 echo "</tr>";
                                 //reset subtotal variable (break group)
                                 $subttl_total = 0;
@@ -171,6 +172,15 @@
                     echoIfColSelected(12,$selectedCols,"<td class='col-12'style='text-align: right'>$Saldo_Piutang</td>");
                     echoIfColSelected(13,$selectedCols,"<td class='col-13'style='text-align: right'>$Menunggak_Hari</td>");										
 					echo "</tr>";*/
+
+					echo "<tr>";
+					echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Total Per-Customer: </td>";
+					echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$subttl_totalNew</td>");
+					echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: right'>$subttl_returnNew</td>");
+					echoIfColSelected(11,$selectedCols,"<td class='col-11' style='font-weight: bold;text-align: right'>$subttl_paidNew</td>");
+					echoIfColSelected(12,$selectedCols,"<td class='col-12' style='font-weight: bold;text-align: right'>$subttl_piutangNew</td>");
+					echoIfColSelected(13,$selectedCols,"<td class='col-13'></td>");										
+					echo "</tr>";
 				?>
 			</tbody>
 		</table>

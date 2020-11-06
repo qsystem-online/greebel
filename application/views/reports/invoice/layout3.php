@@ -55,7 +55,8 @@
 		<div>Gudang : <?= $name_wareHouse ?></div>
 		<div>Tgl Faktur: <?= $this->input->post("fdt_inv_datetime") ?>  s/d <?= $this->input->post("fdt_inv_datetime2") ?></div> 
         <div>Customer: <?= $name_relations ?> </div>
-        <div>Sales: <?= $name_sales ?></div>                            
+        <div>Sales: <?= $name_sales ?></div>
+		<div>Mata Uang : <?= $this->input->post("fst_curr_code") ?></div>                              
 		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1100px">      
 			<thead>
 				<tr style="background-color:RoyalBlue;color:white">
