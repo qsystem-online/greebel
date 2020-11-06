@@ -32,10 +32,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="box-header with-border">
 				<h3 class="box-title title"><?=$title?></h3>
 				<div class="btn-group btn-group-sm  pull-right">					
-					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
-					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
 					<a id="btnPrint" class="btn btn-primary hide" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Group")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 				</div>
 			</div>
@@ -184,10 +181,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#d-active").val("A");
 					
 				}
-				$("#mdlDetailBOMWO").modal("show");
+				$("#mdlDetailBatch").modal("show");
 			},
 			hide:function(){
-				$("#mdlDetailBOMWO").modal("hide");
+				$("#mdlDetailBatch").modal("hide");
 			},
 			clear:function(){					
 				mdlDetailBatch.selectedDetail = null;
@@ -421,7 +418,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).on('click','.btn-delete',function(e){
 			e.preventDefault();
 			var trRow = $(this).parents('tr');
-			tblBatchno.row(trRow).remove().draw(false);
+			
+			var data  = tblBatchno.row(trRow).data();
+			var cfrm = confirm("<?= lang('Hapus Batch Number ')?>" + data.fst_wobatchno_no);
+			if (cfrm == true){
+				$.ajax({
+					url:"<?=site_url()?>tr/production/wo_batch/delete/data.fin_wobatchno_id",
+					method:"GET",
+				}).done(function(resp){
+					if (resp.messages != ""){
+						alert(resp.messages);
+					}
+					if (resp.status == "SUCCESS"){
+						tblBatchno.row(trRow).remove().draw(false);		
+					}
+				})				
+			}			
+
 		});
 
         App.fixedSelect2();
@@ -431,30 +444,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript" info="event">
 	$(function(){
-		$("#btnNew").click(function(e){
-			//e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/production/wo_batch/add");
-		});
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
 			frameVoucher.print("<?=site_url()?>tr/gudang/mutasi/print_voucher/" + $("#fin_mag_id").val());
-		});
+		});				
 		
-		$("#btnSubmitAjax").click(function(e){
-            e.preventDefault();
-            submitAjax(0);
-		});
-		
-		$("#btnDelete").confirmation({
-			title:"<?=lang("Hapus data ini ?")?>",
-			rootSelector: '#btnDelete',
-			placement: 'left',
-		});
-		$("#btnDelete").click(function(e){
-			e.preventDefault();
-			deleteAjax(0);
-		});
-
 		$("#btnList").click(function(e){
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>tr/production/wo_batch");

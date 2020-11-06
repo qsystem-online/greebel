@@ -131,6 +131,7 @@ class Trmagconfirm_model extends MY_Model {
 		$header = $qr->row();
 		return $header;
 	}
+
 	public function unposting($finPagId){		
 		$this->load->model("trinventory_model");		
 		$ssql ="SELECT * FROM trmagconfirm where fin_mag_confirm_id = ?";
@@ -145,6 +146,7 @@ class Trmagconfirm_model extends MY_Model {
         $this->trinventory_model->deleteByCodeId("PAGIN",$finPagId);
 		
 		//Delete itemdetails
+		$this->trinventory_model->deleteInsertSerial("MAGBO",$finPagId);
 		$this->trinventory_model->deleteInsertSerial("PAG",$finPagId);
 
         $this->checkCloseMag((int) $dataH->fin_mag_id);
@@ -200,8 +202,6 @@ class Trmagconfirm_model extends MY_Model {
 		if ($dataH == null){
 			throw new CustomException(lang("invalid mag confirm id"),404,"FAILED",[]);	
 		}else{
-
-
 			if ($dataH->fbl_update_stock != 1){
 				throw new CustomException(lang("Stock belum di update"),404,"FAILED",[]);	
 			}
@@ -212,11 +212,11 @@ class Trmagconfirm_model extends MY_Model {
 		$qr = $this->db->query($ssql,[$dataH->fin_mag_id]);
 		$details = $qr->result();
 
-		foreach($details as $dataD){			
-			//Mutasi OUT barang dari buffer warehouse 
-			$this->load->model("mswarehouse_model");
-			$bufferWarehouse = $this->mswarehouse_model->getBufferWarehouseId($dataH->fin_from_branch_id);
+		$this->load->model("mswarehouse_model");
+		$bufferWarehouse = $this->mswarehouse_model->getBufferWarehouseId();
 
+		foreach($details as $dataD){			
+			//Mutasi OUT barang dari buffer warehouse 			
 			$data = [
 				"fin_warehouse_id"=>$bufferWarehouse,//$dataH->fin_from_warehouse_id,
 				"fdt_trx_datetime"=>$dataH->fdt_mag_confirm_datetime,
@@ -230,6 +230,7 @@ class Trmagconfirm_model extends MY_Model {
 				"fdb_qty_in"=>0,
 				"fdb_qty_out"=>$dataD->fdb_qty_confirm,
 				"fdc_price_in"=>0,
+				"fbl_price_in_auto"=>false,
 				"fst_active"=>"A"
 			];
 			$this->trinventory_model->insert($data);
@@ -257,9 +258,27 @@ class Trmagconfirm_model extends MY_Model {
 				"fdb_qty_in"=>$dataD->fdb_qty_confirm,
 				"fdb_qty_out"=>0,
 				"fdc_price_in"=>$hpp,
+				"fbl_price_in_auto"=>false,
 				"fst_active"=>"A"
 			];
 			$this->trinventory_model->insert($data);
+
+			//transfer keluar dari buffer serial dan batch no			
+			$dataSerial = [
+				"fin_warehouse_id"=>$bufferWarehouse,
+				"fin_item_id"=>$dataD->fin_item_id,
+				"fst_unit"=>$dataD->fst_unit,
+				"fst_serial_number_list"=>$dataD->fst_serial_number_list,
+				"fst_batch_no"=>$dataD->fst_batch_number,
+				"fst_trans_type"=>"MAGBO", 
+				"fin_trans_id"=>$dataH->fin_mag_confirm_id,
+				"fst_trans_no"=>$dataH->fst_mag_confirm_no,
+				"fin_trans_detail_id"=>$dataD->fin_rec_id,
+				"fdb_qty"=>$dataD->fdb_qty,
+				"in_out"=>"OUT",
+			];
+			$this->trinventory_model->insertSerial($dataSerial);
+
 
 			//transfer masuk serial dan batch no
 			$dataSerial = [
@@ -283,10 +302,10 @@ class Trmagconfirm_model extends MY_Model {
 
 	public function checkCloseMag($finMagId){
 		
-		$ssql = "SELECT * FROM trmagitems where fin_mag_id = ? and fdb_qty < fdb_qty_confirm";
+		$ssql = "SELECT * FROM trmagitems where fin_mag_id = ? and fdb_qty <= fdb_qty_confirm";
 		$qr = $this->db->query($ssql,[$finMagId]);				
 		$rw = $qr->row();
-		if ($rw == null){
+		if ($rw != null){
 			$ssql = "UPDATE trmag set fbl_closed = 1,fin_closed_by = 0, fdt_closed_datetime = now() where fin_mag_id = ?";
 			$this->db->query($ssql,[$finMagId]);
 		}else{

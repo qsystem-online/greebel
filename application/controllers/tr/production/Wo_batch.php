@@ -42,10 +42,13 @@ class Wo_batch extends MY_Controller{
 		$this->list['columns'] = [
             ['title' => 'ID.', 'width' => '20px', 'data' => 'fin_wobatchno_id'],
             ['title' => 'WO No.', 'width' => '100px', 'data' => 'fst_wo_no'],
-            ['title' => 'Batch No.', 'width' => '100px', 'data' => 'fst_wobatchno_no'],            
-			['title' => 'Tanggal', 'width' => '80px', 'data' => 'fdt_wobatchno_datetime'],
-			['title' => 'Notes', 'width' => '300px', 'data' => 'fst_notes'],
-			['title' => 'Status', 'width' => '100px', 'data' => 'fst_active',
+			['title' => 'Batch No.', 'width' => '350px', 'data' => 'fst_wobatchno_no',
+				'render'=>'function(data,type,row){
+					return data + "<br>" + row.fst_notes;
+				}'
+			],            
+			['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_wobatchno_datetime'],
+			['title' => 'Status', 'width' => '50px', 'data' => 'fst_active',
 				'render'=>"function(data,type,row){
 					if (data == 'A'){
 						return 'Active';
@@ -412,18 +415,17 @@ class Wo_batch extends MY_Controller{
 	}
 
 
-	public function delete($finId){
+	public function delete($finId){	
 
 		try{
-            $dataHOld = $this->trmps_model->getDataHeader($finId);
+			//Cek if data is delete able
+			$ssql = "SELECT * FROM ";
+			
+			$dataHOld = $this->trmps_model->getDataHeader($finId);
+			
             if ($dataHOld == null){
                 show_404();
-			}
-			//$resp = dateIsLock($dataHOld->fdt_assembling_datetime);
-			//if($resp["status"] != "SUCCESS"){
-			//	throw new CustomException($resp["message"],3003,"FAILED",[]);
-			//}
-            //$this->trassembling_model->isEditable($finId);
+			}			
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
 			$this->ajxResp["message"] = $e->getMessage();

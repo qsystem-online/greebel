@@ -604,7 +604,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								fin_relation_id : v.fin_relation_id,
 								fst_relation_name : v.fst_relation_name,
 								fin_shipping_address_id : v.fin_shipping_address_id,
-								fst_shipping_address : v.fst_shipping_address,
+								fst_address_name:v.fst_address_name,
+								fst_shipping_address : v.fst_shipping_address,								
 								fin_warehouse_id: v.fin_warehouse_id
 							});
 						});     
@@ -616,13 +617,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							}else{
 								warehouseId = v.fin_source_warehouse
 							}
+
 							sel2Data.push({
 								id: v.fin_assembling_id,
 								text: v.fst_assembling_no,
 								fdt_trans_datetime : v.fdt_assembling_datetime,
-								fin_relation_id : 0,
+								fin_relation_id : null,
 								fst_relation_name : '',
-								fin_shipping_address_id : 0,
+								fin_shipping_address_id : null,
 								fst_shipping_address : '',
 								fin_warehouse_id: v.fin_warehouse_id
 							});
@@ -644,15 +646,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).on("select2:select",function(e){
 			data = e.params.data;
 			selectedTrans = data;
-            $("#fst_relation_name").html(data.fst_relation_name);            
-			//$("#fdt_salesorder_datetime").val(dateTimeFormat(data.fdt_salesorder_datetime)).datetimepicker("update");						
+			$("#fst_relation_name").html(data.fst_relation_name);			
 			$("#fin_warehouse_id").val(data.fin_warehouse_id);
 			$("#fin_warehouse_id").trigger("change");
 
 			if ( data.fin_shipping_address_id != null){
 				$("#fin_shipping_address_id").empty();
-				App.addOptionIfNotExist("<option value='" + data.fin_shipping_address_id + "'>"+ data.fst_address_name +"</option>");
+				App.addOptionIfNotExist("<option value='" + data.fin_shipping_address_id + "'>"+ data.fst_address_name +"</option>","fin_shipping_address_id");
+				$("#fin_shipping_address_id").trigger("change");
+				$("#fst_shipping_address").val(data.fst_shipping_address);
 			}
+
 			getDetailTransaction(function(){});
 
 			/*			

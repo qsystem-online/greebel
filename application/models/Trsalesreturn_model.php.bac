@@ -32,9 +32,7 @@ class Trsalesreturn_model extends MY_Model {
 	}
 
 	public function getDataById($finSalesReturnId){
-		$ssql = "SELECT a.*,b.fst_relation_name 
-			FROM trsalesreturn a 
-			INNER JOIN msrelations b on a.fin_customer_id = b.fin_relation_id 
+		$ssql = "SELECT a.* FROM " .$this->tableName. " a  
 			WHERE a.fin_salesreturn_id = ? AND a.fst_active != 'D'";
 
 		$qr = $this->db->query($ssql, [$finSalesReturnId]);
@@ -46,16 +44,7 @@ class Trsalesreturn_model extends MY_Model {
 			];            
 		}
 
-		$ssql ="SELECT a.fin_lpbsalesreturn_id,a.fst_lpbsalesreturn_no FROM trlpbsalesreturn a where a.fin_lpbsalesreturn_id in ?";
-		$qr = $this->db->query($ssql,[json_decode($dataH->fst_lpbsalesreturn_id_list)]);
-		$rs = $qr->result();
-		$dataH->fst_lpbsalesreturn_id_list = $rs;
-
-
-		$ssql = "SELECT a.*,
-			b.fst_inv_no,b.fdt_inv_datetime,
-			c.fst_item_code,c.fst_item_name  
-			FROM trsalesreturnitems a 
+		$ssql = "SELECT a.*,b.fst_inv_no,b.fdt_inv_datetime,c.fst_item_code FROM trsalesreturnitems a 
 			LEFT JOIN trinvoice b on a.fin_inv_id = b.fin_inv_id
 			INNER JOIN msitems c on a.fin_item_id = c.fin_item_id 
 			WHERE a.fin_salesreturn_id = ?";
@@ -210,15 +199,48 @@ class Trsalesreturn_model extends MY_Model {
 		$qr = $this->db->query($ssql,[$finSalesReturnId]);
 		$dataDetails = $qr->result();
 
-		/**		
-			Jurnal Return
-			--------------------------------------------
-			Misalkan retur 10% dari invoice
+
+		if ($dataH->fbl_non_faktur == 0){
+			//Return langsung mengurangi invoice            
+			$ssql = "SELECT fin_inv_id,sum(fdc_total) as ttl_return  FROM trsalesreturnitems where fin_salesreturn_id = ? group by fin_inv_id";
+			$qr = $this->db->query($ssql,[$finSalesReturnId]);
+			$dataSumDetails = $qr->result();
+
+			foreach($dataSumDetails as $dataSum){
+				$ssql ="SELECT * from trinvoice where fin_inv_id = ? and fst_active != 'D'";
+				$qr = $this->db->query($ssql,[$dataSum->fin_inv_id]);
+				$dataInv = $qr->row();
+				if($dataInv == null){
+					throw new CustomException(lang("invalid invoice ID"),3003,"FAILED",$dataSum);
+				}
+				$maxReturn = ($dataInv->fdc_total + $dataInv->fdc_downpayment_claim) - ($dataInv->fdc_total_paid + $dataInv->fdc_total_return);
+				if (  $maxReturn < $dataSum->ttl_return ){
+					throw new CustomException(sprintf(lang("Max return invoice %s adalah %s"),$dataInv->fst_inv_no,formatNumber($maxReturn)),3003,"FAILED",null);
+				}
+				$ssql ="UPDATE trinvoice set fdc_total_return = fdc_total_return + ? where fin_inv_id = ?";
+				$this->db->query($ssql,[$dataSum->ttl_return,$dataSum->fin_inv_id]);
+				
+				throwIfDBError();
+
+			}
+		}
+
+		/**
+		 * SAAT RETUR, KALAU LANGSUNG KE PIUTANG DAGANG         
 			Retur Penjualan		Rp.   100.000,-
 			PPN			Rp.     9.000,-
-				Discount				Rp.   10.000,-
-				Potongan				Rp.   10.000,-	
-				Retur Belum Realisasi	Rp.   89.000,-
+				Discount			Rp.   10.000,-
+				Piutang Dagang			Rp.   99.000,-
+
+
+			SAAT RETUR, KALAU PAKAI AYAT SILANG
+			--------------------------------------------
+			Misalkan retur 10% dari invoice
+
+			Retur Penjualan		Rp.   100.000,-
+			PPN			Rp.     9.000,-
+				Discount			Rp.   10.000,-
+				Retur Belum Realisasi		Rp.   99.000,-
 		 */
 
 		//JURNAL RETURN
@@ -227,16 +249,20 @@ class Trsalesreturn_model extends MY_Model {
 		$accDisc = getGLConfig("INV_DISC");
 		$accPiutang = getGLConfig("AR_DAGANG_LOKAL");
 		$accRetunBelumRealisasi = getGLConfig("RETUR_BELUM_REALISASI");
-		$accPotonganReturn = getGLConfig("POTONGAN_RETURN_PENJUALAN");
 		
 
 		$ttlReturnPenjualan = 0;
 		$ttlPpn = 0;
 		$ttlDisc = 0;
-		$ttlPiutang = 0;   
-		$ttlPotongan =0;     
+		$ttlPiutang = 0;        
 		
 		foreach($dataDetails as $dataD){
+			// update qty return invoice items
+			if ($dataD->fin_inv_detail_id != 0 ){
+				$ssql = "UPDATE trinvoiceitems set fdb_qty_return = fdb_qty_return + ? where fin_rec_id = ?";
+				$this->db->query($ssql,[$dataD->fdb_qty,$dataD->fin_inv_detail_id]);
+				throwIfDBError();
+			}
 			
 			//$ttlReturnPenjualan += $dataD->fdc_total;
 			$ttlReturnPenjualan += $dataD->fdc_dpp_amount;
@@ -244,8 +270,7 @@ class Trsalesreturn_model extends MY_Model {
 			$discAmount = $dataD->fdb_qty * $dataD->fdc_disc_amount_per_item;
 			$ttlDisc += $discAmount;
 			//$ttlPiutang += $dataD->fdc_total + $dataD->fdc_ppn_amount - $discAmount;
-			$ttlPiutang += $dataD->fdc_dpp_amount + $dataD->fdc_ppn_amount - $discAmount -$dataD->fdc_potongan;
-			$ttlPotongan += $dataD->fdc_potongan;
+			$ttlPiutang += $dataD->fdc_dpp_amount + $dataD->fdc_ppn_amount - $discAmount;
 		}
 
 		
@@ -268,8 +293,7 @@ class Trsalesreturn_model extends MY_Model {
 			"fst_no_ref_bank"=>null,
 			"fst_profit_cost_center_code"=>null,
 			"fin_relation_id"=>null,
-			"fst_active"=>"A",
-			"fst_info"=>"RETURN PENJUALAN"
+			"fst_active"=>"A"
 		];
 
 		$dataJurnal[] =[ //PPN
@@ -289,8 +313,7 @@ class Trsalesreturn_model extends MY_Model {
 			"fst_no_ref_bank"=>null,
 			"fst_profit_cost_center_code"=>null,
 			"fin_relation_id"=>null,
-			"fst_active"=>"A",
-			"fst_info"=>"PPN"
+			"fst_active"=>"A"
 		];
 
 		$dataJurnal[] =[ //Disc
@@ -310,34 +333,12 @@ class Trsalesreturn_model extends MY_Model {
 			"fst_no_ref_bank"=>null,
 			"fst_profit_cost_center_code"=>null,
 			"fin_relation_id"=>null,
-			"fst_active"=>"A",
-			"fst_info"=>"DISC"
-		];
-
-		$dataJurnal[] =[ //Potongan
-			"fin_branch_id"=>$dataH->fin_branch_id,
-			"fst_account_code"=>$accPotonganReturn,
-			"fdt_trx_datetime"=>$dataH->fdt_salesreturn_datetime,
-			"fst_trx_sourcecode"=>"SRT",
-			"fin_trx_id"=>$dataH->fin_salesreturn_id,
-			"fst_trx_no"=>$dataH->fst_salesreturn_no,
-			"fst_reference"=>$dataH->fst_memo,
-			"fdc_debit"=> 0,
-			"fdc_origin_debit"=>0,
-			"fdc_credit"=>$ttlPotongan * $dataH->fdc_exchange_rate_idr,
-			"fdc_origin_credit"=>$ttlPotongan,
-			"fst_orgi_curr_code"=>$dataH->fst_curr_code,
-			"fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
-			"fst_no_ref_bank"=>null,
-			"fst_profit_cost_center_code"=>null,
-			"fin_relation_id"=>null,
-			"fst_active"=>"A",
-			"fst_info"=>"POTONGAN RETURN"
+			"fst_active"=>"A"
 		];
 
 		$dataTmp =[ //Piutang / Retur belum realisasi
 			"fin_branch_id"=>$dataH->fin_branch_id,
-			"fst_account_code"=>$accRetunBelumRealisasi,
+			"fst_account_code"=>$accPiutang,
 			"fdt_trx_datetime"=>$dataH->fdt_salesreturn_datetime,
 			"fst_trx_sourcecode"=>"SRT",
 			"fin_trx_id"=>$dataH->fin_salesreturn_id,
@@ -351,12 +352,19 @@ class Trsalesreturn_model extends MY_Model {
 			"fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
 			"fst_no_ref_bank"=>null,
 			"fst_profit_cost_center_code"=>null,
-			"fin_relation_id"=>null,
-			"fst_active"=>"A",
-			"fst_info"=>"RETURN BELUM REALISASI"
+			"fin_relation_id"=>$dataH->fin_customer_id,
+			"fst_active"=>"A"
 		];
+
+
+		if ($dataH->fbl_non_faktur != 0){
+			//Akui piutang sebagai return yg belum direalisasi
+			$dataTmp["fst_account_code"] = $accRetunBelumRealisasi;
+			$dataTmp["fin_relation_id"] = null;
+		}
 		
 		$dataJurnal[] = $dataTmp;
+
 		$result = $this->glledger_model->createJurnal($dataJurnal);        
 	}
 
@@ -372,7 +380,40 @@ class Trsalesreturn_model extends MY_Model {
 			throw new CustomException(lang("invalid sales return ID"),3003,"FAILED",$finSalesReturnId);
 		}
 
-		$this->glledger_model->cancelJurnal("SRT",$finSalesReturnId);			
+		$this->glledger_model->cancelJurnal("SRT",$finSalesReturnId);
+
+		if ($dataH->fbl_non_faktur == 0){
+			//Kembalikan nilai retun di invoice
+			$ssql = "SELECT fin_inv_id,sum(fdc_total) as ttl_return  FROM trsalesreturnitems where fin_salesreturn_id = ? group by fin_inv_id";
+			$qr = $this->db->query($ssql,[$finSalesReturnId]);            
+			$dataSumDetails = $qr->result();
+			
+			foreach($dataSumDetails as $dataSum){
+				$ssql ="SELECT * from trinvoice where fin_inv_id = ? and fst_active != 'D'";
+				$qr = $this->db->query($ssql,[$dataSum->fin_inv_id]);
+				$dataInv = $qr->row();
+				if($dataInv == null){
+					throw new CustomException(lang("invalid invoice ID"),3003,"FAILED",$dataSum);
+				}
+				
+				$ssql = "UPDATE trinvoice set fdc_total_return = fdc_total_return - ? where fin_inv_id = ?";
+				$this->db->query($ssql,[$dataSum->ttl_return, $dataSum->fin_inv_id]);
+				throwIfDBError();
+			}
+		}
+
+		//Kembalikan nilai qty return;
+		$ssql =  "SELECT * FROM trsalesreturnitems WHERE fin_salesreturn_id = ?";
+		$qr = $this->db->query($ssql,[$finSalesReturnId]);
+		$dataDetails  = $qr->result();
+		foreach($dataDetails as $dataD){
+			if ($dataD->fin_inv_detail_id != 0){
+				$ssql = "UPDATE trinvoiceitems set fdb_qty_return = fdb_qty_return - ? WHERE fin_rec_id = ?";
+				$this->db->query($ssql,[$dataD->fdb_qty,$dataD->fin_inv_detail_id]);
+				throwIfDBError();
+			}
+		}
+
 	}
 
 	public function getItemListByInv($finInvId,$search="%"){
@@ -464,6 +505,8 @@ class Trsalesreturn_model extends MY_Model {
 	public function getSalesReturnNonFakturList($finCustId,$fstCurrCode){
 		$ssql = "SELECT a.* from trsalesreturn a 
 			where a.fdc_total > a.fdc_total_claimed
+			AND fbl_non_faktur = 1
+			AND fbl_is_closed = 1
 			AND fin_customer_id = ?
 			AND fst_curr_code = ?";
 		$qr = $this->db->query($ssql,[$finCustId,$fstCurrCode]);

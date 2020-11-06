@@ -1,9 +1,9 @@
 <?php
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Trrmout_model extends MY_Model{
-	public $tableName = "trrmout";
-	public $pkey = "fin_rmout_id";
+class Trrmoutreturn_model extends MY_Model{
+	public $tableName = "trrmoutreturn";
+	public $pkey = "fin_rmout_return_id";
 
 	public function __construct()
 	{
@@ -15,8 +15,8 @@ class Trrmout_model extends MY_Model{
 		$rules = [];
 
 		$rules[] = [
-			'field' => 'fst_rmout_no',
-			'label' => 'Nomor RM-OUT',
+			'field' => 'fst_rmout_return_no',
+			'label' => 'Nomor RM-OUT Retur',
 			'rules' => array(
 				'required',
 			),
@@ -63,57 +63,9 @@ class Trrmout_model extends MY_Model{
 		];
 	}
 
-	public function getDataProductionById($finRMOutId){                
-		$this->load->model("msitems_model");
-
-		$ssql = "SELECT a.*,
-			b.fst_warehouse_name,
-			c.fst_mag_confirm_no as fst_pagp_no,
-			d.fin_wo_id,e.fst_wo_no,
-			f.fst_wobatchno_no
-			FROM trrmout a 
-			INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id
-			INNER JOIN trmagconfirm c on a.fin_pagp_id = c.fin_mag_confirm_id
-			INNER JOIN trmag d on c.fin_mag_id = d.fin_mag_id
-			INNER JOIN trwo e on d.fin_wo_id = e.fin_wo_id	
-			INNER JOIN trwobatchno f on a.fin_wobatchno_id = f.fin_wobatchno_id					
-			WHERE a.fin_rmout_id = ? and a.fst_active !='D'";
-		
-		$qr = $this->db->query($ssql,[$finRMOutId]);      
-		$dataH = $qr->row();
-
-		if ($dataH == null){
-			return null;
-		}
-
-		//Detail 
-		$ssql = "SELECT a.*,
-			b.fst_item_code,b.fst_item_name,b.fbl_is_batch_number,b.fbl_is_serial_number,
-			c.fdc_conv_to_basic_unit,
-			d.fst_unit as fst_basic_unit
-			FROM trrmoutitems a
-			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
-			INNER JOIN msitemunitdetails c on a.fin_item_id = c.fin_item_id  and a.fst_unit = c.fst_unit
-			INNER JOIN msitemunitdetails d on a.fin_item_id = d.fin_item_id  and d.fbl_is_basic_unit = 1 
-			WHERE a.fin_rmout_id = ? AND a.fst_active ='A' ";
-		$qr = $this->db->query($ssql,[$finRMOutId]);		
-		$details = $qr->result();
-		
-		
-		return [
-			"header"=>$dataH,
-			"details"=>$details,
-		];
-	}
-
-	public function getDataHeader($finRMOutId){
-		$ssql = "SELECT * FROM trrmout WHERE fin_rmout_id = ? ";
-		$qr = $this->db->query($ssql,[$finRMOutId]);
-		$dataH = $qr->row();
-		return $dataH;
-	}
-
-	public function generateNonProductionTransactionNo($trDate = null) {
+	
+	
+    public function generateTransactionNo($trDate = null) {
 		$trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
 		$tahun = date("Y/m", strtotime ($trDate));
 		$activeBranch = $this->aauth->get_active_branch();
@@ -121,27 +73,8 @@ class Trrmout_model extends MY_Model{
 		if($activeBranch){
 			$branchCode = $activeBranch->fst_branch_code;
 		}
-		$prefix = getDbConfig("rmout_np_prefix") . "/" . $branchCode ."/";
-		$query = $this->db->query("SELECT MAX(fst_rmout_no) as max_id FROM trrmout where fst_rmout_no like '".$prefix.$tahun."%'");
-		
-		$row = $query->row_array();        
-		$max_id = $row['max_id']; 		
-		$max_id1 =(int) substr($max_id,strlen($max_id)-5);		
-		$fst_tr_no = $max_id1 +1;		
-		$max_tr_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_tr_no);		
-		return $max_tr_no;
-    }
-    
-    public function generateProductionTransactionNo($trDate = null) {
-		$trDate = ($trDate == null) ? date ("Y-m-d"): $trDate;
-		$tahun = date("Y/m", strtotime ($trDate));
-		$activeBranch = $this->aauth->get_active_branch();
-		$branchCode = "";
-		if($activeBranch){
-			$branchCode = $activeBranch->fst_branch_code;
-		}
-		$prefix = getDbConfig("rmout_p_prefix") . "/" . $branchCode ."/";
-		$query = $this->db->query("SELECT MAX(fst_rmout_no) as max_id FROM trrmout where fst_rmout_no like '".$prefix.$tahun."%'");
+		$prefix = getDbConfig("rmout_return_prefix") . "/" . $branchCode ."/";
+		$query = $this->db->query("SELECT MAX(fst_rmout_return_no) as max_id FROM trrmoutreturn where fst_rmout_return_no like '".$prefix.$tahun."%'");
 		
 		$row = $query->row_array();        
 		$max_id = $row['max_id']; 		
@@ -151,12 +84,34 @@ class Trrmout_model extends MY_Model{
 		return $max_tr_no;
 	}
     
-    public function getTypeList(){
-        $ssql = "SELECT * FROM msproductiontype order by fst_production_type";
-        $qr =$this->db->query($ssql,[]);
-        $rs = $qr->result();
-        return $rs;
-	}
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	public function posting($finRMOutId){	
 		$this->load->model("trinventory_model");
@@ -241,35 +196,8 @@ class Trrmout_model extends MY_Model{
 	public function deleteDetail($finRMOutId){
 		$ssql ="DELETE FROM trrmoutitems where fin_rmout_id = ?";
 		$this->db->query($ssql,[$finRMOutId]);
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-	
-
-	
-	
-	
-
-
-	
-
+    }
+    
 	public function delete($finId,$softDelete=true,$data=null){
 		parent::delete($finId,$softDelete);
 		if(!$softDelete){

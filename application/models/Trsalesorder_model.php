@@ -993,7 +993,7 @@ class Trsalesorder_model extends MY_Model {
             $stock = $this->msitems_model->getQtyConvertUnit($item->fin_item_id,$stockInBasicUnit,$basicUnit,$item->fst_unit);
             
             //$conversionUnit= $this->msitems_model->getBasicUnit($item->fin_item_id);
-            $this->msitems_model->geSimpletDataById($item->fin_item_id);
+            $this->msitems_model->getSimpleDataById($item->fin_item_id);
 
 			if($item->fdb_qty > $stockInBasicUnit){
 				$authorizeOutofStock = true;

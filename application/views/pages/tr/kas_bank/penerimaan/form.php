@@ -925,7 +925,6 @@
 			$("#btnJurnal").trigger("click");
 		});
 	});
-	
 </script>
 
 <script type="text/javascript" info="define">

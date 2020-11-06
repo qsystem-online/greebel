@@ -41,8 +41,41 @@ class Trinventory_model extends MY_Model
 			where fin_warehouse_id =? 
 			and fin_item_id = ?
 			and fst_basic_unit = ? 
-			order by fdt_trx_datetime desc , fin_rec_id desc limit 1";
+			order by fin_rec_id desc limit 1";
 		$qr = $this->db->query($ssql,[$fin_warehouse_id,$fin_item_id,$fst_unit]);
+		$rw = $qr->row();
+		if ($rw == null){
+			return 0;
+		}else{
+			//return (int) $rw->ttl_qty_in - (int) $rw->ttl_qty_out;
+			return (float) $rw->fdb_qty_balance_after;
+		}
+		
+	}
+
+	public function getStockPerBranch($fin_item_id,$fst_unit,$finBranchId){
+		//$ssql = "select sum(fdb_qty_in) as ttl_qty_in,sum(fdb_qty_out) as ttl_qty_out from ". $this->tableName . " where fin_warehouse_id = ? and fin_item_id = ? and fst_unit = ? and fst_active = 'A'";
+		$ssql = "select * from msitems where fin_item_id = ?";
+		$qr = $this->db->query($ssql,[$fin_item_id]);
+		$rw = $qr->row();
+		if($rw == null){
+			return 0;
+		}
+		if ($rw->fbl_stock == false){
+			return 999999999;
+		}
+
+
+
+		$ssql ="SELECT IFNULL(sum(fdb_qty_balance_after),0) as fdb_qty_balance_after FROM trinventory a 
+			INNER JOIN (
+				SELECT a.fin_warehouse_id,max(a.fin_rec_id) as last_id FROM trinventory a 
+				INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id
+				WHERE a.fin_item_id = ? AND a.fst_basic_unit = ? AND b.fin_branch_id = ?
+				GROUP BY a.fin_warehouse_id  
+			) b on a.fin_rec_id = b.last_id";
+
+		$qr = $this->db->query($ssql,[$fin_item_id,$fst_unit,$finBranchId]);
 		$rw = $qr->row();
 		if ($rw == null){
 			return 0;
@@ -84,10 +117,10 @@ class Trinventory_model extends MY_Model
 		return $qtyStock - $qtyUnprocessSO + $qtyUnprocessPO;
 	}
 
-	public function insert($data){
+	public function DELETE_insert($data){
 		$this->load->model("msitems_model");
 		
-		$rw = $this->msitems_model->geSimpletDataById($data["fin_item_id"]);
+		$rw = $this->msitems_model->getSimpleDataById($data["fin_item_id"]);
 		if ($rw == null){
 			return ["status"=>"FAILED","message"=>lang("Item tidak ditemukan !")];
 		}
@@ -183,11 +216,162 @@ class Trinventory_model extends MY_Model
 
 			
 			$rwPrev = $data;
+		}	   
+	}
+
+
+	public function insert($data){
+		$this->load->model("msitems_model");
+		$this->load->model("mswarehouse_model");
+		
+		$rw = $this->msitems_model->getSimpleDataById($data["fin_item_id"]);
+		if ($rw == null){
+			//return ["status"=>"FAILED","message"=>lang("Item tidak ditemukan !")];
+			throw new CustomException(lang("Item tidak ditemukan !"),3003,"FAILED",$data);
+		}
+		$itemName = $rw->fst_item_name;
+		if ($rw->fbl_stock == false){
+			return ["status"=>"SUCCESS","message"=>""];
 		}
 
+		$basicUnit = $this->msitems_model->getBasicUnit($data["fin_item_id"]);
+		if ($basicUnit == null){
+			throw new CustomException(sprintf(lang("Item %s tidak memiliki basic unit"),$itemName),3003,"FAILED",[]);
+		}
 
-	   
+		$rwWarehouse= $this->mswarehouse_model->getSimpleDataById($data["fin_warehouse_id"]);
+		if ($rwWarehouse == null){
+			//return ["status"=>"FAILED","message"=>lang("Item tidak ditemukan !")];
+			throw new CustomException(lang("Cabang dari gudang tidak ditemukan !"),3003,"FAILED",$data);
+		}
+		$branchId = $rwWarehouse->fin_branch_id;
+
+
+		$convToBasicUnit = $this->msitems_model->getConversionUnit($data["fin_item_id"],$data["fst_unit"],$basicUnit);
+		$pricePerBasicUnit = floatval($data["fdc_price_in"]) / $convToBasicUnit;
+		$addCost = 0;
+		$qtyInBasicUnit = $this->msitems_model->getQtyConvertToBasicUnit($data["fin_item_id"],$data["fdb_qty_in"],$data["fst_unit"]);
+		$qtyOutBasicUnit = $this->msitems_model->getQtyConvertToBasicUnit($data["fin_item_id"],$data["fdb_qty_out"],$data["fst_unit"]);
+		$addCost = isset($data["fdc_add_cost"]) ? (float) $data["fdc_add_cost"]: 0;
+		
+		$data["fst_basic_unit"]= $basicUnit;
+		$data["fdb_qty_in"]= $qtyInBasicUnit;
+		$data["fdb_qty_out"]= $qtyOutBasicUnit;
+		$data["fdc_price_in"]= $pricePerBasicUnit;
+		$data["fdc_add_cost"] =$addCost;                        
+		if(!isset($data["fbl_price_in_auto"])){
+			$data["fbl_price_in_auto"] = false;
+		}
+		
+
+
+		//update qty per warehouse & Update hpp per branch
+		//get last record per branch		
+		$ssql ="SELECT a.* FROM trinventory a 
+			INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id 
+			WHERE b.fin_branch_id = ? 
+			AND a.fin_item_id = ?
+			AND a.fst_basic_unit = ?        
+			AND a.fdt_trx_datetime < ? order by a.fdt_trx_datetime desc,a.fin_rec_id desc limit 1";
+
+		$qr = $this->db->query($ssql,[$branchId,$data["fin_item_id"],$basicUnit,$data["fdt_trx_datetime"]]);
+		$rwPrev = $qr->row();
+
+		$rsTempExisting = [];		
+		$prevRecId = 0;
+		if ($rwPrev != null){
+			$prevRecId = $rwPrev->fin_rec_id;
+		}
+
+		//GET ALL RECORD AFTER & DELETE IT base on lastId,branchId, itemId,basicUnit
+		$ssql = "SELECT a.* FROM trinventory a 
+			INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id 
+			WHERE b.fin_branch_id = ? 
+			AND a.fin_item_id = ?
+			AND a.fst_basic_unit = ?        
+			AND a.fin_rec_id > ? order by a.fin_rec_id";
+		$qr = $this->db->query($ssql,[$branchId,$data["fin_item_id"],$basicUnit,$prevRecId]);
+		$rsTempExisting = $qr->result();
+		throwIfDBError();
+
+		$ssql = "DELETE a FROM trinventory a 
+				INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id 
+				WHERE b.fin_branch_id = ? 
+				AND a.fin_item_id = ?
+				AND a.fst_basic_unit = ?        
+				AND a.fin_rec_id > ?";
+
+		$this->db->query($ssql,[$branchId,$data["fin_item_id"],$basicUnit,$prevRecId]);
+		throwIfDBError();
+
+		//Insert Current Data
+		if ($data["fbl_price_in_auto"] == true){
+			$data["fdc_price_in"] = $this->getLastHPP($data["fin_item_id"],$data["fin_warehouse_id"]);
+		}
+
+		$qtyBalanceBefore = $this->getStock($data["fin_item_id"],$basicUnit,$data["fin_warehouse_id"]);
+		$qtyBalanceBeforePerBranch = $this->getStockPerBranch($data["fin_item_id"],$basicUnit,$branchId);
+		if ($rwPrev != null){
+			$avgCostBefore = (float) $rwPrev->fdc_avg_cost;
+		}else{
+			$avgCostBefore = (float) 0;
+		}
+		
+		$data["fdb_qty_balance_after"] = $qtyBalanceBefore  + $data["fdb_qty_in"] - $data["fdb_qty_out"];
+		if ($data["fdb_qty_balance_after"] < 0){
+			throw new CustomException(sprintf(lang("Stock %s tidak boleh kurang dari nol"),$itemName),3003,"FAILED",$data);
+		}
+
+		
+		$data["fdc_avg_cost"] = $this->calculateHPP(
+			$qtyBalanceBeforePerBranch,
+			$avgCostBefore,
+			$data["fdb_qty_in"],
+			$data["fdb_qty_out"],
+			$data["fdc_price_in"],
+			$data["fdc_add_cost"]
+		);		
+		parent::insert($data);
+		throwIfDBError();
+
+		
+		//Insert Existing Data
+		$avgCostBefore = $data["fdc_avg_cost"];		
+		foreach($rsTempExisting as $data){
+			//Unset recid
+			$data = (array) $data;
+
+			unset($data["fin_rec_id"]);
+
+			if ($data["fbl_price_in_auto"] == true){
+				$data["fdc_price_in"] = $avgCostBefore;
+			}
+
+			$qtyBalanceBefore = $this->getStock($data["fin_item_id"],$basicUnit,$data["fin_warehouse_id"]);					
+			$data["fdb_qty_balance_after"] = $qtyBalanceBefore  + $data["fdb_qty_in"] - $data["fdb_qty_out"];
+			if ($data["fdb_qty_balance_after"] < 0){
+				throw new CustomException(sprintf(lang("[Update Existing] Stock %s kurang dari nol"),$itemName),3003,"FAILED",$data);
+			}
+
+			$qtyBalanceBeforePerBranch = $this->getStockPerBranch($data["fin_item_id"],$basicUnit,$branchId);
+			$data["fdc_avg_cost"] = $this->calculateHPP(
+				$qtyBalanceBeforePerBranch,
+				$avgCostBefore,
+				$data["fdb_qty_in"],
+				$data["fdb_qty_out"],
+				$data["fdc_price_in"],
+				$data["fdc_add_cost"]
+			);
+			unset($data["fdt_update_datetime"]);
+			unset($data["fin_update_id"]);
+			parent::insert($data);
+			throwIfDBError();
+			$avgCostBefore = $data["fdc_avg_cost"];
+		}
+
 	}
+
+
 
 	public function deleteByCodeId($trxCode,$trxId){
 		$ssql = "select a.*,b.fst_item_name  from trinventory a 
@@ -231,7 +415,7 @@ class Trinventory_model extends MY_Model
 					throw new CustomException(sprintf(lang("Stock %s tidak boleh kurang dari nol"),$rw->fst_item_name),3003,"FAILED");            
 				}
 				
-				$data->fdc_avg_cost = $this->getHPP(
+				$data->fdc_avg_cost = $this->calculateHPP(
 					$rwPrev["fdb_qty_balance_after"],
 					$rwPrev["fdc_avg_cost"],
 					$data->fdb_qty_in,
@@ -294,7 +478,7 @@ class Trinventory_model extends MY_Model
 		$rwPrev = $qr->row_array();
 
 		$dataH["fdb_qty_balance_after"] = $rwPrev["fdb_qty_balance_after"] + $dataH["fdb_qty_in"] - $dataH["fdb_qty_out"];        
-		$dataH["fdc_avg_cost"] = $this->getHPP(
+		$dataH["fdc_avg_cost"] = $this->calculateHPP(
 			$rwPrev["fdb_qty_balance_after"],
 			$rwPrev["fdc_avg_cost"],
 			$dataH["fdb_qty_in"],
@@ -330,7 +514,7 @@ class Trinventory_model extends MY_Model
 		$rs = $qr->result_array();
 		foreach($rs as $dataH){
 			$dataH["fdb_qty_balance_after"] = $rwPrev["fdb_qty_balance_after"] + $dataH["fdb_qty_in"] - $dataH["fdb_qty_out"];        
-			$dataH["fdc_avg_cost"] = $this->getHPP(
+			$dataH["fdc_avg_cost"] = $this->calculateHPP(
 				$rwPrev["fdb_qty_balance_after"],
 				$rwPrev["fdc_avg_cost"],
 				$dataH["fdb_qty_in"],
@@ -348,7 +532,7 @@ class Trinventory_model extends MY_Model
 		}            
 	}
 
-	public function recalculate($finWarehouseId, $finItemId , $fdtTransactionDatetime){
+	public function DELETE_recalculate($finWarehouseId, $finItemId , $fdtTransactionDatetime){
 		
 		//Prev Rec by date
 		$ssql = "select * from trinventory 
@@ -399,7 +583,82 @@ class Trinventory_model extends MY_Model
 		   
 	}
 
-	public function getHPP($lastBalanceQty,$lastHPP,$qtyIn,$qtyOut,$fdcPrice,$fdcAddCost){
+	public function recalculate($finWarehouseId, $finItemId , $fdtTransactionDatetime){
+		//Asumsikan semua data di trinventory sudah dalam satuan basic
+		$this->load->model("mswarehouse_model");
+		$rwWarehouse= $this->mswarehouse_model->getSimpleDataById($data["fin_warehouse_id"]);
+		if ($rwWarehouse == null){
+			//return ["status"=>"FAILED","message"=>lang("Item tidak ditemukan !")];
+			throw new CustomException(lang("Cabang dari gudang tidak ditemukan !"),3003,"FAILED",$data);
+		}
+		$branchId = $rwWarehouse->fin_branch_id;
+
+		//Prev Rec by date
+		$ssql = "SELECT a.* FROM trinventory a 
+			INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id 
+			where  b.fin_branch_id = ?
+			AND a.fdt_trx_datetime < ? 
+			AND a.fin_item_id = ?
+			ORDER BY a.fdt_trx_datetime DESC,a.fin_rec_id DESC LIMIT 1";
+		$qr = $this->db->query($ssql,[$branchId,$fdtTransactionDatetime,$finItemId]);
+		$data = $qr->row();
+		if ($data == null){
+			return;
+		}
+
+		//Get Data To recalculate
+		$ssql = "SELECT a.* FROM trinventory a 
+			INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id 
+			where  b.fin_branch_id = ?
+			AND a.fin_item_id = ?
+			AND a.fin_rec_id > ?
+			ORDER BY fin_rec_id";
+		$qr = $this->db->query($ssql,[$branchId,$finItemId],$data->fin_rec_id);
+		$rs = $qr->result();
+
+		//DELETE data
+		$ssql = "delete trinventory FROM trinventory a 
+			INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id 
+			where  b.fin_branch_id = ?
+			AND a.fin_item_id = ?
+			AND a.fin_rec_id > ?
+			ORDER BY fin_rec_id";
+		$qr = $this->db->query($ssql,[$branchId,$finItemId],$data->fin_rec_id);
+		
+		$avgCostBefore = $data->fdc_avg_cost;
+
+		foreach($rs as $data){
+			$data = (array) $data;
+
+			if ($data["fbl_price_in_auto"] == true){
+				$data["fdc_price_in"] = $avgCostBefore;
+			}
+
+			$qtyBalanceBefore = $this->getStock($data["fin_item_id"],$data["fst_basic_unit"],$data["fin_warehouse_id"]);					
+			$data["fdb_qty_balance_after"] = $qtyBalanceBefore  + $data["fdb_qty_in"] - $data["fdb_qty_out"];
+			if ($data["fdb_qty_balance_after"] < 0){
+				throw new CustomException(sprintf(lang("[Update Existing] Stock %s kurang dari nol"),$itemName),3003,"FAILED",$data);
+			}
+
+			$qtyBalanceBeforePerBranch = $this->getStockPerBranch($data["fin_item_id"],$data["fst_basic_unit"],$branchId);
+			$data["fdc_avg_cost"] = $this->calculateHPP(
+				$qtyBalanceBeforePerBranch,
+				$avgCostBefore,
+				$data["fdb_qty_in"],
+				$data["fdb_qty_out"],
+				$data["fdc_price_in"],
+				$data["fdc_add_cost"]
+			);
+			unset($data["fdt_update_datetime"]);
+			unset($data["fin_update_id"]);
+			parent::update($data);
+			$avgCostBefore = $data["fdc_avg_cost"];
+		}		   
+	}
+
+
+
+	public function calculateHPP($lastBalanceQty,$lastHPP,$qtyIn,$qtyOut,$fdcPrice,$fdcAddCost){
 		
 		$pricePlusCost = (float) $fdcPrice + (float) $fdcAddCost;
 
@@ -674,7 +933,7 @@ class Trinventory_model extends MY_Model
 		return $qr->result();
 	}	
 
-	public function getLastHPP($finItemId,$finWarehouseId){
+	public function DELETE_getLastHPP($finItemId,$finWarehouseId){
 		$ssql = "select * from trinventory where fin_item_id = ? and fin_warehouse_id = ? 
 			order by fdt_trx_datetime desc , fin_rec_id desc limit 1";
 			
@@ -686,6 +945,35 @@ class Trinventory_model extends MY_Model
 			return $rw->fdc_avg_cost;
 		}
 	}
+
+
+	public function getLastHPP($finItemId,$finWarehouseId){
+		//Rata2 HPP Di hitung per cabang bukan per gudang
+
+		$this->load->model("mswarehouse_model");
+		//Get Branch
+		$rwWarehouse = $this->mswarehouse_model->getSimpleDataById($finWarehouseId);
+		if ($rwWarehouse == null){
+			return 0;
+		}
+
+		$branchId = $rwWarehouse->fin_branch_id;
+
+		$ssql = "select * from trinventory a
+			INNER JOIN mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id
+			where a.fin_item_id = ? and b.fin_branch_id = ? 
+			order by fin_rec_id desc , fin_rec_id desc limit 1";
+			
+		$qr = $this->db->query($ssql,[$finItemId,$branchId]);
+		$rw = $qr->row();
+		if($rw == null){
+			return 0;
+		}else{
+			return $rw->fdc_avg_cost;
+		}
+	}
+
+
 
 	public function getListStock($finItemId,$fstUnit,$finBranchId){
 		$this->load->model("msitems_model");
