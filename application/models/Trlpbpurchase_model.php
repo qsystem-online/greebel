@@ -154,7 +154,8 @@ class Trlpbpurchase_model extends MY_Model {
 		$this->load->model("trpurchaserequestprocess_model");
 		
 
-		$ssql = "SELECT a.*,b.fbl_is_import,b.fdc_downpayment,b.fdc_downpayment_paid,b.fbl_dp_inc_ppn FROM trlpbpurchase a 
+		$ssql = "SELECT a.*,b.fbl_is_import,b.fdc_downpayment,b.fdc_downpayment_paid,b.fbl_dp_inc_ppn 
+			FROM trlpbpurchase a 
 			INNER JOIN trpo b ON a.fin_po_id = b.fin_po_id 
 			WHERE fin_lpbpurchase_id = ?";
 
@@ -201,8 +202,8 @@ class Trlpbpurchase_model extends MY_Model {
 				b.fbl_stock,
 				d.fin_pcc_id,
 				c.fin_item_group_id,
-				(a.fdb_qty * a.fdc_price) as fdc_total,
-				(a.fdb_qty * a.fdc_disc_amount_per_item) as fdc_ttl_disc_amount 
+				sum((a.fdb_qty * a.fdc_price)) as fdc_total,
+				sum((a.fdb_qty * a.fdc_disc_amount_per_item)) as fdc_ttl_disc_amount 
 			FROM trlpbpurchaseitems a
 			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
 			INNER JOIN msgroupitems c on b.fin_item_group_id = c.fin_item_group_id 
@@ -210,10 +211,10 @@ class Trlpbpurchase_model extends MY_Model {
 			WHERE a.fin_lpbpurchase_id = ? 
 			GROUP BY d.fin_pcc_id";
 		$qr = $this->db->query($ssql,[$finLPBPurchaseId]);
-		$rs =$qr->result(); 
-		
+		$rs =$qr->result(); 		
 		$dataTmp = [];
-		
+				
+
 		foreach($rs as $rw){
 			//Pembelian/Persediaan/Biaya > Hutang 
 			if ($rw->fin_item_type_id == 5 ){
@@ -277,6 +278,7 @@ class Trlpbpurchase_model extends MY_Model {
 		}
 
 		
+
 		foreach($dataTmp as $accCode=>$arrAcc){
 			foreach($arrAcc as $pccId=>$arrPcc){
 				$dataJurnal[] =[
@@ -441,10 +443,7 @@ class Trlpbpurchase_model extends MY_Model {
 			"fst_active"=>"A",
 			"fst_info"=>"HUTANG DAGANG"
 		];        
-		
-		
-		//var_dump($dataJurnal);
-		//die();
+			
 		$this->glledger_model->createJurnal($dataJurnal);       
 	}
 

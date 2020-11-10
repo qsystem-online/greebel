@@ -3,12 +3,23 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [        
+    "configurations": [
         {
-            "name": "Web Xdebug",
+            "name": "Listen for XDebug",
             "type": "php",
             "request": "launch",
-            "port": 9000
+            "port": 9000,
+            //"log":"D:\\vcodexdebug.log"
         },
+        {
+            "name": "Launch currently open script",
+            "type": "php",
+            "request": "launch",
+            "program": "${file}",
+            "stopOnEntry": true,
+            "cwd": "${fileDirname}",
+            "port": 9000,
+            "runtimeExecutable": "D:\\xampp\\php\\php.exe"
+        }
     ]
 }
