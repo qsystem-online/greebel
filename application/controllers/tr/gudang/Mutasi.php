@@ -343,7 +343,7 @@ class Mutasi extends MY_Controller{
 				throw new CustomException("Error Validation Details",3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
 			}
 
-			$itemInfo = $this->msitems_model->geSimpletDataById($dataD->fin_item_id);
+			$itemInfo = $this->msitems_model->getSimpleDataById($dataD->fin_item_id);
 
 			//Cek is item have batch number
 			if($itemInfo->fbl_is_batch_number && $dataD->fst_batch_number == "" ){

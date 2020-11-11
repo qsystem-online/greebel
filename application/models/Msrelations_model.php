@@ -165,10 +165,10 @@ clASs Msrelations_model extends MY_Model {
     public function getCustomerList(){
         $term = $this->input->get("term");
         $term = "%".$term."%";
-        //$ssql = "select * from msrelations where find_in_set('1',fst_relation_type) and fin_branch_id = ? and fst_relation_name like ?";
-        $ssql = "select * from msrelations where fin_branch_id = ? and fst_relation_name like ?";
-
+        $ssql = "select * from msrelations where find_in_set('1',fst_relation_type) and fin_branch_id = ? and fst_relation_name like ?";
+        //$ssql = "select fin_relation_id,fst_relation_name from msrelations where fin_branch_id = ? and fst_relation_name like ?";
         $query = $this->db->query($ssql, [$this->aauth->get_active_branch_id(),$term]);
+
         $rs = $query->result();
         return $rs;
 

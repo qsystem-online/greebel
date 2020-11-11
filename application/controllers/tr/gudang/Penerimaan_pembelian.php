@@ -204,7 +204,9 @@ class Penerimaan_pembelian extends MY_Controller{
 				$this->trlpbgudangitems_model->insert($dataD);			
 			}
 			
-			$this->trlpbgudang_model->posting($insertId);		
+			$this->trlpbgudang_model->posting($insertId);	
+			
+
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
@@ -382,7 +384,7 @@ class Penerimaan_pembelian extends MY_Controller{
 				throw new CustomException("Error Validation Details",3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
 			}
 
-			$itemInfo = $this->msitems_model->geSimpletDataById($dataD->fin_item_id);
+			$itemInfo = $this->msitems_model->getSimpleDataById($dataD->fin_item_id);
 
 			//Cek is item have batch number
 			if($itemInfo->fbl_is_batch_number && $dataD->fst_batch_no == "" ){

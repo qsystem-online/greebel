@@ -124,6 +124,13 @@ class MY_Model extends CI_Model
 		$this->throwIfDBError();
 	}
 
+	public function getSimpleDataById($id,$activeStatus ='A'){
+		$ssql = "SELECT * FROM $this->tableName where $this->pkey = ? and fst_active = '$activeStatus'";
+		$qr = $this->db->query($ssql,[$id]);
+		return $qr->row();
+	}
+
+
 	public function getTableName()
 	{
 		return $this->tableName;

@@ -486,6 +486,7 @@ class Relation extends MY_Controller{
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["messages"] = "";
 		$this->ajxResp["data"] = $rs;
 		$this->json_output();
 	}
@@ -686,5 +687,14 @@ class Relation extends MY_Controller{
         //FILE NAME WITH DATE
         $this->phpspreadsheet->save("relations_report_" . date("Ymd") . ".xls" ,$spreadsheet);
 
-    }
+	}
+	
+	public function ajxGetCustomerList(){
+		$customerList = $this->msrelations_model->getCustomerList();
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"messages"=>"",
+			"data"=>$customerList
+		]);
+	}
 }

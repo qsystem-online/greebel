@@ -18,7 +18,6 @@ return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-factory/src', $vendorDir . '/psr/http-message/src'),
     'Psr\\Http\\Client\\' => array($vendorDir . '/psr/http-client/src'),
-    'Psr\\Cache\\' => array($vendorDir . '/psr/cache/src'),
     'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src/Prophecy'),
     'PhpOffice\\PhpSpreadsheet\\' => array($vendorDir . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet'),
     'MyCLabs\\Enum\\' => array($vendorDir . '/myclabs/php-enum/src'),
@@ -29,9 +28,5 @@ return array(
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
     'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
-    'Cache\\TagInterop\\' => array($vendorDir . '/cache/tag-interop'),
-    'Cache\\Hierarchy\\' => array($vendorDir . '/cache/hierarchical-cache'),
-    'Cache\\Adapter\\Redis\\' => array($vendorDir . '/cache/redis-adapter'),
-    'Cache\\Adapter\\Common\\' => array($vendorDir . '/cache/adapter-common'),
     'Box\\Spout\\' => array($vendorDir . '/box/spout/src/Spout'),
 );

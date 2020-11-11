@@ -1,3 +1,4 @@
+var select2customAdapter;
 $(function(){
 	//init datetime picker
 	if (typeof $(".datepicker").datepicker === "function") { 
@@ -12,6 +13,23 @@ $(function(){
 
 	if (typeof $(".select2").select2 === "function") { 
 		$(".select2").select2();
+
+		//reff: https://stackoverflow.com/questions/16480910/update-select2-data-without-rebuilding-the-control
+		//Sample usage: D:\xampp\htdocs\greebel\application\views\pages\tr\production\rmout_p\form.php | id:fin_wobatchno_id |line: 670
+		$.fn.select2.amd.define('select2/data/customAdapter',['select2/data/array', 'select2/utils'],
+			function (ArrayAdapter, Utils) {
+				function CustomDataAdapter ($element, options) {
+					CustomDataAdapter.__super__.constructor.call(this, $element, options);
+				}
+				Utils.Extend(CustomDataAdapter, ArrayAdapter);
+				CustomDataAdapter.prototype.updateOptions = function (data) {
+					this.$element.find('option').remove(); // remove all options
+					this.addOptions(this.convertToOptions(data));
+				}        
+				return CustomDataAdapter;
+			}
+		);
+		select2customAdapter = $.fn.select2.amd.require('select2/data/customAdapter');
 	};
 
 	if (typeof $('.icheck').iCheck === "function") {

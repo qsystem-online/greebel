@@ -276,4 +276,13 @@ class Warehouse extends MY_Controller
         $this->Cell(30, 10, 'Percobaan Header Dan Footer With Page Number', 0, 0, 'C');
         $this->Cell(0, 10, 'Halaman ' . $this->PageNo() . ' dari {nb}', 0, 0, 'R');
     }
+
+    public function ajxGetWarehouseList(){
+        $warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
+        $this->json_output([
+            "status"=>"SUCCESS",
+            "messages"=>"",
+            "data"=>$warehouseList
+        ]);
+    }
 }

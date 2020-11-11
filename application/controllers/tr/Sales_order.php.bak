@@ -131,8 +131,6 @@ class Sales_order extends MY_Controller{
 		$mdlPrint = $this->parser->parse('template/mdlPrint.php', [], true);
 		$mdlConfirmAuthorize = $this->parser->parse('template/mdlConfirmAuthorize.php', [], true);
 		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
-		
-		
 
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Sales Order" : "Update Sales Order";
@@ -140,7 +138,7 @@ class Sales_order extends MY_Controller{
 		$data["mdlPrint"] = $mdlPrint;
 		$data["mdlConfirmAuthorize"] = $mdlConfirmAuthorize;
 		$data["mdlEditForm"] = $edit_modal;
-		
+
 		if($mode == 'ADD'){
 			$data["fin_salesorder_id"] = 0;
 			$data["fst_salesorder_no"] = $this->trsalesorder_model->GenerateSONo();
@@ -804,114 +802,179 @@ class Sales_order extends MY_Controller{
         
 	}
 
-	
-	public function ajxGetCustomerList(){
-		$this->load->model("msrelations_model");
-
-		$custList = $this->msrelations_model->getCustomerList();
-		$arrData =[];
-		foreach($custList as $cust){
-			$arrData[] = [
-				"fin_relation_id"=>$cust->fin_relation_id,
-				"fst_relation_name"=>$cust->fst_relation_name,		
-				"fin_terms_payment"=>$cust->fin_terms_payment,
-				"fin_sales_id"=>$cust->fin_sales_id,
-				"fin_cust_pricing_group_id"=>$cust->fin_cust_pricing_group_id,
-			];
-		}
-
-		$this->json_output([
-			"status"=>"SUCCESS",
-			"messages"=>"",
-			"data"=>$arrData
-		]);
+	public function get_customers(){
+		$this->load->model("msrelations_model");			
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $this->msrelations_model->getCustomerList();
+		$this->json_output();
 	}
 
-	public function ajxGetDataItem(){
-		$term = $this->input->get("term");		
-		$ssql = "SELECT fin_item_id, fst_item_code,fst_item_name,fst_max_item_discount 
-			FROM msitems 
-			WHERE CONCAT(fst_item_code,' - ' ,fst_item_name) LIKE ? 
-			AND fst_active ='A' 
-			ORDER BY CONCAT(fst_item_code,' - ' ,fst_item_name)";
-
+	public function get_mswarehouse(){
+		$term = $this->input->get("term");
+		$ssql = "select fin_warehouse_id, fst_warehouse_name from mswarehouse where fst_warehouse_name like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
-		$this->json_output([
-			"status"=>"SUCCESS",
-			"messages"=>"",
-			"data"=>$rs
-		]);
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
 	}
 
-	public function ajxGetUnitList(){
-		$finItemId = $this->input->get("fin_item_id");
-
-		$ssql ="SELECT fst_unit,fdc_conv_to_basic_unit 
-			FROM msitemunitdetails where fin_item_id = ? and fbl_is_selling = 1 and fst_active = 'A'";
-
-		$qr = $this->db->query($ssql,[$finItemId]);
-		$this->json_output([
-			"status"=>"SUCCESS",
-			"messages"=>"",
-			"data"=>$qr->result()
-		]);
-		
-
-	}
-
-	public function ajxGetSellingInfo(){
-
-		//Return stock in basic unit
-
-		$this->load->model("msitems_model");
-		$this->load->model("trinventory_model");
+	public function getValueFormInit($fin_salesorder_id){
+		$salesDeptId = getDbConfig("sales_department_id");
+		$activeBranchId = $this->aauth->get_active_branch_id();
 
 		
-		$finItemId = $this->input->get("fin_item_id");
-		$finWarehouseId = $this->input->get("fin_warehouse_id");
-		$fstUnit = $this->input->get("fst_unit");
-		$finCustomerId =$this->input->get("fin_relation_id");			
-		$sellingPrice = $this->msitems_model->getSellingPrice($finItemId,$fstUnit,$finCustomerId);
+		
+		$ssql = "select fin_warehouse_id, fst_warehouse_name from mswarehouse where fin_branch_id =?";
+		$qr = $this->db->query($ssql,[$activeBranchId]);
+		$rsWarehouse = $qr->result();
+	
+		$rscurrencies = [];
+		$rscurrencies[] = getDefaultCurrency();
 
-		$fstBasicUnit = $this->msitems_model->getBasicUnit($finItemId);
-		$realStock = $this->trinventory_model->getStock($finItemId,$fstBasicUnit,$finWarehouseId);
-		$marketingStock = $this->trinventory_model->getMarketingStock($finItemId,$fstBasicUnit,$finWarehouseId);
+		$ssql = "select fst_item_discount from msitemdiscounts where fst_active ='A'";
+		$qr = $this->db->query($ssql,[]);
+		$rsdiscount = $qr->result();
 
-		$result = (object) [
-			"fst_unit"=>$fstUnit,
-			"fst_basic_unit"=>$fstBasicUnit,
-			"sellingPrice" => $sellingPrice,
-			"real_stock" => $realStock,
-			"marketing_stock" => $marketingStock
+		$data = [
+			"sales" => $rsSales,
+			"warehouse" => $rsWarehouse,
+			"currencies" => $rscurrencies,
+			"discounts" => $rsdiscount,
+			"min_date_time"=>getDbConfig("lock_transaction_date")
 		];
 
-		$this->json_output([
-			"status"=>"SUCCESS",
-			"messages"=>"",
-			"data"=>$result,
-		]);
-	}
+		if ($fin_salesorder_id != 0){
+			$this->load->model("trsalesorder_model");
+			$tmp = $this->trsalesorder_model->getDataById($fin_salesorder_id);		
+			$data["sales_order"] = $tmp["sales_order"];
+			$data["so_details"] = $tmp["so_details"];
+		}
 
-	public function ajxGetPromoItem(){		
-		$dataH = $this->input->post();
-		$finCustomerId = $dataH["fin_relation_id"];
-		unset($dataH["detail"]);
-		$details = $this->input->post("detail");		
-		$isIncludePPN = getDbConfig("sales_price_inc_ppn") == 1 ?  true : false;
-		$ppn = $isIncludePPN ? (double) getDbConfig("sales_ppn_percent") : (double) $dataH["fdc_vat_percent"];
-
-		$details = json_decode($details);
-		//$rsPromoItem = $this->trsalesorder_model->getDataPromo($finCustomerId,$dataH["fdc_vat_percent"],$isIncludePPN,$details);
-		$rsPromoItem = $this->trsalesorder_model->getDataPromo($finCustomerId,$ppn,$isIncludePPN,$details);		
 		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["message"] = "";
-		$this->ajxResp["data"] = $rsPromoItem;
+		$this->ajxResp["data"] = $data;
 		$this->json_output();
-		return;
+
+	
 	}
+
+	public function getSelect2_sales_warehouse_currency(){
+		$salesDeptId = getDbConfig("sales_department_id");
+		$activeBranchId = $this->aauth->get_active_branch_id();
+
+		$ssql = "select fin_user_id, fst_username from users where  fin_branch_id =? and fin_department_id = $salesDeptId order by fst_username";
+		$qr = $this->db->query($ssql,[$activeBranchId]);
+		//lastQuery();
+		$rsSales = $qr->result();
+		
+		$ssql = "select fin_warehouse_id, fst_warehouse_name from mswarehouse where fin_branch_id =?";
+		$qr = $this->db->query($ssql,[$activeBranchId]);
+		$rsWarehouse = $qr->result();
 	
+		//$ssql = "select CurrCode, CurrName from mscurrencies";
+		//$qr = $this->db->query($ssql,[]);
+		//$rscurrencies = $qr->result();
+		$rscurrencies = [];
+		$rscurrencies[] = getDefaultCurrency();
+
+		$data = [
+			"sales" => $rsSales,
+			"warehouse" => $rsWarehouse,
+			"currencies" => $rscurrencies
+		];
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $data;
+		$this->json_output();
+	}
+
+	public function get_sales(){
+		$term = $this->input->get("term");
+		$salesDeptId = getDbConfig("sales_department_id");
+
+		$ssql = "select fin_user_id, fst_username from users where fst_username like ? and fin_department_id = $salesDeptId order by fst_username";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $rs;
+		$this->json_output();
+	}
+
+	public function get_data_item(){
+		$term = $this->input->get("term");		
+		$ssql = "select fin_item_id, CONCAT(fst_item_code,' - ' ,fst_item_name) as ItemCodeName,fst_item_code,fst_item_name,fst_max_item_discount from msitems where CONCAT(fst_item_code,' - ' ,fst_item_name) like ? order by fst_item_name";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+		$this->json_output($rs);
+	}
+
+	public function get_data_disc(){
+		$term = $this->input->get("term");
+		$ssql = "select fst_item_discount from msitemdiscounts where fst_item_discount like ? order by fst_item_discount";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$rs = $qr->result();
+
+		$this->json_output($rs);
+	}
+
+	public function getSoDetail($fin_salesorder_id){
+        $this->load->model("trsalesorderdetails_model");
+        $result = $this->trsalesorderdetails_model->getSoDetail($fin_salesorder_id);
+        $this->ajxResp["data"] = $result;
+        $this->json_output();
+	}
+
+	/*public function report_sales_order(){
+        $this->load->library('pdf');
+        //$customPaper = array(0,0,381.89,595.28);
+        //$this->pdf->setPaper($customPaper, 'landscape');
+        $this->pdf->setPaper('A4', 'portrait');
+		//$this->pdf->setPaper('A4', 'landscape');
+		
+		$this->load->model("trsalesorder_model");
+		$listSalesOrder = $this->trsalesorder_model->getSales_order();
+        $data = [
+			"datas" => $listSalesOrder
+		];
+			
+        $this->pdf->load_view('report/sales_order_pdf', $data);
+        $this->Cell(30,10,'Percobaan Header Dan Footer With Page Number',0,0,'C');
+		$this->Cell(0,10,'Halaman '.$this->PageNo().' dari {nb}',0,0,'R');
+	}*/
 	
+	public function coba(){
+		$ssql = "create temporary table tbltmp select * from users";
+		$this->db->query($ssql,[]);
+		
+		$ssql = "select * from tbltmp";
+		$qr = $this->db->query($ssql,[]);
+		//print_r($qr->result());
+		
+	}
+	public function coba2(){
+		$ssql = "select * from tbltmp";
+		$qr = $this->db->query($ssql,[]);
+		print_r($qr->result());
+		
+		
+	}
+
+	public function testPromo(){
+		$this->load->model("trsalesorder_model");
+		$fin_customer_id =9;
+		$arrItem = [
+			["fin_item_id"=>"2","fdb_qty"=>22,"fst_unit"=>"pack","fdc_price"=>10000,"fst_disc_item"=>0,"fdc_disc_amount"=>0],
+			["fin_item_id"=>"1","fdb_qty"=>9,"fst_unit"=>"pack","fdc_price"=>20000,"fst_disc_item"=>0,"fdc_disc_amount"=>0]
+		];
+		$details = json_encode($arrItem);
+		$details = json_decode($details);
+
+
+		$promo = $this->trsalesorder_model->getDataPromo($fin_customer_id,$details);
+		echo "<br><br><br><br><br>Promo Item :  :<br>";
+		var_dump($promo);
+	}
 
 //===== UNHOLD SALES ORDER ==============================================================================================================================================================================
 
@@ -975,7 +1038,24 @@ class Sales_order extends MY_Controller{
         $this->ajxResp["message"] = "";
         $this->ajxResp["data"]=[];
         $this->json_output();
-	}	
+	}
+	
+	public function get_promo_item(){		
+		$dataH = $this->input->post();
+		$finCustomerId = $dataH["fin_relation_id"];
+		unset($dataH["detail"]);
+		$details = $this->input->post("detail");
+		$isIncludePPN = isset($dataH["fbl_is_vat_include"]) ?  true : false;
+		$details = json_decode($details);
+
+		$rsPromoItem = $this->trsalesorder_model->getDataPromo($finCustomerId,$dataH["fdc_vat_percent"],$isIncludePPN,$details);
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = "";
+		$this->ajxResp["data"] = $rsPromoItem;
+		$this->json_output();
+		return;
+	}
 
 	public function check_authorization(){
 		$dataH = $this->input->post();

@@ -76,34 +76,35 @@
 								</select>
                             </div>                        
                         </div>
-
-						<div class="form-group">							
-							<div class="col-md-10 col-md-offset-2">
-								<label class="checkbox-inline"><input id="fbl_non_faktur" name='fbl_non_faktur' type="checkbox" value="1"><?= lang("Retur Faktur yang sudah dibayar (tidak mengurangi nilai faktur) ") ?></label>
-							</div>
-						</div>												
-
-						<div class="form-group">
+						
+						<div class="form-group" style="display:none">
 							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?> </label>
                             <div class="col-sm-2">
 								<select id="fst_curr_code" type="TEXT" class="form-control" name="fst_curr_code">
 									<?php 
-									$currencyList  = $this->mscurrencies_model->getCurrencyList();
-									foreach($currencyList as $curr){
-										$selected = $curr->fbl_is_default == 1 ? "selected" : "";
-										echo "<option value='$curr->fst_curr_code' data-rate='$curr->fdc_exchange_rate_to_idr' $selected>$curr->fst_curr_code</option>";  
-									}
+									$curr = getDefaultCurrency();
+									echo "<option value='$curr[CurrCode]' data-rate='1'>$curr[CurrCode]</option>";  									
 									?>
 								</select>
 							</div>										                    
 							<label for="fdc_exchange_rate_idr" class="col-md-2 control-label"><?=lang("Nilai Tukar IDR")?> </label>
                             <div class="col-sm-2">
-								<input type="TEXT" id="fdc_exchange_rate_idr"  name="fdc_exchange_rate_idr" class="form-control money"/>
+								<input type="TEXT" id="fdc_exchange_rate_idr"  name="fdc_exchange_rate_idr" class="form-control money" value="1"/>
 								<div id="fdc_exchange_rate_idr_err" class="text-danger"></div>
 							</div>										                    							
-						</div>						
+						</div>
 
-						<div class="form-group" style="margin-bottom:0px">
+						<div class="form-group">
+                            <label for="fst_lpbsalesreturn_id_list" class="col-md-2 control-label"><?=lang("Penerimaan Retur")?> </label>
+                            <div class="col-md-8">
+                                <select id="fst_lpbsalesreturn_id_list" class="form-control" name="fst_lpbsalesreturn_id_list[]" multiple="multiple" style="width:100%"></select>
+                            </div>
+							<div class="col-md-2" style="text-align:right">
+								<button id="btn-get-detail" class="btn btn-primary btn-sm"><i class="fa fa-plus" aria-hidden="true"></i> Get Details</button>
+							</div>
+                        </div>
+
+						<div class="form-group" style="margin-bottom:0px;display:none">
 							<div class="col-md-12" style="text-align:right">
 								<button id="btn-add-detail" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>Tambah Item</button>
 							</div>
@@ -150,394 +151,146 @@
 	</div>
 </section>
 
-<div id="mdlDetail" class="modal fade" role="dialog">
+<div id="mdlDetail" class="modal fade" role="dialog" style="display:none">
 	<div class="modal-dialog" style="display:table;width:700px">
 		<!-- modal content -->
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">			
 			<div class="modal-body">
-				<div class="row">
-                    <div class="col-md-12">
-                        <div style="border:0 px inset #f0f0f0;border-radius:10px;padding:5px">
-                            <fieldset style="padding:10px">
-				
-							<form id="form-detail-return" class="form-horizontal">
-									
-									<div class="form-group">
-										<label for="fin_inv_id" class="col-md-3 control-label"><?=lang("Faktur Penjualan")?> </label>							
-										<div class="col-md-9">
-											<select id="fin_inv_id" class="form-control" name="fin_inv_id" style="width:100%"></select>                                
-										</div>							                    
-									</div>
+				<form id="form-detail-return" class="form-horizontal">
+						
+					<div class="form-group">
+						<label class="col-md-3 control-label"><?=lang("Faktur Penjualan")?> </label>							
+						<div class="col-md-9">
+							<input type="text" id="dfst_inv_no" class="form-control" name="fst_inv_no" readonly />
+						</div>							                    
+					</div>
 
-									<div class="form-group">
-										<label for="fin_item_id" class="col-md-3 control-label">Items</label>
-										<div class="col-md-9">
-											<select id="fin_item_id" class="ele-total form-control " style="width:100%"></select>
-										</div>
-									</div>
-									<div class="form-group">
-										<label for="fst_custom_item_name" class="col-md-3 control-label">Custom Name</label>
-										<div class="col-md-9">
-											<input id="fst_custom_item_name" class="form-control">
-										</div>
-									</div>
-
-									<div class="form-group">
-										<label for="fst_unit" class=" col-md-3 control-label">Unit</label>
-										<div class="col-md-9">
-											<select id="fst_unit" class=" ele-total form-control" style="width:100%"></select>
-										</div>
-									</div>
-									<div class="form-group">
-										<label for="fst_unit" class="col-md-12 control-label"><input id="fbl_is_vat_include" type="Checkbox" checked style="margin-right:10px" class="ele-total"/> include Ppn </label>
-									</div>
-
-									<div class="form-group">
-										<label for="fdb_qty" class="col-md-3 control-label">Qty</label>
-										<div class="col-md-2">
-											<input type="number" class="ele-total form-control text-right numeric" id="fdb_qty" value="1" min="1">
-										</div>
-
-										<label for="fdc_price" class="col-md-2 control-label">Price</label>
-										<div class="col-md-5">
-											<input type="text" class="ele-total form-control text-right money" id="fdc_price" value="0" style="text-align: right;">
-										</div>
-									</div>									
-
-									<div class="form-group">
-										<label for="fst_disc_item" class=" col-md-3 control-label">Disc ++</label>
-										<div class="col-md-3">
-											<select id="fst_disc_item" class="ele-total form-control text-right" style="width:100%;text-align-last: right;">
-												<?php 
-													$discList = $this->msitemdiscounts_model->getItemDiscountList();
-													foreach($discList as $disc){
-														echo "<option value='$disc->fst_item_discount'>$disc->fst_item_discount</option>";
-													}
-												?>
-											</select>											
-										</div>
-										<div class="col-md-6">
-											<input type="text" class="form-control text-right" id="fdc_disc_amount" value="0.00" disabled>
-										</div>
-									</div>
-									
-									<div class="form-group">
-										<label for="fdc_disc_amount" class="col-md-3 control-label">DPP Amount</label>
-										<div class="col-md-9">
-											<input type="text" class="form-control text-right" id="fdc_dpp_amount" value="0.00" readonly />
-										</div>
-									</div>
-
-									<div class="form-group">
-										<label for="fdc_ppn_percent" class="col-md-3 control-label">Ppn</label>	
-										<div class="col-md-3">
-											<input type="text" id="fdc_ppn_percent" value="10" class="ele-total form-control text-right"/>
-										</div>
-										<div class="col-md-6">
-											<input type="text" class="form-control text-right" id="fdc_ppn_amount" value="0.00" disabled>
-										</div>																				
-									</div>								
-
-									<div class="form-group">
-										<label for="fdc_subtotal" class="col-md-3 control-label">Sub total</label>
-										<div class="col-md-9">
-											<input type="text" class="form-control text-right" id="fdc_subtotal" value="0.00" readonly />
-										</div>
-									</div>
-								</form>
-
-								<div class="modal-footer">
-									<button id="btn-add-detail-save" type="button" class="btn btn-primary btn-sm text-center" style="width:15%">Add</button>
-									<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal">Close</button>
-								</div>
-							</fieldset>
+					<div class="form-group">
+						<label class="col-md-3 control-label">Items</label>
+						<div class="col-md-9">
+							<input type="text" id="dfin_item_id" class="form-control" readonly/>
 						</div>
 					</div>
-				</div>
+					
+
+					<div class="form-group">
+						<label class=" col-md-3 control-label">Unit</label>
+						<div class="col-md-9">
+							<input type="text" id="dfst_unit" class="form-control" readonly/>
+						</div>
+					</div>
+					
+
+					<div class="form-group">
+						<label class="col-md-3 control-label">Qty</label>
+						<div class="col-md-2">
+							<input type="number" class="form-control text-right numeric" id="dfdb_qty" value="1" min="1" readonly>
+						</div>
+
+						<label class="col-md-2 control-label">Price</label>
+						<div class="col-md-5">
+							<input type="text" class="form-control text-right money" id="dfdc_price" value="0" style="text-align: right;" readonly>
+						</div>
+					</div>									
+
+					<div class="form-group">
+						<label class=" col-md-3 control-label">Disc</label>						
+						<div class="col-md-9">
+							<input type="text" class="form-control text-right" id="dfdc_disc_amount_per_item" value="0.00" readonly>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class=" col-md-3 control-label">Potongan</label>
+						<div class="col-md-9">
+							<input type="text" class="form-control money text-right" id="dfdc_potongan" value="0.00">
+						</div>
+					</div>
+					
+
+					<div class="form-group">
+						<label for="fdc_subtotal" class="col-md-3 control-label">Sub total</label>
+						<div class="col-md-9">
+							<input type="text" class="form-control text-right" id="dfdc_subtotal" value="0.00" readonly />
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button id="btn-add-detail-save" type="button" class="btn btn-primary btn-sm text-center" style="width:15%">Add</button>
+				<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
-	<script type="text/javascript">
-		mdlDetail = {
-			selectedInv:null,
-			selectedItem:null,
-			isNonFaktur:false,
+
+	<script type="text/javascript" info="define">
+		var mdlDetail = {
 			show:function(){
-				$("#mdlDetail").modal("show");
-				//mdlDetail.clearDetailFormOnInvChange();
+				if (selectedRow !=  null){
+					var data = selectedRow.data();
+					$("#dfst_inv_no").val(data.fst_inv_no);
+					$("#dfin_item_id").val(data.fst_item_code + " - " + data.fst_item_name);
+					$("#dfst_unit").val(data.fst_unit);
+					$("#dfdb_qty").val(data.fdb_qty);
+					$("#dfdc_price").val(App.money_format(data.fdc_price));
+					$("#dfdc_disc_amount_per_item").val(App.money_format(data.fdc_disc_amount_per_item));
+					$("#dfdc_potongan").val(App.money_format(data.fdc_potongan));					
+					mdlDetail.calculateTotal();
+					$("#mdlDetail").modal("show");				
+				}
+				
 			},
-			close:function(){
+			hide:function(){
 				$("#mdlDetail").modal("hide");
 			},
-			clearDetailFormOnInvChange:function(){
-				$("#fin_item_id").empty();
-				$("#fst_custom_item_name").val("");
-				$("#fst_unit").empty();
-				$("#fdb_qty").val(1);
-				$("#fdc_price").val(App.money_format(0));
-				$("#fst_disc_item").val($("#fst_disc_item option:first").val());
-				$("#fdc_disc_amount").val(App.money_format(0));
-				$("#fdc_ppn_amount").val(App.money_format(0));
-				$("#fdc_dpp_amount").val(App.money_format(0));
-				$("#fdc_subtotal").val(App.money_format(0));
-			},			
+					
 			calculateTotal:function(){
-				var qty = $("#fdb_qty").val();
-				var price = $("#fdc_price").val();
-				var strDisc = $("#fst_disc_item").val();
-				var ttlBfDisc = qty * price;				
-				var discAmount = App.calculateDisc(ttlBfDisc, strDisc);				
-
-				if($("#fbl_is_vat_include").prop("checked") ){
-					var dpp = (price * qty) / (1 + ($("#fdc_ppn_percent").val() / 100));
-				}else{
-					var dpp = (price * qty);
-				}
+				var qty = $("#dfdb_qty").val();
+				var price = parseFloat(App.money_parse($("#dfdc_price").val()));
+				var discAmount = parseFloat(App.money_parse($("#dfdc_disc_amount_per_item").val()));
 				
-				var ppn = dpp * ($("#fdc_ppn_percent").val() / 100)
-
-
-				$("#fdc_disc_amount").val(App.money_format(discAmount));
-				$("#fdc_dpp_amount").val(App.money_format(dpp));
-				$("#fdc_ppn_amount").val(App.money_format(ppn));				
-				$("#fdc_subtotal").val(App.money_format(dpp-discAmount+ppn));
-			},
-			setUnitToSelect2:function(){
-				$("#fst_unit").select2({
-					minimumResultsForSearch: Infinity,
-					ajax: {
-						delay: 500,
-						url: SITE_URL + "tr/sales/sales_return/get_sell_unit_list",
-						data: function (params) {				
-							params.finCustomerId = $("#fin_customer_id").val();
-							params.finItemId =$("#fin_item_id").val();
-							return params;
-						},
-						processResults: function (resp) {
-							data  = resp.data;
-							objList = data.map(function(obj){
-								return {
-									id:obj.fst_unit,
-									text:obj.fst_unit,
-									fdc_price:obj.fdc_price,
-								}
-							});
-							return {
-								results: objList
-							};
-						}
-					},
-				}).on("select2:select",function(e){
-					data = e.params.data;
-					$("#fdc_price").val(App.money_format(data.fdc_price));
-					mdlDetail.calculateTotal();
-				});
-				App.fixedSelect2();
-			},
-			clearForm:function(){
-				
+				var subTotal = qty * price;
+				var ttlDisc = qty *discAmount;
+				var potongan = parseFloat(App.money_parse($("#dfdc_potongan").val()));
+				$("#dfdc_subtotal").val(App.money_format(subTotal - ttlDisc - potongan));
+			},			
+			clear:function(){
+				$("#dfst_inv_no").val("");
+				$("#dfin_item_id").val("");
+				$("#dfst_unit").val("");
+				$("#dfdb_qty").val("1");
+				$("#dfdc_price").val("0");
+				$("#dfdc_disc_amount_per_item").val("0");
+				$("#dfdc_potongan").val(0);
+				selectedRow = null;				
 			}		
 		}
-		
-		$(function(){
-			$("#fin_inv_id").select2({
-				allowClear:true,
-				debug:true,
-				placeholder:"<?=lang("Pilih faktur.. ")?>",
-				ajax: {
-					delay: 500,
-					url: SITE_URL + "tr/sales/sales_return/get_list_invoice",
-					data: function (params) {
-						params.isPaidInv = $("#fbl_non_faktur").prop("checked") == true ? 1 : 0;					
-						params.finCustomerId = $("#fin_customer_id").val();
-						params.fstCurrCode = $("#fst_curr_code").val();
-						return params;
-					},
-					processResults: function (resp) {
-						data  = resp.data;
-						objList = data.map(function(obj){
-							return {
-								id:obj.fin_inv_id,
-								text:obj.fst_inv_no,
-								fdt_inv_datetime:obj.fdt_inv_datetime,
-								fbl_is_vat_include:obj.fbl_is_vat_include,
-								fdc_ppn_percent:obj.fdc_ppn_percent,
-							}
-						});
-						return {
-							results: objList
-						};
-					}
-				},
-				templateResult:function(inv){				
-					if (inv.loading == true){
-						return;
-					}
-					sstr = "<label>"+inv.text+"</label><label style='margin-left:20px'>" + App.dateTimeFormat(inv.fdt_inv_datetime) + "</label>";
-					return $(sstr);
-				}
-			}).on('select2:select',function(e){
-				mdlDetail.selectedInv = e.params.data;	
-				mdlDetail.selectedItem = null;	
+	</script>
 
-				var selectedInv = mdlDetail.selectedInv;
-
-				$("#fbl_is_vat_include").prop("disabled",true);
-				$("#fdc_ppn_percent").prop("disabled",true);
-				$("#fst_disc_item").prop("disabled",true);
-
-				fblVATInc = selectedInv.fbl_is_vat_include == 1 ? true : false;
-				$("#fbl_is_vat_include").prop("checked",fblVATInc);				    
-				$("#fdc_ppn_percent").val(selectedInv.fdc_ppn_percent);
-				$("#fdc_price").val(0);
-
-			}).on('select2:unselect',function(e){
-				$("#fbl_is_vat_include").prop("disabled",false);
-				$("#fdc_ppn_percent").prop("disabled",false);
-				$("#fst_disc_item").prop("disabled",false);
-				mdlDetail.selectedInv = null;
-				mdlDetail.clearDetailFormOnInvChange();
-
-
-			});
-
-			$("#fin_item_id").select2({
-				ajax: {
-					delay: 500, //milliseconds
-					url: function(params){
-						if ($("#fin_inv_id").val() == null && $("#fbl_non_faktur").prop("checked") == false){
-							alert("<?=lang("Return Faktur Belum bayar harus mengisi no faktur")?>");							
-						}else{
-							return SITE_URL + 'tr/sales/sales_return/get_item_by_inv';
-						}		
+	<script type="text/javascript" info="init">	
+		$(function(){			
 						
-					},					
-					data: function(params){
-						params.finInvId = $("#fin_inv_id").val();
-						return params;
-					},
-					processResults: function (resp) {
-						var data = resp.data;
-						return {
-							results: $.map(data,function(obj){
-								/*
-								fin_inv_detail_id,
-								a.fin_item_id,
-								b.fst_item_code,
-								b.fst_item_name,
-								a.fst_custom_item_name,
-								a.fst_unit,
-								(a.fdb_qty - a.fdb_qty_return) as fdb_qty_max_return,
-								a.fdc_price,
-								a.fst_disc_item,
-								fdc_disc_amount_per_item
-								*/
+		});
+	</script>
 
-
-								obj.id = obj.fin_item_id;
-								obj.text = obj.fst_custom_item_name;
-								return obj;							
-							})
-						};
-					}
-				}
-			}).on('select2:select', function (e) {
-				mdlDetail.selectedItem =  e.params.data;
-				
-				var selectedItem = mdlDetail.selectedItem;
-				App.log(selectedItem);
-
-				$("#fst_custom_item_name").val(selectedItem.fst_item_name);
-				//getItemBuyUnit(null);				
-				if ($("#fin_inv_id").val() == null ){
-					//Set Unit using select2
-					mdlDetail.setUnitToSelect2();
-				}else{
-					//Unit sesuai invoice
-					$("#fst_unit").empty();
-					App.addOptionIfNotExist("<option value='"+ selectedItem.fst_unit +"' data-price='"+selectedItem.fdc_price+"' selected>"+selectedItem.fst_unit+"</option>","fst_unit");
-					$("#fdb_qty").val(selectedItem.fdb_qty_max_return);
-					$("#fdc_price").val(selectedItem.fdc_price);
-					$("#fst_disc_item").val(selectedItem.fst_disc_item);
-					$(".ele-total").trigger("change");
-				}
-			}).on('select2:opening',function (e){
-				
-			});
-			
-			$(".ele-total").change(function(e){				
+	<script type="text/javascript" info="event">
+		$(function(){
+			$("#dfdc_potongan").change(function(e){
 				mdlDetail.calculateTotal();
 			});
-						
+
 			$("#btn-add-detail-save").click(function(e){
 				e.preventDefault();				
-				t = $("#tbldetails").DataTable();
-
-				selectedItem = mdlDetail.selectedItem;
-
-				var dpp = 0;
-				var discPerItem = App.calculateDisc($("#fdc_price").val(),$("#fst_disc_item").val());
-				var discTotal = $("#fdb_qty").val() * discPerItem;
-
-				if ($("#fbl_is_vat_include").prop("checked") ){					
-					var subTotal  = $("#fdc_price").val() * $("#fdb_qty").val();					
-					dpp = (subTotal - discTotal) / (1 + ($("#fdc_ppn_percent").val()/100));
-				}else{
-					dpp = $("#fdc_price").val() * $("#fdb_qty").val() - discTotal;
-				}
-
-				data =  {
-					fin_rec_id:0,
-					fin_item_id: $("#fin_item_id").val(),
-					fin_inv_id:0,
-					fst_inv_no:"",
-					fin_inv_detail_id:0,
-					fbl_is_vat_include: $("#fbl_is_vat_include").prop("checked"),
-					fst_item_code:selectedItem.fst_item_code,
-					fst_custom_item_name:$("#fst_custom_item_name").val(),
-					fst_unit:$("#fst_unit").val(),
-					fdc_price:$("#fdc_price").val(),
-					fdb_qty:$("#fdb_qty").val(),
-					fst_disc_item:$("#fst_disc_item").val(),
-					fdc_disc_amount_per_item: discPerItem,
-					fdc_dpp_amount: dpp,
-					fdc_ppn_percent: $("#fdc_ppn_percent").val(),
-					fdc_ppn_amount: dpp * ($("#fdc_ppn_percent").val() /100),
-				};
-				
-				if ( $("#fbl_non_faktur").prop("checked") == false && $("#fin_inv_id").val() == null){
-					alert("<?=lang("Return Faktur Belum bayar harus mengisi no faktur")?>");
-					return;
-				}
-
-				if ($("#fin_inv_id").val() == null ){
-
-				}else{
-					data.fin_inv_id = mdlDetail.selectedInv.id;
-					data.fst_inv_no = mdlDetail.selectedInv.text;
-					data.fin_inv_detail_id = selectedItem.fin_inv_detail_id;
-					/*
-					if (selectedItem.fdb_qty_max_return != null){
-						if (parseFloat(selectedItem.fdb_qty_max_return) < parseFloat(data.fdb_qty)){
-							alert("Max return " + selectedItem.fdb_qty_max_return);
-							return;
-						}
-					}
-					*/
-				}
-
-				if (selectedRow == null){
-					t.row.add(data);
-				}else{
-					dataTmp = t.row(selectedRow).data();
-					data.fin_rec_id = dataTmp.fin_rec_id;
-
-					t.row(selectedRow).data(data);
-				}		
+				var data = selectedRow.data();
+				data.fdc_potongan = App.money_parse($("#dfdc_potongan").val());
+				t.row(selectedRow).data(data);
 				t.draw(false);				
-				mdlDetail.close();
-			});			
+				mdlDetail.hide();
+			});
 		});
+	</script>
+
+	<script type="text/javascript" info="function">
 	</script>
 </div>
 
@@ -545,6 +298,176 @@
 <?php echo $mdlJurnal ?>
 <?php echo $mdlPrint ?>
 
+<script type="text/javascript" info="define">
+	var tblDetails;
+	var nonFaktur;
+	var selectedRow = null;
+	var lpbSalesRetunListChanged = false;
+	var fblIncPPN = <?=$fblPPNInc?>;
+	var fdcPPNPercent = <?=$fdcPPNPercent?>;
+
+</script>
+
+<script type="text/javascript" info="init">
+	$(function(){		
+		$("#fdt_salesreturn_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
+		$("#fst_curr_code").trigger("change");
+
+		$("#fin_customer_id").select2({
+			templateResult:function(val){
+				return $('<label style="width:100%">'+ val.text +'</label>');
+			}
+		}).on("change",function(e){
+			$("#tbldetails").DataTable().clear().draw(false);
+		});
+		$("#fin_customer_id").val(null).trigger("change.select2");
+
+		$("#fst_lpbsalesreturn_id_list").select2({
+			ajax:{
+				url:"<?=site_url()?>tr/sales/sales_return/ajxGetLPBSalesReturnList",
+				delay: 250,
+				data: function (params) {				
+					params.fin_customer_id = $("#fin_customer_id").val();
+					params.fst_curr_code =$("#fst_curr_code").val();
+					return params;
+				},
+				processResults: function (resp) {
+					if (resp.messages != ""){
+						alert(resp.messages);
+					}
+
+					if (resp.status == "SUCCESS"){
+						data  = resp.data;
+						var arrData=[];
+						$.each(data,function(i,v){
+							arrData.push({
+								id:v.fin_lpbsalesreturn_id,
+								text:v.fst_lpbsalesreturn_no,
+							})
+						});
+						return {
+							results: arrData
+						};
+					}
+				}
+
+			}
+			
+						
+		}).on("change",function(e){
+			lpbSalesRetunListChanged = true;
+			$("#btnSubmitAjax").hide();
+			
+
+			//console.log(e.params.data);
+			//console.log($("#fst_lpbsalesreturn_id_list").val());
+			//console.log($('#fst_lpbsalesreturn_id_list').select2('data'));
+
+		});
+		
+		tblDetails = $('#tbldetails').on('preXhr.dt', function ( e, settings, data ) {
+			//add aditional data post on ajax call
+			data.sessionId = "TEST SESSION ID";
+		}).DataTable({
+			scrollY: "300px",
+			scrollX: true,			
+			scrollCollapse: true,	
+			order: [],
+			columns:[
+				{"title" : "fin_rec_id","width": "0px",sortable:false,data:"fin_rec_id",visible:false},			
+				{"title" : "Inv No","width": "100px",sortable:false,data:"fst_inv_no"},
+				{"title" : "Item Name",sortable:false,data:"fst_item_id",
+					render:function(data,type,row){
+						var sstr = row.fst_item_code + " - " + row.fst_item_name;
+						sstr += "<br>" + row.fst_unit + " :" + row.fdb_qty + " * @" + money_format(row.fdc_price);
+						sstr += " = " +  money_format(row.fdb_qty * row.fdc_price);
+						return sstr;
+					}
+				},
+				{"title" : "Disc","width": "80px",sortable:false,className:'text-right',
+					render:function(data,type,row){						
+						discAmount = parseFloat(row.fdb_qty) * parseFloat(row.fdc_disc_amount_per_item);
+						return App.money_format(discAmount);
+					}
+				},
+				{"title" : "Potongan","width": "80px",sortable:false,className:'text-right',data:"fdc_potongan",
+					render:function(data,type,row){
+						return App.money_format(data);
+					}
+				},				
+				{"title" : "Sub Total","width": "80px",sortable:false,className:'text-right',
+					render:function(data,type,row){
+						var subttl = row.fdb_qty * row.fdc_price;
+						var disc = row.fdb_qty * row.fdc_disc_amount_per_item;						
+						return App.money_format(parseFloat(subttl -disc - row.fdc_potongan));
+					}
+				},
+				{"title" : "PPN","width": "80px",sortable:false,className:'text-right',
+					render:function(data,type,row){
+						var subttl = row.fdb_qty * row.fdc_price;
+						var disc = row.fdb_qty * row.fdc_disc_amount_per_item;												
+						var dpp = subttl -disc - row.fdc_potongan;						
+						if (fblIncPPN == 1){
+							dpp = dpp / (1 + (row.fdc_ppn_percent/100));
+						}
+						return App.money_format(dpp * (row.fdc_ppn_percent/100));
+					}
+				},
+				{"title" : "Total","width": "80px",sortable:false,className:'text-right',
+					render:function(data,type,row){
+						var subttl = row.fdb_qty * row.fdc_price;
+						var disc = row.fdb_qty * row.fdc_disc_amount_per_item;												
+						var dpp = subttl -disc - row.fdc_potongan;						
+						if (fblIncPPN == 1){
+							dpp = dpp / (1 + (row.fdc_ppn_percent/100));
+						}
+						
+						var total = dpp + (dpp * (row.fdc_ppn_percent/100));
+						return App.money_format(total);
+						
+
+						
+
+					}
+				},
+				{"title" : "Action","width": "35px",sortable:false,className:'text-center',
+					render:function(data,type,row){
+						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>';
+						//action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+						return action;
+					}
+				}
+			],
+			processing: true,
+			serverSide: false,
+			searching: false,
+			lengthChange: false,
+			paging: false,
+			info:false,				
+		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+			calculateTotal();
+		}).on('click','.btn-edit',function(e){
+			e.preventDefault();
+			
+
+			t = tblDetails;
+			var trRow = $(this).parents('tr');
+			selectedRow = t.row(trRow);
+			mdlDetail.show();
+
+		}).on('click','.btn-delete',function(e){
+			e.preventDefault();
+			t = $('#tbldetails').DataTable();
+			var trRow = $(this).parents('tr');
+			t.row(trRow).remove().draw();
+		});
+				
+		App.fixedSelect2();
+		initForm();
+	});
+</script>
 
 <script type="text/javascript" info="event">
 	$(function(){
@@ -595,6 +518,11 @@
 			$("#fdc_exchange_rate_idr").val(App.money_format($("#fst_curr_code option:selected").data("rate")));
 		});
 
+		$("#btn-get-detail").click(function(e){
+			e.preventDefault();
+			getDetailLPBSalesReturn();
+		});
+
 		$("#btn-add-detail").click(function(e){
 			e.preventDefault();
 			selectedRow = null;
@@ -606,179 +534,78 @@
 	});
 </script>
 
-<script type="text/javascript" info="define">
-	var nonFaktur;
-	var selectedRow = null;
-</script>
-
-<script type="text/javascript" info="init">
-	$(function(){		
-		$("#fdt_salesreturn_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
-		$("#fst_curr_code").trigger("change");
-
-		$("#fin_customer_id").select2({
-			templateResult:function(val){
-				return $('<label style="width:100%">'+ val.text +'</label>');
-			}
-		}).on("change",function(e){
-			$("#tbldetails").DataTable().clear().draw(false);
-		});
-		$("#fin_customer_id").val(null).trigger("change.select2");					
-		
-		$('#tbldetails').on('preXhr.dt', function ( e, settings, data ) {
-			//add aditional data post on ajax call
-			data.sessionId = "TEST SESSION ID";
-		}).DataTable({
-			scrollY: "300px",
-			scrollX: true,			
-			scrollCollapse: true,	
-			order: [],
-			columns:[
-				{"title" : "fin_rec_id","width": "0px",sortable:false,data:"fin_rec_id",visible:true},			
-				{"title" : "Inv No","width": "100px",sortable:false,data:"fst_inv_no"},
-				{"title" : "Item Code","width": "80px",sortable:false,data:"fst_item_code"},
-				{"title" : "Item Name","width": "100px",sortable:false,data:"fst_custom_item_name"},
-				{"title" : "Ppn Inc","width": "100px",sortable:false,data:"fbl_is_vat_include",className:"text-center",
-					render:function(data,type,row){
-						checked = data == true ? "checked" : "";
-						return "<input type='checkbox' " + checked + "/>";
-					}
-				},
-				{"title" : "Satuan","width": "100px",sortable:false,data:"fst_unit"},
-				{"title" : "Qty","width": "100px",sortable:false,data:"fdb_qty",className:'text-right'},
-				{"title" : "Price","width": "100px",sortable:false,data:"fdc_price",className:'text-right',
-					render:function(data,type,row){
-						return App.money_format(data);
-					}
-				},
-				{"title" : "Disc","width": "100px",sortable:false,className:'text-right',
-					render:function(data,type,row){						
-						discAmount = parseFloat(row.fdb_qty) * parseFloat(row.fdc_disc_amount_per_item);
-						return App.money_format(discAmount);
-					}
-				},
-				{"title" : "DPP","width": "100px",sortable:false,className:'text-right',
-					render:function(data,type,row){						
-						return App.money_format(row.fdc_dpp_amount);
-					}
-				},				
-				{"title" : "Ppn","width": "100px",sortable:false,className:'text-right',
-					render:function(data,type,row){												
-						return App.money_format(row.fdc_ppn_amount);
-					}
-				},
-				{"title" : "Total","width": "100px",sortable:false,className:'text-right',
-					render:function(data,type,row){						
-						return App.money_format(parseFloat(row.fdc_dpp_amount) + parseFloat(row.fdc_ppn_amount));
-					}
-				},
-				{"title" : "Action","width": "75px",sortable:false,className:'text-center',
-					render:function(data,type,row){
-						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>';
-						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
-						return action;
-					}
-				}
-			],
-			processing: true,
-			serverSide: false,
-			searching: false,
-			lengthChange: false,
-			paging: false,
-			info:false,				
-		}).on('draw',function(){
-			$(".dataTables_scrollHeadInner").css("min-width","100%");
-			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
-			calculateTotal();
-		}).on('click','.btn-edit',function(e){
-			e.preventDefault();
-			mdlDetail.show();
-
-			t = $("#tbldetails").DataTable();
-			var trRow = $(this).parents('tr');
-			selectedRow = t.row(trRow);
-			var data = t.row(selectedRow).data();
-			
-			$("#fin_inv_id").empty();
-			if (data.fin_inv_id != 0){
-				$("#fin_inv_id").trigger({
-					type:"select2:select",
-					params:{	
-						data:{				
-							id:data.fin_inv_id,
-							text:data.fst_inv_no,								
-							fdt_inv_datetime:data.fdt_inv_datetime,
-							fbl_is_vat_include:data.fbl_is_vat_include,
-							fdc_ppn_percent:data.fdc_ppn_percent,
-						}					
-					}
-				});
-				App.addOptionIfNotExist("<option value='"+data.fin_inv_id+"' selected>"+data.fst_inv_no+"</option>","fin_inv_id");
-			}
-
-			$("#fin_item_id").empty();
-			$("#fin_item_id").trigger({
-				type:"select2:select",
-				params:{	
-					data:{				
-						id:data.fin_item_id,
-						text:data.fst_custom_item_name,
-						fin_inv_detail_id:data.fin_inv_detail_id,
-						fin_item_id:data.fin_item_id,
-						fst_item_code:data.fst_item_code,
-						fst_item_name:data.fst_item_name,
-						fst_custom_item_name:data.fst_custom_item_name,
-						fst_unit:data.fst_unit,
-						fdb_qty_max_return:null,
-						fdc_price:data.fdc_price,
-						fst_disc_item:data.fst_disc_item,
-						fdc_disc_amount_per_item:data.fdc_disc_amount_per_item
-					}					
-				}
-			});
-			$("#fin_item_id").append("<option value='"+data.fin_item_id+"'>"+data.fst_item_code + " - " + data.fst_custom_item_name +"</option>");
-			
-			$("#fst_custom_item_name").val(data.fst_custom_item_name);
-			
-			$("#fst_unit").empty();
-			$("#fst_unit").append("<option value='"+data.fst_unit+"'>"+data.fst_unit+"</option>" );
-			
-			$("#fdb_qty").val(data.fdb_qty);
-			$("#fdc_price").val(data.fdc_price);
-			$("#fst_disc_item").val(data.fst_disc_item);
-			mdlDetail.calculateTotal();
-			
-
-		}).on('click','.btn-delete',function(e){
-			e.preventDefault();
-			t = $('#tbldetails').DataTable();
-			var trRow = $(this).parents('tr');
-			t.row(trRow).remove().draw();
-		});
-				
-		App.fixedSelect2();
-		initForm();
-	});
-</script>
-
 <script type="text/javascript" info="function">
+	function getDetailLPBSalesReturn(){
+		$("#btnSubmitAjax").hide();
+		
+		App.blockUIOnAjaxRequest();
+		$.ajax({
+			url:"<?=site_url()?>tr/sales/sales_return/ajxGetLPBSalesReturnItems",
+			method:"GET",
+			data:{
+				fst_lpbsalesreturn_id_list:$("#fst_lpbsalesreturn_id_list").val()
+			}
+		}).done(function(resp){
+			$("#btnSubmitAjax").show();
+			if (resp.messages != ""){
+				alert(resp.messages);
+			}
+			
+			if(resp.status == "SUCCESS"){
+				var details = [];
+				$.each(resp.data,function(i,v){
+					details.push({
+						fin_rec_id:0,
+						fin_inv_id:v.fin_inv_id,
+						fst_inv_no:v.fst_inv_no,
+						fin_item_id:v.fin_item_id,
+						fst_item_code:v.fst_item_code,
+						fst_item_name:v.fst_item_name,
+						fst_unit:v.fst_unit,
+						fdb_qty:v.fdb_qty,
+						fdc_price:v.fdc_price,
+						fdc_potongan:0,
+						fdc_disc_amount_per_item:v.fdc_disc_amount_per_item,
+						fdc_ppn_percent:v.fdc_ppn_percent,
+					});
+				});
+				tblDetails.clear();
+				tblDetails.rows.add(details).draw(false);
+			}
+			
+
+
+		});
+		
+	}
+	
+	
 	function calculateTotal(){
 
-		t= $('#tbldetails').DataTable();
+		t= tblDetails;
 		var datas = t.rows().data();
 		var total = 0;
 		var totalDisc = 0;
 		var totalDPP = 0;
 		var totalPPN = 0;
+
 		$.each(datas,function(i,data){
 
 			var discAmount =  parseFloat(data.fdc_disc_amount_per_item) *  parseFloat(data.fdb_qty);
-			var subttl =  parseFloat(data.fdc_dpp_amount)  +  parseFloat(data.fdc_ppn_amount);			
-			total += subttl;
-			totalDisc += discAmount;
-			totalDPP += parseFloat(data.fdc_dpp_amount);
-			totalPPN += parseFloat(data.fdc_ppn_amount);
+			var subttl =  parseFloat(data.fdc_price)  *  parseFloat(data.fdb_qty);											
+			subttl = subttl - discAmount - parseFloat(data.fdc_potongan);
 
+			var dpp = subttl;
+			if (fblIncPPN == 1){
+				dpp = dpp /(1+(data.fdc_ppn_percent/100));
+			}
+
+			totalDPP += dpp;
+			var ppn = dpp * (data.fdc_ppn_percent/100);
+			totalPPN += ppn;
+			
+
+			totalDisc += discAmount;								
 		});
 
 		//$("#ttlSubTotal").text(App.money_format(total));
@@ -789,7 +616,7 @@
 
 	}
 
-	function getDetailSalesInv(callback){
+	function DELETE_getDetailSalesInv(callback){
 		//params = JSON.stringify(arrLPBGudangId);
 		
 		
@@ -832,7 +659,7 @@
 		});
 	}
 
-	function getItemBuyUnit(defaultValue){
+	function DELETE_getItemBuyUnit(defaultValue){
 		App.getValueAjax({
 			site_url:"<?= site_url()?>",
 			model:"msitemunitdetails_model",
@@ -954,29 +781,29 @@
 					$("#fbl_non_faktur").trigger("change");				
 					$("#fdt_salesreturn_datetime").val(App.dateTimeFormat(dataH.fdt_salesreturn_datetime)).datetimepicker("update");
 					$("#fin_customer_id").val(dataH.fin_customer_id).trigger("change.select2");
+					$.each(dataH.fst_lpbsalesreturn_id_list,function(i,v){
+						App.addOptionIfNotExist("<option value='"+v.fin_lpbsalesreturn_id+"' selected>"+v.fst_lpbsalesreturn_no+"</option>","fst_lpbsalesreturn_id_list");
+					});
 
-					t = $("#tbldetails").DataTable();
+					
+
+					t = tblDetails;
 					dataDetails =[];
 
 					$.each(detailData,function(i,dataD){
 						data =  {
 							fin_rec_id:dataD.fin_rec_id,
 							fin_item_id: dataD.fin_item_id,
+							fst_item_code:dataD.fst_item_code,
+							fst_item_name:dataD.fst_item_name,							
 							fin_inv_id:dataD.fin_inv_id,
 							fst_inv_no:dataD.fst_inv_no,
-							fdt_inv_datetime:dataD.fdt_inv_datetime,							
-							fin_inv_detail_id:dataD.fin_inv_detail_id,
-							fbl_is_vat_include: dataD.fbl_is_vat_include,
-							fst_item_code:dataD.fst_item_code,
-							fst_custom_item_name:dataD.fst_custom_item_name,
 							fst_unit:dataD.fst_unit,
 							fdc_price:dataD.fdc_price,
 							fdb_qty:dataD.fdb_qty,
-							fst_disc_item:dataD.fst_disc_item,
 							fdc_disc_amount_per_item: dataD.fdc_disc_amount_per_item,
-							fdc_dpp_amount: dataD.fdc_dpp_amount,
 							fdc_ppn_percent: dataD.fdc_ppn_percent,
-							fdc_ppn_amount: dataD.fdc_ppn_amount							
+							fdc_potongan:dataD.fdc_potongan
 						};
 						dataDetails.push(data);
 					});

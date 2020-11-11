@@ -73,7 +73,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <?php
                                 $typeList = $this->trrmout_model->getTypeList();
                                 foreach($typeList as $type){
-                                    echo "<option value='$type->fst_rmout_type'>".$type->fst_rmout_type ."</option>";
+                                    echo "<option value='$type->fst_production_type'>".$type->fst_production_type ."</option>";
                                 }
                             ?>
                             </select>
@@ -234,9 +234,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						id:data.fin_item_id,
 						text:data.fst_item_code + " - " +data.fst_item_name, 
 					};
-
-					App.addOptionIfNotExist("<option value='"+mdlDetail.selectedItem.id+"'>"+mdlDetail.selectedItem.text+"</option>","d-fin_item_id");
-					$('#d-fin_item_id').val(data.fin_item_id).trigger({
+					
+					App.addOptionIfNotExist("<option value='"+mdlDetail.selectedItem.fin_item_id+"'>"+mdlDetail.selectedItem.text +"</option>","d-fin_item_id");
+					
+					
+					$('#d-fin_item_id').val(mdlDetail.selectedItem.fin_item_id).trigger({
 						type: 'select2:select',
 						params: {
 							data: mdlDetail.selectedItem
@@ -569,7 +571,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript" info="define">
     var selectedDetail = null;
-    var tblDetails;
+	var tblDetails;
+	var mode ="<?=$mode?>";
 </script>
 
 <script type="text/javascript" info="bind">
@@ -585,7 +588,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         $("#fdt_rmout_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");				
         
         $("#fst_rmout_type").select2({
-            tags:true,
+            //tags:true,
         });
 
 		tblDetails = $('#tblDetails').on('preXhr.dt', function ( e, settings, data ) {
@@ -668,6 +671,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			window.location.replace("<?=site_url()?>tr/production/rmout");
 		});	
 
+		$("#fin_warehouse_id").change(function(e){
+			tblDetails.clear();
+			tblDetails.draw(false);
+		});
 		$("#btn-add-items").click(function(e){
 			e.preventDefault();
 			selectedDetail = null;		
@@ -714,7 +721,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			value: JSON.stringify(detail)
 		});
 	   
-		if ($("#fin_mag_id").val() == 0){
+		if (mode == "ADD"){
 			url = "<?=site_url()?>tr/production/rmout/ajx_add_save";
 		}else{
 			if (confirmEdit == 0){

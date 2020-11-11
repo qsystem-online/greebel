@@ -404,6 +404,7 @@ class Trsuratjalan_model extends MY_Model {
 				"fdb_qty_in"=>0,
 				"fdb_qty_out"=>$dataD->fdb_qty,
 				"fdc_price_in"=>0,
+				"fbl_price_in_auto"=>false,
 				"fst_active"=>"A"
 			];
 			$this->trinventory_model->insert($data);			
@@ -496,6 +497,7 @@ class Trsuratjalan_model extends MY_Model {
 				"fdb_qty_in"=>0,
 				"fdb_qty_out"=>$dataD->fdb_qty, 
 				"fdc_price_in"=>(float) $lpbPurchaseItem->fdc_price - (float) $lpbPurchaseItem->fdc_disc_amount_per_item, 
+				"fbl_price_in_auto"=>false,
 				"fst_active"=>"A" 
 			];
 			$this->trinventory_model->insert($dataStock);			
@@ -562,6 +564,7 @@ class Trsuratjalan_model extends MY_Model {
 				"fdb_qty_in"=>0,
 				"fdb_qty_out"=>$dataD->fdb_qty, 
 				"fdc_price_in"=>0, 
+				"fbl_price_in_auto"=>false,
 				"fst_active"=>"A" 
 			];
 			$this->trinventory_model->insert($dataStock);			

@@ -177,8 +177,7 @@ class Trdistributepr_model extends MY_Model {
 				"fdc_price_in"=>0,
 				"fst_active"=>"A" 
 			];
-			$this->trinventory_model->insert($dataStock);
-
+			
 			$dataSerial = [
                 "fin_warehouse_id"=>$rw->fin_source_warehouse_id,
                 "fin_item_id"=>$rw->fin_item_id,

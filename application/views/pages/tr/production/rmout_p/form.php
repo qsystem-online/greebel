@@ -14,7 +14,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-	<h1><?=lang("RM-OUT Non Produksi")?><small><?=lang("form")?></small></h1>
+	<h1><?=lang("RM-OUT Produksi")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
 		<li><a href="#"><?= lang("Prioduksi") ?></a></li>
@@ -65,41 +65,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>						
                     </div>
 
-                    <div class="form-group">
-						<label for="fst_rmout_type" class="col-md-2 control-label"><?=lang("Type")?></label>
-						<div class="col-md-10">
-							
-							<select id="fst_rmout_type" class="form-control" name="fst_rmout_type" style="width:100%" >
-                            <?php
-                                $typeList = $this->trrmout_model->getTypeList();
-                                foreach($typeList as $type){
-                                    echo "<option value='$type->fst_rmout_type'>".$type->fst_rmout_type ."</option>";
-                                }
-                            ?>
-                            </select>
-							<div id="fst_rmout_type_err" class="text-danger"></div>
+					<div class="form-group">
+						<label for="fst_rmout_type" class="col-md-2 control-label"><?=lang("Workorder")?></label>
+						<div class="col-md-10">							
+							<select id="fin_wo_id" class="form-control" name="fin_wo_id" style="width:100%" ></select>
 						</div>					
 					</div>
-
 
 					<div class="form-group">
-						<label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Gudang Asal")?></label>
-						<div class="col-md-10">
-							
-							<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id" style="width:100%" >
-								<?php
-									$warehouseList = $this->mswarehouse_model->getWarehouseList();
-									foreach($warehouseList as $warehouse){
-										echo "<option value='$warehouse->fin_warehouse_id'>$warehouse->fst_warehouse_name</option>";
-									}	
-								?>
-							</select>
-							<div id="fin_warehouse_id_err" class="text-danger"></div>
+						<label for="fin_pagp_id" class="col-md-2 control-label"><?=lang("PAG No.")?></label>
+						<div class="col-md-10">							
+							<select id="fin_pagp_id" class="form-control" name="fin_pagp_id" style="width:100%" ></select>
+							<div id="fin_pagp_id_err" class="text-danger"></div>
 						</div>					
 					</div>
-
-						
-					<div class="form-group" style="margin-bottom:0px">
+					
+					<div class="form-group">
+						<label for="fin_wobatchno_id" class="col-md-2 control-label"><?=lang("Batch No.")?></label>
+						<div class="col-md-10">							
+							<select id="fin_wobatchno_id" class="form-control" name="fin_wobatchno_id" style="width:100%" ></select>
+							<div id="fin_wobatchno_id_err" class="text-danger"></div>
+						</div>					
+					</div>
+											
+					<div class="form-group" style="margin-bottom:0px;display:none">
 						<div class="col-md-12" style="text-align:right">
 							<button id="btn-add-items" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;Tambah Item</button>
 						</div>
@@ -132,7 +121,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="mdlDetail" class="modal fade in" role="dialog" style="display:none">
+<div id="mdlDetail" class="amodal fade in" role="dialog" style="display:unset">
 	<div class="modal-dialog" style="display:table;width:600px">
 		<!-- modal content -->
 		<div class="modal-content">
@@ -224,7 +213,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				if (mdlDetail.selectedDetail != null){
 					data =  mdlDetail.selectedDetail.data();					
-					console.log(data);
 					mdlDetail.selectedItem = {
 						fin_item_id:data.fin_item_id,
 						fst_item_code:data.fst_item_code,
@@ -365,8 +353,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				ajax:{
 					url:"<?=site_url()?>master/inventory/ajxGetBatchNoList",
 					data:function(params){
-						params.fin_warehouse_id = $("#fin_warehouse_id").val();
-						params.fin_item_id = mdlDetail.selectedItem.fin_item_id
+						var data = mdlDetail.selectedDetail.data();
+						params.fin_warehouse_id = data.fin_warehouse_id;
+						params.fin_item_id = mdlDetail.selectedItem.fin_item_id;
 						return params;
 					},
 					dataType: 'json',
@@ -569,7 +558,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript" info="define">
     var selectedDetail = null;
-    var tblDetails;
+	var tblDetails;
+	var fin_warehouse_id=0;
+	var mode ="<?=$mode?>";
 </script>
 
 <script type="text/javascript" info="bind">
@@ -581,12 +572,131 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 <script type="text/javascript" info="init">
+	var dataBatchno = [];
 	$(function(){
         $("#fdt_rmout_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");				
         
-        $("#fst_rmout_type").select2({
-            tags:true,
-        });
+		$("#fin_wo_id").select2({
+			minimumInputLength:0,
+			ajax: {
+                url: '<?= site_url() ?>tr/production/rmout_prod/ajxGetWOList',
+                dataType: 'json',
+                delay: 250,
+                processResults: function(resp) {
+                    data2 = [];
+					if (resp.status == "SUCCESS"){
+						$.each(resp.data, function(index, value) {
+							console.log(value);
+							data2.push({
+								"id": value.fin_wo_id,
+								"text": value.fst_wo_no
+							});
+						});
+						
+					}
+                    
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+		});
+		
+		$("#fin_pagp_id").select2({
+			minimumInputLength:0,
+			ajax: {
+                url: '<?= site_url() ?>tr/production/rmout_prod/ajxGetPAGWOList',
+				data:function(params){
+					params.fin_wo_id = $("#fin_wo_id").val();
+					return params;
+				},
+                dataType: 'json',
+                delay: 250,
+                processResults: function(resp) {
+                    data2 = [];
+					if (resp.status == "SUCCESS"){
+						$.each(resp.data, function(index, value) {
+							console.log(value);
+							data2.push({
+								"id": value.fin_mag_confirm_id,
+								"text": value.fst_mag_confirm_no
+							});
+						});
+						
+					}
+                    
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+		}).on("select2:select",function(e){
+			getPAGDetails();
+		});
+
+		$("#fin_wobatchno_id").select2({
+			minimumInputLength:0,
+			ajax: {
+                url: '<?= site_url() ?>tr/production/rmout_prod/ajxGetBatchWOList',
+				data:function(params){
+					params.fin_wo_id = $("#fin_wo_id").val();
+					return params;
+				},
+                dataType: 'json',
+                delay: 250,
+                processResults: function(resp) {
+                    data2 = [];
+					if (resp.status == "SUCCESS"){
+						$.each(resp.data, function(index, value) {
+							console.log(value);
+							data2.push({
+								"id": value.fin_wobatchno_id,
+								"text": value.fst_wobatchno_no
+							});
+						});
+						
+					}
+                    
+                    return {
+                        results: data2
+                    };
+                },
+                cache: true,
+            }
+		});
+		
+		/*
+		var sel = $("#fin_wobatchno_id").select2({
+			dataAdapter: select2customAdapter,
+			data:dataBatchno
+		}).on("select2:opening",function(e){		
+			$.ajax({
+				url: '<?= site_url() ?>tr/production/rmout_prod/ajxGetBatchWOList',
+				method:"GET",
+				async:false,
+				data:{
+					fin_wo_id:$("#fin_wo_id").val(),
+				},
+			}).done(function(resp){
+				data2 = [];
+				if (resp.status == "SUCCESS"){
+					$.each(resp.data, function(index, value) {
+						data2.push({
+							"id": value.fin_wobatchno_id,
+							"text": value.fst_wobatchno_no
+						});
+					});						
+				}
+				dataBatchno = data2;
+				sel.data('select2').dataAdapter.updateOptions(dataBatchno);
+				//$('#fin_wobatchno_id').select2('open');
+			});
+
+		});
+		*/
+
 
 		tblDetails = $('#tblDetails').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
@@ -618,7 +728,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			info:false,
 			fnRowCallback: function( nRow, aData, iDisplayIndex ) {},
 		}).on('draw',function(){						
-			calculateTotal();
+			//calculateTotal();
 		}).on("click",".btn-delete",function(event){
 			event.preventDefault();
 			t = $('#tblSJDetails').DataTable();
@@ -641,7 +751,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		$("#btnNew").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/production/rmout/add")
+			window.location.replace("<?=site_url()?>tr/production/rmout_prod/add")
 		});
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
@@ -665,7 +775,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/production/rmout");
+			window.location.replace("<?=site_url()?>tr/production/rmout_prod");
 		});	
 
 		$("#btn-add-items").click(function(e){
@@ -695,12 +805,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			App.log(v);
 			if ((v.fbl_is_batch_number == "1") && (v.fst_batch_number == null || v.fst_batch_number =="")){
 				isValidData = false;
-				alert ("Batch number " + v.fst_custom_item_name  + " tidak boleh kosong !");
+				alert ("Batch number " + v.fst_item_name  + " tidak boleh kosong !");
 				return false;
 			}
 			if ((v.fbl_is_serial_number == 1) && (v.fst_serial_number_list == null || v.fst_serial_number_list =="")){
 				isValidData = false;
-				alert ("Serial number " + v.fst_custom_item_name  + " tidak boleh kosong !");
+				alert ("Serial number " + v.fst_item_name  + " tidak boleh kosong !");
 				return false;
 			}			
 			detail.push(v);
@@ -714,8 +824,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			value: JSON.stringify(detail)
 		});
 	   
-		if ($("#fin_mag_id").val() == 0){
-			url = "<?=site_url()?>tr/production/rmout/ajx_add_save";
+		if (mode == "ADD"){
+			url = "<?=site_url()?>tr/production/rmout_prod/ajx_add_save";
 		}else{
 			if (confirmEdit == 0){
 				MdlEditForm.saveCallBack = function(){
@@ -725,7 +835,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				return;
 			}
 
-			url = "<?=site_url()?>tr/production/rmout/ajx_edit_save";
+			url = "<?=site_url()?>tr/production/rmout_prod/ajx_edit_save";
 		}		
 
 		App.blockUIOnAjaxRequest("<h5>Please wait....</h5>");
@@ -771,10 +881,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	}
 	
 	function initForm(){
-		if ($("#fin_rmout_id").val() != 0){
+		if (mode != "ADD"){
 			App.blockUIOnAjaxRequest();
 			$.ajax({
-				url:"<?= site_url() ?>tr/production/rmout/fetch_data/" + $("#fin_rmout_id").val(),
+				url:"<?= site_url() ?>tr/production/rmout_prod/fetch_data/" + $("#fin_rmout_id").val(),
 			}).done(function(resp){
 				data =  resp.data;
 				dataH = data.header;
@@ -785,10 +895,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 				
 				App.autoFillForm(dataH);
-                $("#fdt_rmout_datetime").val(dateTimeFormat(dataH.fdt_rmout_datetime)).datetimepicker("update");
-                
-                App.addOptionIfNotExist("<option value='"+dataH.fst_rmout_type+"'>"+dataH.fst_rmout_type+"</option>","fst_rmout_type");
-
+                $("#fdt_rmout_datetime").val(dateTimeFormat(dataH.fdt_rmout_datetime)).datetimepicker("update");                
+                App.addOptionIfNotExist("<option value='"+dataH.fin_wo_id+"'>"+dataH.fst_wo_no+"</option>","fin_wo_id");
+				App.addOptionIfNotExist("<option value='"+dataH.fin_pagp_id+"'>"+dataH.fst_pagp_no+"</option>","fin_pagp_id");
+				App.addOptionIfNotExist("<option value='"+dataH.fin_wobatchno_id+"'>"+dataH.fst_wobatchno_no+"</option>","fin_wobatchno_id");
 				
 				details = data.details;
 				t = tblDetails;
@@ -817,13 +927,52 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}
 	}
 
-    function getDetailTransaction(callback){
-		t = $("#tblSJDetails").DataTable();
+    function getPAGDetails(){
+		t = tblDetails;
 		t.clear().draw();
 
         $.ajax({
-            url:"<?=site_url()?>tr/gudang/pengiriman_penjualan/get_detail_trans/" +$("#fst_sj_type").val() + "/" + $("#fin_trans_id").val(),
+			url:"<?=site_url()?>tr/production/rmout_prod/ajxGetPAGDetails",
+			method:"GET",
+			data:{
+				fin_pagp_id:$("#fin_pagp_id").val()
+			}
         }).done(function(resp){
+			if (resp.messages != ""){
+				alert(resp.messages);			
+			}
+			
+			if (resp.status == "SUCCESS"){
+				data = resp.data;
+				tblDetails.clear();
+
+				$.each(data,function(i,v){
+					var tmp ={
+						fin_rec_id:0,
+						fin_warehouse_id : v.fin_to_warehouse_id,
+						fin_item_id:v.fin_item_id,
+						fst_item_code:v.fst_item_code,
+						fst_item_name:v.fst_item_name,
+						fbl_is_batch_number:v.fbl_is_batch_number,
+						fbl_is_serial_number:v.fbl_is_serial_number,
+						fst_unit:v.fst_unit,
+						fdb_qty:v.fdb_qty - v.fdb_qty_rmout,
+						//fst_batch_number:v.fst_batch_number,
+						//fst_serial_number_list:JSON.parse(v.fst_serial_number_list)
+						fst_batch_number:null,
+						fst_serial_number_list:[]
+						
+					};
+					tblDetails.row.add(tmp);
+				});
+				tblDetails.draw(false);
+				//console.log(resp.data);
+			}
+
+
+			return;
+
+
             arrData = resp.data;
 			
 			var dataTable =[];			

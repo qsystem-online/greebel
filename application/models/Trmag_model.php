@@ -102,7 +102,9 @@ class Trmag_model extends MY_Model {
 	public function getDataById($finMagId){
 		$this->load->model("msitemunitdetails_model");
 
-		$ssql = "SELECT a.*,b.fst_warehouse_name as fst_from_warehouse_name,c.fst_warehouse_name as fst_to_warehouse_name,d.fst_wo_no FROM trmag a 
+		$ssql = "SELECT a.*,b.fst_warehouse_name as fst_from_warehouse_name,c.fst_warehouse_name as fst_to_warehouse_name,
+			d.fst_wo_no 
+			FROM trmag a 
 			INNER JOIN mswarehouse b on a.fin_from_warehouse_id = b.fin_warehouse_id
 			INNER JOIN mswarehouse c on a.fin_to_warehouse_id = c.fin_warehouse_id
 			LEFT JOIN trwo d on a.fin_wo_id = d.fin_wo_id 
@@ -176,9 +178,12 @@ class Trmag_model extends MY_Model {
 		$qr = $this->db->query($ssql,[$finMagId]);
 		$details = $qr->result();
 
-		
+		//Mutasi IN barang ke buffer warehouse base on branch id
+		$this->load->model("mswarehouse_model");
+		$bufferWarehouse = $this->mswarehouse_model->getBufferWarehouseId();
+
 		foreach($details as $dataD){
-			//update batchno dan serialno			
+			//update batchno dan serialno OUT	
 			$dataSerial = [
 				"fin_warehouse_id"=>$dataH->fin_from_warehouse_id,
 				"fin_item_id"=>$dataD->fin_item_id,
@@ -194,6 +199,23 @@ class Trmag_model extends MY_Model {
 			];
 			$this->trinventory_model->insertSerial($dataSerial);
 
+			//update batchno dan serialno IN to Buffer
+			$dataSerial = [
+				"fin_warehouse_id"=>$bufferWarehouse,
+				"fin_item_id"=>$dataD->fin_item_id,
+				"fst_unit"=>$dataD->fst_unit,
+				"fst_serial_number_list"=>$dataD->fst_serial_number_list,
+				"fst_batch_no"=>$dataD->fst_batch_number,
+				"fst_trans_type"=>"MAGBI", //MAG BUFFER IN 
+				"fin_trans_id"=>$dataH->fin_mag_id,
+				"fst_trans_no"=>$dataH->fst_mag_no,
+				"fin_trans_detail_id"=>$dataD->fin_rec_id,
+				"fdb_qty"=>$dataD->fdb_qty,
+				"in_out"=>"IN",
+			];
+			$this->trinventory_model->insertSerial($dataSerial);
+
+
 			//Mutasi OUT barang dari from warehouse 
 			$data = [
 				"fin_warehouse_id"=>$dataH->fin_from_warehouse_id,
@@ -208,14 +230,12 @@ class Trmag_model extends MY_Model {
 				"fdb_qty_in"=>0,
 				"fdb_qty_out"=>$dataD->fdb_qty,
 				"fdc_price_in"=>0,
+				"fbl_price_in_auto"=>false,
 				"fst_active"=>"A"
 			];
 			$this->trinventory_model->insert($data);
 
-			//Mutasi IN barang ke buffer warehouse base on branch id
-			$this->load->model("mswarehouse_model");
-			$bufferWarehouse = $this->mswarehouse_model->getBufferWarehouseId();
-			$hpp = $this->trinventory_model->getLastHPP($dataD->fin_item_id,$dataH->fin_from_warehouse_id);
+			//$hpp = $this->trinventory_model->getLastHPP($dataD->fin_item_id,$dataH->fin_from_warehouse_id);
 
 			$data = [
 				"fin_warehouse_id"=>$bufferWarehouse,
@@ -229,7 +249,8 @@ class Trmag_model extends MY_Model {
 				"fst_unit"=>$dataD->fst_unit,
 				"fdb_qty_in"=>$dataD->fdb_qty,
 				"fdb_qty_out"=>0,
-				"fdc_price_in"=>$hpp,
+				"fdc_price_in"=>0,//$hpp,
+				"fbl_price_in_auto"=>true,
 				"fst_active"=>"A"
 			];
 			$this->trinventory_model->insert($data);
@@ -260,6 +281,7 @@ class Trmag_model extends MY_Model {
 
 		//Delete itemdetails
 		$this->trinventory_model->deleteInsertSerial("MAG",$finMagId);
+		$this->trinventory_model->deleteInsertSerial("MAGBI",$finMagId);
 	}
 
 	public function deleteDetail($finMagId){
@@ -357,6 +379,7 @@ class Trmag_model extends MY_Model {
 				"fdb_qty_in"=>0,
 				"fdb_qty_out"=>$dataD->fdb_qty_confirm,
 				"fdc_price_in"=>0,
+				"fbl_price_in_auto"=>false,
 				"fst_active"=>"A"
 			];
 			$this->trinventory_model->insert($data);
@@ -385,7 +408,8 @@ class Trmag_model extends MY_Model {
 				"fst_unit"=>$dataD->fst_unit,
 				"fdb_qty_in"=>$dataD->fdb_qty_confirm,
 				"fdb_qty_out"=>0,
-				"fdc_price_in"=>$hpp,
+				"fdc_price_in"=>0,//$hpp,
+				"fbl_price_in_auto"=>true,
 				"fst_active"=>"A"
 			];
 

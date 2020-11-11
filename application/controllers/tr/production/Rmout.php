@@ -147,7 +147,7 @@ class Rmout extends MY_Controller{
 			$dataH = $dataPrepared["dataH"];
 			$details =$dataPrepared["details"];
 			
-			$resp = dateIsLock($dataH->fdt_rmout_datetime);
+			$resp = dateIsLock($dataH["fdt_rmout_datetime"]);
 			if($resp["status"] != "SUCCESS"){
 				throw new CustomException($resp["message"],3003,"FAILED",[]);
 			}

@@ -165,10 +165,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 					<div class="form-group">						
 						<label for="fst_reff_no" class="col-md-2 control-label"><?=lang("Reff No")?>. </label>
-						<div class="col-md-8">	
+						<div class="col-md-10">	
 							<input type="TEXT" id="fst_reff_no" class="form-control" name="fst_reff_no" />															
 						</div>
-						<div class="col-md-2 checkbox disabled">
+						<div class="col-md-2 checkbox disabled hide">
 							<label><input id="fbl_is_vat_include" type="checkbox" value="1" name="fbl_is_vat_include" disabled><?=lang("Include PPN")?></label>
 						</div>
 					</div>
@@ -279,7 +279,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 
 			<div class="modal-body">				
-				<form id="form-detail" class="form-horizontal">
+				<form class="form-horizontal">
 				    <input type='hidden' id='fin_rec_id'/>
 					<div class="form-group">
 						<label for="" class="col-md-2 control-label"><?=lang("Items")?></label>

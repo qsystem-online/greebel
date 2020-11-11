@@ -221,7 +221,7 @@ class Trlpbgudang_model extends MY_Model {
 		if ($rw->fst_type == "ASSEMBLING"){
 			$this->load->model("msitems_model");
 			$rs = [];
-			$item = $this->msitems_model->geSimpletDataById($rw->fin_item_id);
+			$item = $this->msitems_model->getSimpleDataById($rw->fin_item_id);
 			$basicUnit = $this->msitems_model->getBasicUnit($rw->fin_item_id);
 			$rs[] = (object) [
 				"fin_trans_detail_id"=>$rw->fin_assembling_id,
@@ -401,8 +401,9 @@ class Trlpbgudang_model extends MY_Model {
 					"fdb_qty_in"=>$detail->fdb_qty, 
 					"fdb_qty_out"=>0, 
 					"fdc_price_in"=>(float) $detail->fdc_price - (float) calculateDisc($detail->fst_disc_item,$detail->fdc_price),
+					"fbl_price_in_auto"=>false,
 					"fst_active"=>"A" 
-				];
+				];				
 				$this->trinventory_model->insert($dataStock);
 
 				//Update msitemdetails & summary
@@ -486,7 +487,8 @@ class Trlpbgudang_model extends MY_Model {
 					"fst_unit"=>$detail->fst_unit, 
 					"fdb_qty_in"=>$detail->fdb_qty, 
 					"fdb_qty_out"=>0, 
-					"fdc_price_in"=> $this->trinventory_model->getLastHPP($detail->fin_item_id,$dataH->fin_warehouse_id), //Ambil HPP TERAKHIR//(float) $detail->fdc_price - (float) calculateDisc($detail->fst_disc_item,$detail->fdc_price),
+					"fdc_price_in"=> 0,// $this->trinventory_model->getLastHPP($detail->fin_item_id,$dataH->fin_warehouse_id), //Ambil HPP TERAKHIR//(float) $detail->fdc_price - (float) calculateDisc($detail->fst_disc_item,$detail->fdc_price),
+					"fbl_price_in_auto"=>true,
 					"fst_active"=>"A" 
 				];
 				$this->trinventory_model->insert($dataStock);
@@ -573,8 +575,8 @@ class Trlpbgudang_model extends MY_Model {
 				"fst_unit"=>$detail->fst_unit, 
 				"fdb_qty_in"=>$detail->fdb_qty, 
 				"fdb_qty_out"=>0, 
-				//"fdc_price_in"=> $this->trinventory_model->getLastHPP($detail->fin_item_id,$dataH->fin_warehouse_id), //Ambil HPP TERAKHIR//(float) $detail->fdc_price - (float) calculateDisc($detail->fst_disc_item,$detail->fdc_price),
 				"fdc_price_in"=>$detail->fdc_price_in,
+				"fbl_price_in_auto"=>false,
 				"fst_active"=>"A" 
 			];
 			$this->trinventory_model->insert($dataStock);

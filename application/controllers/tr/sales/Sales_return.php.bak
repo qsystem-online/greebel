@@ -106,8 +106,6 @@ class Sales_return extends MY_Controller{
 		$data["fin_salesreturn_id"] = $finSalesReturnId;
 		$data["mdlEditForm"] = $edit_modal;
 		$data["mdlPrint"] = $mdlPrint;
-		$data["fblPPNInc"] = getDbConfig("sales_price_inc_ppn");
-		$data["fdcPPNPercent"] = (float) getDbConfig("sales_ppn_percent");
 
 		$data["arrExchangeRate"] = $this->mscurrencies_model->getArrRate();
 		
@@ -133,7 +131,8 @@ class Sales_return extends MY_Controller{
 	}
 
 	public function ajx_add_save(){
-	
+		
+
 		try{
 			//CEK tgl lock dari transaksi yg di kirim
 			$fdt_salesreturn_datetime = dBDateTimeFormat($this->input->post("fdt_salesreturn_datetime"));		
@@ -211,19 +210,6 @@ class Sales_return extends MY_Controller{
 			if ($resp["status"] != "SUCCESS" ){
 				throw new CustomException($resp["message"],3003,$resp["status"],null);
 			}	
-
-			//PREPARE DATA
-			$dataPrepared = $this->prepareData();
-			$dataH = $dataPrepared["dataH"];
-			$dataDetails = $dataPrepared["dataDetails"];
-
-			$dataH["fin_salesreturn_id"] = $finSalesReturnId;
-			$dataH["fst_salesreturn_no"] =  $dataHOld->fst_salesreturn_no;
-
-			//VALIDATION
-			$this->validation($dataH,$dataDetails);
-
-
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
 			$this->ajxResp["message"] = $e->getMessage();
@@ -241,7 +227,18 @@ class Sales_return extends MY_Controller{
 
 			//DELETE DETAIL DATA
 			$this->trsalesreturn_model->deleteDetail($finSalesReturnId);     
-						
+
+			//PREPARE DATA
+			$dataPrepared = $this->prepareData();
+			$dataH = $dataPrepared["dataH"];
+			$dataDetails = $dataPrepared["dataDetails"];
+
+			$dataH["fin_salesreturn_id"] = $finSalesReturnId;
+			$dataH["fst_salesreturn_no"] =  $dataHOld->fst_salesreturn_no;
+			
+			//VALIDATION
+			$this->validation($dataH,$dataDetails);
+			
 			//SAVE
 			$this->trsalesreturn_model->update($dataH);
 			foreach($dataDetails as $dataD){
@@ -277,29 +274,28 @@ class Sales_return extends MY_Controller{
 		fst_curr_code: IDR
 		fdc_exchange_rate_idr: 1.00
 		fst_memo: 
-		fst_lpbsalesreturn_id_list
 		details: [{"fin_rec_id":0,"fin_item_id":"64","fin_inv_id":"54","fst_inv_no":"IV/JKT/2019/12/00006","fin_inv_detail_id":"13","fbl_is_vat_include":true,"fst_item_code":"010103000022","fst_custom_item_name":"GREEBEL PENCIL BAG MICA 2520","fst_unit":"PCS","fdc_price":"4200.00","fdb_qty":"14.00","fst_disc_item":"10+2.5","fdc_disc_amount_per_item":514.5,"fdc_dpp_amount":53454.54545454545,"fdc_ppn_percent":"10.00","fdc_ppn_amount":5345.454545454545}]
 		*/
 
 		//PREPARE DATA
-		$fst_salesreturn_no = $this->trsalesreturn_model->generateSalesReturnNo();		
+		$fst_salesreturn_no = $this->trsalesreturn_model->generateSalesReturnNo();
 		$fdt_salesreturn_datetime = dBDateTimeFormat($this->input->post("fdt_salesreturn_datetime"));
-		$fst_curr_code =  $this->input->post("fst_curr_code");
-		$fblIncPPN = getDbConfig("sales_price_inc_ppn");
-		//$fdcPPNPercent = $fblIncPPN == 1 ? getDbConfig("sales_price_inc_ppn") : ;
 
-		$dataH =[			
+		$fbl_non_faktur = $this->input->post("fbl_non_faktur") == null ? false :true;
+		$fst_curr_code =  $this->input->post("fst_curr_code");
+
+		$dataH =[
+			//"fin_purchasereturn_id"
 			"fst_salesreturn_no" =>$fst_salesreturn_no,
 			"fdt_salesreturn_datetime"=>$fdt_salesreturn_datetime,
 			"fin_customer_id" => $this->input->post("fin_customer_id"),
+			"fbl_non_faktur"=>$fbl_non_faktur,			
 			"fst_curr_code"=>$fst_curr_code,
 			"fdc_exchange_rate_idr"=> $this->input->post("fdc_exchange_rate_idr"),
-			"fst_lpbsalesreturn_id_list"=>json_encode($this->input->post("fst_lpbsalesreturn_id_list")),
 			"fdc_subttl"=>0,
 			"fdc_disc_amount"=>0,
-			"fdc_potongan"=>0,
 			"fdc_dpp_amount"=>0,
-			"fdc_ppn_amount"=>0,			
+			"fdc_ppn_amount"=>0,
 			"fdc_total"=>0,
 			"fst_memo"=>$this->input->post("fst_memo"),
 			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
@@ -314,22 +310,18 @@ class Sales_return extends MY_Controller{
 		$ttlAfDisc = 0;
 		$ttlDPP = 0;
 		$ttlPpn = 0;
-		$ttlPotongan=0;
 
-		
-
-		foreach($postDetails as $detail){						
-			$subTotal = ($detail->fdb_qty * $detail->fdc_price);
-			$ttlBfDisc += $subTotal;
-
-			$disc = $detail->fdc_disc_amount_per_item * $detail->fdb_qty;
+		foreach($postDetails as $detail){
 			
-			$potongan  = $detail->fdc_potongan;
-			$ttlPotongan+=$potongan;
-			$total = $subTotal - $disc - $potongan;
-			$dpp = $total;
-			if ($fblIncPPN == 1){				
-				$dpp =   $dpp / (1 + ($detail->fdc_ppn_percent/100));
+			
+			$subTotal = ($detail->fdb_qty * $detail->fdc_price);
+			$discPerItem =calculateDisc($detail->fst_disc_item,$detail->fdc_price);
+			$ttlDisc = $discPerItem * $detail->fdb_qty;
+
+			if ($detail->fbl_is_vat_include){				
+				$dpp =   ($subTotal - $ttlDisc) / (1 + ($detail->fdc_ppn_percent/100));
+			}else{
+				$dpp = $subTotal - $ttlDisc;
 			}
 			$ppnAmount = $dpp * ($detail->fdc_ppn_percent/100);
 
@@ -337,29 +329,61 @@ class Sales_return extends MY_Controller{
 				"fin_rec_id"=>$detail->fin_rec_id,
 				"fin_salesreturn_id"=>0,
 				"fin_inv_id"=>$detail->fin_inv_id,
+				"fin_inv_detail_id"=>$detail->fin_inv_detail_id,
 				"fin_item_id"=>$detail->fin_item_id,
+				"fst_custom_item_name"=>$detail->fst_custom_item_name,
+				"fbl_is_vat_include"=>$detail->fbl_is_vat_include,
 				"fdb_qty"=>$detail->fdb_qty,
 				"fst_unit"=>$detail->fst_unit,
 				"fdc_price"=>$detail->fdc_price,				
 				"fdc_subttl"=>$detail->fdb_qty * $detail->fdc_price,
-				"fdc_disc_amount_per_item"=>$detail->fdc_disc_amount_per_item,
-				"fdc_potongan"=>$potongan,
+				"fst_disc_item"=>$detail->fst_disc_item,
+				"fdc_disc_amount_per_item"=>$discPerItem,
 				"fdc_dpp_amount"=>$dpp,
 				"fdc_ppn_percent"=>$detail->fdc_ppn_percent,
 				"fdc_ppn_amount"=> $ppnAmount,
 				"fdc_total"=> $dpp + $ppnAmount,
 				"fst_active"=>'A'
-			];						
+			];			
+
+			//Overwrite data detail
+			if ($detail->fin_inv_detail_id != 0){
+				$dInv = $this->trinvoiceitems_model->getDataById($detail->fin_inv_detail_id);
+				if($dInv == null){
+					throw new CustomException(lang("Error Validation Data"),3003,"VALIDATION_FORM_FAILED",["details"=> sprintf(lang("Invalid Data Item %s"),$detail->fst_custom_item_name)]);
+				}
+
+				$subTotal = ($dataD["fdb_qty"] * $dataD["fdc_price"]);
+				$discTotal = $dataD["fdb_qty"] * $dInv->fdc_disc_amount_per_item;
+				$dpp = 0;
+				if ($dInv->fbl_is_vat_include){
+					$dpp = ($subTotal - $discTotal) / (1 + ($dInv->fdc_ppn_percent/100));
+				}else{
+					$dpp = $subTotal - $discTotal;
+				}
+
+				$dataD["fin_item_id"] = $dInv->fin_item_id; 
+				$dataD["fst_custom_item_name"] = $dInv->fst_custom_item_name;
+				$dataD["fbl_is_vat_include"] = $dInv->fbl_is_vat_include;
+				$dataD["fst_unit"] = $dInv->fst_unit;
+				$dataD["fdc_subttl"] = $dataD["fdb_qty"] * $dataD["fdc_price"];
+				$dataD["fst_disc_item"] = $dInv->fst_disc_item;				
+				$dataD["fdc_disc_amount_per_item"] = $dInv->fdc_disc_amount_per_item;
+				$dataD["fdc_dpp_amount"] = $dpp;
+				$dataD["fdc_ppn_percent"] = $dInv->fdc_ppn_percent;
+				$dataD["fdc_ppn_amount"] = $dpp * ($dInv->fdc_ppn_percent/100);
+				$dataD["fdc_total"] = $dpp + $dataD["fdc_ppn_amount"];
+			}
 
 			$dataDetails[] = $dataD;
-			$ttlDisc +=  floatval( $disc);			
-			$ttlDPP += floatval($dpp);
-			$ttlPpn += floatval($ppnAmount);
+			$ttlDisc +=  floatval( $dataD["fdb_qty"] * $dataD["fdc_disc_amount_per_item"]);
+			$ttlBfDisc += floatval($dataD["fdb_qty"] * $dataD["fdc_price"]);
+			$ttlDPP += floatval($dataD["fdc_dpp_amount"]);
+			$ttlPpn += floatval($dataD["fdc_ppn_amount"]);
 		}
-		
+		$ttlAfDisc = $ttlBfDisc - $ttlDisc;
 		$dataH["fdc_subttl"] = $ttlBfDisc;
 		$dataH["fdc_disc_amount"] = $ttlDisc;
-		$dataH["fdc_potongan"] = $ttlPotongan;
 		$dataH["fdc_dpp_amount"] = $ttlDPP;
 		$dataH["fdc_ppn_amount"] = $ttlPpn;
 		$totalReturn = $dataH["fdc_dpp_amount"] + $dataH["fdc_ppn_amount"];
@@ -381,6 +405,63 @@ class Sales_return extends MY_Controller{
 		if ($this->form_validation->run() == FALSE) {
 			throw new CustomException(lang("Error Validation Data Header"),3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
 		}
+
+			
+		if($dataH["fbl_non_faktur"] == false){
+			//Return langsung mengurangi tagihan			
+			foreach($dataDetails as $dataD){				
+				$dInv = $this->trinvoiceitems_model->getDataById($dataD["fin_inv_detail_id"]);				
+				//Invoice tidak boleh kosong
+				if($dInv == null){
+					throw new CustomException(sprintf(lang("ID %s Invoice detail tidak ditemukan !"),$dataD->fin_inv_detail_id),3003,"FAILED",null);
+				}				
+				//Invoce tidak boleh ada pembayaran
+				if ($dInv->fdc_total_paid > 0 ){
+					throw new CustomException(sprintf(lang("Invoice %s sudah dilakukan pembayaran !"),$dInv->fst_inv_no),3003,"FAILED",null);
+				}
+				//Cek total retur tidak boleh melebihi total_invoice - (total_pembayaran + total_yang_telah_di_retur)	
+				$maxReturn = ($dInv->fdc_total + $dInv->fdc_downpayment_claim) -  ($dInv->fdc_total_paid + $dInv->fdc_total_return);				
+				if ($dataH["fdc_total"] > $maxReturn ){
+					throw new CustomException(sprintf(lang("Total return Invoice %s tidak boleh melebihi %s"),$dInv->fst_inv_no,formatNumber($maxReturn)),3003,"FAILED",null);
+				}
+				$maxQtyReturn = ($dInv->fdb_qty -  $dInv->fdb_qty_return);				
+				//Cek Qty retur tidak boleh melebih qty di invoice
+				if ($dataD["fdb_qty"] > $maxQtyReturn ){
+					throw new CustomException(sprintf(lang("Total qty return Invoice %s tidak boleh melebihi %s"),$dInv->fst_inv_no,$maxQtyReturn),3003,"FAILED",null);
+				}
+				
+			}						
+		}else{
+			//Return tidak mengurangi tagihan dan harus digunakan sebagai voucher return
+			foreach($dataDetails as $dataD){
+				if ($dataD["fin_inv_detail_id"] != 0){
+					$dInv = $this->trinvoiceitems_model->getDataById($dataD->fin_inv_detail_id);				
+					//Invoice tidak boleh kosong
+					if($dInv == null){
+						throw new CustomException(sprintf(lang("ID %s Invoice detail tidak ditemukan !"),$dataD->fin_inv_detail_id),3003,"FAILED",null);
+					}				
+					//Invoce harus ada pembayaran
+					if ($dInv->fdc_total_paid == 0 ){
+						throw new CustomException(sprintf(lang("Invoice %s belum dilakukan pembayaran !"),$dInv->fst_inv_no),3003,"FAILED",null);
+					}
+					//Cek total retur tidak boleh melebihi total_invoice - (total_pembayaran + total_yang_telah_di_retur)	
+					$maxReturn = ($dInv->fdc_total -  $dInv->fdc_total_paid + $dInv->fdc_total_return);
+					if ($dataH["fdc_total"] > $maxReturn ){
+						throw new CustomException(sprintf(lang("Total return Invoice %s tidak boleh melebihi %s"),$dInv->fst_inv_no,formatNumber($maxReturn)),3003,"FAILED",null);
+					}
+					$maxQtyReturn = ($dInv->fdb_qty -  $dInv->fdb_qty_return);				
+					//Cek Qty retur tidak boleh melebih qty di invoice
+					if ($dataD["fdb_qty"] > $maxQtyReturn ){
+						throw new CustomException(sprintf(lang("Total qty return Invoice %s tidak boleh melebihi %s"),$dInv->fst_inv_no,$maxQtyReturn),3003,"FAILED",null);
+					}
+				}else{
+					//Return tanpa invoice;
+				}
+				
+			}
+		}
+	
+		
 	}
 
 	public function fetch_data($finSalesReturnId){
@@ -445,6 +526,7 @@ class Sales_return extends MY_Controller{
 
 	}
 
+	
 	public function fetch_list_data(){
 		$this->load->library("datatables");
         $this->datatables->setTableName("(
@@ -470,78 +552,6 @@ class Sales_return extends MY_Controller{
 		$this->json_output($datasources);
 		
 	}
-
-
-	public function ajxGetLPBSalesReturnList(){
-		$term = $this->input->get("term");
-		$term = "%$term%";
-		$finCustId = $this->input->get("fin_customer_id");
-		$fstCurrCode = $this->input->get("fst_curr_code");
-
-		$ssql = "SELECT fin_lpbsalesreturn_id,fst_lpbsalesreturn_no FROM trlpbsalesreturn 
-			WHERE fin_customer_id = ? 
-			AND fst_curr_code = ? 
-			AND fst_lpbsalesreturn_no like ? 
-			AND fin_salesreturn_id IS NULL
-			AND fst_active = 'A'";
-		$qr = $this->db->query($ssql,[$finCustId,$fstCurrCode,$term]);		
-		$rs =  $qr->result();
-		$this->json_output([
-			"status"=>"SUCCESS",
-			"messages"=>"",
-			"data"=>$rs,
-		]);		
-	}
-
-	public function ajxGetLPBSalesReturnItems(){
-		$this->load->model("msitems_model");
-		$fstLPBSalesReturnIdList = $this->input->get("fst_lpbsalesreturn_id_list");
-		
-		$ssql ="SELECT a.*,b.fin_customer_id,
-			c.fst_item_code,c.fst_item_name,
-			d.fst_inv_no ,d.fdc_ppn_percent 
-			FROM trlpbsalesreturnitems a
-			INNER JOIN trlpbsalesreturn b on a.fin_lpbsalesreturn_id = b.fin_lpbsalesreturn_id 
-			INNER JOIN msitems c on a.fin_item_id = c.fin_item_id
-			LEFT JOIN trinvoice d on a.fin_inv_id = d.fin_inv_id
-			WHERE a.fin_lpbsalesreturn_id in ? and b.fst_active ='A'";
-
-		$qr = $this->db->query($ssql,[$fstLPBSalesReturnIdList]);
-		$rs =  $qr->result();		
-
-
-		for($i=0;$i<sizeof($rs);$i++){
-			$rw = $rs[$i];
-
-			if ($rw->fin_inv_id == null){
-				//Get harga sales
-				$rw->fdc_price = $this->msitems_model->getSellingPrice($rw->fin_item_id,$rw->fst_unit,$rw->fin_customer_id);
-				$rw->fdc_disc_amount_per_item= 0;
-				$rw->fdc_ppn_percent =getDbConfig("sales_ppn_percent");
-			}else{
-				//Get harga sales dari invoice abaikan barang promo
-				$ssql = "SELECT a.*,b.fdc_ppn_percent FROM trinvoiceitems a
-					INNER JOIN trinvoice b on a.fin_inv_id = b.fin_inv_id 
-					WHERE a.fin_inv_id = ? and a.fin_item_id = ? and a.fst_unit = ? and a.fin_promo_id = 0";
-				$qr =$this->db->query($ssql,[$rw->fin_inv_id,$rw->fin_item_id,$rw->fst_unit]);
-				//var_dump($this->db->last_query());
-				//die();
-
-				$rwTmp = $qr->row();
-				$rw->fdc_price= $rwTmp->fdc_price;
-				$rw->fdc_disc_amount_per_item= $rwTmp->fdc_disc_amount_per_item;					
-			}
-			$rs[$i]=$rw;
-		}
-
-		$this->json_output([
-			"status"=>"SUCCESS",
-			"messages"=>"",
-			"data"=>$rs
-		]);
-	}
-
-
 
 	public function get_item_by_inv(){
 		$search = $this->input->get("term");
@@ -613,6 +623,5 @@ class Sales_return extends MY_Controller{
 		$mpdf->Output();
 
 	}
-
 
 }    

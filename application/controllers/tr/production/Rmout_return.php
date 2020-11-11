@@ -1,12 +1,12 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Rmout_prod extends MY_Controller{
+class Rmout_return extends MY_Controller{
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');		
-		$this->load->model('trrmout_model');		
-		$this->load->model('trrmoutitems_model');		
+		$this->load->model('trrmoutreturn_model');		
+		$this->load->model('trrmoutreturnitems_model');		
 		$this->load->model('mswarehouse_model');		
 		
 	}
@@ -121,14 +121,14 @@ class Rmout_prod extends MY_Controller{
 		
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? lang("Add RM-Out Produksi") : lang("Update RM-Out Produksi");
-		$data["fin_rmout_id"] = $finId;
+		$data["fin_rmout_return_id"] = $finId;
 		$data["mdlEditForm"] = $edit_modal;
 		$data["mdlPrint"] = $mdlPrint;				
 		$data["mdlJurnal"] = $jurnal_modal;					
 
-		$fstRMOutNo = $this->trrmout_model->generateProductionTransactionNo();
-		$data["fst_rmout_no"] = $fstRMOutNo;	
-		$page_content = $this->parser->parse('pages/tr/production/rmout_p/form', $data, true);
+		$fstRMOutReturnNo = $this->trrmoutreturn_model->generateTransactionNo();
+		$data["fst_rmout_return_no"] = $fstRMOutReturnNo;	
+		$page_content = $this->parser->parse('pages/tr/production/rmout_return/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 
 		$control_sidebar = NULL;
@@ -257,7 +257,7 @@ class Rmout_prod extends MY_Controller{
 		
 		$fdtRMOutDatetime = dBDateTimeFormat($this->input->post("fdt_rmout_datetime"));
 
-		$ssql = "SELECT b.fin_to_warehouse_id,b.fin_wo_id 
+		$ssql = "SELECT b.fin_to_warehouse_id 
 			FROM trmagconfirm a 
 			inner join trmag b on a.fin_mag_id = b.fin_mag_id
 			WHERE a.fin_mag_confirm_id = ? ";
@@ -274,7 +274,6 @@ class Rmout_prod extends MY_Controller{
 			"fst_rmout_no"=>$this->input->post("fst_rmout_no"),
 			"fdt_rmout_datetime"=>$fdtRMOutDatetime,
 			//"fst_rmout_type" =>$this->input->post("fst_rmout_type"),
-			"fin_wo_id"=>$rw->fin_wo_id,
 			"fin_pagp_id"=>$this->input->post("fin_pagp_id"),
 			"fin_warehouse_id"=>$rw->fin_to_warehouse_id,
 			"fin_wobatchno_id"=>$this->input->post("fin_wobatchno_id"),
@@ -381,10 +380,10 @@ class Rmout_prod extends MY_Controller{
 		$mpdf->WriteHTML($data);
 		$mpdf->Output();
 
-	}
+    }	
+    
 
-
-	public function ajxGetWOList(){
+    public function ajxGetWOList(){
 		$term = $this->input->get("term");
 		$term = "%$term%";
 		$ssql = "SELECT fin_wo_id,fst_wo_no FROM trwo where fbl_closed = 0 and fst_active ='A' and fst_wo_no like ?";
@@ -395,74 +394,9 @@ class Rmout_prod extends MY_Controller{
 			"messages"=>"",
 			"data"=>$rs
 		]);
+    }
 
-
-	}
-
-	public function ajxGetPAGWOList(){
-		$term = $this->input->get("term");
-		$term = "%$term%";
-
-		$finWOId = $this->input->get("fin_wo_id");
-		
-		/*
-		$ssql = "SELECT a.fin_mag_confirm_id,a.fst_mag_confirm_no FROM trmagconfirm a
-			INNER JOIN trmag b on a.fin_mag_id = b.fin_mag_id
-			WHERE b.fin_wo_id = ? and a.fst_mag_confirm_no like ? and a.fst_active = 'A'";
-		
-		$qr = $this->db->query($ssql,[$finWOId,$term]);
-		*/
-
-		$ssql = "SELECT a.fin_mag_confirm_id FROM trmagconfirm a
-			INNER JOIN trmag b on a.fin_mag_id = b.fin_mag_id
-			WHERE b.fin_wo_id = ? and a.fst_mag_confirm_no like ? and a.fst_active = 'A'";		
-		$qr = $this->db->query($ssql,[$finWOId,$term]);
-		$rs = $qr->result();
-		$finPAGPIds = [];
-		foreach($rs as $rw){
-			$finPAGPIds[] = $rw->fin_mag_confirm_id;
-		}
-
-		if (sizeof($rs) == 0 ){
-			$this->json_output([
-				"status"=>"SUCCESS",
-				"messages"=>"",
-				"data"=>[]
-			]);
-			return;
-		}
-
-		$ssql = " SELECT a.fin_pagp_id,c.fst_mag_confirm_no FROM
-			(
-				SELECT b.fin_mag_confirm_id as fin_pagp_id,a.fin_item_id,a.fst_unit,
-				SUM(a.fdb_qty) as fdb_qty_pagp 
-				FROM trmagitems a 
-				inner join trmagconfirm b on a.fin_mag_id = b.fin_mag_id
-				WHERE fin_mag_confirm_id in ?
-				GROUP BY b.fin_mag_confirm_id ,a.fin_item_id,a.fst_unit
-			) a 
-			LEFT JOIN (
-				SELECT b.fin_pagp_id,a.fin_item_id,a.fst_unit,
-				SUM(a.fdb_qty) as fdb_qty_rmout  
-				FROM trrmoutitems a 
-				INNER JOIN trrmout b ON a.fin_rmout_id = b.fin_rmout_id
-				WHERE b.fin_pagp_id in ?
-				GROUP BY b.fin_pagp_id,a.fin_item_id,a.fst_unit 
-			) b ON a.fin_pagp_id = b.fin_pagp_id AND a.fin_item_id = b.fin_item_id AND a.fst_unit = b.fst_unit 
-			INNER JOIN trmagconfirm c on a.fin_pagp_id = c.fin_mag_confirm_id 
-			WHERE a.fdb_qty_pagp > IFNULL(b.fdb_qty_rmout,0)";
-		$qr = $this->db->query($ssql,[$finPAGPIds,$finPAGPIds]);
-		$rs =$qr->result();			
-		
-		$this->json_output([
-			"status"=>"SUCCESS",
-			"messages"=>"",
-			"data"=>$rs
-		]);
-
-	}
-
-	public function ajxGetBatchWOList(){
+    public function ajxGetBatchWOList(){
 		$term = $this->input->get("term");
 		$term = "%$term%";
 
@@ -479,112 +413,22 @@ class Rmout_prod extends MY_Controller{
 			"messages"=>"",
 			"data"=>$rs
 		]);
-	}
+    }
+    
+    public function ajxGetItemList(){
+		//$term = $this->input->get("term");
+		//$term = "%$term%";
 
-	public function ajxGetPAGDetails(){
-		$finPAGPId = $this->input->get("fin_pagp_id");
+        $finWOId = $this->input->get("fin_wo_id");
+        $finWOBatchNoId = $this->input->get("fin_wobatchno_id");
+        
+        $ssql = "SELECT distinct a.fin_item_id,c.fst_item_code,c.fst_item_name,c.fbl_is_batch_number,c.fbl_is_serial_number  FROM trrmoutitems a
+            INNER JOIN trrmout b on a.fin_rmout_id = b.fin_rmout_id 
+            INNER JOIN msitems c on a.fin_item_id = c.fin_item_id
+            where fin_wo_id = ? and fin_wobatchno_id = ? and b.fst_active ='A'";
+
 		
-		$ssql ="SELECT a.fin_item_id,d.fst_item_name,d.fst_item_code,d.fbl_is_batch_number,d.fbl_is_serial_number,
-			a.fst_unit,e.fin_to_warehouse_id,
-			IFNULL(c.fdb_qty_rmout,0) as fdb_qty_rmout,
-			sum(a.fdb_qty) as fdb_qty 			
-			FROM trmagitems a 
-			INNER JOIN trmagconfirm b on a.fin_mag_id = b.fin_mag_id
-			LEFT JOIN (
-				SELECT a.fin_item_id,a.fst_unit,IFNULL(sum(fdb_qty),0) as fdb_qty_rmout FROM trrmoutitems a
-				INNER JOIN trrmout b on a.fin_rmout_id = b.fin_rmout_id
-				WHERE b.fin_pagp_id = ? 
-				group by a.fin_item_id,a.fst_unit
-			) c on a.fin_item_id = c.fin_item_id and a.fst_unit = c.fst_unit
-			INNER JOIN msitems d on a.fin_item_id = d.fin_item_id 
-			INNER JOIN trmag e on a.fin_mag_id = e.fin_mag_id			
-			WHERE b.fin_mag_confirm_id = ?
-			GROUP BY 
-				a.fin_item_id,d.fst_item_name,d.fst_item_code,d.fbl_is_batch_number,d.fbl_is_serial_number,
-				a.fst_unit,e.fin_to_warehouse_id,IFNULL(c.fdb_qty_rmout,0)
-			HAVING sum(a.fdb_qty) > fdb_qty_rmout";
-			
-		$qr = $this->db->query($ssql,[$finPAGPId,$finPAGPId]);
-		//var_dump($this->db->error());
-		//die();
-		
-		
-		/*
-		$ssql ="SELECT a.fin_item_id,c.fst_item_name,c.fst_item_code,c.fbl_is_batch_number,c.fbl_is_serial_number,
-			a.fst_unit,d.fin_to_warehouse_id,
-			sum(a.fdb_qty) as fdb_qty,
-			sum(a.fdb_qty_rmout) as fdb_qty_rmout  
-			FROM trmagitems a 
-			INNER JOIN trmagconfirm b on a.fin_mag_id = b.fin_mag_id
-			INNER JOIN msitems c on a.fin_item_id = c.fin_item_id 
-			INNER JOIN trmag d on a.fin_mag_id = d.fin_mag_id			
-			WHERE b.fin_mag_confirm_id = ?
-			GROUP BY a.fin_item_id,c.fst_item_name,c.fst_item_code,a.fst_unit 
-			HAVING sum(a.fdb_qty) > sum(a.fdb_qty_rmout) ";
-		$qr = $this->db->query($ssql,[$finPAGPId]);
-		*/
-
-		/*
-		$ssql ="SELECT a.fin_item_id,a.fst_unit,a.fdb_qty,a.fdb_qty_rmout,
-			a.fst_batch_number,a.fst_serial_number_list,
-			c.fst_item_name,c.fst_item_code,c.fbl_is_batch_number,c.fbl_is_serial_number,
-			d.fin_to_warehouse_id
-			FROM trmagitems a 			
-			INNER JOIN trmagconfirm b on a.fin_mag_id = b.fin_mag_id
-			INNER JOIN msitems c on a.fin_item_id = c.fin_item_id 
-			INNER JOIN trmag d on a.fin_mag_id = d.fin_mag_id
-			WHERE b.fin_mag_confirm_id = ? and a.fdb_qty > a.fdb_qty_rmout";	
-		$qr = $this->db->query($ssql,[$finPAGPId]);
-		*/
-		$rs = $qr->result();
-		return $this->json_output([
-			"status"=>"SUCCESS",
-			"messages"=>"",
-			"data"=>$rs
-		]);
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public function ajxGetItemList(){
-		$term = $this->input->get("term");
-		$term = "%$term%";
-
-		$ssql = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fbl_is_batch_number,a.fbl_is_serial_number 
-			FROM msitems a
-			WHERE (a.fst_item_code like ? or a.fst_item_name like ?) 
-			AND a.fin_item_type_id IN (1,2,3,4) AND a.fst_active ='A'";
-
-		$qr = $this->db->query($ssql,[$term,$term]);
+        $qr = $this->db->query($ssql,[$finWOId,$finWOBatchNoId]);            
 		$rs = $qr->result();
 
 		$this->json_output([
@@ -593,33 +437,21 @@ class Rmout_prod extends MY_Controller{
 			"data"=>$rs
 		]);
 
-	}
+    }
+    
+    public function ajxGetUnits(){
+        $finItemId = $this->input->get("fin_item_id");
+        $ssql = "SELECT fst_unit,fbl_is_basic_unit,fdc_conv_to_basic_unit FROM msitemunitdetails where fin_item_id = ? and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finItemId]);
+        $rs = $qr->result();
+        $this->json_output([
+            "status"=>"SUCCESS",
+            "messages"=>"",
+            "data"=>$rs
+        ]);
+    }
+    
 
-	public function ajxGetUnits(){
-		
-		$this->load->model("msitemunitdetails_model");
-		$this->load->model("msitemunitdetails_model");
-		
-		$finItemId = $this->input->get("fin_item_id");
-		$basicUnit = $this->msitemunitdetails_model->getBasicUnit($finItemId);
-		$result = $this->msitemunitdetails_model->getItemListUnits($finItemId);
-
-		$list = [];
-		foreach($result as $unit){
-			$list[] = [
-				"fst_unit"=>$unit->fst_unit,
-				"fbl_is_basic_unit"=>$unit->fbl_is_basic_unit,
-				"fdc_conv_to_basic_unit"=>$unit->fdc_conv_to_basic_unit,                 
-				"fst_basic_unit"=>$basicUnit,
-			];
-		}
-
-		$this->json_output([
-			"status"=>"SUCCESS",
-			"data"=>$list
-		]);
-
-	}
 
 	
 }    

@@ -51,7 +51,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<?php if ($mode != "VIEW") { ?>
 					<div class="btn-group btn-group-sm  pull-right">					
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
-						<a id="btnPromo" class="btn btn-primary" href="#" title="<?=lang("Cek Promo")?>"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
 						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
@@ -90,14 +89,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</div>						
 						</div>
 
-						<div class="form-group hide" >						
+						<div class="form-group">						
 							<label for="fst_curr_code" class="col-md-2 control-label"><?=lang("Mata Uang")?></label>
 							<div class="col-md-4">
 								<select id="fst_curr_code" class="form-control" name="fst_curr_code">
-									<?php										
+									<?php
+										$currList = $this->mscurrencies_model->getArrRate();
 										$defaultCurr = $this->mscurrencies_model->getDefaultCurrencyCode();
-										echo "<option value='$defaultCurr' selected>$defaultCurr</option>";
+										foreach($currList as $curr){
+											$selected =  $defaultCurr == $curr->fst_curr_code ? "selected" : "";
+											echo "<option value='".$curr->fst_curr_code."' $selected>".$curr->fst_curr_name."</option>";
+										}
+
 									?>
+									<option value="<?=$default_currency['CurrCode']?>"><?=$default_currency['CurrName']?></option>
 								</select>
 								<div id="fst_curr_code_err" class="text-danger"></div>
 							</div>
@@ -110,11 +115,58 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 
 						<div class="form-group">						
-							<label for="fin_relation_id" class="col-md-2 control-label"><?=lang("Customer")?></label>
-							<div class="col-md-10">
-								<select id="fin_relation_id" class="form-control non-editable" name="fin_relation_id"></select>
+							<label for="select-relations" class="col-md-2 control-label"><?=lang("Customer")?></label>
+							<div class="col-md-4">
+								<select id="select-relations" class="form-control non-editable" name="fin_relation_id">
+									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
 								<div id="fin_relation_id_err" class="text-danger"></div>
-							</div>						
+							</div>
+						
+							<label for="select-relations" class="col-md-2 control-label"><?=lang("Term")?></label>
+							<div class="col-md-1">
+								<input type="text" class="form-control" id="fin_terms_payment" name="fin_terms_payment" style="width:50px"/>							
+								<div id="fin_terms_payment_err" class="text-danger"></div>
+							</div>
+							<label class="col-md-2 control-label" style="text-align:left;padding-left:0px"><?=lang("Hari")?> </label>
+						</div>
+
+
+						<div class="form-group">
+							
+							<label for="select-sales" class="col-md-2 control-label"><?=lang("Sales")?></label>
+							<div class="col-md-4">
+								<select id="select-sales" class="form-control" name="fin_sales_id">
+									<?php
+										$salesList = $this->users_model->getSalesList();
+										foreach($salesList as $sales){
+											echo "<option value='$sales->fin_user_id'>$sales->fst_username</option>";
+										}
+										
+									?>
+								</select>
+								<div id="fin_sales_id_err" class="text-danger"></div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
+							<div class="col-md-4">
+								<select id="select-warehouse" class="form-control" name="fin_warehouse_id">
+									<?php
+										$warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
+										foreach($warehouseList as $warehouse){
+											echo "<option value='".$warehouse->fin_warehouse_id ."'>$warehouse->fst_warehouse_name</option>";
+										}
+									?>
+								</select>
+								<div id="fin_warehouse_id_err" class="text-danger"></div>
+							</div>
+							<div class="checkbox col-sm-6">
+								<label><input id="fbl_is_hold" type="checkbox" name="fbl_is_hold" value="1"><?= lang("Hold Pengiriman") ?></label>
+								<label style="margin-left:20px"><input id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("Include PPN") ?></label>
+							</div>
+							
 						</div>
 
 						<div class="form-group">
@@ -127,50 +179,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="form-group">
 							<label class="col-md-2 control-label"></label>
 							<div class="col-md-10">
-								<textarea class="form-control" id="fst_shipping_address" style="width:100%" rows="3" readonly></textarea>
+								<textarea class="form-control" id="fst_shipping_address" style="width:100%" rows="5" readonly></textarea>
 								<div id="fst_shipping_address_err" class="text-danger"></div>
 							</div>
 						</div>
-
-						
-						<div class="form-group">
-							<label for="select-relations" class="col-md-2 control-label"><?=lang("Term of payment")?></label>
-							<div class="col-md-1" style="padding-right:5px">
-								<input type="text" class="form-control text-right" id="fin_terms_payment" name="fin_terms_payment" value="1"/>							
-								<div id="fin_terms_payment_err" class="text-danger"></div>
-							</div>
-							<label class="col-md-1 control-label" style="text-align:left;padding-left:0px"><?=lang("Hari")?> </label>
-							
-							<label for="fin_sales_id" class="col-md-2 control-label"><?=lang("Sales")?></label>
-							<div class="col-md-6">
-								<select id="fin_sales_id" class="form-control" name="fin_sales_id">
-									<?php
-										$salesList = $this->users_model->getSalesList();
-										foreach($salesList as $sales){
-											echo "<option value='$sales->fin_user_id'>$sales->fst_username</option>";
-										}										
-									?>
-								</select>
-								<div id="fin_sales_id_err" class="text-danger"></div>
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
-							<div class="col-md-8">
-								<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id">
-									<?php
-										$warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
-										foreach($warehouseList as $warehouse){
-											echo "<option value='".$warehouse->fin_warehouse_id ."'>$warehouse->fst_warehouse_name</option>";
-										}
-									?>
-								</select>
-								<div id="fin_warehouse_id_err" class="text-danger"></div>
-							</div>							
-							<label  class="col-md-2 control-label"><input id="fbl_is_hold" type="checkbox"  name="fbl_is_hold" checked> <?= lang("Hold Pengiriman") ?></label>														
-						</div>
-						
 
 						<div class="form-group" >
 							<div class="col-md-12" style='text-align:right'>
@@ -200,12 +212,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</div>
 							<div class="col-sm-6">	
 								<div class="form-group">
-									<label for="sub-total" class="col-md-8 control-label"><?=lang("Sub total / DPP")?></label>
+									<label for="sub-total" class="col-md-8 control-label"><?=lang("Sub total")?></label>
 									<div class="col-md-4" style='text-align:right'>
 										<input type="text" class="form-control text-right" id="sub-total" value="0" readonly>
 									</div>
 								</div>
-								<div class="form-group ppn-group" >
+								<div class="form-group">
 									<label for="sub-total" class="col-md-6 control-label">%<?=lang("PPn")?></label>
 									<div class="col-md-2" style='text-align:right'>
 										<input type="text" class="form-control text-right" id="fdc_vat_percent" name="fdc_vat_percent" value="<?=$percent_ppn?>" >
@@ -233,9 +245,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</div>
 							
 						</div>
+						
+						
+
 					</div>
 					<!-- end box body -->
-					<div class="box-footer text-right">						
+
+					<div class="box-footer text-right">
+						
 					</div>
 					<!-- end box-footer -->
 				</form>
@@ -254,326 +271,232 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<h4 class="modal-title"><?=lang("Add SO Detail")?></h4>
 			</div>
 
-			<div class="modal-body">	
-				<div id="dialog-info" class="alert alert-info" style="display:none">
-					<a href="#" class="close" onclick="$('#dialog-info').hide()" aria-label="close">&times;</a>
-					<div class="info-message">
-						<strong>Info!</strong> 
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-12" >
+						<div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+							<fieldset style="padding:10px">
+				
+								<form class="form-horizontal">
+									<input type='hidden' id='fin_rec_id'/>
+									<div class="form-group">
+										<label for="select-items" class="col-md-3 control-label"><?=lang("Items")?></label>
+										<div class="col-md-9">
+											<select id="select-items" class="form-control"></select>
+											<div id="ItemId_err" class="text-danger"></div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="fst_custom_item_name" class="col-md-3 control-label"><?=lang("Custom Name")?></label>
+										<div class="col-md-9">
+											<input id="fst_custom_item_name" class="form-control"></select>
+											<div id="fst_custom_item_name_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="select-unit" class="col-md-3 control-label"><?=lang("Unit")?></label>
+										<div class="col-md-9">
+											<select id="select-unit" name="fst_unit" class="disc-group form-control" style="width:100%"></select>
+											<div id="fst_unit_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?></label>
+										<div class="col-md-2">
+											<input type="number" class="disc-group form-control text-right numeric" id="so-qty" value="1">
+											<div id="fdb_qty_err" class="text-danger"></div>
+										</div>
+
+										<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?></label>
+										<div class="col-md-5">
+											<input type="text" class="disc-group form-control text-right money" id="so-price" value="0">
+											<div id="fdc_price_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									
+
+									<div class="form-group">
+										<label for="select-disc" class="col-md-3 control-label"><?=lang("Disc ++")?></label>
+										<div class="col-md-9">
+											<select id="select-disc" class="form-control text-right" name="fst_disc_item">
+												<?php
+													$discList = $this->msitemdiscounts_model->getItemDiscountList();
+													foreach($discList as $disc){
+														echo "<option value='$disc->fst_item_discount'>$disc->fst_item_discount</option>";
+													}
+												?>
+											</select>
+											<div id="fst_disc_item_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fdc_disc_amount_per_item" class="col-md-3 control-label"><?=lang("Nilai Disc / Barang ")?></label>
+										<div class="col-md-9">
+											<input type="text" class="money disc-group form-control text-right" id="fdc_disc_amount_per_item">
+											<div id="fdc_disc_amount_per_item_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="fst_memo_item" class="col-md-3 control-label"><?=lang("Memo")?></label>
+										<div class="col-md-9">
+											<textarea type="text" class="form-control" id="fst_memo_item" rows="3"></textarea>
+											<div id="fst_memo_item_err" class="text-danger"></div>
+										</div>
+									</div>
+
+								</form>
+
+								<div class="modal-footer">
+									<button id="btn-add-so-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+									<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+								</div>
+								<div id="dialog-info" class="alert alert-info">
+									<a href="#" class="close" onclick="$('#dialog-info').hide()" aria-label="close">&times;</a>
+									<div class="info-message">
+										<strong>Info!</strong> 
+									</div>
+								</div>
+							</fieldset>
+						</div>
 					</div>
 				</div>
-
-				<form class="form-horizontal">
-					<div class="form-group">
-						<label for="dfin_item" class="col-md-3 control-label"><?=lang("Items")?></label>
-						<div class="col-md-9">
-							<select id="dfin_item_id" class="form-control price-control"></select>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="col-md-3 control-label"><?=lang("Custom Name")?></label>
-						<div class="col-md-9">
-							<input id="dfst_custom_item_name" class="form-control"></select>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="dfst_unit" class="col-md-3 control-label"><?=lang("Unit")?></label>
-						<div class="col-md-9">
-							<select id="dfst_unit" name="fst_unit" class="disc-group form-control price-control" style="width:100%"></select>
-							<div id="fst_unit_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="col-md-3 control-label"><?=lang("Qty")?></label>
-						<div class="col-md-2">
-							<input type="number" class="disc-group price-control form-control text-right numeric" id="dfdb_qty" value="1">
-						</div>
-
-						<label class="col-md-2 control-label"><?=lang("Price")?></label>
-						<div class="col-md-5">
-							<input type="text" class="disc-group form-control text-right money" id="dfdc_selling_price" value="0">							
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label class="col-md-3 control-label"><?=lang("Disc ++")?></label>
-						<div class="col-md-9">
-							<select id="dfst_disc_item" class="form-control text-right">
-								<?php
-									$discList = $this->msitemdiscounts_model->getItemDiscountList();
-									foreach($discList as $disc){
-										echo "<option value='$disc->fst_item_discount'>$disc->fst_item_discount</option>";
-									}
-								?>
-							</select>
-							<div id="fst_disc_item_err" class="text-danger"></div>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label  class="col-md-3 control-label"><?=lang("Nilai Disc / Barang ")?></label>
-						<div class="col-md-9">
-							<input type="text" class="money disc-group form-control text-right" id="dfdc_disc_amount_per_item" readonly>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<label for="fst_memo_item" class="col-md-3 control-label"><?=lang("Memo")?></label>
-						<div class="col-md-9">
-							<textarea type="text" class="form-control" id="dfst_memo_item" rows="3"></textarea>
-							<div id="dfst_memo_item_err" class="text-danger"></div>
-						</div>
-					</div>
-
-				</form>				
-													
-			</div>
-			<div class="modal-footer">
-				<button id="btn-add-so-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
-				<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
-					
 			</div>
 		</div>
 	</div>
-
-	<script type="text/javascript" info="define">
-		
-		var myModal = {
-			selectedItem:null,
-			selectedUnit:null,
-			show:function(){
-				if (selectedRow != null){
-					var data = selectedRow.data();					
-					
-					myModal.selectedItem ={
-						"id" : data.fin_item_id,
-						"text" : data.fst_item_code  + " - " + data.fst_item_name,
-						"fst_item_name" : data.fst_item_name,
-						"fst_item_code" : data.fst_item_code,
-						"fst_max_item_discount" : data.fst_max_item_discount,
-					};	
-
-					console.log(myModal.selectedItem);
-
-					App.addOptionIfNotExist("<option value='"+data.fin_item_id+"' selected>"+data.fst_item_code + " - " + data.fst_item_name +"</option>","dfin_item_id");
-					$("#dfin_item_id").trigger("change");
-
-					$("#dfst_custom_item_name").val(data.fst_custom_item_name);
-					App.addOptionIfNotExist("<option value='"+ data.fst_unit +"' selected>"+ data.fst_unit +"</option>","dfst_unit");
-					$("#dfst_unit").trigger("change");
-					$("#dfdb_qty").val(money_format(data.fdb_qty));
-					$("#dfdc_selling_price").val(money_format(data.fdc_price));
-					$("#dfst_disc_item").val(data.fst_disc_item);
-					$("#dfdc_disc_amount_per_item").val(money_format(data.fdc_disc_amount_per_item));
-					$("#dfst_memo_item").val(data.fst_memo_item);					
-				}else{
-					myModal.clear();
-				}
-
-				$("#myModal").modal("show");
+	<script type="text/javascript">
+		var ajxSel2Item = {
+			url: '<?=site_url()?>tr/sales_order/get_data_item',
+			dataType: 'json',
+			delay: 500,
+			data:function(params){
+				//params.add_data =1;
+				return params;
 			},
-			hide:function(){
-				$("#myModal").modal("hide");
+			processResults: function (data) {
+				data2 = [];
+				$.each(data,function(index,value){
+					data2.push({
+						"id" : value.fin_item_id,
+						"text" : value.ItemCodeName,
+						"fst_item_name" : value.fst_item_name,
+						"fst_item_code" : value.fst_item_code,
+						"fst_max_item_discount" : value.fst_max_item_discount,
+					});	
+				});
+				return {
+					results: data2
+				};
 			},
-			clear:function(){				
-				$("#dfin_item_id").val(null).trigger("change");				
-				$("#dfst_custom_item_name").val("");
-				$("#dfst_unit").val(null).trigger("change");
-				$("#dfdb_qty").val("1");
-				$("#dfdc_selling_price").val(App.money_format(0));
-				$("#dfst_disc_item").val(0);
-				$("#dfdc_disc_amount_per_item").val(App.money_format(0));
-				$("#dfst_memo_item").val("");	
-				$("#dialog-info").hide();			
-				selectedRow = null;
-			}
+			cache: true,
 		}
-	</script>
 
-	<script type="text/javascript" info="init">
 		$(function(){
-			$("#dfin_item_id").select2({
-				width: '100%',	
-				cache: true,
-				minimumInputLength:2,			
-				ajax: {
-					url: '<?=site_url()?>tr/sales_order/ajxGetDataItem',
-					dataType: 'json',
-					delay: 500,
-					processResults: function (resp) {
-						if (resp.messages != ""){
-							alert(resp.messages);
-						}
-						if (resp.status == "SUCCESS"){
-							data = resp.data;
-							data2 = [];
-							$.each(data,function(index,value){
-								
-								data2.push({
-									"id" : value.fin_item_id,
-									"text" : value.fst_item_code  + " - " + value.fst_item_name,
-									"fst_item_name" : value.fst_item_name,
-									"fst_item_code" : value.fst_item_code,
-									"fst_max_item_discount" : value.fst_max_item_discount,
-								});	
-							});
-							return {
-								results: data2
-							};
-						}											
-					},					
-				}
+			$("#select-items").select2({
+				width: '100%',				
+				ajax: ajxSel2Item,
+				minimumInputLength:2,
 			}).on('select2:select', function(e){
-				myModal.selectedItem = e.params.data;
-				$("#dfst_unit").val(null).trigger("change");
-
-				$("#dfst_custom_item_name").val(myModal.selectedItem.fst_item_name);
+				itemOnSelect(e);
 			});	
-
-			$("#dfst_unit").select2({
-				width: '100%',	
-				cache: true,
-				minimumResultsForSearch: -1,
-				ajax: {
-					url: '<?=site_url()?>tr/sales_order/ajxGetUnitList',
-					data:function(params){
-						params.fin_item_id = $("#dfin_item_id").val();
-						return params;
-					},
-					dataType: 'json',
-					delay: 250,
-					processResults: function (resp) {
-						if (resp.messages != ""){
-							alert(resp.messages);
-						}
-						if (resp.status == "SUCCESS"){
-							data = resp.data;
-							data2 = [];
-							$.each(data,function(index,value){
-								value.id = value.fst_unit;
-								value.text = value.fst_unit;
-								data2.push(value);	
-							});
-							return {
-								results: data2
-							};
-						}											
-					},					
-				}
-			}).on('select2:select', function(e){
-				myModal.selectedUnit = e.params.data;
-				getSellingInfo();
-			});			
-		});
-
-	</script>
-
-	<script type="text/javascript" info="event">
-		$(function(){		
-			$(".price-control").change(function(e){
+			
+			$("#select-disc").change(function(e){
 				e.preventDefault();
+				var amount = App.money_parse($("#so-price").val());
+				var strDisc = $("#select-disc").val();
+				var discAmount = App.calculateDisc(amount,strDisc);
+				$("#fdc_disc_amount_per_item").val(App.money_format(discAmount));
+				//$("#fdc_disc_amount").val(App.money_format(discAmount)); 
+			});
+		
+			$(".disc-group").change(function(e){
+				var price = App.money_parse($("#so-price").val());
+				var discAmountPerItem = App.money_parse($("#fdc_disc_amount_per_item").val());
+
+				var discPersen = 0;
+				if (price >0){
+					discPersen = (discAmountPerItem / price) * 100;
+				} 
+				App.addOptionIfNotExist("<option value='"+ discPersen + "' selected>" + App.money_format(discPersen) + "</option>","select-disc");
+				$("#select-disc").trigger("change.select2");
+
+				//$("#select-disc").change
+
+				//var amount = $("#so-qty").val() * App.money_parse($("#so-price").val());
+				//var strDisc = $("#select-disc").val();
+				//var discAmount = App.calculateDisc(amount,strDisc);
+				//$("#fdc_disc_amount").val(App.money_format(discAmount)); 
+
+
 			});
 
-			$("#dfst_disc_item").change(function(e){
-				e.preventDefault();
-				console.log(myModal.selectedItem);
-				//Cek Max Disc
-				var price = money_parse($("#dfdc_selling_price").val());
-				var maxDiscAmount = App.calculateDisc(price,myModal.selectedItem.fst_max_item_discount);
-				var discAmount = App.calculateDisc(price,$("#dfst_disc_item").val());
-				if (maxDiscAmount < discAmount){
-					alert("Disc Melebih Max Disc (" + myModal.selectedItem.fst_max_item_discount + " %)");
-				}
-				$("#dfdc_disc_amount_per_item").val(App.money_format(discAmount));				
-			});
+			$("#btn-add-so-detail").click(function(event){
+				event.preventDefault();					
+				price = money_parse($("#so-price").val());			
+				//selected_items = $("#select-items").select2('data')[0];
+				selected_disc = $("#select-disc").val();
+				selectedUnits = $("#select-unit").select2('data')[0];
 
-			$("#btn-add-so-detail").click(function(e){
-				e.preventDefault();
-				var data = {};
-				cekPromo = 1;
-				confirmAuthorize = 0;
-				if (selectedRow != null){
-					data = selectedRow.data();
-					data.fin_item_id = myModal.selectedItem.id,
-					data.fst_item_code = myModal.selectedItem.fst_item_code,
-					data.fst_item_name = myModal.selectedItem.fst_item_name,
-					data.fst_max_item_discount = myModal.selectedItem.fst_max_item_discount,
-					data.fst_custom_item_name = $("#dfst_custom_item_name").val(),
-					data.fdb_qty = App.money_parse($("#dfdb_qty").val()),
-					data.fst_unit= $("#dfst_unit").val(),
-					data.fdc_price = App.money_parse($("#dfdc_selling_price").val()),
-					data.fst_disc_item = $("#dfst_disc_item").val(),
-					data.fdc_disc_amount_per_item = money_parse($("#dfdc_disc_amount_per_item").val()),
-					data.fst_memo_item = $("#dfst_memo_item").val()
-					
-					selectedRow.data(data).draw(false);
-					myModal.clear();
-					myModal.hide();
-				}else{				
-					data = {
-						fin_rec_id:0,
-						fin_promo_id:0,
-						fin_item_id:myModal.selectedItem.id,
-						fst_item_code:myModal.selectedItem.fst_item_code,
-						fst_item_name:myModal.selectedItem.fst_item_name,
-						fst_max_item_discount:myModal.selectedItem.fst_max_item_discount,
-						fst_custom_item_name:$("#dfst_custom_item_name").val(),
-						fdb_qty:App.money_parse($("#dfdb_qty").val()),
-						fst_unit:$("#dfst_unit").val(),
-						fdc_price:App.money_parse($("#dfdc_selling_price").val()),
-						fst_disc_item:$("#dfst_disc_item").val(),
-						fdc_disc_amount_per_item:money_parse($("#dfdc_disc_amount_per_item").val()),
-						fst_memo_item:$("#dfst_memo_item").val()
+				qty = $("#so-qty").val();
+				price = money_parse($("#so-price").val());
+				discPerItem = money_parse($("#fdc_disc_amount_per_item").val());
+
+				if (discPerItem > price){
+					alert("<?=lang("Nilai disc melebih nilai harga !")?>");
+					return;
+				}
+
+				//amount = price * qty;
+				//maxDisc = App.calculateDisc(amount,selectedItem.fst_max_item_discount);
+				maxDisc = App.calculateDisc(price,selectedItem.fst_max_item_discount);
+
+				if (maxDisc < discPerItem){
+					var cfrm = confirm("<?= lang('Total discount melebih batas yang diperbolehkan !') ?>" + " (maxDisc:" +  maxDisc + "), tetap proses ?");
+					if (!cfrm){
+						return;
 					}
-					tblDetails.row.add(data).draw(false);
-					myModal.clear();
-				}		
-			})
-		});
-	</script>
-	
-	<script type="text/javascript" info="function">
-
-		function getSellingInfo(){
-
-			App.blockUIOnAjaxRequest();
-
-			$.ajax({
-				url:"<?=site_url()?>tr/sales_order/ajxGetSellingInfo",
-				method:"GET",
-				data:{
-					fin_item_id:$("#dfin_item_id").val(),
-					fin_warehouse_id:$("#fin_warehouse_id").val(),
-					fst_unit:$("#dfst_unit").val(),
-					fin_relation_id:$("#fin_relation_id").val()
+					
 				}
 
-			}).done(function(resp){
+				
 
-				if (resp.messages != ""){
-					alert(resp.messages);
+				data = {
+					fin_rec_id:$("#fin_rec_id").val(),
+					fin_promo_id:0,
+					fin_item_id:selectedItem.id,
+					fst_item_name:selectedItem.fst_item_name,
+					fst_item_code:selectedItem.fst_item_code,
+					fst_custom_item_name:$("#fst_custom_item_name").val(),
+					fst_max_item_discount:selectedItem.fst_max_item_discount,
+					fdb_qty: $("#so-qty").val(),
+					fst_unit: selectedUnits.id,
+					fdc_price : price,
+					fst_disc_item : selected_disc,
+					fdc_disc_amount_per_item: discPerItem,
+					fst_memo_item: $("#fst_memo_item").val(),
+					real_stock: selectedUnits.real_stock,
+					marketing_stock: selectedUnits.marketing_stock,
+					fdc_conv_to_basic_unit: selectedUnits.fdc_conv_to_basic_unit,
+					fst_basic_unit: selectedUnits.fst_basic_unit,
 				}
-				if (resp.status == "SUCCESS"){
-					data = resp.data;
-					$("#dfdc_selling_price").val(money_format(data.sellingPrice));
-					
-					var infoStock = "Qty Real Stock : " + data.real_stock + " " + data.fst_basic_unit + " => " + data.real_stock / myModal.selectedUnit.fdc_conv_to_basic_unit + " " +  myModal.selectedUnit.text;
-					infoStock += " | Qty Marketing Stock : " + data.marketing_stock + " " + data.fst_basic_unit + " => " + data.marketing_stock / myModal.selectedUnit.fdc_conv_to_basic_unit + " " +  myModal.selectedUnit.text;
-					
-					$("#dialog-info .info-message").html(infoStock);
-					$("#dialog-info").show();										
-				}	
 
+				t = $('#tblSODetails').DataTable();
+				if(mode_so_detail == "EDIT"){
+					edited_so_detail.data(data).draw(false);
+					edited_so_detail = null;
+				}else{
+					t.row.add(data).draw(false);	
+				}
+				calculateTotal();
+				clearDetailForm();
 			});
-		}
+		});
 
-		/*
-		function itemOnSelect() {
-			//Get Stock (basic Unit)
-
-
+		function itemOnSelect(event) {
 			var data = event.params.data;
 			data = Array.isArray(data) ? data[0] : data;					
 			selectedItem = data;
@@ -644,13 +567,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				App.fixedSelect2();
 			});				
 		}
-		*/
-		
+		function getPromoDisc(){
+			var finItemId = "";
+			var fstUnit  ="";
+			var fdbQty =0;
+			App.getValueAjax({
+				model:"mspromo_model",
+				func:"",
+				params:[]
+			});
+		}
+
 	</script>
 </div>
-
-
-
 <?php
 	echo $mdlJurnal;
 	echo $mdlConfirmAuthorize;
@@ -667,104 +596,135 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	});
 </script>
 
+<script type="text/javascript" info="event">
+	$(function(){
+
+		$("#btnJurnal").click(function(e){
+			e.preventDefault();
+			MdlJurnal.showJurnalByRef("SO",$("#fin_salesorder_id").val());
+		});
+
+		$("#btnPrint").click(function(e){
+			frameVoucher.print("<?=site_url()?>tr/sales_order/print_voucher/" + $("#fin_salesorder_id").val());
+		});		
+
+		$("#btnSubmitAjax").click(function(event){
+			event.preventDefault();
+			saveAjax(0);
+		});
+
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>tr/sales_order/add")
+		});
+
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+
+		$("#btnDelete").click(function(e){
+			e.preventDefault();
+			deleteAjax(0);
+		});
+
+		$("#btnClose").click(function(e){
+			e.preventDefault();
+			window.location.replace("<?=site_url()?>tr/sales_order/lizt");
+		});
+
+		$("#fbl_is_vat_include").change(function(e){
+			calculateTotal();
+		});
+		
+		$("#btn-add-detail").click(function(event){
+			event.preventDefault();
+			if ($("#select-relations").val() == "0"){
+				alert("<?=lang("Customer tidak boleh kosong !")?>");
+				return;
+			}
+			mode_so_detail = "ADD";			
+			$("#myModal").modal({
+				backdrop:"static",
+			});
+			clearDetailForm();
+			$("#dialog-info").hide();					
+		});
+
+		
+
+		$("#fdc_vat_percent").change(function(e){
+			e.preventDefault();
+			calculateTotal();
+		});
+
+	});
+</script>
+
+
 <script type="text/javascript" info="define">	
-	var selectedCustomer = null;
+	var edited_so_detail = null;
+	var mode_so_detail = "ADD";
+	var arrDetail;	
+	var sel2Sales = [];
+	var sel2Warehouse =[];
+	var sel2Currencies =[];
+	var current_pricing_group_id = 0;
 	var selectedRow = null;
-	var mode = "<?=$mode?>";
-	var tblDetails;
-	var priceIncPPN = <?=getDbConfig("sales_price_inc_ppn");?>;
-	var defaultPPNPercent = <?=getDbConfig("sales_ppn_percent");?>;
+	var selectedItem = null;
 	var cekPromo = 1;
 	var confirmAuthorize = 0;
 
-
-
-	var edited_so_detail = null;
-	var mode_so_detail = "ADD";
-	var arrDetail;				
+	
 </script>
 
 <script type="text/javascript" info="init">
+
 	$(function(){
-		$("#fdt_salesorder_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");				
-		$("#fdc_vat_percent").val(defaultPPNPercent);
-		if (priceIncPPN == 1){
-			//Hide PPN
-			$("#fdc_vat_percent").prop("readonly",true);				
-		}else{
-			$("#fdc_vat_percent").prop("readonly",false);			
-		}
-
-		$("#fin_relation_id").select2({
+		$("#fdt_salesorder_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");		
+		
+		$("#select-relations").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>tr/sales_order/ajxGetCustomerList',
+				url: '<?=site_url()?>tr/sales_order/get_customers',
 				dataType: 'json',
 				delay: 250,
-				processResults: function (resp){
-					if (resp.messages !=""){
-						alert(resp.messages);
-					}
-					if (resp.status =="SUCCESS"){
-						var data = resp.data;
-						var arrData =[];
-						$.each(data,function(index,value){
-							value.id = value.fin_relation_id;
-							value.text = value.fst_relation_name,
-							arrData.push(value);
+				processResults: function (data){
+					items = [];
+					data = data.data;
+					$.each(data,function(index,value){
+						items.push({
+							"id" : value.fin_relation_id,
+							"text" : value.fst_relation_name,
+							"fin_sales_id" : value.fin_sales_id,
+							"fst_shipping_address":value.fst_shipping_address,
+							"fin_warehouse_id":value.fin_warehouse_id,
+							"fin_terms_payment":value.fin_terms_payment,
+							"fin_cust_pricing_group_id" :value.fin_cust_pricing_group_id					
 						});
-					}
+					});					
 					return {
-						results: arrData
+						results: items
 					};
 				},
 				cache: true,
 			}
-		}).on('select2:select',function(e){			
-			selectedCustomer = e.params.data;			
+		}).on('select2:select',function(e){
+			//selectedCustomer = $("#select-relations").select2("data")[0];
+			selectedCustomer = e.params.data;
+			getShippingAddressList(selectedCustomer.id);
 			$("#fin_terms_payment").val(selectedCustomer.fin_terms_payment);
-			$("#fin_sales_id").val(selectedCustomer.fin_sales_id).trigger("change");
+			$("#select-sales").val(selectedCustomer.fin_sales_id).trigger("change.select2");
+			$("#select-warehouse").val(selectedCustomer.fin_warehouse_id).trigger("change.select2");
+			//current_pricing_group_id = selectedCustomer.current_pricing_group_id;			
 		});
 
-		$("#fin_shipping_address_id").select2({
-			width: '100%',
-			ajax: {
-				url: function(params){
-					return '<?=site_url()?>pr/relation/get_shipping_address/' + $("#fin_relation_id").val();
-				},
-				dataType: 'json',
-				delay: 250,
-				processResults: function (resp){
-					if (resp.messages !=""){
-						alert(resp.messages);
-					}
-					if (resp.status =="SUCCESS"){
-						var data = resp.data;
-						var arrData =[];
-						$.each(data,function(index,value){
-							arrData.push({
-								"id" : value.fin_shipping_address_id,
-								"text" : value.fst_name,
-								"fst_shipping_address":value.fst_shipping_address
-							});
-						});
-					}
-					return {
-						results: arrData
-					};
-				},
-				cache: true,
-			}
-		}).on("select2:select",function(e){
-			var data = e.params.data;
-			$("#fst_shipping_address").val(data.fst_shipping_address);
-		});
-
-		$("#fin_sales_id").select2();
+		$("#select-sales").select2();
 		
 			
 
-		tblDetails = $('#tblSODetails').on('preXhr.dt', function ( e, settings, data ) {
+		$('#tblSODetails').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";		
 		}).on('init.dt',function(){
@@ -779,28 +739,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			columns:[				
 				{"title" : "id",sortable:false,data:"fin_rec_id",visible:true},
 				{"title" : "promo",sortable:false,data:"fin_promo_id",visible:true},				
-				{"title" : "Items","width": "320px",sortable:false,data:"fin_item_id",
+				{"title" : "Items","width": "200px",sortable:false,data:"fin_item_id",
 					render: function(data,type,row){
-						
-						return row.fst_item_code + " - " + row.fst_custom_item_name + "<br>" + row.fst_memo_item;
-						
+						return row.fst_item_code + " - " + row.fst_custom_item_name;
 					}
 				},
 				{"title" : "Custom Name","width": "0px",sortable:false,data:"fst_custom_item_name",visible:false},
-				{"title" : "Qty",width:"30px",data:"fdb_qty",className:'text-right'},
+				{"title" : "Qty",data:"fdb_qty",className:'text-right'},
 				{"title" : "Unit",width:"50px",data:"fst_unit"},
 				{"title" : "Price",width:"80px",
 					data:"fdc_price",
 					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
 					className:'text-right'
 				},
-				{"title" : "Disc",width:"120px",data:"fst_disc_item",className:'text-right',
+				{"title" : "Disc (%)",width:"50px",
+					data:"fst_disc_item",
 					//render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
-					render:function(data,type,row){
-						return data + " - " + money_format(row.fdc_disc_amount_per_item);
-					}
+					className:'text-right'
 				},
-							
+				{"title" : "Disc / Item",width:"80px",data:"fdc_disc_amount_per_item",
+					render: $.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT),
+					className:'text-right'
+				},				
 				{"title" : "Total",width:"80px",className:'text-right',
 					render: function(data,type,row){
 						return App.money_format((row.fdb_qty * row.fdc_price) - (row.fdb_qty * row.fdc_disc_amount_per_item));
@@ -808,6 +768,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 					
 				},
+				{"title" : "Memo","width": "120px",data:"fst_memo_item"},
 				{"title" : "Action","width": "60px",sortable:false,className:'dt-body-center text-center',
 					render:function(data,type,row){
 						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';
@@ -837,123 +798,84 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			},
 		}).on('draw',function(){
 			$(".dataTables_scrollHeadInner").css("min-width","100%");
-			$(".dataTables_scrollHeadInner > table").css("min-width","100%");	
-			calculateTotal();		
-		}).on("click",".btn-delete",function(event){
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");			
+		});
+
+		$("#tblSODetails").on("click",".btn-delete",function(event){
 			t = $('#tblSODetails').DataTable();
 			var trRow = $(this).parents('tr');
 
 			t.row(trRow).remove().draw();
 			calculateTotal();
-		}).on("click",".btn-edit",function(event){
-			event.preventDefault();					
-			t = tblDetails;
-			var trRow = $(this).parents('tr');			
-			selectedRow = t.row(trRow);
-			myModal.show();
+		});
+
+		$("#tblSODetails").on("click",".btn-edit",function(event){
+			event.preventDefault();			
+			$("#myModal").modal({
+				backdrop:"static",
+			});
+
+			t = $('#tblSODetails').DataTable();
+			var trRow = $(this).parents('tr');
+			mode_so_detail = "EDIT";
+			edited_so_detail = t.row(trRow);
+			row = edited_so_detail.data();
+			selectedRow = row;	
+
+			$("#fin_rec_id").val(row.fin_rec_id);
+			
+			var newOption = new Option(row.fst_item_code + "-" + row.fst_custom_item_name, row.fin_item_id, true, true);
+			$('#select-items').append(newOption).trigger('change');	
+			
+			$('#select-items').trigger({
+				type:"select2:select",
+				params:{
+					data:{
+						"id" : row.fin_item_id,
+						"text" : row.fst_item_code + " - " + row.fst_item_name,
+						"fst_item_name" : row.fst_item_name,
+						"fst_item_code" : row.fst_item_code,
+						"fst_max_item_discount" : row.fst_max_item_discount,
+					}
+				}
+			});
+			
+			
+			$("#fst_custom_item_name").val(row.fst_custom_item_name);
+			
+			//$('#select-disc').val(row.fst_disc_item).trigger('change');	
+			App.addOptionIfNotExist("<option value='"+row.fst_disc_item+"' selected>"+ App.money_format(row.fst_disc_item) +"</option>","select-disc");
+			//$('#select-disc').val(row.fst_disc_item).trigger('change');
+			$("#so-qty").val(row.fdb_qty);
+			$("#so-price").val(money_format(row.fdc_price));
+			$("#fdc_disc_amount_per_item").val(money_format(row.fdc_disc_amount_per_item));
+			$("#fst_memo_item").val(row.fst_memo_item);				
 		});
 
 		init_form();
 		App.fixedSelect2();		
 	});
+
 </script>
 
-<script type="text/javascript" info="event">
-	$(function(){
+<script type="text/javascript" info="function">
 
-		$("#btnJurnal").click(function(e){
-			e.preventDefault();
-			MdlJurnal.showJurnalByRef("SO",$("#fin_salesorder_id").val());
-		});
-
-		$("#btnPrint").click(function(e){
-			frameVoucher.print("<?=site_url()?>tr/sales_order/print_voucher/" + $("#fin_salesorder_id").val());
-		});		
-
-		$("#btnSubmitAjax").click(function(event){
-			event.preventDefault();
-			saveAjax(0);
-		});
-
-		$("#btnNew").click(function(e){
-			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/sales_order/add")
-		});
-
-		$("#btnPromo").click(function(e){
-			e.preventDefault();
-			getPromoItem(function(){
-
-			});
-		});
-
-		$("#btnDelete").confirmation({
-			title:"<?=lang("Hapus data ini ?")?>",
-			rootSelector: '#btnDelete',
-			placement: 'left',
-		});
-
-		$("#btnDelete").click(function(e){
-			e.preventDefault();
-			deleteAjax(0);
-		});
-
-		$("#btnClose").click(function(e){
-			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/sales_order/lizt");
-		});
-
-		$("#fbl_is_vat_include").change(function(e){
-			calculateTotal();
-		});
-		
-		$("#btn-add-detail").click(function(event){
-				
-			
-			event.preventDefault();
-			myModal.show();
-			myModal.clear();
-
-			/*
-			
-			if ($("#select-relations").val() == "0"){
-				alert("<=lang("Customer tidak boleh kosong !")?>");
-				return;
-			}
-			mode_so_detail = "ADD";		
-			$("#dialog-info").hide();					
-			*/
-
-
-		});		
-
-		$("#fdc_vat_percent").change(function(e){
-			e.preventDefault();
-			calculateTotal();
-		});
-
-	});
-</script>
-
-<script type="text/javascript" info="function">	
+	
 
 	function saveAjax(confirmEdit){
 		
 		if (cekPromo == 1){
-			getPromoItem(function(resp){
-				saveAjax(confirmEdit);
-			});
+			getPromoItem();
 			return;
 		}
 
 		if (confirmAuthorize == 0){
-			checkAuthorize(function(resp){
-				saveAjax(confirmEdit);
-			});
+			checkAuthorize();
 			return;
 		}
 
 		data = $("#frmSalesOrder").serializeArray();
+
 		mode = $("#fin_salesorder_id").val() == 0 ? "ADD" : "EDIT"; //$("#frm-mode").val();
 		if (mode == "ADD"){
 			url =  "<?= site_url() ?>tr/sales_order/ajx_add_save/";
@@ -977,8 +899,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 
 		}
-
-		
 
 		
 		detail = new Array();		
@@ -1049,12 +969,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	}
 
-	function getPromoItem(callback){
-		var t = tblDetails;
+
+	function getPromoItem(){
+		var t = $('#tblSODetails').DataTable();
 		t.rows(function(idx,data,node){
 			return data.fin_promo_id != 0 ;
 		}).remove().draw();
-
 		datas = t.data();
 		detail = new Array();
 		$.each(datas,function(i,v){
@@ -1066,22 +986,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			name:"detail",
 			value: JSON.stringify(detail)
 		});
-
+		
+		
 		App.blockUIOnAjaxRequest();
 		$.ajax({
-			url:"<?=site_url()?>tr/sales_order/ajxGetPromoItem",
+			url:"<?=site_url()?>tr/sales_order/get_promo_item",
 			data:dataPost,
 			method:"POST",
-		}).done(function(resp){
 
+		}).done(function(resp){
 			if (resp.message != ""){
 				alert(resp.message);				
 			}
-
 			if (resp.status == "SUCCESS"){
 				cekPromo = 0;
 				var promotionList = resp.data;
-				if (promotionList.length > 0){
+				if(promotionList.length == 0){
+					saveAjax(0);
+				}else{
 					periksa = confirm("<?=lang("Transaksi ini mendapatkan item promo, periksa promo ?")?>");
 					if (periksa){
 						$.each(promotionList,function (i,promotion){
@@ -1157,16 +1079,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								t.row.add(dataTbl).draw(false);
 							}						
 						});
-						return;
+
+					}else{
+						saveAjax(0);
 					}
 				}
-				callback(resp);
 			}
-
 		});
 	}
 
-	function checkAuthorize(callback){
+	function checkAuthorize(){
 		var t = $('#tblSODetails').DataTable();
 		t.rows(function(idx,data,node){
 			return data.fin_promo_id != 0 ;
@@ -1238,19 +1160,184 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					MdlConfirmAuthorize.show(messageList);
 					MdlConfirmAuthorize.authorizeCallback = function(){
 						confirmAuthorize = 1;
-						callback();
+						saveAjax(0);
 					};
 				}else{
 					confirmAuthorize = 1;
-					callback();
+					saveAjax(0);
 				}
 			}
 		});
 	}
 
+	function getShippingAddressList(customerId,selectedShippingAddressId){
+		blockUIOnAjaxRequest("<div><?=lang("Please wait....")?></div>");		
+		$("#fin_shipping_address_id").empty();
+		$("#fst_shipping_address").val("");
+		$.ajax({
+			//url: '<=site_url()?>pr/relation/select_shipping_address/' + customerId,
+			url:"<?=site_url()?>select_data/get_shipping_address/" + customerId,
+		}).done(function(resp){
+			arrShippingAddress = resp.data;
+			arrSelect = [];
+			defaultValue = null;
+
+			$.each(arrShippingAddress,function(i,v){
+				obj = {
+					id: v.fin_shipping_address_id,
+					text: v.fst_name,
+					fst_shipping_address:v.fst_shipping_address
+				};
+				arrSelect.push(obj);
+				if (obj.id == selectedShippingAddressId){
+					defaultValue = obj;
+				}
+			});
+			if(arrSelect.length > 0){
+
+
+
+				defaultValue = (defaultValue == null) ? arrSelect[0] : defaultValue;
+				$("#fin_shipping_address_id").select2({
+					minimumResultsForSearch: -1,
+					data: arrSelect
+				}).on("select2:select",function(e){
+					data = e.params.data;
+					$("#fst_shipping_address").val(data.fst_shipping_address);
+				});
+
+				
+				
+				/*
+				$("#fin_shipping_address_id").val(defaultValue.id).trigger("change");
+				*/
+				$("#fin_shipping_address_id").trigger({
+					type: 'select2:select',
+					params: {
+						data: defaultValue
+					}
+				});
+				App.fixedSelect2();
+
+
+			}
+		});
+	}
+
+	function fillForm(resp){
+		resp = resp.data;
+
+		$.each(resp.sales_order, function(name, val){
+			var $el = $('[name="'+name+'"]'),
+				type = $el.attr('type');
+			switch(type){
+				case 'checkbox':
+					$el.filter('[value="' + val + '"]').attr('checked', 'checked');
+					break;
+				case 'radio':
+					$el.filter('[value="' + val + '"]').attr('checked', 'checked');
+					break;
+				default:
+					$el.val(val);
+			}
+		});
+
+
+		//Customer
+		var arrCust = [];
+		var currCust = {
+			"id" : resp.sales_order.fin_relation_id,
+			"text" : resp.sales_order.fst_relation_name,
+			"fin_sales_id" : resp.sales_order.fin_sales_id,
+			"fin_shipping_address_id":resp.sales_order.fin_shipping_address_id,
+			"fin_warehouse_id":resp.sales_order.fin_warehouse_id,
+			"fin_terms_payment":resp.sales_order.fin_terms_payment							
+		}
+		arrCust.push(currCust);
+		//var newOption = new Option(resp.sales_order.fst_relation_name, resp.sales_order.fin_relation_id, true, true);
+		//$('#select-relations').append(newOption).trigger('change');
+		//current_pricing_group_id = resp.sales_order.current_pricing_group_id;
+		$('#select-relations').empty();
+		$('#select-relations').select2({
+			minimumResultsForSearch: -1,
+			width: "100%",
+			data:arrCust
+		});
+
+		getShippingAddressList(currCust.id,currCust.fin_shipping_address_id);
+
+		$('#select-sales').val(resp.sales_order.fin_relation_id).trigger('change');
+		$('#select-sales').val(resp.sales_order.fin_sales_id).trigger('change');
+		$('#select-warehouse').val(resp.sales_order.fin_warehouse_id).trigger('change');
+
+		SODetails = resp.so_details;
+
+		dataItem = [];
+		$.each(SODetails, function(idx, detail){
+			data = {
+				fin_rec_id:detail.fin_rec_id,
+				fin_promo_id:detail.fin_promo_id,
+				fin_item_id:detail.fin_item_id,
+				ItemCode:detail.fst_item_code,
+				ItemName:detail.fst_item_name,
+				fst_custom_item_name:detail.fst_custom_item_name,
+				fdb_qty:detail.fdb_qty,
+				fst_unit:detail.fst_unit,
+				fdc_price:detail.fdc_price,
+				fst_disc_item:detail.fst_disc_item,
+				fdc_disc_amount:detail.fdc_disc_amount,
+				fst_memo_item:detail.fst_memo_item,
+				total:detail.fdb_qty * detail.fdc_price - detail.fdc_disc_amount,
+			}
+
+			t = $('#tblSODetails').DataTable();			
+			t.row.add(data).draw(false);
+
+			//set Data Item select2		
+			tmp = {
+				"id" : detail.fin_item_id,
+				"text" : detail.fst_item_code + "-" + detail.fst_item_name,
+				"fst_item_name" : detail.fst_item_name,
+				"fst_item_code" : detail.fst_item_code,
+				"fst_max_item_discount" : detail.fst_max_item_discount
+			}
+			dataItem.push(tmp);
+		});
+
+		$("#select-items").select2({
+			width:"100%",
+			data:dataItem,
+			ajax:ajxSel2Item
+		});
+
+		App.fixedSelect2();
+		//$(".non-editable").prop('disabled', true);
+		calculateTotal();		
+		$("#fdt_salesorder_datetime").val(dateTimeFormat(resp.sales_order.fdt_salesorder_datetime)).datetimepicker('update');
+	
+	}
+
+	function clearDetailForm(){
+		$("#fin_rec_id").val(0);
+		$('#select-items').val(null).trigger('change.select2');
+		$('#select-items').focus();
+		$("#fst_custom_item_name").val("");
+		$('#select-disc').val("0").trigger('change');
+		$('#select-unit').val(null).trigger('change');
+		$("#fin-detail-id").val(0);
+		$("#so-qty").val(1);
+		$("#so-price").val(0);
+		$("#fdc_disc_amount").val(0);
+		$("#fst_memo_item").val("");
+		selectedRow = null;
+	}
+	
 	function calculateTotal(){
-		//Setiap terjadi perubahan total  harus cek promo lagi dan konfirmasi authorize lagi		
-		t = tblDetails;
+		//Setiap terjadi perubahan total  harus cek promo lagi dan konfirmasi authorize lagi
+		cekPromo = 1; 
+		confirmAuthorize = 0;	
+
+		t = $('#tblSODetails').DataTable();
 		datas = t.data();
 		ttlBfDisc = 0;
 		ttlDisc = 0;
@@ -1260,13 +1347,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			ttlDisc +=  v.fdc_disc_amount_per_item * v.fdb_qty;
 		});
 
-		//if ($("#fbl_is_vat_include").prop('checked')){
-		if(priceIncPPN == 1){
+		if ($("#fbl_is_vat_include").prop('checked')){
 			total = ttlBfDisc - ttlDisc;			
-			vat = parseFloat($("#fdc_vat_percent").val());
+			vat = $("#fdc_vat_percent").val() * 1;
 			vat = 1 + (vat/100);
 			subTotal = total / vat;
-			vat = (parseFloat($("#fdc_vat_percent").val()) /100) * subTotal;	
+			vat = ($("#fdc_vat_percent").val() /100) * subTotal;	
 		}else{
 			subTotal= ttlBfDisc - ttlDisc;
 			vat = ($("#fdc_vat_percent").val() /100) * subTotal;
@@ -1294,13 +1380,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					detailData = resp.data.so_details;					
 					App.autoFillForm(dataH);
 					$("#fdt_salesorder_datetime").val(dateTimeFormat(dataH.fdt_salesorder_datetime)).datetimepicker("update");	
-					App.addOptionIfNotExist("<option value='"+ dataH.fin_relation_id +"' selected>" + dataH.fst_relation_name + "</option>","fin_relation_id");
+					App.addOptionIfNotExist("<option value='"+ dataH.fin_relation_id +"' selected>" + dataH.fst_relation_name + "</option>","select-relations");
+					$("#select-sales").trigger("change.select2");
+					getShippingAddressList(dataH.fin_relation_id,dataH.fin_shipping_address_id);
 
-					App.addOptionIfNotExist("<option value='"+ dataH.fin_shipping_address_id +"' selected>" + dataH.fst_address_name + "</option>","fin_shipping_address_id");
-					$("#fst_shipping_address").val(dataH.fst_shipping_address);
-					$("#fin_sales_id").trigger("change");
-					
 					details = [];
+
 					$.each(detailData , function(i,detail){
 						data = {
 							fin_rec_id: detail.fin_rec_id,
@@ -1323,15 +1408,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						}
 						details.push(data);
 					});
-					t = tblDetails;
+
+					t = $('#tblSODetails').DataTable();			
+					//t.data(details).draw(false);
 					t.rows.add(details).draw(false);
 					calculateTotal();
+					//App.addOptionIfNotExist("<option value='"+ dataH.fin_shipping_address_id +"' selected>" + dataH.fst_address_name + "</option>","fin_shipping_address_id");
+					//$("#fst_shipping_address").val(dataH.fst_shipping_address);
+
+					
+
 				}
 			})
 		}
 
 
-	}	
+	}
+
 
 	function deleteAjax(confirmDelete){
 

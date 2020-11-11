@@ -5,7 +5,9 @@ class MY_Controller extends CI_Controller
 {
 	public $data = [];
 	public $ajxResp = [
-		'status' => '0', // 0 process success; else failed
+		'status' => 'SUCCESS', // 0 process success; else failed
+		'messages'=>'',
+		'data'=>[]
 	];
 
 	public function __construct()
