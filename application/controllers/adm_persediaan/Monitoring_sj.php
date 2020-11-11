@@ -30,13 +30,19 @@ class Monitoring_sj extends MY_Controller{
 		$useractive = $this->aauth->get_user_id();
 		$user = $this->aauth->user();
 		
-		$this->datatables->setTableName("(select a.*,b.fst_warehouse_name,c.fst_salesorder_no,c.fdt_salesorder_datetime,d.fst_relation_name from trsuratjalan a
-			left join mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id
-			left join trsalesorder c on a.fin_salesorder_id = c.fin_salesorder_id
-			left join msrelations d on c.fin_relation_id = d.fin_relation_id
-			where a.fst_sj_return_resi_no is NULL ) a ");
+		$this->datatables->setTableName("(SELECT a.*,
+			ifnull(ifnull(b.fst_salesorder_no,c.fst_purchasereturn_no),d.fst_assembling_no) as fst_trans_no,
+			ifnull(ifnull(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime),d.fdt_assembling_datetime) as fdt_trans_datetime,
+			e.fst_warehouse_name,f.fst_relation_name         
+			FROM trsuratjalan a 
+			LEFT JOIN trsalesorder b on a.fin_trans_id = b.fin_salesorder_id and a.fst_sj_type ='SO' 
+			LEFT JOIN trpurchasereturn c on a.fin_trans_id = c.fin_purchasereturn_id and a.fst_sj_type ='PO_RETURN' 
+			LEFT JOIN trassembling d on a.fin_trans_id = d.fin_assembling_id and a.fst_sj_type ='ASSEMBLING_OUT'
+			LEFT JOIN mswarehouse e on a.fin_warehouse_id = e.fin_warehouse_id
+			LEFT JOIN msrelations f on b.fin_relation_id = f.fin_relation_id
+			WHERE a.fst_sj_return_resi_no is NULL ) a ");
 
-		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_datetime,a.fst_warehouse_name,a.fst_salesorder_no,a.fdt_salesorder_datetime,
+		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_datetime,a.fst_warehouse_name,a.fst_trans_no,a.fdt_trans_datetime,
 			a.fst_relation_name,a.fdt_sj_return_datetime,a.fst_sj_return_resi_no,a.fst_sj_return_memo,a.fin_sj_return_by_id,a.fbl_is_hold,a.fdt_unhold_datetime,a.fin_unhold_id";
 		$this->datatables->setSelectFields($selectFields);
 
@@ -109,18 +115,24 @@ class Monitoring_sj extends MY_Controller{
 		$useractive = $this->aauth->get_user_id();
 		$user = $this->aauth->user();
 		
-		$this->datatables->setTableName("(select a.*,b.fst_warehouse_name,c.fst_salesorder_no,c.fdt_salesorder_datetime,d.fst_relation_name from trsuratjalan a
-			left join mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id
-			left join trsalesorder c on a.fin_salesorder_id = c.fin_salesorder_id
-			left join msrelations d on c.fin_relation_id = d.fin_relation_id
+		$this->datatables->setTableName("(SELECT a.*,
+			ifnull(ifnull(b.fst_salesorder_no,c.fst_purchasereturn_no),d.fst_assembling_no) as fst_trans_no,
+			ifnull(ifnull(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime),d.fdt_assembling_datetime) as fdt_trans_datetime,
+			e.fst_warehouse_name,f.fst_relation_name         
+			from trsuratjalan a 
+			LEFT JOIN trsalesorder b on a.fin_trans_id = b.fin_salesorder_id and a.fst_sj_type ='SO' 
+			LEFT JOIN trpurchasereturn c on a.fin_trans_id = c.fin_purchasereturn_id and a.fst_sj_type ='PO_RETURN' 
+			LEFT JOIN trassembling d on a.fin_trans_id = d.fin_assembling_id and a.fst_sj_type ='ASSEMBLING_OUT'
+			LEFT JOIN mswarehouse e on a.fin_warehouse_id = e.fin_warehouse_id
+			LEFT JOIN msrelations f on b.fin_relation_id = f.fin_relation_id
 			where a.fst_sj_return_resi_no is NOT NULL ) a ");
 
-		$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_datetime,a.fst_warehouse_name,a.fst_salesorder_no,a.fdt_salesorder_datetime,
-			a.fst_relation_name,a.fdt_sj_return_datetime,a.fst_sj_return_resi_no,a.fst_sj_return_memo,a.fin_sj_return_by_id,a.fdt_unhold_datetime";
+			$selectFields = "a.fin_sj_id,a.fst_sj_no,a.fdt_sj_datetime,a.fst_warehouse_name,a.fst_trans_no,a.fdt_trans_datetime,
+			a.fst_relation_name,a.fdt_sj_return_datetime,a.fst_sj_return_resi_no,a.fst_sj_return_memo,a.fin_sj_return_by_id,a.fbl_is_hold,a.fdt_unhold_datetime,a.fin_unhold_id";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields = [];
-		$searchFields[] = $this->input->get('optionSearch');
+		$searchFields[] = $this->input->get('optionSearch2');
 		$this->datatables->setSearchFields($searchFields);
 		$this->datatables->activeCondition = "a.fst_active !='D'";
 
