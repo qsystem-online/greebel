@@ -170,9 +170,10 @@
 											<input type="number" class="form-control text-right numeric" id="fdb_qty_req" value="1" min="1">
 										</div>
 
-										<label for="fdc_price" class="col-md-4 control-label">Expected Target Data</label>
+										<label for="fdc_price" class="col-md-4 control-label">Expected Target Date</label>
 										<div class="col-md-3">
 											<input type="text" class="form-control text-right datepicker" id="fdt_etd" value="" style="text-align: right;">
+											<div id="fdt_etd_error" class="text-danger"></div>
 										</div>
 									</div>
 									<div class="form-group">
@@ -300,7 +301,18 @@
 			
 			$("#btn-add-detail-save").click(function(e){
 				e.preventDefault();
-				mdlDetail.save();
+				//addRow = true;
+                var fdt_etd = $("#fdt_etd").val();
+                if (fdt_etd == null || fdt_etd == "") {
+                    $("#fdt_etd_error").html("Expected Target Date Required!!!");
+                    $("#fdt_etd_error").show();
+                    //addRow = false;
+                    //return;
+                } else {
+                    $("#fdt_etd_error").hide();
+					mdlDetail.save();
+                }
+				//mdlDetail.save();
 			})
 
 
