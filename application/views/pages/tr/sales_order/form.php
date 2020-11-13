@@ -720,8 +720,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				},
 				cache: true,
 			}
-		}).on('select2:select',function(e){			
-			selectedCustomer = e.params.data;			
+		}).on('select2:selecting',function(e){
+			
+			//console.log(tmp);
+			//e.preventDefault();
+			if (selectedCustomer != null){		
+				tmp = e.params.args.data;
+				if (tmp.fin_cust_pricing_group_id != selectedCustomer.fin_cust_pricing_group_id){
+					if ( tblDetails.data().count() > 0) {									
+						if (confirm("Pelangan memiliki group price yg berbeda dan perubahan akan menghapus detail, Lanjutkan ?")){
+							tblDetails.clear();
+							tblDetails.draw();
+						}else{
+							e.preventDefault()
+							return;
+						}
+					}
+				}
+			}
+
+		}).on('select2:select',function(e){									
+			selectedCustomer = e.params.data;		
 			$("#fin_terms_payment").val(selectedCustomer.fin_terms_payment);
 			$("#fin_sales_id").val(selectedCustomer.fin_sales_id).trigger("change");
 		});
