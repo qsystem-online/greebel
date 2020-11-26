@@ -57,7 +57,7 @@
         <div>Customer: <?= $name_relations ?> </div>
         <div>Sales: <?= $name_sales ?></div>
 		<div>Mata Uang : <?= $this->input->post("fst_curr_code") ?></div>                              
-		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1100px">       
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1200px">       
 			<thead>
 				<tr style="background-color:RoyalBlue;color:white">
 					<?php
@@ -68,7 +68,8 @@
 						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:400px'>Pelanggan/Customer</th>");
 						echoIfColSelected(5,$selectedCols,"<th class='col-5' style='width:100px'>Subtotal</th>");
 						echoIfColSelected(6,$selectedCols,"<th class='col-6' style='width:100px'>Discount</th>");
-						echoIfColSelected(7,$selectedCols,"<th class='col-7' style='width:100px'>Total</th>");
+						echoIfColSelected(7,$selectedCols,"<th class='col-7' style='width:100px'>Potongan</th>");
+						echoIfColSelected(8,$selectedCols,"<th class='col-8' style='width:100px'>Total</th>");
 					?>
 				</tr>
 			</thead>
@@ -76,7 +77,10 @@
 				<?php
                     $nou = 0;
 					$subttl = 0;
-					$rate = 0;
+					$disc_total = 0;
+					$disc_totalNew = 0;
+					$potongan_total = 0;
+					$potongan_totalNew = 0;
 					$ttl_total = 0;
 					$subttlNew = 0;
 					$ttl_totalNew = 0;
@@ -84,31 +88,40 @@
 					foreach ($dataReport as $row){
                         $nou++;
 						echo "<tr>";
-                        $fdc_subttl = number_format ($row->fdc_subttl, 2, '.', ',');
-                        $rate_idr = number_format ($row->Rate_Idr, 2, '.', ',');
-						$fdc_total = number_format ($row->fdc_total, 2, '.', ',');
+                        $fdc_subttl = formatNumber ($row->fdc_subttl, 2);
+						$fdc_disc_amount = formatNumber ($row->Disc_Amount, 2);
+						$fdc_potongan = formatNumber ($row->fdc_potongan, 2);
+						$fdc_total = formatNumber ($row->fdc_total, 2);
                         echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");	   
                         echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->No_Retur</td>");
                         echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->Retur_Date</td>");
                         echoIfColSelected(3,$selectedCols,"<td class='col-3'>$row->Mata_Uang</td>");
                         echoIfColSelected(4,$selectedCols,"<td class='col-4'>$row->Relation_Name</td>");
                         echoIfColSelected(5,$selectedCols,"<td class='col-5'style='text-align: right'>$fdc_subttl</td>");
-						echoIfColSelected(6,$selectedCols,"<td class='col-6'style='text-align: right'>$rate_idr</td>");
-						echoIfColSelected(7,$selectedCols,"<td class='col-7'style='text-align: right'>$fdc_total</td>");										                                                                                                                                                                      
+						echoIfColSelected(6,$selectedCols,"<td class='col-6'style='text-align: right'>$fdc_disc_amount</td>");
+						echoIfColSelected(7,$selectedCols,"<td class='col-7'style='text-align: right'>$fdc_potongan</td>");
+						echoIfColSelected(8,$selectedCols,"<td class='col-8'style='text-align: right'>$fdc_total</td>");										                                                                                                                                                                      
                         echo "</tr>";
-                        $subttl += $row->fdc_subttl;
+						$subttl += $row->fdc_subttl;
+						$disc_total += $row->Disc_Amount;
+						$potongan_total += $row->fdc_potongan;
 						$ttl_total += $row->fdc_total;
 					}
                     $subttlNew += $subttl;
-                    $subttlNew = number_format ($subttlNew, 2, '.', ',');
+					$subttlNew = formatNumber ($subttlNew, 2);
+					$disc_totalNew += $disc_total;
+					$disc_totalNew = formatNumber ($disc_totalNew, 2);
+					$potongan_totalNew += $potongan_total;
+                    $potongan_totalNew = formatNumber ($potongan_totalNew, 2);
 					$ttl_totalNew += $ttl_total;
-					$ttl_totalNew = number_format ($ttl_totalNew, 2, '.', ','); 
+					$ttl_totalNew = formatNumber ($ttl_totalNew, 2); 
 
 					echo "<tr>";
 					echo "<td colspan='".totalSelectedCol(5,$selectedCols)."'style='text-align: right;font-weight: bold'>Total : </td>";
 					echoIfColSelected(5,$selectedCols,"<td class='col-5' style='font-weight: bold;text-align: right'>$subttlNew</td>");
-					echoIfColSelected(6,$selectedCols,"<td class='col-6' style='font-weight: bold;text-align: right'></td>");
-					echoIfColSelected(7,$selectedCols,"<td class='col-7' style='font-weight: bold;text-align: right'>$ttl_totalNew</td>");									
+					echoIfColSelected(6,$selectedCols,"<td class='col-6' style='font-weight: bold;text-align: right'>$disc_totalNew</td>");
+					echoIfColSelected(7,$selectedCols,"<td class='col-7' style='font-weight: bold;text-align: right'>$potongan_totalNew</td>");
+					echoIfColSelected(8,$selectedCols,"<td class='col-8' style='font-weight: bold;text-align: right'>$ttl_totalNew</td>");									
 					echo "</tr>";
 				?>
 			</tbody>

@@ -72,52 +72,59 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     $(function() {
         $("#btn-update").click(function(event) {
 			event.preventDefault();
-			$(".text-danger").html("");
-			//data = $('#resi-modal').serializeArray();
-			data = new FormData($("#resi-modal")[0]);
-			url= "<?= site_url() ?>adm_persediaan/monitoring_sj/doUpdateResi";
-			console.log(data);
-            $.ajax({
-                type: "POST",
-                enctype: 'multipart/form-data',
-                url: url,
-                data: data,
-                processData: false,
-                contentType: false,
-                cache: false,
-                timeout: 600000,
-                success: function(resp) {
-                    if (resp.message != "") {
-                        $.alert({
-                            title: 'Message',
-                            content: resp.message,
-                            buttons: {
-                                OK: function() {
-                                    if (resp.status == "SUCCESS") {
-                                        window.location.href = "<?= site_url() ?>adm_persediaan/monitoring_sj";
-                                        return;
-                                    }
-                                },
-                            }
-                        });
-                    }
-                    if (resp.status == "VALIDATION_FORM_FAILED") {
-                        //Show Error
-                        errors = resp.data;
-                        for (key in errors) {
-                            $("#" + key + "_err").html(errors[key]);
-                        }
-                    } else if (resp.status == "SUCCESS") {
-                        data = resp.data;
-                        //Clear all previous error
-                        $(".text-danger").html("");
-                    }
-                },
-                error: function(e) {
-                    $("#result").text(e.responseText);
-                    console.log("ERROR : ", e);
-                }
-            });
+			var resiNo = $("#fst_sj_return_resi_no").val();
+			if (resiNo == null || resiNo == "") {
+				$("#fst_sj_return_resi_no_err").html("S/J Resi No Required!!!");
+				$("#fst_sj_return_resi_no_err").show();
+			} else {
+				$("#fst_sj_return_resi_no_err").hide();
+				//data = $('#resi-modal').serializeArray();
+				data = new FormData($("#resi-modal")[0]);
+				url= "<?= site_url() ?>adm_persediaan/monitoring_sj/doUpdateResi";
+				console.log(data);
+				App.blockUIOnAjaxRequest("Please wait while update data.....");
+				$.ajax({
+					type: "POST",
+					enctype: 'multipart/form-data',
+					url: url,
+					data: data,
+					processData: false,
+					contentType: false,
+					cache: false,
+					timeout: 600000,
+					success: function(resp) {
+						if (resp.message != "") {
+							$.alert({
+								title: 'Message',
+								content: resp.message,
+								buttons: {
+									OK: function() {
+										if (resp.status == "SUCCESS") {
+											window.location.href = "<?= site_url() ?>adm_persediaan/monitoring_sj";
+											return;
+										}
+									},
+								}
+							});
+						}
+						if (resp.status == "VALIDATION_FORM_FAILED") {
+							//Show Error
+							errors = resp.data;
+							for (key in errors) {
+								$("#" + key + "_err").html(errors[key]);
+							}
+						} else if (resp.status == "SUCCESS") {
+							data = resp.data;
+							//Clear all previous error
+							$(".text-danger").html("");
+						}
+					},
+					error: function(e) {
+						$("#result").text(e.responseText);
+						console.log("ERROR : ", e);
+					}
+				});
+			}
         });
     });
 </script>
@@ -313,6 +320,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript">
 	$(function(){
 		$(".filterData").change(function(event){
+			event.preventDefault();
+			$('#tblHistMonitoring').DataTable().ajax.reload();
+		});
+
+		$("#tab_2").on("click",function(event){
 			event.preventDefault();
 			$('#tblHistMonitoring').DataTable().ajax.reload();
 		});
