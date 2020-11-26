@@ -326,6 +326,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </div>
 
     <script type="text/javascript">
+        var unit_detail = null;
         var action = '<a class="btn-edit" href="#" data-toggle="" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp; <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
         $(function() {
             $("#btn-add-unit-details").click(function(event) {

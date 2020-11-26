@@ -33,7 +33,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<h3 class="box-title title"><?=$title?></h3>
 				<div class="btn-group btn-group-sm  pull-right">					
 					<a id="btnPrint" class="btn btn-primary hide" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Group")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar List")?>"><i class="fa fa-list" aria-hidden="true"></i></a>
 				</div>
 			</div>
             <!-- end box header -->
@@ -394,8 +394,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				},
 				{"title" : "Action","width": "80px",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){
-						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';												
-						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';						
+
+						var action = '<a class="btn-process" href="#"  data-original-title="" title="Close Batch"><i class="fa fa-cog"></i></a>&nbsp;';
+						action += '<a class="btn-edit" href="#" data-original-title="" title="Edit"><i class="fa fa-pencil"></i></a>&nbsp;';
+						action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title="Delete"><i class="fa fa-trash"></i></a>';						
 						return action;
 					}
 				},
@@ -410,6 +412,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).on('draw',function(){
 			$(".dataTables_scrollHeadInner").css("min-width","100%");
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+		}).on('click','.btn-process',function(e){
+			var trRow = $(this).parents('tr');
+			var data = tblBatchno.row(trRow).data();	
+			console.log(data);	
+			if (data.fst_active != 'A'){
+				alert("<?=lang('Status Batch Number tidak aktif !')?>");
+				return;
+			}
+			processBatchNo(data.fin_wobatchno_id);
 		}).on('click','.btn-edit',function(e){
 			e.preventDefault();
 			var trRow = $(this).parents('tr');
@@ -548,7 +559,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 		})
 	}
-	
+	function processBatchNo(finWOBatchnoId){
+		//alert(finWOBatchnoId);
+		$.ajax({
+			url:"<?=site_url()?>tr/production/wo_batch/ajxClosing/" + finWOBatchnoId,
+			method:"GET",			
+		}).done(function(resp){
+
+		});
+	}
 </script>
 <!-- Select2 -->
 <script src="<?=base_url()?>bower_components/select2/dist/js/select2.full.js"></script>

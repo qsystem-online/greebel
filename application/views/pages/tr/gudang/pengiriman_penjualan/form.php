@@ -955,7 +955,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				t.clear();
 				var itemList = [];
 				$.each(details,function(i,v){				
+					v.fst_serial_number_list = JSON.parse(v.fst_serial_number_list);
 					t.row.add(v);
+
 					itemList.push({
 						fin_salesorder_detail_id: v.fin_salesorder_detail_id,
 						id: v.fin_item_id,
@@ -1010,7 +1012,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					fin_rec_id:0,
 					fst_memo_item:"",
 					fst_batch_number:null,
-					fst_serial_number_list:null,
+					fst_serial_number_list:[],
 					fst_basic_unit : v.fst_basic_unit,
             		fdc_conv_to_basic_unit : v.fdc_conv_to_basic_unit,
 				}

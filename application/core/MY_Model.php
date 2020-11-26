@@ -130,6 +130,17 @@ class MY_Model extends CI_Model
 		return $qr->row();
 	}
 
+	public function getList($active='A'){
+		if ($active == 'ALL'){
+			$ssql = "SELECT * FROM $this->tableName";
+		}else{
+			$ssql = "SELECT * FROM $this->tableName where fst_active = '$active'";
+		}		
+		$qr = $this->db->query($ssql,[]);
+		return $qr->result();
+	}
+
+
 
 	public function getTableName()
 	{

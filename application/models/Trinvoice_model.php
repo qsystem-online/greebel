@@ -305,7 +305,10 @@ class Trinvoice_model extends MY_Model {
 
 
         //SALES PECAH PER PROFIT CENTER
-        $ssql = "SELECT f.fin_pcc_id,sum(b.fdb_qty * c.fdc_price) as fdc_total,sum(b.fdb_qty * c.fdc_disc_amount_per_item) as fdc_total_disc_amount FROM trinvoicedetails a 
+        $ssql = "SELECT f.fin_pcc_id,
+            sum(b.fdb_qty * c.fdc_price) as fdc_total,
+            sum(b.fdb_qty * c.fdc_disc_amount_per_item) as fdc_total_disc_amount 
+            FROM trinvoicedetails a 
             inner join trsuratjalandetails b on a.fin_sj_id = b.fin_sj_id 
             inner join trsalesorderdetails c on b.fin_trans_detail_id = c.fin_rec_id
             inner join msitems d on c.fin_item_id = d.fin_item_id

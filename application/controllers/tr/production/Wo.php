@@ -12,6 +12,7 @@ class Wo extends MY_Controller{
 		$this->load->model("trwobomdetails_model");
 		$this->load->model("trwoactivitydetails_model");
 		$this->load->model("trwobatchno_model");
+		$this->load->model("mswarehouse_model");
 		//$this->load->model("trmpsitems_model");
 		
 	}
@@ -291,6 +292,7 @@ class Wo extends MY_Controller{
 			"fin_item_id"=>$this->input->post("fin_item_id"),
 			"fst_unit"=>$this->input->post("fst_unit"),
 			"fdb_qty"=>$this->input->post("fdb_qty"),
+			"fin_warehouse_target"=>$this->input->post("fin_warehouse_target"),
 			"fst_notes" => $this->input->post("fst_notes"),
 			"fin_activity_group_id" => $this->input->post("fin_activity_group_id"),
 			"fst_active"=>'A',			

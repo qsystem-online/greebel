@@ -517,5 +517,27 @@ class Wo_batch extends MY_Controller{
         ]);
         
     }
-    
+	
+	
+	public function ajxClosing($finWOBatchnoId){
+		try{
+			$this->db->trans_start();
+			$this->trwobatchno_model->closingBatch($finWOBatchnoId);
+			$this->db->trans_complete();
+			$this->json_output([
+				"status"=>"SUCCESS",
+				"messages"=>"",
+				"data"=>[$this->input->get()]
+			]);
+		}catch(CustomException $e){
+			$this->db->trans_rollback();
+			$this->json_output([
+				"status"=>$e->getStatus(),
+				"messages"=>$e->getMessage(),
+				"data"=>$e->getData()
+			]);
+		}
+
+		
+	}
 }    
