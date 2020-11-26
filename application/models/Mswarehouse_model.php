@@ -57,7 +57,6 @@ class Mswarehouse_model extends MY_Model
 	{
 		$ssql = "select fin_warehouse_id,fst_warehouse_name from " . $this->tableName . " where fbl_is_buffer = 0 and fst_active = 'A'";
 		$qr = $this->db->query($ssql, []);
-		var_dump($this->db->error());
 		$rs = $qr->result();
 		return $rs;
 	}

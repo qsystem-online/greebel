@@ -83,6 +83,25 @@ class Trrmoutreturn_model extends MY_Model{
 		$max_tr_no = $prefix.''.$tahun.'/'.sprintf("%05s",$fst_tr_no);		
 		return $max_tr_no;
 	}
+
+	public function isEditable($finRMOutReturnId){
+		//Kalau wobatchno sudah close tidak bisa di edit
+		$rmoutReturn =$this->getSimpleDataById($finRMOutReturnId);
+		if ($rmoutReturn == null){
+			throw new CustomException(lang("Invalid rmout return id"), 9009,"FAILED",[]);			
+		}
+
+		$this->load->model("trwobatchno_model");
+		$batchNo = $this->trwobatchno_model->getSimpleDataById($rmoutReturn->fin_wobatchno_id);
+		if ($batchNo == null){
+			throw new CustomException("[is editable]" +lang("Invalid wobatchno id"), 9009,"FAILED",[]);			
+		}
+
+		if ($batchNo->fbl_closed ){
+			throw new CustomException("[is editable]" +lang("Proses gagal, WO Batch Number sudah di close !"), 3003,"FAILED",[]);
+		}
+
+	}
     
 	
 	
@@ -188,10 +207,7 @@ class Trrmoutreturn_model extends MY_Model{
 		$this->trinventory_model->deleteInsertSerial("RMOUT",$finRMOutId);
 	}
 
-	public function isEditable(){
-		//LHP apa ada ubungan dengan rmout ??
-
-	}
+	
 
 	public function deleteDetail($finRMOutId){
 		$ssql ="DELETE FROM trrmoutitems where fin_rmout_id = ?";

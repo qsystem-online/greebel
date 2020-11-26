@@ -142,6 +142,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					
 
 					<div class="form-group">
+						<label for="fin_warehouse_target" class="col-md-2 control-label"><?=lang("Gudang Tujuan")?></label>
+						<div class="col-md-10">
+							<select  class="form-control" id="fin_warehouse_target" name="fin_warehouse_target" >
+								<?php
+									$listWarehouse = $this->mswarehouse_model->getNonLogisticWarehouseList();
+									foreach($listWarehouse  as $warehouse){
+										echo "<option value='$warehouse->fin_warehouse_id'>$warehouse->fst_warehouse_name</option>";
+									}
+								?>
+							</select>
+							<div id="fst_notes_err" class="text-danger"></div>
+						</div>		
+					</div>   
+
+
+					<div class="form-group">
 						<label for="fst_notes" class="col-md-2 control-label"><?=lang("Notes")?></label>
 						<div class="col-md-10">
 							<textarea type="text" class="form-control" id="fst_notes" name="fst_notes" ></textarea>
@@ -652,6 +668,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript" info="init">
 	$(function(){		
 		$("#fdt_wo_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
+		$("#fdt_wo_target_date").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
+		
 
 		$("#fin_supplier_id").select2({
 			ajax:{

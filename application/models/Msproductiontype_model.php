@@ -35,6 +35,7 @@ class Msproductiontype_model extends MY_Model{
 
         return $rules;
     }
+
     
 
 

@@ -201,7 +201,7 @@ class Pengiriman_penjualan extends MY_Controller{
             foreach($dataDetails as $detail){
                 $detail = (array) $detail;
                 $detail["fin_sj_id"] = $insertId;
-                $detail["fst_serial_number_list"] = json_encode($detail["fst_serial_number_list"]);
+                $detail["fst_serial_number_list"] = json_encode($detail["fst_serial_number_list"]); //$detail["fst_serial_number_list"]; //
                 $detail["fst_active"] = 'A';
                 $this->trsuratjalandetails_model->insert($detail);
             }
@@ -350,6 +350,11 @@ class Pengiriman_penjualan extends MY_Controller{
                 ];
             }
             $details = $tblDetails;
+        }else{
+            for($i = 0;$i< sizeof($details) ;$i++){                
+                $details[$i]->fst_active = 'A';
+                //$details[$i]->fst_serial_number_list = ;            
+            }
         }
 
 
