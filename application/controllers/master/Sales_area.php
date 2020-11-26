@@ -664,7 +664,7 @@ class Sales_area extends MY_Controller{
     
     public function get_Regional(){
 		$term = $this->input->get("term");
-		$ssql = "SELECT fin_sales_regional_id, fst_name FROM mssalesregional WHERE fst_name LIKE ?";
+		$ssql = "SELECT fin_sales_regional_id, fst_name FROM mssalesregional WHERE fst_name LIKE ? AND fst_active ='A'";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
@@ -675,7 +675,7 @@ class Sales_area extends MY_Controller{
 
     public function get_National(){
         $term = $this->input->get("term");
-        $ssql = "SELECT fin_sales_national_id, fst_name FROM mssalesnational WHERE fst_name LIKE ?";
+        $ssql = "SELECT fin_sales_national_id, fst_name FROM mssalesnational WHERE fst_name LIKE ? AND fst_active ='A'";
         $qr = $this->db->query($ssql,['%'.$term.'%']);
         $rs = $qr->result();
 
