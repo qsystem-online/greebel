@@ -127,6 +127,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<div id="fin_item_id_err" class="text-danger"></div>
 						</div>
 					</div>
+
 					<div class="form-group">					
 						<label for="fst_unit" class="col-md-2 control-label"><?=lang("Unit")?></label>
 						<div class="col-md-6">
@@ -163,9 +164,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<textarea type="text" class="form-control" id="fst_notes" name="fst_notes" ></textarea>
 							<div id="fst_notes_err" class="text-danger"></div>
 						</div>		
-					</div>   
-
-					
+					</div>   					
 
 					<div class="form-group">												
 						<div class="col-sm-12">
@@ -174,9 +173,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<li><a data-toggle="tab" href="#bom-wo">BOM WO</a></li>
 								<li><a data-toggle="tab" href="#mr-wo">Material Requirment WO</a></li>
 								<li><a data-toggle="tab" href="#activity">Activities</a></li>
-								<li><a data-toggle="tab" href="#detailw2">MAG / PAG</a></li>
-								<li><a data-toggle="tab" href="#detailw2">Info RM-OUT</a></li>
-								<li><a data-toggle="tab" href="#detailw2">Info LHP</a></li>
+								<li><a data-toggle="tab" href="#mag-pag">MAG / PAG</a></li>
+								<li><a data-toggle="tab" href="#rmout">Info RM-OUT</a></li>
+								<li><a data-toggle="tab" href="#lhp">Info LHP</a></li>
 								<li><a data-toggle="tab" href="#batchno">Info Batch-No</a></li>
 							</ul>
 
@@ -246,6 +245,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 								</div>
 
+								<div id="mag-pag" class="tab-pane fade">
+									<div class="form-group">
+										<div class="col-md-12">
+											<table id="tblMAGPAG" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+										</div>
+									</div>
+								</div>
+
+								<div id="rmout" class="tab-pane fade">
+									<div class="form-group">
+										<div class="col-md-12">
+											<table id="tblRmout" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+										</div>
+									</div>
+								</div>
+
+								<div id="lhp" class="tab-pane fade">
+									<div class="form-group">
+										<div class="col-md-12">
+											<table id="tblLHP" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+										</div>
+									</div>
+								</div>
+								
 								<div id="batchno" class="tab-pane fade">									
 									<div class="form-group">
 										<div class="col-md-12">
@@ -802,10 +825,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			width:"100%",
 			placeholder: "Select activity group",
     		allowClear: true,
-		}).val(null).trigger("change");
-		
-
-		
+		}).val(null).trigger("change");				
 		
 
 		tblBOMMaster = $('#tblBOMMaster').on('preXhr.dt', function ( e, settings, data ) {
@@ -948,6 +968,91 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			tblActivity.row(trRow).remove().draw(false);
 		});
 
+		tblMAGPAG = $("#tblMAGPAG").on('preXhr.dt', function ( e, settings, data ) {
+			data.sessionId = "";
+		}).DataTable({
+			scrollY: "300px",
+			scrollX: true,			
+			scrollCollapse: true,	
+			order: [],
+			columns:[
+				{"title" : "id","width": "0px",sortable:false,data:"fin_mag_id",visible:false},
+				{"title" : "MAG","width": "70px",sortable:false,data:"fst_mag_no"},
+				{"title" : "Tgl MAG","width": "80px",sortable:false,data:"fdt_mag_datetime"},
+				{"title" : "Item","width": "100px",sortable:false,data:"fst_item_name"},
+				{"title" : "Unit","width": "50px",sortable:false,data:"fst_unit"},
+				{"title" : "Qty","width": "50px",sortable:false,data:"fdb_qty"},
+				{"title" : "PAG","width": "70px",sortable:false,data:"fst_mag_confirm_no"},
+				{"title" : "Tgl PAG","width": "80px",sortable:false,data:"fdt_mag_confirm_datetime"},
+			],
+			processing: true,
+			serverSide: false,
+			searching: false,
+			lengthChange: false,
+			paging: false,
+			info:false,				
+		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+		});
+
+
+		tblRmout = $("#tblRmout").on('preXhr.dt', function ( e, settings, data ) {
+			data.sessionId = "";
+		}).DataTable({
+			scrollY: "300px",
+			scrollX: true,			
+			scrollCollapse: true,	
+			order: [],
+			columns:[
+				{"title" : "id","width": "0px",sortable:false,data:"fin_rmout_id",visible:false},
+				{"title" : "RM-Out","width": "70px",sortable:false,data:"fst_rmout_no"},
+				{"title" : "Tgl RM_Out","width": "80px",sortable:false,data:"fdt_rmout_datetime"},
+				{"title" : "Item","width": "100px",sortable:false,data:"fst_item_name"},
+				{"title" : "Unit","width": "50px",sortable:false,data:"fst_unit"},
+				{"title" : "Qty","width": "50px",sortable:false,data:"fdb_qty"},
+			],
+			processing: true,
+			serverSide: false,
+			searching: false,
+			lengthChange: false,
+			paging: false,
+			info:false,				
+		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+		});
+
+
+		tblLHP = $("#tblLHP").on('preXhr.dt', function ( e, settings, data ) {
+			data.sessionId = "";
+		}).DataTable({
+			scrollY: "300px",
+			scrollX: true,			
+			scrollCollapse: true,	
+			order: [],
+			columns:[
+				{"title" : "id","width": "0px",sortable:false,data:"fin_lhp_id",visible:false},
+				{"title" : "LHP","width": "70px",sortable:false,data:"fst_lhp_no"},
+				{"title" : "Tgl LHP","width": "80px",sortable:false,data:"fdt_lhp_datetime"},
+				{"title" : "Batch No","width": "80px",sortable:false,data:"fst_wobatchno_no"},
+				{"title" : "Warehouse","width": "80px",sortable:false,data:"fst_warehouse_name"},
+				{"title" : "Gramasi","width": "80px",sortable:false,data:"fdb_gramasi"},
+				{"title" : "Item","width": "100px",sortable:false,data:"fst_item_name"},
+				{"title" : "Unit","width": "50px",sortable:false,data:"fst_unit"},
+				{"title" : "Qty","width": "50px",sortable:false,data:"fdb_qty"},
+			],
+			processing: true,
+			serverSide: false,
+			searching: false,
+			lengthChange: false,
+			paging: false,
+			info:false,				
+		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+		});
+
 		tblBatchno = $('#tblBatchno').on('preXhr.dt', function ( e, settings, data ) {
 			data.sessionId = "";
 		}).DataTable({
@@ -1036,7 +1141,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$(document).on("shown.bs.tab","#tabDetail a",function(e){
-			var tabActive = $(e.target).text();
+			//var tabActive = $(e.target).text();
 			//if (tabActive == "Material Requirment WO"){
 			//	generateMaterialRequirment();
 			//}
@@ -1218,6 +1323,57 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						});
 						tblActivity.draw(false);
 						
+						var detailsMAGPAG = data.detailsMAGPAG;
+						$.each(detailsMAGPAG,function(i,v){
+							var data = {
+								fin_mag_id:v.fin_mag_id,
+								fst_mag_no:v.fst_mag_no,
+								fdt_mag_datetime:v.fdt_mag_datetime,
+								fst_item_name:v.fst_item_name,
+								fst_unit:v.fst_unit,
+								fdb_qty:v.fdb_qty,
+								fst_mag_confirm_no:v.fst_mag_confirm_no,
+								fdt_mag_confirm_datetime:v.fdt_mag_confirm_datetime
+							};
+							tblMAGPAG.row.add(data);
+						});
+						tblMAGPAG.draw(false);
+
+
+						var detailsRmout = data.detailsRmout;
+						$.each(detailsRmout,function(i,v){
+							var data = {
+								fin_rmout_id:v.fin_rmout_id,
+								fst_rmout_no:v.fst_rmout_no,
+								fdt_rmout_datetime:v.fdt_rmout_datetime,
+								fst_item_name:v.fst_item_name,
+								fst_unit:v.fst_unit,
+								fdb_qty:v.fdb_qty,
+							};
+							tblRmout.row.add(data);
+						});
+						tblRmout.draw(false);
+
+					
+						var detailsLHP = data.detailsLHP;
+						$.each(detailsLHP,function(i,v){
+							var data = {
+								fin_lhp_id:v.fin_lhp_id,
+								fst_lhp_no:v.fst_lhp_no,
+								fdt_lhp_datetime:v.fdt_lhp_datetime,
+								fst_wobatchno_no:v.fst_wobatchno_no,
+								fst_warehouse_name:v.fst_warehouse_name,
+								fdb_gramasi:v.fdb_gramasi,
+								fst_item_name:v.fst_item_name,
+								fst_unit:v.fst_unit,
+								fdb_qty:v.fdb_qty,
+							};
+							tblLHP.row.add(data);
+						});
+						tblLHP.draw(false);
+
+
+
 						var detailsBatchno = data.detailsBatchno;
 						$.each(detailsBatchno,function(i,v){
 							var data = {

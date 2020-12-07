@@ -331,6 +331,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         $(function() {
             $("#btn-add-unit-details").click(function(event) {
                 event.preventDefault();
+                unit_detail = null;
                 $("#mdlUnitDetails").modal('show');
             });
             $("#tbl_unit_details").DataTable({

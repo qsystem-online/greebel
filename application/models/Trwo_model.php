@@ -96,6 +96,39 @@ class Trwo_model extends MY_Model{
 		$qr = $this->db->query($ssql,[$finWOId]);
 		$detailsActivity = $qr->result();
 		
+		//Detail MAG PAG
+		$ssql = "SELECT a.fin_mag_id,a.fst_mag_no,a.fdt_mag_datetime,
+			c.fst_item_name,b.fst_unit,b.fdb_qty,d.fst_mag_confirm_no,d.fdt_mag_confirm_datetime 
+			FROM trmag a 
+			INNER JOIN trmagitems b on a.fin_mag_id = b.fin_mag_id
+			INNER JOIN msitems c on b.fin_item_id = c.fin_item_id
+			LEFT JOIN trmagconfirm d on a.fin_mag_id = d.fin_mag_id
+			Where a.fin_wo_id = ? and a.fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$finWOId]);
+		$detailsMAGPAG = $qr->result();
+
+		//Detail RMOUT
+		$ssql = "SELECT a.fin_rmout_id,a.fst_rmout_no,a.fdt_rmout_datetime,c.fst_item_name,b.fst_unit,b.fdb_qty 
+			FROM trrmout a 
+			INNER JOIN trrmoutitems b on a.fin_rmout_id = b.fin_rmout_id
+			INNER JOIN msitems c on b.fin_item_id = c.fin_item_id			
+			Where a.fin_wo_id = ? and a.fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$finWOId]);
+		$detailsRmout = $qr->result();
+
+
+		//Detail LHP
+		$ssql = "SELECT a.fin_lhp_id,a.fst_lhp_no,a.fdt_lhp_datetime,a.fin_wobatchno_id,b.fst_wobatchno_no,
+			a.fin_warehouse_id,d.fst_warehouse_name,
+			a.fdb_gramasi,a.fin_item_id,c.fst_item_name,a.fst_unit,a.fdb_qty
+			FROM trlhp a 
+			INNER JOIN trwobatchno b on a.fin_wobatchno_id = b.fin_wobatchno_id
+			INNER JOIN msitems c on a.fin_item_id = c.fin_item_id
+			INNER JOIN mswarehouse d on a.fin_warehouse_id = d.fin_warehouse_id
+			Where a.fin_wo_id = ? and a.fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$finWOId]);
+		$detailsLHP = $qr->result();
+
 
 		//Detail Batch NO
 		$ssql = "SELECT * FROM trwobatchno WHERE fin_wo_id = ? and fst_active != 'D'";
@@ -107,7 +140,10 @@ class Trwo_model extends MY_Model{
 			"detailsBOMMaster"=>$detailsBOMMaster,
 			"detailsBOMWO"=>$detailsBOMWO,
 			"detailsActivity"=>$detailsActivity,
-			"detailsBatchno"=>$detailsBatchno
+			"detailsMAGPAG"=>$detailsMAGPAG,
+			"detailsBatchno"=>$detailsBatchno,
+			"detailsRmout"=>$detailsRmout,
+			"detailsLHP"=>$detailsLHP
 		];
 	}
 
