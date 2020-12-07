@@ -896,4 +896,11 @@ class Sales_order extends MY_Controller
 		//echo "<div id='tstdiv'>Show Report</div>";//
 	}
 
+	public function get_customers(){
+		$this->load->model("msrelations_model");			
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["data"] = $this->msrelations_model->getCustomerList();
+		$this->json_output();
+	}
+
 }

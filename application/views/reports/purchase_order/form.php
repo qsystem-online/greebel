@@ -10,11 +10,19 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptSalesOrder" action="<?= site_url() ?>report/sales_order/process" method="POST" enctype="multipart/form-data">
+<form id="rptPO" action="<?= site_url() ?>report/tr/purchase_order/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
-        <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
+        <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
             <div class="form-group row">
-                <label for="active_branch_id" class="col-sm-2 control-label"><?= lang("Branch") ?> :</label>
+                <label for="fst_delivery_address" class="col-md-2 control-label"></label>
+                <div class="col-md-10">								
+                    <label class="radio-inline"><input type="radio" id="fblIsImportFalse" class="fbl_is_import" name="fbl_is_import" value="0" checked>Lokal</label>
+                    <label class="radio-inline"><input type="radio" id="fblIsImportTrue" class="fbl_is_import" name="fbl_is_import" value="1" >Import</label>
+                    <label class="radio-inline"><input type="radio" id="fblIsImportAll" class="fbl_is_import" name="fbl_is_import" value="ALL" >All</label>
+                </div>
+            </div>                    
+            <div class="form-group row">
+                <label for="active_branch_id" class="col-sm-2 control-label"><?= lang("Branch") ?></label>
                 <div class="col-sm-4">
                     <?php
                     $active_user = $this->session->userdata("active_user");			
@@ -35,7 +43,7 @@
                     </select>
                     <div id="fin_branch_id_err" class="text-danger"></div>
                 </div>
-                <label for="select-warehouse" class="col-sm-2 control-label"><?=lang("Warehouse")?> :</label>
+                <label for="select-warehouse" class="col-sm-2 control-label"><?=lang("Warehouse")?></label>
                 <div class="col-sm-4">
                     <select id="select-warehouse" class="form-control" name="fin_warehouse_id">
                         <option value='0'>All</option>
@@ -50,57 +58,59 @@
                 </div>
             </div>
             <div class="form-group row">						
-                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?> :</label>
+                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Supplier")?></label>
                 <div class="col-sm-4">
-                    <select id="select-relations" class="form-control non-editable" name="fin_relation_id">
+                    <select id="select-relations" class="form-control non-editable" name="fin_supplier_id">
                     </select>
-                    <div id="fin_relation_id_err" class="text-danger"></div>
-                </div>            
-                <label for="select-sales" class="col-sm-2 control-label"><?=lang("Sales")?> :</label>
-                <div class="col-sm-4">
-                    <select id="select-sales" class="form-control" name="fin_sales_id">
-                        <option value='0'>All</option>
-                        <?php
-                            $salesList = $this->users_model->getSalesList();
-                            foreach($salesList as $sales){
-                                echo "<option value='$sales->fin_user_id'>$sales->fst_username</option>";
-                            }                            
-                        ?>
-                    </select>
-                    <div id="fin_sales_id_err" class="text-danger"></div>
+                    <div id="fin_supplier_id_err" class="text-danger"></div>
                 </div>
+                <label for="fst_curr_code" class="col-sm-2 control-label"><?=lang("Mata Uang")?></label>
+                <div class="col-sm-4">
+                    <select id="fst_curr_code" class="form-control" name="fst_curr_code">
+                        <?php
+                            $currList = $this->mscurrencies_model->getArrRate();
+                            $defaultCurr = $this->mscurrencies_model->getDefaultCurrencyCode();
+                            foreach($currList as $curr){
+                                $selected =  $defaultCurr == $curr->fst_curr_code ? "selected" : "";
+                                echo "<option value='".$curr->fst_curr_code."' $selected>".$curr->fst_curr_name."</option>";
+                            }
+
+                        ?>
+                        <option value="<?=$default_currency['CurrCode']?>"><?=$default_currency['CurrName']?></option>
+                    </select>
+                    <div id="fst_curr_code_err" class="text-danger"></div>
+                </div>   
             </div>
             <div class="form-group row">
-                <label for="fdt_salesorder_datetime" class="col-sm-2 control-label"><?=lang("Sales Order Date")?> *</label>
+                <label for="fdt_po_datetime" class="col-sm-2 control-label"><?=lang("PO Date")?></label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_salesorder_datetime" name="fdt_salesorder_datetime"/>
+                        <input type="text" class="form-control datepicker" id="fdt_po_datetime" name="fdt_po_datetime"/>
                     </div>
-                    <div id="fdt_salesorder_datetime_err" class="text-danger"></div>
+                    <div id="fdt_po_datetime_err" class="text-danger"></div>
                     <!-- /.input group -->
                 </div>
-                <label for="fdt_salesorder_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
+                <label for="fdt_po_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?></label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_salesorder_datetime2" name="fdt_salesorder_datetime2"/>
+                        <input type="text" class="form-control datepicker" id="fdt_po_datetime2" name="fdt_po_datetime2"/>
                     </div>
-                    <div id="fdt_salesorder_datetime2_err" class="text-danger"></div>
+                    <div id="fdt_po_datetime2_err" class="text-danger"></div>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
             <div class="form-group row">
                 <label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
                 <div class="col-sm-4">								
-                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Detail")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Ringkas")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Outstanding S/J")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Lost Of Sales")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Purchase Order Detail")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Purchase Order Ringkas")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Item Purchase Order O/S LPB")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -123,11 +133,6 @@
                         <option value=".net">.Net</option> -->
                     </select>             
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox col-md-12">
-                    <label><input id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("PPN Include") ?></label>
-                </div>                  
             </div>
     </div>
 </form>
@@ -159,6 +164,18 @@
         $('#multiple-columns').multiselect('dataprovider', newArray);
         $('#multiple-columns').multiselect('selectAll',false);
 		$('#multiple-columns').multiselect('updateButtonText');
+
+        if (myRadio.value == "3"){
+            $('#select-sales').val("0");
+            //$('#select-sales').hide();
+            //$('#select-sales').prop('disabled',true);
+        //}else{
+            //$('#select-sales').show();
+        }
+        if (myRadio.value == "4"){
+            $('#select-relations').empty();
+            $('#select-relations').append('<option value="0">All</option>');
+        }
         // for(var i=0; i<newArray.length; i++){
         //     alert(newArray[i].label);
         //     console.log(newArray[i].label);
@@ -169,8 +186,8 @@
     $(function() {
         $("#select-relations").select2({
 			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>report/sales_order/get_customers',
+			ajax:{
+				url: '<?=site_url()?>report/tr/purchase_order/get_suppliers',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -178,7 +195,7 @@
 					data = data.data;
                     items.push({
 							"id" : "0",
-							"text" : "ALL",					
+							"text" : "All",					
 						});
 					$.each(data,function(index,value){
 						items.push({
@@ -200,14 +217,52 @@
 			// $("#select-sales").val(selectedCustomer.fin_sales_id).trigger("change.select2");
 			// $("#select-warehouse").val(selectedCustomer.fin_warehouse_id).trigger("change.select2");
 			//current_pricing_group_id = selectedCustomer.current_pricing_group_id;			
-		});
+        });
+
+        $("#select-items").select2({
+            minimumInputLength: 2,
+            placeholder:{
+                id: '0', // the value of the option
+                text: 'All'
+            },
+            allowClear: true,
+            ajax:{
+                delay: 250,
+                url: "<?=site_url()?>/report/invoice/ajxListItem",
+                dataType: 'json',
+                processResults: function (result) {
+                    if (result.status == "SUCCESS"){
+                        var data = $.map(result.data, function (obj) {
+                            obj.id = obj.fin_item_id,  
+                            obj.text = obj.fst_item_code + " - "  + obj.fst_item_name;
+                            //obj.fbl_is_batch_number
+                            //obj.fbl_is_serial_number
+                            return obj;
+                        });
+
+                        return {
+                            results: data
+                        };
+                    }else{
+                        return {
+                            result:[]
+                        }
+                    }
+                }
+            }
+        }).on('select2:select',function(e){
+            var data = e.params.data;
+            selectedItem = data;
+            //$("#fstUnit").empty().trigger("change.select2");
+            //showHideBatchSerial();
+        });
 
         $("#btnProcess").click(function(event) {
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#rptSalesOrder").serializeArray();
-            url = "<?= site_url() ?>report/sales_order/process";
+            data = $("#rptPO").serializeArray();
+            url = "<?= site_url() ?>report/tr/purchase_order/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -227,7 +282,7 @@
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        $("#btnNew").trigger("click");
+                                        $("#btnProcess").trigger("click");
                                         alert('OK');
                                         return;
                                     }
@@ -250,12 +305,12 @@
                         //Clear all previous error
                         $(".text-danger").html("");
                         //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/sales_order/generatereport";
+                        url = "<?= site_url() ?>report/tr/purchase_order/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
-                        $("#rptSalesOrder").attr('action', url);
-                        $("#rptSalesOrder").attr('target', 'rpt_iframe');
-                        $("#rptSalesOrder").submit();
+                        $("#rptPO").attr('action', url);
+                        $("#rptPO").attr('target', 'rpt_iframe');
+                        $("#rptPO").submit();
                         $("a#toggle-window").click();
                         // Change to Edit mode
                         // $("#frm-mode").val("EDIT"); //ADD|EDIT
@@ -290,7 +345,7 @@
             var a = document.createElement('a');
             a.href = data_type + ', ' + table_html;
 			//a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
-			a.download = 'Laporan_SO_Detail' + '.xls';
+			a.download = 'Laporan_Purchase_Order' + '.xls';
 			a.click();                        			
 			return;
 		});      
