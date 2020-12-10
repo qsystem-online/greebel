@@ -168,7 +168,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</select>
 								<div id="fin_warehouse_id_err" class="text-danger"></div>
 							</div>							
-							<label  class="col-md-2 control-label"><input id="fbl_is_hold" type="checkbox"  name="fbl_is_hold" checked> <?= lang("Hold Pengiriman") ?></label>														
+							<label  class="col-md-2 control-label"><input id="fbl_is_hold" type="checkbox"  name="fbl_is_hold"> <?= lang("Hold Pengiriman") ?></label>
 						</div>
 						
 
