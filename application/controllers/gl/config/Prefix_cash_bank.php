@@ -2,7 +2,8 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Prefix_cash_bank extends MY_Controller {
-    
+	public $menuName="prefix_cash_bank"; 
+	
     public function __construct(){
         parent::__construct();
         $this->load->library('form_validation');
@@ -10,6 +11,7 @@ class Prefix_cash_bank extends MY_Controller {
     }
 
     public function index(){
+		parent::index();
         $this->lizt();
     }
 
@@ -79,14 +81,17 @@ class Prefix_cash_bank extends MY_Controller {
     }
 
     public function add(){
+		parent::add();
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($fin_kasbank_id){
+    public function edit($fin_kasbank_id){
+		parent::edit($fin_kasbank_id);
         $this->openForm("EDIT", $fin_kasbank_id);
     }
 
     public function ajx_add_save(){
+		parent::ajx_add_save();
         $this->load->model('kasbank_model');
 		$this->form_validation->set_rules($this->kasbank_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -130,6 +135,7 @@ class Prefix_cash_bank extends MY_Controller {
     }
 
     public function ajx_edit_save(){
+		parent::ajx_edit_save();
         $this->load->model('kasbank_model');
 		$fin_kasbank_id = $this->input->post("fin_kasbank_id");
 		$data = $this->kasbank_model->getDataById($fin_kasbank_id);
@@ -228,6 +234,7 @@ class Prefix_cash_bank extends MY_Controller {
     }
 
     public function delete($id){
+		parent::delete($id);
 		$this->load->model("kasbank_model");
         $this->db->trans_start();
         $this->kasbank_model->delete($id);

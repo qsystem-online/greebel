@@ -473,15 +473,37 @@ class Trsuratjalan_model extends MY_Model {
 			];            
 			$this->trinventory_model->insertSerial($dataSerial);
 
-			//GET PRICE WAKTU BELI ACUANNYA DARI NILAI FAKTUR
-			$ssql = "SELECT * from trpurchasereturn a
-				INNER JOIN trlpbpurchaseitems b on a.fin_lpbpurchase_id = b.fin_lpbpurchase_id and  b.fin_item_id = ? 
-				WHERE a.fin_purchasereturn_id = ?";
-			$qr = $this->db->query($ssql,[$dataD->fin_item_id,$dataH->fin_trans_id]);
-			throwIfDBError();
-			$lpbPurchaseItem = $qr->row();
-			if ($lpbPurchaseItem == null){
-				throw new CustomException("LPB Purchase Item not found !",3003,"FAILED",$dataD);                
+
+			$ssql = "SELECT * FROM trpurchasereturn where fin_purchasereturn_id = ? and fst_active ='A'";
+			$qr = $this->db->query($ssql,[$dataH->fin_trans_id]);
+			$rwReturn = $qr->row();
+			if ($rwReturn == null){
+				throw new CustomException("Invalid return id!",3003,"FAILED",$dataD);                
+			}
+			$priceIn =0;
+			if ($rwReturn->fbl_non_faktur == 0){			
+				//GET PRICE WAKTU BELI ACUANNYA DARI NILAI FAKTUR
+				$ssql = "SELECT * from trpurchasereturn a
+					INNER JOIN trlpbpurchaseitems b on a.fin_lpbpurchase_id = b.fin_lpbpurchase_id and  b.fin_item_id = ? 
+					WHERE a.fin_purchasereturn_id = ?";
+				$qr = $this->db->query($ssql,[$dataD->fin_item_id,$dataH->fin_trans_id]);
+				throwIfDBError();
+				$lpbPurchaseItem = $qr->row();
+				if ($lpbPurchaseItem == null){
+					throw new CustomException("LPB Purchase Item not found !",3003,"FAILED",$dataD);                
+				}
+				$priceIn = (float) $lpbPurchaseItem->fdc_price - (float) $lpbPurchaseItem->fdc_disc_amount_per_item;
+			}else{
+				//GET PRICE WAKTU BELI ACUANNYA DARI NILAI PADA RETURN
+				$ssql = "SELECT * from trpurchasereturnitems WHERE fin_rec_id = ?";
+				$qr = $this->db->query($ssql,[$dataD->fin_trans_detail_id]);
+				throwIfDBError();
+				$returnItem = $qr->row();
+				if ($returnItem == null){
+					throw new CustomException("Non faktur return items not found!",3003,"FAILED",$dataD);
+				}
+
+				$priceIn = (float) $returnItem->fdc_price - (float) $returnItem->fdc_disc_amount_per_item;
 			}
 
 			$dataStock = [
@@ -496,7 +518,7 @@ class Trsuratjalan_model extends MY_Model {
 				"fst_unit"=>$dataD->fst_unit, 
 				"fdb_qty_in"=>0,
 				"fdb_qty_out"=>$dataD->fdb_qty, 
-				"fdc_price_in"=>(float) $lpbPurchaseItem->fdc_price - (float) $lpbPurchaseItem->fdc_disc_amount_per_item, 
+				"fdc_price_in"=>$priceIn, 
 				"fbl_price_in_auto"=>false,
 				"fst_active"=>"A" 
 			];
@@ -505,7 +527,7 @@ class Trsuratjalan_model extends MY_Model {
 		}
 
 		$ssql ="UPDATE trsuratjalan set fbl_update_stock = 1,fdt_delivery_datetime = now() where fin_sj_id = ?";
-		$this->db->query($ssql,[$finSJId]);
+		$this->db->query($ssql,[$sjId]);
 	}
 
 	private function postingAssemblingType($dataH,$dataDetails){

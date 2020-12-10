@@ -75,6 +75,12 @@ class Aauth {
 		if ($user == null){
 			$user = $this->CI->aauth->user();
 		}
+
+
+		if ($user->fbl_admin == 1){
+			return true;
+		}
+
 		//Cek privileges by id
 		$ssql ="SELECT * FROM usergroupprivileges where fin_user_id = ? and fst_menu_name = ? and fst_active ='A'";
 		$qr = $this->CI->db->query($ssql,[$user->fin_user_id,$permission_name]);

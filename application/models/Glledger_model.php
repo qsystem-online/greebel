@@ -56,9 +56,9 @@ class Glledger_model extends MY_Model{
         
         
         //foreach($datas as $data){
+        
         for($i = 0; $i < sizeof($datas) ;$i++){
-            $data = $datas[$i];
-
+            $data = $datas[$i];            
             $account = $this->glaccounts_model->getSimpleDataHeader($data["fst_account_code"]); 
             $data["fst_account_name"] = $account->fst_glaccount_name;
             

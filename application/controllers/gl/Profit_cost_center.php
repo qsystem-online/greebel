@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Profit_cost_center extends MY_Controller
 {
-
+	public $menuName="profit_cost_center"; 
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -11,6 +11,7 @@ class Profit_cost_center extends MY_Controller
 	}
 
 	public function index(){
+		parent::index();
 		$this->lizt();
 	}
 
@@ -78,14 +79,17 @@ class Profit_cost_center extends MY_Controller
 	}
 
 	public function add(){
+		parent::add();		
 		$this->openForm("ADD", 0);
 	}
 
 	public function Edit($fin_pcc_id){
+		parent::edit($fin_pcc_id);		
 		$this->openForm("EDIT", $fin_pcc_id);
 	}
 
 	public function ajx_add_save(){
+		parent::ajx_add_save();		
 		$this->load->model('profitcostcenter_model');
 		$this->form_validation->set_rules($this->profitcostcenter_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -125,6 +129,7 @@ class Profit_cost_center extends MY_Controller
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();		
 		$this->load->model('profitcostcenter_model');
 		$fin_pcc_id = $this->input->post("fin_pcc_id");
 		$data = $this->profitcostcenter_model->getDataById($fin_pcc_id);
@@ -202,7 +207,6 @@ class Profit_cost_center extends MY_Controller
 		$this->json_output($datasources);
 	}
 
-
 	public function fetch_data($fin_pcc_id){
 		$this->load->model("profitcostcenter_model");
 		$data = $this->profitcostcenter_model->getDataById($fin_pcc_id);
@@ -212,6 +216,7 @@ class Profit_cost_center extends MY_Controller
 	}
 
 	public function delete($id){
+		parent::delete($id);		
 		$this->db->trans_start();
         $this->profitcostcenter_model->delete($id);
         $this->db->trans_complete();
