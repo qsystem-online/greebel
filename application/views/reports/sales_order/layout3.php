@@ -78,7 +78,6 @@
 			</thead>
 			<tbody>
 				<?php
-                    $nou = 0;
 					$id_SO = "";
 					$noSO = "";
 					$no_sj = "";
@@ -86,7 +85,8 @@
 					$qty_sj = 0;
 					$ttl_qty_sj = 0;
 					$ttl_qty_os = 0;
-					$cetakTotal = false;
+					$ttl_qty_sjNew = 0;
+					$ttl_qty_osNew = 0;
 					//$numOfRecs = count($dataReport);
 					foreach ($dataReport as $row){
 
@@ -96,8 +96,8 @@
 							//echo "<td colspan='".totalSelectedCol(11,$selectedCols)."'style='text-align: right;font-weight: bold'></td>";
 								//echo "<td colspan='".totalSelectedCol(10,$selectedCols)."' style='text-align: right;font-weight: bold'>Total</td>";
 								echoIfColSelected(11,$selectedCols,"<td colspan='".totalSelectedCol(10,$selectedCols)."' style='text-align: right;font-weight: bold'>Total</td>");
-								echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_sj</td>");
-								echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_os</td>");								
+								echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_sjNew</td>");
+								echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_osNew</td>");								
 
 								//echo "<td style='text-align: right;font-weight: bold'>$ttl_qty_sj</td>";									
 								//echo "<td style='text-align: right;font-weight: bold'>$ttl_qty_os</td>";
@@ -137,14 +137,16 @@
 						}
 						echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->fst_sj_no</td>");
 						echoIfColSelected(9,$selectedCols,"<td class='col-9'>$row->fdt_sj_datetime</td>");
-						echoIfColSelected(10,$selectedCols,"<td class='col-10'>$row->qty_sj</td>");
-						echoIfColSelected(10,$selectedCols,"<td class='col-10'>0</td>");
+						echoIfColSelected(10,$selectedCols,"<td class='col-10'style='text-align: right'>$row->qty_sj</td>");
+						echoIfColSelected(10,$selectedCols,"<td class='col-10'></td>");
 						echo "</tr>";
 						$ttl_qty_sj += $row->qty_sj;
+						$ttl_qty_sjNew = formatNumber ($ttl_qty_sj, 2);
 						$ttl_qty_os = $row->Qty - $ttl_qty_sj;
+						$ttl_qty_osNew = formatNumber ($ttl_qty_os, 2);
 
 					}   
-					$ttl_qty_sj += $row->qty_sj;
+					/*$ttl_qty_sj += $row->qty_sj;
 					$ttl_qty_os = $row->Qty - $ttl_qty_sj;
 
 					/*
@@ -156,8 +158,8 @@
 
 					echo "<tr>";
 					echoIfColSelected(11,$selectedCols,"<td colspan='".totalSelectedCol(10,$selectedCols)."' style='text-align: right;font-weight: bold'>Total</td>");
-					echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_sj</td>");
-					echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_os</td>");															
+					echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_sjNew</td>");
+					echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_osNew</td>");															
 					echo "</tr>";
 
 				?>

@@ -31,9 +31,9 @@ class Trpo_rpt_model extends CI_Model {
             $swhere .= " AND a.fin_warehouse_id = " . $this->db->escape($warehouse_id);
         }
         if ($relation_id > "0") {
-            $swhere .= " AND a.fin_relation_id = " . $this->db->escape($relation_id);
+            $swhere .= " AND a.fin_supplier_id = " . $this->db->escape($relation_id);
         }
-        if ($curr_code != "") {
+        if ($curr_code != "0") {
             $swhere .= " AND a.fst_curr_code = " . $this->db->escape($curr_code);
         }
         if ($bl_import != "ALL") {
@@ -46,7 +46,7 @@ class Trpo_rpt_model extends CI_Model {
             $swhere .= " AND a.fdt_po_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
         }
 
-        if ($rptLayout == "3"){
+        if ($rptLayout == "4"){
             if ($swhere != "") {
                 $swhere = " AND " . substr($swhere, 5);
             }
@@ -62,12 +62,12 @@ class Trpo_rpt_model extends CI_Model {
         switch($rptLayout) {
             case "1":
                 $ssql = "SELECT a.fin_po_id,a.fst_po_no as No_PO, a.fdt_po_datetime as PO_Date, a.fin_term as TOP,CAST(DATE_ADD(a.fdt_po_datetime, INTERVAL a.fin_term DAY) as DATE) as Jt_Date,
-                a.fst_memo as PO_Memo,a.fdc_downpayment as Dpp,a.fdc_ppn_amount as Ppn,a.fdc_subttl as fdc_subttl,((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) as fdc_total,a.fdc_disc_amount as Disc_Total,a.fst_curr_code as Mata_Uang,
-                a.fst_do_no as No_DO,a.fst_contract_no as No_Kontrak,
-                a.fdc_exchange_rate_idr as Rate_Idr,a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,a.fin_supplier_id as fin_supplier_id,c.fst_relation_name as Relation_Name,
+                a.fst_memo as PO_Memo,a.fdc_downpayment as Dpp,a.fdc_ppn_amount as Ppn,a.fdc_subttl as fdc_subttl,(a.fdc_subttl * a.fdc_exchange_rate_idr) as fdc_subttl_Idr,((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) as fdc_total,a.fdc_disc_amount as Disc_Total,
+                a.fst_curr_code as Mata_Uang,a.fdc_exchange_rate_idr as Rate_Idr,(((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) * a.fdc_exchange_rate_idr) as fdc_total_Idr,a.fst_do_no as No_DO,a.fst_contract_no as No_Kontrak,
+                a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,a.fin_supplier_id as fin_supplier_id,c.fst_relation_name as Relation_Name,
                 b.fin_po_detail_id as Rec_Id, b.fin_item_id as Item_Id, e.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,b.fst_notes as Nota_Item,
                 b.fdb_qty as Qty, b.fst_unit as Unit, b.fdc_price as Price,(b.fdc_price - b.fdc_disc_amount_per_item) as Price_Netto, b.fst_disc_item as Disc_Item, b.fdc_disc_amount_per_item as Disc_Amount,
-                (b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) as Amount  
+                (b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) as Amount,((b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) * a.fdc_exchange_rate_idr) as Amount_Idr   
                 FROM (SELECT * FROM trpo a WHERE a.fst_active !='D') a LEFT OUTER JOIN trpodetails b 
                 ON a.fin_po_id = b.fin_po_id LEFT OUTER JOIN msrelations c
                 ON a.fin_supplier_id = c.fin_relation_id LEFT OUTER JOIN mswarehouse d
@@ -77,26 +77,33 @@ class Trpo_rpt_model extends CI_Model {
             case "2":
                 $ssql = "SELECT a.fst_po_no as No_PO, a.fdt_po_datetime as PO_Date,a.fin_term as TOP,a.fst_do_no as No_DO,a.fst_contract_no as No_Kontrak,c.fst_warehouse_name as Warehouse,
                 a.fin_supplier_id as fin_supplier_id,b.fst_relation_name as Relation_Name,a.fst_curr_code as Mata_Uang,a.fdc_exchange_rate_idr as Rate_Idr,a.fdc_subttl as fdc_subttl,
-                ((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) as fdc_total,(((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) * a.fdc_exchange_rate_idr)  as fdc_total_Idr
+                ((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) as fdc_total,(((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) * a.fdc_exchange_rate_idr)  as fdc_total_Idr,
+                a.fdc_downpayment as Dp,a.fdc_downpayment_paid as Dp_Paid,a.fdc_downpayment_claimed as Dp_Claimed
                 FROM (SELECT * FROM trpo WHERE fst_active !='D') a LEFT OUTER JOIN msrelations b
                 ON a.fin_supplier_id = b.fin_relation_id  LEFT OUTER JOIN mswarehouse c
                 ON a.fin_warehouse_id = c.fin_warehouse_id " . $swhere . $sorderby;
                 break;
             case "3":
-                $ssql = "SELECT a.fin_po_id,a.fst_po_no as No_PO, a.fdt_po_datetime as PO_Date, a.fin_term as TOP,CAST(DATE_ADD(a.fdt_po_datetime, INTERVAL a.fin_term DAY) as DATE) as Jt_Date,
-                a.fst_memo as PO_Memo,a.fdc_downpayment as Dpp,a.fdc_ppn_amount as Ppn,a.fdc_subttl as fdc_subttl,((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) as fdc_total,a.fdc_disc_amount as Disc_Total,a.fst_curr_code as Mata_Uang,
-                a.fst_do_no as No_DO,a.fst_contract_no as No_Kontrak,
-                a.fdc_exchange_rate_idr as Rate_Idr,a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,a.fin_supplier_id as fin_supplier_id,c.fst_relation_name as Relation_Name,
-                b.fin_po_detail_id as Rec_Id, b.fin_item_id as Item_Id, e.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,b.fst_notes as Nota_Item,
-                b.fdb_qty as Qty, b.fst_unit as Unit
+                $ssql = "SELECT a.fin_po_id as Id_PO,a.fst_po_no as No_PO, a.fdt_po_datetime as PO_Date,a.fst_curr_code as Mata_Uang,
+                a.fin_warehouse_id as Warehouse_Id, d.fst_warehouse_name as Warehouse,a.fin_supplier_id as fin_supplier_id,c.fst_relation_name as Relation_Name,
+                b.fin_po_detail_id as Id_DetailPO, b.fin_item_id as Item_Id, e.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,b.fst_notes as Nota_Item,
+                b.fdb_qty as Qty_PO, b.fst_unit as Unit_PO,f.fst_lpbgudang_no as No_LPB,f.fdt_lpbgudang_datetime as LPB_Date,f.fdb_qty as Qty_LPB,f.fst_unit as Unit_LPB
                 FROM (SELECT * FROM trpo a WHERE a.fst_active !='D') a LEFT OUTER JOIN trpodetails b 
                 ON a.fin_po_id = b.fin_po_id LEFT OUTER JOIN msrelations c
                 ON a.fin_supplier_id = c.fin_relation_id LEFT OUTER JOIN mswarehouse d
                 ON a.fin_warehouse_id = d.fin_warehouse_id LEFT OUTER JOIN msitems e
                 ON b.fin_item_id = e.fin_item_id LEFT OUTER JOIN 
-                (SELECT a.fin_trans_id,a.fst_trans_no,b.fin_trans_detail_id,b.fin_item_id,b.fdb_qty 
-                FROM trlpbgudang a LEFT OUTER JOIN trlpbgudangitems b ON a.fin_sj_id = b.fin_sj_id) f LEFT OUTER JOIN
-	            trlpbgudang g ON d.fin_sj_id = e.fin_sj_id RIGHT OUTER JOIN $swhere ORDER BY a.fin_supplier_id";
+                (SELECT a.fin_trans_id,a.fst_lpbgudang_no,a.fdt_lpbgudang_datetime,a.fst_trans_no,b.fin_trans_detail_id,b.fin_item_id,b.fdb_qty,b.fst_unit 
+                FROM trlpbgudang a LEFT OUTER JOIN trlpbgudangitems b ON a.fin_lpbgudang_id = b.fin_lpbgudang_id) f 
+	            ON b.fin_po_id = f.fin_trans_id AND b.fin_po_detail_id = f.fin_trans_detail_id AND b.fin_item_id = f.fin_item_id  $swhere ORDER BY a.fin_warehouse_id,a.fin_supplier_id";
+                break;
+            case "4":
+                $ssql = "SELECT a.fst_po_no as No_PO, a.fdt_po_datetime as PO_Date,a.fin_term as TOP,a.fst_do_no as No_DO,a.fst_contract_no as No_Kontrak,c.fst_warehouse_name as Warehouse,
+                a.fin_supplier_id as fin_supplier_id,b.fst_relation_name as Relation_Name,a.fst_curr_code as Mata_Uang,a.fdc_exchange_rate_idr as Rate_Idr,a.fdc_subttl as fdc_subttl,
+                ((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) as fdc_total,(((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) * a.fdc_exchange_rate_idr)  as fdc_total_Idr
+                FROM (SELECT * FROM trpo WHERE fst_active !='D') a LEFT OUTER JOIN msrelations b
+                ON a.fin_supplier_id = b.fin_relation_id  LEFT OUTER JOIN mswarehouse c
+                ON a.fin_warehouse_id = c.fin_warehouse_id " . $swhere . $sorderby;
                 break;
             default:
                 break;

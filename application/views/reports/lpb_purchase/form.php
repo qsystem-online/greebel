@@ -10,17 +10,9 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptPO" action="<?= site_url() ?>report/tr/purchase_order/process" method="POST" enctype="multipart/form-data">
+<form id="rptPurchase" action="<?= site_url() ?>report/tr/lpb_purchase/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
-        <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
-            <div class="form-group row">
-                <label for="fst_delivery_address" class="col-md-2 control-label"></label>
-                <div class="col-md-10">								
-                    <label class="radio-inline"><input type="radio" id="fblIsImportFalse" class="fbl_is_import" name="fbl_is_import" value="0" checked>Lokal</label>
-                    <label class="radio-inline"><input type="radio" id="fblIsImportTrue" class="fbl_is_import" name="fbl_is_import" value="1" >Import</label>
-                    <label class="radio-inline"><input type="radio" id="fblIsImportAll" class="fbl_is_import" name="fbl_is_import" value="ALL" >All</label>
-                </div>
-            </div>                    
+        <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                  
             <div class="form-group row">
                 <label for="active_branch_id" class="col-sm-2 control-label"><?= lang("Branch") ?></label>
                 <div class="col-sm-4">
@@ -43,18 +35,10 @@
                     </select>
                     <div id="fin_branch_id_err" class="text-danger"></div>
                 </div>
-                <label for="select-warehouse" class="col-sm-2 control-label"><?=lang("Warehouse")?></label>
+                <label for="select-items" class="col-sm-2 control-label"><?=lang("Item")?></label>
                 <div class="col-sm-4">
-                    <select id="select-warehouse" class="form-control" name="fin_warehouse_id">
-                        <option value='0'>All</option>
-                        <?php
-                            $warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
-                            foreach($warehouseList as $warehouse){
-                                echo "<option value='".$warehouse->fin_warehouse_id ."'>$warehouse->fst_warehouse_name</option>";
-                            }
-                        ?>
-                    </select>
-                    <div id="fin_warehouse_id_err" class="text-danger"></div>
+                    <select id="select-items" class="form-control non-editable" name="fin_item_id"></select>
+                    <div id="fin_item_id_err" class="text-danger"></div>
                 </div>
             </div>
             <div class="form-group row">						
@@ -81,35 +65,36 @@
                 </div>   
             </div>
             <div class="form-group row">
-                <label for="fdt_po_datetime" class="col-sm-2 control-label"><?=lang("PO Date")?></label>
+                <label for="fdt_lpbpurchase_datetime" class="col-sm-2 control-label"><?=lang("LPB Date")?></label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_po_datetime" name="fdt_po_datetime"/>
+                        <input type="text" class="form-control datepicker" id="fdt_lpbpurchase_datetime" name="fdt_lpbpurchase_datetime"/>
                     </div>
-                    <div id="fdt_po_datetime_err" class="text-danger"></div>
+                    <div id="fdt_lpbpurchase_datetime_err" class="text-danger"></div>
                     <!-- /.input group -->
                 </div>
-                <label for="fdt_po_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?></label>
+                <label for="fdt_lpbpurchase_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?></label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_po_datetime2" name="fdt_po_datetime2"/>
+                        <input type="text" class="form-control datepicker" id="fdt_lpbpurchase_datetime2" name="fdt_lpbpurchase_datetime2"/>
                     </div>
-                    <div id="fdt_po_datetime2_err" class="text-danger"></div>
+                    <div id="fdt_lpbpurchase_datetime2_err" class="text-danger"></div>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
             <div class="form-group row">
                 <label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
                 <div class="col-sm-4">								
-                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Purchase Order Detail")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Purchase Order Ringkas")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Item Purchase Order O/S LPB")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan LPB Purchase Per-Supplier")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan LPB Purchase Ringkas")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan LPB Purchase Per-Item")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan LPB Purchase Per-Item Per-Supplier")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -164,22 +149,23 @@
         $('#multiple-columns').multiselect('selectAll',false);
 		$('#multiple-columns').multiselect('updateButtonText');
 
-        /*if (myRadio.value == "4"){
-            $('#select-relations').empty();
-            $('#select-relations').append('<option value="0">All</option>');
-        }*/
+        if (myRadio.value == "2"){
+            $('#select-items').empty();
+            $('#select-items').append('<option value="0">All</option>');
+        }
         // for(var i=0; i<newArray.length; i++){
         //     alert(newArray[i].label);
         //     console.log(newArray[i].label);
         // }
         
         // currentValue = myRadio.value;
-    }         
+    } 
+
     $(function() {
         $("#select-relations").select2({
 			width: '100%',
 			ajax:{
-				url: '<?=site_url()?>report/tr/purchase_order/get_suppliers',
+				url: '<?=site_url()?>report/tr/lpb_purchase/get_suppliers',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -211,12 +197,50 @@
 			//current_pricing_group_id = selectedCustomer.current_pricing_group_id;			
         });
 
+        $("#select-items").select2({
+            minimumInputLength: 2,
+            placeholder:{
+                id: '0', // the value of the option
+                text: 'All'
+            },
+            allowClear: true,
+            ajax:{
+                delay: 250,
+                url: "<?=site_url()?>/report/tr/lpb_purchase/ajxListItem",
+                dataType: 'json',
+                processResults: function (result) {
+                    if (result.status == "SUCCESS"){
+                        var data = $.map(result.data, function (obj) {
+                            obj.id = obj.fin_item_id,  
+                            obj.text = obj.fst_item_code + " - "  + obj.fst_item_name;
+                            //obj.fbl_is_batch_number
+                            //obj.fbl_is_serial_number
+                            return obj;
+                        });
+
+                        return {
+                            results: data
+                        };
+                    }else{
+                        return {
+                            result:[]
+                        }
+                    }
+                }
+            }
+        }).on('select2:select',function(e){
+            var data = e.params.data;
+            selectedItem = data;
+            //$("#fstUnit").empty().trigger("change.select2");
+            //showHideBatchSerial();
+        });
+
         $("#btnProcess").click(function(event) {
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#rptPO").serializeArray();
-            url = "<?= site_url() ?>report/tr/purchase_order/process";
+            data = $("#rptPurchase").serializeArray();
+            url = "<?= site_url() ?>report/tr/lpb_purchase/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -259,12 +283,12 @@
                         //Clear all previous error
                         $(".text-danger").html("");
                         //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/tr/purchase_order/generatereport";
+                        url = "<?= site_url() ?>report/tr/lpb_purchase/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
-                        $("#rptPO").attr('action', url);
-                        $("#rptPO").attr('target', 'rpt_iframe');
-                        $("#rptPO").submit();
+                        $("#rptPurchase").attr('action', url);
+                        $("#rptPurchase").attr('target', 'rpt_iframe');
+                        $("#rptPurchase").submit();
                         $("a#toggle-window").click();
                         // Change to Edit mode
                         // $("#frm-mode").val("EDIT"); //ADD|EDIT
@@ -299,7 +323,7 @@
             var a = document.createElement('a');
             a.href = data_type + ', ' + table_html;
 			//a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
-			a.download = 'Laporan_Purchase_Order' + '.xls';
+			a.download = 'Laporan_LPB_Purchase' + '.xls';
 			a.click();                        			
 			return;
 		});      
