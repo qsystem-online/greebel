@@ -438,15 +438,8 @@ class Purchase_return extends MY_Controller{
 
 			$this->db->trans_start();
 			$data =[];
-			$resp = $this->trpurchasereturn_model->unposting($finPurchaseReturnId);               
-			if($resp["status"] != "SUCCESS"){
-				$this->db->trans_rollback();
-				$this->ajxResp["status"] = $resp["status"];
-				$this->ajxResp["message"] = $resp["message"];
-				$this->json_output();
-				return;
-			}
-
+			$this->trpurchasereturn_model->unposting($finPurchaseReturnId);
+						
 			$resp = $this->trpurchasereturn_model->delete($finPurchaseReturnId,true,$data);			
 			$dbError  = $this->db->error();
 			if ($dbError["code"] != 0){
