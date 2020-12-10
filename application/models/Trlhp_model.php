@@ -88,7 +88,7 @@ class Trlhp_model extends MY_Model {
 			"fst_unit"=>$dataH->fst_wo_unit, 
 			"fdb_qty_in"=>$dataH->fdb_qty_baseonwo, 
 			"fdb_qty_out"=>0, 
-			"fdc_price_in"=>0,
+			"fdc_price_in"=>$dataH->fdc_hpp,
 			"fbl_price_in_auto"=>false,
 			"fst_active"=>"A" 
 		];				

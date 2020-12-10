@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Glaccount extends MY_Controller
 {
+    public $menuName="gl_account";
 
     public function __construct()
     {
@@ -13,6 +14,7 @@ class Glaccount extends MY_Controller
 
     public function index()
     {
+        parent::index();        
         $this->lizt();
     }
 
@@ -93,16 +95,19 @@ class Glaccount extends MY_Controller
 
     public function add()
     {
+        parent::add();
         $this->openForm("ADD", "");
     }
 
     public function Edit($fst_glaccount_code)
     {
+        parent::edit($fst_glaccount_code);
         $this->openForm("EDIT", $fst_glaccount_code);
     }
 
     public function ajx_add_save()
     {
+        parent::ajx_add_save();
         $this->load->model('GLaccounts_model');
         $this->form_validation->set_rules($this->GLaccounts_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -155,6 +160,7 @@ class Glaccount extends MY_Controller
 
     public function ajx_edit_save()
     {
+        parent::ajx_edit_save();
         $this->load->model('GLaccounts_model');
         $fst_glaccount_code = $this->input->post("fst_glaccount_code");
         $data = $this->GLaccounts_model->getDataById($fst_glaccount_code);
@@ -312,6 +318,8 @@ class Glaccount extends MY_Controller
     }
 
     public function delete($fst_glaccount_code){
+        parent::delete();
+
 		if (!$this->aauth->is_permit("")) {
 			$this->ajxResp["status"] = "NOT_PERMIT";
 			$this->ajxResp["message"] = "You not allowed to do this operation !";

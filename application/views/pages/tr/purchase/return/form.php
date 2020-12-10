@@ -320,31 +320,38 @@
 			
 			$("#btn-add-detail-save").click(function(e){
 				e.preventDefault();
+
+				if ($("#fdb_qty").val()	== 0){
+					alert("<?= 'Qty tidak boleh 0 !'?>");
+					return;
+				}
+
+
 				t = $("#tbldetails").DataTable();
-								
+				
+				var data ={
+					fin_rec_id:0,
+					fin_item_id: $("#fin_item_id").val(),
+					fst_item_code:selectedItem.fst_item_code,
+					fst_custom_item_name:$("#fst_custom_item_name").val(),
+					fst_unit:$("#fst_unit").val(),
+					fdc_price:$("#fdc_price").val(),
+					fst_disc_item:$("#fst_disc_item").val(),
+					fdc_disc_amount_per_item: App.calculateDisc($("#fdc_price").val(),$("#fst_disc_item").val()),
+					fdb_qty_lpb:0,
+					fdb_qty_return:0,
+					fdb_qty:$("#fdb_qty").val()											
+				}
+
 				if(rowDetail == null){
-					//new data
-					var data ={
-						fin_rec_id:0,
-						fin_item_id: $("#fin_item_id").val(),
-						fst_item_code:selectedItem.fst_item_code,
-						fst_custom_item_name:$("#fst_custom_item_name").val(),
-						fst_unit:$("#fst_unit").val(),
-						fdc_price:$("#fdc_price").val(),
-						fst_disc_item:$("#fst_disc_item").val(),
-						fdc_disc_amount_per_item: App.calculateDisc($("#fdc_price").val(),$("#fst_disc_item").val()),
-						fdb_qty_lpb:0,
-						fdb_qty_return:0,
-						fdb_qty:$("#fdb_qty").val()											
-					}
+					//new data					
 					t.row.add(data).draw(false);
 				}else{
 					//edit data
 					dataTbl = t.row(rowDetail).data();
 					//Hanya bisa merubah Qty Return
-					dataTbl.fdb_qty = $("#fdb_qty").val();
-					dataTbl.fdc_price = $("#fdc_price").val();
-					t.row(rowDetail).data(dataTbl).draw(false);
+					data.fin_rec_id = dataTbl.fin_rec_id;
+					t.row(rowDetail).data(data).draw(false);
 				}				
 				mdlDetail.hide();
 

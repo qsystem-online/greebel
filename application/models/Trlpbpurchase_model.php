@@ -374,7 +374,7 @@ class Trlpbpurchase_model extends MY_Model {
 			$ttlPpn = $dataH->fdc_ppn_amount;            
 			$dpClaim = $dataH->fdc_downpayment_claim;
 			$dpClaim = $dpClaim / (1 + $dataH->fdc_ppn_percent / 100);
-			$ttlPpn += floatval($dataH->fdc_downpayment_claim) - $dpClaim;
+			$ttlPpn -= floatval($dataH->fdc_downpayment_claim) - $dpClaim;
 
 		}else{
 			$ttlPpn = $dataH->fdc_ppn_amount;

@@ -371,8 +371,6 @@ class Trinventory_model extends MY_Model
 
 	}
 
-
-
 	public function deleteByCodeId($trxCode,$trxId){
 		$ssql = "select a.*,b.fst_item_name  from trinventory a 
 			inner join msitems b on a.fin_item_id = b.fin_item_id 
@@ -656,8 +654,6 @@ class Trinventory_model extends MY_Model
 		}		   
 	}
 
-
-
 	public function calculateHPP($lastBalanceQty,$lastHPP,$qtyIn,$qtyOut,$fdcPrice,$fdcAddCost){
 		
 		$pricePlusCost = (float) $fdcPrice + (float) $fdcAddCost;
@@ -694,7 +690,6 @@ class Trinventory_model extends MY_Model
 		};
 		return $result;
 	}
-
 	
 	public function insertSerial($dataSerial){
 		/**
