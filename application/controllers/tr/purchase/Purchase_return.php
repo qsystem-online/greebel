@@ -318,7 +318,11 @@ class Purchase_return extends MY_Controller{
 		$dataDetails = [];
 		$ttlDisc = 0;
 		$subTtl = 0;		
+		$ttlQty = 0;
 		foreach($postDetails as $detail){
+
+			$ttlQty += $detail->fdb_qty;
+
 			$dataD = [
 				"fin_rec_id"=>0,
 				"fin_purchasereturn_id"=>0,
@@ -339,6 +343,11 @@ class Purchase_return extends MY_Controller{
 			$ttlDisc +=  floatval($disc);
 			
 		}
+
+		if ($ttlQty <= 0){
+			throw new CustomException("Total qty harus lebih besar 0",3003,"FAILED",[]);
+		}
+
 		$dataH["fdc_subttl"] = $subTtl;
 		$dataH["fdc_disc_amount"] = $ttlDisc;
 		
