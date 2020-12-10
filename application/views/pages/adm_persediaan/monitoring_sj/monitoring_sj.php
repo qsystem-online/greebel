@@ -23,8 +23,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="box-body">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
-                        <li class="nav-item nav-link active"><a href="#tab_1" data-toggle="tab" aria-expanded="false"><label>Monitoring Surat Jalan</label></a></li>
-                        <li class="nav-item nav-link"><a href="#tab_2" data-toggle="tab" aria-expanded="false"><label>Histories</label></a></li>
+                        <li class="nav-item nav-link active">
+						<a id="tab1" href="#tab_1" data-toggle="tab" aria-expanded="false"><label>Monitoring Surat Jalan</label></a></li>
+                        <li class="nav-item nav-link">
+						<a id="tab2" href="#tab_2" data-toggle="tab" aria-expanded="false"><label>Histories</label></a></li>
                     </ul>
 
                     <div class="tab-content">
@@ -319,12 +321,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!----------- HISTORY MONITORING ---------->
 <script type="text/javascript">
 	$(function(){
-		$(".filterData").change(function(event){
-			event.preventDefault();
-			$('#tblHistMonitoring').DataTable().ajax.reload();
-		});
 
-		$("#tab_2").on("click",function(event){
+		/*$(document).on("shown.bs.tab","#tab2 a",function(e){
+			$($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
+		});*/
+
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			$($.fn.dataTable.tables( true ) ).DataTable().columns.adjust().draw();
+		})
+		
+		$(".filterData").change(function(event){
 			event.preventDefault();
 			$('#tblHistMonitoring').DataTable().ajax.reload();
 		});

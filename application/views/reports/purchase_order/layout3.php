@@ -45,133 +45,126 @@
 		<div>Tgl PO: <?= $this->input->post("fdt_po_datetime") ?>  s/d <?= $this->input->post("fdt_po_datetime2") ?></div> 
         <div>Supplier: <?= $name_relations ?> </div>
 		<div>Mata Uang : <?= $this->input->post("fst_curr_code") ?></div>                              
-		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:2300px">      
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1700px">      
 			<thead>
 				<tr style="background-color:RoyalBlue;color:white">
 					<?php
-						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:250px'>Supplier</th>");
-						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:150px'>No.P/O</th>");
-						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:150px'>Tgl P/O</th>");
-						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:50px'>TOP</th>");
-						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:150px'>No.DO</th>");
-						echoIfColSelected(5,$selectedCols,"<th class='col-5' style='width:150px'>No.Kontrak</th>");
-						echoIfColSelected(6,$selectedCols,"<th class='col-6' style='width:100px'>GUD</th>");
-						echoIfColSelected(7,$selectedCols,"<th class='col-7' style='width:100px'>Kode Barang</th>");
-						echoIfColSelected(8,$selectedCols,"<th class='col-8' style='width:250px'>Nama Barang</th>");
-						echoIfColSelected(9,$selectedCols,"<th class='col-9' style='width:50px'>Qty</th>");
+						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:100px'>GUD</th>");
+						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:250px'>Supplier</th>");
+						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:100px'>No.P/O</th>");
+						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:150px'>Tgl.P/O</th>");
+						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:250px'>Nama Barang</th>");
+						echoIfColSelected(5,$selectedCols,"<th class='col-5' style='width:50px'>Qty P/O</th>");
+						echoIfColSelected(6,$selectedCols,"<th class='col-6' style='width:50px'>Unit</th>");
+						echoIfColSelected(7,$selectedCols,"<th class='col-7' style='width:100px'>No.Penerimaan</th>");
+						echoIfColSelected(8,$selectedCols,"<th class='col-8' style='width:150px'>Tgl.Terima</th>");
+						echoIfColSelected(9,$selectedCols,"<th class='col-9' style='width:50px'>Qty Terima</th>");
                         echoIfColSelected(10,$selectedCols,"<th class='col-10' style='width:50px'>Unit</th>");
-                        echoIfColSelected(11,$selectedCols,"<th class='col-11' style='width:50px'>Harga</th>");
-                        echoIfColSelected(12,$selectedCols,"<th class='col-12' style='width:50px'>Disc Amt</th>");
-                        echoIfColSelected(13,$selectedCols,"<th class='col-13' style='width:50px'>Jumlah</th>");
-                        echoIfColSelected(14,$selectedCols,"<th class='col-14' style='width:50px'>Kurs</th>");
-                        echoIfColSelected(15,$selectedCols,"<th class='col-15' style='width:150px'>Jumlah kurs</th>");
+                        echoIfColSelected(11,$selectedCols,"<th class='col-11' style='width:50px'>Qty O/S</th>");
+                        echoIfColSelected(12,$selectedCols,"<th class='col-12' style='width:50px'>Status</th>");
 					?>
 				</tr>
 			</thead>
 			<tbody>
-				<?php
-                    $idPO = "";
-                    $idSupplier = "";
-					$subAmount = 0;
-					$subDiscount = 0;
-					$totalDiscount = 0;
-					$totalAmount = 0;
-					$fdc_subttl = 0;
-					$Disc_Total = 0;
-					$Dpp = 0;
-					$Ppn = 0;
-                    $fdc_total = 0;
-                    $qty_subttl = 0;
-                    $qty_total = 0;
+                <?php
+					$id_PO = "";
+					$noPO = "";
+					$no_LPB = "";
+					$id_detailPO = "";
+					$status_close ="";
+					$qty_LPB = 0;
+					$ttl_qty_LPB = 0;
+					$ttl_qty_os = 0;
+					$ttl_qty_LPBNew = 0;
+					$ttl_qty_osNew = 0;
+					//$numOfRecs = count($dataReport);
 					foreach ($dataReport as $row){
+						if ($id_detailPO != $row->Id_DetailPO){
+							if ($id_detailPO != ""){
+								echo "<tr>";
+							//echo "<td colspan='".totalSelectedCol(11,$selectedCols)."'style='text-align: right;font-weight: bold'></td>";
+								//echo "<td colspan='".totalSelectedCol(10,$selectedCols)."' style='text-align: right;font-weight: bold'>Total</td>";
+								echoIfColSelected(12,$selectedCols,"<td colspan='".totalSelectedCol(9,$selectedCols)."' style='text-align: right;font-weight: bold'>Total :</td>");
+								echoIfColSelected(12,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_LPBNew</td>");
+								echoIfColSelected(12,$selectedCols,"<td style='text-align: center;font-weight: bold'></td>");
+								echoIfColSelected(12,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_osNew</td>");
+								echoIfColSelected(12,$selectedCols,"<td style='text-align: right;font-weight: bold'>$status_close</td>");								
+
+								//echo "<td style='text-align: right;font-weight: bold'>$ttl_qty_sj</td>";									
+								//echo "<td style='text-align: right;font-weight: bold'>$ttl_qty_os</td>";
+								//echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: right'>$ttl_qty_sj</td>");
+								//echoIfColSelected(11,$selectedCols,"<td class='col-11' style='font-weight: bold;text-align: right'>$ttl_qty_os</td>");							
+								echo "</tr>";
+								$ttl_qty_LPB = 0;
+								$ttl_qty_os = 0;
+								$status_close ="";	
+							}
+						}
+
 						echo "<tr>";
-						if ( $idPO != $row->fin_po_id ){
-                            if ($idPO != "") {
-								//akumulasi total keseluruhan                                                        
-                                //tulis subtotal per-group
-                                    echo "<tr>";
-                                    echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Sub total Per-PO:</td>";
-                                    echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: right'>$qty_subttl</td>");
-                                    echoIfColSelected(15,$selectedCols,"<td class='col-15' style='font-weight: bold;text-align: right'>$fdc_subttl</td>");							
-                                    echo "</tr>";
-
-								//reset subtotal variable (break group)
-                                $subAmount = 0;
-                                $qty_subttl = 0;
-							}			
-                            $idPO = $row->fin_po_id;
-
-                            if ( $idSupplier != $row->fin_supplier_id ){
-                                if ($idSupplier != "") {
-                                        echo "<tr>";
-                                        echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right'>Total Per-Supplier</td>";
-                                        echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: right'>$qty_total</td>");
-                                        echoIfColSelected(11,$selectedCols,"<td class='col-11' style='font-weight: bold;text-align: right'></td>");						
-                                        echo "</tr>";
-
-                                        $qty_total= 0;
-                                }
-                                $idSupplier = $row->fin_supplier_id;
-                                echoIfColSelected(0,$selectedCols,"<td class='col-0'>$row->Relation_Name</td>");	   
-                            }else{
-                                echoIfColSelected(0,$selectedCols,"<td class='col-0'></td>");
-                            }
-                            	   
-                            echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->No_PO</td>");
-                            echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->PO_Date</td>");
-                            echoIfColSelected(3,$selectedCols,"<td class='col-3'>$row->TOP</td>");
-                            echoIfColSelected(4,$selectedCols,"<td class='col-4'>$row->No_DO</td>");
-                            echoIfColSelected(5,$selectedCols,"<td class='col-5'>$row->No_Kontrak</td>");
-                            echoIfColSelected(6,$selectedCols,"<td class='col-6'>$row->Warehouse</td>");
+                        if ( $id_PO != $row->Id_PO ){
+							$id_PO = $row->Id_PO;
+                            echoIfColSelected(0,$selectedCols,"<td class='col-0''border-25'>$row->Warehouse</td>");	   
+                            echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->Relation_Name</td>");
+                            echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->No_PO</td>");
+                            echoIfColSelected(3,$selectedCols,"<td class='col-3'>$row->PO_Date</td>");
+                            
 						}else{
                             echoIfColSelected(0,$selectedCols,"<td class='col-0'></td>");
                             echoIfColSelected(1,$selectedCols,"<td class='col-1'></td>");
                             echoIfColSelected(2,$selectedCols,"<td class='col-2'></td>");
                             echoIfColSelected(3,$selectedCols,"<td class='col-3'></td>");
+                            
+						}
+
+						if ($id_detailPO != $row->Id_DetailPO){
+							//$ttl_qty_sj += $row->qty_sj;
+                            $id_detailPO = $row->Id_DetailPO;
+                            echoIfColSelected(4,$selectedCols,"<td class='col-4'>$row->Item_Name</td>");
+							echoIfColSelected(5,$selectedCols,"<td class='col-5'>$row->Qty_PO</td>");
+							echoIfColSelected(6,$selectedCols,"<td class='col-6'>$row->Unit_PO</td>");
+								
+						}else{
                             echoIfColSelected(4,$selectedCols,"<td class='col-4'></td>");
-                            echoIfColSelected(5,$selectedCols,"<td class='col-5'></td>");
-                            echoIfColSelected(6,$selectedCols,"<td class='col-6'></td>");
-							
+							echoIfColSelected(5,$selectedCols,"<td class='col-5'></td>");
+							echoIfColSelected(6,$selectedCols,"<td class='col-6'></td>");	
                         }
-                        $Price = formatNumber ($row->Price,2);
-                        $Price_Netto = formatNumber ($row->Price_Netto,2);
-                        $Disc_Amount = formatNumber ($row->Disc_Amount,2);
-                        $Amount = formatNumber ($row->Amount,2);
-                        $Rate_Idr = formatNumber ($row->Rate_Idr,2);
-						echoIfColSelected(7,$selectedCols,"<td class='col-7'>$row->Item_Code</td>");
-						echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->Item_Name</td>");
-						echoIfColSelected(9,$selectedCols,"<td class='col-9'>$row->Qty</td>");
-                        echoIfColSelected(10,$selectedCols,"<td class='col-10'>$row->Unit</td>");
-                        echoIfColSelected(11,$selectedCols,"<td class='col-11'>$Price</td>");
-                        echoIfColSelected(12,$selectedCols,"<td class='col-12' style='text-align: right'>$Disc_Amount</td>");
-                        echoIfColSelected(13,$selectedCols,"<td class='col-13' style='text-align: right'>$Amount</td>");
-                        echoIfColSelected(14,$selectedCols,"<td class='col-14' style='text-align: right'>$Rate_Idr</td>");
-                        echoIfColSelected(15,$selectedCols,"<td class='col-15' style='text-align: right'>$Amount</td>");											                                                                                                                                                                      
-                        echo "</tr>";
-                        $subAmount += $row->Amount;
-                        $subAmountNew = formatNumber ($subAmount,2);
-                        $qty_subttl += $row->Qty;
-						
-						$totalDiscount += $subDiscount;
-						$totalAmount += $subAmount;
-						$newtotalAmount = formatNumber($totalAmount,2);
-						$fdc_subttl = formatNumber ($row->fdc_subttl,2);
-						$Disc_Total = formatNumber ($row->Disc_Total,2);
-						$Dpp = formatNumber ($row->Dpp,2);
-						$Ppn = formatNumber ($row->Ppn,2);
-                        $fdc_total = formatNumber ($row->fdc_total,2);
-                        $qty_total += $qty_subttl;
-					}
-					$qty_total += $qty_subttl;
+                        echoIfColSelected(7,$selectedCols,"<td class='col-7'>$row->No_LPB</td>");
+						echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->LPB_Date</td>");
+						echoIfColSelected(9,$selectedCols,"<td class='col-9' style='text-align: right'>$row->Qty_LPB</td>");
+						echoIfColSelected(10,$selectedCols,"<td class='col-10' style='text-align: right'>$row->Unit_LPB</td>");
+						echoIfColSelected(11,$selectedCols,"<td class='col-11'></td>");
+						echoIfColSelected(12,$selectedCols,"<td class='col-12'></td>");
+						echo "</tr>";
+						$ttl_qty_LPB += $row->Qty_LPB;
+						$ttl_qty_LPBNew = formatNumber ($ttl_qty_LPB, 2);
+						$ttl_qty_os = $row->Qty_PO - $ttl_qty_LPB;
+						$ttl_qty_osNew = formatNumber ($ttl_qty_os, 2);
+						if ($ttl_qty_os <= 0){
+							$status_close = "";
+						}else{
+							$status_close = "O/S";
+						}
+
+					}   
+					//$ttl_qty_LPB += $row->Qty_LPB;
+					//$ttl_qty_os = $row->Qty_PO - $ttl_qty_LPB;
+
+					/*
 					echo "<tr>";
-					echo "<td colspan='".totalSelectedCol(15,$selectedCols)."'style='text-align: right;font-weight: bold'>Sub total Per-PO:</td>";
-					echoIfColSelected(15,$selectedCols,"<td class='col-15' style='font-weight: bold;text-align: right'>$fdc_subttl</td>");							
-                    echo "</tr>";
-                    
-                    echo "<tr>";
-                    echo "<td colspan='".totalSelectedCol(15,$selectedCols)."'style='text-align: right'>Total Per-Supplier</td>";
-                    echoIfColSelected(15,$selectedCols,"<td class='col-15' style='font-weight: bold;text-align: right'></td>");						
-                    echo "</tr>";
+					echo "<td colspan='10' style='text-align: right;font-weight: bold'>Total</td>";
+					echo "<td style='text-align: right;font-weight: bold'>$ttl_qty_sj</td>";									
+					echo "<td style='text-align: right;font-weight: bold'>$ttl_qty_os</td>";
+					echo "</tr>";*/
+
+					echo "<tr>";
+					echoIfColSelected(12,$selectedCols,"<td colspan='".totalSelectedCol(9,$selectedCols)."' style='text-align: right;font-weight: bold'>Total :</td>");
+					echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_LPB</td>");
+					echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'></td>");
+					echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$ttl_qty_os</td>");
+					echoIfColSelected(11,$selectedCols,"<td style='text-align: right;font-weight: bold'>$status_close</td>");															
+					echo "</tr>";
+
 				?>
 			</tbody>
 		</table>
