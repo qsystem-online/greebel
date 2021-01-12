@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Ekspedisi extends MY_Controller{
+    public $menuName="sales_ekspedisi"; 
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -14,9 +15,11 @@ class Ekspedisi extends MY_Controller{
     }
 
     public function index(){
-       $this->lizt();
+        parent::index();
+        $this->lizt();
     }
     public function lizt(){
+        parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Ekspedisi";
 		$this->list['list_name'] = "Ekspedisi List";
@@ -130,10 +133,12 @@ class Ekspedisi extends MY_Controller{
 	}
 
 	public function add(){
+        parent::add();
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_salesekspedisi_id){
+	public function edit($fin_salesekspedisi_id){
+        parent::edit($fin_salesekspedisi_id);
 		$this->openForm("EDIT", $fin_salesekspedisi_id);
     }
 
@@ -143,6 +148,7 @@ class Ekspedisi extends MY_Controller{
 	}
     
     public function ajx_add_save(){
+        parent::ajx_add_save();
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsalesorder_model");
         $this->load->model("trinventory_model");
@@ -201,7 +207,7 @@ class Ekspedisi extends MY_Controller{
     }
 
     public function ajx_edit_save(){
-       
+        parent::ajx_edit_save();
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsalesorder_model");
         $this->load->model("trinventory_model");
@@ -284,7 +290,7 @@ class Ekspedisi extends MY_Controller{
     }
     
     public function delete($finSalesekspedisiId){
-
+        parent::delete($finSalesekspedisiId);
         try{
             $dataHOld = $this->db->get_where("trsalesekspedisi",["fin_salesekspedisi_id"=>$fin_salesekspedisi_id])->row();
             if ($dataHOld == null){

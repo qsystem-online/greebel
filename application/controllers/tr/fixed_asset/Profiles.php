@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Profiles extends MY_Controller{
+	public $menuName="fixed_asset_profile";
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');		
@@ -14,7 +15,7 @@ class Profiles extends MY_Controller{
 	}
 
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Fixed Asset Profile";
 		$this->list['list_name'] = "Fixed Asset Profile List";
@@ -105,10 +106,12 @@ class Profiles extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 	
 	public function edit($finId){
+		parent::edit($finId);
 		$this->openForm("EDIT", $finId);
 
 	}
@@ -150,6 +153,7 @@ class Profiles extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
+		parent::ajx_add_save();
 		try{			
 			$dataPrepared = $this->prepareData();
 			$dataH = $dataPrepared["dataH"];
@@ -208,6 +212,7 @@ class Profiles extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
         $finFAProfileId = $this->input->post("fin_fa_profile_id");
 		try{
             $dataHOld = $this->trfaprofiles_model->getDataHeader($finFAProfileId);
@@ -406,7 +411,7 @@ class Profiles extends MY_Controller{
 	}
 
 	public function delete($finId){
-	
+		parent::delete($finId);
 		$finFAProfileId = $this->input->post("fin_fa_profile_id");
 		try{
 			$dataHOld = $this->trfaprofiles_model->getDataHeader($finFAProfileId);

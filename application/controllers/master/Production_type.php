@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Production_type extends MY_Controller {
+    public $menuName="master_production_type"; 
     public function __construct(){
         parent:: __construct();
         $this->load->library('form_validation');
@@ -10,6 +11,7 @@ class Production_type extends MY_Controller {
 
 
     public function index(){
+        parent::index();
         $this->load->library('menus');
 		$this->list['page_name'] = "Master Project";
         $this->list['list_name'] = "Project List";
@@ -75,15 +77,17 @@ class Production_type extends MY_Controller {
     }
 
     public function add(){
+        parent::add();
         $this->openForm("ADD",0);
     }
 
-    public function Edit($finId){
+    public function edit($finId){
+        parent::edit($finId);
         $this->openForm("EDIT", $finId);
     }
 
     public function ajx_add_save(){
-        
+        parent::ajx_add_save();
         $this->form_validation->set_rules($this->msproductiontype_model->getRules("ADD",0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
         if ($this->form_validation->run() == FALSE){
@@ -120,6 +124,7 @@ class Production_type extends MY_Controller {
     }
 
     public function ajx_edit_save(){
+        parent::ajx_edit_save();
         $this->load->model('msprojects_model');
         $id = $this->input->post("fin_rec_id");
         $data = $this->msproductiontype_model->getDataById($id);
@@ -198,6 +203,7 @@ class Production_type extends MY_Controller {
     }
 
     public function delete($id){
+        parent::delete($id);
         $this->load->model("msprojects_model");
         
         $this->msproductiontype_model->delete($id);

@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Mps extends MY_Controller{
+	public $menuName="mps";
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -11,7 +12,7 @@ class Mps extends MY_Controller{
 	}
 
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Master Planning Schedule";
 		$this->list['list_name'] = "Master Planning Schedule List";
@@ -98,10 +99,12 @@ class Mps extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 	
 	public function edit($finId){
+		parent::edit($finId);
 		$this->openForm("EDIT", $finId);
 
 	}
@@ -141,6 +144,8 @@ class Mps extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
+		parent::ajx_add_save();
+
 		try{			
 			$dataPrepared = $this->prepareData();
 			$dataH = $dataPrepared["dataH"];
@@ -185,6 +190,7 @@ class Mps extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){		
+		parent::ajx_edit_save();
         $finMPSId = $this->input->post("fin_mps_id");
 		try{
             $dataHOld = $this->trmps_model->getDataHeader($finMPSId);
@@ -318,7 +324,7 @@ class Mps extends MY_Controller{
 
 
 	public function delete($finId){
-
+		parent::delete($finId);
 		try{
             $dataHOld = $this->trmps_model->getDataHeader($finId);
             if ($dataHOld == null){

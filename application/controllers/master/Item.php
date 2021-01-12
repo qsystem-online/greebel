@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 class Item extends MY_Controller
 {
+    public $menuName="items"; 
     public function __construct()
     {
         parent::__construct();
@@ -12,6 +13,7 @@ class Item extends MY_Controller
 
     public function index()
     {
+        parent::index();
         $this->lizt();
     }
 
@@ -88,16 +90,19 @@ class Item extends MY_Controller
 
     public function add()
     {
+        parent::add();
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($fin_item_id)
+    public function edit($fin_item_id)
     {
+        parent::edit($fin_item_id);
         $this->openForm("EDIT", $fin_item_id);
     }
 
     public function ajx_add_save()
     {
+        parent::ajx_add_save();
         $this->load->model('msitems_model');
         $this->form_validation->set_rules($this->msitems_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -223,6 +228,7 @@ class Item extends MY_Controller
 
     public function ajx_edit_save()
     {
+        parent::ajx_edit_save();
         $this->load->model('msitems_model');
         $fin_item_id = $this->input->post("fin_item_id");
         $data = $this->msitems_model->getDataById($fin_item_id);
@@ -416,6 +422,7 @@ class Item extends MY_Controller
     }
 
     public function delete($fin_item_id){
+        parent::delete($fin_item_id);
 		if (!$this->aauth->is_permit("")) {
 			$this->ajxResp["status"] = "NOT_PERMIT";
 			$this->ajxResp["message"] = "You not allowed to do this operation !";

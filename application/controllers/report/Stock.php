@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Stock extends MY_Controller
 {
 
+	public $menuName="report_gudang";
 	public $layout_columns =[]; 
 	public $spreadsheet;
 	
@@ -100,6 +101,7 @@ class Stock extends MY_Controller
 
 	public function index()
 	{
+		parent::index();
 		$this->loadForm();
 	}
 

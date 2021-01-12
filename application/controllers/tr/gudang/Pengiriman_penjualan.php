@@ -2,6 +2,8 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Pengiriman_penjualan extends MY_Controller{
+
+    public $menuName="delivery_order"; 
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -16,9 +18,11 @@ class Pengiriman_penjualan extends MY_Controller{
     }
 
     public function index(){
-       $this->lizt();
+        parent::index();
+        $this->lizt();
     }
     public function lizt(){
+        parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Surat Jalan";
 		$this->list['list_name'] = "Surat Jalan List";
@@ -152,10 +156,12 @@ class Pengiriman_penjualan extends MY_Controller{
 	}
 
 	public function add(){
+        parent::add();
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_sj_id){
+	public function edit($fin_sj_id){
+        parent::edit($fin_sj_id);
 		$this->openForm("EDIT", $fin_sj_id);
     }
     
@@ -165,7 +171,8 @@ class Pengiriman_penjualan extends MY_Controller{
 		$this->json_output($data);
 	}    
 
-    public function ajx_add_save(){        
+    public function ajx_add_save(){      
+        parent::ajx_add_save();  
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsuratjalandetails_model");
         $this->load->model("trinventory_model");
@@ -227,7 +234,7 @@ class Pengiriman_penjualan extends MY_Controller{
     }
 
     public function ajx_edit_save(){
-        
+        parent::ajx_edit_save();  
         try{
             $finSJId = $this->input->post("fin_sj_id");
             $dataHOld = $this->db->get_where("trsuratjalan",["fin_sj_id"=>$finSJId])->row();
@@ -442,7 +449,7 @@ class Pengiriman_penjualan extends MY_Controller{
     }
 
     public function delete($sjId){
-
+        parent::delete($sjId);  
         try{
             //CHECK LOCKED DATE
             $finSJId = $sjId;            

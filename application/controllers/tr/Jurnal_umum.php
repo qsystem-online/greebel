@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 class Jurnal_umum extends MY_Controller{
+    public $menuName="jurnal_umum";
 	public function __construct(){
 		parent::__construct();
         $this->load->library('form_validation');
@@ -20,9 +21,11 @@ class Jurnal_umum extends MY_Controller{
 
 	}
 	public function index(){
+        parent::index();
 		$this->lizt();
 	}
 	public function lizt(){
+        parent::index();
 		$this->load->library('menus');
         $this->list['page_name'] = "Manual Jurnal";
         $this->list['list_name'] = "Manual Jurnal List";
@@ -121,9 +124,11 @@ class Jurnal_umum extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 	public function add(){
+        parent::add();
 		$this->openForm("ADD", 0);
 	}
 	public function edit($fin_jurnal_id){
+        parent::edit($fin_jurnal_id);
 		$this->openForm("EDIT", $fin_jurnal_id);
 	}
 	public function view($finPOId){
@@ -132,7 +137,7 @@ class Jurnal_umum extends MY_Controller{
 
 
 	public function ajx_add_save(){
-
+        parent::ajx_add_save();
         try{   
             $fdt_journal_datetime = dBDateTimeFormat($this->input->post("fdt_journal_datetime"));
             $resp = dateIsLock($fdt_journal_datetime);
@@ -193,6 +198,7 @@ class Jurnal_umum extends MY_Controller{
 
 
 	public function ajx_edit_save(){
+        parent::ajx_edit_save();
         try{
 
             $finJournalId = $this->input->post("fin_journal_id");
@@ -372,6 +378,7 @@ class Jurnal_umum extends MY_Controller{
 		$this->json_output($data);
 	}
 	public function delete($finJournalId){
+        parent::delete($finJournalId);
 		if (!$this->aauth->is_permit("")) {
 			$this->ajxResp["status"] = "NOT_PERMIT";
 			$this->ajxResp["message"] = "You not allowed to do this operation !";

@@ -2,7 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Cust_pricing_group extends MY_Controller{
-
+	public $menuName="pricing_group"; 
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -10,10 +10,12 @@ class Cust_pricing_group extends MY_Controller{
 	}
 
 	public function index(){
+		parent::index();
 		$this->lizt();
 	}
 
 	public function lizt(){
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Master Cust Pricing Groups";
 		$this->list['list_name'] = "Master Cust Pricing Groups List";
@@ -81,14 +83,17 @@ class Cust_pricing_group extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_cust_pricing_group_id){
+	public function edit($fin_cust_pricing_group_id){
+		parent::edit($fin_cust_pricing_group_id);
 		$this->openForm("EDIT", $fin_cust_pricing_group_id);
 	}
 
 	public function ajx_add_save(){
+		parent::ajx_add_save();
 		$this->load->model('mscustpricinggroups_model');
 		$this->form_validation->set_rules($this->mscustpricinggroups_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -129,6 +134,7 @@ class Cust_pricing_group extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
 		$this->load->model('mscustpricinggroups_model');
 		$fin_cust_pricing_group_id = $this->input->post("fin_cust_pricing_group_id");
 		$data = $this->mscustpricinggroups_model->getDataById($fin_cust_pricing_group_id);
@@ -215,6 +221,7 @@ class Cust_pricing_group extends MY_Controller{
 	}
 
 	public function delete($id) {
+		parent::delete($id);
 		$this->load->model("mscustpricinggroups_model");
 		$this->db->trans_start();
         $this->mscustpricinggroups_model->delete($id);

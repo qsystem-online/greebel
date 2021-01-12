@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Mts extends MY_Controller{
+	public $menuName="mts";
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -13,7 +14,7 @@ class Mts extends MY_Controller{
 	}
 
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Master Target Sales";
 		$this->list['list_name'] = "Master Target Sales List";
@@ -102,10 +103,12 @@ class Mts extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 	
 	public function edit($finId){
+		parent::edit($finId);
 		$this->openForm("EDIT", $finId);
 
 	}
@@ -145,6 +148,7 @@ class Mts extends MY_Controller{
 	}
 
 	public function ajx_add_save(){
+		parent::ajx_add_save();
 		try{			
 			$dataPrepared = $this->prepareData();
 			$dataH = $dataPrepared["dataH"];
@@ -190,7 +194,8 @@ class Mts extends MY_Controller{
 
 	}
 
-	public function ajx_edit_save(){		
+	public function ajx_edit_save(){
+		parent::ajx_edit_save();
 		$finMTSId = $this->input->post("fin_mts_id");
 		
 		try{
@@ -341,7 +346,7 @@ class Mts extends MY_Controller{
 
 
 	public function delete($finId){
-
+		parent::delete($finId);
 		try{
             $dataHOld = $this->trmts_model->getDataHeader($finId);
             if ($dataHOld == null){

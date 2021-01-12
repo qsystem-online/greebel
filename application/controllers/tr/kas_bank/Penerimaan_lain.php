@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Penerimaan_lain extends MY_Controller{
+	public $menuName="penerimaan_kas_lain";
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');		
@@ -19,7 +20,7 @@ class Penerimaan_lain extends MY_Controller{
 	}
 	
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
         $this->list['page_name'] = "Cash Bank - Receive Other";
         $this->list['list_name'] = "Cash & Bank Receive Other List";
@@ -107,11 +108,13 @@ class Penerimaan_lain extends MY_Controller{
 
 
     public function add(){
+		parent::add();
         $this->openForm("ADD", 0);
 
 	}
 	
 	public function edit($finCBReceiveId){
+		parent::edit($finCBReceiveId);
         $this->openForm("EDIT", $finCBReceiveId);
 
     }
@@ -156,7 +159,7 @@ class Penerimaan_lain extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
-		
+		parent::ajx_add_save();
 		try{
 			$fdt_cbreceiveoth_datetime = dBDateTimeFormat($this->input->post("fdt_cbreceiveoth_datetime"));
 			$resp = dateIsLock($fdt_cbreceiveoth_datetime);
@@ -215,6 +218,7 @@ class Penerimaan_lain extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
 		$this->load->model('trcbreceiveitems_model');
 		$this->load->model('trcbreceiveitemstype_model');
 		$this->load->model('kasbank_model');
@@ -458,6 +462,7 @@ class Penerimaan_lain extends MY_Controller{
 	}
 
 	public function delete($finCBReceiveOthId){
+		parent::delete($finCBReceiveOthId);
 		//$this->load->model("trcbreceiveitems_model");		
 	
 		//IS EDITABLE

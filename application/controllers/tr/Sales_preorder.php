@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Sales_preorder extends MY_Controller
 {
+    public $menuName="sales_preorder"; 
 
     public function __construct()
     {
@@ -13,12 +14,14 @@ class Sales_preorder extends MY_Controller
 
     public function index()
     {
+        parent::index();
         $this->lizt();
     }
 
     public function lizt()
     {
         $this->load->library('menus');
+        parent::index();
         $this->list['page_name'] = "Sales Pre-order";
         $this->list['list_name'] = "Sales Pre-order List";
         $this->list['addnew_ajax_url'] = site_url() . 'tr/sales_preorder/add';
@@ -86,16 +89,19 @@ class Sales_preorder extends MY_Controller
 
     public function add()
     {
+        parent::add();
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($fin_preorder_id)
+    public function edit($fin_preorder_id)
     {
+        parent::edit($fin_preorder_id);
         $this->openForm("EDIT", $fin_preorder_id);
     }
 
     public function ajx_add_save()
     {
+        parent::ajx_add_save();
         $this->load->model('Trsalespreorder_model');
         $this->form_validation->set_rules($this->Trsalespreorder_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -170,6 +176,7 @@ class Sales_preorder extends MY_Controller
 
     public function ajx_edit_save()
     {
+        parent::ajx_edit_save();
         $this->load->model('Trsalespreorder_model');
         $fin_preorder_id = $this->input->post("fin_preorder_id");
         $data = $this->Trsalespreorder_model->getDataById($fin_preorder_id);
@@ -293,6 +300,7 @@ class Sales_preorder extends MY_Controller
     }
 
     public function delete($id){
+        parent::delete($id);
         $this->load->model("Trsalespreorder_model");
         $this->db->trans_start();
         $this->Trsalespreorder_model->delete($id);

@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Mutasi extends MY_Controller{
+	public $menuName="mag_umum"; 
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');		
@@ -11,7 +12,7 @@ class Mutasi extends MY_Controller{
 	}
 
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Mutasi Antar Gudang";
 		$this->list['list_name'] = "MAG List";
@@ -103,10 +104,12 @@ class Mutasi extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 	
 	public function edit($finMagId){
+		parent::edit($finMagId);
 		$this->openForm("EDIT", $finMagId);
 
 	}
@@ -149,6 +152,7 @@ class Mutasi extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
+		parent::ajx_add_save();
 		//$this->load->model("msitems_model");		
 		try{
 			$fdt_mag_datetime = dBDateTimeFormat($this->input->post("fdt_mag_datetime"));
@@ -203,7 +207,8 @@ class Mutasi extends MY_Controller{
 
 	}
 
-	public function ajx_edit_save(){					
+	public function ajx_edit_save(){		
+		parent::ajx_edit_save();			
 		try{
 			$finMagId = $this->input->post("fin_mag_id");
 
@@ -384,7 +389,7 @@ class Mutasi extends MY_Controller{
 	}
 
 	public function delete($finMagId){
-
+		parent::delete($finMagId);
 		try{
 			
 			$dataHOld = $this->trmag_model->getDataHeaderById($finMagId);

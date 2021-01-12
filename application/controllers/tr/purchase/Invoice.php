@@ -2,6 +2,8 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Invoice extends MY_Controller{
+	public $menuName="purchase_invoice";
+
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');		
@@ -16,8 +18,8 @@ class Invoice extends MY_Controller{
     }
 
 	public function index(){
-
 		$this->load->library('menus');
+		parent::index();
         $this->list['page_name'] = "Purchase - Invoice";
         $this->list['list_name'] = "Invoice Pembelian List";
         $this->list['boxTools'] = [
@@ -104,10 +106,12 @@ class Invoice extends MY_Controller{
 	}
 
     public function add(){
+		parent::add();
         $this->openForm("ADD", 0);
 	}
 	
 	public function edit($finLPBPurchaseId){
+		parent::edit($finLPBPurchaseId);
         $this->openForm("EDIT", $finLPBPurchaseId);
 
     }
@@ -161,6 +165,8 @@ class Invoice extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
+
+		parent::ajx_add_save();
 		$this->load->model("trlpbpurchaseitems_model");
 		/*
 		__c9da2c3066cf64f25a59677d1666d7ac: 6def1b1f8e380109d34d980906d3fe73
@@ -240,6 +246,8 @@ class Invoice extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
+
 		$this->load->model("trlpbpurchaseitems_model");	
 
 
@@ -426,7 +434,7 @@ class Invoice extends MY_Controller{
 	}
 
 	public function delete($finLPBPurchaseId){
-
+		parent::delete($finLPBPurchaseId);
 		try{
 			
 			$dataHOld = $this->db->get_where("trlpbpurchase",["fin_lpbpurchase_id"=>$finLPBPurchaseId])->row();

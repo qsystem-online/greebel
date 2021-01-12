@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Sales_return extends MY_Controller{
+	public $menuName="sales_return"; 
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -16,7 +17,7 @@ class Sales_return extends MY_Controller{
     }
 	
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
         $this->list['page_name'] = "Sales - Return";
         $this->list['list_name'] = "Invoice Retur Pembelian List";
@@ -85,10 +86,12 @@ class Sales_return extends MY_Controller{
 
 
 	public function add(){
+		parent::add();
         $this->openForm("ADD", 0);
 	}
 
 	public function edit($finSalesReturnId){
+		parent::edit($finSalesReturnId);
         $this->openForm("EDIT", $finSalesReturnId);
     }
 
@@ -133,6 +136,7 @@ class Sales_return extends MY_Controller{
 	}
 
 	public function ajx_add_save(){
+		parent::ajx_add_save();
 	
 		try{
 			//CEK tgl lock dari transaksi yg di kirim
@@ -186,6 +190,7 @@ class Sales_return extends MY_Controller{
 	}
 	
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
 		$finSalesReturnId = $this->input->post("fin_salesreturn_id");		
 		try{
 			//CEK if editable
@@ -397,6 +402,7 @@ class Sales_return extends MY_Controller{
 	}
 
 	public function delete($finSalesReturnId){
+		parent::delete($finSalesReturnId);
 		
 		try{
 			$dataHOld = $this->trsalesreturn_model->getDataHeaderById($finSalesReturnId);

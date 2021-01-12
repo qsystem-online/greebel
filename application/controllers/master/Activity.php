@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Activity extends MY_Controller
 {
-
+    public $menuName="production_activity";
     public function __construct()
     {
         parent::__construct();
@@ -13,11 +13,13 @@ class Activity extends MY_Controller
 
     public function index()
     {
+        parent::index();
         $this->lizt();
     }
 
     public function lizt()
     {
+        parent::index();
         $this->load->library('menus');
         $this->list['page_name'] = "Activity";
         $this->list['list_name'] = "Activity List";
@@ -86,16 +88,19 @@ class Activity extends MY_Controller
 
     public function add()
     {
+        parent::add();
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($fin_activity_id)
+    public function edit($fin_activity_id)
     {
+        parent::edit($fin_activity_id);
         $this->openForm("EDIT", $fin_activity_id);
     }
 
     public function ajx_add_save()
     {
+        parent::ajx_add_save();
         $data = [
             "fst_name" => $this->input->post("fst_name"),
             "fst_team" => $this->input->post("fst_team"),
@@ -170,6 +175,7 @@ class Activity extends MY_Controller
 
     public function ajx_edit_save()
     {
+        parent::ajx_edit_save();
         $this->load->model('msactivity_model');
         $fin_activity_id = $this->input->post("fin_activity_id");
         $data = $this->msactivity_model->getDataById($fin_activity_id);
@@ -294,6 +300,7 @@ class Activity extends MY_Controller
     }
 
     public function delete($id){
+        parent::delete($id);
         $this->load->model("msactivity_model");
         $this->db->trans_start();
         $this->msactivity_model->delete($id);

@@ -17,20 +17,53 @@ class Process extends MY_Controller {
 		$lastDate = getPeriodDate($period);
 
 
-		//bahan baku fin_item_type_id 1,2,3
-		
-		
+		//bahan baku fin_item_type_id 1,2,3				
 		try{		
 			$ssql = "SELECT * FROM msprofitcostcenter where fst_active= 'A'";
 			$qr = $this->db_>query($ssql,[]);
 			$rsPCC =$qr->result();
 
 			$this->db->trans_start();
+
 			//PROCESS COGM = Persedian awal + Pembelian + biaya pembelian + biaya produksi - Persediaan akhir
-			//COGM Di hitung dari item bahan baku
-			
+			//COGM Di hitung dari item bahan baku			
 			foreach($rsPCC as $pcc){
-				//Persediaan awal
+				//COGM Persediaan awal
+				$ssql = "SELECT c.fin_pcc_id,
+					SUM(fdb_qty_balance_after) as fdb_qty,
+					SUM((fdb_qty_balance_after* fdc_avg_cost))/SUM(fdb_qty_balance_after) AS hpp
+					FROM trinventory a
+					INNER JOIN msitems b ON a.fin_item_id = b.fin_item_id
+					INNER JOIN msgroupitems c ON b.fin_item_group_id = c.fin_item_group_id 
+					WHERE fin_rec_id IN (
+						SELECT MAX(fin_rec_id) FROM trinventory WHERE fdt_trx_datetime < ? GROUP BY fin_item_id,fin_warehouse_id
+					)
+					AND c.fin_pcc_id = ? and b.fin_item_type_id in (1,2,3)
+				GROUP BY c.fin_pcc_id";
+				$qr = $this->db->query($ssql,[$firstDate,$pcc->fin_pcc_id]);
+				$rw = $qr->row();
+				$cogmPersediaanAwal = $rw->fdb_qty * $rw->hpp;								
+				
+				//COGM PEMBELIAN LPB & Biaya
+				$ssql = "SELECT sum(fdb_qty_in * fdc_price_in) as ttl_pembelian,sum(fdc_add_cost) as ttl_biaya FROM trinventory a 
+					INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
+					INNER JOIN msgroupitems c on b.fin_item_group_id = c.fin_item_group_id 
+					where c.fin_pcc_id = ? and a.fdt_trx_datetime >= ? and a.fdt_trx_datetime < ? and b.fin_item_type_id in (1,2,3)
+					and a.fst_active ='A' ";
+				$qr = $this->db->query($ssql,[$pcc->fin_pcc_id,$firstDate,$lastDate]);
+				$rw = $qr->row();
+				$cogmTotalPembelian = 0;
+				$cogmTotalBiayaPembelian = 0;
+				if ($rw != null){
+					$cogmTotalPembelian = $rw->ttl_pembelian;
+					$cogmTotalBiayaPembelian = $rw->ttl_biaya;
+				}
+
+				//COGM Biaya Produksi
+				$cogmTotalBiayaProduksi =0;
+				//trlhpactivities
+
+				//COGM Persediaan akhir
 				$ssql = "SELECT c.fin_pcc_id,
 					SUM(fdb_qty_balance_after) as fdb_qty,
 					SUM((fdb_qty_balance_after* fdc_avg_cost))/SUM(fdb_qty_balance_after) AS hpp
@@ -44,34 +77,78 @@ class Process extends MY_Controller {
 				GROUP BY c.fin_pcc_id";
 				$qr = $this->db->query($ssql,[$lastDate,$pcc->fin_pcc_id]);
 				$rw = $qr->row();
-				$persediaanAwal = $rw->fdb_qty * $rw->hpp;
-				
-				
-				
-				//PEMBELIAN LPB & Biaya
+				$cogmPersediaanAkhir = $rw->fdb_qty * $rw->hpp;		
+
+				$cogmTotal = $cogmPersediaanAwal + $cogmTotalPembelian + $cogmTotalBiayaPembelian +$cogmtotalBiayaProduksi - $cogmPersediaanAkhir;
+
+
+
+				//cogs = Persedian awal + Pembelian + biaya pembelian + hpp produksi(cogm) - Persediaan akhir
+				//COGS Persediaan awal
+				$ssql = "SELECT c.fin_pcc_id,
+					SUM(fdb_qty_balance_after) as fdb_qty,
+					SUM((fdb_qty_balance_after* fdc_avg_cost))/SUM(fdb_qty_balance_after) AS hpp
+					FROM trinventory a
+					INNER JOIN msitems b ON a.fin_item_id = b.fin_item_id
+					INNER JOIN msgroupitems c ON b.fin_item_group_id = c.fin_item_group_id 
+					WHERE fin_rec_id IN (
+						SELECT MAX(fin_rec_id) FROM trinventory WHERE fdt_trx_datetime < ? GROUP BY fin_item_id,fin_warehouse_id
+					)
+					AND c.fin_pcc_id = ? and b.fin_item_type_id in (4)
+				GROUP BY c.fin_pcc_id";
+				$qr = $this->db->query($ssql,[$firstDate,$pcc->fin_pcc_id]);
+				$rw = $qr->row();
+				$cogsPersediaanAwal = $rw->fdb_qty * $rw->hpp;	
+
+
+				//COGS PEMBELIAN  & Biaya
 				$ssql = "SELECT sum(fdb_qty_in * fdc_price_in) as ttl_pembelian,sum(fdc_add_cost) as ttl_biaya FROM trinventory a 
 					INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
 					INNER JOIN msgroupitems c on b.fin_item_group_id = c.fin_item_group_id 
-					where c.fin_pcc_id = ? and a.fdt_trx_datetime >= ? and a.fdt_trx_datetime < ? 
+					where c.fin_pcc_id = ? and a.fdt_trx_datetime >= ? and a.fdt_trx_datetime < ? and b.fin_item_type_id in (4)
 					and a.fst_active ='A' ";
 				$qr = $this->db->query($ssql,[$pcc->fin_pcc_id,$firstDate,$lastDate]);
 				$rw = $qr->row();
-				$totalPembelian = 0;
-				$totalBiaya = 0;
+				$cogmTotalPembelian = 0;
+				$cogmTotalBiayaPembelian = 0;
 				if ($rw != null){
-					$totalPembelian = $rw->ttl_pembelian;
-					$totalBiaya = $rw->ttl_biaya;
+					$cogmTotalPembelian = $rw->ttl_pembelian;
+					$cogmTotalBiayaPembelian = $rw->ttl_biaya;
 				}
 
-				//Biaya Produksi
-				//trlhpactivities
-
-				$ssql = "INSERT INTO trmonthlyclosing(fst_periode,fst_type,fin_pcc_id,fdc_persediaan_awal,fdc_pembelian,fdc_biaya_pembelian) values(?,'COGM',?,?,?,?)";
-				$this->db->query($ssql,[$period,$pcc->fin_pcc_id,$persediaanAwal,$totalPembelian,$totalBiaya]);
-
 				
-
+				$ssql = "INSERT INTO trmonthlyclosing(
+					fst_periode,
+					fin_pcc_id,
+					fdc_cogm_persediaan_awal,
+					fdc_cogm_pembelian,
+					fdc_cogm_biaya_pembelian,
+					fdc_cogm_biaya_produksi,
+					fdc_cogm_persediaan_akhir,
+					fdc_cogm,
+					fdc_cogs_persediaan_awal,
+					
+				) values(
+					?,?,?,?,?,?,?,?,?
+				)";
+				
+				$this->db->query($ssql,[
+					$period,
+					$pcc->fin_pcc_id,
+					$cogmPersediaanAwal,
+					$cogmTotalPembelian,
+					$cogmTotalBiayaPembelian,
+					$cogmTotalBiayaProduksi,
+					$cogmPersediaanAkhir,
+					$cogmTotal,
+					$cogsPersediaanAwal					
+				]);				
+			
+			
+				
 			}
+					
+
 			
 
 
@@ -80,9 +157,6 @@ class Process extends MY_Controller {
 			$this->db->trans_rollback();
 		}
 
-
-		
-		
 		for($i=0 ;$i < 15;$i++){
 			sleep(1);
 		}

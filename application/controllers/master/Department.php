@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Department extends MY_Controller
 {
-
+	public $menuName="department"; 
 	public function __construct()
 	{
 		parent::__construct();
@@ -11,13 +11,15 @@ class Department extends MY_Controller
 		$this->load->model('Msdepartments_model');
 	}
 
-	public function index()
+	public function index()	
 	{
+		parent::index();
 		$this->lizt();
 	}
 
 	public function lizt()
 	{
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Department";
 		$this->list['list_name'] = "Department List";
@@ -83,16 +85,19 @@ class Department extends MY_Controller
 
 	public function add()
 	{
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_department_id)
+	public function edit($fin_department_id)
 	{
+		parent::edit($fin_department_id);
 		$this->openForm("EDIT", $fin_department_id);
 	}
 
 	public function ajx_add_save()
 	{
+		parent::ajx_add_save();
 		$this->load->model('Msdepartments_model');
 		$this->form_validation->set_rules($this->Msdepartments_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -134,6 +139,7 @@ class Department extends MY_Controller
 
 	public function ajx_edit_save()
 	{
+		parent::ajx_edit_save();
 		$this->load->model('Msdepartments_model');
 		$fin_department_id = $this->input->post("fin_department_id");
 		$data = $this->Msdepartments_model->getDataById($fin_department_id);
@@ -255,6 +261,7 @@ class Department extends MY_Controller
 	}
 
 	public function delete($id){
+		parent::delete($id);
 		$this->db->trans_start();
         $this->Msdepartments_model->delete($id);
         $this->db->trans_complete();

@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Warehouse extends MY_Controller
 {
 
+    public $menuName="warehouse"; 
     public function __construct()
     {
         parent::__construct();
@@ -13,6 +14,7 @@ class Warehouse extends MY_Controller
 
     public function index()
     {
+        parent::index();
         $this->lizt();
     }
 
@@ -84,16 +86,19 @@ class Warehouse extends MY_Controller
 
     public function add()
     {
+        parent::add();
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($fin_warehouse_id)
+    public function edit($fin_warehouse_id)
     {
+        parent::edit($fin_warehouse_id);
         $this->openForm("EDIT", $fin_warehouse_id);
     }
 
     public function ajx_add_save()
     {
+        parent::ajx_add_save();
         $this->load->model('mswarehouse_model');
         $this->form_validation->set_rules($this->mswarehouse_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -139,6 +144,7 @@ class Warehouse extends MY_Controller
 
     public function ajx_edit_save()
     {
+        parent::ajx_edit_save();
         $this->load->model('mswarehouse_model');
         $fin_warehouse_id = $this->input->post("fin_warehouse_id");
         $data = $this->mswarehouse_model->getDataById($fin_warehouse_id);
@@ -231,6 +237,7 @@ class Warehouse extends MY_Controller
     }
 
 	public function delete($id){
+        parent::delete($id);
 		$this->db->trans_start();
         $this->mswarehouse_model->delete($id);
         $this->db->trans_complete();

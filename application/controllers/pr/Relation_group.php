@@ -2,7 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Relation_group extends MY_Controller{
-
+	public $menuName="relation_group"; 
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -10,6 +10,7 @@ class Relation_group extends MY_Controller{
 	}
 
 	public function index(){
+		parent::index();
 		$this->lizt();
 	}
 
@@ -77,14 +78,17 @@ class Relation_group extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_relation_group_id){
+	public function edit($fin_relation_group_id){
+		parent::edit($fin_relation_group_id);
 		$this->openForm("EDIT", $fin_relation_group_id);
 	}
 
 	public function ajx_add_save(){
+		parent::ajx_add_save();
 		$this->load->model('msrelationgroups_model');
 		$this->form_validation->set_rules($this->msrelationgroups_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -123,6 +127,7 @@ class Relation_group extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
 		$this->load->model('msrelationgroups_model');
 		$fin_relation_group_id = $this->input->post("fin_relation_group_id");
 		$data = $this->msrelationgroups_model->getDataById($fin_relation_group_id);
@@ -208,6 +213,7 @@ class Relation_group extends MY_Controller{
 	}
 
 	public function delete($id){
+		parent::delete($id);
 		$this->load->model("msrelationgroups_model");
 		$this->db->trans_start();
         $this->msrelationgroups_model->delete($id);

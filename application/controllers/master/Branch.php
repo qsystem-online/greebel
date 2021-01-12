@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Branch extends MY_Controller
 {
 
+	public $menuName="branch"; 
 	public function __construct()
 	{
 		parent::__construct();
@@ -13,11 +14,13 @@ class Branch extends MY_Controller
 
 	public function index()
 	{
+		parent::index();
 		$this->lizt();
 	}
 
 	public function lizt()
 	{
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Branch";
 		$this->list['list_name'] = "Branch List";
@@ -86,16 +89,19 @@ class Branch extends MY_Controller
 
 	public function add()
 	{
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_branch_id)
+	public function edit($fin_branch_id)
 	{
+		parent::edit($fin_branch_id);
 		$this->openForm("EDIT", $fin_branch_id);
 	}
 
 	public function ajx_add_save()
 	{
+		parent::ajx_add_save();
 		$this->load->model('msbranches_model');
 		$this->load->model('mswarehouse_model');
 		
@@ -159,6 +165,7 @@ class Branch extends MY_Controller
 
 	public function ajx_edit_save()
 	{
+		parent::ajx_edit_save();
 		$this->load->model('msbranches_model');
 		$fin_branch_id = $this->input->post("fin_branch_id");
 		$data = $this->msbranches_model->getDataById($fin_branch_id);
@@ -254,6 +261,7 @@ class Branch extends MY_Controller
 	}
 
 	public function delete($id){
+		parent::delete($id);
 		$this->db->trans_start();
 		$this->msbranches_model->delete($id);
 		$this->db->trans_complete();

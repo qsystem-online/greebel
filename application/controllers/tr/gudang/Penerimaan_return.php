@@ -2,6 +2,8 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Penerimaan_return extends MY_Controller{
+	public $menuName="penerimaan_return"; 
+	
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');		
@@ -16,7 +18,7 @@ class Penerimaan_return extends MY_Controller{
 	}
 
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Gudang - Penerimaan Retur";
 		$this->list['list_name'] = "Penerimaan Retur List";
@@ -101,10 +103,12 @@ class Penerimaan_return extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 	
 	public function edit($finLPBGudangId){
+		parent::edit($finLPBGudangId);
 		$this->openForm("EDIT", $finLPBGudangId);
 
 	}
@@ -147,7 +151,7 @@ class Penerimaan_return extends MY_Controller{
 
 	public function ajx_add_save(){	
 		
-		
+		parent::ajx_add_save();
 		try{
 			$fdt_lpbsalesreturn_datetime = dBDateTimeFormat($this->input->post("fdt_lpbsalesreturn_datetime"));
 			$resp = dateIsLock($fdt_lpbsalesreturn_datetime);
@@ -203,7 +207,7 @@ class Penerimaan_return extends MY_Controller{
 
 	public function ajx_edit_save(){			
 
-		
+		parent::ajx_edit_save();
 		try{
 			$finLPBSalesReturnId = $this->input->post("fin_lpbsalesreturn_id");
 
@@ -376,7 +380,7 @@ class Penerimaan_return extends MY_Controller{
 	}
 
 	public function delete($id){
-
+		parent::delete($id);
 		try{
 			$finLPBSalesReturnId = $id;
 			$dataHOld = $this->trlpbsalesreturn_model->getSimpleDataById($finLPBSalesReturnId);
