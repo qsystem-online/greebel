@@ -66,27 +66,36 @@
 		$sidebarCollapse = ($this->session->userdata('sidebar_collapse') == 1) ? "sidebar-collapse" : "";
 	?>
 	<style>
-	.dataTable{
-		border:1px solid #1aa3ff;
-	}
-    .dataTable thead tr th{
-        /*background-color:#80ccff;height:25px;padding:5px;border:1px solid #1aa3ff;*/
-		background-color:#3c8dbc;
-		/*height:25px;*/
-		padding:5px;
-		border:1px solid #000;
-		color:#fff;
-		font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
-		font-weight: 400;
-		
-    }
-    .dataTable tbody tr td{
-        padding:5px;
-		/*border:1px solid #1aa3ff;*/
-    }
-	textarea {
-		resize: none;
-	}
+		.dataTable{
+			border:1px solid #1aa3ff;
+		}
+		.dataTable thead tr th{
+			/*background-color:#80ccff;height:25px;padding:5px;border:1px solid #1aa3ff;*/
+			background-color:#3c8dbc;
+			/*height:25px;*/
+			padding:5px;
+			border:1px solid #000;
+			color:#fff;
+			font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+			font-weight: 400;
+			
+		}
+		.dataTable tbody tr td{
+			padding:5px;
+			/*border:1px solid #1aa3ff;*/
+		}
+		textarea {
+			resize: none;
+		}
+
+		td.details-control {
+			background: url('<?=site_url()?>/assets/system/icons/details_open.png') no-repeat center center;
+			cursor: pointer;
+		}
+		tr.shown td.details-control {
+			background: url('<?=site_url()?>/assets/system/icons/details_close.png') no-repeat center center;
+		}
+
 	</style>
 
 	<body class="hold-transition skin-blue sidebar-mini <?= $sidebarCollapse?>" style="overflow-x:auto">

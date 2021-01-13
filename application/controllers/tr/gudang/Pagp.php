@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Pagp extends MY_Controller{
+	public $menuName="pag_produksi"; 
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -12,7 +13,7 @@ class Pagp extends MY_Controller{
 	}
 
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Penerimaan Mutasi Antar Gudang";
 		$this->list['list_name'] = "PAG List";
@@ -108,10 +109,12 @@ class Pagp extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 	
 	public function edit($finMagConfirmId){
+		parent::edit($finMagConfirmId);
 		$this->openForm("EDIT", $finMagConfirmId);
 	}
 
@@ -151,7 +154,7 @@ class Pagp extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
-
+		parent::ajx_add_save();
 		try{
 			$fdt_mag_confirm_datetime = dBDateTimeFormat($this->input->post("fdt_mag_confirm_datetime"));
 			$resp = dateIsLock($fdt_mag_confirm_datetime);
@@ -201,7 +204,8 @@ class Pagp extends MY_Controller{
 
 	}
 
-	public function ajx_edit_save(){			
+	public function ajx_edit_save(){	
+		parent::ajx_edit_save();		
 		$finMagConfirmId = $this->input->post("fin_mag_confirm_id");		
 		try{			
 			$dataHOld = $this->trmagconfirm_model->getDataHeaderById($finMagConfirmId);
@@ -392,7 +396,7 @@ class Pagp extends MY_Controller{
 	}
 
 	public function delete($finPagId){
-
+		parent::delete($finPagId);
 		try{
 			
 			$dataHOld = $this->trmagconfirm_model->getDataHeaderById($finPagId);

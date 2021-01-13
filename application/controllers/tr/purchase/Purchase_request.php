@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Purchase_request extends MY_Controller{
+	public $menuName="purchase_request"; 
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -20,7 +21,7 @@ class Purchase_request extends MY_Controller{
     }
 	
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
         $this->list['page_name'] = "Purchase - Request";
         $this->list['list_name'] = "Purchase Request List";
@@ -82,14 +83,18 @@ class Purchase_request extends MY_Controller{
 
 
 	public function add(){
+		parent::add();
         $this->openForm("ADD", 0);
 	}
 
 	public function edit($finPRId){
+		parent::edit($finPRId);
         $this->openForm("EDIT", $finPRId);
 	}
 	
 	public function process(){
+		$this->menuName = "process_pr";
+		parent::index();
         $this->openForm("PROCESS", 0);
 	}
 
@@ -142,7 +147,7 @@ class Purchase_request extends MY_Controller{
 	}
 
 	public function ajx_add_save(){
-		
+		parent::ajx_add_save();
 		$this->load->model("trpurchaserequestitems_model");		
 		//CEK tgl lock dari transaksi yg di kirim
 		try{
@@ -202,6 +207,7 @@ class Purchase_request extends MY_Controller{
 	}
 	
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
 		$finPRId = $this->input->post("fin_pr_id");
 		try{
 			
@@ -370,7 +376,7 @@ class Purchase_request extends MY_Controller{
 	}
 
 	public function delete($finPRId){
-		
+		parent::delete($finPRId);
 		$dataHOld = $this->trpurchaserequest_model->getDataHeaderById($finPRId);
 		//CEK tgl lock dari transaksi tersimpan
 		$resp = dateIsLock($dataHOld->fdt_pr_datetime);
@@ -565,6 +571,9 @@ class Purchase_request extends MY_Controller{
 	}
 	
 	public function ajx_process_pr(){
+		$this->menuName = "process_pr";
+		parent::ajx_add_save();
+
 		$this->load->model("trpurchaserequestprocess_model");
 
 		$fstItemType = $this->input->post("fst_item_type");
@@ -632,6 +641,8 @@ class Purchase_request extends MY_Controller{
 	}
 
 	public function ajx_cancel_process($finProcessId){
+		$this->menuName = "process_pr";
+		parent::delete($finProcessId);
 		$this->load->model("trpurchaserequestprocess_model");
 		
 		$result=[
@@ -698,6 +709,9 @@ class Purchase_request extends MY_Controller{
 
 	public function distribute(){
 		$this->load->library('menus');
+		$this->menuName = "pr_distibute";
+		parent::index();
+
         $this->list['page_name'] = "Purchase Request Distribution";
         $this->list['list_name'] = "Distribution List";
         $this->list['boxTools'] = [
@@ -776,10 +790,16 @@ class Purchase_request extends MY_Controller{
 
 
 	public function distribute_add(){
+		$this->menuName = "pr_distibute";
+		parent::add();
+		
 		$this->openDistributeForm("ADD");
 	}
 
 	public function distribute_edit($finDistributePRId){
+		$this->menuName = "pr_distibute";
+		parent::edit($finDistributePRId);
+		
 		$this->openDistributeForm("EDIT",$finDistributePRId);
 	}
 
@@ -842,6 +862,9 @@ class Purchase_request extends MY_Controller{
 	}
 
 	public function ajx_distribute_add_save(){		
+		$this->menuName = "pr_distibute";
+		parent::ajx_add_save();
+
 		$this->load->model("trdistributepr_model");
 		$this->load->model("trdistributepritems_model");			
 		try{
@@ -891,6 +914,9 @@ class Purchase_request extends MY_Controller{
 	}
 
 	public function ajx_distribute_edit_save(){
+		$this->menuName = "pr_distibute";
+		parent::ajx_edit_save();
+
 		$this->load->model('trdistributepr_model');
 		$this->load->model('trdistributepritems_model');
 
@@ -987,6 +1013,10 @@ class Purchase_request extends MY_Controller{
 	}
 
 	public function ajx_delete_distribute($finDistributePRId){
+		$this->menuName = "pr_distibute";
+		parent::delete($finDistributePRId);
+
+
 		$this->load->model('trdistributepr_model');
 		$this->load->model('trdistributepritems_model');
 

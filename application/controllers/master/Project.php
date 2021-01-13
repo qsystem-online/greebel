@@ -2,6 +2,8 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Project extends MY_Controller {
+    public $menuName="master_project"; 
+
     public function __construct(){
         parent:: __construct();
         $this->load->library('form_validation');
@@ -9,10 +11,12 @@ class Project extends MY_Controller {
     }
 
     public function index(){
+        parent::index();
         $this->lizt();
     }
 
     public function lizt(){
+        parent::index();
         $this->load->library('menus');
 		$this->list['page_name'] = "Master Project";
 		$this->list['list_name'] = "Project List";
@@ -78,14 +82,17 @@ class Project extends MY_Controller {
     }
 
     public function add(){
+        parent::add();
         $this->openForm("ADD",0);
     }
 
-    public function Edit($fin_project_id){
+    public function edit($fin_project_id){
+        parent::edit($fin_project_id);
         $this->openForm("EDIT", $fin_project_id);
     }
 
     public function ajx_add_save(){
+        parent::ajx_add_save();
         $this->load->model('msprojects_model');
         $this->form_validation->set_rules($this->msprojects_model->getRules("ADD",0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -128,6 +135,7 @@ class Project extends MY_Controller {
     }
 
     public function ajx_edit_save(){
+        parent::ajx_edit_save();
         $this->load->model('msprojects_model');
         $fin_project_id = $this->input->post("fin_project_id");
         $data = $this->msprojects_model->getDataById($fin_project_id);
@@ -216,6 +224,7 @@ class Project extends MY_Controller {
     }
 
     public function delete($id){
+        parent::delete($id);
         $this->load->model("msprojects_model");
         $this->db->trans_start();
         $this->msprojects_model->delete($id);

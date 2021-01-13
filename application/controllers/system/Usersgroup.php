@@ -2,17 +2,19 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Usersgroup extends MY_Controller {
-
+	public $menuName="user_group"; 
     public function __construct(){
         parent:: __construct();
         $this->load->library('form_validation');
     }
 
     public function index(){
+		parent::index();
         $this->lizt();
     }
 
     public function lizt(){
+		parent::index();
         $this->load->library('menus');
         $this->list['page_name']="Master Groups";
         $this->list['list_name']="Users Group List";
@@ -77,14 +79,17 @@ class Usersgroup extends MY_Controller {
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD",0);
 	}
 
-	public function Edit($fin_group_id){
+	public function edit($fin_group_id){
+		parent::edit($fin_group_id);
 		$this->openForm("EDIT",$fin_group_id);
 	}
 
 	public function ajx_add_save(){
+		parent::ajx_add_save();
 		$this->load->model('Usersgroup_model');
 		$this->form_validation->set_rules($this->Usersgroup_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -125,6 +130,7 @@ class Usersgroup extends MY_Controller {
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
 		$this->load->model('Usersgroup_model');		
 		$fin_group_id = $this->input->post("fin_group_id");
 		$data = $this->Usersgroup_model->getDataById($fin_group_id);
@@ -235,6 +241,7 @@ class Usersgroup extends MY_Controller {
 	}
 
 	public function delete($id){
+		parent::delete($id);
 		$this->load->model("usersgroup_model");
 		$this->db->trans_start();
         $this->usersgroup_model->delete($id);

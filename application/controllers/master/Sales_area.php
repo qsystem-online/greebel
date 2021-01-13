@@ -3,6 +3,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Sales_area extends MY_Controller{
 
+    public $menuName="";
+
     public function __construct() {
         parent::__construct();
         $this->load->library('form_validation');
@@ -15,10 +17,14 @@ class Sales_area extends MY_Controller{
     }
 
     public function area() {
+        $this->menuName="sales_area_area";
+        parent::index();
         $this->area_lizt();
     }
 
     public function area_lizt() {
+        $this->menuName="sales_area_area";
+        parent::index();
         $this->load->library('menus');
         $this->list['page_name'] = "Master Sales Area";
         $this->list['list_name'] = "Sales Area List";
@@ -86,14 +92,20 @@ class Sales_area extends MY_Controller{
     }
 
     public function add_area() {
+        $this->menuName="sales_area_area";
+        parent::add();
         $this->areaForm("ADD", 0);
     }
 
-    public function Edit_area($fin_sales_area_id){
+    public function edit_area($fin_sales_area_id){
+        $this->menuName="sales_area_area";
+        parent::edit($fin_sales_area_id);
         $this->areaForm("EDIT", $fin_sales_area_id);
     }
 
     public function ajx_add_save() {
+        $this->menuName="sales_area_area";
+        parent::ajx_add_save();
         $this->load->model('mssalesarea_model');
         $this->form_validation->set_rules($this->mssalesarea_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -134,6 +146,8 @@ class Sales_area extends MY_Controller{
     }
 
     public function ajx_edit_save() {
+        $this->menuName="sales_area_area";
+        parent::ajx_edit_save();
         $this->load->model('mssalesarea_model');
 		$fin_sales_area_id = $this->input->post("fin_sales_area_id");
 		$data = $this->mssalesarea_model->getDataById($fin_sales_area_id);
@@ -225,6 +239,8 @@ class Sales_area extends MY_Controller{
     //== SALES AREA REGIONAL ================================================================================================================================================
 
     public function regional() {
+        $this->menuName = "sales_area_regional";
+        parent::index();
         $this->regional_lizt();
     }
 
@@ -254,8 +270,11 @@ class Sales_area extends MY_Controller{
         $this->parser->parse('template/main', $this->data);
     }
 
-    public function regional_lizt() {
+    public function regional_lizt() {        
         $this->load->library('menus');
+        $this->menuName = "sales_area_regional";
+        parent::index();
+
         $this->list['page_name'] = "Master Sales Regional";
         $this->list['list_name'] = "Sales Regional List";
         $this->list['addnew_ajax_url'] = site_url() . 'master/sales_area/add_regional';
@@ -295,14 +314,20 @@ class Sales_area extends MY_Controller{
     }
 
     public function add_regional() {
+        $this->menuName = "sales_area_regional";
+        parent::add();
         $this->regionalForm("ADD", 0);
     }
 
-    public function Edit_reg($fin_sales_regional_id){
+    public function edit_reg($fin_sales_regional_id){
+        $this->menuName = "sales_area_regional";
+        parent::edit($fin_sales_regional_id);
         $this->regionalForm("EDIT", $fin_sales_regional_id);
     }
 
     public function reg_add_save() {
+        $this->menuName = "sales_area_regional";
+        parent::ajx_add_save();
         $this->load->model('mssalesregional_model');
         $this->form_validation->set_rules($this->mssalesregional_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -343,6 +368,8 @@ class Sales_area extends MY_Controller{
     }
 
     public function reg_edit_save() {
+        $this->menuName = "sales_area_regional";
+        parent::ajx_edit_save();
         $this->load->model('mssalesregional_model');
 		$fin_sales_regional_id = $this->input->post("fin_sales_regional_id");
 		$data = $this->mssalesregional_model->getDataById($fin_sales_regional_id);
@@ -433,6 +460,8 @@ class Sales_area extends MY_Controller{
     //== SALES AREA NATIONAL ================================================================================================================================================
 
     public function national() {
+        $this->menuName = "sales_area_national";
+        parent::index();
         $this->national_lizt();
     }
 
@@ -463,6 +492,9 @@ class Sales_area extends MY_Controller{
     }
 
     public function national_lizt() {
+        $this->menuName = "sales_area_national";
+        parent::index();
+
         $this->load->library('menus');
         $this->list['page_name'] = "Master Sales National";
         $this->list['list_name'] = "Sales National List";
@@ -502,14 +534,20 @@ class Sales_area extends MY_Controller{
     }
 
     public function add_national() {
+        $this->menuName = "sales_area_national";
+        parent::add();
         $this->nationalForm("ADD", 0);
     }
 
-    public function Edit_nat($fin_sales_national_id){
+    public function edit_nat($fin_sales_national_id){
+        $this->menuName = "sales_area_national";
+        parent::edit($fin_sales_national_id);
         $this->nationalForm("EDIT", $fin_sales_national_id);
     }
 
     public function nat_add_save() {
+        $this->menuName = "sales_area_national";
+        parent::ajx_add_save();
         $this->load->model('mssalesnational_model');
         $this->form_validation->set_rules($this->mssalesnational_model->getRules("ADD", 0));
         $this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -549,6 +587,8 @@ class Sales_area extends MY_Controller{
     }
 
     public function nat_edit_save() {
+        $this->menuName = "sales_area_national";
+        parent::ajx_edit_save();
         $this->load->model('mssalesnational_model');
 		$fin_sales_national_id = $this->input->post("fin_sales_national_id");
 		$data = $this->mssalesnational_model->getDataById($fin_sales_national_id);

@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Linebusiness extends MY_Controller
 {
-
+	public $menuName="line_of_business"; 
 	public function __construct()
 	{
 		parent::__construct();
@@ -13,6 +13,7 @@ class Linebusiness extends MY_Controller
 
 	public function index()
 	{
+		parent::index();
 		$this->lizt();
 	}
 
@@ -83,16 +84,19 @@ class Linebusiness extends MY_Controller
 
 	public function add()
 	{
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_linebusiness_id)
+	public function edit($fin_linebusiness_id)
 	{
+		parent::edit($fin_linebusiness_id);
 		$this->openForm("EDIT", $fin_linebusiness_id);
 	}
 
 	public function ajx_add_save()
 	{
+		parent::ajx_add_save();
 		$this->load->model('mslinebusiness_model');
 		$this->form_validation->set_rules($this->mslinebusiness_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -133,6 +137,7 @@ class Linebusiness extends MY_Controller
 
 	public function ajx_edit_save()
 	{
+		parent::ajx_edit_save();
 		$this->load->model('mslinebusiness_model');
 		$fin_linebusiness_id = $this->input->post("fin_linebusiness_id");
 		$data = $this->mslinebusiness_model->getDataById($fin_linebusiness_id);
@@ -253,6 +258,7 @@ class Linebusiness extends MY_Controller
 	}
 
 	public function delete($id){
+		parent::delete($id);
 		$this->db->trans_start();
         $this->mslinebusiness_model->delete($id);
         $this->db->trans_complete();

@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Cost extends MY_Controller{
+	public $menuName="purchase_cost"; 
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');						
@@ -17,7 +18,7 @@ class Cost extends MY_Controller{
 	}
 
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = lang("Biaya - Pembelian");
 		$this->list['list_name'] = "Daftar Biaya Pembelian";
@@ -104,9 +105,11 @@ class Cost extends MY_Controller{
 	}
 	
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 	public function edit($finPurchaseCostId){
+		parent::edit($finPurchaseCostId);
 		$this->openForm("EDIT", $finPurchaseCostId);
 	}
 	
@@ -148,7 +151,8 @@ class Cost extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 	
-	public function ajx_add_save(){		        
+	public function ajx_add_save(){		
+		parent::ajx_add_save();
 		/*
 			array (size=9)
 			'fin_purchasecost_id' => string '0' (length=1)
@@ -350,7 +354,8 @@ class Cost extends MY_Controller{
 		$this->json_output();
 	}
 
-	public function ajx_edit_save(){		                
+	public function ajx_edit_save(){	
+		parent::ajx_edit_save();	                
 		/*
 		'fin_purchasecost_id' => string '23' (length=2)
 		'fbl_is_import' => string '0' (length=1)
@@ -602,7 +607,7 @@ class Cost extends MY_Controller{
 		$this->json_output($resp);
 	}
 	public function delete($finPurchaseCostId){
-		
+		parent::delete($finPurchaseCostId);
 		$dataHOld = $this->trpurchasecost_model->getDataHeaderById($finPurchaseCostId);
 		//CEK tgl lock dari transaksi tersimpan
 		$resp = dateIsLock($dataHOld->fdt_purchasecost_datetime);

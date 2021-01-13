@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Activity_groups extends MY_Controller
 {
-
+    public $menuName="production_group_activity";
     public function __construct()
     {
         parent::__construct();
@@ -13,11 +13,13 @@ class Activity_groups extends MY_Controller
 
     public function index()
     {
+        parent::index();
         $this->lizt();
     }
 
     public function lizt()
     {
+        parent::index();
         $this->load->library('menus');
         $this->list['page_name'] = "Master ActivityGroups";
         $this->list['list_name'] = "Master ActivityGroups List";
@@ -84,16 +86,19 @@ class Activity_groups extends MY_Controller
 
     public function add()
     {
+        parent::add();
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($fin_activity_group_id)
+    public function edit($fin_activity_group_id)
     {
+        parent::edit($fin_activity_group_id);
         $this->openForm("EDIT", $fin_activity_group_id);
     }
 
     public function ajx_add_save()
     {
+        parent::ajx_add_save();
         $data = [
             "fst_activity_group_name" => $this->input->post("fst_activity_group_name"),
             "fst_active" => 'A'
@@ -157,6 +162,7 @@ class Activity_groups extends MY_Controller
 
     public function ajx_edit_save()
     {
+        parent::ajx_edit_save();
         $this->load->model('msactivitygroups_model');
         $fin_activity_group_id = $this->input->post("fin_activity_group_id");
         $data = $this->msactivitygroups_model->getDataById($fin_activity_group_id);
@@ -270,6 +276,7 @@ class Activity_groups extends MY_Controller
     }
 
     public function delete($id){
+        parent::delete($id);
         $this->load->model("msactivitygroups_model");
         $this->db->trans_start();
         $this->msactivitygroups_model->delete($id);

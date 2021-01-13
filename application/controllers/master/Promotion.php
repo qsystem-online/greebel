@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Promotion extends MY_Controller
 {
-
+    public $menuName="promo";
     public function __construct()
     {
         parent::__construct();
@@ -13,11 +13,13 @@ class Promotion extends MY_Controller
 
     public function index()
     {
+        parent::index();
         $this->lizt();
     }
 
     public function lizt()
     {
+        parent::index();
         $this->load->library('menus');
         $this->list['page_name'] = "Sales Promotion";
         $this->list['list_name'] = "Sales Promotion List";
@@ -90,16 +92,19 @@ class Promotion extends MY_Controller
 
     public function add()
     {
+        parent::add();
         $this->openForm("ADD", 0);
     }
 
-    public function Edit($fin_promo_id)
+    public function edit($fin_promo_id)
     {
+        parent::edit($fin_promo_id);
         $this->openForm("EDIT", $fin_promo_id);
     }
 
     public function ajx_add_save()
     {
+        parent::ajx_add_save();
         $data = [
             "fst_promo_name" => $this->input->post("fst_promo_name"),
             //"fst_list_branch_id" => implode(",",$this->input->post("fst_list_branch_id")),
@@ -240,6 +245,7 @@ class Promotion extends MY_Controller
 
     public function ajx_edit_save()
     {
+        parent::ajx_edit_save();
         $this->load->model('mspromo_model');
         $fin_promo_id = $this->input->post("fin_promo_id");
         $data = $this->mspromo_model->getDataById($fin_promo_id);
@@ -433,6 +439,7 @@ class Promotion extends MY_Controller
     }
 
     public function delete($id){
+        parent::delete($id);
         $this->load->model("mspromo_model");
         $this->db->trans_start();
         $this->mspromo_model->delete($id);

@@ -1,12 +1,13 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 class Monitoring_sj extends MY_Controller{
-
+	public $menuName="monitoring_sj"; 
 	public function __construct(){
 		parent::__construct();
 	}
 
 	public function index(){
+		parent::index();
 		$this->load->library("menus");
 	
         $main_header = $this->parser->parse('inc/main_header', [], true);

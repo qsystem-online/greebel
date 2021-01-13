@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Penerimaan extends MY_Controller{
+	public $menuName="penerimaan_kas";
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');		
@@ -10,7 +11,7 @@ class Penerimaan extends MY_Controller{
 	}
 	
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
         $this->list['page_name'] = "Cash Bank - Receive";
         $this->list['list_name'] = "Cash & Bank Receive List";
@@ -103,11 +104,13 @@ class Penerimaan extends MY_Controller{
 
 
     public function add(){
+		parent::add();
         $this->openForm("ADD", 0);
 
 	}
 	
 	public function edit($finCBReceiveId){
+		parent::edit($finCBReceiveId);
         $this->openForm("EDIT", $finCBReceiveId);
 
     }
@@ -151,6 +154,7 @@ class Penerimaan extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
+		parent::ajx_add_save();
 		$this->load->model('trcbreceiveitems_model');
 		$this->load->model('trcbreceiveitemstype_model');
 		$this->load->model('kasbank_model');
@@ -220,6 +224,7 @@ class Penerimaan extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
 		$this->load->model('trcbreceiveitems_model');
 		$this->load->model('trcbreceiveitemstype_model');
 		$this->load->model('kasbank_model');
@@ -513,6 +518,7 @@ class Penerimaan extends MY_Controller{
 	}
 
 	public function delete($finCBReceiveId){
+		parent::delete($finCBReceiveId);
 		$this->load->model("trcbreceiveitems_model");
 		$this->load->model("trcbreceiveitemstype_model");
 	

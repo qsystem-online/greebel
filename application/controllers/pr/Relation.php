@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 class Relation extends MY_Controller{
+	public $menuName="relation_customer_vendor";
+
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -9,6 +11,7 @@ class Relation extends MY_Controller{
 	}
 
 	public function index(){
+		parent::index();
 		$this->lizt();
 	}
 
@@ -97,14 +100,17 @@ class Relation extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 
 	public function edit($fin_relation_id){
+		parent::edit($fin_relation_id);
 		$this->openForm("EDIT", $fin_relation_id);
 	}
 
 	public function ajx_add_save(){
+		parent::ajx_add_save();
 		$this->load->model("msrelations_model");
 		$this->form_validation->set_rules($this->msrelations_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -188,6 +194,7 @@ class Relation extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
 		$this->load->model("msrelations_model");
 		$fin_relation_id = $this->input->post("fin_relation_id");
 		$data = $this->msrelations_model->getDataById($fin_relation_id);
@@ -469,6 +476,7 @@ class Relation extends MY_Controller{
 	}
 
 	public function delete($id){
+		parent::delete($id);
 		$this->db->trans_start();
 		$this->msrelations_model->delete($id);
 		$this->db->trans_complete();

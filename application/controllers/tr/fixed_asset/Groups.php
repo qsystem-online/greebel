@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Groups extends MY_Controller{
+	public $menuName="fixed_asset_group";
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');		
@@ -11,7 +12,7 @@ class Groups extends MY_Controller{
 	}
 
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Fixed Asset Group";
 		$this->list['list_name'] = "Fixed Asset Group List";
@@ -94,10 +95,12 @@ class Groups extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 	
 	public function edit($finId){
+		parent::edit($finId);
 		$this->openForm("EDIT", $finId);
 
 	}
@@ -133,6 +136,7 @@ class Groups extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
+		parent::ajx_add_save();
 		//$this->load->model("msitems_model");		
 		try{
 			
@@ -168,6 +172,7 @@ class Groups extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
         $finFAGroupId = $this->input->post("fin_fa_group_id");
 		try{
             $dataHOld = $this->msfagroups_model->getDataById($finFAGroupId);
@@ -254,49 +259,25 @@ class Groups extends MY_Controller{
 		$this->json_output($resp);
 	}
 
-	public function delete($finMagId){
+	public function delete($finId){
+		parent::delete($finId);
 
 		try{
-			
-			$dataHOld = $this->trmag_model->getDataHeaderById($finMagId);
-			if ($dataHOld == null){
-				throw new CustomException(lang("Invalid MAG ID"),3003,"FAILED",null);
-			}
-
-			$resp = dateIsLock($dataHOld->fdt_mag_datetime);
-			if ($resp["status"] != "SUCCESS"){
-				throw new CustomException($resp["message"],3003,"FAILED",null);
-			}
-									
-			$resp = $this->trmag_model->isEditable($finMagId,$dataHOld);
-			if ($resp["status"] != "SUCCESS"){
-				throw new CustomException($resp["message"],3003,"FAILED",null);
-			}			
-		}catch(CustomException $e){
-			$this->ajxResp["status"] = $e->getStatus();
-			$this->ajxResp["message"] = $e->getMessage();
-			$this->ajxResp["data"] = $e->getData();
-			$this->json_output();
-			return;
-		}
-
-		try{
+			$this->msfagroups_model->isEditable($finId);
 			$this->db->trans_start();
-			
-			$this->trmag_model->unposting($finMagId);			
-			$resp = $this->trmag_model->delete($finMagId,true,null);	
-
+			$this->msfagroups_model->delete($finId,true);	
 			$this->db->trans_complete();	
-
-			$this->ajxResp["status"] = "SUCCESS";
-			$this->ajxResp["message"] = "";
-			$this->json_output();
+			$this->json_output([
+				"status"=>"SUCCESS",
+				"message"=>"",
+				"data"=>[]
+			]);
 
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
 			$this->ajxResp["status"] = $e->getStatus();
 			$this->ajxResp["message"] = $e->getMessage();
-			$this->ajxResp["data"] = $e->getData();			
+			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
 		}

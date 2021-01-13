@@ -2,7 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Membership extends MY_Controller{
-
+	public $menuName="membership"; 
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -10,6 +10,7 @@ class Membership extends MY_Controller{
 	}
 
 	public function index(){
+		parent::index();
 		$this->lizt();
 	}
 
@@ -84,14 +85,17 @@ class Membership extends MY_Controller{
   	}
     
   	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_rec_id){
+	public function edit($fin_rec_id){
+		parent::edit($fin_rec_id);
 		$this->openForm("EDIT", $fin_rec_id);
   	}
     
 	public function ajx_add_save(){
+		parent::ajx_add_save();
 		$this->load->model('msmemberships_model');
 		$this->form_validation->set_rules($this->msmemberships_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -135,6 +139,7 @@ class Membership extends MY_Controller{
 	}
 		
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
 		$this->load->model('msmemberships_model');
 		$fin_rec_id = $this->input->post("fin_rec_id");
 		$data = $this->msmemberships_model->getDataById($fin_rec_id);
@@ -244,6 +249,7 @@ class Membership extends MY_Controller{
 	}
 
 	public function delete($id){
+		parent::delete($id);
 		$this->load->model("msmemberships_model");
 		$this->db->trans_start();
         $this->msmemberships_model->delete($id);

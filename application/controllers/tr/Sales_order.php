@@ -2,7 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Sales_order extends MY_Controller{
-
+	public $menuName="sales_order"; 
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -19,11 +19,13 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function index(){
+		parent::index();
 		$this->lizt();
 	}
 
 	public function lizt(){
 		$this->load->library('menus');
+		parent::index();
 		$this->list['page_name'] = "Sales Order";
 		$this->list['list_name'] = "Sales Order List";
 		$this->list['addnew_ajax_url'] = site_url() . 'tr/sales_order/add';
@@ -166,10 +168,12 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 
 	public function edit($fin_salesorder_id){
+		parent::edit($fin_salesorder_id);
 		$this->openForm("EDIT", $fin_salesorder_id);
 	}
 
@@ -178,6 +182,7 @@ class Sales_order extends MY_Controller{
 	}
 	
 	public function ajx_add_save(){		
+		parent::ajx_add_save();
 		$fst_salesorder_no = $this->trsalesorder_model->GenerateSONo();
 		$fdt_salesorder_datetime = dBDateTimeFormat($this->input->post("fdt_salesorder_datetime"));
 		$fdc_downpayment = parseNumber($this->input->post("fdc_downpayment"));
@@ -442,6 +447,7 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
 		$this->load->model('trsalesorder_model');
 		$this->load->model('trvoucher_model');
 		$this->load->model('trverification_model');
@@ -760,6 +766,7 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function delete($finSalesOrderId){
+		parent::delete($finSalesOrderId);
 		$this->load->model("trsalesorder_model");
 		$this->load->model('trsalesorder_model');
 		$this->load->model('trvoucher_model');
@@ -916,6 +923,9 @@ class Sales_order extends MY_Controller{
 //===== UNHOLD SALES ORDER ==============================================================================================================================================================================
 
 	public function unhold(){
+		$this->menuName = "unhold_so";
+		parent::index();
+
 		$this->load->library('menus');
 
         $main_header = $this->parser->parse('inc/main_header',[],true);
@@ -968,6 +978,9 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function doUnhold($finSalesOrderId){
+		$this->menuName = "unhold_so";
+		parent::ajx_add_save();
+
 		$this->load->model('trsalesorder_model');
 
         $this->db->trans_start();

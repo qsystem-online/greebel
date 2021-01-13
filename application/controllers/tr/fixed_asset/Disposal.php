@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Disposal extends MY_Controller{
+	public $menuName="fixed_asset_disposal";
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');		
@@ -14,7 +15,7 @@ class Disposal extends MY_Controller{
 	}
 
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "Disposal Fixed Asset";
 		$this->list['list_name'] = "Disposal Fixed Asset List";
@@ -100,10 +101,12 @@ class Disposal extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 	
 	public function edit($finId){
+		parent::edit($finId);
 		$this->openForm("EDIT", $finId);
 
 	}
@@ -143,6 +146,7 @@ class Disposal extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
+		parent::ajx_add_save();
 		//$this->load->model("msitems_model");		
 		try{			
 			$dataPrepared = $this->prepareData();
@@ -194,6 +198,7 @@ class Disposal extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){
+		parent::ajx_edit_save();
         $finFADisposalId = $this->input->post("fin_fa_disposal_id");
 		try{
             $dataHOld = $this->trfadisposal_model->getDataHeader($finFADisposalId);
@@ -389,7 +394,7 @@ class Disposal extends MY_Controller{
 
 
 	public function delete($finFADisposalId){
-
+		parent::delete($finFADisposalId);
 		try{
             $dataHOld = $this->trfadisposal_model->getDataHeader($finFADisposalId);
             if ($dataHOld == null){

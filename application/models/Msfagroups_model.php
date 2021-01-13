@@ -31,7 +31,7 @@ class Msfagroups_model extends MY_Model{
 
     public function getDataById($finFAGroupId)
     {
-        $ssql = "SELECT * FROM msfagroups where fin_fa_group_id = ?";
+        $ssql = "SELECT * FROM msfagroups where fin_fa_group_id = ? and fst_active != 'D'";
         $qr = $this->db->query($ssql, [$finFAGroupId]);
         $rw = $qr->row();
 
@@ -44,7 +44,7 @@ class Msfagroups_model extends MY_Model{
         //Throw customexception if not editable
     }
 
-    public function getList(){
+    public function getList($active ='A'){
         $ssql = "SELECT * FROM msfagroups where fst_active != 'D'";
         $qr =$this->db->query($ssql,[]);
         return $qr->result();

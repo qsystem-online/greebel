@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Penerimaan_pembelian extends MY_Controller{
+	public $menuName="penerimaan_pembelian"; 
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');		
@@ -16,7 +17,7 @@ class Penerimaan_pembelian extends MY_Controller{
     }
 
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
         $this->list['page_name'] = "Gudang - Penerimaan Pembelian";
         $this->list['list_name'] = "Penerimaan Pembelian List";
@@ -111,10 +112,12 @@ class Penerimaan_pembelian extends MY_Controller{
 	}
 
     public function add(){
+		parent::add();
         $this->openForm("ADD", 0);
 	}
 	
 	public function edit($finLPBGudangId){
+		parent::edit($finLPBGudangId);
         $this->openForm("EDIT", $finLPBGudangId);
 
     }
@@ -166,6 +169,7 @@ class Penerimaan_pembelian extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
+		parent::ajx_add_save();
 		$this->load->model("trlpbgudangitems_model");
 		$this->load->model("msitems_model");
 		
@@ -224,7 +228,8 @@ class Penerimaan_pembelian extends MY_Controller{
 
 	}
 
-	public function ajx_edit_save(){			
+	public function ajx_edit_save(){		
+		parent::ajx_edit_save();	
 
 		
 		try{
@@ -425,7 +430,7 @@ class Penerimaan_pembelian extends MY_Controller{
 	}
 
 	public function delete($finLPBGudangId){
-
+		parent::delete($finLPBGudangId);
 		try{
 			
 			$dataHOld = $this->trlpbgudang_model->getDataHeaderById($finLPBGudangId);

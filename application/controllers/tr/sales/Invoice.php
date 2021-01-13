@@ -2,6 +2,8 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Invoice extends MY_Controller{
+    public $menuName="invoice"; 
+
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -16,10 +18,13 @@ class Invoice extends MY_Controller{
     }
 
     public function index(){
-       $this->lizt();
+        parent::index();
+        $this->lizt();
     }
     public function lizt(){
-		$this->load->library('menus');
+        $this->load->library('menus');
+        parent::index();
+
 		$this->list['page_name'] = "Invoice ";
 		$this->list['list_name'] = "Invoice List";
 		$this->list['addnew_ajax_url'] = site_url() . 'tr/sales/invoice/add';
@@ -126,10 +131,12 @@ class Invoice extends MY_Controller{
 	}
 
 	public function add(){
+        parent::add();
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_inv_id){
+	public function edit($fin_inv_id){
+        parent::edit($fin_inv_id);
 		$this->openForm("EDIT", $fin_inv_id);
     }
 
@@ -173,7 +180,8 @@ class Invoice extends MY_Controller{
 
     }
 
-    public function ajx_add_save(){        
+    public function ajx_add_save(){   
+        parent::ajx_add_save();     
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsalesorder_model");
         $this->load->model("trinventory_model");
@@ -311,7 +319,7 @@ class Invoice extends MY_Controller{
     }
 
     public function ajx_edit_save(){
-       
+        parent::ajx_edit_save();
         $this->load->model("trsuratjalan_model");
         $this->load->model("trsalesorder_model");
         $this->load->model("trinventory_model");
@@ -469,6 +477,7 @@ class Invoice extends MY_Controller{
     }
     
     public function delete($finInvId){
+        parent::delete($finInvId);
         try{
             
             $this->db->trans_start();

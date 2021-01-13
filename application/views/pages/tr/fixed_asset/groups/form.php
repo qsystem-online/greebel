@@ -296,7 +296,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/gudang/penerimaan_mutasi/delete/" + $("#fin_mag_confirm_id").val();
+		var url =  "<?= site_url() ?>tr/fixed_asset/groups/delete/" + $("#fin_fa_group_id").val();
 		$.ajax({
 			url:url,
 			method:"POST",

@@ -2,6 +2,8 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Purchase_return extends MY_Controller{
+	public $menuName="purchase_return";
+
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -19,7 +21,7 @@ class Purchase_return extends MY_Controller{
     }
 	
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
         $this->list['page_name'] = "Purchase - Return";
         $this->list['list_name'] = "Invoice Retur Pembelian List";
@@ -84,10 +86,12 @@ class Purchase_return extends MY_Controller{
 
 
 	public function add(){
+		parent::add();
         $this->openForm("ADD", 0);
 	}
 
 	public function edit($finPurchaseReturnId){
+		parent::edit($finPurchaseReturnId);
         $this->openForm("EDIT", $finPurchaseReturnId);
     }
 
@@ -130,7 +134,7 @@ class Purchase_return extends MY_Controller{
 	}
 
 	public function ajx_add_save(){
-		
+		parent::ajx_add_save();
 		$this->load->model("trpurchasereturnitems_model");
 		$this->load->model("trlpbpurchase_model");		
 		$this->load->model("trpodetails_model");	
@@ -187,7 +191,7 @@ class Purchase_return extends MY_Controller{
 	}
 	
 	public function ajx_edit_save(){					
-		
+		parent::ajx_edit_save();
 		try{
 			$finPurchaseReturnId = $this->input->post("fin_purchasereturn_id");
 
@@ -418,7 +422,7 @@ class Purchase_return extends MY_Controller{
 	}
 
 	public function delete($finPurchaseReturnId){
-		
+		parent::delete($finPurchaseReturnId);
 		$dataHOld = $this->trpurchasereturn_model->getDataHeaderById($finPurchaseReturnId);
 		//CEK tgl lock dari transaksi tersimpan
 		$resp = dateIsLock($dataHOld->fdt_purchasereturn_datetime);

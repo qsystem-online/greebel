@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class User extends MY_Controller
 {
-
+	public $menuName="user"; 
 	public function __construct()
 	{
 		parent::__construct();
@@ -12,11 +12,13 @@ class User extends MY_Controller
 
 	public function index()
 	{
+		parent::index();
 		$this->lizt();
 	}
 
 	public function lizt()
 	{
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "User";
 		$this->list['list_name'] = "User List";
@@ -98,16 +100,19 @@ class User extends MY_Controller
 
 	public function add()
 	{
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 
-	public function Edit($fin_user_id)
+	public function edit($fin_user_id)
 	{
+		parent::edit($fin_user_id);
 		$this->openForm("EDIT", $fin_user_id);
 	}
 
 	public function ajx_add_save()
 	{
+		parent::ajx_add_save();
 		$this->load->model('users_model');
 		$this->form_validation->set_rules($this->users_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -187,6 +192,7 @@ class User extends MY_Controller
 
 	public function ajx_edit_save()
 	{
+		parent::ajx_edit_save();
 		$this->load->model('users_model');
 		$fin_user_id = $this->input->post('fin_user_id');
 		$data = $this->users_model->getDataById($fin_user_id);
@@ -370,6 +376,7 @@ class User extends MY_Controller
 	}
 
 	public function delete($id){
+		parent::delete($id);
 		$this->load->model('users_model');
 		$this->db->trans_start();
         $this->users_model->delete($id);

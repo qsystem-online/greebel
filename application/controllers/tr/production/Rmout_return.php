@@ -2,6 +2,8 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Rmout_return extends MY_Controller{
+	public $menuName="rmout_return";
+
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');		
@@ -12,7 +14,7 @@ class Rmout_return extends MY_Controller{
 	}
 
 	public function index(){
-
+		parent::index();
 		$this->load->library('menus');
 		$this->list['page_name'] = "RM-OUT Produksi";
 		$this->list['list_name'] = "RM-OUT Produksi List";
@@ -98,12 +100,13 @@ class Rmout_return extends MY_Controller{
 	}
 
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 	
 	public function edit($finId){
+		parent::edit($finId);
 		$this->openForm("EDIT", $finId);
-
 	}
 
 
@@ -141,6 +144,7 @@ class Rmout_return extends MY_Controller{
 	}
 
 	public function ajx_add_save(){	
+		parent::ajx_add_save();
 		try{			
 			$dataPrepared = $this->prepareData();
 			$dataH = $dataPrepared["dataH"];
@@ -186,7 +190,8 @@ class Rmout_return extends MY_Controller{
 
 	}
 
-	public function ajx_edit_save(){		
+	public function ajx_edit_save(){	
+		parent::ajx_edit_save();	
 		$finRMOutId = $this->input->post("fin_rmout_id");
 		try{
 			$dataHOld = $this->trrmout_model->getDataHeader($finRMOutId);
@@ -332,7 +337,7 @@ class Rmout_return extends MY_Controller{
 
 
 	public function delete($finId){
-
+		parent::delete($finId);
 		try{
 			$dataHOld = $this->trwo_model->getDataHeader($finId);
 			if ($dataHOld == null){

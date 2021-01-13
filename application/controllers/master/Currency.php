@@ -2,12 +2,14 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Currency extends MY_Controller {
+	public $menuName="master_currency"; 
     public function __construct(){
         parent:: __construct();
         $this->load->library('form_validation');
     }
 
     public function index(){
+		parent::index();
         $this->lizt();
     }
 
@@ -74,14 +76,17 @@ class Currency extends MY_Controller {
     }
     
     public function add(){
+		parent::add();
         $this->openForm("ADD",0);
     }
 
-    public function Edit($fst_curr_code){
+    public function edit($fst_curr_code){
+		parent::edit($fst_curr_code);
         $this->openForm("EDIT", $fst_curr_code);
     }
 
     public function ajx_add_save(){
+		parent::ajx_add_save();
 		$this->load->model('mscurrencies_model');
 		$this->form_validation->set_rules($this->mscurrencies_model->getRules("ADD",0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
@@ -161,6 +166,7 @@ class Currency extends MY_Controller {
     }
 
     public function ajx_edit_save(){
+		parent::ajx_edit_save();
         $this->load->model('mscurrencies_model');		
 		$fst_curr_code = $this->input->post("fst_curr_code");
 		$data = $this->mscurrencies_model->getDataById($fst_curr_code);
@@ -287,6 +293,7 @@ class Currency extends MY_Controller {
 	}
 
 	public function delete($id){
+		parent::delete($id);
 		$this->load->model("mscurrencies_model");
 		$this->db->trans_start();
         $this->mscurrencies_model->delete($id);

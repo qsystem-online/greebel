@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 class Purchase_order extends MY_Controller{
+	public $menuName="purchase_order";
+
 	public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
@@ -14,10 +16,12 @@ class Purchase_order extends MY_Controller{
 
 	}
 	public function index(){
+		parent::index();
 		$this->lizt();
 	}
-	public function lizt(){
+	public function lizt(){		
 		$this->load->library('menus');
+		parent::index();
         $this->list['page_name'] = "Purchase - Order";
         $this->list['list_name'] = "Order Pembelian List";
         $this->list['boxTools'] = [
@@ -157,9 +161,11 @@ class Purchase_order extends MY_Controller{
 		$this->parser->parse('template/main', $this->data);
 	}
 	public function add(){
+		parent::add();
 		$this->openForm("ADD", 0);
 	}
 	public function edit($fin_po_id){
+		parent::edit();
 		$this->openForm("EDIT", $fin_po_id);
 	}
 	public function view($finPOId){
@@ -173,6 +179,7 @@ class Purchase_order extends MY_Controller{
 	}
 
 	public function ajx_add_save(){
+		parent::ajx_add_save();
 
 		try{
 
@@ -249,7 +256,7 @@ class Purchase_order extends MY_Controller{
 
 
 	public function ajx_edit_save(){
-
+		parent::ajx_edit_save();
 		$this->load->model("trverification_model");
 		
 		try{
@@ -466,6 +473,7 @@ class Purchase_order extends MY_Controller{
 		$this->json_output($data);
 	}
 	public function delete($finPOId){
+		parent::delete($finPOId);
 		if (!$this->aauth->is_permit("")) {
 			$this->ajxResp["status"] = "NOT_PERMIT";
 			$this->ajxResp["message"] = "You not allowed to do this operation !";
@@ -652,6 +660,9 @@ class Purchase_order extends MY_Controller{
 
 
 	public function close_po_cost_list(){
+		$this->menuName ="close_purchase_cost";
+		parent::index();
+
 		$this->load->library('menus');
         $this->list['page_name'] = "Purchase - Order";
         $this->list['list_name'] = "Order Pembelian List";
@@ -785,6 +796,9 @@ class Purchase_order extends MY_Controller{
 	}
 
 	public function process_closing_cost($isCompleted){	
+		$this->menuName ="close_purchase_cost";
+		parent::ajx_add_save();
+		 
 		$finPOId = $this->input->post("fin_po_id");
 		try{
 			if($isCompleted){
