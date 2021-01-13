@@ -56,7 +56,7 @@
 		<div>Tanggal Retur: <?= $this->input->post("fdt_purchasereturn_datetime") ?>  s/d <?= $this->input->post("fdt_purchasereturn_datetime2") ?></div> 
         <div>Supplier: <?= $name_relations ?> </div>
         <div>Mata Uang : <?= $name_currency ?></div>                             
-		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:2000px">       
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1800px">       
 			<thead>
 				<tr style="background-color:RoyalBlue;color:white">
                 <?php

@@ -141,6 +141,7 @@
                             $ttl_total_retur += $row->fdc_total_retur;
                             $ttl_total_netto += $row->fdc_total_netto;
 
+
                             $sub_total += $row->fdc_nilai_faktur;
                             $sub_totalNew = formatNumber ($sub_total,2);
                             $sub_total_downpayment_claim += $row->fdc_downpayment_claim;
@@ -149,10 +150,7 @@
                             $sub_total_returNew = formatNumber ($sub_total_retur,2);
                             $sub_total_netto += $row->fdc_total_netto;
                             $sub_total_nettoNew = formatNumber ($sub_total_netto,2);
-                            $sub_total_payment += $row->fdc_payment;
-                            $sub_total_paymentNew = formatNumber ($sub_total_payment,2);
-                            $sub_total_outstanding = $sub_total_netto - $sub_total_payment;
-                            $sub_total_outstandingNew = formatNumber ($sub_total_outstanding,2);
+
 						}else{
                             echoIfColSelected(0,$selectedCols,"<td class='col-0'></td>");
                             echoIfColSelected(1,$selectedCols,"<td class='col-1'></td>");
@@ -175,21 +173,22 @@
                         echoIfColSelected(15,$selectedCols,"<td class='col-15' style='text-align: right'>$fdc_payment</td>");
                         echoIfColSelected(16,$selectedCols,"<td class='col-16' style='text-align: right'>OS</td>");												                                                                                                                                                                      
                         echo "</tr>";
+
+                        $sub_total_payment += $row->fdc_payment;
+                        $sub_total_paymentNew = formatNumber ($sub_total_payment,2);
+                        $sub_total_outstanding = $sub_total_netto - $sub_total_payment;
+                        $sub_total_outstandingNew = formatNumber ($sub_total_outstanding,2);
+                        $ttl_total_payment += $row->fdc_payment;
+                        $ttl_total_outstanding = $ttl_total_netto - $ttl_total_payment;
                         
 
 					}
-                    $ttl_total += $row->fdc_nilai_faktur;
                     $ttl_totalNew = formatNumber ($ttl_total,2);
-                    $ttl_total_downpayment_claim += $row->fdc_downpayment_claim;
                     $ttl_total_downpayment_claimNew = formatNumber ($ttl_total_downpayment_claim,2);
-                    $ttl_total_retur += $row->fdc_total_retur;
                     $ttl_total_returNew = formatNumber ($ttl_total_retur,2);
-                    $ttl_total_netto += $row->fdc_total_netto;
                     $ttl_total_nettoNew = formatNumber ($ttl_total_netto,2);
-                    $ttl_total_payment += $row->fdc_payment;
                     $ttl_total_paymentNew = formatNumber ($ttl_total_payment,2);
-                    $ttl_total_outstanding = $ttl_total_netto - $ttl_total_payment;
-                    $ttl_total_outstandingNew = formatNumber ($ttl_total_payment,2);
+                    $ttl_total_outstandingNew = formatNumber ($ttl_total_outstanding,2);
                     echo "<tr>";
                     echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Total Per-Supplier :</td>";
                     echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$sub_totalNew</td>");
