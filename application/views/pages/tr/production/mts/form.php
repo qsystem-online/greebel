@@ -670,7 +670,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 				
 				App.autoFillForm(dataH);
-				
+				$("#fdt_mts_datetime").val(App.dateTimeFormat(dataH.fdt_mts_datetime)).datetimepicker('update');	
 				App.addOptionIfNotExist("<option value='"+dataH.fin_item_group_id+"'>"+dataH.fst_item_group_name +"</option>","fin_item_group_id");
 				$("fin_item_group_id").val(dataH.fin_item_group_id).trigger("change");
 
