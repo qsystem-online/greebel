@@ -150,7 +150,7 @@ class Lhp extends MY_Controller{
 		}catch(CustomException $e){
 			$this->json_output([
 				"status"=>$e->getStatus(),
-				"messages"=>$e->getMessages(),
+				"messages"=>$e->getMessage(),
 				"data"=>$e->getStatus(),
 				"status"=>$e->getData()				
 			]);
