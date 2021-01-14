@@ -59,7 +59,7 @@ class Trwo_model extends MY_Model{
 			FROM trwo a 
 			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
 			INNER JOIN msgroupitems c on b.fin_item_group_id = c.fin_item_group_id       
-			INNER JOIN msactivitygroups d on a.fin_activity_group_id = d.fin_activity_group_id 
+			LEFT JOIN msactivitygroups d on a.fin_activity_group_id = d.fin_activity_group_id 
 			LEFT JOIN msrelations e on a.fin_supplier_id = e.fin_relation_id 
 			WHERE a.fin_wo_id = ? and a.fst_active !='D'";
 		

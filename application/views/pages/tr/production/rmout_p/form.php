@@ -586,15 +586,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     data2 = [];
 					if (resp.status == "SUCCESS"){
 						$.each(resp.data, function(index, value) {
-							console.log(value);
 							data2.push({
 								"id": value.fin_wo_id,
 								"text": value.fst_wo_no
 							});
 						});
-						
 					}
-                    
                     return {
                         results: data2
                     };
@@ -617,15 +614,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     data2 = [];
 					if (resp.status == "SUCCESS"){
 						$.each(resp.data, function(index, value) {
-							console.log(value);
 							data2.push({
-								"id": value.fin_mag_confirm_id,
+								"id": value.fin_pagp_id,
 								"text": value.fst_mag_confirm_no
 							});
-						});
-						
+						});						
 					}
-                    
+					console.log(data2);              
                     return {
                         results: data2
                     };

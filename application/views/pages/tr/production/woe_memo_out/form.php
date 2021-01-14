@@ -225,6 +225,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript" info="event">
 	$(function(){
+		$("#btnNew").click(function(e){
+			e.preventDefault();
+            window.location.replace("<?=site_url()?>tr/production/woe_out/add");
+		});
+
 		$("#btnSubmitAjax").click(function(e){
 			e.preventDefault();
             submitAjax(0);

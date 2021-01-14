@@ -691,7 +691,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript" info="init">
 	$(function(){		
 		$("#fdt_wo_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
-		$("#fdt_wo_target_date").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
+		$("#fdt_wo_target_date").val(dateFormat("<?= date("Y-m-d")?>")).datetimepicker("update");
 		
 
 		$("#fin_supplier_id").select2({
@@ -1281,9 +1281,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					var header = data.header;
 					if (header != null){
 						App.autoFillForm(header);
+
 						$("#fdt_wo_datetime").val(dateTimeFormat(header.fdt_wo_datetime)).datetimepicker("update");	
 						$("#fdt_wo_target_date").val(dateFormat(header.fdt_wo_target_date)).datepicker("update");	
 
+						if (header.fst_wo_type == "External"){
+							$(".type-external").show();
+						}else{
+							$(".type-external").hide();
+						}
+
+						App.addOptionIfNotExist("<option value='"+header.fin_supplier_id+"'>"+header.fst_supplier_name +"</option>","fin_supplier_id");
 						App.addOptionIfNotExist("<option value='"+header.fin_item_group_id+"'>"+header.fst_item_group_name +"</option>","fin_item_group_id");
 						App.addOptionIfNotExist("<option value='"+header.fin_item_id+"'>"+header.fst_item_name +"</option>","fin_item_id");
 						App.addOptionIfNotExist("<option value='"+header.fst_unit+"'>"+header.fst_unit +"</option>","fst_unit");
