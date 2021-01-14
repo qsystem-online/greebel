@@ -615,9 +615,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					if (resp.status == "SUCCESS"){
 						$.each(resp.data, function(index, value) {
 							data2.push({
-								"id": value.fin_pagp_id,
+								"id": value.fin_pagp_id,								
 								"text": value.fst_mag_confirm_no
 							});
+							
 						});						
 					}
 					console.log(data2);              
