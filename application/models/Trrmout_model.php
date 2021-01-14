@@ -24,7 +24,18 @@ class Trrmout_model extends MY_Model{
 				'required' => '%s tidak boleh kosong',
 				//'is_unique' => '%s unik'
 			),
-		];      
+		]; 
+		$rules[] = [
+			'field' => 'fin_wobatchno_id',
+			'label' => 'WO Batch No',
+			'rules' => array(
+				'required',
+			),
+			'errors' => array(
+				'required' => '%s tidak boleh kosong',
+				//'is_unique' => '%s unik'
+			),
+		];        
 		
 		return $rules;
 	}
@@ -76,7 +87,7 @@ class Trrmout_model extends MY_Model{
 			INNER JOIN trmagconfirm c on a.fin_pagp_id = c.fin_mag_confirm_id
 			INNER JOIN trmag d on c.fin_mag_id = d.fin_mag_id
 			INNER JOIN trwo e on d.fin_wo_id = e.fin_wo_id	
-			INNER JOIN trwobatchno f on a.fin_wobatchno_id = f.fin_wobatchno_id					
+			LEFT JOIN trwobatchno f on a.fin_wobatchno_id = f.fin_wobatchno_id					
 			WHERE a.fin_rmout_id = ? and a.fst_active !='D'";
 		
 		$qr = $this->db->query($ssql,[$finRMOutId]);      
