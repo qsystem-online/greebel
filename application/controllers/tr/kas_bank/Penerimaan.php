@@ -180,7 +180,7 @@ class Penerimaan extends MY_Controller{
 			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 		}
-		
+
 		try{
 			//INSERT DATA
 			$this->db->trans_start();
@@ -383,7 +383,6 @@ class Penerimaan extends MY_Controller{
 			}else if($detailsReceive[$i]->fst_cbreceive_type == "GLACCOUNT"){
 				$acc = (object) ["fst_glaccount_code" => $detailsReceive[$i]->fst_glaccount_code];
 			}
-
 			if ($acc){
 				$detailsReceive[$i]->fst_glaccount_code = $acc->fst_glaccount_code;
 			}else{

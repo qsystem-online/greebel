@@ -264,15 +264,13 @@ class Mts extends MY_Controller{
 		$dataH = [
 			"fin_mts_id"=>$this->input->post("fin_mts_id"),
 			"fst_mts_no"=>$this->input->post("fst_mts_no"),
-			"fdt_mts_datetime"=>dBDateFormat($this->input->post("fdt_mts_datetime")),
+			"fdt_mts_datetime"=>dBDateTimeFormat($this->input->post("fdt_mts_datetime")),
 			"fin_year"=>$this->input->post("fin_year"),
 			"fin_item_group_id"=>$this->input->post("fin_item_group_id"),
 			"fst_history_type"=>$this->input->post("fst_history_type"),
 			"fst_notes"=>$this->input->post("fst_notes"),
 			"fst_active"=>"A"
 		];
-
-		//var_dump($dataH);
 		
 		$dataDetails = $this->input->post("details");
 		$dataDetails = json_decode($dataDetails);		

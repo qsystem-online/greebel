@@ -972,6 +972,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						return false;
 					}				
 					App.autoFillForm(dataH);
+					
+					$("#fdt_mrp_datetime").val(App.dateTimeFormat(dataH.fdt_mrp_datetime)).datetimepicker('update');	
 					App.addOptionIfNotExist("<option value='"+dataH.fin_mps_id+"'>"+dataH.fst_mps_no+"</option>","fin_mps_id");
 
 					weekDetails =  data.weekDetails;

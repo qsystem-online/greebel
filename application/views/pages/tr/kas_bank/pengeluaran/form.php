@@ -220,7 +220,7 @@
                         <div style="border:0 px inset #f0f0f0;border-radius:10px;padding:5px">
                             <fieldset style="padding:10px">
 				
-								<form id="form-detail" class="form-horizontal">
+								<form id="form-detail-type" class="form-horizontal">
 									<input type='hidden' id='fin_rec_id_items'/>
 									<div class="form-group">
 										<label for="fst_trans_type" class="col-md-2 control-label"><?=lang("Trans type")?></label>
@@ -229,6 +229,7 @@
 												<option value="LPB_PO">LPB Pembelian</option>
 												<option value="DP_PO">DP LPB Pembelian</option>
 												<option value="LPB_RETURN">Return Pembelian Non Faktur</option>
+												<option value="PAY_WO_EXT">External Workorder</option>
 											</select>
 										</div>
 									</div>
@@ -854,6 +855,9 @@
 							case "LPB_RETURN":
 								return "Return Pembelian Non Faktur";
 								break;
+							case "PAY_WO_EXT":
+								return "Pembayaran External WO";
+								break;
 							default:
 								return "";
 						}
@@ -1416,6 +1420,26 @@
 
 						if(typeof callback !== "undefined"){
 							callback(purchaseReturnNonFakturList);
+						}
+						
+					}
+				});
+				break;
+			case "PAY_WO_EXT":
+				App.getValueAjax({
+					site_url:"<?=site_url()?>",
+					model:"trcbpayment_model",
+					func:"getWOEFakturList",
+					params:[$("#fin_supplier_id").val(),$("#fst_curr_code").val()],
+					callback:function(WOEFakturList){
+						$("#fin_trans_id").empty();
+						$.each(WOEFakturList,function(i,WOEFaktur){
+							//var dp = parseFloat(lpbPurchase.fdc_downpayment);					
+							$("#fin_trans_id").append("<option value='"+WOEFaktur.fin_woeinv_id+"' data-ttl_amount='"+ parseFloat(WOEFaktur.fdc_total)  +"' data-ttl_paid='"+WOEFaktur.fdc_total_paid + "' data-ttl_return='0' >"+WOEFaktur.fst_woeinv_no+"</option>");
+						});
+						$("#fin_trans_id").val(null);
+						if(typeof callback !== "undefined"){
+							callback(WOEFakturList);
 						}
 						
 					}

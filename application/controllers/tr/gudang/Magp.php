@@ -320,14 +320,15 @@ class Magp extends MY_Controller{
 		
 		$details = [];
 		foreach($dataDetails as $detail){
+			//var_dump($detail);
 			$tmp = [
                 "fin_rec_id"=>$detail->fin_rec_id,
                 "fin_wo_detail_id"=>$detail->fin_wo_detail_id,
 				"fin_item_id"=>$detail->fin_item_id,
 				"fst_unit"=>$detail->fst_unit,
 				"fdb_qty"=>$detail->fdb_qty,
-				"fst_batch_number"=>$detail->fst_batch_number,
-				"fst_serial_number_list"=>$detail->fst_serial_number_list
+				"fst_batch_number"=>isset($detail->fst_batch_number) ? $detail->fst_batch_number : null,
+				"fst_serial_number_list"=>isset($detail->fst_serial_number_list) ? $detail->fst_serial_number_list : []
 			];
 			$details[]=(object) $tmp;
 		}

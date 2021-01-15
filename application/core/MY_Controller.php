@@ -64,6 +64,7 @@ class MY_Controller extends CI_Controller
 		} else {
 			echo json_encode($data);
 		}
+		die();
 	}
 
 	public function index(){

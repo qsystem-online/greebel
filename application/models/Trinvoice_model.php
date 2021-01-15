@@ -489,7 +489,7 @@ class Trinvoice_model extends MY_Model {
         $ssql = "SELECT a.* 
             FROM trinvoice a
             LEFT JOIN trsalesreturnitems b on a.fin_inv_id = b.fin_inv_id
-            INNER JOIN trsalesreturn c on b.fin_salesreturn_id = c.fin_salesreturn_id
+            LEFT JOIN trsalesreturn c on b.fin_salesreturn_id = c.fin_salesreturn_id
             where a.fin_relation_id = ? and a.fst_curr_code = ? and a.fdc_total - a.fdc_total_return > a.fdc_total_paid and a.fst_active =! 'D'
             AND ifnull(c.fbl_is_closed,1) =  1";
 
