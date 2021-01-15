@@ -78,10 +78,12 @@
 		<div class="form-group row">
 			<label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
 			<div class="col-sm-4">								
-				<label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Kartu Stock")?></label>
-				<label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Daftar Barang Detail Unit Satuan")?></label>
-				<label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Daftar Barang Detail BOM")?></label>
-				<label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Daftar Barang Detail Special Pricing")?></label>
+				<label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Kartu Stock")?></label>
+				<label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Kartu stock dengan Nilai transaksi")?></label>
+				<label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Mutasi Persediaan")?></label>
+				<label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Mutasi Persediaan Ringkas")?></label>
+				<label class="radio"><input type="radio" id="rpt_layout5" class="rpt_layout" name="rpt_layout" value="5" onclick="handleRadioClick(this);"><?=lang("Laporan Persediaan Akhir + Nilai")?></label>
+				<label class="radio"><input type="radio" id="rpt_layout6" class="rpt_layout" name="rpt_layout" value="6" onclick="handleRadioClick(this);"><?=lang("Laporan Persediaan Semua Gudang")?></label>
 			</div>
 			<label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
 			<div class="container col-sm-4">
@@ -127,16 +129,18 @@
 
 	function handleRadioClick(myRadio) {
 		// alert('Old value: ' + currentValue);        
-		var js_data = '<?php echo json_encode($layout_columns); ?>';
-		var js_obj_data = JSON.parse(js_data );
-		
-		var newArray = js_obj_data.filter(function (el) {                        
-			// alert(el.layout==(myRadio.value).toString());
-			return el.layout==(myRadio.value).toString();
-		});        
+        var js_data = '<?php echo json_encode($layout_columns); ?>';
+        var js_obj_data = JSON.parse(js_data );
+        
+        var newArray = js_obj_data.filter(function (el) {                        
+            // alert(el.layout==(myRadio.value).toString());
+            return el.layout==(myRadio.value).toString();
+        });        
 
-		console.log(newArray);
-		$('#multiple-columns').multiselect('dataprovider', newArray);
+        console.log(newArray);
+        $('#multiple-columns').multiselect('dataprovider', newArray);
+        $('#multiple-columns').multiselect('selectAll',false);
+		$('#multiple-columns').multiselect('updateButtonText');
 		// for(var i=0; i<newArray.length; i++){
 		//     alert(newArray[i].label);
 		//     console.log(newArray[i].label);
