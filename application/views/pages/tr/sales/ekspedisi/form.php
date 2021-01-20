@@ -283,6 +283,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#fin_shipping_address_id").empty().trigger("change");
 			//$("#fin_shipping_address_id").val(null).trigger("change");
 			$("#shipping-address").val(null);
+			$("#fst_sj_list").empty().trigger("change");
+			$(".ttl").trigger("change");
 		});
 
 		$("#fst_curr_code").change(function(e){

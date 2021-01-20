@@ -371,7 +371,7 @@ class Trinventory_model extends MY_Model
 
 	}
 
-	public function deleteByCodeId($trxCode,$trxId){
+	public function deleteByCodeId($trxCode,$trxId,$force=false){
 		$ssql = "select a.*,b.fst_item_name  from trinventory a 
 			inner join msitems b on a.fin_item_id = b.fin_item_id 
 			where a.fst_trx_code = ? and a.fin_trx_id =? and a.fst_active ='A' 
@@ -409,7 +409,7 @@ class Trinventory_model extends MY_Model
 			$rs = $qr->result();               
 			foreach($rs as $data){
 				$data->fdb_qty_balance_after = $rwPrev["fdb_qty_balance_after"] + (float) $data->fdb_qty_in -  (float) $data->fdb_qty_out;                
-				if ($data->fdb_qty_balance_after < 0){
+				if ($data->fdb_qty_balance_after < 0 && $force == false){
 					throw new CustomException(sprintf(lang("Stock %s tidak boleh kurang dari nol"),$rw->fst_item_name),3003,"FAILED");            
 				}
 				

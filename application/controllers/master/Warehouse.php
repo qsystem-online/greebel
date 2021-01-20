@@ -119,6 +119,7 @@ class Warehouse extends MY_Controller
             "fbl_is_external" => ($this->input->post("fbl_is_external") == null) ? 0 : 1,
             "fbl_is_main" => ($this->input->post("fbl_is_main") == null) ? 0 : 1,
             "fbl_logistic" => ($this->input->post("fbl_logistic") == null) ? 0 : 1,
+            "fbl_is_production" => ($this->input->post("fbl_is_production") == null) ? 0 : 1,            
             "fst_active" => 'A'
         ];
 
@@ -176,6 +177,7 @@ class Warehouse extends MY_Controller
             "fbl_is_external" => ($this->input->post("fbl_is_external") == null) ? 0 : 1,
             "fbl_is_main" => ($this->input->post("fbl_is_main") == null) ? 0 : 1,
             "fbl_logistic" => ($this->input->post("fbl_logistic") == null) ? 0 : 1,
+            "fbl_is_production" => ($this->input->post("fbl_is_production") == null) ? 0 : 1,            
             "fst_active" => 'A'
         ];
 
@@ -203,7 +205,7 @@ class Warehouse extends MY_Controller
     public function fetch_list_data()
     {
         $this->load->library("datatables");
-        $this->datatables->setTableName("(select a.*,b.fst_branch_name from mswarehouse a inner join msbranches b on a.fin_branch_id = b.fin_branch_id) a");
+        $this->datatables->setTableName("(select a.*,b.fst_branch_name from mswarehouse a inner join msbranches b on a.fin_branch_id = b.fin_branch_id where fbl_is_buffer = 0) a");
 
         $selectFields = "fin_warehouse_id,fst_warehouse_name,fst_branch_name,fst_delivery_address,'action' as action";
         $this->datatables->setSelectFields($selectFields);

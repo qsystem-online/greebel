@@ -144,10 +144,11 @@ class Trmagconfirm_model extends MY_Model {
 		//delete Inventory
 		$this->trinventory_model->deleteByCodeId("PAGBO",$finPagId);
         $this->trinventory_model->deleteByCodeId("PAGIN",$finPagId);
-		
+
 		//Delete itemdetails
 		$this->trinventory_model->deleteInsertSerial("MAGBO",$finPagId);
 		$this->trinventory_model->deleteInsertSerial("PAG",$finPagId);
+		
 
         $this->checkCloseMag((int) $dataH->fin_mag_id);
 	}
@@ -158,10 +159,16 @@ class Trmagconfirm_model extends MY_Model {
 		throwIfDBError();
 	}
 
-	public function isEditable($finMagId){
-		return [
-			"status"=>"SUCCESS"
-		];
+	public function isEditable($finPagId){
+		//Tidak boleh sudah di lakukan rmout
+
+		$ssql ="SELECT * FROM trrmout where fin_pagp_id = ? and fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$finPagId]);
+		$rw = $qr->row();
+		if ($rw != null){
+			throw new CustomException(lang("PAG telah di gunakan oleh RMOUT :") . $rw->fst_rmout_no , 3003,"FAILED",[]);						
+		}
+		
 	}
 
 	public function isEditableProduction($finMagId){

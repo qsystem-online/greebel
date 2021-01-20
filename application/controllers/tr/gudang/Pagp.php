@@ -224,23 +224,25 @@ class Pagp extends MY_Controller{
 				throw new CustomException($resp["message"],3003,"FAILED",null);
 			}
 
-			$resp = $this->trmagconfirm_model->isEditableProduction($finMagConfirmId);
-			if ($resp["status"] != "SUCCESS"){
-				throw new CustomException($resp["message"],3003,"FAILED",null);
-			}			
+			//$resp = $this->trmagconfirm_model->isEditableProduction($finMagConfirmId);
+			$this->trmagconfirm_model->isEditable($finMagConfirmId);
+
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
-			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["messages"] = $e->getMessage();
 			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
 		}
 
 		try{
+			
 			$this->db->trans_start();
 			
 			$this->trmagconfirm_model->unposting($finMagConfirmId);
+			
 			$this->trmagconfirm_model->deleteDetail($dataHOld->fin_mag_id);
+			
 
 			$preparedData = $this->prepareData();
 			$dataH = $preparedData["dataH"];

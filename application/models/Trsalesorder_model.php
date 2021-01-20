@@ -76,6 +76,15 @@ class Trsalesorder_model extends MY_Model {
         ];
 
         $rules[] = [
+            'field' => 'fin_shipping_address_id',
+            'label' => lang('Shipping Address'),
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong',
+            )
+        ];
+
+        $rules[] = [
             'field' => 'fin_warehouse_id',
             'label' => lang('Kolom Warehouse'),
             'rules' => 'required',
@@ -83,6 +92,8 @@ class Trsalesorder_model extends MY_Model {
                 'required' => '%s tidak boleh kosong',
             )
         ];
+
+        
 
 
         return $rules;

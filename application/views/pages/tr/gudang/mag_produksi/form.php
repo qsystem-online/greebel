@@ -688,9 +688,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			calculateTotal();
 		}).on("click",".btn-delete",function(event){
 			event.preventDefault();
-			t = $('#tblSJDetails').DataTable();
 			var trRow = $(this).parents('tr');
-			t.row(trRow).remove().draw();
+			tblDetails.row(trRow).remove().draw();
 			calculateTotal();
 		}).on("click",".btn-edit",function(event){	
             tRow = $(this).parents("tr");

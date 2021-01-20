@@ -769,30 +769,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             method: "POST",
         }).done(function(resp){
             if (resp.message != "")	{
-					$.alert({
-						title: 'Message',
-						content: resp.message,
-						buttons : {
-							OK : function(){
-								if(resp.status == "SUCCESS"){
-									$("#btnNew").trigger("click");
-									return false;
-								}
-							},
-						}
-					});
-				}
-
-				if(resp.status == "VALIDATION_FORM_FAILED" ){
-					//Show Error
-					errors = resp.data;
-					for (key in errors) {
-						$("#"+key+"_err").html(errors[key]);
+				$.alert({
+					title: 'Message',
+					content: resp.message,
+					buttons : {
+						OK : function(){
+							if(resp.status == "SUCCESS"){
+								$("#btnNew").trigger("click");
+								return false;
+							}
+						},
 					}
-				}else if(resp.status == "SUCCESS") {
-					data = resp.data;
-					$("#fin_assembling_id").val(data.insert_id);					
+				});
+			}
+
+			if(resp.status == "VALIDATION_FORM_FAILED" ){
+				//Show Error
+				errors = resp.data;
+				for (key in errors) {
+					$("#"+key+"_err").html(errors[key]);
 				}
+			}else if(resp.status == "SUCCESS") {
+				data = resp.data;
+				$("#fin_assembling_id").val(data.insert_id);					
+			}
+			
         });
 
 	}

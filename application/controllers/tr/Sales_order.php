@@ -53,7 +53,12 @@ class Sales_order extends MY_Controller{
 			
 			['title' => 'Total', 'width' => '100px','className'=>'text-right',
 				'render'=>"function(data,type,row){
-					var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount) + parseFloat(row.fdc_vat_amount);
+
+					var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount);
+					if (row.fbl_is_vat_include == 0){
+						total +=  parseFloat(row.fdc_vat_amount);						
+					}
+					
 					return row.fst_curr_code + ':' + App.money_format(total);
 				}"
 			],
@@ -198,6 +203,14 @@ class Sales_order extends MY_Controller{
 			return;
 		}
 
+		$vat = 0;
+		$incVat = 0;
+		if (getDbConfig("sales_price_inc_ppn") == "1"){
+			$vat = getDbConfig("sales_ppn_percent");
+			$incVat = 1;
+		}else{
+			$vat =  $this->input->post("fdc_vat_percent");
+		}
 
 
 		//PREPARE DATA
@@ -212,13 +225,13 @@ class Sales_order extends MY_Controller{
 			"fin_sales_id" => $this->input->post("fin_sales_id"),
 			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),			
 			"fbl_is_hold" => $isHold,
-			"fbl_is_vat_include" => ($this->input->post("fbl_is_vat_include") == null) ? 0 : 1,
+			"fbl_is_vat_include" => $incVat,
 			"fin_shipping_address_id" =>$this->input->post("fin_shipping_address_id"),			
 			"fst_memo" =>$this->input->post("fst_memo"),
 			"fdc_subttl"=>0,// calculate from detail
 			"fdc_disc_amount" => 0, //get Total Disc recalculate
 			"fdc_dpp_amount" => 0, // calculate from detail
-			"fdc_vat_percent" => $this->input->post("fdc_vat_percent"),
+			"fdc_vat_percent" => $vat,
 			"fdc_vat_amount" => 0, //total vat recalculate
 			"fdc_total" => 0, //total recalculate
 			"fdc_downpayment" => $fdc_downpayment,
@@ -498,7 +511,17 @@ class Sales_order extends MY_Controller{
 			$this->trvoucher_model->deleteVoucher("SALESORDER",$fin_salesorder_id);
 			$this->trverification_model->deleteApproval("SO",$fin_salesorder_id);			
 
+
 			//PREPARE DATA
+			$vat = 0;
+			$incVat = 0;
+			if (getDbConfig("sales_price_inc_ppn") == "1"){
+				$vat = getDbConfig("sales_ppn_percent");
+				$incVat = 1;
+			}else{
+				$vat =  $this->input->post("fdc_vat_percent");
+			}
+
 			$dataH = [
 				"fin_salesorder_id"=>$fin_salesorder_id,
 				"fin_branch_id"=>$this->aauth->get_active_branch_id(),
@@ -511,13 +534,13 @@ class Sales_order extends MY_Controller{
 				"fin_sales_id" => $this->input->post("fin_sales_id"),
 				"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),			
 				"fbl_is_hold" => $isHold,
-				"fbl_is_vat_include" => ($this->input->post("fbl_is_vat_include") == null) ? 0 : 1,
+				"fbl_is_vat_include" => $incVat,
 				"fin_shipping_address_id" =>$this->input->post("fin_shipping_address_id"),			
 				"fst_memo" =>$this->input->post("fst_memo"),
 				"fdc_subttl"=>0,// calculate from detail
 				"fdc_disc_amount" => 0, //get Total Disc recalculate
 				"fdc_dpp_amount" => 0, // calculate from detail
-				"fdc_vat_percent" => $this->input->post("fdc_vat_percent"),
+				"fdc_vat_percent" => $vat,
 				"fdc_vat_amount" => 0, //total vat recalculate
 				"fdc_total" => 0, //total recalculate
 				"fdc_downpayment" => $fdc_downpayment,

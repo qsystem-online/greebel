@@ -239,6 +239,15 @@ var App = {
 	},
 	consoleLog:function(obj){
 		App.log(obj);
+	},
+	showFormErrors:function(resp){
+		if(resp.status == "VALIDATION_FORM_FAILED" ){
+			//Show Error
+			errors = resp.data;
+			for (key in errors) {
+				$("#"+key+"_err").html(errors[key]);
+			}
+		}
 	}
 	
 }

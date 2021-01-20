@@ -151,8 +151,7 @@ class Lhp extends MY_Controller{
 			$this->json_output([
 				"status"=>$e->getStatus(),
 				"messages"=>$e->getMessage(),
-				"data"=>$e->getStatus(),
-				"status"=>$e->getData()				
+				"data"=>$e->getData(),	
 			]);
 		}
 
