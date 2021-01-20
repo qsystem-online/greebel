@@ -100,7 +100,7 @@ class Trsalesekspedisi_model extends MY_Model {
 		
 		
 		$dataJurnal = [];
-		if(!$dataH->fbl_reclaimable){
+		if($dataH->fbl_reclaimable){
 			//Piutang
 			//      Hutang                        
 			$accPiutangEkspedisi = getGLConfig("PIUTANG_EKSPEDISI_PENJUALAN");        

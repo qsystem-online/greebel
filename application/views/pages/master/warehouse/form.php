@@ -82,6 +82,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fbl_logistic_err" class="text-danger" style="padding-left:200px"></div>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <div class="col-md-3 col-md-offset-3">
+                                <label class="checkbox-inline"><input id="fbl_is_production" type="checkbox" name="fbl_is_production" value="1"><?= lang("Production") ?></label>
+                                <div id="fbl_is_production_err" class="text-danger" style="padding-left:200px"></div>
+                            </div>
+                        </div>
+
+                        
                         <!-- end box body -->
 
                         <div class="box-footer text-right">

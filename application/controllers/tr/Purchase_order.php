@@ -165,7 +165,7 @@ class Purchase_order extends MY_Controller{
 		$this->openForm("ADD", 0);
 	}
 	public function edit($fin_po_id){
-		parent::edit();
+		parent::edit($fin_po_id);
 		$this->openForm("EDIT", $fin_po_id);
 	}
 	public function view($finPOId){

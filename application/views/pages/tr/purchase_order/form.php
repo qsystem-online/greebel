@@ -301,12 +301,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 									<div class="form-group">
 										<label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?></label>
-										<div class="col-md-2">
+										<div class="col-md-3">
 											<input type="number" class="ele-disc form-control text-right numeric" id="fdb_qty" value="1" min="1">
 										</div>
 
-										<label for="fdc_price" class="col-md-2 control-label"><?=lang("Price")?></label>
-										<div class="col-md-5">
+										<label for="fdc_price" class="col-md-3 control-label"><?=lang("Price")?></label>
+										<div class="col-md-3">
 											<input type="text" class="ele-disc form-control text-right money" id="fdc_price" value="0">
 										</div>
 									</div>
