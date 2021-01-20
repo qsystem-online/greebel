@@ -77,13 +77,15 @@
 						$fdb_qty_out = formatNumber ($row->fdb_qty_out,2);
 						$fdc_price_in = formatNumber ($row->fdc_price_in,2);
                         $fdc_jumlah = formatNumber ($fdc_jumlah,2);
-                        $fdb_qty_balance_after = formatNumber ($row->fdb_qty_balance_after,2);
+						$fdb_qty_balance_after = formatNumber ($row->fdb_qty_balance_after,2);
+						$start_balance = ($row->fdb_qty_balance_after + $row->fdb_qty_out) - $row->fdb_qty_in;
+						$start_balance = formatNumber ($start_balance,2);
 						echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");
 						echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->fdt_trx_datetime</td>");
 						echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->fst_trx_code</td>");
 						echoIfColSelected(3,$selectedCols,"<td class='col-3'>$row->fst_trx_no</td>");
 						echoIfColSelected(4,$selectedCols,"<td class='col-4'>$row->fst_referensi</td>");
-						echoIfColSelected(5,$selectedCols,"<td class='col-5'>-</td>");
+						echoIfColSelected(5,$selectedCols,"<td class='col-5'>$start_balance</td>");
 						echoIfColSelected(6,$selectedCols,"<td class='col-6' style='text-align: right'>$fdb_qty_in</td>");
 						echoIfColSelected(7,$selectedCols,"<td class='col-7' style='text-align: right'>$fdb_qty_out</td>");
 						echoIfColSelected(8,$selectedCols,"<td class='col-8' style='text-align: right'>$fdc_price_in</td>");
