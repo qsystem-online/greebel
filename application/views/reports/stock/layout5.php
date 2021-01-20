@@ -31,7 +31,9 @@
 						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:50px'>Q.Masuk</th>");
 						echoIfColSelected(5,$selectedCols,"<th class='col-5' style='width:50px'>Q.Keluar</th>");
 						echoIfColSelected(6,$selectedCols,"<th class='col-6 text-right' style='width:50px'>Q.Sisa</th>");
-						echoIfColSelected(7,$selectedCols,"<th class='col-7 text-right' style='width:50px'>Unit</th>");		
+                        echoIfColSelected(7,$selectedCols,"<th class='col-7 text-right' style='width:50px'>Unit</th>");
+                        echoIfColSelected(8,$selectedCols,"<th class='col-8 text-right' style='width:50px'>Nilai</th>");
+						echoIfColSelected(9,$selectedCols,"<th class='col-9 text-right' style='width:50px'>Jumlah</th>");			
 					?>
 				</tr>
 			</thead>
@@ -47,24 +49,16 @@
                     $fdc_jumlah = 0;
 					$newItem = true;
 					foreach ($dataReport as $row){
-						if ( $groupItemId != $row->fin_item_group_id){
-							$groupItemId = $row->fin_item_group_id;
-							//echoIfColSelected(0,$selectedCols,"<td class='col-0'>$row->Relation_Name</td>");
-							echo "<tr>";
-							echo "<td colspan='".totalSelectedCol(8,$selectedCols)."'style='text-align: left;font-weight: bold'>$row->fst_item_group_name</td>";
-                            echo "</tr>";
-                            $nou = 0;	   
-						}
-
-
-						echo "<tr>";
-						$nou++;
-						$start_balance = formatNumber($row->start_balance,2);
+                        echo "<tr>";
+                        $nou++;
+                        $start_balance = formatNumber($row->start_balance,2);
                         $fdb_qty_in = formatNumber ($row->fdb_qty_in,2);
 						$fdb_qty_out = formatNumber ($row->fdb_qty_out,2);
-						$fdc_jumlah = formatNumber ($fdc_jumlah,2);
                         $end_balance = ($row->start_balance + $row->fdb_qty_in) - $row->fdb_qty_out;
 						$end_balance = formatNumber ($end_balance,2);
+                        $fdc_avg_cost = formatNumber($row->fdc_avg_cost,2);
+                        $fdc_jumlah = ((($row->start_balance + $row->fdb_qty_in) - $row->fdb_qty_out)* $row->fdc_avg_cost);
+						$fdc_jumlah = formatNumber ($fdc_jumlah,2);
 						if ($row->fst_basic_unit == null ){
 							$fst_basic_unit = '???';
 						}else{
@@ -77,7 +71,9 @@
 						echoIfColSelected(4,$selectedCols,"<td class='col-4'style='text-align: right'>$fdb_qty_in</td>");
 						echoIfColSelected(5,$selectedCols,"<td class='col-5'style='text-align: right'>$fdb_qty_out</td>");
 						echoIfColSelected(6,$selectedCols,"<td class='col-6'style='text-align: right'>$end_balance</td>"); 
-						echoIfColSelected(7,$selectedCols,"<td class='col-7'>$fst_basic_unit</td>"); 										                                                                                                                                                                      
+                        echoIfColSelected(7,$selectedCols,"<td class='col-7'>$fst_basic_unit</td>");
+                        echoIfColSelected(8,$selectedCols,"<td class='col-8'style='text-align: right'>$fdc_avg_cost</td>");
+						echoIfColSelected(9,$selectedCols,"<td class='col-9'style='text-align: right'>$fdc_jumlah</td>");  										                                                                                                                                                                      
 						echo "</tr>";	
 					}
 

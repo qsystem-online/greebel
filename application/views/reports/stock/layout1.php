@@ -20,7 +20,7 @@
 		<br>
 		<div>Gudang : Gudang</div>
 		<div>Tanggal: Tanggal  s/d Tanggal</div>                            
-		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1500px">      
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1200px">      
 			<thead>
 				<tr style="background-color:navy;color:white">
 					<?php
@@ -46,7 +46,11 @@
 					$sumPerItem = false;
 					$ttlItemIn =0 ;
 					$ttlItemOut =0 ;
-					$newItem = true;
+					$fdb_qty_in = 0;
+					$fdb_qty_out = 0;
+					$fdb_qty_balance_after = 0;
+					$start_balance =0 ;
+					$fst_item_name = "";
 					foreach ($dataReport as $row){
 						//if ( $itemId != $row->fin_item_id  && $itemId != ""){
 							//Cetak Total
@@ -79,13 +83,12 @@
 						if ( $itemId != $row->fin_item_id ){
 							$itemId = $row->fin_item_id;
 							//echoIfColSelected(0,$selectedCols,"<td class='col-0'>$row->Relation_Name</td>");
+							$fst_item_name = $row->fst_item_code .'-'. $row->fst_item_name;
 							echo "<tr>";
-							echo "<td colspan='".totalSelectedCol(11,$selectedCols)."'style='text-align: left;font-weight: bold'>$row->fst_item_name</td>";
+							echo "<td colspan='".totalSelectedCol(11,$selectedCols)."'style='text-align: left;font-weight: bold'>$fst_item_name</td>";
 							echo "</tr>";
 							$nou = 0;	   
 						}
-
-
 						echo "<tr>";
 						//if ( $groupItemId != $row->fin_item_group_id){
 						//	$groupItemId = $row->fin_item_group_id;
@@ -105,12 +108,14 @@
 						$fdb_qty_in = formatNumber ($row->fdb_qty_in,2);
 						$fdb_qty_out = formatNumber ($row->fdb_qty_out,2);
 						$fdb_qty_balance_after = formatNumber ($row->fdb_qty_balance_after,2);
+						$start_balance = ($row->fdb_qty_balance_after + $row->fdb_qty_out) - $row->fdb_qty_in;
+						$start_balance = formatNumber ($start_balance,2);
 						echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");
 						echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->fdt_trx_datetime</td>");
 						echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->fst_trx_code</td>");
 						echoIfColSelected(3,$selectedCols,"<td class='col-3'>$row->fst_trx_no</td>");
 						echoIfColSelected(4,$selectedCols,"<td class='col-4'>$row->fst_referensi</td>");
-						echoIfColSelected(5,$selectedCols,"<td class='col-5'>-</td>");
+						echoIfColSelected(5,$selectedCols,"<td class='col-5' style='text-align: right'>$start_balance</td>");
 						echoIfColSelected(6,$selectedCols,"<td class='col-6' style='text-align: right'>$fdb_qty_in</td>");
 						echoIfColSelected(7,$selectedCols,"<td class='col-7' style='text-align: right'>$fdb_qty_out</td>");
 						echoIfColSelected(8,$selectedCols,"<td class='col-8' style='text-align: right'>$fdb_qty_balance_after</td>");
