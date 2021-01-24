@@ -30,23 +30,9 @@
 				</select>
 			</div>
 		</div>
-
-		<div class="form-group row">
-			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("From")?></label>
-			<div class="col-md-4">
-				<input type="text" class="form-control datepicker text-right" id="fdt_from" name="fdt_from" />
-				
-			</div>
-			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("To")?></label>
-			<div class="col-md-4">
-			<input type="text" class="form-control datepicker text-right" id="fdt_to" name="fdt_to" />
-			</div>
-		</div>
-
-
 		<div class="form-group row">
 			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
-			<div class="col-md-10">
+			<div class="col-md-4">
 				<select class="form-control select2" id="fin_warehouse_id" name="fin_warehouse_id">
 				<?php
 					$listWarehouse = $this->mswarehouse_model->getALLWarehouseList();
@@ -56,24 +42,22 @@
 				?>
 				</select>
 			</div>
-		</div>			
-
+			<label for="select-items" class="col-sm-2 control-label"><?=lang("Item")?></label>
+			<div class="col-sm-4">
+				<select id="select-items" class="form-control non-editable" name="fin_item_id"></select>
+				<div id="fin_item_id_err" class="text-danger"></div>
+			</div>
+		</div>  
 		<div class="form-group row">
-			<label for="select-ItemCode" class="col-md-2 control-label"><?= lang("Item Code") ?></label>
+			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("From")?></label>
 			<div class="col-md-4">
-				<select id="select-ItemCode" class="form-control" name="fst_item_code">
-					<option value="0">--  <?= lang("select") ?>  --</option>
-				</select>
-				<div id="fst_item_code_err" class="text-danger"></div>
+				<input type="text" class="form-control datepicker text-right" id="fdt_from" name="fdt_from" />
 			</div>
-			<label for="select-CodeItem" class="col-md-2 control-label"><?= lang("s/d") ?></label>
+			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("To")?></label>
 			<div class="col-md-4">
-				<select id="select-ItemCode2" class="form-control" name="fst_item_code2">
-					<option value="0">--  <?= lang("select") ?>  --</option>
-				</select>
-				<div id="fst_item_code2_err" class="text-danger"></div>
+			<input type="text" class="form-control datepicker text-right" id="fdt_to" name="fdt_to" />
 			</div>
-		</div>          
+		</div>		        
 	
 		<div class="form-group row">
 			<label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
@@ -152,6 +136,11 @@
 	$(function() {
 		$("#select-GroupItemId").select2({
 			width: '100%',
+			placeholder:{
+                id: '0', // the value of the option
+                text: 'All'
+            },
+			allowClear: true,
 			ajax: {
 				url: '<?= site_url() ?>master/item/get_data_ItemGroupId',
 				dataType: 'json',
@@ -182,51 +171,43 @@
 			});
 		});
 
-		$("#select-ItemCode").select2({
-			width: '100%',
-			ajax: {
-				url: '<?= site_url() ?>master/item/get_data_ItemCode',
-				dataType: 'json',
-				delay: 250,
-				processResults: function(data) {
-					data2 = [];
-					$.each(data, function(index, value){
-						data2.push({
-							"id": value.fst_item_code,
-							"text": value.fst_item_code
-						});
-					});
-					console.log(data2);
-					return {
-						results: data2
-					};
-				},
-				cache: true,
-			}
-		});
+        $("#select-items").select2({
+            minimumInputLength: 2,
+            placeholder:{
+                id: '0', // the value of the option
+                text: 'All'
+            },
+            allowClear: true,
+            ajax:{
+                delay: 250,
+                url: "<?=site_url()?>/report/invoice/ajxListItem",
+                dataType: 'json',
+                processResults: function (result) {
+                    if (result.status == "SUCCESS"){
+                        var data = $.map(result.data, function (obj) {
+                            obj.id = obj.fin_item_id,  
+                            obj.text = obj.fst_item_code + " - "  + obj.fst_item_name;
+                            //obj.fbl_is_batch_number
+                            //obj.fbl_is_serial_number
+                            return obj;
+                        });
 
-		$("#select-ItemCode2").select2({
-			width: '100%',
-			ajax: {
-				url: '<?= site_url() ?>master/item/get_data_ItemCode',
-				dataType: 'json',
-				delay: 250,
-				processResults: function(data) {
-					data2 = [];
-					$.each(data, function(index, value){
-						data2.push({
-							"id": value.fst_item_code,
-							"text": value.fst_item_code
-						});
-					});
-					console.log(data2);
-					return {
-						results: data2
-					};
-				},
-				cache: true,
-			}
-		});
+                        return {
+                            results: data
+                        };
+                    }else{
+                        return {
+                            result:[]
+                        }
+                    }
+                }
+            }
+        }).on('select2:select',function(e){
+            var data = e.params.data;
+            selectedItem = data;
+            //$("#fstUnit").empty().trigger("change.select2");
+            //showHideBatchSerial();
+        });
 
 		$("#btnProcess").click(function(event) {
 			event.preventDefault();
