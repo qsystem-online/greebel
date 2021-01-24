@@ -557,7 +557,8 @@ class Trpo_model extends MY_Model {
 			$rwInv = $qr->row();
 			if($rwInv != null){
 				$cost = ((float) $rw->fdc_m3 / $ttlKubik) * $ttlCost;
-				$this->trinventory_model->updateById($rwInv->fin_rec_id,null,null,null,null,$cost);
+				//$this->trinventory_model->updateById($rwInv->fin_rec_id,null,null,null,null,$cost);
+				$this->trinventory_model->updateById($rwInv->fin_rec_id,null,null,null,null,$cost/$rwInv->fdb_qty_in);
 			}
 		}      
 
@@ -575,7 +576,7 @@ class Trpo_model extends MY_Model {
 
 		$ssql = "select a.* from trlpbgudangitems a 
 		inner join trlpbgudang b on a.fin_lpbgudang_id = b.fin_lpbgudang_id
-		where b.fin_po_id = ? and b.fst_active = 'A'";
+		where b.fst_lpb_type = 'PO' and b.fin_trans_id = ? and b.fst_active = 'A'";
 		
 		$qr = $this->db->query($ssql,[$finPOId]);
 		$rs = $qr->result();
