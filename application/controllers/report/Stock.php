@@ -69,6 +69,11 @@ class Stock extends MY_Controller
 			['layout' => 5, 'label'=>'Nilai', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
 			['layout' => 5, 'label'=>'Jumlah', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
 
+			['layout' => 6, 'label'=>'Nou.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+            ['layout' => 6, 'label'=>'Item Code', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 6, 'label'=>'Item Name', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 6, 'label'=>'Unit', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+
 		];
 
 	}
@@ -92,7 +97,7 @@ class Stock extends MY_Controller
 		$this->data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>0], true);        	
 		$side_filter = $this->parser->parse('reports/stock/form',$this->data, true);
 		$this->data['REPORT_FILTER'] = $side_filter;
-		$this->data['TITLE'] = "ITEM LIST REPORT";
+		$this->data['TITLE'] = "INVENTORY REPORT";
 		$mode = "Report";
 		// $this->data["mode"] = $mode;
 		// $this->data["title"] = $mode == "ADD" ? "Add Branch" : "Update Branch";
@@ -144,8 +149,7 @@ class Stock extends MY_Controller
 			"fin_warehouse_id"=> $this->input->post("fin_warehouse_id"),
 			"fdt_from"=>dbDateFormat($this->input->post("fdt_from")),
 			"fdt_to"=>dbDateFormat($this->input->post("fdt_to")),
-			"fst_item_code" => $this->input->post("fst_item_code"),
-			"fst_item_code2" => $this->input->post("fst_item_code2"),
+			"fin_item_id" => $this->input->post("fin_item_id"),
 			"rpt_layout" => $this->input->post("rpt_layout"),
 			"selected_columns" => array($this->input->post("selected_columns"))
 		];		
@@ -172,8 +176,14 @@ class Stock extends MY_Controller
 			case "4":
 				$this->parser->parse('reports/stock/layout4', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
 				break;
+			case "5":
+				$this->parser->parse('reports/stock/layout5', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+				break;
+			case "6":
+				$this->parser->parse('reports/stock/layout6', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+				break;
 			default:
-			$this->parser->parse('reports/stock/layout5', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+				$this->parser->parse('reports/stock/layout1', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
 				break;
 		}
 		

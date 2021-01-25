@@ -18,8 +18,35 @@
 		</style>
 		<div>MUTASI PERSEDIAAN</div>
 		<br>
-		<div>Gudang : Gudang</div>
-		<div>Tanggal: Tanggal  s/d Tanggal</div>                            
+		<?php
+		$fin_warehouse_id = $this->input->post("fin_warehouse_id");
+		$this->load->model("mswarehouse_model");
+		$data = $this->mswarehouse_model->getDataById($fin_warehouse_id);
+		$wareHouse = $data ["warehouse"];
+		if ($wareHouse != null){
+			$name_wareHouse = $wareHouse->fst_warehouse_name;
+		}else{
+			$name_wareHouse = "ALL";
+		}
+		?>
+		<?php
+		$start_date = $this->input->post("fdt_from");
+		if ($start_date != null){
+			$start_date = $start_date;
+		}else{
+			$start_date = "1900-01-01";
+		}
+		?>
+		<?php
+		$end_date = $this->input->post("fdt_to");
+		if ($end_date != null){
+			$end_date = $end_date;
+		}else{
+			$end_date = "3000-01-01";
+		}
+		?>
+		<div>Gudang : <?= $name_wareHouse ?></div>
+		<div>Tanggal: <?= $start_date ?>  s/d <?= $end_date ?></div>                             
 		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1200px">      
 			<thead>
 				<tr style="background-color:navy;color:white">
@@ -55,10 +82,15 @@
                         $fdb_qty_in = formatNumber ($row->fdb_qty_in,2);
 						$fdb_qty_out = formatNumber ($row->fdb_qty_out,2);
                         $end_balance = ($row->start_balance + $row->fdb_qty_in) - $row->fdb_qty_out;
-						$end_balance = formatNumber ($end_balance,2);
-                        $fdc_avg_cost = formatNumber($row->fdc_avg_cost,2);
-                        $fdc_jumlah = ((($row->start_balance + $row->fdb_qty_in) - $row->fdb_qty_out)* $row->fdc_avg_cost);
-						$fdc_jumlah = formatNumber ($fdc_jumlah,2);
+                        $end_balance = formatNumber ($end_balance,2);
+                        if ($row->fdc_avg_cost_last == null){
+                            $fdc_avg_cost = $row->fdc_avg_cost_start;
+                        }else{
+                            $fdc_avg_cost = $row->fdc_avg_cost_last;
+                        }
+                        $fdc_jumlah = ((($row->start_balance + $row->fdb_qty_in) - $row->fdb_qty_out)* $fdc_avg_cost);
+                        $fdc_jumlah = formatNumber ($fdc_jumlah,2);
+                        $fdc_avg_cost = formatNumber($fdc_avg_cost,2);
 						if ($row->fst_basic_unit == null ){
 							$fst_basic_unit = '???';
 						}else{

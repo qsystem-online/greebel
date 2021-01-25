@@ -18,8 +18,35 @@
 		</style>
 		<div>Laporans Stock Barang</div>
 		<br>
-		<div>Gudang : Gudang</div>
-		<div>Tanggal: Tanggal  s/d Tanggal</div>                            
+		<?php
+		$fin_warehouse_id = $this->input->post("fin_warehouse_id");
+		$this->load->model("mswarehouse_model");
+		$data = $this->mswarehouse_model->getDataById($fin_warehouse_id);
+		$wareHouse = $data ["warehouse"];
+		if ($wareHouse != null){
+			$name_wareHouse = $wareHouse->fst_warehouse_name;
+		}else{
+			$name_wareHouse = "ALL";
+		}
+		?>
+		<?php
+		$start_date = $this->input->post("fdt_from");
+		if ($start_date != null){
+			$start_date = $start_date;
+		}else{
+			$start_date = "1900-01-01";
+		}
+		?>
+		<?php
+		$end_date = $this->input->post("fdt_to");
+		if ($end_date != null){
+			$end_date = $end_date;
+		}else{
+			$end_date = "3000-01-01";
+		}
+		?>
+		<div>Gudang : <?= $name_wareHouse ?></div>
+		<div>Tanggal: <?= $start_date ?>  s/d <?= $end_date ?></div>                             
 		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1200px">      
 			<thead>
 				<tr style="background-color:navy;color:white">
