@@ -597,7 +597,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/gudang/pengiriman_penjualan");
+			window.location.replace("<?=site_url()?>tr/gudang/mutasi");
 		});	
 
 		$("#btn-add-items").click(function(e){
@@ -663,6 +663,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 <script type="text/javascript" info="function">
 	function submitAjax(confirmEdit){        
+		
+		if($("#fin_from_warehouse_id").val() == $("#fin_to_warehouse_id").val()){
+			alert("<?=lang("Gudang Asal & Gudang Tujuan Tidak boleh sama !")?>");
+			return;
+		}
+
+
 		data = $("#frmHeader").serializeArray();
 
 		data.push({

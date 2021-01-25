@@ -345,6 +345,10 @@ class Magp extends MY_Controller{
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		$this->form_validation->set_data($dataH);
 		
+		if ($dataH["fin_from_warehouse_id"] == $dataH["fin_to_warehouse_id"]){
+			throw new CustomException("Data gudang asa dan gudang tujuan tidak boleh sama !",3003,"FAILED",[]);
+		}
+		
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
 			throw new CustomException("Error Validation Header",3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());

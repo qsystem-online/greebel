@@ -751,6 +751,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	function submitAjax(confirmEdit){        
 		data = $("#frmHeader").serializeArray();
 
+		if($("#fin_from_warehouse_id").val() == $("#fin_from_warehouse_id").val()){
+			alert("<?=lang("Gudang Asal & Gudang Tujuan Tidak boleh sama !")?>");
+			return;
+		}
+
 		data.push({
 			name:SECURITY_NAME,
 			value: SECURITY_VALUE

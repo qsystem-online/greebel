@@ -1154,6 +1154,7 @@ class Trsalesorder_model extends MY_Model {
     public function isEditable($finSalesOrderId){
         /**
          * + False: kalau transaksi sudah ada yang melakukan approval
+         * + False: kalau sudah di tarik menjadi SJ
          */
         $ssql = "SELECT * from trverification  
             where fst_verification_type = 'SO' 
@@ -1165,6 +1166,16 @@ class Trsalesorder_model extends MY_Model {
             return [
                 "status"=>"FAILED",
                 "message"=> sprintf(lang("%s telah dilakukan proses approval"),$rw->fst_salesorder_no)
+            ];
+        }
+
+        $ssql ="SELECT * FROM trsuratjalan where fst_sj_type ='SO' and fin_trans_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$finSalesOrderId]);
+        $rw = $qr->row();
+        if ($rw != null){
+            return [
+                "status"=>"FAILED",
+                "message"=> sprintf(lang("telah terbis surat jalan %s "),$rw->fst_sj_no)
             ];
         }
 

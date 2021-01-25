@@ -274,11 +274,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				}
 
-				//$("#mdlDetail").modal("show");
+				$("#mdlDetail").modal("show");
 			},
 
 			hide:function(){
-				//$("#mdlDetail").modal("hide");
+				$("#mdlDetail").modal("hide");
 			},
 			clear:function(){
 				mdlDetail.selectedDetail =null;

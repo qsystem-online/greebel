@@ -12,7 +12,10 @@ class Msunits_model extends MY_Model
 
 	public function getDataById($id)
 	{
-		return null;
+		$ssql = "SELECT * FROM msunits where fin_rec_id = ? and fst_active != 'D'";
+		$qr = $this->db->query($ssql,[$id]);
+		$rw = $qr->row();
+		return $rw;
 	}
 
 	public function getRules($mode = "ADD", $id = 0)
@@ -20,23 +23,13 @@ class Msunits_model extends MY_Model
 		$rules = [];
 
 		$rules[] = [
-			'field' => 'fst_fa_profile_code',
-			'label' => 'Fixed asset code',
+			'field' => 'fst_unit',
+			'label' => 'Unit',
 			'rules' => 'required',
 			'errors' => array(
 				'required' => '%s tidak boleh kosong'
 			)
 		];
-
-		$rules[] = [
-			'field' => 'fin_productiontype_id',
-			'label' => 'Type produksi',
-			'rules' => 'required',
-			'errors' => array(
-				'is_unique' => '%s tidak boleh kosong'
-			)
-		];
-
 		return $rules;
 	}	
 

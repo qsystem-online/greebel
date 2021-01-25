@@ -602,23 +602,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).on('click','.btn-delete',function(e){
 			e.preventDefault();
 			var trRow = $(this).parents('tr');
-			
-			var data  = tblBatchno.row(trRow).data();
-			var cfrm = confirm("<?= lang('Hapus Batch Number ')?>" + data.fst_wobatchno_no);
-			if (cfrm == true){
-				$.ajax({
-					url:"<?=site_url()?>tr/production/wo_batch/delete/data.fin_wobatchno_id",
-					method:"GET",
-				}).done(function(resp){
-					if (resp.messages != ""){
-						alert(resp.messages);
-					}
-					if (resp.status == "SUCCESS"){
-						tblBatchno.row(trRow).remove().draw(false);		
-					}
-				})				
-			}			
-
+			tblCost.row(trRow).remove().draw(false);
 		}).on('click', 'td.details-control', function () {
 			var tr = $(this).closest('tr');
 			var row = tblCost.row( tr );
@@ -653,7 +637,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		$("#btnNew").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/production/woe_in/add");
+			window.location.replace("<?=site_url()?>tr/production/woe_inv/add");
 		});
 
 
@@ -675,7 +659,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/production/woe_in");
+			window.location.replace("<?=site_url()?>tr/production/woe_inv");
 		});
 
 		$("#fst_curr_code").change(function(e){
