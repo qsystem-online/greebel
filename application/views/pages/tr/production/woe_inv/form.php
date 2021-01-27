@@ -112,7 +112,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						<label for="fdb_qty" class="col-md-5 control-label"><?=lang("Cost Per Unit")?></label>
 						<div class="col-md-2">
-							<input type="text" readonly class="form-control text-right" id="fdc_external_cost_per_unit"  placeholder="<?=lang("0")?>" value="0"></input>
+							<input type="text" class="form-control text-right money" id="fdc_external_cost_per_unit" name="fdc_external_cost_per_unit" placeholder="<?=lang("0")?>" value="0"></input>
 						</div>
 					</div>
 
@@ -665,8 +665,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#fst_curr_code").change(function(e){
 			var rate = $("#fst_curr_code option:selected").data("rate");
 			$("#fdc_exchange_rate_idr").val(App.money_format(rate));
+			calculateWOEIn();
 		});
 
+		
+		$("#fdc_exchange_rate_idr").change(function(e){
+			calculateWOEIn();
+		});
+
+		$("#fdc_external_cost_per_unit").change(function(e){
+			calculateWOEIn();
+		});
+
+		
 		$("#btn-add-cost").click(function(e){
 			e.preventDefault();
 			mdlDetailCost.selectedDetail = null;
@@ -680,6 +691,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	
 	function submitAjax(confirmEdit){     
+
+		if($("#ttl-cost").val() != $("#ttl-cost-detail").val()){
+			alert("<?=lang("Total tidak sama !")?>");
+			return;
+		}
+
 		var mode = "<?=$mode?>";   
 		if (mode == "EDIT" && confirmEdit == 0){
 			MdlEditForm.saveCallBack = function(){
@@ -895,9 +912,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		totalQty = 0;
 		totalCost = 0;
 		exchangeRate = parseFloat($("#fdc_exchange_rate_idr").val());
+		
+		var costPerUnit = parseFloat(App.money_parse($("#fdc_external_cost_per_unit").val()));
+
 		$.each(selectedWOInList,function(i,v){
 			totalQty += parseFloat(v.fdb_qty);
-			totalCost += parseFloat(v.fdb_qty) * parseFloat(selectedWO.fdc_external_cost_per_unit) * exchangeRate;
+			totalCost += parseFloat(v.fdb_qty) * costPerUnit * exchangeRate;
 		});
 		$("#ttl-qty").val(totalQty);
 		$("#ttl-cost").val(money_format(totalCost));

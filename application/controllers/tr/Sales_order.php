@@ -295,7 +295,7 @@ class Sales_order extends MY_Controller{
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
 			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "Error Validation Forms 1";
+			$this->ajxResp["message"] = "";
 			$this->ajxResp["data"] = $this->form_validation->error_array();
 			$this->ajxResp["request_data"] = $_POST;
 			$this->json_output();

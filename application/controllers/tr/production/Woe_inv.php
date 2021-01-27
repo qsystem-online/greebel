@@ -387,18 +387,31 @@ class Woe_inv extends MY_Controller{
 			"fst_curr_code"=>$this->input->post("fst_curr_code"),	
 			"fin_supplier_id"=>$this->input->post("fin_supplier_id"),		
 			"fdc_exchange_rate_idr"=>$this->input->post("fdc_exchange_rate_idr"),
+			"fdb_total_qty"=>0,
+			"fdc_external_cost_per_unit"=>$this->input->post("fdc_external_cost_per_unit"),
 			"fst_memo" => $this->input->post("fst_memo"),
 			"fst_active"=>'A',
 		];		
 
 		$dataDWOEIn = $this->input->post("fin_woein_id_list");
 
+		$ttlQty = 0;
+		foreach($dataDWOEIn as $fin_woein_id){
+			$woein = $this->trmemowoein_model->getSimpleDataById($fin_woein_id);
+			$ttlQty += $woein->fdb_qty;
+		}
+		$dataH["fdb_total_qty"] = $ttlQty;
+		$dataH["fdc_total"] = $ttlQty * $dataH["fdc_external_cost_per_unit"];
+
 		$dataDCost = JSON_decode($this->input->post("detailsCost"));
 		$total=0;
 		foreach ($dataDCost as $dCost) {
 			$total += $dCost->fdc_total;
 		}
-		$dataH["fdc_total"] = $total;
+
+		if ($dataH["fdc_total"] != $total){
+			throw new CustomException(lang("Total header dan detail tidak sesuai !"), 3003,"FAILED",[]);			
+		};
 
 		return[
 			"dataH"=>$dataH,

@@ -121,7 +121,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?></label>
 							<div class="col-md-10">
 								<select class="select2 form-control" name="fin_shipping_address_id" id="fin_shipping_address_id" style="width:100%"></select>
-								<div id="fst_shipping_address_err" class="text-danger"></div>
+								<div id="fin_shipping_address_id_err" class="text-danger"></div>
 							</div>														
 						</div>
 						<div class="form-group">
