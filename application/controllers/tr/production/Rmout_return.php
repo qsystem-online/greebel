@@ -16,34 +16,35 @@ class Rmout_return extends MY_Controller{
 	public function index(){
 		parent::index();
 		$this->load->library('menus');
-		$this->list['page_name'] = "RM-OUT Produksi";
-		$this->list['list_name'] = "RM-OUT Produksi List";
+		$this->list['page_name'] = "RM-OUT Return";
+		$this->list['list_name'] = "RM-OUT Return List";
 		$this->list['boxTools'] = [
-			"<a id='btnNew'  href='".site_url()."tr/production/rmout_prod/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>"
+			"<a id='btnNew'  href='".site_url()."tr/production/rmout_return/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>"
 		];
 		$this->list['pKey'] = "id";
-		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/production/rmout_prod/fetch_list_data';
+		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/production/rmout_return/fetch_list_data';
 		$this->list['arrSearch'] = [
-			'fst_rmout_no' => 'No.',
+			'fst_rmout_return_no' => 'No.',
 		];
 
 		$this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
 			['title' => 'Production', 'link' => '#', 'icon' => ''],
-			['title' => 'RM-OUT Produksi', 'link' => null, 'icon' => '']			
+			['title' => 'RM-OUT Return', 'link' => null, 'icon' => '']			
 		];
 		
 
 		$this->list['columns'] = [
-			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_rmout_id'],
-			['title' => 'No.', 'width' => '60px', 'data' => 'fst_rmout_no'],
-			['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_rmout_datetime'],
-			['title' => 'Type', 'width' => '50px', 'data' => 'fst_rmout_type'],
+			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_rmout_return_id'],
+			['title' => 'No.', 'width' => '60px', 'data' => 'fst_rmout_return_no'],
+			['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_rmout_return_datetime'],
+			['title' => 'WO.', 'width' => '60px', 'data' => 'fst_wo_no'],
+			['title' => 'WO Batch No.', 'width' => '60px', 'data' => 'fst_wobatchno_id'],
 			['title' => 'Warehouse', 'width' => '50px', 'data' => 'fst_warehouse_name'],			
 			['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
-					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/production/rmout_prod/edit/' + row.fin_rmout_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
+					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/production/rmout_return/edit/' + row.fin_rmout_return_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
 					action += '<div>';
 					return action;
 				}"
@@ -71,9 +72,11 @@ class Rmout_return extends MY_Controller{
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("(
-				select a.*,b.fst_warehouse_name from trrmout a 
-				inner join mswarehouse b on a.fin_warehouse_id = b.fin_warehouse_id 
-				where a.fst_active != 'D' and a.fin_pagp_id IS NOT NULL
+				select a.*,b.fst_wo_no,c.fst_wobatchno_no,d.fst_warehouse_name from trrmoutreturn a 
+				inner join trwo b on a.fin_wo_id = b.fin_wo_id 
+				inner join trwobatchno c on a.fin_wobatchno_id = c.fin_wobatchno_id  
+				inner join mswarehouse d on a.fin_warehouse_id = d.fin_warehouse_id 
+				where a.fst_active != 'D'
 			) a");
 
 		$selectFields = "a.*";
@@ -123,7 +126,7 @@ class Rmout_return extends MY_Controller{
 		
 		
 		$data["mode"] = $mode;
-		$data["title"] = $mode == "ADD" ? lang("Add RM-Out Produksi") : lang("Update RM-Out Produksi");
+		$data["title"] = $mode == "ADD" ? lang("Add RM-Out Return") : lang("Update RM-Out Return");
 		$data["fin_rmout_return_id"] = $finId;
 		$data["mdlEditForm"] = $edit_modal;
 		$data["mdlPrint"] = $mdlPrint;				
@@ -256,32 +259,18 @@ class Rmout_return extends MY_Controller{
 	}
 
 	private function prepareData(){		
+		//$this->load->model("trinventory_model");		
 
-		$this->load->model("trinventory_model");
-		//'detail' => string '[{"fin_rec_id":0,"fin_item_id":"5","fst_item_code":"ITEM-0001","fst_item_name":"Item with batch and serial","fbl_is_batch_number":"1","fbl_is_serial_number":"1","fst_basic_unit":"PCS","fst_unit":"PCS","fbl_is_basic_unit":"1","fdc_conv_to_basic_unit":"1.00","fdb_qty":"1","fst_batch_number":"BATCH-20200630-001","fst_serial_number_list":["ITM01-004"]}]'
-		
-		$fdtRMOutDatetime = dBDateTimeFormat($this->input->post("fdt_rmout_datetime"));
-
-		$ssql = "SELECT b.fin_to_warehouse_id 
-			FROM trmagconfirm a 
-			inner join trmag b on a.fin_mag_id = b.fin_mag_id
-			WHERE a.fin_mag_confirm_id = ? ";
-		
-		$qr = $this->db->query($ssql,[$this->input->post("fin_pagp_id")]);
-		$rw = $qr->row();
-		if ($rw == null){
-			throw new CustomException("[Data Corrupted..] PAG ID No MAG",3003,"FAILED",[]);
-		}
-
+		$fdtRMOutReturnDatetime = dBDateTimeFormat($this->input->post("fdt_rmout_return_datetime"));
 
 		$dataH = [
-			"fin_rmout_id"=>$this->input->post("fin_rmout_id"),
-			"fst_rmout_no"=>$this->input->post("fst_rmout_no"),
-			"fdt_rmout_datetime"=>$fdtRMOutDatetime,
+			"fin_rmout_return_id"=>$this->input->post("fin_rmout_return_id"),
+			"fst_rmout_return_no"=>$this->input->post("fst_rmout_return_no"),
+			"fdt_rmout_return_datetime"=>$fdtRMOutReturnDatetime,
 			//"fst_rmout_type" =>$this->input->post("fst_rmout_type"),
-			"fin_pagp_id"=>$this->input->post("fin_pagp_id"),
-			"fin_warehouse_id"=>$rw->fin_to_warehouse_id,
+			"fin_wo_id"=>$this->input->post("fin_wo_id"),
 			"fin_wobatchno_id"=>$this->input->post("fin_wobatchno_id"),
+			"fin_warehouse_id"=>$this->input->post("fin_warehouse_id"),
 			"fst_memo"=>$this->input->post("fst_memo"),
 			"fst_active"=>'A',			
 			"fin_branch_id"=>$this->aauth->get_active_branch_id()

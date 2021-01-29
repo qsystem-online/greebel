@@ -733,7 +733,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btnList").click(function(e){
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>tr/gudang/magp");
-		});	
+		});
+
+		$("#fin_wo_id").change(function(e){
+			tblDetails.clear().draw();
+		});
 
 		$("#btn-add-items").click(function(e){
 			e.preventDefault();
@@ -751,7 +755,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	function submitAjax(confirmEdit){        
 		data = $("#frmHeader").serializeArray();
 
-		if($("#fin_from_warehouse_id").val() == $("#fin_from_warehouse_id").val()){
+		if($("#fin_to_warehouse_id").val() == $("#fin_from_warehouse_id").val()){
 			alert("<?=lang("Gudang Asal & Gudang Tujuan Tidak boleh sama !")?>");
 			return;
 		}
