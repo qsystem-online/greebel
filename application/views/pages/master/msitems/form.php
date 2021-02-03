@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/select2/dist/css/select2.min.css">
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/datatables.min.css">
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.css">
+<script src="<?=base_url()?>bower_components/jquery.dragOptions/jquery.dragoptions.min.js"></script>				
 
 <style type="text/css">
     .border-0 {
@@ -216,6 +217,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <ul class="nav nav-tabs">
                                 <li class="active"><a href="#unit_details" data-toggle="tab" aria-expanded="true"><?= lang("Unit Details") ?></a></li>
                                 <li class="bom_details" id="tab-doc"><a href="#bom_details" data-toggle="tab" aria-expanded="false"><?= lang("BOM Details") ?></a></li>
+                                <li class="" id="tab-doc"><a href="#non_component_details" data-toggle="tab" aria-expanded="false"><?= lang("Retur non Component Details") ?></a></li>
                                 <li class="special_pricing" style="display:<?= $displaytabs ?>;"><a href="#special_pricing" data-toggle="tab" aria-expanded="false"><?= lang("Special Pricing") ?></a></li>
                             </ul>
                             <div class="tab-content">
@@ -229,6 +231,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                     <button id="btn-add-bom" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add BOM") ?></button>
                                     <div>
                                         <table id="tbl_bom_details" class="table table-bordered table-hover" style="width:100%;"></table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="non_component_details">
+                                    <button id="btn-add-noncomponent" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Return Non Component") ?></button>
+                                    <div>
+                                        <table id="tbl_noncomponent_details" class="table table-bordered table-hover" style="width:100%;"></table>
                                     </div>
                                 </div>
                                 <div <?= $displaytabs ?> class="tab-pane" id="special_pricing">
@@ -892,6 +900,253 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </script>
 </div>
 
+<div id="mdlNonComponentDetails" class="amodal fade in" role="dialog" style="display: unset">
+    <div class="modal-dialog" style="display:table;width:800px;min-width:350px;max-width:100%">
+        <!-- Modal content-->
+        <div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title"><?= lang("Add BOM Details") ?></h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="fin_nc_item_id" class="col-md-3 control-label"><?= lang("Item Non Component") ?></label>
+                                        <div class="col-md-9">
+                                            <select class="select2 form-control" id="fin_nc_item_id" style="width:100%"></select>
+                                            <span id="fin_nc_item_id_error" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="fst_hpp_type" class="col-md-3 control-label"><?= lang("HPP Calculate From") ?></label>
+                                        <div class="col-md-9">
+                                            <select class="select2 form-control" id="fst_hpp_type" style="width:100%">
+                                                <option value='PRODUCT'>PRODUCT</option>
+                                                <option value='BOM'>BOM</option>
+                                                <option value='MASTER'>MASTER</option>
+                                            </select>
+                                            <span id="fst_hpp_type_error" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="fst_item_list_id" class="col-md-3 control-label"><?= lang("Priority Item For HPP BOM / MASTER") ?></label>
+                                        <div class="col-md-7">
+                                            <select class="select2 form-control" id="item-list" style="width:100%"></select>                                            
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button class="btn btn-primary form-control" id="btn-add-hpp-bom-master">Add</button>                                            
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-9 col-md-offset-3">
+                                            <select class="form-control" id="fst_item_list_id" multiple style="width:100%;height:250px">
+                                                <option>Satu</option>
+                                                <option>Dua</option>
+                                                <option>Tiga</option>
+                                                <option>Empat</option>
+                                                <option>Lima</option>
+                                                <option>Enam</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    
+
+                                </form>
+
+                                <div class="modal-footer">
+                                    <button id="btn-add-bom-details" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+                                    <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+                                </div>
+
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(function() {
+            $("#fst_item_list_id").dragOptions();
+
+            $("#btn-add-noncomponent").click(function(event) {
+                event.preventDefault();
+                $("#mdlNonComponentDetails").modal('show');
+            });
+            $("#tbl_noncomponent_details").DataTable({
+                searching: false,
+                paging: false,
+                info: false,
+                columns: [{
+                        "title": "<?= lang("ID") ?>",
+                        "width": "5%",
+                        data: "fin_rec_id",
+                        visible: false
+                    },
+                    {
+                        "title": "<?= lang("Item Name") ?>",
+                        "width": "10%",
+                        data: "fin_item_id",
+                        visible: false,
+                    },
+                    {
+                        "title": "<?= lang("") ?>",
+                        "width": "10%",
+                        data: "fin_item_id_bom",
+                        visible: false,
+                    },
+                    {
+                        "title": "<?= lang("Item BOM") ?>",
+                        "width": "30%",
+                        data: "BomName",
+                        visible: true,
+                    },
+                    {
+                        "title": "<?= lang("Unit") ?>",
+                        "width": "5%",
+                        data: "fst_unit",
+                        visible: true,
+                    },
+                    {
+                        "title": "<?= lang("Qty") ?>",
+                        "width": "7%",
+                        data: "fdb_qty"
+                    },
+                    {
+                        "title": "<?= lang("Action") ?>",
+                        "width": "5%",
+                        render: function(data, type, row) {
+                            action = "<a class='btn-delete-bom-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+                            //action += "<a class='btn-view-document-items' href='#'><i class='fa fa-folder-open' aria-hidden='true'></i></a>";
+                            return action;
+                        },
+                        "sortable": false,
+                        "className": "dt-body-center text-center"
+                    }
+                ],
+            });
+            $("#tbl_bom_details").on("click", ".btn-delete-bom-details", function(event) {
+                event.preventDefault();
+                t = $("#tbl_bom_details").DataTable();
+                var trRow = $(this).parents('tr');
+                t.row(trRow).remove().draw();
+            });
+            $("#fin_item_id_bom").select2({
+                width: '100%',
+                ajax: {
+                    url: '<?= site_url() ?>master/item/get_data_ItemBom',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        data2 = [];
+                        $.each(data, function(index, value) {
+                            data2.push({
+                                "id": value.fin_item_id,
+                                "text": value.fst_item_name
+                            });
+                        });
+                        console.log(data2);
+                        return {
+                            results: data2
+                        };
+                    },
+                    cache: true,
+                }
+            });
+            var selected_bom;
+            $('#fin_item_id_bom').on('select2:select', function(e) {
+                console.log(selected_bom);
+                var data = e.params.data;
+                selected_bom = data;
+            });
+            $("#fin_item_id_bom").change(function(event) {
+                event.preventDefault();
+                $('#fst_unit-bom').val(null).trigger('change');
+                $("#fst_unit-bom").select2({
+                    width: '100%',
+                    ajax: {
+                        url: '<?= site_url() ?>master/item/get_data_unitbom/' + $("#fin_item_id_bom").val(),
+                        dataType: 'json',
+                        delay: 250,
+                        processResults: function(data) {
+                            data2 = [];
+                            $.each(data, function(index, value) {
+                                data2.push({
+                                    "id": value.fin_item_id,
+                                    "text": value.fst_unit
+                                });
+                            });
+                            console.log(data2);
+                            return {
+                                results: data2
+                            };
+                        },
+                        cache: true,
+                    }
+                });
+            })
+            var selected_unitbom;
+            $('#fst_unit-bom').on('select2:select', function(e) {
+                console.log(selected_unitbom);
+                var data = e.params.data;
+                selected_unitbom = data;
+            });
+            $("#btn-add-bom-details").click(function(event) {
+                event.preventDefault();
+                addRow = true;
+                var itemBom = $("#fin_item_id_bom").val();
+                if (itemBom == null || itemBom == "") {
+                    $("#fin_item_id_bom_error").html("Please select Item");
+                    $("#fin_item_id_bom_error").show();
+                    addRow = false;
+                    return;
+                } else {
+                    $("#fin_item_id_bom_error").hide();
+                }
+                var unitBom = $("#fst_unit-bom").val();
+                if (unitBom == null || unitBom == "") {
+                    $("#fst_unit-bom_error").html("Please select Unit");
+                    $("#fst_unit-bom_error").show();
+                    addRow = false;
+                    return;
+                } else {
+                    $("#fst_unit-bom_error").hide();
+                }
+                var qtyBom = $("#fdb_qty").val();
+                if (qtyBom == null || qtyBom == "" || qtyBom < 0 ) {
+                    $("#fdb_qty_error").html("Qty must be greater than or same as 0 ");
+                    $("#fdb_qty_error").show();
+                    addRow = false;
+                    return;
+                } else {
+                    $("#fdb_qty_error").hide();
+                }
+                t = $('#tbl_bom_details').DataTable();
+                t.row.add({
+                    fin_rec_id: 0,
+                    fin_item_id: 0,
+                    fin_item_id_bom: selected_bom.id,
+                    BomName: selected_bom.text,
+                    fst_unit: selected_unitbom.text,
+                    fdb_qty: $("#fdb_qty").val(),
+                    action: action
+                }).draw(false);
+            });
+        });
+    </script>
+</div>
+
 <div id="mdlSpecialPricing" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:40%;min-width:400px;max-width:100%">
         <!-- Modal content-->
@@ -1196,6 +1451,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
         </div>
     </div>
 </div>
+
+
 
 <?php
     echo $mdlItemGroup;

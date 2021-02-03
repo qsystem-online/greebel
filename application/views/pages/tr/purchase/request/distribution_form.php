@@ -135,16 +135,17 @@
 								<div class="form-group source-warehouse" >
 									<label for="fin_source_warehouse_id" class="col-md-3 control-label">Source Warehouse</label>
 									<div class="col-md-9">
-										<select class="form-control" id="fin_source_warehouse_id">
+										<select class="form-control" id="fin_source_warehouse_id" style="width:100%">
 										<?php
-											$warehouseList = $this->mswarehouse_model->getWarehouseList();
+											//$warehouseList = $this->mswarehouse_model->getWarehouseList();
+											$warehouseList = $this->mswarehouse_model->getLogisticWarehouseList();
 											foreach($warehouseList as $warehouse){
 												echo "<option value='$warehouse->fin_warehouse_id'>$warehouse->fst_warehouse_name</option>";
 											}
 										?>
 										</select>
 									</div>
-								</div>
+								</div>							
 								
 								<div class="form-group">
 									<label for="fdb_qty_distribute" class="col-md-3 control-label">Qty Distribute</label>
@@ -225,14 +226,12 @@
 				$("#fdb_qty_distribute").val(App.money_format(qtyToDistribute));
 				$("#toBasicUnit").text(data.fin_conv_basic_unit + " " + data.fst_basic_unit);
 
-				//if (data.fbl_stock == 1 && data.fin_item_type_id == 5 ){ //5:logistic	
-				if (data.fbl_stock == 1){ //5:logistic	
+				if (data.fbl_stock == 1){ //5:logistic													
 					$(".source-warehouse").show();
 					$("#fin_source_warehouse_id").val(data.fin_source_warehouse_id);
 				}else{
-					$(".source-warehouse").hide();
-					$("#fin_source_warehouse_id").val(null);
-					
+					$(".source-warehouse").hide();					
+					$("#fin_source_warehouse_id").val(null);									
 				}
 
 				if (data.fbl_is_batch_number == 1){

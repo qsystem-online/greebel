@@ -38,7 +38,7 @@ class Mssalesnational_model extends MY_Model {
         return $rules;
     }
 
-    public function getList(){
+    public function getList($active ='A'){
         $ssql ="select * from mssalesnational where fst_active = 'A'" ;
         $qr = $this->db->query($ssql);
         return $qr->result();
