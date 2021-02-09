@@ -166,7 +166,7 @@ class Stock_rpt_model extends CI_Model {
 					) a
 					INNER JOIN trinventory b ON a.max_rec_id = b.fin_rec_id 
 				) b ON a.fin_item_id = b.fin_item_id 
-				ORDER BY a.fst_item_code";
+				ORDER BY a.fin_item_id";
 				break;
 			default:
 				break;

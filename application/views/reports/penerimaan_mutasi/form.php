@@ -10,11 +10,18 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptSalesOrder" action="<?= site_url() ?>report/sales_order/process" method="POST" enctype="multipart/form-data">
+<form id="rptPAG" action="<?= site_url() ?>report/tr/penerimaan_mutasi/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
-        <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
+        <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
             <div class="form-group row">
-                <label for="active_branch_id" class="col-sm-2 control-label"><?= lang("Branch") ?> :</label>
+                <label for="fbl_date_option" class="col-md-2 control-label"></label>
+                <div class="col-md-10">								
+                    <label class="radio-inline"><input type="radio" id="fbl_mag_date" class="fbl_date_option" name="fbl_date_option" value="0" checked>Tgl Data</label>
+                    <label class="radio-inline"><input type="radio" id="fbl_input_date" class="fbl_date_option" name="fbl_date_option" value="1" >Tgl System</label>
+                </div>
+            </div>                    
+            <div class="form-group row">
+                <label for="active_branch_id" class="col-sm-2 control-label"><?= lang("Branch") ?></label>
                 <div class="col-sm-4">
                     <?php
                     $active_user = $this->session->userdata("active_user");			
@@ -35,12 +42,24 @@
                     </select>
                     <div id="fin_branch_id_err" class="text-danger"></div>
                 </div>
-                <label for="select-warehouse" class="col-sm-2 control-label"><?=lang("Warehouse")?> :</label>
+                <label for="select-type" class="col-sm-2 control-label"><?=lang("Jenis MAG")?></label>
                 <div class="col-sm-4">
-                    <select id="select-warehouse" class="form-control" name="fin_warehouse_id">
+                    <select id="select-type" class="form-control non-editable" name="fin_type_id">
+                        <option value='0'><?=lang("All")?></option>
+                        <option value='1'><?=lang("PRODUKSI W/O")?></option>
+						<option value='2'><?=lang("PRODUKSI NON-W/O")?></option>
+                        <option value='3'><?=lang("STANDARD")?></option>
+                    </select>
+                    <div id="fin_type_id_err" class="text-danger"></div>
+                </div>   
+            </div>
+            <div class="form-group row">						
+                <label for="select-warehouse_from" class="col-sm-2 control-label"><?=lang("Asal")?></label>
+                <div class="col-sm-4">
+                    <select id="select-warehouse_from" class="form-control" name="fin_from_warehouse_id">
                         <option value='0'>All</option>
                         <?php
-                            $warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
+                            $warehouseList = $this->mswarehouse_model->getAllList();
                             foreach($warehouseList as $warehouse){
                                 echo "<option value='".$warehouse->fin_warehouse_id ."'>$warehouse->fst_warehouse_name</option>";
                             }
@@ -48,59 +67,49 @@
                     </select>
                     <div id="fin_warehouse_id_err" class="text-danger"></div>
                 </div>
-            </div>
-            <div class="form-group row">						
-                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?> :</label>
+                <label for="select-warehouse_to" class="col-sm-2 control-label"><?=lang("Tujuan")?></label>
                 <div class="col-sm-4">
-                    <select id="select-relations" class="form-control non-editable" name="fin_relation_id">
-                    </select>
-                    <div id="fin_relation_id_err" class="text-danger"></div>
-                </div>            
-                <label for="select-sales" class="col-sm-2 control-label"><?=lang("Sales")?> :</label>
-                <div class="col-sm-4">
-                    <select id="select-sales" class="form-control" name="fin_sales_id">
+                    <select id="select-warehouse" class="form-control" name="fin_to_warehouse_id">
                         <option value='0'>All</option>
                         <?php
-                            $salesList = $this->users_model->getSalesList();
-                            foreach($salesList as $sales){
-                                echo "<option value='$sales->fin_user_id'>$sales->fst_username</option>";
-                            }                            
+                            $warehouseList = $this->mswarehouse_model->getAllList();
+                            foreach($warehouseList as $warehouse){
+                                echo "<option value='".$warehouse->fin_warehouse_id ."'>$warehouse->fst_warehouse_name</option>";
+                            }
                         ?>
                     </select>
-                    <div id="fin_sales_id_err" class="text-danger"></div>
-                </div>
+                    <div id="fin_warehouse_id_err" class="text-danger"></div>
+                </div> 
             </div>
             <div class="form-group row">
-                <label for="fdt_salesorder_datetime" class="col-sm-2 control-label"><?=lang("Sales Order Date")?> *</label>
+                <label for="fdt_datetime" class="col-sm-2 control-label"><?=lang("Date")?></label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_salesorder_datetime" name="fdt_salesorder_datetime"/>
+                        <input type="text" class="form-control datepicker" id="fdt_datetime" name="fdt_datetime"/>
                     </div>
-                    <div id="fdt_salesorder_datetime_err" class="text-danger"></div>
+                    <div id="fdt_datetime_err" class="text-danger"></div>
                     <!-- /.input group -->
                 </div>
-                <label for="fdt_salesorder_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
+                <label for="fdt_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?></label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_salesorder_datetime2" name="fdt_salesorder_datetime2"/>
+                        <input type="text" class="form-control datepicker" id="fdt_datetime2" name="fdt_datetime2"/>
                     </div>
-                    <div id="fdt_salesorder_datetime2_err" class="text-danger"></div>
+                    <div id="fdt_datetime2_err" class="text-danger"></div>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
             <div class="form-group row">
                 <label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
                 <div class="col-sm-4">								
-                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Detail")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Ringkas")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Sales Order Outstanding S/J")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Lost Of Sales")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan PAG Detail")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan PAG Ringkas")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -124,17 +133,12 @@
                     </select>             
                 </div>
             </div>
-            <div class="form-group">
-                <div class="checkbox col-md-12">
-                    <label><input id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("PPN Include") ?></label>
-                </div>                  
-            </div>
     </div>
 </form>
 <script type="text/javascript" info="init">
 	$(function(){
-		$("#fdt_salesorder_datetime").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");
-        $("#fdt_salesorder_datetime2").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");					
+		$("#fdt_datetime").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");
+        $("#fdt_datetime2").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");					
 	});
 </script>
 <script type="text/javascript">
@@ -165,6 +169,11 @@
         $('#multiple-columns').multiselect('dataprovider', newArray);
         $('#multiple-columns').multiselect('selectAll',false);
 		$('#multiple-columns').multiselect('updateButtonText');
+
+        /*if (myRadio.value == "4"){
+            $('#select-relations').empty();
+            $('#select-relations').append('<option value="0">All</option>');
+        }*/
         // for(var i=0; i<newArray.length; i++){
         //     alert(newArray[i].label);
         //     console.log(newArray[i].label);
@@ -173,47 +182,13 @@
         // currentValue = myRadio.value;
     }         
     $(function() {
-        $("#select-relations").select2({
-			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>report/sales_order/get_customers',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data){
-					items = [];
-					data = data.data;
-                    items.push({
-							"id" : "0",
-							"text" : "ALL",					
-						});
-					$.each(data,function(index,value){
-						items.push({
-							"id" : value.fin_relation_id,
-							"text" : value.fst_relation_name,					
-						});
-					});					
-					return {
-						results: items
-					};
-				},
-				cache: true,
-			}
-		}).on('select2:select',function(e){
-			//selectedCustomer = $("#select-relations").select2("data")[0];
-			// selectedCustomer = e.params.data;
-			// getShippingAddressList(selectedCustomer.id);
-			// $("#fin_terms_payment").val(selectedCustomer.fin_terms_payment);
-			// $("#select-sales").val(selectedCustomer.fin_sales_id).trigger("change.select2");
-			// $("#select-warehouse").val(selectedCustomer.fin_warehouse_id).trigger("change.select2");
-			//current_pricing_group_id = selectedCustomer.current_pricing_group_id;			
-		});
 
         $("#btnProcess").click(function(event) {
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#rptSalesOrder").serializeArray();
-            url = "<?= site_url() ?>report/sales_order/process";
+            data = $("#rptPAG").serializeArray();
+            url = "<?= site_url() ?>report/tr/penerimaan_mutasi/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -233,7 +208,7 @@
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        $("#btnNew").trigger("click");
+                                        $("#btnProcess").trigger("click");
                                         alert('OK');
                                         return;
                                     }
@@ -256,12 +231,12 @@
                         //Clear all previous error
                         $(".text-danger").html("");
                         //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/sales_order/generatereport";
+                        url = "<?= site_url() ?>report/tr/penerimaan_mutasi/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
-                        $("#rptSalesOrder").attr('action', url);
-                        $("#rptSalesOrder").attr('target', 'rpt_iframe');
-                        $("#rptSalesOrder").submit();
+                        $("#rptPAG").attr('action', url);
+                        $("#rptPAG").attr('target', 'rpt_iframe');
+                        $("#rptPAG").submit();
                         $("a#toggle-window").click();
                         // Change to Edit mode
                         // $("#frm-mode").val("EDIT"); //ADD|EDIT
@@ -296,7 +271,7 @@
             var a = document.createElement('a');
             a.href = data_type + ', ' + table_html;
 			//a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
-			a.download = 'Laporan_SO_Detail' + '.xls';
+			a.download = 'Laporan_PAG' + '.xls';
 			a.click();                        			
 			return;
 		});      

@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Purchase_order extends MY_Controller
 {
 
+	public $menuName="report_purchase_order";
 	public $layout_columns =[];
 	public $spreadsheet; 
 

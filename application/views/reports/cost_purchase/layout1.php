@@ -40,11 +40,22 @@
 			$name_relations = "ALL";
 		}
 		?>
+		<?php
+		$fst_curr_code = $this->input->post("fst_curr_code");
+		if ($fst_curr_code >"0"){
+			$this->load->model("mscurrencies_model");
+			$data = $this->mscurrencies_model->getDataById($fst_curr_code);
+			$currency = $data ["ms_Currency"];
+			$name_currency = $currency->fst_curr_name;
+		}else{
+			$name_currency = "ALL";
+		}
+		?>
 		<div>Branch : <?= $name_branch ?></div>
 		<div>Tgl Biaya: <?= $this->input->post("fdt_purchasecost_datetime") ?>  s/d <?= $this->input->post("fdt_purchasecost_datetime2") ?></div> 
         <div>Supplier: <?= $name_relations ?> </div>
-		<div>Mata Uang : <?= $this->input->post("fst_curr_code") ?></div>                              
-		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1700px">      
+		<div>Mata Uang : <?= $name_currency ?></div>                              
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:2100px">      
 			<thead>
 				<tr style="background-color:RoyalBlue;color:white">
 					<?php
@@ -59,6 +70,10 @@
 						echoIfColSelected(8,$selectedCols,"<th class='col-8' style='width:50px'>Notes</th>");
                         echoIfColSelected(9,$selectedCols,"<th class='col-9' style='width:50px'>Debit</th>");
                         echoIfColSelected(10,$selectedCols,"<th class='col-10' style='width:50px'>Credit</th>");
+						echoIfColSelected(11,$selectedCols,"<th class='col-11' style='width:100px'>Profit/Cost Center</th>");
+						echoIfColSelected(12,$selectedCols,"<th class='col-12' style='width:100px'>Analisa Department</th>");
+                        echoIfColSelected(13,$selectedCols,"<th class='col-13' style='width:100px'>Analisa Customer</th>");
+                        echoIfColSelected(14,$selectedCols,"<th class='col-14' style='width:100px'>Analisa Project</th>");
 					?>
 				</tr>
 			</thead>
@@ -72,7 +87,7 @@
 					foreach ($dataReport as $row){
 						echo "<tr>";
 						if ( $idCost != $row->fin_purchasecost_id ){
-                            if ($idCost != "") {
+                            /*if ($idCost != "") {
 								//akumulasi total keseluruhan                                                        
                                 //tulis subtotal per-group
                                 $fdc_total = formatNumber ($row->fdc_total,2);
@@ -81,8 +96,9 @@
                                 echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$fdc_total</td>");						
                                 echo "</tr>";
 								//reset subtotal variable (break group)
+								$fdc_total = 0;
 
-                            }			
+                            }*/			
                             $idCost = $row->fin_purchasecost_id;
                             if ( $idSupplier != $row->fin_supplier_id ){
                                 $idSupplier = $row->fin_supplier_id;
@@ -113,13 +129,17 @@
 						echoIfColSelected(7,$selectedCols,"<td class='col-7'>$row->Account_Name</td>");
 						echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->Notes_Detail</td>");
                         echoIfColSelected(9,$selectedCols,"<td class='col-9' style='text-align: right'>$Debit</td>");
-                        echoIfColSelected(10,$selectedCols,"<td class='col-10' style='text-align: right'>$Credit</td>");										                                                                                                                                                                      
+                        echoIfColSelected(10,$selectedCols,"<td class='col-10' style='text-align: right'>$Credit</td>");
+						echoIfColSelected(11,$selectedCols,"<td class='col-11'>$row->ProfitCost_Center</td>");
+						echoIfColSelected(12,$selectedCols,"<td class='col-12'>$row->Analisa_Department</td>");
+						echoIfColSelected(13,$selectedCols,"<td class='col-13'>$row->Analisa_Customer</td>");
+						echoIfColSelected(14,$selectedCols,"<td class='col-14'>$row->Analisa_Project</td>");
                         echo "</tr>";
                     }
-                    echo "<tr>";
-                    echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Subtotal :</td>";
-                    echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$fdc_total</td>");						
-                    echo "</tr>";
+                    //echo "<tr>";
+                    //echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Subtotal :</td>";
+                    //echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$fdc_total</td>");						
+                    //echo "</tr>";
 				?>
 			</tbody>
 		</table>

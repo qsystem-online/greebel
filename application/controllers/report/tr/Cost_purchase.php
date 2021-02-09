@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Cost_purchase extends MY_Controller{
 
+	public $menuName="report_cost_purchase";
 	public $layout_columns =[];
 	public $spreadsheet; 
 
@@ -26,39 +27,18 @@ class Cost_purchase extends MY_Controller{
 			['layout' => 1, 'label'=>'Notes', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Debit', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Credit', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Profit/Cost Center', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
+			['layout' => 1, 'label'=>'Analisa Department', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
+			['layout' => 1, 'label'=>'Analisa Customer', 'value'=>'13', 'selected'=>false,'sum_total'=>true],
+			['layout' => 1, 'label'=>'Analisa Project', 'value'=>'14', 'selected'=>false,'sum_total'=>true],
 
 			['layout' => 2, 'label'=>'No.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'No.LPB', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Tgl.LPB', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'TOP', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Tgl.J/T', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'No.P/O', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Tgl.P/O', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Supplier', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'M.U', 'value'=>'8', 'selected'=>false,'sum_total'=>true],
-			['layout' => 2, 'label'=>'Rate', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
-			['layout' => 2, 'label'=>'Subtotal', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
-            ['layout' => 2, 'label'=>'Total', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
-			['layout' => 2, 'label'=>'Total IDR', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
-			['layout' => 2, 'label'=>'DP Claimed', 'value'=>'13', 'selected'=>false,'sum_total'=>true],
-			
-			['layout' => 3, 'label'=>'No.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Kode Barang', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Nama Barang', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Qty', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Unit', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Jumlah', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Kurs', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Jumlah IDR', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
-
-			['layout' => 4, 'label'=>'No.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Kode Barang', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Nama Barang', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Qty', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Unit', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Jumlah', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Kurs', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Jumlah IDR', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'No.Memo Biaya', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Tgl Memo Biaya', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'M.U', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Rate', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Supplier', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 2, 'label'=>'Total', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
 		];
 
 	}
@@ -159,12 +139,6 @@ class Cost_purchase extends MY_Controller{
 			case "2":
 				$this->parser->parse('reports/cost_purchase/layout2', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
 				break;
-			case "3":
-				$this->parser->parse('reports/cost_purchase/layout3', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
-				break;
-			case "4":
-				$this->parser->parse('reports/cost_purchase/layout4', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
-				break;
 			default:
 				$this->parser->parse('reports/cost_purchase/layout1', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
 				break;
@@ -178,31 +152,6 @@ class Cost_purchase extends MY_Controller{
 		$this->ajxResp["status"] = "SUCCESS";
 		$this->ajxResp["data"] = $this->msrelations_model->getSupplierList();
 		$this->json_output();
-	}
-
-    public function get_data_items(){
-        /*$term = $this->input->get("term");
-        $ssql = "select * from msitems where fst_item_name like ? order by fst_item_name";
-        $qr = $this->db->query($ssql, ['%' . $term . '%']);
-        $rs = $qr->result();
-
-		$this->json_output($rs);*/
-		
-		$this->load->model("msitems_model");			
-		$this->ajxResp["status"] = "SUCCESS";
-		$this->ajxResp["data"] = $this->msitems_model->getItemList_report();
-		$this->json_output();
-
-	}
-	
-	public function ajxListItem(){
-		$this->load->model("msitems_model");
-		$searchKey = $this->input->get("term");
-		$result = $this->msitems_model->getAllList($searchKey,"fin_item_id,fst_item_code,fst_item_name");        
-		$this->json_output([
-			"status"=>"SUCCESS",
-			"data"=> $result
-		]);
 	}
 
 }

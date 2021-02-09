@@ -94,7 +94,7 @@
                                 //tulis subtotal per-group
                                     echo "<tr>";
 									echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Subtotal Per-P/O :</td>";
-									echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: left'>$qty_subttlNew</td>");
+									echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$qty_subttlNew</td>");
                                     echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: left'></td>");
 									echoIfColSelected(11,$selectedCols,"<td class='col-11' style='font-weight: bold;text-align: right'></td>");
 									echoIfColSelected(12,$selectedCols,"<td class='col-12' style='font-weight: bold;text-align: right'></td>");
@@ -154,9 +154,9 @@
                         $Rate_Idr = formatNumber ($row->Rate_Idr,2);
 						echoIfColSelected(7,$selectedCols,"<td class='col-7'>$row->Item_Code</td>");
 						echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->Item_Name</td>");
-						echoIfColSelected(9,$selectedCols,"<td class='col-9'>$row->Qty</td>");
-                        echoIfColSelected(10,$selectedCols,"<td class='col-10'>$row->Unit</td>");
-                        echoIfColSelected(11,$selectedCols,"<td class='col-11'>$Price</td>");
+						echoIfColSelected(9,$selectedCols,"<td class='col-9' style='text-align: right'>$row->Qty</td>");
+                        echoIfColSelected(10,$selectedCols,"<td class='col-10' style='text-align: right'>$row->Unit</td>");
+                        echoIfColSelected(11,$selectedCols,"<td class='col-11' style='text-align: right'>$Price</td>");
                         echoIfColSelected(12,$selectedCols,"<td class='col-12' style='text-align: right'>$Disc_Amount</td>");
                         echoIfColSelected(13,$selectedCols,"<td class='col-13' style='text-align: right'>$Amount</td>");
                         echoIfColSelected(14,$selectedCols,"<td class='col-14' style='text-align: right'>$Rate_Idr</td>");
@@ -184,7 +184,7 @@
 					}
 					echo "<tr>";
 					echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Subtotal Per-P/O :</td>";
-					echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: left'>$qty_subttlNew</td>");
+					echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$qty_subttlNew</td>");
 					echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: left'></td>");
 					echoIfColSelected(11,$selectedCols,"<td class='col-11' style='font-weight: bold;text-align: right'></td>");
 					echoIfColSelected(12,$selectedCols,"<td class='col-12' style='font-weight: bold;text-align: right'></td>");

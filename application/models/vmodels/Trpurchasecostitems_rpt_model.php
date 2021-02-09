@@ -50,24 +50,27 @@ class Trpurchasecostitems_rpt_model extends CI_Model {
                 a.fst_curr_code as Mata_Uang,a.fdc_exchange_rate_idr as Rate_Idr,(a.fdc_total * a.fdc_exchange_rate_idr) as fdc_total_Idr,
                 a.fin_supplier_id as fin_supplier_id,c.fst_relation_name as Relation_Name,e.fst_po_no as No_PO,
                 b.fin_rec_id as Rec_Id, b.fst_glaccount_code as Account_Code, d.fst_glaccount_name as Account_Name,b.fst_notes as Notes_Detail,
-                b.fdc_debet as fdc_debet,b.fdc_credit as fdc_credit   
+                b.fdc_debet as fdc_debet,b.fdc_credit as fdc_credit,f.fst_pcc_name as ProfitCost_Center,g.fst_department_name as Analisa_Department,
+                h.fst_relation_name as Analisa_Customer,i.fst_project_name as Analisa_Project 
                 FROM (SELECT * FROM trpurchasecost a WHERE a.fst_active !='D') a LEFT OUTER JOIN trpurchasecostitems b 
                 ON a.fin_purchasecost_id = b.fin_purchasecost_id LEFT OUTER JOIN msrelations c
                 ON a.fin_supplier_id = c.fin_relation_id LEFT OUTER JOIN glaccounts d
                 ON b.fst_glaccount_code = d.fst_glaccount_code LEFT OUTER JOIN trpo e
                 ON a.fin_po_id = e.fin_po_id LEFT OUTER JOIN msprofitcostcenter f
                 ON b.fin_pcc_id = f.fin_pcc_id LEFT OUTER JOIN departments g
-                ON b.fin_pc_divisi_id = g.fin_department_id
+                ON b.fin_pc_divisi_id = g.fin_department_id LEFT OUTER JOIN msrelations h
+                ON b.fin_pc_customer_id = h.fin_relation_id LEFT OUTER JOIN msprojects i
+                ON b.fin_pc_project_id = i.fin_project_id
                  " . $swhere . $sorderby;
                 break;
             case "2":
-                $ssql = "SELECT a.fin_purchasereturn_id,a.fst_purchasereturn_no as No_Retur, a.fdt_purchasereturn_datetime as Retur_Date,
-                a.fst_memo as Retur_Memo,a.fdc_total_claimed as Total_Claimed,a.fdc_ppn_amount as Ppn,a.fdc_subttl as fdc_subttl,(a.fdc_subttl * a.fdc_exchange_rate_idr) as fdc_subttl_Idr,((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) as fdc_total,
-                a.fdc_disc_amount as Disc_Total,a.fst_curr_code as Mata_Uang,a.fdc_exchange_rate_idr as Rate_Idr,(((a.fdc_subttl - a.fdc_disc_amount) + a.fdc_ppn_amount) * a.fdc_exchange_rate_idr) as fdc_total_Idr,
-                a.fin_supplier_id as fin_supplier_id,b.fst_relation_name as Relation_Name,c.fst_lpbpurchase_no as No_LPB
-                FROM (SELECT * FROM trpurchasereturn WHERE fst_active !='D') a LEFT OUTER JOIN msrelations b
-                ON a.fin_supplier_id = b.fin_relation_id  LEFT OUTER JOIN trlpbpurchase c
-                ON a.fin_lpbpurchase_id = c.fin_lpbpurchase_id " . $swhere . $sorderby;
+                $ssql = "SELECT a.fin_po_id as Id_PO,a.fin_purchasecost_id,a.fst_purchasecost_no as No_Cost, a.fdt_purchasecost_datetime as Cost_Date,
+                a.fst_memo as Cost_Memo,a.fdc_total as fdc_total,a.fbl_is_import as fbl_is_import,
+                a.fst_curr_code as Mata_Uang,a.fdc_exchange_rate_idr as Rate_Idr,(a.fdc_total * a.fdc_exchange_rate_idr) as fdc_total_Idr,
+                a.fin_supplier_id as fin_supplier_id,b.fst_relation_name as Relation_Name,c.fst_po_no as No_PO  
+                FROM (SELECT * FROM trpurchasecost a WHERE a.fst_active !='D') a LEFT OUTER JOIN msrelations b
+                ON a.fin_supplier_id = b.fin_relation_id LEFT OUTER JOIN trpo c
+                ON a.fin_po_id = c.fin_po_id $swhere ORDER BY a.fin_po_id,a.fin_purchasecost_id";
                 break;
             default:
                 break;

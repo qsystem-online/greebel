@@ -4,7 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Stock extends MY_Controller
 {
 
-	public $menuName="report_gudang";
+	public $menuName="report_stock";
 	public $layout_columns =[]; 
 	public $spreadsheet;
 	

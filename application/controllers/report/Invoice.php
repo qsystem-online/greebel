@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Invoice extends MY_Controller
 {
 
+	public $menuName="report_invoice";
 	public $layout_columns =[];
 	public $spreadsheet; 
 

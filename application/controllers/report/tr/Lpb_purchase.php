@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Lpb_purchase extends MY_Controller{
 
+	public $menuName="report_purchase";
 	public $layout_columns =[];
 	public $spreadsheet; 
 

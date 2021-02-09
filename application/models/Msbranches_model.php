@@ -50,6 +50,16 @@ class Msbranches_model extends MY_Model
         return $row;
     }
 
+    public function getBranchReport($fin_branch_id){
+        $ssql = "select * from " . $this->tableName . " where fin_branch_id = ?";
+        $qr = $this->db->query($ssql,[$fin_branch_id]);
+        $row = $qr->row();
+        $data = [
+            "branch" => $row
+        ];
+        return $data;
+    }
+
     public function getRules($mode = "ADD", $id = 0)
     {
         $rules = [];
