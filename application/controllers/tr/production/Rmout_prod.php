@@ -313,14 +313,29 @@ class Rmout_prod extends MY_Controller{
 	}
 	
 	private function validateData($dataH,$details){
-		$this->form_validation->set_rules($this->trrmout_model->getRules("ADD", 0));
+
+
+		$rules = $this->trrmout_model->getRules("ADD", 0);
+		$rules[] = [
+			'field' => 'fin_wobatchno_id',
+			'label' => 'WO Batch No',
+			'rules' => array(
+				'required',
+			),
+			'errors' => array(
+				'required' => '%s tidak boleh kosong',
+				//'is_unique' => '%s unik'
+			),
+		];
+
+		$this->form_validation->set_rules($rules);
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		$this->form_validation->set_data($dataH);
 		
 		if ($this->form_validation->run() == FALSE) {
 			//print_r($this->form_validation->error_array());
 			throw new CustomException("Error Validation Header",3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
-		}		
+		}					
 	}
 
 	public function fetch_data($finId){

@@ -14,7 +14,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-	<h1><?=lang("RM-OUT Produksi")?><small><?=lang("form")?></small></h1>
+	<h1><?=lang("RM-OUT Return")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
 		<li><a href="#"><?= lang("Prioduksi") ?></a></li>
@@ -46,10 +46,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					
 					<div class="form-group">
-                        <label for="fst_rmout_no" class="col-md-2 control-label"><?=lang("RM-OUT Return No.")?> #</label>
+                        <label for="fst_rmout_return_no" class="col-md-2 control-label"><?=lang("RM-OUT Return No.")?> #</label>
 						<div class="col-md-4">
 							<input type="text" class="form-control" id="fst_rmout_return_no" placeholder="<?=lang("RM-OUT Return No")?>" name="fst_rmout_return_no" value="<?=$fst_rmout_return_no?>" readonly>
-							<div id="fst_rmout_no_err" class="text-danger"></div>
+							<div id="fst_rmout_return_no_err" class="text-danger"></div>
 						</div>
 						
 						<label for="fdt_rmout_return_datetime" class="col-md-2 control-label"><?=lang("RM-OUT Date")?> *</label>
@@ -130,7 +130,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="mdlDetail" class="amodal fade in" role="dialog" style="display:unset">
+<div id="mdlDetail" class="modal fade in" role="dialog" style="display:none">
 	<div class="modal-dialog" style="display:table;width:600px">
 		<!-- modal content -->
 		<div class="modal-content">
@@ -269,11 +269,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				}
 
-				//$("#mdlDetail").modal("show");
+				$("#mdlDetail").modal("show");
 			},
 
 			hide:function(){
-				//$("#mdlDetail").modal("hide");
+				$("#mdlDetail").modal("hide");
 			},
 			clear:function(){
 				mdlDetail.selectedDetail =null;
@@ -592,6 +592,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 },
                 cache: true,
             }
+		}).change(function(e){
+			$("#fin_wobatchno_id").val(null).trigger("change");	
 		});
 		
 		
@@ -627,37 +629,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             }
 		});
 		
-		/*
-		var sel = $("#fin_wobatchno_id").select2({
-			dataAdapter: select2customAdapter,
-			data:dataBatchno
-		}).on("select2:opening",function(e){		
-			$.ajax({
-				url: '<?= site_url() ?>tr/production/rmout_prod/ajxGetBatchWOList',
-				method:"GET",
-				async:false,
-				data:{
-					fin_wo_id:$("#fin_wo_id").val(),
-				},
-			}).done(function(resp){
-				data2 = [];
-				if (resp.status == "SUCCESS"){
-					$.each(resp.data, function(index, value) {
-						data2.push({
-							"id": value.fin_wobatchno_id,
-							"text": value.fst_wobatchno_no
-						});
-					});						
-				}
-				dataBatchno = data2;
-				sel.data('select2').dataAdapter.updateOptions(dataBatchno);
-				//$('#fin_wobatchno_id').select2('open');
-			});
-
-		});
-		*/
-
-
 		tblDetails = $('#tblDetails').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
@@ -735,7 +706,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/production/rmout_prod");
+			window.location.replace("<?=site_url()?>tr/production/rmout_return");
 		});	
 
 		$("#btn-add-items").click(function(e){

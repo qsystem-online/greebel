@@ -25,17 +25,7 @@ class Trrmout_model extends MY_Model{
 				//'is_unique' => '%s unik'
 			),
 		]; 
-		$rules[] = [
-			'field' => 'fin_wobatchno_id',
-			'label' => 'WO Batch No',
-			'rules' => array(
-				'required',
-			),
-			'errors' => array(
-				'required' => '%s tidak boleh kosong',
-				//'is_unique' => '%s unik'
-			),
-		];        
+		
 		
 		return $rules;
 	}

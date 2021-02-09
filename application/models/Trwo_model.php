@@ -229,7 +229,12 @@ class Trwo_model extends MY_Model{
 
 		for($i=0;$i<sizeof($detailBOMWO);$i++){
 			$bom = $detailBOMWO[$i];
-			$bom->fdb_qty_real = ($fdbQtyInBasic/$scale) * $bom->fdb_qty;
+			if ($scale == 0){
+				$bom->fdb_qty_real = 0;
+			}else{
+				$bom->fdb_qty_real = ($fdbQtyInBasic/$scale) * $bom->fdb_qty;
+			}
+			
 
 			$mainWarehouseId = $this->mswarehouse_model->getMainWarehouseId($this->aauth->get_active_branch_id());
 			$hpp = $this->trinventory_model->getTotalHPP($bom->fin_item_id,$bom->fst_unit,$bom->fdb_qty_real,$mainWarehouseId);
