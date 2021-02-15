@@ -40,6 +40,32 @@ class Msitems_model extends MY_Model
         $qr = $this->db->query($ssql, [$fin_item_id]);
         $rsBomDetail = $qr->result();
 
+        $ssql = "SELECT a.*,
+            b.fst_item_code as fst_nc_item_code,
+            b.fst_item_name as fst_nc_item_name            
+            FROM msitemnoncomponentdetails a 
+            INNER JOIN msitems b on a.fin_nc_item_id = b.fin_item_id 
+            WHERE a.fin_item_id = ? and a.fst_active ='A' ";
+        $qr = $this->db->query($ssql,[$fin_item_id]);
+        $rsReturnNCDetail = $qr->result();
+
+        for($i = 0; $i < sizeof($rsReturnNCDetail);$i++){
+            $nc = $rsReturnNCDetail[$i];
+            $ncHPPItems = explode(",",$nc->fst_item_list_id);
+            $arrHPPItems = [];
+            foreach($ncHPPItems as $itemId){
+                $item = $this->getSimpleDataById($itemId);
+                $arrHPPItems[] =[
+                    "fin_item_id" =>$itemId,
+                    "fst_item_code" => $item->fst_item_code,
+                    "fst_item_name" => $item->fst_item_name,
+                ];
+            }
+            $nc->arrHPPItems = $arrHPPItems;
+            $rsReturnNCDetail[$i] = $nc;
+        }
+
+        
         $ssql = "select a.*,b.fst_cust_pricing_group_name from msitemspecialpricinggroupdetails a left join mscustpricinggroups b on a.fin_cust_pricing_group_id = b.fin_cust_pricing_group_id  where a.fin_item_id = ?";
         $qr = $this->db->query($ssql, [$fin_item_id]);
         $rsSpecialPricing = $qr->result();
@@ -48,6 +74,7 @@ class Msitems_model extends MY_Model
             "ms_items" => $rwItem,
             "unit_Detail" => $rsUnitDetail,
             "bom_Detail" => $rsBomDetail,
+            "nc_Detail" => $rsReturnNCDetail, //Return Non Component
             "special_Pricing" => $rsSpecialPricing,
         ];
 

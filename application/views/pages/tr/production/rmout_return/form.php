@@ -68,7 +68,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="fst_rmout_type" class="col-md-2 control-label"><?=lang("Workorder")?></label>
 						<div class="col-md-10">							
-							<select id="fin_wo_id" class="form-control" style="width:100%" ></select>
+							<select id="fin_wo_id" name="fin_wo_id" class="form-control" style="width:100%" ></select>
 						</div>					
 					</div>
 
@@ -206,20 +206,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 
 	<script type="text/javascript" info="define">
-		//var availableSerialList = [];		
+		var availableSerialList = [];		
 		var mdlDetail = {
 			selectedItem:null,
 			selectedUnit:null,
 			selectedDetail:null,			
-			show:function(){								
-				//$("#d-fin_item_id").prop("disabled",true);
-				//$("#d-fst_unit").prop("disabled",true);
-
-				//if ($("#fin_wo_id").val() == null){
-				//	$("#d-fin_item_id").prop("disabled",false);
-				//	$("#d-fst_unit").prop("disabled",false);				
-				//}
-
+			show:function(){												
 				if (mdlDetail.selectedDetail != null){
 					data =  mdlDetail.selectedDetail.data();					
 					mdlDetail.selectedItem = {
@@ -465,7 +457,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					fin_rec_id: 0,
 				}
 			}
-			console.log(dataRow);	
+			
 			
 			
 			dataRow.fin_item_id = mdlDetail.selectedItem.fin_item_id;
@@ -518,8 +510,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$(".serialNoBlock").hide();
 			}
 		}
-
-        /*
+        
 		function getSerialNoList(finWarehouseId,finItemId,fstBatchNo,callback){
 			App.getValueAjax({
 				model:"trinventory_model",
@@ -535,8 +526,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					callback();					
 				}
 			});			
-        }
-        */
+        }        
 		function calculateTotalSerialNo(){
 			$("#ttlSerial").text($("#fstSerialNoList option").length);
 		}		
@@ -682,7 +672,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		$("#btnNew").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/production/rmout_prod/add")
+			window.location.replace("<?=site_url()?>tr/production/rmout_return/add")
 		});
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
@@ -756,7 +746,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 	   
 		if (mode == "ADD"){
-			url = "<?=site_url()?>tr/production/rmout_prod/ajx_add_save";
+			url = "<?=site_url()?>tr/production/rmout_return/ajx_add_save";
 		}else{
 			if (confirmEdit == 0){
 				MdlEditForm.saveCallBack = function(){
@@ -766,7 +756,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				return;
 			}
 
-			url = "<?=site_url()?>tr/production/rmout_prod/ajx_edit_save";
+			url = "<?=site_url()?>tr/production/rmout_return/ajx_edit_save";
 		}		
 
 		App.blockUIOnAjaxRequest("<h5>Please wait....</h5>");
@@ -815,7 +805,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		if (mode != "ADD"){
 			App.blockUIOnAjaxRequest();
 			$.ajax({
-				url:"<?= site_url() ?>tr/production/rmout_prod/fetch_data/" + $("#fin_rmout_id").val(),
+				url:"<?= site_url() ?>tr/production/rmout_return/fetch_data/" + $("#fin_rmout_return_id").val(),
 			}).done(function(resp){
 				data =  resp.data;
 				dataH = data.header;
@@ -834,7 +824,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				t = tblDetails;
 				t.clear();				
 				$.each(details,function(i,v){				
-					
 					var dataRow = {
 						fin_rec_id:v.fin_rec_id,
 						fin_item_id: v.fin_item_id,
