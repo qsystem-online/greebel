@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Surat_jalan extends MY_Controller
 {
 
+	public $menuName="report_surat_jalan";
 	public $layout_columns =[];
 	public $spreadsheet; 
 

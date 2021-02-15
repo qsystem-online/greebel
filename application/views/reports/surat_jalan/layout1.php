@@ -77,7 +77,7 @@
                                 //tulis subtotal per-group
                                     echo "<tr>";
                                     echo "<td colspan='".totalSelectedCol(7,$selectedCols)."'style='text-align: right;font-weight: bold'>Sub total Per-S/J :</td>";
-                                    echoIfColSelected(7,$selectedCols,"<td class='col-7' style='font-weight: bold;text-align: right'>$subQty</td>");							
+                                    echoIfColSelected(7,$selectedCols,"<td class='col-7' style='font-weight: bold;text-align: right'>$subQtyNew</td>");							
                                     echo "</tr>";
 
 								//reset subtotal variable (break group)
@@ -107,12 +107,14 @@
 						echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->Unit</td>");										                                                                                                                                                                      
                         echo "</tr>";
                         $subQty += $row->Qty;
+						$subQtyNew = formatNumber ($subQty,2);
 					}
 					$totalQty += $subQty;
+					$totalQty = formatNumber ($totalQty,2);
 
 					echo "<tr>";
 					echo "<td colspan='".totalSelectedCol(7,$selectedCols)."'style='text-align: right;font-weight: bold'>Sub total Per-S/J : </td>";
-					echoIfColSelected(7,$selectedCols,"<td class='col-7' style='font-weight: bold;text-align: right'>$subQty</td>");							
+					echoIfColSelected(7,$selectedCols,"<td class='col-7' style='font-weight: bold;text-align: right'>$subQtyNew</td>");							
 					echo "</tr>";
 
                     echo "<tr>";

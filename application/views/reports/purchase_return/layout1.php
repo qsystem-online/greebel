@@ -147,7 +147,7 @@
 						$qty_subttl += $row->Qty;
 						$qty_subttlNew = formatNumber ($qty_subttl,2);
 
-						$totalDiscount += $subDiscount;
+						$totalDiscount += $row->Disc_Amount;
 						$newtotalDiscount = formatNumber($totalDiscount,2);
 						$totalAmount += $row->Amount;
 						$newtotalAmount = formatNumber($totalAmount,2);
@@ -172,7 +172,7 @@
 					echo "</tr>";
                     
 					echo "<tr>";
-					echo "<td colspan='".totalSelectedCol(12,$selectedCols)."'style='text-align: right;font-weight: bold'>Total Per-Supplier :</td>";
+					echo "<td colspan='".totalSelectedCol(12,$selectedCols)."'style='text-align: right;font-weight: bold'>Total Keseluruhan :</td>";
 					echoIfColSelected(12,$selectedCols,"<td class='col-12' style='font-weight: bold;text-align: right'>$newtotalDiscount</td>");	
 					echoIfColSelected(13,$selectedCols,"<td class='col-13' style='font-weight: bold;text-align: right'>$newtotalAmount</td>");
 					echoIfColSelected(14,$selectedCols,"<td class='col-14' style='font-weight: bold;text-align: right'>$newtotalAmount_Idr</td>");				

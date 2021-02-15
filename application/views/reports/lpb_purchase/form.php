@@ -120,6 +120,13 @@
             </div>
     </div>
 </form>
+
+<script type="text/javascript" info="init">
+	$(function(){
+		$("#fdt_lpbpurchase_datetime").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");
+        $("#fdt_lpbpurchase_datetime2").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");					
+	});
+</script>
 <script type="text/javascript">
     $(document).ready(function() {
        // $('#multiple-columns').multiselect();

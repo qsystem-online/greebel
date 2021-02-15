@@ -47,7 +47,7 @@
 		?>
 		<div>Gudang : <?= $name_wareHouse ?></div>
 		<div>Tanggal: <?= $start_date ?>  s/d <?= $end_date ?></div>                             
-		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1200px">      
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:2000px">      
 			<thead>
 				<tr style="background-color:navy;color:white">
 					<?php
@@ -59,12 +59,9 @@
                         $qr = $this->db->query($ssql,[]);
                         $rs = $qr->result();
                         $i = 3;
-                        $selectedCols = 17;
-                        $warehouse_id = "";
                         foreach($rs as $rw){
                             $i = $i + 1;
-                            echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:30px'>$rw->fst_warehouse_name</th>");
-                            //$i = $i + 1;
+                            echo("<th class='col-'.$i style='width:100px'>$rw->fst_warehouse_name</th>");
                         }
                             
 					?>
@@ -75,22 +72,56 @@
 					$itemId ="";
 					$nou = 0;
 					$newItem = true;
+					$end_balance = 0;
 					foreach ($dataReport as $row){
-                        echo "<tr>";
-                        $nou++;
-						if ($row->fst_basic_unit == null ){
-							$fst_basic_unit = '???';
+						if ($itemId !=""){
+							if($itemId != $row->fin_item_id){
+								echo "<tr>";
+								$nou++;
+								if ($row->fst_basic_unit == null ){
+									$fst_basic_unit = '???';
+								}else{
+									$fst_basic_unit = $row->fst_basic_unit;
+								}
+								echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");
+								echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->fst_item_code</td>");
+								echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->fst_item_name</td>");
+								echoIfColSelected(3,$selectedCols,"<td class='col-3'style='text-align: right'>$fst_basic_unit</td>");
+								foreach($rs as $rw){
+									$i = $i + 1;
+									//echo isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
+									$end_balance = isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
+									echo("<td class='col-'.$i style='text-align: right'>$end_balance</td>");
+								}
+								$arrLastTemp = []; 										                                                                                                                                                                      
+								echo "</tr>";
+							}
 						}else{
-							$fst_basic_unit = $row->fst_basic_unit;
+							echo "<tr>";
+							$nou++;
+							if ($row->fst_basic_unit == null ){
+								$fst_basic_unit = '???';
+							}else{
+								$fst_basic_unit = $row->fst_basic_unit;
+							}
+							echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");
+							echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->fst_item_code</td>");
+							echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->fst_item_name</td>");
+							echoIfColSelected(3,$selectedCols,"<td class='col-3'style='text-align: right'>$fst_basic_unit</td>");
+							$arrLastTemp[$row->fin_warehouse_id] = $row->end_balance;
+							foreach($rs as $rw){
+								$i = $i + 1;
+								//echo isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
+								$end_balance = isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
+								echo("<td class='col-'.$i style='text-align: right'>$end_balance</td>");
+							}
+							//$arrLastTemp = []; 											                                                                                                                                                                      
+							echo "</tr>";
+							$itemId = $row->fin_item_id;
 						}
-						echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");
-						echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->fst_item_code</td>");
-						echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->fst_item_name</td>");
-						echoIfColSelected(3,$selectedCols,"<td class='col-3'style='text-align: right'>$fst_basic_unit</td>");  										                                                                                                                                                                      
-						echo "</tr>";	
+						$itemId = $row->fin_item_id;
+						$arrLastTemp[$row->fin_warehouse_id] = $row->end_balance;
 					}
-
-
 				?>
 			</tbody>
 		</table>

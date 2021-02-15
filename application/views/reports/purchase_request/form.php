@@ -82,6 +82,12 @@
             </div>
     </div>
 </form>
+<script type="text/javascript" info="init">
+	$(function(){
+		$("#fdt_pr_datetime").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");
+        $("#fdt_pr_datetime2").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");					
+	});
+</script>
 <script type="text/javascript">
     $(document).ready(function() {
        // $('#multiple-columns').multiselect();

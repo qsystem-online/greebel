@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Lpb_purchase_netto extends MY_Controller{
 
+	public $menuName="report_purchase_netto";
 	public $layout_columns =[];
 	public $spreadsheet; 
 

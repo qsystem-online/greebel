@@ -67,26 +67,6 @@ class Trpurchasereturn_rpt_model extends CI_Model {
                 ON a.fin_supplier_id = b.fin_relation_id  LEFT OUTER JOIN trlpbpurchase c
                 ON a.fin_lpbpurchase_id = c.fin_lpbpurchase_id " . $swhere . $sorderby;
                 break;
-            case "3":
-                $ssql = "SELECT a.fdt_lpbpurchase_datetime as LPB_Date,a.fst_curr_code as Mata_Uang,a.fdc_exchange_rate_idr as Rate_Idr,a.fin_supplier_id as fin_supplier_id,
-                b.fin_rec_id as Rec_Id, b.fin_item_id as Item_Id, c.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,b.fst_memo_item as Nota_Item,
-                b.fdb_qty as Qty, b.fst_unit as Unit, b.fdc_price as Price,(b.fdc_price - b.fdc_disc_amount_per_item) as Price_Netto, b.fst_disc_item as Disc_Item, b.fdc_disc_amount_per_item as Disc_Amount,
-                (b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) as Amount,((b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) * a.fdc_exchange_rate_idr) as Amount_Idr   
-                FROM (SELECT * FROM trlpbpurchase a WHERE a.fst_active !='D') a LEFT OUTER JOIN trlpbpurchaseitems b 
-                ON a.fin_lpbpurchase_id = b.fin_lpbpurchase_id LEFT OUTER JOIN msitems c
-                ON b.fin_item_id = c.fin_item_id $swhere GROUP BY b.fin_item_id,c.fst_item_name,a.fin_supplier_id,a.fdc_exchange_rate_idr,b.fst_unit";
-                break;
-            case "4":
-                $ssql = "SELECT a.fdt_lpbpurchase_datetime as LPB_Date,a.fst_curr_code as Mata_Uang,a.fdc_exchange_rate_idr as Rate_Idr,
-                a.fin_supplier_id as fin_supplier_id,c.fst_relation_name as Relation_Name,
-                b.fin_rec_id as Rec_Id, b.fin_item_id as Item_Id, d.fst_item_code as Item_Code, b.fst_custom_item_name as Item_Name,b.fst_memo_item as Nota_Item,
-                b.fdb_qty as Qty, b.fst_unit as Unit, b.fdc_price as Price,(b.fdc_price - b.fdc_disc_amount_per_item) as Price_Netto, b.fst_disc_item as Disc_Item, b.fdc_disc_amount_per_item as Disc_Amount,
-                (b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) as Amount,((b.fdb_qty * (b.fdc_price - b.fdc_disc_amount_per_item)) * a.fdc_exchange_rate_idr) as Amount_Idr   
-                FROM (SELECT * FROM trlpbpurchase a WHERE a.fst_active !='D') a LEFT OUTER JOIN trlpbpurchaseitems b 
-                ON a.fin_lpbpurchase_id = b.fin_lpbpurchase_id LEFT OUTER JOIN msrelations c
-                ON a.fin_supplier_id = c.fin_relation_id LEFT OUTER JOIN msitems d
-                ON b.fin_item_id = d.fin_item_id $swhere GROUP BY a.fin_supplier_id,c.fst_relation_name,b.fin_item_id,d.fst_item_name,a.fdc_exchange_rate_idr,b.fst_unit";
-                break;
             default:
                 break;
         }

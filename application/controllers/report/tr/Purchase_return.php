@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Purchase_return extends MY_Controller{
 
+	public $menuName="report_purchase_return";
 	public $layout_columns =[];
 	public $spreadsheet; 
 
@@ -45,23 +46,6 @@ class Purchase_return extends MY_Controller{
             ['layout' => 2, 'label'=>'Total IDR', 'value'=>'11', 'selected'=>false,'sum_total'=>true],
 			['layout' => 2, 'label'=>'Total Claimed', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
 			
-			['layout' => 3, 'label'=>'No.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Kode Barang', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Nama Barang', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Qty', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Unit', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Jumlah', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Kurs', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Jumlah IDR', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
-
-			['layout' => 4, 'label'=>'No.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Kode Barang', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Nama Barang', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Qty', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Unit', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Jumlah', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Kurs', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 4, 'label'=>'Jumlah IDR', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
 		];
 
 	}
