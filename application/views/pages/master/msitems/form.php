@@ -217,7 +217,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <ul class="nav nav-tabs">
                                 <li class="active"><a href="#unit_details" data-toggle="tab" aria-expanded="true"><?= lang("Unit Details") ?></a></li>
                                 <li class="bom_details" id="tab-doc"><a href="#bom_details" data-toggle="tab" aria-expanded="false"><?= lang("BOM Details") ?></a></li>
-                                <li class="" id="tab-doc"><a href="#non_component_details" data-toggle="tab" aria-expanded="false"><?= lang("Retur non Component Details") ?></a></li>
+                                <li class="" id="return-non-component"><a href="#non_component_details" data-toggle="tab" aria-expanded="false"><?= lang("Retur non Component Details") ?></a></li>
                                 <li class="special_pricing" style="display:<?= $displaytabs ?>;"><a href="#special_pricing" data-toggle="tab" aria-expanded="false"><?= lang("Special Pricing") ?></a></li>
                             </ul>
                             <div class="tab-content">
@@ -900,7 +900,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </script>
 </div>
 
-<div id="mdlNonComponentDetails" class="amodal fade in" role="dialog" style="display: unset">
+<div id="mdlNonComponentDetails" class="modal fade in" role="dialog" style="display: none">
     <div class="modal-dialog" style="display:table;width:800px;min-width:350px;max-width:100%">
         <!-- Modal content-->
         <div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
@@ -936,27 +936,26 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group non-componen-bom-master" >
                                         <label for="fst_item_list_id" class="col-md-3 control-label"><?= lang("Priority Item For HPP BOM / MASTER") ?></label>
                                         <div class="col-md-7">
                                             <select class="select2 form-control" id="item-list" style="width:100%"></select>                                            
                                         </div>
                                         <div class="col-md-2">
                                             <button class="btn btn-primary form-control" id="btn-add-hpp-bom-master">Add</button>                                            
-                                        </div>
-                                        
+                                        </div>                                        
                                     </div>
-                                    <div class="form-group">
+
+                                    <div class="form-group non-componen-bom-master">
                                         <div class="col-md-9 col-md-offset-3">
-                                            <select class="form-control" id="fst_item_list_id" multiple style="width:100%;height:250px">
-                                                <option>Satu</option>
-                                                <option>Dua</option>
-                                                <option>Tiga</option>
-                                                <option>Empat</option>
-                                                <option>Lima</option>
-                                                <option>Enam</option>
-                                            </select>
+                                            <select class="form-control" id="fst_item_list_id" multiple style="width:100%;height:250px"></select>
                                         </div>
+                                    </div>
+
+                                    <div class="form-group non-componen-bom-master">
+                                        <div class="col-md-9 col-md-offset-3">
+                                            <button class="btn btn-primary form-control" id="btn-delete-item-list">Delete Selected</button>                                            
+                                        </div>                                        
                                     </div>
 
                                     
@@ -964,7 +963,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 </form>
 
                                 <div class="modal-footer">
-                                    <button id="btn-add-bom-details" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+                                    <button id="btn-add-non-component-details" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
                                     <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
                                 </div>
 
@@ -977,172 +976,222 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </div>
 
     <script type="text/javascript">
-        $(function() {
-            $("#fst_item_list_id").dragOptions();
+        $(".non-componen-bom-master").hide();
 
-            $("#btn-add-noncomponent").click(function(event) {
-                event.preventDefault();
+        var selectedNonComponent = null;
+        var tblNonComponent;
+        var mdlNonComponent = {
+            show:function(){
+                if (selectedNonComponent != null){
+                    var data = tblNonComponent.row(selectedNonComponent).data();
+                    
+                    App.addOptionIfNotExist("<option value='"+ data.fin_nc_item_id +"'>"+data.fst_nc_item_name+"</option>","fin_nc_item_id");
+                    $("#fin_nc_item_id").trigger("change");
+                    $("#fst_hpp_type").val(data.fst_hpp_type).trigger("change");
+
+                    $.each(data.fst_item_list_id , function(i,v){
+                        App.addOptionIfNotExist("<option value='"+v.id+"'>"+v.text+"</option>","fst_item_list_id");
+                    });
+                    $("#fst_item_list_id").trigger("change");
+
+                    
+                }
                 $("#mdlNonComponentDetails").modal('show');
-            });
-            $("#tbl_noncomponent_details").DataTable({
-                searching: false,
-                paging: false,
-                info: false,
-                columns: [{
-                        "title": "<?= lang("ID") ?>",
-                        "width": "5%",
-                        data: "fin_rec_id",
-                        visible: false
-                    },
-                    {
-                        "title": "<?= lang("Item Name") ?>",
-                        "width": "10%",
-                        data: "fin_item_id",
-                        visible: false,
-                    },
-                    {
-                        "title": "<?= lang("") ?>",
-                        "width": "10%",
-                        data: "fin_item_id_bom",
-                        visible: false,
-                    },
-                    {
-                        "title": "<?= lang("Item BOM") ?>",
-                        "width": "30%",
-                        data: "BomName",
-                        visible: true,
-                    },
-                    {
-                        "title": "<?= lang("Unit") ?>",
-                        "width": "5%",
-                        data: "fst_unit",
-                        visible: true,
-                    },
-                    {
-                        "title": "<?= lang("Qty") ?>",
-                        "width": "7%",
-                        data: "fdb_qty"
-                    },
-                    {
-                        "title": "<?= lang("Action") ?>",
-                        "width": "5%",
-                        render: function(data, type, row) {
-                            action = "<a class='btn-delete-bom-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
-                            //action += "<a class='btn-view-document-items' href='#'><i class='fa fa-folder-open' aria-hidden='true'></i></a>";
-                            return action;
-                        },
-                        "sortable": false,
-                        "className": "dt-body-center text-center"
-                    }
-                ],
-            });
-            $("#tbl_bom_details").on("click", ".btn-delete-bom-details", function(event) {
-                event.preventDefault();
-                t = $("#tbl_bom_details").DataTable();
-                var trRow = $(this).parents('tr');
-                t.row(trRow).remove().draw();
-            });
-            $("#fin_item_id_bom").select2({
+            },
+            hide:function(){
+                $("#mdlNonComponentDetails").modal('hide');
+            },
+            clear:function(){
+                $("#fin_nc_item_id").val(null).trigger("change");
+                $("#fst_hpp_type").val("PRODUCT").trigger("change");
+                $("#fst_item_list_id").empty();
+                $(".non-componen-bom-master").hide();                
+
+            }
+        }
+        
+
+        $(function() {
+
+            $("#fst_hpp_type,#fin_nc_item_id").change(function(e){
+                $("#fst_item_list_id").empty();
+                $("#item-list").empty();
+                $(".non-componen-bom-master").show();
+                if ($(this).val() == "PRODUCT"){
+                    $(".non-componen-bom-master").hide();
+                }
+            })
+
+
+            $("#fin_nc_item_id").select2({
                 width: '100%',
                 ajax: {
-                    url: '<?= site_url() ?>master/item/get_data_ItemBom',
+                    url: function(){
+                        return '<?= site_url() ?>master/item/ajxGetListItemMaster';
+                    },
                     dataType: 'json',
                     delay: 250,
-                    processResults: function(data) {
-                        data2 = [];
-                        $.each(data, function(index, value) {
-                            data2.push({
-                                "id": value.fin_item_id,
-                                "text": value.fst_item_name
+                    processResults: function(resp) {
+
+                        if (resp.status == "SUCCESS"){
+                            data = resp.data;
+                            data2=[];
+                            $.each(data, function(index, value) {
+                                data2.push({
+                                    "id": value.fin_item_id,
+                                    "text": value.fst_item_code + " - " + value.fst_item_name
+                                });
                             });
-                        });
-                        console.log(data2);
-                        return {
-                            results: data2
-                        };
+                            return {
+                                results: data2
+                            };
+                        }                                                                        
                     },
                     cache: true,
                 }
             });
-            var selected_bom;
-            $('#fin_item_id_bom').on('select2:select', function(e) {
-                console.log(selected_bom);
-                var data = e.params.data;
-                selected_bom = data;
-            });
-            $("#fin_item_id_bom").change(function(event) {
-                event.preventDefault();
-                $('#fst_unit-bom').val(null).trigger('change');
-                $("#fst_unit-bom").select2({
-                    width: '100%',
-                    ajax: {
-                        url: '<?= site_url() ?>master/item/get_data_unitbom/' + $("#fin_item_id_bom").val(),
-                        dataType: 'json',
-                        delay: 250,
-                        processResults: function(data) {
-                            data2 = [];
+
+            $("#item-list").select2({
+                width: '100%',
+                ajax: {
+                    url: function(){
+                        if ($("#fst_hpp_type").val() == "BOM"){
+                            return '<?= site_url() ?>master/item/ajxGetListItemBOM/' + $("#fin_item_id").val();
+                        }
+                        return '<?= site_url() ?>master/item/ajxGetListItemMaster';
+                    },
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(resp) {
+
+                        if (resp.status == "SUCCESS"){
+                            data = resp.data;
+                            data2=[];
                             $.each(data, function(index, value) {
                                 data2.push({
                                     "id": value.fin_item_id,
-                                    "text": value.fst_unit
+                                    "text": value.fst_item_code + " - " + value.fst_item_name
                                 });
                             });
-                            console.log(data2);
                             return {
                                 results: data2
                             };
-                        },
-                        cache: true,
-                    }
+                        }
+                        
+                        
+                        
+                    },
+                    cache: true,
+                }
+            });
+
+            $("#btn-add-hpp-bom-master").click(function(e){
+                e.preventDefault();
+                var id=$("#item-list").val();
+                var text=$("#item-list option:selected").text();
+                $("#fst_item_list_id").append("<option value='"+id+"'>"+text+"</option>");
+            });
+
+            $("#fst_item_list_id").dragOptions();
+            $("#btn-delete-item-list").click(function(e){
+                e.preventDefault();
+                $.each($("#fst_item_list_id option:selected"),function(i,v){
+                    v.remove();
                 });
+
             })
-            var selected_unitbom;
-            $('#fst_unit-bom').on('select2:select', function(e) {
-                console.log(selected_unitbom);
-                var data = e.params.data;
-                selected_unitbom = data;
-            });
-            $("#btn-add-bom-details").click(function(event) {
+
+            $("#btn-add-noncomponent").click(function(event) {
                 event.preventDefault();
-                addRow = true;
-                var itemBom = $("#fin_item_id_bom").val();
-                if (itemBom == null || itemBom == "") {
-                    $("#fin_item_id_bom_error").html("Please select Item");
-                    $("#fin_item_id_bom_error").show();
-                    addRow = false;
-                    return;
-                } else {
-                    $("#fin_item_id_bom_error").hide();
-                }
-                var unitBom = $("#fst_unit-bom").val();
-                if (unitBom == null || unitBom == "") {
-                    $("#fst_unit-bom_error").html("Please select Unit");
-                    $("#fst_unit-bom_error").show();
-                    addRow = false;
-                    return;
-                } else {
-                    $("#fst_unit-bom_error").hide();
-                }
-                var qtyBom = $("#fdb_qty").val();
-                if (qtyBom == null || qtyBom == "" || qtyBom < 0 ) {
-                    $("#fdb_qty_error").html("Qty must be greater than or same as 0 ");
-                    $("#fdb_qty_error").show();
-                    addRow = false;
-                    return;
-                } else {
-                    $("#fdb_qty_error").hide();
-                }
-                t = $('#tbl_bom_details').DataTable();
-                t.row.add({
-                    fin_rec_id: 0,
-                    fin_item_id: 0,
-                    fin_item_id_bom: selected_bom.id,
-                    BomName: selected_bom.text,
-                    fst_unit: selected_unitbom.text,
-                    fdb_qty: $("#fdb_qty").val(),
-                    action: action
-                }).draw(false);
+                mdlNonComponent.show();
+                mdlNonComponent.clear();
+                
             });
+
+            tblNonComponent = $("#tbl_noncomponent_details").DataTable({
+                searching: false,
+                paging: false,
+                info: false,
+                columns: [
+                    {"title": "<?= lang("ID") ?>","width": "5%",data: "fin_rec_id",visible: false},
+                    {"title": "<?= lang("Non Component Item") ?>","width": "10%",data: "fin_nc_item_id",visible: true,
+                        render:function(data,type,row){
+                            return row.fst_nc_item_name;
+                        }
+                    },
+                    {"title": "<?= lang("Hpp Type") ?>","width": "10%",data: "fst_hpp_type",visible: true},
+                    {"title": "<?= lang("HPP Item List") ?>","width": "30%",data: "fst_item_list_id",visible: true,
+                        render:function(data,type,row){
+                            console.log(row);
+                            var itemList = "";
+                            $.each(row.fst_item_list_id,function(i,v){
+                                itemList += v.text + "<br>";
+                            });
+                            return itemList;
+                        }
+                    },
+                    {"title": "<?= lang("Action") ?>","width": "5%","sortable": false,"className": "dt-body-center text-center",
+                        render: function(data, type, row) {
+                            action = "<a class='btn-edit-nc-details edit-mode' href='#'><i class='fa fa-pencil'></i></a>&nbsp;";
+                            action += "<a class='btn-delete-nc-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+                            
+                            return action;
+                        },
+                    }
+                ],
+
+            }).on("click", ".btn-edit-nc-details", function(event) {
+                event.preventDefault();
+                var trRow = $(this).parents('tr');
+                selectedNonComponent = trRow;
+                mdlNonComponent.show();
+                
+                
+            }).on("click", ".btn-delete-nc-details", function(event) {
+                event.preventDefault();                
+                var trRow = $(this).parents('tr');
+                tblNonComponent.row(trRow).remove().draw();
+            });
+
+            
+            $("#btn-add-non-component-details").click(function(e) {
+                e.preventDefault();
+
+                var selectedItemHPP =[];
+                
+                $.each($("#fst_item_list_id option"),function(i,v){
+                    //console.log($(v).val());
+                    selectedItemHPP.push({
+                        id: $(v).val(),
+                        text: $(v).text()
+                    });
+                });
+
+                
+                var data = null;
+                if (selectedNonComponent == null){
+                    data = {
+                        fin_rec_id:0,
+                        fin_nc_item_id: $("#fin_nc_item_id").val(),
+                        fst_nc_item_name: $("#fin_nc_item_id option:selected").text(),
+                        fst_hpp_type:$("#fst_hpp_type").val(),
+                        fst_item_list_id:selectedItemHPP,
+                    }
+                    tblNonComponent.row.add(data).draw(false);
+                }else{
+                    data = tblNonComponent.row(selectedNonComponent).data();
+                    data.fin_nc_item_id =  $("#fin_nc_item_id").val(),
+                    data.fst_nc_item_name= $("#fin_nc_item_id option:selected").text(),
+                    data.fst_hpp_type = $("#fst_hpp_type").val(),
+                    data.fst_item_list_id =selectedItemHPP;
+
+                    tblNonComponent.row(selectedNonComponent).data(data).draw(false);
+                }                             
+                selectedNonComponent = null;
+                mdlNonComponent.hide();
+                mdlNonComponent.clear();
+            });
+
         });
     </script>
 </div>
@@ -1464,8 +1513,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 <script type="text/javascript">
     $(function() {
+        $("#return-non-component").hide();
+
         <?php if ($mode == "EDIT") { ?>
             init_form($("#fin_item_id").val());
+            $("#return-non-component").show();
         <?php } ?>
         
         $("#btnSubmitAjax").click(function(event) {
@@ -1476,54 +1528,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
             }else{
                 saveAjax();
             }
-            console.log(data);
-            //var formData = new FormData($('form')[0])
-            /*$.ajax({
-                type: "POST",
-                enctype: 'multipart/form-data',
-                url: url,
-                data: data,
-                processData: false,
-                contentType: false,
-                cache: false,
-                timeout: 600000,
-                success: function(resp) {
-                    if (resp.message != "") {
-                        $.alert({
-                            title: 'Message',
-                            content: resp.message,
-                            buttons: {
-                                OK: function() {
-                                    if (resp.status == "SUCCESS") {
-                                        window.location.href = "<?= site_url() ?>master/item";
-                                        return;
-                                    }
-                                },
-                            }
-                        });
-                    }
-                    if (resp.status == "VALIDATION_FORM_FAILED") {
-                        //Show Error
-                        errors = resp.data;
-                        for (key in errors) {
-                            $("#" + key + "_err").html(errors[key]);
-                        }
-                    } else if (resp.status == "SUCCESS") {
-                        data = resp.data;
-                        $("#fin_item_id").val(data.insert_id);
-                        //Clear all previous error
-                        $(".text-danger").html("");
-                        // Change to Edit mode
-                        $("#frm-mode").val("EDIT"); //ADD|EDIT
-                        $('#fst_item_name').prop('readonly', true);
-                    }
-                },
-                error: function(e) {
-                    $("#result").text(e.responseText);
-                    console.log("ERROR : ", e);
-                    $("#btnSubmit").prop("disabled", false);
-                }
-            });*/
         });
 
         $("#fst_image").change(function(event) {
@@ -1750,7 +1754,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			title:"<?=lang("Hapus data ini ?")?>",
 			rootSelector: '#btnDelete',
 			placement: 'left',
-		});
+        });
+        
 		$("#btnDelete").click(function(e){
 			e.preventDefault();
 			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
@@ -1910,6 +1915,28 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         action: action
                     }).draw(false);
                 })
+
+                //populate return non component
+                $.each(resp.nc_Detail,function(i,v){
+                    
+                    var selectedItemHPP =[];
+                    $.each(v.arrHPPItems, function(i,v){
+                        selectedItemHPP.push({
+                            id:v.fin_item_id,
+                            text: v.fst_item_code + " - " + v.fst_item_name
+                        });
+                    });
+
+                    tblNonComponent.row.add({
+                        fin_rec_id:v.fin_rec_id,
+                        fin_nc_item_id: v.fin_nc_item_id,
+                        fst_nc_item_name: v.fst_nc_item_code + " - " +  v.fst_nc_item_name,
+                        fst_hpp_type:v.fst_hpp_type,
+                        fst_item_list_id:selectedItemHPP
+                    });
+                });
+                tblNonComponent.draw(false);
+
                 //populate Special pricing
                 $.each(resp.special_Pricing, function(name, val) {
                     console.log(val);
@@ -1934,6 +1961,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     }
 
     function saveAjax(){
+
         data = new FormData($("#frmItem")[0]);
 
         detail = new Array();
@@ -1959,6 +1987,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
             value: JSON.stringify(detailBOM)
         });*/
         data.append("detailBOM",JSON.stringify(detailBOM));
+
+        // Non Component return 
+        var detailNonComponent = [];
+        var nonComponentDetails = tblNonComponent.data();
+        $.each(nonComponentDetails,function(i,v){
+            detailNonComponent.push(v);
+        });
+        data.append("detailReturnNonComponent",JSON.stringify(detailNonComponent));
+
+
+
         // save Special pricing
         specialprice = new Array();
         p = $('#tbl_special_pricing').DataTable();

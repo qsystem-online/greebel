@@ -39,7 +39,7 @@ class Rmout_return extends MY_Controller{
 			['title' => 'No.', 'width' => '60px', 'data' => 'fst_rmout_return_no'],
 			['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_rmout_return_datetime'],
 			['title' => 'WO.', 'width' => '60px', 'data' => 'fst_wo_no'],
-			['title' => 'WO Batch No.', 'width' => '60px', 'data' => 'fst_wobatchno_id'],
+			['title' => 'WO Batch No.', 'width' => '60px', 'data' => 'fst_wobatchno_no'],
 			['title' => 'Warehouse', 'width' => '50px', 'data' => 'fst_warehouse_name'],			
 			['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
@@ -152,12 +152,12 @@ class Rmout_return extends MY_Controller{
 			$dataPrepared = $this->prepareData();
 			$dataH = $dataPrepared["dataH"];
 			$details =$dataPrepared["details"];			
-			$resp = dateIsLock($dataH["fdt_rmout_datetime"]);
+			$resp = dateIsLock($dataH["fdt_rmout_return_datetime"]);
 			if($resp["status"] != "SUCCESS"){
 				throw new CustomException($resp["message"],3003,"FAILED",[]);
 			}
-			unset($dataH["fin_rmout_id"]);
-			$dataH["fst_rmout_no"] = $this->trrmout_model->generateProductionTransactionNo();		
+			unset($dataH["fin_rmout_return_id"]);
+			$dataH["fst_rmout_return_no"] = $this->trrmoutreturn_model->generateTransactionNo();		
 			$this->validateData($dataH,$details);
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
@@ -169,14 +169,14 @@ class Rmout_return extends MY_Controller{
 
 		try{
 			$this->db->trans_start();
-			$insertId = $this->trrmout_model->insert($dataH);
+			$insertId = $this->trrmoutreturn_model->insert($dataH);
 			foreach($details as $dataD){
 				$dataD = (array)$dataD;
-				$dataD["fin_rmout_id"] = $insertId;
-				$this->trrmoutitems_model->insert($dataD);
+				$dataD["fin_rmout_return_id"] = $insertId;
+				$this->trrmoutreturnitems_model->insert($dataD);
 			}
 
-			$this->trrmout_model->posting($insertId);
+			$this->trrmoutreturn_model->posting($insertId);
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
@@ -195,17 +195,17 @@ class Rmout_return extends MY_Controller{
 
 	public function ajx_edit_save(){	
 		parent::ajx_edit_save();	
-		$finRMOutId = $this->input->post("fin_rmout_id");
+		$finRMOutReturnId = $this->input->post("fin_rmout_return_id");
 		try{
-			$dataHOld = $this->trrmout_model->getDataHeader($finRMOutId);
+			$dataHOld = $this->trrmoutreturn_model->getsimpleDataById($finRMOutReturnId);
 			if ($dataHOld == null){
 				show_404();
 			}			
-			$resp = dateIsLock($dataHOld->fdt_rmout_datetime);
+			$resp = dateIsLock($dataHOld->fdt_rmout_return_datetime);
 			if($resp["status"] != "SUCCESS"){
 				throw new CustomException($resp["message"],3003,"FAILED",[]);
 			}
-			$this->trrmout_model->isEditable($finRMOutId);
+			$this->trrmoutreturn_model->isEditable($finRMOutReturnId);
 						
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
@@ -219,33 +219,29 @@ class Rmout_return extends MY_Controller{
 			$preparedData = $this->prepareData();
 			$dataH = $preparedData["dataH"];
 			$details = $preparedData["details"];
-			$dataH["fin_rmout_id"] = $finRMOutId;
-			$dataH["fst_rmout_no"] = $dataHOld->fst_rmout_no;
+			$dataH["fin_rmout_return_id"] = $finRMOutReturnId;
+			$dataH["fst_rmout_return_no"] = $dataHOld->fst_rmout_return_no;
 			
 
 
 			$this->db->trans_start();
-
-			$this->trrmout_model->unposting($finRMOutId);
-			
-			$this->trrmout_model->deleteDetail($finRMOutId);
-			
+			$this->trrmoutreturn_model->unposting($finRMOutReturnId);			
+			$this->trrmoutreturn_model->deleteDetail($finRMOutReturnId);			
 			$this->validateData($dataH,$details);
-			$this->trrmout_model->update($dataH);
+			$this->trrmoutreturn_model->update($dataH);
 
 			foreach($details as $dataD){
 				$dataD = (array)$dataD;
-				$dataD["fin_rmout_id"] = $finRMOutId;
-				$this->trrmoutitems_model->insert($dataD);
+				$dataD["fin_rmout_return_id"] = $finRMOutReturnId;
+				$this->trrmoutreturnitems_model->insert($dataD);
 			}
-
 			
-			$this->trrmout_model->posting($finRMOutId);
+			$this->trrmoutreturn_model->posting($finRMOutReturnId);
 			
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
 			$this->ajxResp["message"] = "Data Saved !";
-			$this->ajxResp["data"]["insert_id"] = $finRMOutId;
+			$this->ajxResp["data"]["insert_id"] = $finRMOutReturnId;
 			$this->json_output();			
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
@@ -259,10 +255,8 @@ class Rmout_return extends MY_Controller{
 	}
 
 	private function prepareData(){		
-		//$this->load->model("trinventory_model");		
-
+		$this->load->model("trwo_model");
 		$fdtRMOutReturnDatetime = dBDateTimeFormat($this->input->post("fdt_rmout_return_datetime"));
-
 		$dataH = [
 			"fin_rmout_return_id"=>$this->input->post("fin_rmout_return_id"),
 			"fst_rmout_return_no"=>$this->input->post("fst_rmout_return_no"),
@@ -276,16 +270,18 @@ class Rmout_return extends MY_Controller{
 			"fin_branch_id"=>$this->aauth->get_active_branch_id()
 		];		
 
+		$wo = $this->trwo_model->getSimpleDataById($dataH["fin_wo_id"]);
+		
 		$postDetails = $this->input->post("detail");
 		$postDetails = json_decode($postDetails);		
 		$details = [];
-		foreach($postDetails as $detail){			
+		foreach($postDetails as $detail){	
 			$tmp = [
 				"fin_rec_id"=>$detail->fin_rec_id,				
 				"fin_item_id"=>$detail->fin_item_id,
 				"fst_unit"=>$detail->fst_unit,
 				"fdb_qty"=>$detail->fdb_qty,
-				"fdc_hpp"=>$this->trinventory_model->getLastHPP($detail->fin_item_id,$dataH["fin_warehouse_id"]),
+				"fdc_avg_cost"=>$this->trrmoutreturn_model->getHPPReturnItem($wo->fin_item_id,$detail->fin_item_id,$dataH["fin_warehouse_id"]),
 				"fst_batch_number"=>$detail->fst_batch_number,
 				"fst_serial_number_list"=>json_encode($detail->fst_serial_number_list),
 				"fst_active"=>"A"
@@ -301,7 +297,7 @@ class Rmout_return extends MY_Controller{
 	}
 	
 	private function validateData($dataH,$details){
-		$this->form_validation->set_rules($this->trrmout_model->getRules("ADD", 0));
+		$this->form_validation->set_rules($this->trrmoutreturn_model->getRules("ADD", 0));
 		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
 		$this->form_validation->set_data($dataH);
 		
@@ -312,7 +308,7 @@ class Rmout_return extends MY_Controller{
 	}
 
 	public function fetch_data($finId){
-		$data = $this->trrmout_model->getDataProductionById($finId);	
+		$data = $this->trrmoutreturn_model->getDataById($finId);	
 		if ($data == null){
 			$resp = ["status"=>"FAILED","message"=>"DATA NOT FOUND !"];
 		}else{
@@ -410,19 +406,24 @@ class Rmout_return extends MY_Controller{
     }
     
     public function ajxGetItemList(){
+		$this->load->model("trwo_model");
 		//$term = $this->input->get("term");
 		//$term = "%$term%";
-
+		//Barang yang bisa di return barang jadi, barang yang ada dalam bomlist (produk jadi), barang yang ada dalam return non component (produk jadinya)
         $finWOId = $this->input->get("fin_wo_id");
-        $finWOBatchNoId = $this->input->get("fin_wobatchno_id");
-        
-        $ssql = "SELECT distinct a.fin_item_id,c.fst_item_code,c.fst_item_name,c.fbl_is_batch_number,c.fbl_is_serial_number  FROM trrmoutitems a
-            INNER JOIN trrmout b on a.fin_rmout_id = b.fin_rmout_id 
-            INNER JOIN msitems c on a.fin_item_id = c.fin_item_id
-            where fin_wo_id = ? and fin_wobatchno_id = ? and b.fst_active ='A'";
-
+		//$finWOBatchNoId = $this->input->get("fin_wobatchno_id");
 		
-        $qr = $this->db->query($ssql,[$finWOId,$finWOBatchNoId]);            
+
+		$wo = $this->trwo_model->getSimpleDataById($finWOId);
+		$finItemId = $wo->fin_item_id;
+
+		//get item jadinya
+		$ssql  = "SELECT a.fin_item_id,a.fst_item_code,a.fst_item_name,a.fbl_is_batch_number,a.fbl_is_serial_number from msitems a 
+		where (a.fin_item_id = ?) OR
+		a.fin_item_id in (SELECT fin_item_id_bom  from msitembomdetails where  fin_item_id = ? and fst_active ='A') OR
+		a.fin_item_id in (SELECT fin_nc_item_id  from msitemnoncomponentdetails where  fin_item_id = ? and fst_active ='A')";
+        
+		$qr = $this->db->query($ssql,[$finItemId,$finItemId,$finItemId]);		
 		$rs = $qr->result();
 
 		$this->json_output([

@@ -227,7 +227,7 @@ class Item extends MY_Controller
     }
 
     public function ajx_edit_save()
-    {
+    {        
         parent::ajx_edit_save();
         $this->load->model('msitems_model');
         $fin_item_id = $this->input->post("fin_item_id");
@@ -358,6 +358,47 @@ class Item extends MY_Controller
                 return;
             }
         }
+
+        //Save Return Non Component        
+        $this->load->model("msitemnoncomponentdetails_model");
+        $this->msitemnoncomponentdetails_model->deleteByHeaderId($fin_item_id);
+        $details = $this->input->post("detailReturnNonComponent");
+        $details = json_decode($details);
+        
+        foreach ($details as $item) {
+            $hppItemList =  $item->fst_item_list_id;
+            $strHppItemId = "";
+            foreach($hppItemList as $hppItem){
+                $strHppItemId .= $hppItem->id . ",";
+            }
+            $strHppItemId = rtrim($strHppItemId,",");
+
+
+            $data = [
+                "fin_item_id" => $fin_item_id,
+                "fin_nc_item_id" => $item->fin_nc_item_id,
+                "fst_hpp_type" => $item->fst_hpp_type,
+                "fst_item_list_id" => $strHppItemId,
+                "fst_active" => "A"
+            ];
+
+            $this->msitemnoncomponentdetails_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->db->trans_rollback();
+                $this->json_output([
+                    "status"=>"DB_FAILED",
+                    "message"=>"Insert Detail Failed",
+                    "data"=>$this->db->error()
+                ]);
+                return;
+            }
+        }
+
+        
+
+
+
         //Save Special pricing
         $this->load->model("msitemspecialpricinggroupdetails_model");
         $this->msitemspecialpricinggroupdetails_model->deleteByHeaderId($fin_item_id);
@@ -848,6 +889,39 @@ class Item extends MY_Controller
         $this->json_output();
     }
 
+
+    public function ajxGetListItemBOM($finItemId){
+        $term = $this->input->get("term");
+        $term = "%$term%";
+
+        $ssql = "SELECT b.fin_item_id,b.fst_item_name,b.fst_item_code FROM msitembomdetails a
+            INNER JOIN msitems b on a.fin_item_id_bom = b.fin_item_id 
+            where a.fin_item_id = ? and b.fst_item_name like ? and b.fst_item_code like ? and a.fst_active ='A'";
+
+        $qr = $this->db->query($ssql,[$finItemId,$term,$term]);
+        $rs =$qr->result();
+        $this->json_output([
+            "status"=>"SUCCESS",
+            "messages"=>"",
+            "data"=>$rs
+        ]);
+    }
+
+    public function ajxGetListItemMaster(){
+        $term = $this->input->get("term");
+        $term = "%$term%";
+
+        $ssql = "SELECT fin_item_id,fst_item_name,fst_item_code FROM msitems 
+            where fst_item_name like ? and fst_item_code like ? and fst_active ='A'";
+
+        $qr = $this->db->query($ssql,[$term,$term]);
+        $rs =$qr->result();
+        $this->json_output([
+            "status"=>"SUCCESS",
+            "messages"=>"",
+            "data"=>$rs
+        ]);
+    }
     
 
 }
