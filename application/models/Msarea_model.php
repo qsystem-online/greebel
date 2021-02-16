@@ -8,7 +8,18 @@ class Msarea_model extends MY_Model {
     public function __construct(){
         parent:: __construct();
     }
+    
+    public function getDataById($fst_kode){
+        $ssql = "SELECT fst_kode,fst_nama FROM " . $this->tableName . " WHERE fst_kode = ?"; 
+        $qr = $this->db->query($ssql, [$fst_kode]);
+        $rwArea = $qr->row();
 
+        $data = [
+            "ms_area" => $rwArea
+        ];
+
+        return $data;
+    }
     public function getRules($mode="ADD",$id=0){
         $rules = [];
 

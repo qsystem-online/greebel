@@ -89,9 +89,9 @@
 					foreach ($dataReport as $row){
                         $nou++;
 						echo "<tr>";
-                        $fdc_subttl = number_format ($row->fdc_subttl, 2, '.', ',');
-                        $rate_idr = number_format ($row->Rate_Idr, 2, '.', ',');
-						$fdc_total = number_format ($row->fdc_total, 2, '.', ',');
+                        $fdc_subttl = formatNumber ($row->fdc_subttl, 2);
+                        $rate_idr = formatNumber ($row->Rate_Idr, 2);
+						$fdc_total = formatNumber ($row->fdc_total, 2);
                         echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");	   
                         echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->No_Inv</td>");
                         echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->Inv_Date</td>");
@@ -109,9 +109,9 @@
 						$ttl_total += $row->fdc_total;
 					}
                     $subttlNew += $subttl;
-                    $subttlNew = number_format ($subttlNew, 2, '.', ',');
+                    $subttlNew = formatNumber ($subttlNew, 2);
 					$ttl_totalNew += $ttl_total;
-					$ttl_totalNew = number_format ($ttl_totalNew, 2, '.', ','); 
+					$ttl_totalNew = formatNumber ($ttl_totalNew, 2); 
 
 					echo "<tr>";
 					echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Total : </td>";

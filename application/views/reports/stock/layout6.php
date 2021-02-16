@@ -74,8 +74,15 @@
 					$newItem = true;
 					$end_balance = 0;
 					foreach ($dataReport as $row){
-						if ($itemId !=""){
+						if ($itemId !="" || $itemId == $row->fin_item_id){
 							if($itemId != $row->fin_item_id){
+								foreach($rs as $rw){
+									//$i = $i + 1;
+									//echo isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
+									$end_balance = isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
+									echo("<td class='col-'.$i style='text-align: right'>$end_balance</td>");
+								}
+								$arrLastTemp = [];	
 								echo "<tr>";
 								$nou++;
 								if ($row->fst_basic_unit == null ){
@@ -88,16 +95,14 @@
 								echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->fst_item_name</td>");
 								echoIfColSelected(3,$selectedCols,"<td class='col-3'style='text-align: right'>$fst_basic_unit</td>");
 								foreach($rs as $rw){
-									$i = $i + 1;
-									//echo isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
+									//$i = $i + 1;
 									$end_balance = isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
-									echo("<td class='col-'.$i style='text-align: right'>$end_balance</td>");
+									//echo("<td class='col-'.$i style='text-align: right'>$end_balance</td>");
 								}
-								$arrLastTemp = []; 										                                                                                                                                                                      
-								echo "</tr>";
+								$arrLastTemp = [];										                                                                                                                                                                      
+								//echo "</tr>";
 							}
 						}else{
-							echo "<tr>";
 							$nou++;
 							if ($row->fst_basic_unit == null ){
 								$fst_basic_unit = '???';
@@ -110,18 +115,25 @@
 							echoIfColSelected(3,$selectedCols,"<td class='col-3'style='text-align: right'>$fst_basic_unit</td>");
 							$arrLastTemp[$row->fin_warehouse_id] = $row->end_balance;
 							foreach($rs as $rw){
-								$i = $i + 1;
-								//echo isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
+								//$i = $i + 1;
 								$end_balance = isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
-								echo("<td class='col-'.$i style='text-align: right'>$end_balance</td>");
+								//echo("<td class='col-'.$i style='text-align: right'>$end_balance</td>");
 							}
-							//$arrLastTemp = []; 											                                                                                                                                                                      
-							echo "</tr>";
+							$arrLastTemp = [];										                                                                                                                                                                      
+							//echo "</tr>";
 							$itemId = $row->fin_item_id;
 						}
 						$itemId = $row->fin_item_id;
 						$arrLastTemp[$row->fin_warehouse_id] = $row->end_balance;
 					}
+					foreach($rs as $rw){
+						//$i = $i + 1;
+						//echo isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
+						$end_balance = isset($arrLastTemp[$rw->fin_warehouse_id]) ? $arrLastTemp[$rw->fin_warehouse_id] : 0;
+						echo("<td class='col-'.$i style='text-align: right'>$end_balance</td>");
+					}
+					$arrLastTemp = [];	
+					echo "<tr>";
 				?>
 			</tbody>
 		</table>

@@ -80,6 +80,15 @@ class Stock_rpt_model extends CI_Model {
 			}
 		}
 
+		if ($rptLayout =="6"){
+			if ($group_id != "") {
+				$swhere .= " AND a.fin_item_group_id = " . $this->db->escape($group_id);
+			}
+			if ($item_id > "0" ) {
+				$swhere .= " AND a.fin_item_id = " . $this->db->escape($item_id);
+			}
+		}
+
         if ($swhere != "") {
             $swhere = " WHERE " . substr($swhere, 5);
         }
@@ -113,7 +122,7 @@ class Stock_rpt_model extends CI_Model {
 						WHERE fin_warehouse_id = '".$warehouse_id."' AND fdt_trx_datetime < '".$start_date."' GROUP BY fin_item_id
 					) a
 					INNER JOIN trinventory b ON a.max_rec_id = b.fin_rec_id 
-				) c ON b.fin_item_id = c.fin_item_id 
+				) c ON a.fin_item_id = c.fin_item_id 
 				INNER JOIN msgroupitems d ON a.fin_item_group_id = d.fin_item_group_id 
 				$swhere GROUP BY a.fin_item_id ORDER BY d.fst_item_group_name,a.fst_item_code";
 				break;
@@ -132,7 +141,7 @@ class Stock_rpt_model extends CI_Model {
 						WHERE fin_warehouse_id = '".$warehouse_id."' AND fdt_trx_datetime < '".$start_date."' GROUP BY fin_item_id
 					) a
 					INNER JOIN trinventory b ON a.max_rec_id = b.fin_rec_id 
-				) c ON b.fin_item_id = c.fin_item_id 
+				) c ON a.fin_item_id = c.fin_item_id 
 				INNER JOIN msgroupitems d ON a.fin_item_group_id = d.fin_item_group_id 
 				$swhere GROUP BY a.fin_item_id ORDER BY d.fst_item_group_name,a.fst_item_code";
 				break;
@@ -166,7 +175,7 @@ class Stock_rpt_model extends CI_Model {
 					) a
 					INNER JOIN trinventory b ON a.max_rec_id = b.fin_rec_id 
 				) b ON a.fin_item_id = b.fin_item_id 
-				ORDER BY a.fin_item_id";
+				$swhere  ORDER BY a.fin_item_id,b.fin_warehouse_id";
 				break;
 			default:
 				break;

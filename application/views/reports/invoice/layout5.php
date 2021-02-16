@@ -53,7 +53,7 @@
 		}
 		?>
 		<div>Gudang : <?= $name_wareHouse ?></div>
-		<div>Tanggal S/O: <?= $this->input->post("fdt_inv_datetime") ?>  s/d <?= $this->input->post("fdt_inv_datetime2") ?></div> 
+		<div>Tgl Faktur: <?= $this->input->post("fdt_inv_datetime") ?>  s/d <?= $this->input->post("fdt_inv_datetime2") ?></div> 
         <div>Customer: <?= $name_relations ?> </div>
         <div>Sales: <?= $name_sales ?></div>
 		<div>Mata Uang : <?= $this->input->post("fst_curr_code") ?></div>                            
