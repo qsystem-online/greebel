@@ -92,7 +92,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="col-md-10">
 							<select class="form-control" id="fin_supplier_id" placeholder="<?= lang("Exkspedisi") ?>" name="fin_supplier_id"  style="width:100%">
 								<?php
-									$supplierList = $this->msrelations_model->getSupplierList();
+									$supplierList = $this->msrelations_model->getEkspedisiList();
 									foreach($supplierList as $supplier){
 										echo "<option value='$supplier->fin_relation_id'> $supplier->fst_relation_name </option>";
 									}

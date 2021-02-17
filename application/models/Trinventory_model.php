@@ -406,7 +406,7 @@ class Trinventory_model extends MY_Model
 				and fin_item_id = ?
 				and fdt_trx_datetime >= ? order by fdt_trx_datetime,fin_rec_id";
 			$qr = $this->db->query($ssql,[$rw->fin_warehouse_id,$rw->fin_item_id,$rw->fdt_trx_datetime]);
-			$rs = $qr->result();               
+			$rs = $qr->result();
 			foreach($rs as $data){
 				$data->fdb_qty_balance_after = $rwPrev["fdb_qty_balance_after"] + (float) $data->fdb_qty_in -  (float) $data->fdb_qty_out;                
 				if ($data->fdb_qty_balance_after < 0 && $force == false){
@@ -474,7 +474,13 @@ class Trinventory_model extends MY_Model
 				$dataH["fst_basic_unit"],
 			]);
 		$rwPrev = $qr->row_array();
+		if ($rwPrev == null){
+			$rwPrev = [
+				"fdb_qty_balance_after"=>0,
+				"fdc_avg_cost"=>0
+			];
 
+		}
 		$dataH["fdb_qty_balance_after"] = $rwPrev["fdb_qty_balance_after"] + $dataH["fdb_qty_in"] - $dataH["fdb_qty_out"];        
 		$dataH["fdc_avg_cost"] = $this->calculateHPP(
 			$rwPrev["fdb_qty_balance_after"],
