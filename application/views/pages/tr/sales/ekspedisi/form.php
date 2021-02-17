@@ -579,6 +579,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 				App.autoFillForm(dataH);
 
+				/*
+				if (dataH.fbl_reclaimable == 1){
+					$("#fbl_reclaimable").prop("checked",true);
+				}else{
+					$("#fbl_reclaimable").prop("checked",false);
+				}
+				*/
+
 				$("#fdt_salesekspedisi_datetime").val(dateTimeFormat(dataH.fdt_salesekspedisi_datetime)).datetimepicker("update");
 
 				$("#fin_customer_id").val(dataH.fin_customer_id).trigger("change.select2");

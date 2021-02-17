@@ -196,7 +196,14 @@ var App = {
 			type = $el.attr('type');
 			switch(type){
 				case 'checkbox':
-					$el.filter('[value="' + val + '"]').attr('checked', 'checked');
+					if (val == 0){
+						//$el.filter('[value="' + val + '"]').attr('checked', 'checked');
+						$el.prop("checked",false);
+					}else{
+						$el.prop("checked",true);
+						//$el.filter('[value="' + val + '"]').attr('checked', 'checked');
+					}
+					
 					break;
 				case 'radio':
 					$el.filter('[value="' + val + '"]').attr('checked', 'checked');

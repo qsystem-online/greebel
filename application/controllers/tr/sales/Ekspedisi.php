@@ -216,7 +216,7 @@ class Ekspedisi extends MY_Controller{
         $finSalesekspedisiId = $this->input->post("fin_salesekspedisi_id");
 
         try{            
-            $dataHOld = $this->db->get_where("trsalesekspedisi",["fin_salesekspedisi_id"=>$fin_salesekspedisi_id])->row();
+            $dataHOld = $this->db->get_where("trsalesekspedisi",["fin_salesekspedisi_id"=>$finSalesekspedisiId])->row();
             if ($dataHOld == null){
                 throw new CustomException(lang("ID sales ekspedisi tidak dikenal !"),3003,"FAILED",null);                
             }

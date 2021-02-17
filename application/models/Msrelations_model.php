@@ -159,7 +159,6 @@ clASs Msrelations_model extends MY_Model {
         $query = $this->db->query($ssql, [$this->aauth->get_active_branch_id()]);
         $rs = $query->result();
         return $rs;
-
     }
 
     public function getCustomerList(){
