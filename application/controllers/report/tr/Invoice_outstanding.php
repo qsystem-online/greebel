@@ -71,21 +71,6 @@ class Invoice_outstanding extends MY_Controller
 			['layout' => 4, 'label'=>'Total Retur', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
 			['layout' => 4, 'label'=>'Pembayaran', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
 			['layout' => 4, 'label'=>'Nilai Netto', 'value'=>'13', 'selected'=>false,'sum_total'=>true],
-
-			['layout' => 5, 'label'=>'No', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'No.Faktur', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Tgl.Faktur', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Jatuh Tempo', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'No.S/J', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'No.S/O', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'GUD', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Sales', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Pelanggan/Customer', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'M.U', 'value'=>'9', 'selected'=>false,'sum_total'=>true],
-			['layout' => 5, 'label'=>'Nilai Faktur', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Total Retur', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
-			['layout' => 5, 'label'=>'Pembayaran', 'value'=>'12', 'selected'=>false,'sum_total'=>true],
-			['layout' => 5, 'label'=>'Nilai Netto', 'value'=>'13', 'selected'=>false,'sum_total'=>true],
 		];
 	}
 

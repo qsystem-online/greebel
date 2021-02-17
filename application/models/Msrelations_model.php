@@ -174,6 +174,18 @@ clASs Msrelations_model extends MY_Model {
 
     }
 
+    public function getEkspedisiList(){
+        $term = $this->input->get("term");
+        $term = "%".$term."%";
+        $ssql = "select * from msrelations where find_in_set('3',fst_relation_type) and fin_branch_id = ? and fst_relation_name like ?";
+        //$ssql = "select fin_relation_id,fst_relation_name from msrelations where fin_branch_id = ? and fst_relation_name like ?";
+        $query = $this->db->query($ssql, [$this->aauth->get_active_branch_id(),$term]);
+
+        $rs = $query->result();
+        return $rs;
+
+    }
+
     public function getPrintRelation($type,$relationId_start,$relationId_end){
         if ($type == 'ALL'){
             $type ="";

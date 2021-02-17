@@ -10,7 +10,7 @@
 	}
 </style>
 <!-- form start -->
-<form id="irptInvoiceOutstanding" action="<?= site_url() ?>report/tr/invoice_oustanding/process" method="POST" enctype="multipart/form-data">
+<form id="rptInvoiceOutstanding" action="<?= site_url() ?>report/tr/invoice_oustanding/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
@@ -150,6 +150,7 @@
                     <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Penjualan Outstanding dan Pembayaran")?></label>
                     <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Penjualan Outstanding dan Pembayaran Sortir No.Faktur")?></label>
                     <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Tanda terima Faktur Penjualan untuk Penagihan")?></label>
+                    <label control-label"><?=lang("LAYOUT 4 IN PROSES")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -384,7 +385,7 @@
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#irptInvoiceOutstanding").serializeArray();
+            data = $("#rptInvoiceOutstanding").serializeArray();
             url = "<?= site_url() ?>report/tr/invoice_outstanding/process";
             
             // $("iframe").attr("src",url);
@@ -431,9 +432,9 @@
                         url = "<?= site_url() ?>report/tr/invoice_outstanding/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
-                        $("#irptInvoiceOutstanding").attr('action', url);
-                        $("#irptInvoiceOutstanding").attr('target', 'rpt_iframe');
-                        $("#irptInvoiceOutstanding").submit();
+                        $("#rptInvoiceOutstanding").attr('action', url);
+                        $("#rptInvoiceOutstanding").attr('target', 'rpt_iframe');
+                        $("#rptInvoiceOutstanding").submit();
                         $("a#toggle-window").click();
                         // Change to Edit mode
                         // $("#frm-mode").val("EDIT"); //ADD|EDIT
