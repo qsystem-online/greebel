@@ -273,4 +273,14 @@ class Stock extends MY_Controller
 			$line++;
 		}		
 	}
+
+	public function ajxListItem(){
+		$this->load->model("msitems_model");
+		$searchKey = $this->input->get("term");
+		$result = $this->msitems_model->getAllList($searchKey,"fin_item_id,fst_item_code,fst_item_name");        
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"data"=> $result
+		]);
+	}
 }

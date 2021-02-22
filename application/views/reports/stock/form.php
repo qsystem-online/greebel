@@ -10,7 +10,7 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptItems" action="<?= site_url() ?>report/items/process" method="POST" enctype="multipart/form-data">
+<form id="rptStock" action="<?= site_url() ?>report/gudang/stock/process" method="POST" enctype="multipart/form-data">
 	<div class="box-body">
 		<input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
 		<div class="form-group row">
@@ -51,11 +51,11 @@
 		<div class="form-group row">
 			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("From")?></label>
 			<div class="col-md-4">
-				<input type="text" class="form-control datepicker text-right" id="fdt_from" name="fdt_from" />
+				<input type="text" class="form-control datepicker" id="fdt_from" name="fdt_from" />
 			</div>
 			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("To")?></label>
 			<div class="col-md-4">
-			<input type="text" class="form-control datepicker text-right" id="fdt_to" name="fdt_to" />
+			<input type="text" class="form-control datepicker" id="fdt_to" name="fdt_to" />
 			</div>
 		</div>		        
 	
@@ -185,7 +185,7 @@
             allowClear: true,
             ajax:{
                 delay: 250,
-                url: "<?=site_url()?>/report/invoice/ajxListItem",
+                url: "<?=site_url()?>/report/gudang/stock/ajxListItem",
                 dataType: 'json',
                 processResults: function (result) {
                     if (result.status == "SUCCESS"){
@@ -218,8 +218,8 @@
 			event.preventDefault();
 			App.blockUIOnAjaxRequest("Please wait while processing data.....");
 			//data = new FormData($("#frmBranch")[0]);
-			data = $("#rptItems").serializeArray();			
-			url = "<?= site_url() ?>report/stock/process";
+			data = $("#rptStock").serializeArray();			
+			url = "<?= site_url() ?>report/gudang/stock/process";
 			
 			// $("iframe").attr("src",url);
 			$.ajax({
@@ -262,12 +262,12 @@
 						//Clear all previous error
 						$(".text-danger").html("");
 						//url = "<= site_url() ?>report/stock/generateexcel";
-						url = "<?= site_url() ?>report/stock/generatereport";
+						url = "<?= site_url() ?>report/gudang/stock/generatereport";
 						//alert(url);
 						//$("iframe").attr("src",url);
-						$("#rptItems").attr('action', url);
-						$("#rptItems").attr('target', 'rpt_iframe');
-						$("#rptItems").submit();
+						$("#rptStock").attr('action', url);
+						$("#rptStock").attr('target', 'rpt_iframe');
+						$("#rptStock").submit();
 						$("a#toggle-window").click();
 						// Change to Edit mode
 						// $("#frm-mode").val("EDIT"); //ADD|EDIT

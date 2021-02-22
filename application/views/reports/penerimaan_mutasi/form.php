@@ -10,7 +10,7 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptPAG" action="<?= site_url() ?>report/tr/penerimaan_mutasi/process" method="POST" enctype="multipart/form-data">
+<form id="rptPAG" action="<?= site_url() ?>report/gudang/penerimaan_mutasi/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
             <div class="form-group row">
@@ -188,7 +188,7 @@
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
             data = $("#rptPAG").serializeArray();
-            url = "<?= site_url() ?>report/tr/penerimaan_mutasi/process";
+            url = "<?= site_url() ?>report/gudang/penerimaan_mutasi/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -231,7 +231,7 @@
                         //Clear all previous error
                         $(".text-danger").html("");
                         //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/tr/penerimaan_mutasi/generatereport";
+                        url = "<?= site_url() ?>report/gudang/penerimaan_mutasi/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
                         $("#rptPAG").attr('action', url);

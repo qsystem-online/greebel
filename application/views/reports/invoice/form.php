@@ -10,7 +10,7 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptInvoice" action="<?= site_url() ?>report/invoice/process" method="POST" enctype="multipart/form-data">
+<form id="rptInvoice" action="<?= site_url() ?>report/tr/invoice/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
@@ -215,7 +215,7 @@
         $("#select-relations").select2({
 			width: '100%',
 			ajax:{
-				url: '<?=site_url()?>report/invoice/get_customers',
+				url: '<?=site_url()?>report/tr/invoice/get_customers',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -285,7 +285,7 @@
             allowClear: true,
             ajax:{
                 delay: 250,
-                url: "<?=site_url()?>/report/invoice/ajxListItem",
+                url: "<?=site_url()?>/report/tr/invoice/ajxListItem",
                 dataType: 'json',
                 processResults: function (result) {
                     if (result.status == "SUCCESS"){
@@ -319,7 +319,7 @@
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
             data = $("#rptInvoice").serializeArray();
-            url = "<?= site_url() ?>report/invoice/process";
+            url = "<?= site_url() ?>report/tr/invoice/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -362,7 +362,7 @@
                         //Clear all previous error
                         $(".text-danger").html("");
                         //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/invoice/generatereport";
+                        url = "<?= site_url() ?>report/tr/invoice/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
                         $("#rptInvoice").attr('action', url);
