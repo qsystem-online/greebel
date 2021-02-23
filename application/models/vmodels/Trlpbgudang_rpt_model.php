@@ -16,7 +16,7 @@ class Trlpbgudang_rpt_model extends CI_Model {
         $end_date = "";
         if (isset($data['fin_branch_id'])) { $branch_id = $data['fin_branch_id'];}
         if (isset($data['fin_warehouse_id'])) { $warehouse_id = $data['fin_warehouse_id'];}
-        if (isset($data['fin_supplier_id'])) { $relation_id = $data['fin_supplier_id'];}
+        if (isset($data['fin_supplier_id'])) { $supplier_id = $data['fin_supplier_id'];}
         if (isset($data['fin_item_id'])) { $item_id = $data['fin_item_id'];}
         if (isset($data['fst_lpb_type'])) { $lpb_type = $data['fst_lpb_type'];}
         if (isset($data['fdt_lpbgudang_datetime'])) { $start_date = $data['fdt_lpbgudang_datetime'];}
