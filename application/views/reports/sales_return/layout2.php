@@ -52,10 +52,10 @@
 			$name_sales = "ALL";
 		}
 		?>
-		<div>Gudang : <?= $name_wareHouse ?></div>
-		<div>Tanggal Faktur: <?= $this->input->post("fdt_salesreturn_datetime") ?>  s/d <?= $this->input->post("fdt_salesreturn_datetime2") ?></div> 
-        <div>Customer: <?= $name_relations ?> </div>
-        <div>Sales: <?= $name_sales ?></div>
+		<div>Gudang    : <?= $name_wareHouse ?></div>
+		<div>Tgl Return: <?= $this->input->post("fdt_salesreturn_datetime") ?>  s/d <?= $this->input->post("fdt_salesreturn_datetime2") ?></div> 
+        <div>Customer  : <?= $name_relations ?> </div>
+        <div>Sales     : <?= $name_sales ?></div>
 		<div>Mata Uang : <?= $this->input->post("fst_curr_code") ?></div>                              
 		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1200px">       
 			<thead>

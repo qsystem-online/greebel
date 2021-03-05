@@ -16,7 +16,7 @@
 				align:'right';
 			}
 		</style>
-		<div>Laporans Stock Barang</div>
+		<div>LAPORAN KARTU STOCK</div>
 		<br>
 		<?php
 		$fin_warehouse_id = $this->input->post("fin_warehouse_id");

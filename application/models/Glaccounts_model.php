@@ -180,4 +180,11 @@ class Glaccounts_model extends MY_Model
         $qr = $this->db->query($ssql,[$groupId]);
         return $qr->result();
     }
+
+    public function getKasbankList(){
+        $ssql = "SELECT * FROM glaccounts WHERE (fst_glaccount_level = 'DK' OR fst_glaccount_level = 'DB') AND fst_active ='A'";
+        $qr =$this->db->query($ssql,[]);
+        $rs = $qr->result();
+        return $rs;
+    }
 }

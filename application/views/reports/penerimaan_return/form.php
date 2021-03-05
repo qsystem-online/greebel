@@ -10,11 +10,11 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptSuratJalan" action="<?= site_url() ?>report/gudang/surat_jalan/process" method="POST" enctype="multipart/form-data">
+<form id="rptLPBReturn" action="<?= site_url() ?>report/tr/penerimaan_return/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
-                <label for="active_branch_id" class="col-sm-2 control-label"><?= lang("Branch") ?> :</label>
+                <label for="active_branch_id" class="col-sm-2 control-label"><?= lang("Branch") ?></label>
                 <div class="col-sm-4">
                     <?php
                     $active_user = $this->session->userdata("active_user");			
@@ -35,12 +35,12 @@
                     </select>
                     <div id="fin_branch_id_err" class="text-danger"></div>
                 </div>
-                <label for="select-warehouse" class="col-sm-2 control-label"><?=lang("Warehouse")?> :</label>
+                <label for="select-warehouse" class="col-sm-2 control-label"><?=lang("Warehouse")?></label>
                 <div class="col-sm-4">
                     <select id="select-warehouse" class="form-control" name="fin_warehouse_id">
                         <option value='0'>All</option>
                         <?php
-                            $warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
+                            $warehouseList = $this->mswarehouse_model->getWarehouseList();
                             foreach($warehouseList as $warehouse){
                                 echo "<option value='".$warehouse->fin_warehouse_id ."'>$warehouse->fst_warehouse_name</option>";
                             }
@@ -50,52 +50,47 @@
                 </div>
             </div>
             <div class="form-group row">						
-                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?> :</label>
+                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?></label>
                 <div class="col-sm-4">
-                    <select id="select-relations" class="form-control non-editable" name="fin_relation_id">
+                    <select id="select-relations" class="form-control non-editable" name="fin_customer_id">
                     </select>
-                    <div id="fin_relation_id_err" class="text-danger"></div>
-                </div>
-                <label for="select-type" class="col-sm-2 control-label"><?=lang("Type")?> :</label>
+                    <div id="fin_customer_id_err" class="text-danger"></div>
+                </div>            
+                <label for="select-items" class="col-sm-2 control-label"><?=lang("Item")?></label>
                 <div class="col-sm-4">
-                    <select id="select-type" class="form-control non-editable" name="fst_sj_type">
-                        <option value='SO'><?=lang("SO")?></option>
-						<option value='PO_RETURN'><?=lang("PO_RETURN")?></option>
-                        <option value='ASSEMBLING_OUT'><?=lang("ASSEMBLING_OUT")?></option>
-                    </select>
-                    <div id="fst_sj_type_err" class="text-danger"></div>
-                </div>               
+                    <select id="select-items" class="form-control non-editable" name="fin_item_id"></select>
+                    <div id="fin_item_id_err" class="text-danger"></div>
+                </div>    
             </div>
             <div class="form-group row">
-                <label for="fdt_sj_datetime" class="col-sm-2 control-label"><?=lang("Sales Order Date")?> *</label>
+                <label for="fdt_lpbsalesreturn_datetime" class="col-sm-2 control-label"><?=lang("Tanggal")?> *</label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_sj_datetime" name="fdt_sj_datetime"/>
+                        <input type="text" class="form-control datepicker" id="fdt_lpbsalesreturn_datetime" name="fdt_lpbsalesreturn_datetime"/>
                     </div>
-                    <div id="fdt_sj_datetime_err" class="text-danger"></div>
+                    <div id="fdt_lpbsalesreturn_datetime_err" class="text-danger"></div>
                     <!-- /.input group -->
                 </div>
-                <label for="fdt_sj_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
+                <label for="fdt_lpbsalesreturn_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_sj_datetime2" name="fdt_sj_datetime2"/>
+                        <input type="text" class="form-control datepicker" id="fdt_lpbsalesreturn_datetime2" name="fdt_lpbsalesreturn_datetime2"/>
                     </div>
-                    <div id="fdt_sj_datetime2_err" class="text-danger"></div>
+                    <div id="fdt_lpbsalesreturn_datetime2_err" class="text-danger"></div>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
             <div class="form-group row">
                 <label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
                 <div class="col-sm-4">								
-                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Surat Jalan")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Surat Jalan dan No.Faktur Penjualan")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Surat Jalan (Jumlah Print)")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Penerimaan Barang Return Per-Customer")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Penerimaan Barang Return Per-No Penerimaan")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -123,8 +118,8 @@
 </form>
 <script type="text/javascript" info="init">
 	$(function(){
-		$("#fdt_sj_datetime").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");
-        $("#fdt_sj_datetime2").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");					
+		$("#fdt_lpbsalesreturn_datetime").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");
+        $("#fdt_lpbsalesreturn_datetime2").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");					
 	});
 </script>
 <script type="text/javascript">
@@ -155,11 +150,17 @@
         $('#multiple-columns').multiselect('dataprovider', newArray);
         $('#multiple-columns').multiselect('selectAll',false);
 		$('#multiple-columns').multiselect('updateButtonText');
-        if (myRadio.value == "2"){
-            $('#select-type').val("SO");
-            $('#select-type').prop('disabled',true);
-        }else{
-            $('#select-type').prop('disabled',false);
+
+        if (myRadio.value == "3"){
+            $('#select-sales').val("0");
+            //$('#select-sales').hide();
+            //$('#select-sales').prop('disabled',true);
+        //}else{
+            //$('#select-sales').show();
+        }
+        if (myRadio.value == "4"){
+            $('#select-relations').empty();
+            $('#select-relations').append('<option value="0">All</option>');
         }
         // for(var i=0; i<newArray.length; i++){
         //     alert(newArray[i].label);
@@ -171,8 +172,8 @@
     $(function() {
         $("#select-relations").select2({
 			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>report/gudang/surat_jalan/get_customers',
+			ajax:{
+				url: '<?=site_url()?>report/gudang/penerimaan_return/get_customers',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -180,7 +181,7 @@
 					data = data.data;
                     items.push({
 							"id" : "0",
-							"text" : "ALL",					
+							"text" : "All",					
 						});
 					$.each(data,function(index,value){
 						items.push({
@@ -202,14 +203,52 @@
 			// $("#select-sales").val(selectedCustomer.fin_sales_id).trigger("change.select2");
 			// $("#select-warehouse").val(selectedCustomer.fin_warehouse_id).trigger("change.select2");
 			//current_pricing_group_id = selectedCustomer.current_pricing_group_id;			
-		});
+        });
+
+        $("#select-items").select2({
+            minimumInputLength: 2,
+            placeholder:{
+                id: '0', // the value of the option
+                text: 'All'
+            },
+            allowClear: true,
+            ajax:{
+                delay: 250,
+                url: "<?=site_url()?>/report/gudang/penerimaan_return/ajxListItem",
+                dataType: 'json',
+                processResults: function (result) {
+                    if (result.status == "SUCCESS"){
+                        var data = $.map(result.data, function (obj) {
+                            obj.id = obj.fin_item_id,  
+                            obj.text = obj.fst_item_code + " - "  + obj.fst_item_name;
+                            //obj.fbl_is_batch_number
+                            //obj.fbl_is_serial_number
+                            return obj;
+                        });
+
+                        return {
+                            results: data
+                        };
+                    }else{
+                        return {
+                            result:[]
+                        }
+                    }
+                }
+            }
+        }).on('select2:select',function(e){
+            var data = e.params.data;
+            selectedItem = data;
+            //$("#fstUnit").empty().trigger("change.select2");
+            //showHideBatchSerial();
+        });
 
         $("#btnProcess").click(function(event) {
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#rptSuratJalan").serializeArray();
-            url = "<?= site_url() ?>report/gudang/surat_jalan/process";
+            data = $("#rptLPBReturn").serializeArray();
+            url = "<?= site_url() ?>report/gudang/penerimaan_return/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -229,7 +268,7 @@
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        $("#btnNew").trigger("click");
+                                        $("#btnProcess").trigger("click");
                                         alert('OK');
                                         return;
                                     }
@@ -251,13 +290,13 @@
                         // 
                         //Clear all previous error
                         $(".text-danger").html("");
-                        //url = "<?= site_url() ?>report/surat_jalan/generateexcel";
-                        url = "<?= site_url() ?>report/gudang/surat_jalan/generatereport";
+                        //url = "<?= site_url() ?>report/sales_order/generateexcel";
+                        url = "<?= site_url() ?>report/gudang/penerimaan_return/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
-                        $("#rptSuratJalan").attr('action', url);
-                        $("#rptSuratJalan").attr('target', 'rpt_iframe');
-                        $("#rptSuratJalan").submit();
+                        $("#rptLPBReturn").attr('action', url);
+                        $("#rptLPBReturn").attr('target', 'rpt_iframe');
+                        $("#rptLPBReturn").submit();
                         $("a#toggle-window").click();
                         // Change to Edit mode
                         // $("#frm-mode").val("EDIT"); //ADD|EDIT
@@ -292,7 +331,7 @@
             var a = document.createElement('a');
             a.href = data_type + ', ' + table_html;
 			//a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
-			a.download = 'Laporan_SO_Detail' + '.xls';
+			a.download = 'Laporan_Penerimaan_Barang_Return' + '.xls';
 			a.click();                        			
 			return;
 		});      

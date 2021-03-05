@@ -10,7 +10,7 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptSalesReturn" action="<?= site_url() ?>report/sales_return/process" method="POST" enctype="multipart/form-data">
+<form id="rptSalesReturn" action="<?= site_url() ?>report/tr/sales_return/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
@@ -200,7 +200,7 @@
         $("#select-relations").select2({
 			width: '100%',
 			ajax:{
-				url: '<?=site_url()?>report/invoice/get_customers',
+				url: '<?=site_url()?>report/tr/sales_return/get_customers',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -237,7 +237,7 @@
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
             data = $("#rptSalesReturn").serializeArray();
-            url = "<?= site_url() ?>report/sales_return/process";
+            url = "<?= site_url() ?>report/tr/sales_return/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -280,7 +280,7 @@
                         //Clear all previous error
                         $(".text-danger").html("");
                         //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/sales_return/generatereport";
+                        url = "<?= site_url() ?>report/tr/sales_return/generatereport";
 
                         $("#rptSalesReturn").attr('action', url);
                         $("#rptSalesReturn").attr('target', 'rpt_iframe');
