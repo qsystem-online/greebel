@@ -204,7 +204,17 @@ class Trcbreceive_model extends MY_Model {
 				//cek valid claim kelebihan pembayaran
 				$this->checkIsValidClaimPaymentOver($dataItem->fin_trans_id);
 
-			
+			}else if ($dataItem->fst_trans_type == "CLAIM_EXPEDITION"){
+				//Claim Kelebihan Pembayaran
+				$tmpArr = $this->getDataJurnalPostingClaimExpedition($dataItem,$dataH);        
+
+				//$ssql = "update trcbreceiveitems set fdc_receive_amount_claimed = fdc_receive_amount_claimed +  ? where fin_rec_id = ?";
+				$this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);
+				throwIfDBError();
+
+				//cek valid claim kelebihan ekspedisi
+				//$this->checkIsValidClaimPaymentOver($dataItem->fin_trans_id);
+
 			}else if ($dataItem->fst_trans_type == "CLAIM_PAYMENT_UNKNOWN"){
 				$tmpArr = $this->getDataJurnalPostingClaimPaymentUnknown($dataItem,$dataH);
 				$ssql ="UPDATE glledger set fbl_claimed_cashbank_receive_unknown = true where fin_rec_id =?";
@@ -234,7 +244,7 @@ class Trcbreceive_model extends MY_Model {
 			if ($receive->fst_cbreceive_type == "TUNAI" || $receive->fst_cbreceive_type == "TRANSFER" ){
 				$fstAccountCode = $defaultGLCode;
 			}else if ($receive->fst_cbreceive_type == "GIRO"){
-				$fstAccountCode = getGLConfig("CB_OUT_GIRO_MUNDUR");
+				$fstAccountCode = getGLConfig("CB_IN_GIRO_MUNDUR");
 			}else if ($receive->fst_cbreceive_type == "GLACCOUNT"){
 				$fstAccountCode = $receive->fst_glaccount_code;
 			}
@@ -673,7 +683,7 @@ class Trcbreceive_model extends MY_Model {
 			];
 		}        
 		return $dataJurnal;
-	}
+	}	
 
 	public function checkIsValidClaimPaymentOver($finCbReceiveDetailId){
 		$ssql = "select * from trcbreceiveitems where fin_rec_id = ?";
@@ -687,6 +697,108 @@ class Trcbreceive_model extends MY_Model {
 			throw new CustomException(lang("Total klaim kelebihan pembayaran melebih nilainya"),3003,"FAILED",null);
 		}
 	}
+
+	public function getDataJurnalPostingClaimExpedition($dataItem,$dataH){
+
+		$ssql = "SELECT a.*,b.fst_cbreceive_no,b.fst_curr_code,b.fdc_exchange_rate_idr FROM trcbreceiveitems a
+			INNER JOIN trcbreceive b on a.fin_cbreceive_id = b.fin_cbreceive_id 
+			WHERE a.fin_rec_id = ?   
+			AND b.fst_active != 'D'";
+
+		$qr =$this->db->query($ssql,[$dataItem->fin_trans_id]);
+		$dataD = $qr->row();
+		if($dataD == null){
+			throw new CustomException("ID Kelebihan Pembayaran tidak dikenal !",9009,"FAILED",null);
+		}
+
+		$maxClaim = (float) $dataD->fdc_receive_amount - (float) $dataD->fdc_receive_amount_claimed;
+		if ($maxClaim < (float) $dataItem->fdc_receive_amount){
+			throw new CustomException(sprintf(lang("Maksimum klaim kelebihan pembayaran %s"),formatNumber($maxClaim)),3003,"FAILED",null);
+		}
+
+		
+
+		$dataJurnal = [];
+		//$accKelebihanBayar = getGLConfig("CUSTOMER_KELEBIHAN_BAYAR");        
+		$accPiutangEkspedisi = getGLConfig("PIUTANG_EKSPEDISI_PENJUALAN");    
+		$glAccountInfo = "CLAIM BIAYA EKSPEDISI";
+				
+		$dataJurnal[] = [
+			"fin_branch_id"=>$dataH->fin_branch_id,
+			"fst_account_code"=>$accPiutangEkspedisi,
+			"fdt_trx_datetime"=>$dataH->fdt_cbreceive_datetime,
+			"fst_trx_sourcecode"=>"CBIN",
+			"fin_trx_id"=>$dataH->fin_cbreceive_id, 
+			"fst_trx_no"=>$dataH->fst_cbreceive_no,
+			"fst_reference"=>$dataH->fst_memo,
+			"fdc_debit"=> 0,
+			"fdc_origin_debit"=>0,
+			"fdc_credit"=> $dataItem->fdc_receive_amount * $dataH->fdc_exchange_rate_idr,
+			"fdc_origin_credit"=> $dataItem->fdc_receive_amount * 1,
+			"fst_orgi_curr_code"=>$dataH->fst_curr_code,
+			"fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
+			"fst_no_ref_bank"=>null,
+			"fin_pcc_id"=>null,
+			"fin_relation_id"=>$dataH->fin_customer_id,
+			"fst_active"=>"A",
+			"fst_info"=>$glAccountInfo,
+		];        
+
+		//Jurnal Selisih Kurs     
+		if ($dataH->fdc_exchange_rate_idr  != $dataD->fdc_exchange_rate_idr){
+
+			$selisih = ($dataItem->fdc_receive_amount * $dataD->fdc_exchange_rate_idr) - ($dataItem->fdc_receive_amount * $dataH->fdc_exchange_rate_idr);
+
+			if ($selisih < 0){
+				$fstAccountCode =  getGLConfig("SELISIH_KURS_RUGI");
+				$glAccountInfo = "SELISIH KURS RUGI";                
+				
+			}else{
+				$fstAccountCode =  getGLConfig("SELISIH_KURS_UNTUNG");
+				$glAccountInfo = "SELISIH KURS UNTUNG";
+			}
+				
+			$debet = $selisih;
+			$credit = 0;
+						
+			$dataJurnal[] = [
+				"fin_branch_id"=>$dataD->fin_branch_id,
+				"fst_account_code"=>$fstAccountCode,
+				"fdt_trx_datetime"=>$dataH->fdt_cbreceive_datetime,
+				"fst_trx_sourcecode"=>"CBIN",
+				"fin_trx_id"=>$dataItem->fin_cbreceive_id,
+				"fst_trx_no"=>$dataH->fst_cbreceive_no,
+				"fst_reference"=>$dataD->fst_inv_no . " | " . $dataH->fst_memo,
+				"fdc_debit"=> $debet,
+				"fdc_origin_debit"=>$debet,
+				"fdc_credit"=>$credit,
+				"fdc_origin_credit"=>$credit,
+				"fst_orgi_curr_code"=>"IDR",
+				"fdc_orgi_rate"=>1,
+				"fst_no_ref_bank"=>null,
+				"fin_pcc_id"=>null,
+				"fin_relation_id"=>null,
+				"fst_active"=>"A",
+				"fst_info"=>$glAccountInfo
+			];
+		}        
+		return $dataJurnal;
+	}
+	
+	public function checkIsValidClaimExpedition($finSalesEkspedisiId){
+		$ssql = "select * from trsalesekspedisi where fin_salesekspedisi_id = ?";
+		$qr = $this->db->query($ssql,[$finSalesEkspedisiId]);
+		$rw = $qr->row();
+		if($rw == null){
+			throw new CustomException(lang("ID Claim Ekspedisi tidak dikenal !"),9009,"FAILED",null);
+		}
+
+		if($rw->fdc_total < $rw->fdc_total_claimed){
+			throw new CustomException(lang("Total klaim kelebihan biaya ekspedisi melebih nilainya"),3003,"FAILED",null);
+		}
+	}
+
+	
 
 
 	public function getDataJurnalPostingClaimPaymentUnknown($dataItem,$dataH){
@@ -1078,6 +1190,21 @@ class Trcbreceive_model extends MY_Model {
 		return $qr->result();
 
 	}
+
+	public function getClaimableExpeditionList($finCustId,$fstCurrCode){
+		$ssql = "SELECT a.fin_salesekspedisi_id,a.fst_salesekspedisi_no,a.fdc_total,a.fdc_total_claimed 
+			FROM trsalesekspedisi a 
+			WHERE a.fbl_reclaimable = 1 
+			AND a.fdc_total > a.fdc_total_claimed 
+			AND a.fin_customer_id = ?
+			AND a.fst_curr_code = ? 
+			AND a.fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$finCustId,$fstCurrCode]);
+		return $qr->result();
+
+	}
+
+
 
 	public function getUnknownReceiveList($fstCurrCode){
 		$accUnknownReceive = getGLConfig("UNKNOWN_CASH_BANK_RECEIVE");

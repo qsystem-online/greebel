@@ -533,7 +533,10 @@ class Pengeluaran extends MY_Controller{
 			$detailsPayment[$i]->fin_pc_divisi_id =  $detailsPayment[$i]->fin_pc_divisi_id == "" ? NULL : $detailsPayment[$i]->fin_pc_divisi_id;
 			$detailsPayment[$i]->fin_pc_customer_id = $detailsPayment[$i]->fin_pc_customer_id ==""  ? NULL : $detailsPayment[$i]->fin_pc_customer_id;
 			$detailsPayment[$i]->fin_pc_project_id =$detailsPayment[$i]->fin_pc_project_id == "" ? NULL : $detailsPayment[$i]->fin_pc_project_id;
-			$detailsPayment[$i]->fin_relation_id =$detailsPayment[$i]->fin_relation_id == "" ? NULL : $detailsPayment[$i]->fin_relation_id;
+			if (isset($detailsPayment[$i]->fin_relation_id)){
+				$detailsPayment[$i]->fin_relation_id =$detailsPayment[$i]->fin_relation_id == "" ? NULL : $detailsPayment[$i]->fin_relation_id;
+			}
+			
 			
 
 			if ($detailsPayment[$i]->fst_cbpayment_type == "TUNAI" ||$detailsPayment[$i]->fst_cbpayment_type == "TRANSFER"){
