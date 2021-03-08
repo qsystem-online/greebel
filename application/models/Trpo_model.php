@@ -528,11 +528,27 @@ class Trpo_model extends MY_Model {
 
 	public function completedCost($finPOId){
 		$this->load->model("trinventory_model");
+
+		/*
 		//get total cost
 		$ssql = "select sum(fdc_total) as ttl_cost from trpurchasecost where fin_po_id = ? and fst_active ='A'";
 		$qr = $this->db->query($ssql,[$finPOId]);
 		$rw = $qr->row();
 		$ttlCost = $rw == null ? 0 : (float) $rw->ttl_cost;
+		*/
+
+		//get total cost hanya dari biaya pembelian tidak temasuk pajak dll (*Ronie 2021-03-08)
+		$ssql = "SELECT SUM(a.fdc_debet - a.fdc_credit) AS ttl_cost FROM trpurchasecostitems a 
+			INNER JOIN trpurchasecost b ON a.fin_purchasecost_id = b.fin_purchasecost_id
+			INNER JOIN glaccounts c ON a.fst_glaccount_code = c.fst_glaccount_code
+			WHERE b.fin_po_id = ? AND b.fst_active = 'A' AND c.fin_glaccount_maingroup_id = 5";
+		$qr = $this->db->query($ssql,[$finPOId]);
+		$rw = $qr->row();
+		$ttlCost = $rw == null ? 0 : (float) $rw->ttl_cost;
+
+
+
+
 
 		//Get total Kubikasi
 		$ssql =  "select sum(a.fdc_m3) as ttl_kubikasi from trlpbgudangitems a 

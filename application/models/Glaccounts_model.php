@@ -134,12 +134,21 @@ class Glaccounts_model extends MY_Model
             inner join glaccountmaingroups b on a.fin_glaccount_maingroup_id = b.fin_glaccount_maingroup_id 
             where b.fst_glaccount_type = 'PROFIT_LOST' and a.fst_glaccount_level in ('DT','DK','DB')  
             and a.fst_active ='A'";
-
         $qr = $this->db->query($ssql,[]);		
         $rs = $qr->result();	
-        return $rs;
-		
+        return $rs;		
     }
+
+    public function getAccountAll(){
+        $ssql = "select a.* from glaccounts a
+            inner join glaccountmaingroups b on a.fin_glaccount_maingroup_id = b.fin_glaccount_maingroup_id 
+            where a.fst_glaccount_level in ('DT','DK','DB')  
+            and a.fst_active ='A'";
+        $qr = $this->db->query($ssql,[]);		
+        $rs = $qr->result();	
+        return $rs;		
+    }
+
     public function getBiayaList(){
         $prefixBiaya = "6";
         $ssql = "select fst_glaccount_code,fst_glaccount_name from glaccounts 
