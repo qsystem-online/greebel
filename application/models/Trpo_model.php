@@ -196,7 +196,7 @@ class Trpo_model extends MY_Model {
 		//Process id request dari PR
 		$finProcessId = $dataH["fin_pr_process_id"]; //$this->input->post("fin_process_id");
 		if ($finProcessId != 0 && $finProcessId != null ){
-			$ssql = "UPDATE trpurchaserequestitems set fin_po_id = null where fin_process_id = ?";
+			$ssql = "UPDATE trpurchaserequestprocess set fin_po_id = null where fin_process_id = ?";
 			$this->db->query($ssql,[$finProcessId]);
 		}
 
@@ -626,8 +626,8 @@ class Trpo_model extends MY_Model {
 		*/
 
 		$ssql = "SELECT a.fin_item_id,b.fst_item_code,b.fst_item_name,a.fst_unit,SUM(fdb_qty_to_po) AS fdb_qty_to_po from trpurchaserequestitems a 
-			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
-			where fin_process_id = ? GROUP BY a.fin_item_id,a.fst_unit";
+			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 			
+			where fin_process_id = ? GROUP BY a.fin_item_id,a.fst_unit HAVING SUM(fdb_qty_to_po) > 0";
 
 		$qr = $this->db->query($ssql,[$finProcessId]);
 		

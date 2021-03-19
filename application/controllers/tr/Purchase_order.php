@@ -137,9 +137,14 @@ class Purchase_order extends MY_Controller{
 			$data["fin_process_id"] = 0;
 			$data["fin_supplier_id"] = 0;
 		}else if($mode=="EDIT"){
+			$po = $this->trpo_model->getSimpleDataById($fin_po_id);
+			$processId = 0;
+			if ($po != null){
+				$processId = $po->fin_pr_process_id;
+			}
 			$data["fin_po_id"] = $fin_po_id;
 			$data["fst_po_no"] = "";			
-			$data["fin_process_id"] = 0;			
+			$data["fin_process_id"] = $processId;			
 		}else if($mode == "VIEW"){
 			$data["fin_po_id"] = $fin_po_id;
 			$data["fst_po_no"] = "";			

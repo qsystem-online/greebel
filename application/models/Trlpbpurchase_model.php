@@ -227,11 +227,16 @@ class Trlpbpurchase_model extends MY_Model {
 					//Biaya
 					//Pending Tunggu benerin PR dan PO
 					$rwPRProses = $this->trpurchaserequestprocess_model->getHeaderByPO($dataH->fin_po_id);
-					if ($rwPRProses->fst_stock_cost_type == "NONSTOCK_PABRIKASI"){
-						$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_PABRIKASI");;
-					}else if ($rwPRProses->fst_stock_cost_type == "NONSTOCK_UMUM"){
-						$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");;
+					if($rwPRProses != null){					
+						if ($rwPRProses->fst_stock_cost_type == "NONSTOCK_PABRIKASI"){
+							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_PABRIKASI");;
+						}else if ($rwPRProses->fst_stock_cost_type == "NONSTOCK_UMUM"){
+							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");;
+						}
+					}else{
+						$postAcc = $purchaseAccount;
 					}
+
 				}
 
 				if (isset($dataTmp[$postAcc][$rw->fin_pcc_id])){
@@ -287,6 +292,7 @@ class Trlpbpurchase_model extends MY_Model {
 					"fdt_trx_datetime"=>date("Y-m-d H:i:s"),
 					"fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
 					"fin_trx_id"=>$finLPBPurchaseId,
+					"fst_trx_no"=>$dataH->fst_lpbpurchase_no,
 					"fst_reference"=>null,
 					"fdc_debit"=> $arrPcc["debet"]* $dataH->fdc_exchange_rate_idr,
 					"fdc_origin_debit"=>$arrPcc["debet"],
@@ -304,70 +310,6 @@ class Trlpbpurchase_model extends MY_Model {
 		}
 
 		
-
-		   
-
-		/*
-		$ssql = "SELECT d.fin_pcc_id,
-				sum(a.fdb_qty * a.fdc_price) as fdc_total,
-				sum(a.fdb_qty * a.fdc_disc_amount_per_item) as fdc_ttl_disc_amount 
-			FROM trlpbpurchaseitems a
-			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
-			INNER JOIN msgroupitems c on b.fin_item_group_id = c.fin_item_group_id 
-			INNER JOIN msgroupitems d on SUBSTRING_INDEX(c.fst_tree_id, '.', 1) = d.fin_item_group_id
-			WHERE a.fin_lpbpurchase_id = ? 
-			GROUP BY d.fin_pcc_id";
-		$qr = $this->db->query($ssql,[$finLPBPurchaseId]);
-		$rs =$qr->result();      
-
-		foreach($rs as $rw){                    
-			//PEMBELIAN
-			$dataJurnal[] =[
-				"fin_branch_id"=>$dataH->fin_branch_id,
-				"fst_account_code"=>$glAccount,
-				"fdt_trx_datetime"=>date("Y-m-d H:i:s"),
-				"fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
-				"fin_trx_id"=>$finLPBPurchaseId,
-				"fst_reference"=>$dataH->fst_memo,
-				"fdc_debit"=> $rw->fdc_total * $dataH->fdc_exchange_rate_idr, //$dataH->fdc_subttl * $dataH->fdc_exchange_rate_idr,
-				"fdc_origin_debit"=> $rw->fdc_total, //$dataH->fdc_subttl,
-				"fdc_credit"=>0,
-				"fdc_origin_credit"=>0,
-				"fst_orgi_curr_code"=>$dataH->fst_curr_code,
-				"fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
-				"fst_no_ref_bank"=>null,
-				"fin_pcc_id"=>$rw->fin_pcc_id,
-				"fin_relation_id"=>null,
-				"fst_active"=>"A",
-				"fst_info"=>"PEMBELIAN"
-			];
-
-			//DISC
-			$dataJurnal[] =[
-				"fin_branch_id"=>$dataH->fin_branch_id,
-				"fst_account_code"=>getGLConfig("PURCHASE_DISC"),
-				"fdt_trx_datetime"=>date("Y-m-d H:i:s"),
-				"fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
-				"fin_trx_id"=>$finLPBPurchaseId,
-				"fst_reference"=>null,
-				"fdc_debit"=> 0,
-				"fdc_origin_debit"=>0,
-				"fdc_credit"=> $rw->fdc_ttl_disc_amount * $dataH->fdc_exchange_rate_idr, //$dataH->fdc_disc_amount * $dataH->fdc_exchange_rate_idr ,
-				"fdc_origin_credit"=> $rw->fdc_ttl_disc_amount, //$dataH->fdc_disc_amount,
-				"fst_orgi_curr_code"=>$dataH->fst_curr_code,
-				"fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
-				"fst_no_ref_bank"=>null,
-				"fin_pcc_id"=>$rw->fin_pcc_id,
-				"fin_relation_id"=>null,
-				"fst_active"=>"A",
-				"fst_info"=>"DISC"
-			];                     
-		}
-		*/
-
-
-
-
 		//PPN
 		//APAKAH DP SUDAH ADA UNSUR PPN ATAU TIDAK        
 		if ($dataH->fbl_dp_inc_ppn){
@@ -386,6 +328,7 @@ class Trlpbpurchase_model extends MY_Model {
 			"fdt_trx_datetime"=>date("Y-m-d H:i:s"),
 			"fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
 			"fin_trx_id"=>$finLPBPurchaseId,
+			"fst_trx_no"=>$dataH->fst_lpbpurchase_no,
 			"fst_reference"=>$dataH->fst_memo,
 			"fdc_debit"=> $ttlPpn * $dataH->fdc_exchange_rate_idr,
 			"fdc_origin_debit"=>$ttlPpn,
@@ -407,6 +350,7 @@ class Trlpbpurchase_model extends MY_Model {
 			"fdt_trx_datetime"=>date("Y-m-d H:i:s"),
 			"fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
 			"fin_trx_id"=>$finLPBPurchaseId,
+			"fst_trx_no"=>$dataH->fst_lpbpurchase_no,
 			"fst_reference"=>null,
 			"fdc_debit"=> 0,
 			"fdc_origin_debit"=>0,
@@ -430,6 +374,7 @@ class Trlpbpurchase_model extends MY_Model {
 			"fdt_trx_datetime"=>date("Y-m-d H:i:s"),
 			"fst_trx_sourcecode"=>"PINV", //PURCHASE INVOICE
 			"fin_trx_id"=>$finLPBPurchaseId,
+			"fst_trx_no"=>$dataH->fst_lpbpurchase_no,
 			"fst_reference"=>null,
 			"fdc_debit"=> 0,
 			"fdc_origin_debit"=>0,
