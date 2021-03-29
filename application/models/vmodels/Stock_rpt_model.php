@@ -35,6 +35,9 @@ class Stock_rpt_model extends CI_Model {
 			if ($group_id != "") {
 				$swhere .= " AND b.fin_item_group_id = " . $this->db->escape($group_id);
 			}
+			if ($type_id > "0" ) {
+				$swhere .= " AND b.fin_item_type_id = " . $this->db->escape($type_id);
+			}
 			if ($item_id > "0" ) {
 				$swhere .= " AND a.fin_item_id = " . $this->db->escape($item_id);
 			}
@@ -52,6 +55,9 @@ class Stock_rpt_model extends CI_Model {
 			if ($group_id != "") {
 				$swhere .= " AND b.fin_item_group_id = " . $this->db->escape($group_id);
 			}
+			if ($type_id > "0" ) {
+				$swhere .= " AND b.fin_item_type_id = " . $this->db->escape($type_id);
+			}
 			if ($item_id > "0" ) {
 				$swhere .= " AND a.fin_item_id = " . $this->db->escape($item_id);
 			}
@@ -66,6 +72,9 @@ class Stock_rpt_model extends CI_Model {
 			if ($group_id != "") {
 				$swhere .= " AND a.fin_item_group_id = " . $this->db->escape($group_id);
 			}
+			if ($type_id > "0" ) {
+				$swhere .= " AND a.fin_item_type_id = " . $this->db->escape($type_id);
+			}
 			if ($item_id > "0" ) {
 				$swhere .= " AND a.fin_item_id = " . $this->db->escape($item_id);
 			}
@@ -75,6 +84,9 @@ class Stock_rpt_model extends CI_Model {
 			if ($group_id != "") {
 				$swhere .= " AND a.fin_item_group_id = " . $this->db->escape($group_id);
 			}
+			if ($type_id > "0" ) {
+				$swhere .= " AND a.fin_item_type_id = " . $this->db->escape($type_id);
+			}
 			if ($item_id > "0" ) {
 				$swhere .= " AND a.fin_item_id = " . $this->db->escape($item_id);
 			}
@@ -83,6 +95,9 @@ class Stock_rpt_model extends CI_Model {
 		if ($rptLayout =="6"){
 			if ($group_id != "") {
 				$swhere .= " AND a.fin_item_group_id = " . $this->db->escape($group_id);
+			}
+			if ($type_id > "0" ) {
+				$swhere .= " AND a.fin_item_type_id = " . $this->db->escape($type_id);
 			}
 			if ($item_id > "0" ) {
 				$swhere .= " AND a.fin_item_id = " . $this->db->escape($item_id);
@@ -143,7 +158,7 @@ class Stock_rpt_model extends CI_Model {
 					INNER JOIN trinventory b ON a.max_rec_id = b.fin_rec_id 
 				) c ON a.fin_item_id = c.fin_item_id 
 				INNER JOIN msgroupitems d ON a.fin_item_group_id = d.fin_item_group_id 
-				$swhere GROUP BY a.fin_item_id ORDER BY d.fst_item_group_name,a.fst_item_code";
+				$swhere GROUP BY a.fin_item_id ORDER BY a.fst_item_code";
 				break;
 			case "5":
 				$ssql = "SELECT a.fin_item_id,IFNULL(b.fdb_qty_in,0) AS fdb_qty_in,IFNULL(b.fdb_qty_out,0) AS fdb_qty_out,b.fdc_avg_cost_start,c.fdc_avg_cost_last ,a.fst_unit AS fst_basic_unit,
@@ -162,7 +177,7 @@ class Stock_rpt_model extends CI_Model {
 					INNER JOIN trinventory b ON a.max_rec_id = b.fin_rec_id 
 				) c ON a.fin_item_id = c.fin_item_id 
 				INNER JOIN msgroupitems d ON a.fin_item_group_id = d.fin_item_group_id 
-				$swhere GROUP BY a.fin_item_id ORDER BY d.fst_item_group_name,a.fst_item_code";
+				$swhere GROUP BY a.fin_item_id ORDER BY a.fst_item_code";
 				break;
 			case "6":
 				$ssql = "SELECT a.fin_item_id,a.fst_unit AS fst_basic_unit,
@@ -175,7 +190,7 @@ class Stock_rpt_model extends CI_Model {
 					) a
 					INNER JOIN trinventory b ON a.max_rec_id = b.fin_rec_id 
 				) b ON a.fin_item_id = b.fin_item_id 
-				$swhere  ORDER BY a.fin_item_id,b.fin_warehouse_id";
+				$swhere  ORDER BY a.fst_item_code,b.fin_warehouse_id";
 				break;
 			default:
 				break;
