@@ -93,7 +93,7 @@
 										<select id="fin_supplier_id" class="form-control"></select>
 									</div>
 									<div class="col-md-2">
-										<button id="btn-process" type="button" class="btn btn-default btn-sm text-center form-control"><?= lang("Process to PO")?></button>
+										<button id="btn-process" type="button" class="btn btn-default btn-sm text-center form-control"><?= lang("Process PR")?></button>
 									</div>
 								</div>																
 							</form>
@@ -346,6 +346,8 @@
 			data.details = details;
 			t.row(trRow).data(data).draw(false);						
 		})
+
+		
 		
 		
 		
@@ -393,6 +395,20 @@
 							qtyProcess = dataD.fdb_qty_process == null ? 0 : dataD.fdb_qty_process;
 							qtyProcess = parseFloat(qtyProcess);
 							total += qtyProcess;
+						});
+						return total;
+					}
+				},
+				{"title" : "Qty PO","width": "100px",sortable:false,className:'text-right',
+					render:function(data,type,row){
+						//return row.fdb_qty_process;
+
+						details = row.details;
+						total = 0;
+						$.each(details, function(i,dataD){
+							qtyPO = dataD.fdb_qty_po == null ? 0 : dataD.fdb_qty_po;
+							qtyPO = parseFloat(qtyPO);
+							total += qtyPO;
 						});
 						return total;
 					}
@@ -584,6 +600,9 @@
 		$.each(datas,function(i,v){
 			details.push(v);
 		});
+
+		//console.log(details);
+		//return;
 
 		dataSubmit.push({
 			name:"details",

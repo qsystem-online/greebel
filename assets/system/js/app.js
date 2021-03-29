@@ -303,12 +303,8 @@ function money_parse(money){
 	if (DECIMAL_SEPARATOR == ","){
 		value = value.replace(",",".");
 	}
-	return parseFloat(value);
-
-	
+	return parseFloat(value);	
 }
-
-
 
 
 function consoleLog(obj){

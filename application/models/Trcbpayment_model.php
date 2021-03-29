@@ -177,6 +177,21 @@ class Trcbpayment_model extends MY_Model {
                 if($result["status"] != "SUCCESS"){
                     return $result;
                 }
+            }else if ($dataItem->fst_trans_type == "COST_PURCHASE"){
+                $ssql = "update trpurchasecost set fdc_total_paid = fdc_total_paid -  ? where fin_purchasecost_id = ?";
+                $this->db->query($ssql,[$dataItem->fdc_payment,$dataItem->fin_trans_id]);
+                //cek valid DP_PO
+                $result = $this->checkIsValidCostPurchase($dataItem->fin_trans_id);
+                if($result["status"] != "SUCCESS"){
+                    return $result;
+                }
+            }else if ($dataItem->fst_trans_type == "COST_EXPEDITION"){
+                $ssql = "update trsalesekspedisi set fdc_total_paid = fdc_total_paid -  ? where fin_salesekspedisi_id = ?";
+                $this->db->query($ssql,[$dataItem->fdc_payment,$dataItem->fin_trans_id]);
+                $result = $this->checkIsValidCostEkspedisi($dataItem->fin_trans_id);
+                if($result["status"] != "SUCCESS"){
+                    return $result;
+                }                
             }else if ($dataItem->fst_trans_type == "LPB_RETURN"){
                 $ssql = "update trpurchasereturn set fdc_total_claimed = fdc_total_claimed - ? where fin_purchasereturn_id = ?";
                 $this->db->query($ssql,[abs($dataItem->fdc_payment),$dataItem->fin_trans_id]);
@@ -215,6 +230,7 @@ class Trcbpayment_model extends MY_Model {
         $qr = $this->db->query($ssql,[$finCBPaymentId]);        
         $dataItems = $qr->result();               
         foreach($dataItems as $dataItem){
+
             if ($dataItem->fst_trans_type == "LPB_PO"){
                 //Purchase Invoice
                 $tmpArr =$this->getDataJurnalPostingLPBPurchase($dataItem,$dataH);
@@ -240,6 +256,30 @@ class Trcbpayment_model extends MY_Model {
                 if($result["status"] != "SUCCESS"){
                     return $result;
                 }
+            }else if ($dataItem->fst_trans_type == "COST_PURCHASE"){
+                $tmpArr = $this->getDataJurnalPostingCostPurchase($dataItem,$dataH);                
+                foreach($tmpArr as $tmp){
+                    $dataJurnal[] = $tmp;
+                }
+                $ssql = "update trpurchasecost set fdc_total_paid = fdc_total_paid + ? where fin_purchasecost_id = ?";
+                $this->db->query($ssql,[abs($dataItem->fdc_payment),$dataItem->fin_trans_id]);
+                $result = $this->checkIsValidCostPurchase($dataItem->fin_trans_id);
+                if($result["status"] != "SUCCESS"){
+                    return $result;
+                }
+
+            }else if ($dataItem->fst_trans_type == "COST_EXPEDITION"){
+                $tmpArr = $this->getDataJurnalPostingCostExpedition($dataItem,$dataH);                
+                foreach($tmpArr as $tmp){
+                    $dataJurnal[] = $tmp;
+                }
+                $ssql = "update trsalesekspedisi set fdc_total_paid = fdc_total_paid + ? where fin_salesekspedisi_id = ?";
+                $this->db->query($ssql,[abs($dataItem->fdc_payment),$dataItem->fin_trans_id]);
+                $result = $this->checkIsValidCostEkspedisi($dataItem->fin_trans_id);
+                if($result["status"] != "SUCCESS"){
+                    return $result;
+                }
+
             }else if ($dataItem->fst_trans_type == "LPB_RETURN"){
                 $tmpArr = $this->getDataJurnalPostingLPBReturn($dataItem,$dataH);                
                 foreach($tmpArr as $tmp){
@@ -301,7 +341,7 @@ class Trcbpayment_model extends MY_Model {
                 "fst_active"=>"A"
             ];  
         }         
-
+        
         $result = $this->glledger_model->createJurnal($dataJurnal);            
         return $result;
        
@@ -545,6 +585,162 @@ class Trcbpayment_model extends MY_Model {
         return $dataJurnal;
     }
 
+
+    public function getDataJurnalPostingCostPurchase($dataItem,$dataH){
+
+        $ssql ="select * from trpurchasecost where fin_purchasecost_id = ?";
+        $qr = $this->db->query($ssql,[$dataItem->fin_trans_id]);
+        $rw = $qr->row();
+        if(!$rw){            
+            return [];
+        }
+        
+        $isImport = $rw->fbl_is_import;        
+        $accHutangBiayaPembelian="";        
+		if($isImport){
+			$accHutangBiayaPembelian = getGLConfig("AP_BIAYA_PEMBELIAN_IMPORT");
+		}else{
+			$accHutangBiayaPembelian = getGLConfig("AP_BIAYA_PEMBELIAN_LOKAL");
+        }
+               
+        $dataJurnal = [];
+        $dataJurnal[] = [
+            "fin_branch_id"=>$rw->fin_branch_id,
+            "fst_account_code"=>$accHutangBiayaPembelian,
+            "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
+            "fst_trx_sourcecode"=>"CBOUT",
+            "fin_trx_id"=>$dataItem->fin_cbpayment_id,
+            "fst_trx_no"=>$dataH->fst_cbpayment_no,
+            "fst_reference"=>$rw->fst_purchasecost_no . " | " . $dataH->fst_memo,
+            "fdc_debit"=> $dataItem->fdc_payment   * $rw->fdc_exchange_rate_idr,
+            "fdc_origin_debit"=>$dataItem->fdc_payment,
+            "fdc_credit"=>0,
+            "fdc_origin_credit"=>0,
+            "fst_orgi_curr_code"=>$rw->fst_curr_code,
+            "fdc_orgi_rate"=>$rw->fdc_exchange_rate_idr,
+            "fst_no_ref_bank"=>null,
+            "fin_pcc_id"=>null,
+            "fin_relation_id"=>$rw->fin_supplier_id,
+            "fst_active"=>"A"
+        ];
+
+        //Cek selisih Kurs        
+        if ($dataH->fdc_exchange_rate_idr  != $rw->fdc_exchange_rate_idr){
+            
+            $selisih = ($dataItem->fdc_payment * $rw->fdc_exchange_rate_idr) - ($dataItem->fdc_payment * $dataH->fdc_exchange_rate_idr);
+
+            if ($selisih < 0){
+                $fstAccountCode =  getGLConfig("SELISIH_KURS_RUGI");
+                $debet =  $selisih * - 1;
+                $credit = 0 ;
+                                
+            }else{
+                $fstAccountCode =  getGLConfig("SELISIH_KURS_UNTUNG");
+                $debet = 0;
+                $credit = $selisih;
+            }
+
+            $dataJurnal[] = [
+                "fin_branch_id"=>$rw->fin_branch_id,
+                "fst_account_code"=>$fstAccountCode,
+                "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
+                "fst_trx_sourcecode"=>"CBOUT",
+                "fin_trx_id"=>$dataItem->fin_cbpayment_id,
+                "fst_trx_no"=>$dataH->fst_cbpayment_no,
+                "fst_reference"=>$rw->fst_po_no . " | " . $dataH->fst_memo,
+                "fdc_debit"=> $debet,
+                "fdc_origin_debit"=>$debet,
+                "fdc_credit"=>$credit,
+                "fdc_origin_credit"=>$credit,
+                "fst_orgi_curr_code"=>"IDR",
+                "fdc_orgi_rate"=>1,
+                "fst_no_ref_bank"=>null,
+                "fin_pcc_id"=>null,
+                "fin_relation_id"=>null,
+                "fst_active"=>"A"
+            ];
+        }
+        return $dataJurnal;
+    }
+
+    public function getDataJurnalPostingCostExpedition($dataItem,$dataH){
+        $ssql ="select * from trsalesekspedisi where fin_salesekspedisi_id = ?";
+        $qr = $this->db->query($ssql,[$dataItem->fin_trans_id]);
+        $rw = $qr->row();
+        if(!$rw){            
+            return [];
+        }
+        
+        //$isImport = $rw->fbl_is_import;        
+        //$accHutangBiayaEksepedisi="";        
+        $accHutangBiayaEksepedisi = getGLConfig("HUTANG_EKSPEDISI_PENJUALAN");
+		//if($isImport){
+		//	$accHutangBiayaEksepedisi = getGLConfig("HUTANG_EKSPEDISI_PENJUALAN");
+		//}else{
+		//	$accHutangBiayaEksepedisi = getGLConfig("HUTANG_EKSPEDISI_PENJUALAN");
+        //}
+               
+        $dataJurnal = [];
+        $dataJurnal[] = [
+            "fin_branch_id"=>$rw->fin_branch_id,
+            "fst_account_code"=>$accHutangBiayaEksepedisi,
+            "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
+            "fst_trx_sourcecode"=>"CBOUT",
+            "fin_trx_id"=>$dataItem->fin_cbpayment_id,
+            "fst_trx_no"=>$dataH->fst_cbpayment_no,
+            "fst_reference"=>$rw->fst_salesekspedisi_no . " | " . $dataH->fst_memo,
+            "fdc_debit"=> $dataItem->fdc_payment   * $rw->fdc_exchange_rate_idr,
+            "fdc_origin_debit"=>$dataItem->fdc_payment,
+            "fdc_credit"=>0,
+            "fdc_origin_credit"=>0,
+            "fst_orgi_curr_code"=>$rw->fst_curr_code,
+            "fdc_orgi_rate"=>$rw->fdc_exchange_rate_idr,
+            "fst_no_ref_bank"=>null,
+            "fin_pcc_id"=>null,
+            "fin_relation_id"=>$rw->fin_supplier_id,
+            "fst_active"=>"A"
+        ];
+
+        //Cek selisih Kurs        
+        if ($dataH->fdc_exchange_rate_idr  != $rw->fdc_exchange_rate_idr){
+            
+            $selisih = ($dataItem->fdc_payment * $rw->fdc_exchange_rate_idr) - ($dataItem->fdc_payment * $dataH->fdc_exchange_rate_idr);
+
+            if ($selisih < 0){
+                $fstAccountCode =  getGLConfig("SELISIH_KURS_RUGI");
+                $debet =  $selisih * - 1;
+                $credit = 0 ;
+                                
+            }else{
+                $fstAccountCode =  getGLConfig("SELISIH_KURS_UNTUNG");
+                $debet = 0;
+                $credit = $selisih;
+            }
+
+            $dataJurnal[] = [
+                "fin_branch_id"=>$rw->fin_branch_id,
+                "fst_account_code"=>$fstAccountCode,
+                "fdt_trx_datetime"=>$dataH->fdt_cbpayment_datetime,
+                "fst_trx_sourcecode"=>"CBOUT",
+                "fin_trx_id"=>$dataItem->fin_cbpayment_id,
+                "fst_trx_no"=>$dataH->fst_cbpayment_no,
+                "fst_reference"=>$rw->fst_po_no . " | " . $dataH->fst_memo,
+                "fdc_debit"=> $debet,
+                "fdc_origin_debit"=>$debet,
+                "fdc_credit"=>$credit,
+                "fdc_origin_credit"=>$credit,
+                "fst_orgi_curr_code"=>"IDR",
+                "fdc_orgi_rate"=>1,
+                "fst_no_ref_bank"=>null,
+                "fin_pcc_id"=>null,
+                "fin_relation_id"=>null,
+                "fst_active"=>"A"
+            ];
+        }
+        return $dataJurnal;
+    }
+
+
     public function getDataJurnalPostingLPBPurchase($dataItem,$dataH){
         $dataJurnal = [];
 
@@ -666,6 +862,21 @@ class Trcbpayment_model extends MY_Model {
         return $qr->result();
     }
 
+    function getCostPurchaseList($finSupplierId,$fstCurrCode){
+        $ssql ="SELECT a.* FROM trpurchasecost a
+            WHERE a.fin_supplier_id = ? and a.fst_curr_code = ? 
+            AND a.fdc_total > a.fdc_total_paid and a.fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finSupplierId,$fstCurrCode]);
+        return $qr->result();
+    }
+
+    function getEkspedisiCostList($finSupplierId,$fstCurrCode){
+        $ssql ="SELECT a.* FROM trsalesekspedisi a
+            WHERE a.fin_supplier_id = ? and a.fst_curr_code = ? 
+            AND a.fdc_total > a.fdc_total_paid and a.fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finSupplierId,$fstCurrCode]);
+        return $qr->result();
+    }
 
     public function getAccountList(){
         $ssql ="SELECT a.*,b.fst_glaccount_type FROM glaccounts a 
@@ -747,6 +958,42 @@ class Trcbpayment_model extends MY_Model {
         return ["status"=>"SUCCESS","message"=>""];
 
     }
+
+    public function checkIsValidCostPurchase($finPurchaseCostId){
+        $ssql = "select * from trpurchasecost where fin_purchasecost_id = ?";
+        $qr = $this->db->query($ssql,[$finPurchaseCostId]);
+        $rw = $qr->row();
+        if($rw == null){
+            return ["status"=>"FAILED",'message'=>lang("ID Biaya Pembelian tidak dikenal")];
+        }
+
+        //Pembayaran melebihi jumlah tagihan
+        if(($rw->fdc_total_paid) > $rw->fdc_total){
+            return ["status"=>"FAILED","message"=>sprintf(lang("Total pembayaran biaya pembelian %s melebih jumlah tagihan !"),$rw->fst_purchasecost_no)];
+        }   
+
+        return ["status"=>"SUCCESS","message"=>""];
+
+    }
+
+    public function checkIsValidCostEkspedisi($finSalesEkspedisiId){
+        $ssql = "select * from trsalesekspedisi where fin_salesekspedisi_id = ?";
+        $qr = $this->db->query($ssql,[$finSalesEkspedisiId]);
+        $rw = $qr->row();
+        if($rw == null){
+            return ["status"=>"FAILED",'message'=>lang("ID Biaya Ekspedisi tidak dikenal")];
+        }
+
+        //Pembayaran melebihi jumlah tagihan
+        if(($rw->fdc_total_paid) > $rw->fdc_total){
+            return ["status"=>"FAILED","message"=>sprintf(lang("Total pembayaran biaya ekspedisi %s melebih jumlah tagihan !"),$rw->fst_salesekspedisi_no)];
+        }   
+
+        return ["status"=>"SUCCESS","message"=>""];
+
+    }
+
+
     public function checkIsValidLPBReturn($finPurchaseReturnId){
         $ssql = "select * from trpurchasereturn where fin_purchasereturn_id = ?";
         $qr = $this->db->query($ssql,[$finPurchaseReturnId]);

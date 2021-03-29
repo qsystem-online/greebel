@@ -230,6 +230,7 @@
 												<option value="RETURN_SO">Return Penjualan Non Faktur</option>
 												<option value="PAYMENT_OVER">Kelebihan Bayaran</option>
 												<option value="CLAIM_PAYMENT_OVER">Klaim Kelebihan Bayaran</option>
+												<option value="CLAIM_EXPEDITION">Klaim Ekspedisi</option>
 												<option value="SELL_FIXED_ASSET">Penjualan Fixed Asset</option>
 												<option value="CLAIM_PAYMENT_UNKNOWN">Klaim DP tidak dikenal</option>
 											</select>
@@ -433,6 +434,27 @@
 
 							if(typeof callback !== "undefined"){
 								callback(paymentOverList);
+							}
+							
+						}
+					});
+					break;
+				case "CLAIM_EXPEDITION":
+					App.getValueAjax({
+						site_url:"<?=site_url()?>",
+						model:"trcbreceive_model",
+						func:"getClaimableExpeditionList",
+						params:[$("#fin_customer_id").val(),$("#fst_curr_code").val()],
+						callback:function(expeditionClaimableList){
+							$("#fin_trans_id").empty();
+							$.each(expeditionClaimableList,function(i,expeditionClaimable){
+								//var dp = parseFloat(lpbPurchase.fdc_downpayment);					
+								$("#fin_trans_id").append("<option value='"+expeditionClaimable.fin_salesekspedisi_id+"' data-ttl_amount='"+ parseFloat(expeditionClaimable.fdc_total)  +"' data-ttl_paid='"+expeditionClaimable.fdc_total_claimed  + "' data-ttl_return='0' >"+expeditionClaimable.fst_salesekspedisi_no+"</option>");
+							});
+							$("#fin_trans_id").val(null);
+
+							if(typeof callback !== "undefined"){
+								callback(expeditionClaimableList);
 							}
 							
 						}
@@ -1062,6 +1084,9 @@
 								break;
 							case "CLAIM_PAYMENT_OVER":
 								return "Klaim Kelebihan Bayar";
+								break;
+							case "CLAIM_EXPEDITION":
+								return "Klaim Ekspedisi";
 								break;
 							case "CLAIM_PAYMENT_UNKNOWN":
 								return "Klaim DP tidak dikenal";

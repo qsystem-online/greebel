@@ -228,8 +228,10 @@
 											<select id="fst_trans_type" class="form-control" style="width:100%">
 												<option value="LPB_PO">LPB Pembelian</option>
 												<option value="DP_PO">DP LPB Pembelian</option>
+												<option value="COST_PURCHASE">Biaya Pembelian</option>
+												<option value="COST_EXPEDITION">Biaya Ekspedisi (on Progress)</option>
 												<option value="LPB_RETURN">Return Pembelian Non Faktur</option>
-												<option value="PAY_WO_EXT">External Workorder</option>
+												<option value="PAY_WO_EXT">External Workorder</option>												
 											</select>
 										</div>
 									</div>
@@ -852,6 +854,12 @@
 							case "DP_PO":
 								return "DP LPB Pembelian";
 								break;
+							case "COST_PURCHASE":
+								return "Biaya Pembelian";
+								break;
+							case "COST_EXPEDITION":
+								return "Biaya Ekspedisi";
+								break;
 							case "LPB_RETURN":
 								return "Return Pembelian Non Faktur";
 								break;
@@ -1404,7 +1412,8 @@
 				break;
 			
 			
-			case "LPB_RETURN":
+			
+				case "LPB_RETURN":
 				App.getValueAjax({
 					site_url:"<?=site_url()?>",
 					model:"trcbpayment_model",
@@ -1425,6 +1434,49 @@
 					}
 				});
 				break;
+			case "COST_PURCHASE":
+				App.getValueAjax({
+					site_url:"<?=site_url()?>",
+					model:"trcbpayment_model",
+					func:"getCostPurchaseList",
+					params:[$("#fin_supplier_id").val(),$("#fst_curr_code").val()],
+					callback:function(costPurchaseList){
+						$("#fin_trans_id").empty();
+						$.each(costPurchaseList,function(i,costPurchase){
+							//var dp = parseFloat(lpbPurchase.fdc_downpayment);					
+							$("#fin_trans_id").append("<option value='"+costPurchase.fin_purchasecost_id+"' data-ttl_amount='"+ parseFloat(costPurchase.fdc_total)  +"' data-ttl_paid='"+costPurchase.fdc_total_paid + "' data-ttl_return='0' >"+costPurchase.fst_purchasecost_no+"</option>");
+						});
+						$("#fin_trans_id").val(null);
+						if(typeof callback !== "undefined"){
+							callback(costPurchaseList);
+						}
+						
+					}
+				});
+				break;
+
+			case "COST_EXPEDITION":
+
+				App.getValueAjax({
+					site_url:"<?=site_url()?>",
+					model:"trcbpayment_model",
+					func:"getEkspedisiCostList",
+					params:[$("#fin_supplier_id").val(),$("#fst_curr_code").val()],
+					callback:function(expeditionCostList){
+						$("#fin_trans_id").empty();
+						$.each(expeditionCostList,function(i,expeditionCost){
+							//var dp = parseFloat(lpbPurchase.fdc_downpayment);					
+							$("#fin_trans_id").append("<option value='"+expeditionCost.fin_salesekspedisi_id+"' data-ttl_amount='"+ parseFloat(expeditionCost.fdc_total)  +"' data-ttl_paid='"+expeditionCost.fdc_total_paid + "' data-ttl_return='0' >"+expeditionCost.fst_salesekspedisi_no+"</option>");
+						});
+						$("#fin_trans_id").val(null);
+						if(typeof callback !== "undefined"){
+							callback(costPurchaseList);
+						}
+						
+					}
+				});
+				break;
+
 			case "PAY_WO_EXT":
 				App.getValueAjax({
 					site_url:"<?=site_url()?>",
