@@ -35,7 +35,7 @@
                     </select>
                     <div id="fin_branch_id_err" class="text-danger"></div>
                 </div>
-                <label for="select-sales" class="col-sm-2 control-label"><?=lang("Sales")?> :</label>
+                <label for="select-sales" class="col-sm-2 control-label"><?=lang("Sales")?></label>
                 <div class="col-sm-4">
                     <select id="select-sales" class="form-control" name="fin_sales_id">
                         <option value='0'>All</option>
@@ -52,16 +52,16 @@
             <div class="form-group row">						
                 <label for="select-kasbank" class="col-sm-2 control-label"><?=lang("Tipe Kas/Bank")?></label>
                 <div class="col-sm-4">
-                    <select id="select-kasbank" class="form-control non-editable" name="kasbank_code">
+                    <select id="select-kasbank" class="form-control non-editable" name="kasbank_id">
                     <option value='0'>All</option>
                     <?php
                         $kasbankList = $this->kasbank_model->getKasbankList();
                         foreach($kasbankList as $acc){
-                            echo "<option value='".$acc->fst_gl_account_code."'>$acc->fst_kasbank_name</option>";
+                            echo "<option value='".$acc->fin_kasbank_id."'>$acc->fst_kasbank_name</option>";
                         }
                     ?>
                     </select>
-                    <div id="kasbank_code_err" class="text-danger"></div>
+                    <div id="kasbank_id_err" class="text-danger"></div>
                 </div>            
                 <label for="fst_orgi_curr_code" class="col-sm-2 control-label"><?=lang("Mata Uang")?></label>
                 <div class="col-sm-4">
@@ -81,7 +81,7 @@
                 </div>  
             </div>
             <div class="form-group row">
-                <label for="fdt_trx_datetime" class="col-sm-2 control-label"><?=lang("Tanggal")?> *</label>
+                <label for="fdt_trx_datetime" class="col-sm-2 control-label"><?=lang("Tanggal")?></label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
@@ -92,7 +92,7 @@
                     <div id="fdt_trx_datetime_err" class="text-danger"></div>
                     <!-- /.input group -->
                 </div>
-                <label for="fdt_trx_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
+                <label for="fdt_trx_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?></label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
@@ -104,7 +104,7 @@
                 </div>
             </div>
             <div class="form-group row">						
-                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?> :</label>
+                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?></label>
                 <div class="col-sm-10">
                     <select id="select-relations" class="form-control non-editable" name="fin_relation_id">
                     </select>
@@ -116,8 +116,8 @@
                 <div class="col-sm-4">								
                     <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Kartu Piutang")?></label>
                     <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Saldo Piutang Ringkas")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Saldo Piutang Ringkas")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Saldo Piutang Ringkas")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Detail Pembayaran Per No.Faktur")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Detail Pembayaran Faktur Per Periode")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">

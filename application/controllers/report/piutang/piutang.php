@@ -36,6 +36,28 @@ class piutang extends MY_Controller
             ['layout' => 2, 'label'=>'Credit', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
 			['layout' => 2, 'label'=>'Saldo Akhir', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
 
+			['layout' => 3, 'label'=>'No.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'No.Faktur', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Tgl', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Customer/Pelanggan', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Nilai Faktur', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+            ['layout' => 3, 'label'=>'Klaim DP', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Alokasi Retur', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'No.Kasbank', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Tgl', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Pembayaran', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
+
+			['layout' => 4, 'label'=>'No.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Tgl', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Customer/Pelanggan', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'No.Faktur', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Nilai Faktur', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+            ['layout' => 4, 'label'=>'Klaim DP', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Alokasi Retur', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'No.Kasbank', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Tgl', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Pembayaran', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
+
 
 		];
 
@@ -111,7 +133,7 @@ class piutang extends MY_Controller
 			"fin_branch_id" => $this->input->post("fin_branch_id"),
 			"fin_sales_id" => $this->input->post("fin_sales_id"),
 			"fin_relation_id" => $this->input->post("fin_relation_id"),
-			"kasbank_code" => $this->input->post("kasbank_code"),
+			"kasbank_id" => $this->input->post("kasbank_id"),
             "fst_orgi_curr_code" => $this->input->post("fst_orgi_curr_code"),
 			"fdt_trx_datetime"=>dbDateFormat($this->input->post("fdt_trx_datetime")),
 			"fdt_trx_datetime2"=>dbDateFormat($this->input->post("fdt_trx_datetime2")),
@@ -137,6 +159,9 @@ class piutang extends MY_Controller
 				break;
 			case "3":
 				$this->parser->parse('reports/piutang/layout3', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+				break;
+			case "4":
+				$this->parser->parse('reports/piutang/layout4', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
 				break;
 			default:
 				$this->parser->parse('reports/piutang/layout1', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);

@@ -92,7 +92,7 @@
                             if ($idPO != "") {
 								//akumulasi total keseluruhan                                                        
                                 //tulis subtotal per-group
-                                    echo "<tr>";
+                                    //echo "<tr>";
 									echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Subtotal Per-P/O :</td>";
 									echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$qty_subttlNew</td>");
                                     echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: left'></td>");
@@ -109,7 +109,7 @@
                             $idPO = $row->fin_po_id;
                             if ( $idSupplier != $row->fin_supplier_id ){
                                 if ($idSupplier != "") {
-                                        echo "<tr>";
+                                        //echo "<tr>";
                                         echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Total Per-Supplier :</td>";
 										echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$qty_totalNew</td>");
 										echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: right'></td>");
