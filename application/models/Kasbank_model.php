@@ -101,4 +101,11 @@ class Kasbank_model extends MY_Model{
         $rs = $qr->result();
         return $rs;
     }
+
+    public function getKasbankList(){
+        $ssql = "SELECT * FROM mskasbank WHERE fst_active ='A'";
+        $qr =$this->db->query($ssql,[]);
+        $rs = $qr->result();
+        return $rs;
+    }
 }
