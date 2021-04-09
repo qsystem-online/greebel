@@ -229,7 +229,7 @@
 												<option value="LPB_PO">LPB Pembelian</option>
 												<option value="DP_PO">DP LPB Pembelian</option>
 												<option value="COST_PURCHASE">Biaya Pembelian</option>
-												<option value="COST_EXPEDITION">Biaya Ekspedisi (on Progress)</option>
+												<option value="COST_EXPEDITION">Biaya Ekspedisi</option>
 												<option value="LPB_RETURN">Return Pembelian Non Faktur</option>
 												<option value="PAY_WO_EXT">External Workorder</option>												
 											</select>
@@ -1470,7 +1470,7 @@
 						});
 						$("#fin_trans_id").val(null);
 						if(typeof callback !== "undefined"){
-							callback(costPurchaseList);
+							callback(expeditionCostList);
 						}
 						
 					}

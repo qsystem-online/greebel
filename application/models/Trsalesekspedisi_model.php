@@ -27,11 +27,11 @@ class Trsalesekspedisi_model extends MY_Model {
 	public function getDataById($finSalesEkspedisiId){
 		
 		$ssql = "SELECT a.*,d.fst_name as fst_shipping_address_name,d.fst_shipping_address FROM trsalesekspedisi a         
-		INNER JOIN msshippingaddress d on a.fin_shipping_address_id = d.fin_shipping_address_id       
+		LEFT JOIN msshippingaddress d on a.fin_shipping_address_id = d.fin_shipping_address_id       
 		where a.fin_salesekspedisi_id = ? and a.fst_active != 'D'";
 
-		$dataH = $this->db->query($ssql,[$finSalesEkspedisiId])->row();
-				
+		$dataH = $this->db->query($ssql,[$finSalesEkspedisiId])->row();	
+
 		$ssql = "SELECT a.*,b.fst_sj_no FROM trsalesekspedisiitems a
 			INNER JOIN trsuratjalan b on a.fin_sj_id = b.fin_sj_id
 			where a.fin_salesekspedisi_id = ? and a.fst_active != 'D'";
@@ -225,11 +225,18 @@ class Trsalesekspedisi_model extends MY_Model {
 	public function isEditable($dataH){
 	   /**
 		* FAILED CONDITION
-		* + Belum dibayar
+		* + Sudah Di lakukan Pembayaran
+		* + Bila Claimable sudah di lakukan Claim
 		*/
+
 		if ($dataH->fdc_total_paid > 0){
 			throw new CustomException(lang("Biaya ekspedisi telah dilakukan pembayaran !"),3003,"FAILED",null);
-		}        
+		}    
+
+		if ($dataH->fdc_total_claimed > 0){
+			throw new CustomException(lang("Biaya ekspedisi telah dilakukan claim !"),3003,"FAILED",null);
+		} 
+
 		$resp =["status"=>"SUCCESS","message"=>""];
 		return $resp;
 	}
