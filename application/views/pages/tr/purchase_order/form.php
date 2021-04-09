@@ -151,9 +151,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 										if ($fin_process_id == 0){
 											$warehouses = $this->mswarehouse_model->getNonLogisticWarehouseList();
 										}else{
-											//PO berasal dr proses PR
-											$warehouses = $this->mswarehouse_model->getLogisticWarehouseList();
-											//$warehouses = $this->mswarehouse_model->getNonLogisticWarehouseList();
+											$prProcess = $this->trpurchaserequestprocess_model->getSimpleDataById($fin_process_id);
+											if ($prProcess == null){
+												$warehouses =[];
+											}else{											
+												if ($prProcess->fst_item_type == 'LOGISTIC'){
+													$warehouses = $this->mswarehouse_model->getLogisticWarehouseList();
+												}else{
+													$warehouses = $this->mswarehouse_model->getNonLogisticWarehouseList();
+												}
+											}
 										}										
 										foreach($warehouses as $warehouse){
 											echo "<option value='$warehouse->fin_warehouse_id' data-address='$warehouse->fst_delivery_address'>$warehouse->fst_warehouse_name</option>";
@@ -193,6 +200,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fst_delivery_address_err" class="text-danger"></div>
 							</div>
 						</div>
+
+						<?php 
+							$showPoscosting = "hide";
+							if ($fin_process_id == 0){
+								$showPoscosting = "";
+							}
+						?>
+
+						<div class="form-group <?=$showPoscosting?>">
+							<label for="fst_pos_costing" class="col-md-2 control-label">Non Stock Cost Pos</label>							
+							<div class="col-md-10">					
+								<label class="radio-inline"><input type="radio" name="fst_pos_costing" value='NONSTOCK_UMUM' checked>Umum</label>
+								<label class="radio-inline"><input type="radio" name="fst_pos_costing" value='NONSTOCK_PABRIKASI' >Pabrikasi</label>								
+							</div>
+						</div>
+
+
 
 						<div class="form-group">
 							<div class="col-md-12" style='text-align:right'>

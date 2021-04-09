@@ -68,7 +68,7 @@
 							<div class="col-md-10">
 								<select id="fst_lpb_type" class="form-control non-editable" name="fst_lpb_type">
 									<option value='PO'>Purchase Order</option>
-									<option value='SO_RETURN'>Sales Return</option>
+									<!-- <option value='SO_RETURN'>Sales Return</option> -->
 									<option value='ASSEMBLING_IN'>Assembling /Disassembling In</option>
 								</select>
 								<div id="fst_lpb_type_err" class="text-danger"></div>
@@ -442,6 +442,7 @@
 							fst_trans_no:trans.fst_trans_no,
 							fdt_trans_datetime:trans.fdt_trans_datetime,
 							fin_pr_process_id:trans.fin_pr_process_id,
+							fst_item_type:trans.fst_item_type,
 							fst_relation_name:trans.fst_relation_name,
 							fin_warehouse_id:trans.fin_warehouse_id,
 						}
@@ -461,16 +462,24 @@
 			//GET DETAIL Transaction
 			data = e.params.data;
 			$("#fst_relation_name").html(data.fst_relation_name);
-			//Bila fin_pr_process_id == 0 set warehouse logistik
-			if (data.fin_pr_process_id == 0){
-				$("#fin_warehouse_id").empty();
+			//Bila fin_pr_process_id == 0 set warehouse logistik 
+			//Bila melalui PR dan type logistik makan warehouse logistik
+
+			$("#fin_warehouse_id").empty();
+			if (data.fin_pr_process_id == 0){				
 				$.each(arrWarehouseNonLogistik,function(i,v){
 					App.addOptionIfNotExist("<option value='"+v.id+"'>"+v.text+"</option>","fin_warehouse_id");
 				});
 			}else{
-				$.each(arrWarehouseLogistik,function(i,v){
-					App.addOptionIfNotExist("<option value='"+v.id+"'>"+v.text+"</option>","fin_warehouse_id");
-				});
+				if (data.fst_item_type == "LOGISTIC"){
+					$.each(arrWarehouseLogistik,function(i,v){
+						App.addOptionIfNotExist("<option value='"+v.id+"'>"+v.text+"</option>","fin_warehouse_id");
+					});
+				}else{
+					$.each(arrWarehouseNonLogistik,function(i,v){
+						App.addOptionIfNotExist("<option value='"+v.id+"'>"+v.text+"</option>","fin_warehouse_id");
+					});					
+				}
 			}
 
 			if(typeof data.fin_warehouse_id !== "undefined") {

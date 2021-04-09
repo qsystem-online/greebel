@@ -198,6 +198,7 @@ class Trpurchasecost_model extends MY_Model {
 		/**
 		 * FALSE CONDITION
 		 * 1. Status fbl_cost_completed sudah true, sudah dilakukan perhitungan harga pokok barang 
+		 * 2. Sudah dilakukan pembayaran terhadap biaya ini
 		 */
 		$ssql ="SELECT b.fst_po_no,b.fbl_cost_completed FROM trpurchasecost a 
 			INNER JOIN trpo b on a.fin_po_id = b.fin_po_id 
@@ -213,6 +214,16 @@ class Trpurchasecost_model extends MY_Model {
 			return $resp;
 		}
 
+
+		$ssql = "SELECT * FROM trcbpaymentitems a 
+			INNER JOIN trcbpayment b on a.fin_cbpayment_id = b.fin_cbpayment_id
+			WHERE a.fst_trans_type = 'COST_PURCHASE' AND a.fin_trans_id = ? AND b.fst_active ='A'";
+		$qr= $this->db->query($ssql,[$finPurchaseCostId]);
+		$rw = $qr->row();
+		if ($rw != null){
+			$resp =["status"=>"FAILED","message"=>sprintf(lang("Biaya telah dilakukan pembayaran ! %s"),"")];    
+			return $resp;
+		}
 
 		$resp =["status"=>"SUCCESS","message"=>""];
 		return $resp;
