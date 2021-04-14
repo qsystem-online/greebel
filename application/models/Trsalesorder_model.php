@@ -1155,6 +1155,7 @@ class Trsalesorder_model extends MY_Model {
         /**
          * + False: kalau transaksi sudah ada yang melakukan approval
          * + False: kalau sudah di tarik menjadi SJ
+         * + False: Sudah ada pembayaran DP
          */
         $ssql = "SELECT * from trverification  
             where fst_verification_type = 'SO' 
@@ -1175,9 +1176,19 @@ class Trsalesorder_model extends MY_Model {
         if ($rw != null){
             return [
                 "status"=>"FAILED",
-                "message"=> sprintf(lang("telah terbis surat jalan %s "),$rw->fst_sj_no)
+                "message"=> sprintf(lang("telah terbi surat jalan %s "),$rw->fst_sj_no)
             ];
         }
+
+        $so = $this->getSimpleDataById($finSalesOrderId);
+        if ($so != null){
+            if ($so->fdc_downpayment_paid > 0){
+                return [
+                    "status"=>"FAILED",
+                    "message"=> lang("Telah diterima pembayaran DP")
+                ];  
+            }
+        }   
 
         return [
             "status"=>"SUCCESS",
