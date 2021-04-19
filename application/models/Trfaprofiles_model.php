@@ -150,6 +150,7 @@ class trfaprofiles_model extends MY_Model{
 		if ($dataH->fst_type == "PURCHASE"){
 			$ssql = "UPDATE trlpbpurchaseitems set fbl_fa_profiles = 1 where fin_rec_id = ?";
 			$this->db->query($ssql,[$dataH->fin_lpbpurchase_detail_id]);
+			
 		}else if ($dataH->fst_type == "MUTASI"){
 			
 			$ssql = "UPDATE trfadisposalitems set fbl_fa_profiles = 1 where fin_rec_id = ?";

@@ -32,7 +32,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
 					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-					<a id="btnJurnal" class="btn btn-primary" href="#" title="Jurnal" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
 					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Group")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 				</div>
@@ -148,12 +147,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									<select class="form-control" id="fst_method" placeholder="<?=lang("Method")?>" name="fst_method">
 										<option value="Non-Depreciable">Non-Depreciable</option>
 										<option value="Straight Line">Straight Line</option>
-										<option value="Double Declining Balance">Double Declining Balance</option>
+										<!-- <option value="Double Declining Balance">Double Declining Balance</option> -->
 									</select>
 									<div id="fst_method_err" class="text-danger"></div>
 								</div>								
 												
-								<label for="fst_depre_period" class="col-md-1 control-label"><?=lang("Periode") ?> #</label>
+								<label for="fst_depre_period" class="col-md-1 control-label"><?=lang("Periode") ?></label>
 								<div class="col-md-2">
 									<select  class="form-control" id="fst_depre_period"  name="fst_depre_period">
 										<option value="monthly"><?=lang("Bulanan")?></option>
@@ -217,12 +216,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div class="col-md-4">
 									<input type="TEXT" class="form-control money" id="fdc_aquisition_price"  name="fdc_aquisition_price" value="0"/>
 									<div id="fdc_aquisition_price_err" class="text-danger"></div>
+								</div>
+
+								
+
+								<label for="fdc_pct_rate_year" class="col-md-2 control-label"><?=lang("Persen Rate / Year (%)") ?> </label>
+								<div class="col-md-4">
+									<input type="TEXT" class="form-control money" id="fdc_pct_rate_year"  name="fdc_pct_rate_year" value="0.00"/>
+									<div id="fdc_residu_value_err" class="text-danger"></div>
 								</div>				
-								<label for="fdc_residu_value" class="col-md-2 control-label"><?=lang("Nilai Residu") ?> </label>
+
+								<!--
+								<label for="fdc_residu_value" class="col-md-2 control-label"><=lang("Nilai Residu") ?> </label>
 								<div class="col-md-4">
 									<input type="TEXT" class="form-control money" id="fdc_residu_value"  name="fdc_residu_value" value="0"/>
 									<div id="fdc_residu_value_err" class="text-danger"></div>
 								</div>				
+								-->
 
 							</div>
 							
@@ -310,12 +320,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#fst_fa_profile_code_d").val(data.fst_fa_profile_code);
 				$("#fst_fa_profile_name_d").val(data.fst_fa_profile_name);				
 				$("#mdlDetail").modal("show");
+				return mdlDetail;
 			},
 
-			hide:function(){
+			hide:function(){				
 				$("#mdlDetail").modal("hide");
+				return mdlDetail;
 			},
 			clear:function(){
+				$("#fst_fa_profile_code_d").val("");
+				$("#fst_fa_profile_name_d").val("");	
+				return mdlDetail;	
 			}
 		}	
 	</script>
@@ -324,9 +339,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btn-save-detail").click(function(e){
 			e.preventDefault();
 			var data = selectedDetail.data();
+			
+			data.fst_fa_profile_code = $("#fst_fa_profile_code_d").val();
+			data.fst_fa_profile_name = $("#fst_fa_profile_name_d").val();
+			tblDetail.row(selectedDetail).data(data).draw();
 
-
-
+			mdlDetail.clear().hide();
 
 		});
 	</script>
@@ -349,6 +367,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript" info="define">
 	var selectedDetail;
+	var tblDetail;
 </script>
 
 <script type="text/javascript" info="bind">
@@ -444,6 +463,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$("#fst_deprecost_account_code").val(group.fst_deprecost_account_code).trigger("change");
 			$("#fst_depre_period").val(group.fst_depre_period);	
 					
+		});
+
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			var target = $(e.target).attr("href") // activated tab
+			if (target == "#detailsProfile"){
+				tblDetail.scroller.measure()
+    			.columns.adjust();
+			}
 		});
 		
 	});
@@ -585,6 +612,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				return;
 			}
 
+			detail = new Array();		
+			datas = tblDetail.data();
+			$.each(datas,function(i,v){
+				detail.push(v);
+			});
+
+			data.push({
+				name:"detail",
+				value: JSON.stringify(detail)
+			});
+			
 			url = "<?=site_url()?>tr/fixed_asset/profiles/ajx_edit_save";
 		}		
 
@@ -717,7 +755,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$('#tblDetailList tbody').empty();
 
 
-		$('#tblDetailList').on('preXhr.dt', function ( e, settings, data ) {
+		tblDetail = $('#tblDetailList').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
 		}).on('init.dt',function(){

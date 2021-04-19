@@ -329,14 +329,19 @@ class Profiles extends MY_Controller{
 			"fst_accum_account_code"=>$this->input->post("fst_accum_account_code"),
 			"fst_deprecost_account_code"=>$this->input->post("fst_deprecost_account_code"),
 			"fdc_aquisition_price"=> $fdcPrice,
-			"fdc_residu_value"=>$this->input->post("fdc_residu_value"),
+			"fdc_pct_rate_year"=>$this->input->post("fdc_pct_rate_year"),
+			//"fdc_residu_value"=>$this->input->post("fdc_residu_value"),
 			"fdt_aquisition_date"=>dBDateFormat($this->input->post("fdt_aquisition_date")),
 			"fin_pcc_id"=>$this->input->post("fin_pcc_id"),
 			"fin_branch_id"=>$this->aauth->get_active_branch_id()
 		];
 
+		$details = $this->input->post("detail");
+		$details = json_decode($details);		
+
 		return[
 			"dataH"=>$dataH,
+			"dataD"=>$details
 		];
 		
 	}

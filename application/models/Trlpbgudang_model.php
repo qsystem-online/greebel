@@ -688,7 +688,7 @@ class Trlpbgudang_model extends MY_Model {
 						];
 						return $resp;
 					}
-				}
+				}				
 				break;
 
 			case "SO_RETURN":

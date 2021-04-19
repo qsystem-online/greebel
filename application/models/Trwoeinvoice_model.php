@@ -115,31 +115,13 @@ class Trwoeinvoice_model extends MY_Model{
 		$totalHutang = $dataH->fdc_total;
 
 		//Jurnal Biaya (Update kartu Hutang)
-		//Hutang (AP)
-			// Biaya-Biaya
+		// Biaya-Biaya
+			//Hutang (AP)
+			
 
 
 		$dataJurnal = [];
-		$accAPWOEksternal = getGLConfig("HUTANG_WORKORDER_EKSTERNAL");
-		$dataJurnal[] =[
-			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
-			"fst_account_code"=>$accAPWOEksternal,
-			"fdt_trx_datetime"=>date("Y-m-d H:i:s"),
-			"fst_trx_sourcecode"=>"WOEI", //Work Order Eksternal Invoice
-			"fin_trx_id"=>$dataH->fin_woeinv_id,
-			"fst_reference"=>null,
-			"fdc_debit"=> $totalHutang * $dataH->fdc_exchange_rate_idr,
-			"fdc_origin_debit"=>$totalHutang,
-			"fdc_credit"=> 0,
-			"fdc_origin_credit"=> 0, 
-			"fst_orgi_curr_code"=>$dataH->fst_curr_code,
-			"fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
-			"fst_no_ref_bank"=>null,
-			"fin_pcc_id"=>null,
-			"fin_relation_id"=>$dataH->fin_supplier_id,
-			"fst_active"=>"A",
-			"fst_info"=>""
-		];
+		
 
 		
 		$ssql = "SELECT * FROM trwoeinvoiceitemcost where fin_woeinv_id = ? and fst_active ='A'";
@@ -153,10 +135,10 @@ class Trwoeinvoice_model extends MY_Model{
 				"fst_trx_sourcecode"=>"WOEI", //Work Order Eksternal Invoice
 				"fin_trx_id"=>$dataH->fin_woeinv_id,
 				"fst_reference"=>null,
-				"fdc_debit"=> 0,
-				"fdc_origin_debit"=>0,
-				"fdc_credit"=> $rw->fdc_total * $dataH->fdc_exchange_rate_idr,
-				"fdc_origin_credit"=> $rw->fdc_total, 
+				"fdc_debit"=> $rw->fdc_total * $dataH->fdc_exchange_rate_idr,
+				"fdc_origin_debit"=>$rw->fdc_total,
+				"fdc_credit"=> 0,
+				"fdc_origin_credit"=> 0, 
 				"fst_orgi_curr_code"=>$dataH->fst_curr_code,
 				"fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
 				"fst_no_ref_bank"=>null,
@@ -170,6 +152,29 @@ class Trwoeinvoice_model extends MY_Model{
 			];
 
 		}
+
+		$accAPWOEksternal = getGLConfig("HUTANG_WORKORDER_EKSTERNAL");
+		$dataJurnal[] =[
+			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
+			"fst_account_code"=>$accAPWOEksternal,
+			"fdt_trx_datetime"=>date("Y-m-d H:i:s"),
+			"fst_trx_sourcecode"=>"WOEI", //Work Order Eksternal Invoice
+			"fin_trx_id"=>$dataH->fin_woeinv_id,
+			"fst_reference"=>null,
+			"fdc_debit"=> 0,
+			"fdc_origin_debit"=>0,
+			"fdc_credit"=> $totalHutang * $dataH->fdc_exchange_rate_idr,
+			"fdc_origin_credit"=> $totalHutang, 
+			"fst_orgi_curr_code"=>$dataH->fst_curr_code,
+			"fdc_orgi_rate"=>$dataH->fdc_exchange_rate_idr,
+			"fst_no_ref_bank"=>null,
+			"fin_pcc_id"=>null,
+			"fin_relation_id"=>$dataH->fin_supplier_id,
+			"fst_active"=>"A",
+			"fst_info"=>""
+		];
+
+
 		$this->glledger_model->createJurnal($dataJurnal);         
 	}
 

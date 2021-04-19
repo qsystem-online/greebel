@@ -144,6 +144,13 @@ class Woe_inv extends MY_Controller{
 		
 		$fstWOEInvNo = $this->trwoeinvoice_model->generateTransactionNo();
 		$data["fst_woeinv_no"] = $fstWOEInvNo;	
+		if($mode == 'ADD'){
+			$data["mdlJurnal"] = "";
+		}else if($mode == 'EDIT'){
+			$jurnal_modal = $this->parser->parse('template/mdlJurnal', [], true);
+			$data["mdlJurnal"] = $jurnal_modal;
+		}     
+		
 		$page_content = $this->parser->parse('pages/tr/production/woe_inv/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 
@@ -432,28 +439,31 @@ class Woe_inv extends MY_Controller{
 		}
 
 		//Get Total cost harus sama dengan total cost inv dari inv in
-		//$arrFinWOEInId = [];
-		//var_dump($dataDWOEIn);
-		//die();
-		//foreach($dataDWOEIn as $woein){
-		//	$arrFinWOEInId[] = $woein;
-		//}
 		//Get WO
-		$ssql = "SELECT sum(a.fdb_qty * c.fdc_external_cost_per_unit) as ttl_woein_cost 		
+		/*
+		$ssql = "SELECT sum(a.fdb_qty * c.fdc_external_cost_per_unit) as ttl_woein_cost
 			FROM trmemowoein a 
 			INNER JOIN trmemowoeout b on a.fin_woeout_id = b.fin_woeout_id
 			INNER JOIN trwo c on b.fin_wo_id = c.fin_wo_id 
 			where a.fin_woein_id in ? and a.fst_active ='A'";
 		$qr = $this->db->query($ssql,[$dataDWOEIn]);
 		$rw = $qr->row();
+		*/
+		$ssql = "SELECT sum(a.fdb_qty) as ttl_qty  FROM trmemowoein a 
+		where a.fin_woein_id in ? and a.fst_active ='A'";
+		$qr = $this->db->query($ssql,[$dataDWOEIn]);
+		$rw = $qr->row();
 
+		$costPerUnit = $dataH["fdc_external_cost_per_unit"];
+		$totalCost =  $rw->ttl_qty * $costPerUnit;
+		
 		//Get Total Detail Cost
 		$total = 0;
 		foreach($dataDCost as $dCost){
 			$total += $dCost->fdc_total; 
 		}
 
-		if ($total != $rw->ttl_woein_cost){
+		if ($total != $totalCost){
 			throw new CustomException("Data total tidak sama",3003,"FAILED",[]);
 		}
 

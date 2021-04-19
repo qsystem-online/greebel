@@ -34,7 +34,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="btn-group btn-group-sm  pull-right">					
 				<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-					<a id="btnPrint" class="btn btn-primary hide" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+					<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
 					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("List")?>"><i class="fa fa-list" aria-hidden="true"></i></a>
 				</div>
@@ -174,6 +175,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <?php echo $mdlEditForm ?>
 <?php echo $mdlPrint ?>
+<?php echo $mdlJurnal ?>
 
 
 
@@ -649,6 +651,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
 			frameVoucher.print("<?=site_url()?>tr/gudang/mutasi/print_voucher/" + $("#fin_mag_id").val());
+		});
+
+		$("#btnJurnal").click(function(e){
+			e.preventDefault();
+			MdlJurnal.showJurnalByRef("WOEI",$("#fin_woeinv_id").val());
 		});
 
 		$("#btnDelete").click(function(e){

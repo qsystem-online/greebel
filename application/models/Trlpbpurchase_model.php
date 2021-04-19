@@ -276,25 +276,27 @@ class Trlpbpurchase_model extends MY_Model {
 			}else{ //Non Logistic
 				if ($rw->fbl_stock){
 					$postAcc = $purchaseAccount;					
-				}else{
-					//Langsung dijadikan biaya
-					if ($usingPR){
-						//Jadikan Persedian dan dijadikan biaya pada saat distribusi
-						if ($rwPRProses->fst_pos_costing == "NONSTOCK_PABRIKASI"){
-							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_PABRIKASI");
-						}else if ($rwPRProses->fst_pos_costing == "NONSTOCK_UMUM"){
-							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");
-						}
+				}else{					
+					if ($rw->fin_item_type_id == 6){ //Fixed Asset
+						$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"PERSEDIAAN");;
 					}else{
-						//Langsung dijadikan biaya						
-						if ($dataH->fst_pos_costing == "NONSTOCK_PABRIKASI"){
-							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_PABRIKASI");
-						}else if ($dataH->fst_pos_costing == "NONSTOCK_UMUM"){
-							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");
-						}
+						//Langsung dijadikan biaya
+						if ($usingPR){
+							//Jadikan Persedian dan dijadikan biaya pada saat distribusi
+							if ($rwPRProses->fst_pos_costing == "NONSTOCK_PABRIKASI"){
+								$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_PABRIKASI");
+							}else if ($rwPRProses->fst_pos_costing == "NONSTOCK_UMUM"){
+								$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");
+							}
+						}else{
+							//Langsung dijadikan biaya						
+							if ($dataH->fst_pos_costing == "NONSTOCK_PABRIKASI"){
+								$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_PABRIKASI");
+							}else if ($dataH->fst_pos_costing == "NONSTOCK_UMUM"){
+								$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");
+							}
+						}					
 					}
-					
-
 				}
 							
 				if (isset($dataTmp[$postAcc][$rw->fin_pcc_id])){
@@ -309,6 +311,8 @@ class Trlpbpurchase_model extends MY_Model {
 						"credit"=> 0
 					];
 				}
+
+
 			}
 
 			//Disc > Hutang
@@ -469,6 +473,7 @@ class Trlpbpurchase_model extends MY_Model {
 		/**
 		 * FALSE CONDITION
 		 * 1. Purchase Invoice sudah di lakukan pembayaran
+		 * 2. Item Fixed Asset sudah di profiling
 		 */
 
 		$ssql ="select * from trlpbpurchase where fin_lpbpurchase_id =?";
@@ -480,6 +485,17 @@ class Trlpbpurchase_model extends MY_Model {
 			return [
 				"status"=>"FAILED",
 				"message"=>lang("Transaksi tidak dapat di rubah karena sudah dilakukan pembayaran !")
+			];
+		}
+
+		//Kondisi  2: Item Fixed Asset sudah di profiling
+		$ssql = "SELECT * FROM trlpbpurchaseitems where fin_lpbpurchase_id = ? and fbl_fa_profiles = 1";
+		$qr = $qr = $this->db->query($ssql,[$finLPBPurchaseId]);
+		$rw = $qr->row();
+		if ($rw != null){
+			return [
+				"status"=>"FAILED",
+				"message"=>lang("Item Fixed Asset Sudah di profiling !")
 			];
 		}
 

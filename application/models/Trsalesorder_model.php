@@ -889,6 +889,7 @@ class Trsalesorder_model extends MY_Model {
     }
 
     public function unposting($fin_salesorder_id){
+
         //Cancel Jurnal
         $this->load->model("glledger_model");
         $result = $this->glledger_model->cancelJurnal(JURNAL_TRX_SC_SO,$fin_salesorder_id);
@@ -900,7 +901,12 @@ class Trsalesorder_model extends MY_Model {
 
         $ssql = "UPDATE trsalesorder SET fst_active ='S' where fin_salesorder_id = ?";
         $this->db->query($ssql,[$fin_salesorder_id]);
-        $this->my_model->throwIfDBError();        
+        $this->my_model->throwIfDBError();      
+        
+        //Cancel Aproval Requirment
+        $ssql = "DELETE from trverification where fst_controller ='SO' and fin_transaction_id = ?";
+        $this->db->query($ssql,[$fin_salesorder_id]);
+        $this->my_model->throwIfDBError();      
     }
 
     public function update($data){

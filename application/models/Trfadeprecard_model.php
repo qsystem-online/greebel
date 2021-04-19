@@ -59,8 +59,12 @@ class Trfadeprecard_model extends MY_Model{
         if ($dataH->fst_method == "Non-Depreciable"){
             return;
         }else if ($dataH->fst_method == "Straight Line"){
-            $depreAmount = ($dataH->fdc_aquisition_price - $dataH->fdc_residu_value) / $dataH->fin_life_time_period;
-        }else if ($dataH->fst_method == "Double Declining Balance"){            
+            //$depreAmount = ($dataH->fdc_aquisition_price - $dataH->fdc_residu_value) / $dataH->fin_life_time_period;
+            //Depresiasi per tahun
+            $depreAmountYear = $dataH->fdc_aquisition_price * ($dataH->fdc_pct_rate_year /100);
+
+        }else if ($dataH->fst_method == "Double Declining Balance"){     
+            //Ngak di pakai DULU cara juga berubah pakai rate bukan pakai nilai residu lagi       
             $diffPeriod =  diffPeriod($akuisisiPeriod,$processPeriod,$dataH->fst_depre_period);
             $nilaiBuku = $dataH->fdc_aquisition_price;
             $nilaiSusut = 0;
@@ -86,7 +90,11 @@ class Trfadeprecard_model extends MY_Model{
             $fblJurnal = 1;
         }
 
-        if ($dataH->fst_depre_period == "monthly"){
+        
+
+        if ($dataH->fst_depre_period == "monthly"){            
+            $depreAmount = $depreAmountYear /12;
+
             foreach($details as $detail){
                 $data =[
                     "fin_fa_profile_id"=>$dataH->fin_fa_profile_id,
@@ -103,6 +111,8 @@ class Trfadeprecard_model extends MY_Model{
             }
         }else{ //year
             //$currentPeriod = getPeriod();
+            $depreAmount = $depreAmountYear;
+
             if (periodIsEndOfYear($processPeriod)){            
                 foreach($details as $detail){
                     $data =[
@@ -124,6 +134,8 @@ class Trfadeprecard_model extends MY_Model{
 
     public function jurnalDeprecateAsset(){
         //belum di buat jurnalnya
+
+        
     }
 
     
