@@ -314,6 +314,8 @@ class Disposal extends MY_Controller{
 		foreach($dataDetails as $detail){
 			$aquisitionPrice = 0;
 			$profileInfo = $this->trfaprofilesitems_model->getInfoById($detail->fin_fa_profile_detail_id);
+
+			
 			if ($profileInfo == null){
 				throw new CustomException("Invalid profile detail id ". $detail->fin_fa_profile_detail_id , 404,"FAILED",[]);
 			}

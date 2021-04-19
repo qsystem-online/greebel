@@ -60,9 +60,10 @@ class trfaprofilesitems_model extends MY_Model{
     
 
     public function getInfoById($finFAProfileDetailId){
-        $ssql = "SELECT a.fst_fa_profile_code,b.fst_account_code,b.fst_accum_account_code,b.fdc_aquisition_price,sum(c.fdc_depre_amount) as fdc_depre_amount FROM trfaprofilesitems a 
+        $ssql = "SELECT a.fst_fa_profile_code,b.fst_account_code,b.fst_accum_account_code,b.fdc_aquisition_price,
+            sum(ifnull(c.fdc_depre_amount,0)) as fdc_depre_amount FROM trfaprofilesitems a 
             INNER JOIN trfaprofiles b on a.fin_fa_profile_id = b.fin_fa_profile_id  
-            INNER JOIN trfadeprecard c on a.fst_fa_profile_code = c.fst_fa_profile_code
+            LEFT JOIN trfadeprecard c on a.fst_fa_profile_code = c.fst_fa_profile_code
             WHERE a.fin_rec_id = ? group by a.fst_fa_profile_code,b.fst_account_code,b.fst_accum_account_code,b.fdc_aquisition_price";
         $qr =$this->db->query($ssql,[$finFAProfileDetailId]);
         return $qr->row();
