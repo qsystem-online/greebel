@@ -40,6 +40,7 @@
                 <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?></label>
                 <div class="col-sm-4">
                     <select id="select-relations" class="form-control non-editable" name="fin_relation_id">
+                    <option value='0'>All</option>
                     </select>
                     <div id="fin_relation_id_err" class="text-danger"></div>
                 </div>

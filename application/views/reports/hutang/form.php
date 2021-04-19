@@ -10,7 +10,7 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptPiutang" action="<?= site_url() ?>report/piutang/piutang/process" method="POST" enctype="multipart/form-data">
+<form id="rptHutang" action="<?= site_url() ?>report/hutang/hutang/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
@@ -34,35 +34,7 @@
                         ?>
                     </select>
                     <div id="fin_branch_id_err" class="text-danger"></div>
-                </div>
-                <label for="select-sales" class="col-sm-2 control-label"><?=lang("Sales")?></label>
-                <div class="col-sm-4">
-                    <select id="select-sales" class="form-control" name="fin_sales_id">
-                        <option value='0'>All</option>
-                        <?php
-                            $salesList = $this->users_model->getSalesList();
-                            foreach($salesList as $sales){
-                                echo "<option value='$sales->fin_user_id'>$sales->fst_username</option>";
-                            }                            
-                        ?>
-                    </select>
-                    <div id="fin_sales_id_err" class="text-danger"></div>
-                </div>
-            </div>
-            <div class="form-group row">						
-                <label for="select-kasbank" class="col-sm-2 control-label"><?=lang("Tipe Kas/Bank")?></label>
-                <div class="col-sm-4">
-                    <select id="select-kasbank" class="form-control non-editable" name="kasbank_id">
-                    <option value='0'>All</option>
-                    <?php
-                        $kasbankList = $this->kasbank_model->getKasbankList();
-                        foreach($kasbankList as $acc){
-                            echo "<option value='".$acc->fin_kasbank_id."'>$acc->fst_kasbank_name</option>";
-                        }
-                    ?>
-                    </select>
-                    <div id="kasbank_id_err" class="text-danger"></div>
-                </div>            
+                </div>          
                 <label for="fst_orgi_curr_code" class="col-sm-2 control-label"><?=lang("Mata Uang")?></label>
                 <div class="col-sm-4">
                     <select id="fst_orgi_curr_code" class="form-control" name="fst_orgi_curr_code">
@@ -104,7 +76,7 @@
                 </div>
             </div>
             <div class="form-group row">						
-                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?></label>
+                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Supplier/Ekspedisi")?></label>
                 <div class="col-sm-10">
                     <select id="select-relations" class="form-control non-editable" name="fin_relation_id">
                     <option value='0'>All</option>
@@ -115,10 +87,8 @@
             <div class="form-group row">
                 <label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
                 <div class="col-sm-4">								
-                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Kartu Piutang")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Saldo Piutang Ringkas")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Detail Pembayaran Per No.Faktur")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Detail Pembayaran Faktur Per Periode")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Kartu Hutang")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Saldo Hutang Ringkas")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -194,7 +164,7 @@
         $("#select-relations").select2({
 			width: '100%',
 			ajax: {
-				url: '<?=site_url()?>report/piutang/piutang/get_customers',
+				url: '<?=site_url()?>report/hutang/hutang/get_suppliers_Ekspedisi',
 				dataType: 'json',
 				delay: 250,
 				processResults: function (data){
@@ -230,8 +200,8 @@
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#rptPiutang").serializeArray();
-            url = "<?= site_url() ?>report/piutang/piutang/process";
+            data = $("#rptHutang").serializeArray();
+            url = "<?= site_url() ?>report/hutang/hutang/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -274,12 +244,12 @@
                         //Clear all previous error
                         $(".text-danger").html("");
                         //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/piutang/piutang/generatereport";
+                        url = "<?= site_url() ?>report/hutang/hutang/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
-                        $("#rptPiutang").attr('action', url);
-                        $("#rptPiutang").attr('target', 'rpt_iframe');
-                        $("#rptPiutang").submit();
+                        $("#rptHutang").attr('action', url);
+                        $("#rptHutang").attr('target', 'rpt_iframe');
+                        $("#rptHutang").submit();
                         $("a#toggle-window").click();
                         // Change to Edit mode
                         // $("#frm-mode").val("EDIT"); //ADD|EDIT
@@ -314,7 +284,7 @@
             var a = document.createElement('a');
             a.href = data_type + ', ' + table_html;
 			//a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
-			a.download = 'Laporan_Kartu_Piutang' + '.xls';
+			a.download = 'Laporan_Kartu_Hutang' + '.xls';
 			a.click();                        			
 			return;
 		});      
