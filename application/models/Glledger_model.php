@@ -60,6 +60,10 @@ class Glledger_model extends MY_Model{
         for($i = 0; $i < sizeof($datas) ;$i++){
             $data = $datas[$i];                        
             $account = $this->glaccounts_model->getSimpleDataHeader($data["fst_account_code"]); 
+            //if ($account == null){
+            //    var_dump($data);
+            //    die();
+            //}
             $data["fst_account_name"] = $account->fst_glaccount_name;
             
             if ($data["fst_orgi_curr_code"]  == null){

@@ -156,7 +156,10 @@ class Trpurchaserequest_model extends MY_Model {
 		}else{
 			$ssql .= " AND c.fin_item_type_id != 5";
 		}
+
 		$qr = $this->db->query($ssql,[$lineBusinessId]);
+
+		//echo $this->db->last_query();
 
 		//echo "ITEM TYPE : $itemType";
 		//echo $this->db->last_query();

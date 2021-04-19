@@ -458,11 +458,13 @@ class Disposal extends MY_Controller{
 		//$finWarehouseId =$this->input->get("fin_warehouse_id");
 		$finBranchId = $this->aauth->get_active_branch_id();
 
-		$ssql ="SELECT a.fin_rec_id as fin_fa_profile_rec_id,a.fst_fa_profile_code,a.fst_fa_profile_name,b.fdc_aquisition_price,c.fdc_depre_amount 
+		$ssql ="SELECT a.fin_rec_id as fin_fa_profile_rec_id,a.fst_fa_profile_code,a.fst_fa_profile_name,
+			b.fdc_aquisition_price,IFNULL(c.fdc_depre_amount,0) AS fdc_depre_amount 
 			FROM trfaprofilesitems a 
 			INNER JOIN trfaprofiles b on a.fin_fa_profile_id = b.fin_fa_profile_id
-			INNER JOIN (
-				SELECT fst_fa_profile_code,sum(fdc_depre_amount) as fdc_depre_amount from trfadeprecard group by fst_fa_profile_code
+			LEFT JOIN (
+				SELECT fst_fa_profile_code,sum(fdc_depre_amount) as fdc_depre_amount from trfadeprecard 
+				group by fst_fa_profile_code
 			) c on a.fst_fa_profile_code = c.fst_fa_profile_code 
 			WHERE a.fbl_disposal = 0  AND b.fst_active ='A' AND b.fin_branch_id = ? AND 
 			(a.fst_fa_profile_code like ? OR a.fst_fa_profile_name like ?)";

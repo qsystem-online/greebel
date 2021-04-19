@@ -154,7 +154,7 @@ class Trlpbpurchase_model extends MY_Model {
 		$this->load->model("trpurchaserequestprocess_model");
 		
 
-		$ssql = "SELECT a.*,b.fbl_is_import,b.fdc_downpayment,b.fdc_downpayment_paid,b.fbl_dp_inc_ppn 
+		$ssql = "SELECT a.*,b.fbl_is_import,b.fdc_downpayment,b.fdc_downpayment_paid,b.fbl_dp_inc_ppn,b.fst_pos_costing 
 			FROM trlpbpurchase a 
 			INNER JOIN trpo b ON a.fin_po_id = b.fin_po_id 
 			WHERE fin_lpbpurchase_id = ?";
@@ -215,28 +215,50 @@ class Trlpbpurchase_model extends MY_Model {
 		$dataTmp = [];
 				
 
-		foreach($rs as $rw){
+		//Dengan PR atau Tidak
+		$rwPRProses = $this->trpurchaserequestprocess_model->getHeaderByPO($dataH->fin_po_id);
+		$usingPR = false;
+		if ($rwPRProses == null){
+			//Non PR (Tidak bole ada transaksi item logistik stock)
+			$usingPR = false;
+		}else{
+			//With PR
+			$usingPR = true;
+		}
+
+		foreach($rs as $rw){		
 			//Pembelian/Persediaan/Biaya > Hutang 
-			if ($rw->fin_item_type_id == 5 ){
-				//Logistik (stock or non stock ?)
+			if ($rw->fin_item_type_id == 5 ){ //Logistik				
 				$postAcc = "";
+
 				if ($rw->fbl_stock){
-					//persediaan supply
-					$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"PERSEDIAAN");
-				}else{
-					//Biaya
-					//Pending Tunggu benerin PR dan PO
-					$rwPRProses = $this->trpurchaserequestprocess_model->getHeaderByPO($dataH->fin_po_id);
-					if($rwPRProses != null){					
+					//persediaan supply (Harus Dengan PR)
+					if ($usingPR){
+						$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"PERSEDIAAN");
+					}else{
+						throw new CustomException(lang("Untuk Item Logistik stock, harus menggunakan Purchase Request !"),3003,"FAILED",[]);
+					}				
+					
+				}else{					
+					//Langsung dijadikan biaya
+					if ($usingPR){
+						//Jadikan Persedian dan dijadikan biaya pada saat distribusi
+						//var_dump($rwPRProses);
 						if ($rwPRProses->fst_stock_cost_type == "NONSTOCK_PABRIKASI"){
-							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_PABRIKASI");;
+							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_PABRIKASI");
 						}else if ($rwPRProses->fst_stock_cost_type == "NONSTOCK_UMUM"){
-							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");;
+							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");
 						}
 					}else{
-						$postAcc = $purchaseAccount;
-					}
+						
 
+						//Langsung dijadikan biaya
+						if ($dataH->fst_pos_costing == "NONSTOCK_PABRIKASI"){
+							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_PABRIKASI");
+						}else if ($dataH->fst_pos_costing == "NONSTOCK_UMUM"){
+							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");
+						}
+					}
 				}
 
 				if (isset($dataTmp[$postAcc][$rw->fin_pcc_id])){
@@ -251,16 +273,38 @@ class Trlpbpurchase_model extends MY_Model {
 					];
 				}
 
-			}else{
-				//Non Logistic
-				if (isset($dataTmp[$purchaseAccount][$rw->fin_pcc_id])){
+			}else{ //Non Logistic
+				if ($rw->fbl_stock){
+					$postAcc = $purchaseAccount;					
+				}else{
+					//Langsung dijadikan biaya
+					if ($usingPR){
+						//Jadikan Persedian dan dijadikan biaya pada saat distribusi
+						if ($rwPRProses->fst_pos_costing == "NONSTOCK_PABRIKASI"){
+							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_PABRIKASI");
+						}else if ($rwPRProses->fst_pos_costing == "NONSTOCK_UMUM"){
+							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");
+						}
+					}else{
+						//Langsung dijadikan biaya						
+						if ($dataH->fst_pos_costing == "NONSTOCK_PABRIKASI"){
+							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_PABRIKASI");
+						}else if ($dataH->fst_pos_costing == "NONSTOCK_UMUM"){
+							$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");
+						}
+					}
+					
+
+				}
+							
+				if (isset($dataTmp[$postAcc][$rw->fin_pcc_id])){
 					//$dataTmp[$purchaseAccount][$rw->fin_pcc_id] += $rw->fdc_total;
-					$dataTmp[$purchaseAccount][$rw->fin_pcc_id] = [
-						"debet"=> $dataTmp[$purchaseAccount][$rw->fin_pcc_id]["debet"] + $rw->fdc_total,
+					$dataTmp[$postAcc][$rw->fin_pcc_id] = [
+						"debet"=> $dataTmp[$postAcc][$rw->fin_pcc_id]["debet"] + $rw->fdc_total,
 						"credit"=> 0
 					];
 				}else{
-					$dataTmp[$purchaseAccount][$rw->fin_pcc_id] = [
+					$dataTmp[$postAcc][$rw->fin_pcc_id] = [
 						"debet"=> $rw->fdc_total,
 						"credit"=> 0
 					];
@@ -279,7 +323,7 @@ class Trlpbpurchase_model extends MY_Model {
 					"debet"=>0,
 					"credit"=>$rw->fdc_ttl_disc_amount
 				];
-			}			 
+			}				
 		}
 
 		
@@ -322,6 +366,7 @@ class Trlpbpurchase_model extends MY_Model {
 			$ttlPpn = $dataH->fdc_ppn_amount;
 			$dpClaim = $dataH->fdc_downpayment_claim;
 		}
+
 		$dataJurnal[] =[
 			"fin_branch_id"=>$dataH->fin_branch_id,
 			"fst_account_code"=>getGLConfig("PPN_MASUKAN"),
@@ -387,8 +432,8 @@ class Trlpbpurchase_model extends MY_Model {
 			"fin_relation_id"=>$dataH->fin_supplier_id,
 			"fst_active"=>"A",
 			"fst_info"=>"HUTANG DAGANG"
-		];        
-			
+		];       		
+
 		$this->glledger_model->createJurnal($dataJurnal);       
 	}
 

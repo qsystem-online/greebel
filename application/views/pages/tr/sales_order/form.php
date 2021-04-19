@@ -428,7 +428,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}).on('select2:select', function(e){
 				myModal.selectedItem = e.params.data;
 				$("#dfst_unit").val(null).trigger("change");
-
 				$("#dfst_custom_item_name").val(myModal.selectedItem.fst_item_name);
 			});	
 
@@ -557,7 +556,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 				if (resp.status == "SUCCESS"){
 					data = resp.data;
-					$("#dfdc_selling_price").val(money_format(data.sellingPrice));
+					if (data.sellingPrice == 0){
+						$("#dfdc_selling_price").prop("disabled",false);
+						$("#dfdc_selling_price").val(money_format(0));
+					}else{
+						$("#dfdc_selling_price").prop("disabled",true);
+						$("#dfdc_selling_price").val(money_format(data.sellingPrice));
+					}
+					
 					
 					var infoStock = "Qty Real Stock : " + data.real_stock + " " + data.fst_basic_unit + " => " + data.real_stock / myModal.selectedUnit.fdc_conv_to_basic_unit + " " +  myModal.selectedUnit.text;
 					infoStock += " | Qty Marketing Stock : " + data.marketing_stock + " " + data.fst_basic_unit + " => " + data.marketing_stock / myModal.selectedUnit.fdc_conv_to_basic_unit + " " +  myModal.selectedUnit.text;
@@ -569,82 +575,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		}
 
-		/*
-		function itemOnSelect() {
-			//Get Stock (basic Unit)
-
-
-			var data = event.params.data;
-			data = Array.isArray(data) ? data[0] : data;					
-			selectedItem = data;
-
-			dataCust = $("#select-relations").select2("data")[0];
-			$("#fst_custom_item_name").val(data.fst_item_name);
-
-			$('#select-unit').empty();
-			$("#so-qty").val(1);
-			$("#so-price").val(App.money_format(0));
-			$("#select-disc").val(0);
-			$("#fdc_disc_amount").val(App.money_format(0));
-			
-			App.blockUIOnAjaxRequest();
-			$.ajax({
-				url: '<?=site_url()?>master/item/get_selling_unit/' + data.id +"/" + dataCust.id +"/" + $("#select-warehouse").val(),
-			}).done(function(resp){
-				arrData = resp;
-				arrSel2 =[];
-				$.each(arrData,function(i,v){
-					arrSel2.push({
-						"id" : v.fst_unit,
-						"text" : v.fst_unit,
-						"price" :v.sellingPrice,
-						"real_stock":v.real_stock,
-						"marketing_stock":v.marketing_stock,
-						"fdc_conv_to_basic_unit":v.fdc_conv_to_basic_unit,
-						"fst_basic_unit":v.fst_basic_unit,
-					});
-				});
-
-				$("#select-unit").select2({
-					minimumResultsForSearch: -1,
-					data:arrSel2
-				}).on('select2:select', function (e) {
-					dataUnit = e.params.data;
-					$("#so-price").val(money_format(dataUnit.price));
-					var infoStock = "Qty Real Stock : " + dataUnit.real_stock + " " + dataUnit.fst_basic_unit + " => " + dataUnit.real_stock / dataUnit.fdc_conv_to_basic_unit + " " +  dataUnit.text;
-					infoStock += " | Qty Marketing Stock : " + dataUnit.marketing_stock + " " + dataUnit.fst_basic_unit + " => " + dataUnit.marketing_stock / dataUnit.fdc_conv_to_basic_unit + " " +  dataUnit.text;
-					//$("#dialog-info .info-message").html("Qty Stock : " + dataUnit.real_stock + "  | " + " Qty Marketing Stock : " + dataUnit.marketing_stock);
-					$("#dialog-info .info-message").html(infoStock);
-					$("#dialog-info").show();							
-				});
-				
-				if (selectedRow != null){
-					$("#select-unit").val(selectedRow.fst_unit).trigger("change.select2");
-					$("#select-unit").trigger({
-						type:"select2:select",
-						params:{
-							data:{
-								id : row.fst_unit,
-								text : row.fst_unit,
-								price: row.fdc_price,
-								real_stock: row.real_stock,
-								marketing_stock: row.marketing_stock,
-								fdc_conv_to_basic_unit: row.fdc_conv_to_basic_unit,
-								fst_basic_unit: row.fst_basic_unit,
-							}
-						}
-					});
-
-				}else{
-					$("#select-unit").val(null).trigger("change.select2");				
-				}
-
-				
-
-				App.fixedSelect2();
-			});				
-		}
-		*/
+		
 		
 	</script>
 </div>

@@ -605,6 +605,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				App.addOptionIfNotExist("<option value='"+dataH.fin_shipping_address_id+"'>"+ dataH.fst_shipping_address_name +"</option>","fin_shipping_address_id");
 				$("#shipping-address").val(dataH.fst_shipping_address);
 
+				$(".ttl").trigger("change");
+
 				//App.addOptionIfNotExist("<option value='"+dataH.fin_supplier_id+"'>"+ dataH.fst_supplier_name +"</option>","fin_supplier_id");
 				
 				

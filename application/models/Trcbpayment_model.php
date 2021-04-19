@@ -100,8 +100,23 @@ class Trcbpayment_model extends MY_Model {
                 return null;
             }
             return $rw->fst_po_no;
-        }
-
+        }else if($transType == "COST_PURCHASE"){
+            $ssql ="select * from trpurchasecost where fin_purchasecost_id = ?";
+            $qr =$this->db->query($ssql,[$transId]);
+            $rw = $qr->row();
+            if(!$rw){
+                return null;
+            }
+            return $rw->fst_purchasecost_no;
+        }else if($transType == "COST_EXPEDITION"){
+            $ssql ="select * from trsalesekspedisi where fin_salesekspedisi_id = ?";
+            $qr =$this->db->query($ssql,[$transId]);
+            $rw = $qr->row();
+            if(!$rw){
+                return null;
+            }
+            return $rw->fst_salesekspedisi_no;
+        }        
     }
 
 

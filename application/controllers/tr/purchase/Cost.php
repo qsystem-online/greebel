@@ -618,9 +618,16 @@ class Cost extends MY_Controller{
 			return;
 		}
 
-		$isEditable = $this->trpurchasecost_model->isEditable($finPurchaseCostId);
+		
+
+		$isEditable = $this->trpurchasecost_model->isEditable($finPurchaseCostId);		
 		if($isEditable["status"] != "SUCCESS"){
-			return $isEditable;
+			//return $isEditable;
+			$this->json_output([
+				"status"=>$isEditable["status"],
+				"message"=>$isEditable["message"],
+				"data"=>[]
+			]);
 		}
 		
 

@@ -147,9 +147,13 @@ class Trlpbgudang_model extends MY_Model {
 			and b.fbl_is_closed = 0 
 			and b.fdc_downpayment <= b.fdc_downpayment_paid";
 		*/
-		$ssql = "SELECT a.fin_po_id as fin_trans_id,a.fst_po_no as fst_trans_no,a.fdt_po_datetime as fdt_trans_datetime,a.fin_pr_process_id,b.fst_relation_name  from trpo a 
+		$ssql = "SELECT a.fin_po_id as fin_trans_id,a.fst_po_no as fst_trans_no,
+			a.fdt_po_datetime as fdt_trans_datetime,a.fin_pr_process_id,
+			b.fst_relation_name,c.fst_item_type
+			FROM trpo a 
 			INNER JOIN msrelations b on a.fin_supplier_id = b.fin_relation_id 
-			and a.fst_active ='A' 
+			LEFT JOIN trpurchaserequestprocess c on a.fin_pr_process_id = c.fin_process_id 
+			WHERE a.fst_active ='A' 
 			and a.fbl_is_closed = 0 
 			and a.fdc_downpayment <= a.fdc_downpayment_paid";
 		$qr = $this->db->query($ssql,[]);

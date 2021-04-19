@@ -121,8 +121,15 @@ class Trcbreceive_model extends MY_Model {
 				$ssql = "update trcbreceiveitems set fdc_receive_amount_claimed = fdc_receive_amount_claimed -  ? where fin_rec_id = ?";
 				$this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);
 				throwIfDBError();
+				$this->checkIsValidClaimPaymentOver($dataItem->fin_trans_id);  
 
-				$this->checkIsValidClaimPaymentOver($dataItem->fin_trans_id);        
+			}else if ($dataItem->fst_trans_type == "CLAIM_EXPEDITION"){
+
+				$ssql = "update trsalesekspedisi set fdc_total_claimed = fdc_total_claimed - ? where fin_salesekspedisi_id = ?";
+                $this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);				
+				throwIfDBError();
+				$this->checkIsValidClaimExpedition($dataItem->fin_trans_id);
+
 			}else if ($dataItem->fst_trans_type == "CLAIM_PAYMENT_UNKNOWN"){
 				$ssql ="UPDATE glledger set fbl_claimed_cashbank_receive_unknown = false where fin_rec_id =?";
 				$this->db->query($ssql,[$dataItem->fin_trans_id]);
@@ -208,12 +215,12 @@ class Trcbreceive_model extends MY_Model {
 				//Claim Kelebihan Pembayaran
 				$tmpArr = $this->getDataJurnalPostingClaimExpedition($dataItem,$dataH);        
 
-				//$ssql = "update trcbreceiveitems set fdc_receive_amount_claimed = fdc_receive_amount_claimed +  ? where fin_rec_id = ?";
-				$this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);
+				$ssql = "update trsalesekspedisi set fdc_total_claimed = fdc_total_claimed + ? where fin_salesekspedisi_id = ?";
+                $this->db->query($ssql,[abs($dataItem->fdc_receive_amount),$dataItem->fin_trans_id]);				
 				throwIfDBError();
 
 				//cek valid claim kelebihan ekspedisi
-				//$this->checkIsValidClaimPaymentOver($dataItem->fin_trans_id);
+				$this->checkIsValidClaimExpedition($dataItem->fin_trans_id);
 
 			}else if ($dataItem->fst_trans_type == "CLAIM_PAYMENT_UNKNOWN"){
 				$tmpArr = $this->getDataJurnalPostingClaimPaymentUnknown($dataItem,$dataH);
@@ -699,27 +706,31 @@ class Trcbreceive_model extends MY_Model {
 	}
 
 	public function getDataJurnalPostingClaimExpedition($dataItem,$dataH){
-
+		//var_dump($dataItem);
+		/*
 		$ssql = "SELECT a.*,b.fst_cbreceive_no,b.fst_curr_code,b.fdc_exchange_rate_idr FROM trcbreceiveitems a
 			INNER JOIN trcbreceive b on a.fin_cbreceive_id = b.fin_cbreceive_id 
 			WHERE a.fin_rec_id = ?   
 			AND b.fst_active != 'D'";
+		*/
+		$ssql = "SELECT a.* FROM trsalesekspedisi a
+			WHERE a.fin_salesekspedisi_id = ? AND a.fst_active != 'D'";
+
 
 		$qr =$this->db->query($ssql,[$dataItem->fin_trans_id]);
 		$dataD = $qr->row();
 		if($dataD == null){
-			throw new CustomException("ID Kelebihan Pembayaran tidak dikenal !",9009,"FAILED",null);
+			throw new CustomException("ID klaim Ekspedis tidak dikenal !",9009,"FAILED",null);
 		}
 
-		$maxClaim = (float) $dataD->fdc_receive_amount - (float) $dataD->fdc_receive_amount_claimed;
+		$maxClaim = (float) $dataD->fdc_total - (float) $dataD->fdc_total_claimed;
 		if ($maxClaim < (float) $dataItem->fdc_receive_amount){
-			throw new CustomException(sprintf(lang("Maksimum klaim kelebihan pembayaran %s"),formatNumber($maxClaim)),3003,"FAILED",null);
+			throw new CustomException(sprintf(lang("Maksimum klaim ekspedisi %s"),formatNumber($maxClaim)),3003,"FAILED",null);
 		}
 
 		
 
 		$dataJurnal = [];
-		//$accKelebihanBayar = getGLConfig("CUSTOMER_KELEBIHAN_BAYAR");        
 		$accPiutangEkspedisi = getGLConfig("PIUTANG_EKSPEDISI_PENJUALAN");    
 		$glAccountInfo = "CLAIM BIAYA EKSPEDISI";
 				
@@ -1087,6 +1098,7 @@ class Trcbreceive_model extends MY_Model {
 				"fdc_paid_amount"=>0,
 				"fdc_return_amount"=>0,
 			];        
+			
 		}else if($transType == "CLAIM_PAYMENT_OVER"){
 			$ssql = "SELECT a.*,b.fst_cbreceive_no from trcbreceiveitems a 
 				INNER JOIN trcbreceive b on a.fin_cbreceive_id = b.fin_cbreceive_id
@@ -1106,6 +1118,28 @@ class Trcbreceive_model extends MY_Model {
 					"fst_trans_no"=>$rw->fst_cbreceive_no,
 					"fdc_trans_amount"=>$rw->fdc_receive_amount,
 					"fdc_paid_amount"=>$rw->fdc_receive_amount_claimed,
+					"fdc_return_amount"=>0,
+				];
+			}
+		}else if($transType == "CLAIM_EXPEDITION"){
+
+			$ssql = "SELECT a.* from trsalesekspedisi a 
+				WHERE a.fin_salesekspedisi_id = ? and a.fst_active != 'D'";
+
+			$qr = $this->db->query($ssql,[$transId]);
+			$rw = $qr->row();
+			if($rw == null){
+				return [
+					"fst_trans_no"=>null,
+					"fdc_trans_amount"=>0,
+					"fdc_paid_amount"=>0,
+					"fdc_return_amount"=>0
+				];
+			}else{
+				return [
+					"fst_trans_no"=>$rw->fst_salesekspedisi_no,
+					"fdc_trans_amount"=>$rw->fdc_total,
+					"fdc_paid_amount"=>$rw->fdc_total_claimed,
 					"fdc_return_amount"=>0,
 				];
 			}

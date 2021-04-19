@@ -266,7 +266,8 @@ class Invoice extends MY_Controller{
             $dataH["fdc_dpp_amount"] = $subTotalDPP;
             $dataH["fdc_disc_amount"] = $ttlDisc;
             $dataH["fdc_ppn_amount"] = $subTotalDPP * ($dataH["fdc_ppn_percent"] / 100);
-            $dataH["fdc_total"] = $ttlNoDisc - $ttlDisc + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
+            //$dataH["fdc_total"] = $ttlNoDisc - $ttlDisc + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
+            $dataH["fdc_total"] = $subTotalDPP + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
                         
             //VALIDASI DATA
             $this->validation_data($dataH,$detailData,$dataItemList,$salesOrder);
@@ -433,7 +434,8 @@ class Invoice extends MY_Controller{
             $dataH["fdc_dpp_amount"] = $subTotalDPP;
             $dataH["fdc_disc_amount"] = $ttlDisc;
             $dataH["fdc_ppn_amount"] = $subTotalDPP * ($dataH["fdc_ppn_percent"] / 100);
-            $dataH["fdc_total"] = $ttlNoDisc - $ttlDisc + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
+            //$dataH["fdc_total"] = $ttlNoDisc - $ttlDisc + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
+            $dataH["fdc_total"] = $subTotalDPP + $dataH["fdc_ppn_amount"] - $dataH["fdc_downpayment_claim"];
             
             //VALIDASI DATA
             $this->validation_data($dataH,$detailData,$dataItemList,$salesOrder);

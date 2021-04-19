@@ -158,44 +158,46 @@ class Trdistributepr_model extends MY_Model {
 			$this->db->query($ssql,[$rw->fdb_qty_distribute ,$rw->fin_pr_detail_id]);	
 			if ($this->db->error()["code"]	!= 0){
 				throw new CustomException($this->db->error()["message"],"3003","FAILED",[]);
-			}
-
-			//Update kartu stock
-			$dataStock = [
-				//`fin_rec_id`, 
-				"fin_warehouse_id"=>$rw->fin_source_warehouse_id,
-				"fdt_trx_datetime"=>$dataH->fdt_distributepr_datetime,
-				"fst_trx_code"=>"PRD", 
-				"fin_trx_id"=>$dataH->fin_distributepr_id,
-				"fin_trx_detail_id"=>$rw->fin_rec_id,
-				"fst_trx_no"=>$dataH->fst_distributepr_no, 
-				"fst_referensi"=>null, 
-				"fin_item_id"=>$rw->fin_item_id, 
-				"fst_unit"=>$rw->fst_unit, 
-				"fdb_qty_in"=>0, 
-				"fdb_qty_out"=>$rw->fdb_qty_distribute, 
-				"fdc_price_in"=>0,
-				"fst_active"=>"A" 
-			];
+			}								
 			
-			$dataSerial = [
-                "fin_warehouse_id"=>$rw->fin_source_warehouse_id,
-                "fin_item_id"=>$rw->fin_item_id,
-                "fst_unit"=>$rw->fst_unit,
-                "fst_serial_number_list"=>$rw->fst_serial_number_list,
-                "fst_batch_no"=>$rw->fst_batch_number,
-                "fst_trans_type"=>"PRD", 
-                "fin_trans_id"=>$dataH->fin_distributepr_id,
-                "fst_trans_no"=>$dataH->fst_distributepr_no,
-                "fin_trans_detail_id"=>$rw->fin_rec_id,
-                "fdb_qty"=>$rw->fdb_qty_distribute,
-                "in_out"=>"OUT",
-            ];            
-			$this->trinventory_model->insertSerial($dataSerial);			
-
-			//jurnal 
 			if ($rw->fin_item_type_id == 5 && $rw->fbl_stock == true){
-				
+				//Update kartu stock
+				$dataStock = [
+					//`fin_rec_id`, 
+					"fin_warehouse_id"=>$rw->fin_source_warehouse_id,
+					"fdt_trx_datetime"=>$dataH->fdt_distributepr_datetime,
+					"fst_trx_code"=>"PRD", 
+					"fin_trx_id"=>$dataH->fin_distributepr_id,
+					"fin_trx_detail_id"=>$rw->fin_rec_id,
+					"fst_trx_no"=>$dataH->fst_distributepr_no, 
+					"fst_referensi"=>null, 
+					"fin_item_id"=>$rw->fin_item_id, 
+					"fst_unit"=>$rw->fst_unit, 
+					"fdb_qty_in"=>0, 
+					"fdb_qty_out"=>$rw->fdb_qty_distribute, 
+					"fdc_price_in"=>0,
+					"fst_active"=>"A" 
+				];
+				$this->trinventory_model->insert($dataStock);
+
+
+				$dataSerial = [
+					"fin_warehouse_id"=>$rw->fin_source_warehouse_id,
+					"fin_item_id"=>$rw->fin_item_id,
+					"fst_unit"=>$rw->fst_unit,
+					"fst_serial_number_list"=>$rw->fst_serial_number_list,
+					"fst_batch_no"=>$rw->fst_batch_number,
+					"fst_trans_type"=>"PRD", 
+					"fin_trans_id"=>$dataH->fin_distributepr_id,
+					"fst_trans_no"=>$dataH->fst_distributepr_no,
+					"fin_trans_detail_id"=>$rw->fin_rec_id,
+					"fdb_qty"=>$rw->fdb_qty_distribute,
+					"in_out"=>"OUT",
+				];            
+				$this->trinventory_model->insertSerial($dataSerial);
+
+
+				//jurnal 	
 				$ssql ="select * from msgroupitems where fin_item_group_id = $rw->fin_item_group_id";
 				$qr = $this->db->query($ssql,[]);
 				$rwItemGroup = $qr->row();

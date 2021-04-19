@@ -249,6 +249,8 @@ class Sales_order extends MY_Controller{
 		$subTtl = 0;
 		$ttlDiscAmount = 0;
 		$ttlVATAmount = 0;
+		
+
 
 		for($i = 0; $i < sizeof($details) ; $i++){
 			$item = $details[$i];

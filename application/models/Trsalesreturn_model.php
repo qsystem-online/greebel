@@ -236,8 +236,7 @@ class Trsalesreturn_model extends MY_Model {
 		$ttlPiutang = 0;   
 		$ttlPotongan =0;     
 		
-		foreach($dataDetails as $dataD){
-			
+		foreach($dataDetails as $dataD){			
 			//$ttlReturnPenjualan += $dataD->fdc_total;
 			$ttlReturnPenjualan += $dataD->fdc_dpp_amount;
 			$ttlPpn += $dataD->fdc_ppn_amount;

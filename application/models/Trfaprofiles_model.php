@@ -133,86 +133,8 @@ class trfaprofiles_model extends MY_Model{
 		}
 		return true;            
 	}
-
-	public function posting_bac($finFAProfileId){
-
-		//Create Card only if no reference from purchase invoice
-
-		$this->load->model("trfadeprecard_model");
-
-		$ssql = "SELECT * FROM trfaprofiles where fin_fa_profile_id = ?";
-		$qr = $this->db->query($ssql,[$finFAProfileId]);
-		$dataH=$qr->row();
-		if ($dataH == null){
-			throw new CustomException("Invalid FA profile ID",404,"INVALID ID",[]);
-		}
-
-		if ($dataH->fin_lpbpurchase_detail_id != null){
-			return;
-		}
-		$fdtStartSystem = getDbConfig("start_program");
-		
-		//Create FA Card from aquisisi to startsystem
-		$aquisitionPeriod = getPeriod($dataH->fdt_aquisition_date);
-		$startSystemPeriod = getPeriod($fdtStartSystem);
-		
-
-		$ssql ="SELECT * FROM trfaprofilesitems where fin_fa_profile_id = ?";
-		$qr = $this->db->query($ssql,[$finFAProfileId]);
-		
-
-		$details = $qr->result();
-		
-		$i=0;
-		$processPeriod = $aquisitionPeriod;
-		while ($processPeriod != $startSystemPeriod ){
-			$i++;
-			if ($i > $dataH->fin_life_time_month){
-				break;
-			}
-			
-
-			//cek tahunan atau bulanan
-			$depreAmountPerMonth = ($dataH->fdc_aquisition_price - $dataH->fdc_residu_value) /$dataH->fin_life_time_month;
-			if ($dataH->fst_depre_period == "monthly"){
-				foreach($details as $detail){
-					$data =[
-						"fin_fa_profile_id"=>$dataH->fin_fa_profile_id,
-						"fst_fa_profile_code"=>$detail->fst_fa_profile_code,
-						"fst_period"=>$processPeriod,
-						"fdc_depre_amount"=>$depreAmountPerMonth,
-						"fst_active"=>"A",
-					];
-					$this->trfadeprecard_model->insert($data);
-				}
-			}else{ //year
-				//$currentPeriod = getPeriod();
-				if (periodIsEndOfYear($processPeriod)){
-					$diffPeriod = diffPeriod($startSystemPeriod,$processPeriod);
-					if ( $diffPeriod > 12 ){
-						$diffPeriod = 12;
-					}
-				}
-				$depreAmountPerMonth = $depreAmountPerMonth * $diffPeriod;
-				foreach($details as $detail){
-					$data =[
-						"fin_fa_profile_id"=>$dataH->fin_fa_profile_id,
-						"fst_fa_profile_code"=>$detail->fst_fa_profile_code,
-						"fst_period"=>$processPeriod,
-						"fdc_depre_amount"=>$depreAmountPerMonth,
-						"fst_active"=>"A",
-					];
-					$this->trfadeprecard_model->insert($data);
-				}
-			}            
-			$processPeriod = nextPeriod($processPeriod);
-		}
-		
-	}
-
-
+	
 	public function posting($finFAProfileId){
-
 		/**
 		 * create record card jika periode akuisisi lebih kecil dari tgl start system
 		 * 
