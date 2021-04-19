@@ -29,6 +29,8 @@ class Trfadeprecard_model extends MY_Model{
         return $rules;
     }
 
+
+
     public function deprecateAsset($finFAProfileId,$processPeriod){
         //periode sebelum start system tidak dilakukan jurnal
 
@@ -132,9 +134,74 @@ class Trfadeprecard_model extends MY_Model{
         }
     }
 
-    public function jurnalDeprecateAsset(){
-        //belum di buat jurnalnya
+    public function jurnalDeprecateAsset($finfaDeprecardId){
+        $this->load->model("glledger_model");
 
+        //belum di buat jurnalnya
+        /**
+         * Biaya
+         *      Akumulasi Penyusutan
+         */
+
+        $ssql = "SELECT a.*,b.fin_branch_id,b.fst_accum_account_code,b.fst_deprecost_account_code FROM trfadeprecard a 
+            INNER JOIN trfaprofiles b on a.fin_fa_profile_id = b.fin_fa_profile_id
+            where a.fin_rec_id = ? and a.fst_active ='A'";
+
+        
+        $qr = $this->db->query($ssql,[$finfaDeprecardId]);        
+        $rw = $qr->row();
+        if ($rw == null){
+            throw new CustomException("Invalid Deprecard ID",404,"FAILED",[]);
+        }
+
+        $accBiaya = $rw->fst_deprecost_account_code;
+        $accAkumalisPenyusutan = $rw->fst_accum_account_code;
+        
+        $dataJurnal =[];
+
+        $dataJurnal[] =[ 
+            "fin_branch_id"=>$rw->fin_branch_id,
+            "fst_account_code"=>$accBiaya,
+            "fdt_trx_datetime"=>$rw->fdt_insert_datetime,
+            "fst_trx_sourcecode"=>"DCFA", //Deprecard Asset
+            "fin_trx_id"=>$rw->fin_rec_id,
+            "fst_trx_no"=>$rw->fst_fa_profile_code . "/" .$rw->fst_period,
+            "fst_reference"=>"",
+            "fdc_debit"=> $rw->fdc_depre_amount,
+            "fdc_origin_debit"=>$rw->fdc_depre_amount,
+            "fdc_credit"=>0,
+            "fdc_origin_credit"=>0,
+            "fst_orgi_curr_code"=>getDefaultCurrency()["CurrCode"],
+            "fdc_orgi_rate"=>1,
+            "fst_no_ref_bank"=>null,
+            "fin_pcc_id"=>null,
+            "fin_relation_id"=>null,
+            "fst_active"=>"A",
+            "fst_info"=>"Biaya Penyusutan",
+        ];
+
+        $dataJurnal[] =[ 
+            "fin_branch_id"=>$rw->fin_branch_id,
+            "fst_account_code"=>$accAkumalisPenyusutan,
+            "fdt_trx_datetime"=>$rw->fdt_insert_datetime,
+            "fst_trx_sourcecode"=>"DCFA", //Deprecard Asset
+            "fin_trx_id"=>$rw->fin_rec_id,
+            "fst_trx_no"=>$rw->fst_fa_profile_code . "/" .$rw->fst_period,
+            "fst_reference"=>"",
+            "fdc_debit"=> 0,
+            "fdc_origin_debit"=>0,
+            "fdc_credit"=>$rw->fdc_depre_amount,
+            "fdc_origin_credit"=>$rw->fdc_depre_amount,
+            "fst_orgi_curr_code"=>getDefaultCurrency()["CurrCode"],
+            "fdc_orgi_rate"=>1,
+            "fst_no_ref_bank"=>null,
+            "fin_pcc_id"=>null,
+            "fin_relation_id"=>null,
+            "fst_active"=>"A",
+            "fst_info"=>"Akumulasi Penyusutan",
+        ];        
+
+        $this->glledger_model->createJurnal($dataJurnal);
         
     }
 

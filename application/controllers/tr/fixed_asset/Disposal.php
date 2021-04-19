@@ -315,7 +315,7 @@ class Disposal extends MY_Controller{
 			$aquisitionPrice = 0;
 			$profileInfo = $this->trfaprofilesitems_model->getInfoById($detail->fin_fa_profile_detail_id);
 
-			
+
 			if ($profileInfo == null){
 				throw new CustomException("Invalid profile detail id ". $detail->fin_fa_profile_detail_id , 404,"FAILED",[]);
 			}
@@ -494,4 +494,19 @@ class Disposal extends MY_Controller{
 	}
 	
 
+
+	public function test(){
+		$this->load->model("trfadeprecard_model");
+		try{
+			$this->db->trans_start();
+			$this->trfadeprecard_model->deprecateAsset(6,"2021-03");
+			$this->db->trans_complete();
+		}catch(CustomException $e){
+			$this->db->trans_rollback();			
+			var_dump($e);
+		}
+		
+		echo "DONE";
+
+	}
 }    
