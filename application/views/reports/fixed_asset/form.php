@@ -10,7 +10,7 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptPiutang" action="<?= site_url() ?>report/piutang/piutang/process" method="POST" enctype="multipart/form-data">
+<form id="rptFixedasset" action="<?= site_url() ?>report/tr/fixed_asset/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
         <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
@@ -34,91 +34,63 @@
                         ?>
                     </select>
                     <div id="fin_branch_id_err" class="text-danger"></div>
-                </div>
-                <label for="select-sales" class="col-sm-2 control-label"><?=lang("Sales")?></label>
+                </div>          
+                <label for="fin_fa_group_id" class="col-sm-2 control-label"><?=lang("Group F/A")?></label>
                 <div class="col-sm-4">
-                    <select id="select-sales" class="form-control" name="fin_sales_id">
-                        <option value='0'>All</option>
+                    <select class="form-control" id="fin_fa_group_id" name="fin_fa_group_id">
                         <?php
-                            $salesList = $this->users_model->getSalesList();
-                            foreach($salesList as $sales){
-                                echo "<option value='$sales->fin_user_id'>$sales->fst_username</option>";
-                            }                            
+                            echo "<option value='0'>All</option>";
+                            $groupList = $this->msfagroups_model->getList();
+                            foreach($groupList as $group){
+                                echo "<option value='$group->fin_fa_group_id' 
+                                        data-fst_method='$group->fst_method'
+                                        data-fin_life_time_month='$group->fin_life_time_month'
+                                        data-fst_accum_account_code = '$group->fst_accum_account_code'
+                                        data-fst_deprecost_account_code ='$group->fst_deprecost_account_code'
+                                        data-fst_depre_period ='$group->fst_depre_period'
+                                    >
+                                    $group->fst_fa_group_code - $group->fst_fa_group_name
+                                </option>";
+                            }									
                         ?>
                     </select>
-                    <div id="fin_sales_id_err" class="text-danger"></div>
-                </div>
-            </div>
-            <div class="form-group row">						
-                <label for="select-kasbank" class="col-sm-2 control-label"><?=lang("Tipe Kas/Bank")?></label>
-                <div class="col-sm-4">
-                    <select id="select-kasbank" class="form-control non-editable" name="kasbank_id">
-                    <option value='0'>All</option>
-                    <?php
-                        $kasbankList = $this->kasbank_model->getKasbankList();
-                        foreach($kasbankList as $acc){
-                            echo "<option value='".$acc->fin_kasbank_id."'>$acc->fst_kasbank_name</option>";
-                        }
-                    ?>
-                    </select>
-                    <div id="kasbank_id_err" class="text-danger"></div>
-                </div>            
-                <label for="fst_orgi_curr_code" class="col-sm-2 control-label"><?=lang("Mata Uang")?></label>
-                <div class="col-sm-4">
-                    <select id="fst_orgi_curr_code" class="form-control" name="fst_orgi_curr_code">
-                        <?php
-                            $currList = $this->mscurrencies_model->getArrRate();
-                            $defaultCurr = $this->mscurrencies_model->getDefaultCurrencyCode();
-                            foreach($currList as $curr){
-                                $selected =  $defaultCurr == $curr->fst_curr_code ? "selected" : "";
-                                echo "<option value='".$curr->fst_curr_code."' $selected>".$curr->fst_curr_name."</option>";
-                            }
-
-                        ?>
-                        <option value="<?=$default_currency['CurrCode']?>"><?=$default_currency['CurrName']?></option>
-                    </select>
-                    <div id="fst_orgi_curr_code_err" class="text-danger"></div>
+                    <div id="fin_fa_group_id_err" class="text-danger"></div>
                 </div>  
             </div>
             <div class="form-group row">
-                <label for="fdt_trx_datetime" class="col-sm-2 control-label"><?=lang("Tanggal")?></label>
+                <label for="fdt_aquisition_date" class="col-sm-2 control-label"><?=lang("Tgl Perolehan")?></label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_trx_datetime" name="fdt_trx_datetime"/>
+                        <input type="text" class="form-control datepicker" id="fdt_aquisition_date" name="fdt_aquisition_date"/>
                     </div>
-                    <div id="fdt_trx_datetime_err" class="text-danger"></div>
+                    <div id="fdt_aquisition_date_err" class="text-danger"></div>
                     <!-- /.input group -->
                 </div>
-                <label for="fdt_trx_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?></label>
+                <label for="fdt_aquisition_date2" class="col-sm-2 control-label"><?=lang("s/d")?></label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_trx_datetime2" name="fdt_trx_datetime2"/>
+                        <input type="text" class="form-control datepicker" id="fdt_aquisition_date2" name="fdt_aquisition_date2"/>
                     </div>
-                    <div id="fdt_trx_datetime2_err" class="text-danger"></div>
+                    <div id="fdt_aquisition_date2_err" class="text-danger"></div>
                 </div>
             </div>
-            <div class="form-group row">						
-                <label for="select-relations" class="col-sm-2 control-label"><?=lang("Customer")?></label>
-                <div class="col-sm-10">
-                    <select id="select-relations" class="form-control non-editable" name="fin_relation_id">
-                    <option value='0'>All</option>
-                    </select>
-                    <div id="fin_relation_id_err" class="text-danger"></div>
-                </div>            
+            <div class="form-group row">
+                <label for="fst_period" class="col-md-2 control-label"><?= lang("s/d Periode") ?> *</label>
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="fst_period" placeholder="<?= lang("yyyy-mm") ?>" name="fst_period">
+                    <div id="fst_period_err" class="text-danger"></div>
+                </div>
             </div>
             <div class="form-group row">
                 <label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
                 <div class="col-sm-4">								
-                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Kartu Piutang")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Saldo Piutang Ringkas")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Detail Pembayaran Per No.Faktur")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Detail Pembayaran Faktur Per Periode")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Fixed Asset")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -146,8 +118,8 @@
 </form>
 <script type="text/javascript" info="init">
 	$(function(){
-		$("#fdt_trx_datetime").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");
-        $("#fdt_trx_datetime2").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");					
+		$("#fdt_aquisition_date").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");
+        $("#fdt_aquisition_date2").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");					
 	});
 </script>
 <script type="text/javascript">
@@ -191,47 +163,13 @@
         // currentValue = myRadio.value;
     }         
     $(function() {
-        $("#select-relations").select2({
-			width: '100%',
-			ajax: {
-				url: '<?=site_url()?>report/piutang/piutang/get_customers',
-				dataType: 'json',
-				delay: 250,
-				processResults: function (data){
-					items = [];
-					data = data.data;
-                    items.push({
-							"id" : "0",
-							"text" : "All",					
-						});
-					$.each(data,function(index,value){
-						items.push({
-							"id" : value.fin_relation_id,
-							"text" : value.fst_relation_name,					
-						});
-					});					
-					return {
-						results: items
-					};
-				},
-				cache: true,
-			}
-		}).on('select2:select',function(e){
-			//selectedCustomer = $("#select-relations").select2("data")[0];
-			// selectedCustomer = e.params.data;
-			// getShippingAddressList(selectedCustomer.id);
-			// $("#fin_terms_payment").val(selectedCustomer.fin_terms_payment);
-			// $("#select-sales").val(selectedCustomer.fin_sales_id).trigger("change.select2");
-			// $("#select-warehouse").val(selectedCustomer.fin_warehouse_id).trigger("change.select2");
-			//current_pricing_group_id = selectedCustomer.current_pricing_group_id;			
-		});
 
         $("#btnProcess").click(function(event) {
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#rptPiutang").serializeArray();
-            url = "<?= site_url() ?>report/piutang/piutang/process";
+            data = $("#rptFixedasset").serializeArray();
+            url = "<?= site_url() ?>report/tr/fixed_asset/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -274,12 +212,12 @@
                         //Clear all previous error
                         $(".text-danger").html("");
                         //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/piutang/piutang/generatereport";
+                        url = "<?= site_url() ?>report/tr/fixed_asset/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
-                        $("#rptPiutang").attr('action', url);
-                        $("#rptPiutang").attr('target', 'rpt_iframe');
-                        $("#rptPiutang").submit();
+                        $("#rptFixedasset").attr('action', url);
+                        $("#rptFixedasset").attr('target', 'rpt_iframe');
+                        $("#rptFixedasset").submit();
                         $("a#toggle-window").click();
                         // Change to Edit mode
                         // $("#frm-mode").val("EDIT"); //ADD|EDIT
@@ -314,7 +252,7 @@
             var a = document.createElement('a');
             a.href = data_type + ', ' + table_html;
 			//a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
-			a.download = 'Laporan_Kartu_Piutang' + '.xls';
+			a.download = 'Laporan_Fixed_Asset' + '.xls';
 			a.click();                        			
 			return;
 		});      

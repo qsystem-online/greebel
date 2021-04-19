@@ -161,6 +161,14 @@ clASs Msrelations_model extends MY_Model {
         return $rs;
     }
 
+    public function getSupplierEkspedisiList(){
+        $ssql = "select * from msrelations where (find_in_set('2',fst_relation_type) or find_in_set('3',fst_relation_type)) and fin_branch_id = ?";
+        $query = $this->db->query($ssql, [$this->aauth->get_active_branch_id()]);
+        $rs = $query->result();
+        return $rs;
+    }
+
+
     public function getCustomerList(){
         $term = $this->input->get("term");
         $term = "%".$term."%";
