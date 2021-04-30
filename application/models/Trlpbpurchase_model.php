@@ -184,19 +184,30 @@ class Trlpbpurchase_model extends MY_Model {
 		
 		//JURNAL 
 		$dataJurnal= [];
+		$accPembelianBahanBaku ="";
+		$accPembelianBarangJadi="";
+
 		if ($dataH->fbl_is_import){
-			$glAccount = getGLConfig("PURCHASE_IMPORT");
+			$accPembelianBahanBaku = getGLConfig("PURCHASE_IMPORT"); //BAHAN BAKU
+			$accPembelianBarangJadi = getGLConfig("PURCHASE_IMPORT_JADI"); //BARANG JADI
+			
+
 			$dpGlAccount = getGLConfig("DP_OUT_IMPORT");
 			$apGlAccount = getGLConfig("AP_DAGANG_IMPORT");
 		}else{
-			$glAccount = getGLConfig("PURCHASE_LOKAL");
+			$accPembelianBahanBaku  = getGLConfig("PURCHASE_LOKAL"); //BAHAN BAKU
+			$accPembelianBarangJadi = getGLConfig("PURCHASE_LOKAL_JADI"); //BARANG JADI
+
 			$dpGlAccount = getGLConfig("DP_OUT_LOKAL");
 			$apGlAccount = getGLConfig("AP_DAGANG_LOKAL");
 		}
-		$purchaseAccount = $glAccount;
-		$purchaseDiscAccount = getGLConfig("PURCHASE_DISC");
 
-		//fin_item_type_id : 5 Logistic, Other is Merchandise
+		
+
+		//$purchaseAccount = $accPembelianBahanBaku;
+		//$purchaseDiscAccount = getGLConfig("PURCHASE_DISC");
+
+		//fin_item_type_id : 5 Logistic, 1,2,3 Bahan Baku, Other is Merchandise
 		$ssql = "SELECT 
 				b.fin_item_type_id,
 				b.fbl_stock,
@@ -263,22 +274,40 @@ class Trlpbpurchase_model extends MY_Model {
 
 				if (isset($dataTmp[$postAcc][$rw->fin_pcc_id])){
 					$dataTmp[$postAcc][$rw->fin_pcc_id] = [
-						"debet"=> $dataTmp[$purchaseAccount][$rw->fin_pcc_id]["debet"] + $rw->fdc_total,
+						"debet"=> $dataTmp[$postAcc][$rw->fin_pcc_id]["debet"] + $rw->fdc_total - $rw->fdc_ttl_disc_amount,
 						"credit"=> 0
 					];
 				}else{
 					$dataTmp[$postAcc][$rw->fin_pcc_id] = [
-						"debet"=> $rw->fdc_total,
+						"debet"=> $rw->fdc_total - $rw->fdc_ttl_disc_amount,
 						"credit"=> 0
 					];
 				}
 
 			}else{ //Non Logistic
 				if ($rw->fbl_stock){
-					$postAcc = $purchaseAccount;					
+					if ($rw->fin_item_type_id == 1 || $rw->fin_item_type_id == 2 || $rw->fin_item_type_id == 3){
+						//Bahan Baku
+						$postAcc = $accPembelianBahanBaku; 
+					}else{
+						//Barang Jadi
+						$postAcc = $accPembelianBarangJadi;
+					}
 				}else{					
 					if ($rw->fin_item_type_id == 6){ //Fixed Asset
-						$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"PERSEDIAAN");;
+						$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"PERSEDIAAN");
+						if (isset($dataTmp[$postAcc][$rw->fin_pcc_id])){
+							$dataTmp[$postAcc][$rw->fin_pcc_id] = [
+								"debet"=> $dataTmp[$postAcc][$rw->fin_pcc_id]["debet"] + $rw->fdc_total - $rw->fdc_ttl_disc_amount,
+								"credit"=> 0
+							];
+						}else{
+							$dataTmp[$postAcc][$rw->fin_pcc_id] = [
+								"debet"=> $rw->fdc_total - $rw->fdc_ttl_disc_amount,
+								"credit"=> 0
+							];
+						}
+
 					}else{
 						//Langsung dijadikan biaya
 						if ($usingPR){
@@ -295,39 +324,47 @@ class Trlpbpurchase_model extends MY_Model {
 							}else if ($dataH->fst_pos_costing == "NONSTOCK_UMUM"){
 								$postAcc = getLogisticGLConfig($rw->fin_item_group_id,"BIAYA_UMUM");
 							}
-						}					
+						}	
+						
+						if (isset($dataTmp[$postAcc][$rw->fin_pcc_id])){
+							$dataTmp[$postAcc][$rw->fin_pcc_id] = [
+								"debet"=> $dataTmp[$postAcc][$rw->fin_pcc_id]["debet"] + $rw->fdc_total,
+								"credit"=> 0
+							];
+						}else{
+							$dataTmp[$postAcc][$rw->fin_pcc_id] = [
+								"debet"=> $rw->fdc_total,
+								"credit"=> 0
+							];
+						}
+
+						//Disc > Hutang (untuk Logistic dan Fixed asset langsung dipotong jadi tidak di jurnal sebagai discount)
+						if ($rw->fin_item_type_id == 1 || $rw->fin_item_type_id == 2 ||$rw->fin_item_type_id == 3 ){
+							$purchaseDiscAccount = getGLConfig("PURCHASE_DISC");  //DISC PEMBELIAN BAHAN BAKU
+						}else{
+							$purchaseDiscAccount = getGLConfig("PURCHASE_DISC_JADI"); //DISC PEMBELIAN BARANG JADI
+						}
+
+						if (isset($dataTmp[$purchaseDiscAccount][$rw->fin_pcc_id])){
+							$dataTmp[$purchaseDiscAccount][$rw->fin_pcc_id] = [
+								"debet"=>0,
+								"credit"=> $dataTmp[$purchaseDiscAccount][$rw->fin_pcc_id]["credit"] + $rw->fdc_ttl_disc_amount
+							];
+						}else{
+							$dataTmp[$purchaseDiscAccount][$rw->fin_pcc_id] = [
+								"debet"=>0,
+								"credit"=>$rw->fdc_ttl_disc_amount
+							];
+						}
 					}
 				}
 							
-				if (isset($dataTmp[$postAcc][$rw->fin_pcc_id])){
-					//$dataTmp[$purchaseAccount][$rw->fin_pcc_id] += $rw->fdc_total;
-					$dataTmp[$postAcc][$rw->fin_pcc_id] = [
-						"debet"=> $dataTmp[$postAcc][$rw->fin_pcc_id]["debet"] + $rw->fdc_total,
-						"credit"=> 0
-					];
-				}else{
-					$dataTmp[$postAcc][$rw->fin_pcc_id] = [
-						"debet"=> $rw->fdc_total,
-						"credit"=> 0
-					];
-				}
+				
 
 
 			}
 
-			//Disc > Hutang
-			if (isset($dataTmp[$purchaseDiscAccount][$rw->fin_pcc_id])){
-				$dataTmp[$purchaseDiscAccount][$rw->fin_pcc_id] = [
-					"debet"=>0,
-					"credit"=> $dataTmp[$purchaseDiscAccount][$rw->fin_pcc_id]["credit"] + $rw->fdc_ttl_disc_amount
-				];
-
-			}else{
-				$dataTmp[$purchaseDiscAccount][$rw->fin_pcc_id] = [
-					"debet"=>0,
-					"credit"=>$rw->fdc_ttl_disc_amount
-				];
-			}				
+					
 		}
 
 		
