@@ -112,7 +112,7 @@ class Piutang_rpt_model extends CI_Model {
                 LEFT OUTER JOIN (SELECT * FROM glledger WHERE fst_active !='D' AND fdt_trx_datetime >= '" . date('Y-m-d', strtotime($start_date)) . "' AND fdt_trx_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "' AND
                 (fst_account_code = '".$piutang_gl_code."' OR fst_account_code = '".$piutangExpedisi_gl_code."') AND fst_orgi_curr_code = '".$fst_orgi_curr_code."') b 
                 ON a.fin_relation_id = b.fin_relation_id LEFT OUTER JOIN users c
-                ON a.fin_sales_id = c.fin_user_id ORDER BY a.fin_sales_id,a.fin_relation_id,b.fdt_trx_datetime,b.fin_rec_id";
+                ON a.fin_sales_id = c.fin_user_id $swhere ORDER BY a.fin_sales_id,a.fin_relation_id,b.fdt_trx_datetime,b.fin_rec_id";
                 break;
             case "2":
                 $ssql = "SELECT a.fin_sales_id,d.fst_username AS Sales_Name,a.fin_relation_id,a.fst_relation_name,b.fst_orgi_curr_code, b.fin_branch_id,IFNULL(c.fdc_debit,0) AS Total_Debit,

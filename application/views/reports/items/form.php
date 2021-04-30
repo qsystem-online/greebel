@@ -16,6 +16,7 @@
                         <option value='3'><?= lang("Supporting Material") ?></option>
                         <option value='4'><?= lang("Ready Product") ?></option>
                         <option value='5'><?= lang("Logistic") ?></option>
+                        <option value='6'><?= lang("Fixed Asset") ?></option>
                     </select>
                 </div>
             </div>
