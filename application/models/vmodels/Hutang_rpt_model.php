@@ -69,7 +69,7 @@ class Hutang_rpt_model extends CI_Model {
                 OR fst_account_code = '".$biayaImport_gl_code."'
                 OR fst_account_code = '".$hutangWo_gl_code."'
                 ) AND fst_orgi_curr_code = '".$fst_orgi_curr_code."') b 
-                ON a.fin_relation_id = b.fin_relation_id ORDER BY a.fin_relation_id,b.fdt_trx_datetime,b.fin_rec_id";
+                ON a.fin_relation_id = b.fin_relation_id $swhere ORDER BY a.fin_relation_id,b.fdt_trx_datetime,b.fin_rec_id";
                 break;
             case "2":
                 $ssql = "SELECT a.fin_relation_id,a.fst_relation_name,b.fst_orgi_curr_code, b.fin_branch_id,IFNULL(c.fdc_debit,0) AS Total_Debit,

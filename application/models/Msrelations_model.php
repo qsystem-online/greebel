@@ -162,8 +162,10 @@ clASs Msrelations_model extends MY_Model {
     }
 
     public function getSupplierEkspedisiList(){
-        $ssql = "select * from msrelations where (find_in_set('2',fst_relation_type) or find_in_set('3',fst_relation_type)) and fin_branch_id = ?";
-        $query = $this->db->query($ssql, [$this->aauth->get_active_branch_id()]);
+        $term = $this->input->get("term");
+        $term = "%".$term."%";
+        $ssql = "select * from msrelations where (find_in_set('2',fst_relation_type) or find_in_set('3',fst_relation_type)) and fin_branch_id = ? and fst_relation_name like ?";
+        $query = $this->db->query($ssql, [$this->aauth->get_active_branch_id(),$term]);
         $rs = $query->result();
         return $rs;
     }
