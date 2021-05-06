@@ -10,15 +10,134 @@ class Process extends MY_Controller {
 	}
 
 	public function ajxDoClosing(){
+		$this->load->model("trclosingperiod_model");
 		session_write_close();
 		ini_set('max_execution_time',0);
 		$period = "2020-12";
 		$firstDate = $period ."-01";
-		$lastDate = getPeriodDate($period);
+		$lastDate = getPeriodDate($period) > " 23:59:59";
 
 
 		//bahan baku fin_item_type_id 1,2,3				
-		try{		
+		try{
+			
+			//Create Closing Batch
+			$dataH = [
+				"fst_period" => $period,
+				"fst_active"=>"A"
+			];
+			$insertId = $this->trclosingperiod_model->insert($dataH);
+			
+			$accIktisarRugiLaba =  getGLConfig("IKTISAR_RUGI_LABA");
+
+			//Process COGM fin_item_type_id 1,2,3	
+			//GET Persediaan Akhir
+			$ssql = "SELECT b.fin_item_type_id,c.fin_pcc_id,SUM(a.fdb_qty_balance_after * a.fdc_avg_cost) AS total_persediaan FROM trinventory a 
+			INNER JOIN msitems b ON a.fin_item_id = b.fin_item_id
+			INNER JOIN msgroupitems c ON b.fin_item_group_id = c.fin_item_group_id
+			WHERE  a.fin_rec_id IN (SELECT MAX(fin_rec_id) FROM trinventory WHERE fdt_trx_datetime <= ? GROUP BY fin_item_id)
+			AND b.fin_item_type_id in (1,2,3) 
+			GROUP BY b.fin_item_type_id,c.fin_pcc_id ";
+
+			$qr = $this->db->query($ssql,[$lastDate]);
+			$rs = $qr->result();
+
+			//Jurnal Persediaan Akhir (Bahan Baku)
+			//Persediaan pada iktisar rugi laba (Bahan Baku)
+			
+
+			$ttlIktisarRugiLaba = 0;			
+			foreach($rs as $rw){
+
+				$accPersediaan = "";
+				$info = "";
+
+				if ($rw->fin_item_type_id == 1){
+					$accPersediaan = getGLConfig("PERSEDIAAN_BAHAN_BAKU");
+					$info ="Persediaan Bahan Baku";
+				}else if ($rw->fin_item_type_id == 2){
+					$accPersediaan = getGLConfig("PERSEDIAAN_BARANG_SETENGAH_JADI");
+					$info ="Persediaan Barang Setengah Jadi";
+				}else if ($rw->fin_item_type_id == 3){
+					$accPersediaan = getGLConfig("PERSEDIAAN_BAHAN_PENDUKUNG");
+					$info ="Persediaan Bahan Pendukung";
+				}else{
+					throw new Customexception("Proses Persediaan Bahan Baku, Invalid item type id $rw->fin_item_type_id",3003,"FAILED",[]);					
+				}
+
+				$dataJurnal[] =[
+					"fin_branch_id"=>$this->aauth->get_active_branch_id(),
+					"fst_account_code"=>$accPersediaan,
+					"fdt_trx_datetime"=>date("Y-m-d H:i:s"),
+					"fst_trx_sourcecode"=>"MCLS", //Monthly Closing
+					"fin_trx_id"=>$insertId,
+					"fst_trx_no"=>$period,
+					"fst_reference"=>null,
+					"fdc_debit"=> $rw->total_persediaan,
+					"fdc_origin_debit"=> $rw->total_persediaan,
+					"fdc_credit"=> 0,
+					"fdc_origin_credit"=> 0,
+					"fst_orgi_curr_code"=>getDefaultCurrency()["CurrCode"],
+					"fdc_orgi_rate"=>1,
+					"fst_no_ref_bank"=>null,
+					"fin_pcc_id"=> ($rw->fin_pcc_id == "") ? NULL:$rw->fin_pcc_id, 
+					"fin_relation_id"=>null,
+					"fst_active"=>"A",
+					"fst_info"=>$info
+				];
+
+				$ttlIktisarRugiLaba += $rw->total_persediaan; 			
+			}
+
+			$dataJurnal[] =[
+				"fin_branch_id"=>$this->aauth->get_active_branch_id(),
+				"fst_account_code"=>$accPersediaan,
+				"fdt_trx_datetime"=>date("Y-m-d H:i:s"),
+				"fst_trx_sourcecode"=>"MCLS", //Monthly Closing
+				"fin_trx_id"=>$insertId,
+				"fst_trx_no"=>$period,
+				"fst_reference"=>null,
+				"fdc_debit"=> 0,
+				"fdc_origin_debit"=> 0,
+				"fdc_credit"=> $ttlIktisarRugiLaba,
+				"fdc_origin_credit"=> $ttlIktisarRugiLaba,
+				"fst_orgi_curr_code"=>getDefaultCurrency()["CurrCode"],
+				"fdc_orgi_rate"=>1,
+				"fst_no_ref_bank"=>null,
+				"fin_pcc_id"=> ($rw->fin_pcc_id == "") ? NULL:$rw->fin_pcc_id, 
+				"fin_relation_id"=>null,
+				"fst_active"=>"A",
+				"fst_info"=>$info
+			];
+			$this->glledger_model->createJurnal($dataJurnal);      
+
+
+
+
+
+
+
+
+
+
+
+
+
+			$ssql = "SELECT max(fin_rec_id),fin_item_id FROM trinventory a 
+				INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
+				INNER JOIN msgroupitems c on b.fin_item_group_id = c.fin_item_group_id"
+
+
+
+
+
+
+
+
+
+
+
+
 			$ssql = "SELECT * FROM msprofitcostcenter where fst_active= 'A'";
 			$qr = $this->db_>query($ssql,[]);
 			$rsPCC =$qr->result();
