@@ -37,18 +37,27 @@ class Purchase_request extends MY_Controller
 			['layout' => 2, 'label'=>'Close', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
 			['layout' => 2, 'label'=>'Close Date', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
 			['layout' => 2, 'label'=>'Close Info', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Department', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'No', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'No PR', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Tgl Request', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Memo', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Kode Barang', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Nama Barang', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Qty Request', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Qty PO', 'value'=>'8', 'selected'=>false,'sum_total'=>true],
-			['layout' => 3, 'label'=>'Qty Distribute', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Unit', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
-			['layout' => 3, 'label'=>'Tgl Target', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
+
+			['layout' => 3, 'label'=>'No', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'No PR', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Tgl Request', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Kode Barang', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Nama Barang', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Qty Request', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 3, 'label'=>'Qty PO', 'value'=>'6', 'selected'=>false,'sum_total'=>true],
+			['layout' => 3, 'label'=>'Unit', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+
+			['layout' => 4, 'label'=>'No', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'No PR', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Tgl Request', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Kode Barang', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Nama Barang', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Qty Request', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Qty PO', 'value'=>'6', 'selected'=>false,'sum_total'=>true],
+			['layout' => 4, 'label'=>'Qty Distribusi', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Unit', 'value'=>'8', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'No. Distribusi', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
+			['layout' => 4, 'label'=>'Tgl. Distribusi', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
 		];
 
 	}
@@ -147,6 +156,9 @@ class Purchase_request extends MY_Controller
 				break;
 			case "3":
 				$this->parser->parse('reports/purchase_request/layout3', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
+				break;
+			case "4":
+				$this->parser->parse('reports/purchase_request/layout4', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);
 				break;
 			default:
 				$this->parser->parse('reports/purchase_request/layout1', ["selectedCols"=>$selectedCols,"ttlCol"=>$totalColumn,"dataReport"=>$dataReport]);

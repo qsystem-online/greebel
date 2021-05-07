@@ -63,6 +63,7 @@
                     <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Purchase Request Detail")?></label>
                     <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan Purchase Request Ringkas")?></label>
                     <label class="radio"><input type="radio" id="rpt_layout3" class="rpt_layout" name="rpt_layout" value="3" onclick="handleRadioClick(this);"><?=lang("Laporan Purchase Request O/S PO")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout4" class="rpt_layout" name="rpt_layout" value="4" onclick="handleRadioClick(this);"><?=lang("Laporan Purchase Request Realisasi Distribusi")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">

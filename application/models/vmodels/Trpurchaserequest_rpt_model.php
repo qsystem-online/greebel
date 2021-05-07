@@ -18,7 +18,7 @@ class Trpurchaserequest_rpt_model extends CI_Model {
 
         $swhere = "";
         $sorderby = "";
-        if ($rptLayout == "1" || $rptLayout == "3"){
+        if ($rptLayout == "1" || $rptLayout == "3" || $rptLayout == "4"){
             if ($req_department_id > "0") {
                 $swhere .= " AND a.fin_req_department_id = " . $this->db->escape($req_department_id);
             }
@@ -86,6 +86,21 @@ class Trpurchaserequest_rpt_model extends CI_Model {
                 on a.fin_req_department_id = c.fin_department_id left join msitems d
                 on b.fin_item_id = d.fin_item_id 
                 WHERE (b.fdb_qty_req - b.fdb_qty_to_po) >0 $swhere ORDER BY c.fin_department_id";
+                break;
+            case "4":
+                $ssql = "SELECT a.fin_pr_id AS id_PR,a.fst_pr_no as No_PR, a.fdt_pr_datetime as PR_Date,a.fdt_publish_datetime as Publish_Date,a.fdt_use_datetime as Use_Date, a.fst_memo as PR_Memo,
+                a.fin_req_department_id, a.fbl_rejected,a.fst_rejected_note, c.fst_department_name as Request_By,
+                b.fin_rec_id as Rec_Id, b.fin_item_id as Item_Id, d.fst_item_code as Item_Code, d.fst_item_name as Item_Name,
+                IFNULL(b.fdb_qty_req,0) as Qty_Req, b.fst_unit as Unit, IFNULL(b.fdb_qty_process,0) as Qty_Process, IFNULL(b.fdb_qty_to_po,0) as Qty_Po, b.fdb_qty_distribute,
+                b.fbl_closed_distribute,b.fdt_etd,b.fst_memo as Detail_Memo,
+                e.fst_distributepr_no as No_Distribusi,e.fdt_distributepr_datetime as Distribusi_Date,IFNULL(e.fdb_qty_distribute,0) as Qty_Distribute 
+                FROM (SELECT * FROM trpurchaserequest WHERE fst_active !='D') a RIGHT JOIN trpurchaserequestitems b 
+                ON a.fin_pr_id = b.fin_pr_id LEFT JOIN departments c
+                ON a.fin_req_department_id = c.fin_department_id LEFT JOIN msitems d
+                ON b.fin_item_id = d.fin_item_id LEFT JOIN (SELECT a.fst_distributepr_no,a.fdt_distributepr_datetime,b.fin_pr_detail_id,b.fin_source_warehouse_id,b.fdb_qty_distribute 
+                FROM trdistributepr a LEFT JOIN trdistributepritems b ON a.fin_distributepr_id = b.fin_distributepr_id WHERE a.fst_active !='D') e
+                ON b.fin_rec_id = e.fin_pr_detail_id
+                $swhere ORDER BY c.fin_department_id";
                 break;
             default:
                 break;
