@@ -1,7 +1,8 @@
 <?php
 if(!defined('BASEPATH')) exit('No direct script access allowed');
 
-clASs Msrelations_model extends MY_Model {
+class Msrelations_model extends MY_Model 
+{
     public $tableName = "msrelations";
     public $pkey = "fin_relation_id";
 
