@@ -32,53 +32,51 @@
 		?>
 		<div>Department : <?= $name_department ?></div>
 		<div>Tgl Request: <?= $this->input->post("fdt_pr_datetime") ?>  s/d <?= $this->input->post("fdt_pr_datetime2") ?></div>                            
-		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1800px">      
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1200px">      
 			<thead>
 				<tr style="background-color:RoyalBlue;color:white">
 					<?php
-						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:200px'>Department</th>");
-						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:20px'>No</th>");
-						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:100px'>No PR</th>");
-						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:130px'>Tgl Request</th>");
-						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:300px'>Memo</th>");
-						echoIfColSelected(5,$selectedCols,"<th class='col-5' style='width:100px'>Kode Barang</th>");
-						echoIfColSelected(6,$selectedCols,"<th class='col-6' style='width:400px'>Nama Barang</th>");
-						echoIfColSelected(7,$selectedCols,"<th class='col-7' style='width:50px'>Qty Request</th>");
-						echoIfColSelected(8,$selectedCols,"<th class='col-8' style='width:50px'>Qty PO</th>");
-						echoIfColSelected(9,$selectedCols,"<th class='col-9' style='width:50px'>Qty Distribute</th>");
-						echoIfColSelected(10,$selectedCols,"<th class='col-10' style='width:50px'>Unit</th>");
-						echoIfColSelected(11,$selectedCols,"<th class='col-11' style='width:100px'>Tgl Distribusi</th>");
+						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:20px'>No.</th>");
+						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:100px'>No. PR</th>");
+						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:100px'>Tgl. Request</th>");
+						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:100px'>Kode Barang</th>");
+						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:300px'>Nama Barang</th>");
+						echoIfColSelected(5,$selectedCols,"<th class='col-5' style='width:50px'>Qty Request</th>");
+						echoIfColSelected(6,$selectedCols,"<th class='col-6' style='width:50px'>Qty PO</th>");
+						echoIfColSelected(7,$selectedCols,"<th class='col-7' style='width:50px'>Unit</th>");
 					?>
 				</tr>
 			</thead>
 			<tbody>
                 <?php
 					$id_Department = "";
+					$id_PR = "";
+					$nou = 0;
 					foreach ($dataReport as $row){
 						echo "<tr>";
 						if ( $id_Department != $row->fin_req_department_id ){
                             if ($id_Department != "") {
                                     echo "<tr>";
-                                    echo "<td colspan='".totalSelectedCol(12,$selectedCols)."'style='text-align: right'>.</td>";
-                                    echoIfColSelected(12,$selectedCols,"<td class='col-12' style='font-weight: bold;text-align: right'></td>");						
+                                    echo "<td colspan='".totalSelectedCol(8,$selectedCols)."'style='text-align: right'>.</td>";
+                                    echoIfColSelected(8,$selectedCols,"<td class='col-8' style='font-weight: bold;text-align: right'></td>");						
                                     echo "</tr>";
 							}
                             $id_Department = $row->fin_req_department_id;
-                            echoIfColSelected(0,$selectedCols,"<td class='col-0'>$row->Request_By</td>");	   
-						}else{
-                            echoIfColSelected(0,$selectedCols,"<td class='col-0'></td>");
+                            //echoIfColSelected(0,$selectedCols,"<td class='col-0'>$row->Request_By</td>");
+                            echo "<tr>";
+							echo "<td colspan='".totalSelectedCol(8,$selectedCols)."'style='text-align: left;font-weight: bold'>$row->Request_By</td>";
+							echo "</tr>";
+							$nou = 0;
                         }
-						echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->Item_Code</td>");
-						echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->No_PR</td>");
-						echoIfColSelected(3,$selectedCols,"<td class='col-3'>$row->PR_Date</td>");
-                        echoIfColSelected(4,$selectedCols,"<td class='col-4'>$row->PR_Memo</td>");
-                        echoIfColSelected(5,$selectedCols,"<td class='col-5'>$row->Item_Code</td>");
-						echoIfColSelected(6,$selectedCols,"<td class='col-6'>$row->Item_Name</td>");
-                        echoIfColSelected(7,$selectedCols,"<td class='col-7'>$row->Qty_Req</td>");
-                        echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->Qty_Po</td>");
-						echoIfColSelected(9,$selectedCols,"<td class='col-9'>$row->Qty_Distribute</td>");
-                        echoIfColSelected(10,$selectedCols,"<td class='col-10'>$row->Unit</td>");
-                        echoIfColSelected(11,$selectedCols,"<td class='col-11'>$row->fdt_distribute_datetime</td>");		
+						$nou++;
+						echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");
+						echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->No_PR</td>");
+						echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->PR_Date</td>");
+                        echoIfColSelected(3,$selectedCols,"<td class='col-3'>$row->Item_Code</td>");
+						echoIfColSelected(4,$selectedCols,"<td class='col-4'>$row->Item_Name</td>");
+                        echoIfColSelected(5,$selectedCols,"<td class='col-5' style='text-align: right'>$row->Qty_Req</td>");
+                        echoIfColSelected(6,$selectedCols,"<td class='col-6' style='text-align: right'>$row->Qty_Po</td>");
+                        echoIfColSelected(7,$selectedCols,"<td class='col-7'>$row->Unit</td>");	
                         echo "</tr>";
 					}
 				?>

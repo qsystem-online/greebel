@@ -23,6 +23,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
         border-bottom-color: #3c8dbc;
         border-bottom-style: fixed;
     }
+    .form-group{
+		margin-bottom: 5px;
+	}
+	.checkbox label, .radio label {
+		font-weight:700;
+	}
 </style>
 
 <section class="content-header">
@@ -88,12 +94,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
                         </div>
                         <div class='form-group'>
-                            <label for="fdc_cashback" class="col-md-2 control-label"><?= lang("/CashBack") ?></label>
+                            <label for="fdc_cashback" class="col-md-2 control-label"><?= lang("CashBack") ?></label>
                             <div class="col-md-2">
                                 <input type="text" class="form-control money" id="fdc_cashback" placeholder="<?= lang("0") ?>" name="fdc_cashback">
                                 <div id="fdc_cashback_err" class="text-danger"></div>
                             </div>
-                            <label for="fst_other_prize" class="col-md-2 control-label"><?= lang("/Other Item") ?></label>
+                            <label for="fst_other_prize" class="col-md-2 control-label"><?= lang("Other Item") ?></label>
                             <div class="col-md-3">
                                 <input type="text" class="form-control" id="fst_other_prize" placeholder="<?= lang("Other Item") ?>" name="fst_other_prize">
                                 <div id="fst_other_prize_err" class="text-danger"></div>
@@ -145,13 +151,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
                         </div>
                         <div class='form-group'>
-                            <div class="col-md-2 col-md-offset-2">
-								<label class="checkbox-inline"><input id="fbl_promo_gabungan" name='fbl_promo_gabungan' type="checkbox" value="1"><?=lang("Allow Other Promo")?></label>
+                            <div class="checkbox col-sm-2 col-md-offset-2">
+								<label><input id="fbl_promo_gabungan" name='fbl_promo_gabungan' type="checkbox" value="1"><?=lang("Allow Other Promo")?></label>
 							</div>
-                            <div class="col-md-2 col-md-offset-1">
+                            <div class="checkbox col-sm-2 col-md-offset-1">
 								<label class="checkbox-inline"><input id="fbl_is_multiples_prize" name='fbl_is_multiples_prize' type="checkbox" value="1"><?=lang("Multiple Prize")?></label>
 							</div>
-                            <div class="col-md-2 col-md-offset-1">
+                            <div class="checkbox col-sm-2 col-md-offset-1">
                                 <label class="checkbox-inline"><input id="fbl_disc_per_item" name='fbl_disc_per_item' type="checkbox" value="1"><?=lang("Disk Per Item")?></label>
                             </div>
                         </div>
@@ -177,19 +183,25 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <select class="select2 form-control" id="fst_unit_gabungan" name="fst_unit_gabungan"></select>
                                 <div id="fst_unit_gabungan_err" class="text-danger"></div>
                             </div>
-                            <div class="col-md-3">
+                            <!--<div class="col-md-4">
                                 <div>
                                     <input type="checkbox" class="minimal form-control icheck" id="fbl_qty_gabungan" name="fbl_qty_gabungan"> &nbsp;
-                                    <label for="fbl_qty_gabungan" class=""> <?= lang("combined qty of item terms")?> </label>
+                                    <label for="fbl_qty_gabungan" class=""> <= lang("combined qty of item terms")?> </label>
                                 </div>
+                            </div>-->
+                            <div class="checkbox col-sm-2">
+                                <label class="checkbox-inline"><input id="fbl_qty_gabungan" name='fbl_qty_gabungan' type="checkbox" value="1"><?=lang("(Mix item terms)")?></label>
                             </div>				
                         </div>
                         <!-- end box body -->
                         <div class="nav-tabs-custom" style="display:unset">
                             <ul class="nav nav-tabs">
                                 <li class="active"><a href="#promo_item_details" data-toggle="tab" aria-expanded="true"><?= lang("Promo Terms") ?></a></li>
-                                <li class="promo_customer_details" id="tab-doc"><a href="#promo_customer_details" data-toggle="tab" aria-expanded="false"><?= lang("Promo Participants") ?></a></li>
-                                <li class="promo_discount_details" id="tab-doc"><a href="#promo_discount_details" data-toggle="tab" aria-expanded="false"><?= lang("Discount Items") ?></a></li>
+                                <li class="promo_customer_details" id="tab-doc"><a href="#promo_customer_details" data-toggle="tab" aria-expanded="false"><?= lang("Participants") ?></a></li>
+                                <!--<li class="promo_discount_details" id="tab-doc"><a href="#promo_discount_details" data-toggle="tab" aria-expanded="false"><= lang("Discount Items") ?></a></li>-->
+                                <li class="promo_customer_areas" id="tab-doc"><a href="#promo_customer_areas" data-toggle="tab" aria-expanded="false"><?= lang("Participants By Area") ?></a></li>
+                                <li class="promo_customer_restric" id="tab-doc"><a href="#promo_customer_restric" data-toggle="tab" aria-expanded="false"><?= lang("Exclude Participants") ?></a></li>
+                                <li class="free_item_details" id="tab-doc"><a href="#free_item_details" data-toggle="tab" aria-expanded="false"><?= lang("Free Items") ?></a></li>
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="promo_item_details">
@@ -209,10 +221,28 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                         <table id="tbl_customer_promo" class="table table-bordered table-hover" style="width:100%;"></table>
                                     </div>
                                 </div>
-                                <div class="tab-pane" id="promo_discount_details">
+                                <!--<div class="tab-pane" id="promo_discount_details">
                                     <button id="btn-add-discount-promo" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Disc Item") ?></button>
                                     <div>
                                         <table id="tbl_discount_promo" class="table table-bordered table-hover" style="width:100%;"></table>
+                                    </div>
+                                </div>-->
+                                <div class="tab-pane" id="promo_customer_areas">
+                                    <button id="btn-add-customer-area" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Area") ?></button>
+                                    <div>
+                                        <table id="tbl_customer_area" class="table table-bordered table-hover" style="width:100%;"></table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="promo_customer_restric">
+                                    <button id="btn-add-customer-restric" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Exclude Customer") ?></button>
+                                    <div>
+                                        <table id="tbl_customer_restric" class="table table-bordered table-hover" style="width:100%;"></table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="free_item_details">
+                                    <button id="btn-add-free-item" class="btn btn-primary btn-sm pull-right edit-mode" style="margin-bottom:20px"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;<?= lang("Add Free Item") ?></button>
+                                    <div>
+                                        <table id="tbl_free_items" class="table table-bordered table-hover" style="width:100%;"></table>
                                     </div>
                                 </div>
                             </div>
@@ -609,7 +639,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                             <select class="form-control" id="fst_participant_type" name="fst_participant_type">
                                                 <option value="0">-- <?=lang("select")?> --</option>
                                                 <option value="RELATION"><?= lang("RELATION") ?></option>
-                                                <option value="MEMBER GROUP"><?= lang("MEMBER GROUP") ?></option>
+                                                <!--<option value="MEMBER GROUP"><?= lang("MEMBER GROUP") ?></option>-->
                                                 <option value="RELATION GROUP"><?= lang("RELATION GROUP") ?></option>
                                             </select>
                                         </div>
@@ -702,8 +732,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     select_relation();
                 }else if (type =="RELATION GROUP"){
                     select_relationgroup();
-                }else {
-                    select_membergroup();
+                /*}else {
+                    select_membergroup();*/
                 }
             });
             function select_relation(){
@@ -1023,6 +1053,637 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </script>
 </div>
 
+<!--- // PARTISIPAN BY AREA CUSTOMER \\ ---------------------------------------------------------------------------------------------------------------->
+
+<div id="mdlAreaPromo" class="modal fade in" role="dialog" style="display: none">
+    <div class="modal-dialog" style="display:table;width:40%;min-width:400px;max-width:100%">
+        <!-- Modal content-->
+        <div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title"><?= lang("Add Participants By Customer Area") ?></h4>
+            </div>
+
+			<div class="modal-body">
+				<div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+								<form  class="form-horizontal">
+
+                                    <div class="form-group">
+                                        <label for="select-country" class="col-md-3 control-label"><?=lang("Country")?></label>
+                                        <div class="col-md-9">
+                                            <select id="select-country" class="form-control" name="fin_country_id">
+                                                <option value="0">-- <?=lang("select")?> --</option>
+                                            </select>
+                                            <div id="fst_country_name_err" class="text-danger"></div>
+                                        </div>
+                                    </div>
+								
+									<div class="form-group">
+										<label for="provincePromo" class="col-md-3 control-label"><?=lang("Province")?></label>
+										<div class="col-md-9">
+											<select id="provincePromo" class="form-control" name="fst_kode">
+												<option value="0">-- <?=lang("select")?> --</option>
+											</select>
+											<div id="fst_nama_err" class="text-danger"></div>
+										</div>
+                                    </div>
+                                    <div class="form-group">
+										<label for="districtPromo" class="col-md-3 control-label"><?=lang("District")?></label>
+										<div class="col-md-9">
+											<select id="districtPromo" class="form-control" name="fst_kode">
+												<option value="0">-- <?=lang("select")?> --</option>
+											</select>
+											<div id="fst_nama_err" class="text-danger"></div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="subdistrictPromo" class="col-md-3 control-label"><?=lang("Sub District")?></label>
+										<div class="col-md-9">
+											<select id="subdistrictPromo" class="form-control" name="fst_kode">
+												<option value="0">-- <?=lang("select")?> --</option>
+											</select>
+											<div id="fst_nama_err" class="text-danger"></div>
+										</div>
+                                    </div>
+                                    <div class="form-group">
+										<label for="villagePromo" class="col-md-3 control-label"><?=lang("Village")?></label>
+										<div class="col-md-9">
+											<select id="villagePromo" class="form-control" name="fst_kode">
+												<option value="0">-- <?=lang("select")?> --</option>
+											</select>
+											<div id="fst_nama_err" class="text-danger"></div>
+										</div>
+									</div>
+								</form>
+
+								<div class="modal-footer" style="width:100%;padding:10px" class="text-center">
+									<button id="btn-add-areaPromo" type="button" class="btn btn-primary btn-sm text-center" style="width:10%" ><?=lang("Add")?></button>
+									<button type="button" class="btn btn-default btn-sm text-center" style="width:10%" data-dismiss="modal"><?=lang("Close")?></button>
+								</div>
+							</fieldset>
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
+    </div>
+	<script type="text/javascript">
+		var action = '<a class="btn-edit" href="#" data-toggle="" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp; <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+		$(function() {
+
+			$("#btn-add-customer-area").click(function(event) {
+				event.preventDefault();
+				$("#mdlAreaPromo").modal('show');
+			});
+
+			$("#tbl_customer_area").DataTable({
+				searching: false,
+				paging: false,
+				info:false,
+				columns:[
+					{"title": "<?=lang("Rec ID")?>","width": "15%",data: "fin_rec_id",visible: false},
+					{"title": "<?=lang("Promo ID")?>","width": "10%",data: "fin_promo_id",visible: false},
+					{"title": "<?=lang("Area Code")?>","width": "5%",data: "fst_kode",visible: true},
+					{"title": "<?=lang("Area Name")?>","width": "15%",data: "fst_nama",visible: true},
+					{"title": "<?= lang("Action")?>","width": "10%",render: function(data, type, row) {
+                            action = "<a class='btn-delete-area-promo edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+                            return action;
+                        },
+						"sortable":false,"className":"dt-body-center text-center"}
+				],
+			});
+
+			$("#tbl_customer_area").on("click", ".btn-delete-area-promo", function(event) {
+				event.preventDefault();
+				t = $('#tbl_customer_area').DataTable();
+				var trRow = $(this).parents('tr');
+				t.row(trRow).remove().draw();
+			});
+
+            $("#select-country").select2({
+                width: '100%',
+                ajax: {
+                    url: '<?=site_url()?>pr/relation/get_countries',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function (data){
+                        items = [];
+                        data = data.data;
+                        $.each(data,function(index,value){
+                            items.push({
+                                "id" : value.fin_country_id,
+                                "text" : value.fst_country_name
+                            });
+                        });
+                        console.log(items);
+                        return {
+                            results: items
+                        };
+                    },
+                    cache: true,
+                }
+            });
+
+			$("#select-country").change(function(event){
+				event.preventDefault();
+				$('#provincePromo').val(null).trigger('change');
+				$("#provincePromo").select2({
+					width: '100%',
+					ajax: {
+						url: '<?=site_url()?>pr/relation/get_dataProvince/'+ $("#select-country").val(),
+						dataType: 'json',
+						delay: 250,
+						processResults: function (data){
+							data2 = [];
+							data = data.data;
+							$.each(data,function(index,value){
+								data2.push({
+									"id" : value.fst_kode,
+									"text" : value.fst_nama
+								});
+							});
+							console.log(data2);
+							return {
+								results: data2
+							};
+						},
+						cache: true,
+					}
+				});
+			});
+
+			$("#provincePromo").change(function(event){
+				event.preventDefault();
+				$('#districtPromo').val(null).trigger('change');
+				$("#districtPromo").select2({
+					width: '100%',
+					ajax: {
+						url: '<?=site_url()?>pr/relation/get_district/'+ $("#provincePromo").val(),
+						dataType: 'json',
+						delay: 250,
+						processResults: function (data){
+							data2 = [];
+							data = data.data;
+							$.each(data,function(index,value){
+								data2.push({
+									"id" : value.fst_kode,
+									"text" : value.fst_nama
+								});
+							});
+							console.log(data2);
+							return {
+								results: data2
+							};
+						},
+						cache: true,
+					}
+				});
+			});
+
+			$("#districtPromo").change(function(event){
+				event.preventDefault();
+				$('#subdistrictPromo').val(null).trigger('change');
+				$("#subdistrictPromo").select2({
+					width: '100%',
+					ajax: {
+						url: '<?=site_url()?>pr/relation/get_subdistrict/'+ $("#districtPromo").val(),
+						dataType: 'json',
+						delay: 250,
+						processResults: function (data){
+							data2 = [];
+							data = data.data;
+							$.each(data,function(index,value){
+								data2.push({
+									"id" : value.fst_kode,
+									"text" : value.fst_nama
+								});
+							});
+							console.log(data2);
+							return {
+								results: data2
+							};
+						},
+						cache: true,
+					}
+				});
+			});
+
+			$("#subdistrictPromo").change(function(event){
+				event.preventDefault();
+				$('#villagePromo').val(null).trigger('change');
+				$("#villagePromo").select2({
+					width: '100%',
+					ajax: {
+						url: '<?=site_url()?>pr/relation/get_village/'+ $("#subdistrictPromo").val(),
+						dataType: 'json',
+						delay: 250,
+						processResults: function (data){
+							data2 = [];
+							data = data.data;
+							$.each(data,function(index,value){
+								data2.push({
+									"id" : value.fst_kode,
+									"text" : value.fst_nama
+								});
+							});
+							console.log(data2);
+							return {
+								results: data2
+							};
+						},
+						cache: true,
+					}
+				});
+			});
+
+			var selected_areaCode;
+			$('#provincePromo').on('select2:select', function(e) {
+				console.log(selected_areaCode);
+				var data = e.params.data;
+				selected_areaCode = data;
+			})
+
+			$('#districtPromo').on('select2:select', function(e) {
+				console.log(selected_areaCode);
+				var data = e.params.data;
+				selected_areaCode = data;
+			})
+
+			$('#subdistrictPromo').on('select2:select', function(e) {
+				console.log(selected_areaCode);
+				var data = e.params.data;
+				selected_areaCode = data;
+			})
+
+			$('#villagePromo').on('select2:select', function(e) {
+				console.log(selected_areaCode);
+				var data = e.params.data;
+				selected_areaCode = data;
+			})
+
+			$("#btn-add-areaPromo").click(function(event) {
+				event.preventDefault();
+				t = $('#tbl_customer_area').DataTable();
+				t.row.add({
+					fin_rec_id: 0,
+					fin_promo_id: 0,
+					//fst_area_code: selected_areaCode.id,
+					fst_kode: selected_areaCode.id,
+					fst_nama: selected_areaCode.text,
+					action:action
+				}).draw(false);
+			});
+		});	
+	</script>
+</div>
+
+<!--- // EXCLUDE PARTISIPAN CUSTOMER \\ ---------------------------------------------------------------------------------------------------------------->
+<div id="mdlCustomerRestric" class="modal fade in" role="dialog" style="display: none">
+    <div class="modal-dialog" style="display:table;width:40%;min-width:400px;max-width:100%">
+        <!-- Modal content-->
+        <div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title"><?= lang("Add Exclude Participants") ?></h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+                                <form class="form-horizontal ">
+                                    <div class="form-group">
+                                        <label for="fin_customer_id_restric" class="col-md-3 control-label"><?= lang("Customer") ?></label>
+                                        <div class="col-md-9">
+                                            <select class="select2 form-control" id="fin_customer_id_restric" style="width:100%"></select>
+                                            <span id="fin_customer_id_restric_err" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </form>
+                    
+                                <div class="modal-footer">
+                                    <button id="btn-add-participants-restric" type="button" class="btn btn-primary btn-sm text-center" style="width:15%">Add</button>
+                                    <button type="button" class="btn btn-default btn-sm text-center" data-dismiss="modal" style="width:15%">Close</button>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var action = '<a class="btn-edit" href="#" data-toggle="" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp; <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+        $(function() {
+            $("#btn-add-customer-restric").click(function(event) {
+                event.preventDefault();
+                $("#mdlCustomerRestric").modal('show');
+            });
+            $("#tbl_customer_restric").DataTable({
+                searching: false,
+                paging: false,
+                info: false,
+                columns: [{
+                        "title": "<?= lang("ID ") ?>",
+                        "width": "5%",
+                        data: "fin_rec_id",
+                        visible: false,
+                    },
+                    {
+                        "title": "<?= lang("Promo ID ") ?>",
+                        "width": "5%",
+                        data: "fin_promo_id",
+                        visible: false,
+                    },
+                    {
+                        "title": "<?= lang("Participant ID") ?>",
+                        "width": "5%",
+                        data: "fin_customer_id",
+                        visible: false,
+                    },
+                    {
+                        "title": "<?= lang("Exclude Participant Name ") ?>",
+                        "width": "40%",
+                        data: "customer_name",
+                        visible: true,
+                    },
+                    {
+                        "title": "<?= lang("Action ") ?>",
+                        "width": "5%",
+                        render: function(data, type, row) {
+                            action = "<a class='btn-delete-customer-restric edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+                            return action;
+                        },
+                        "sortable": false,
+                        "className": "dt-body-center text-center"
+                    }
+                ],
+            });
+            $("#tbl_customer_restric").on("click", ".btn-delete-customer-restric", function(event) {
+                event.preventDefault();
+                t = $("#tbl_customer_restric").DataTable();
+                var trRow = $(this).parents('tr');
+                t.row(trRow).remove().draw();
+            });
+
+            $("#fin_customer_id_restric").select2({
+                width: '100%',
+                ajax: {
+                    url: '<?= site_url() ?>master/promotion/get_relationpromo',
+                    dataType: 'json',
+                    delay: 250,
+                    processResults: function(data) {
+                        data2 = [];
+                        $.each(data, function(index, value) {
+                            data2.push({
+                                "id": value.fin_relation_id,
+                                "text": value.fst_relation_name
+                            });
+                        });
+                        console.log(data2);
+                        return {
+                            results: data2
+                        };
+                    },
+                    cache: true,
+                }
+            });
+            
+            var selected_participants_restric;
+            $('#fin_customer_id_restric').on('select2:select', function(e) {
+                console.log(selected_participants_restric);
+                var data = e.params.data;
+                selected_participants_restric = data;
+            });
+            $("#btn-add-participants-restric").click(function(event) {
+                event.preventDefault();
+                t = $('#tbl_customer_restric').DataTable();
+                addRow = true;
+                t.row.add({
+                    fin_rec_id: 0,
+                    fin_promo_id: 0,
+                    fin_customer_id: selected_participants_restric.id,
+                    customer_name: selected_participants_restric.text,
+                    action: action
+                }).draw(false);
+            });
+        });
+    </script>
+</div>
+
+<!--- // PRIZE / FREE ITEMS \\ ---------------------------------------------------------------------------------------------------------------->
+<div id="mdlFreeItems" class="modal fade in" role="dialog" style="display: none">
+    <div class="modal-dialog" style="display:table;width:40%;min-width:400px;max-width:100%">
+        <!-- Modal content-->
+        <div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title"><?= lang("Add Free Item") ?></h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" >
+                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
+                            <fieldset style="padding:10px">
+
+                                <form class="form-horizontal ">
+                                    <div class="form-group">
+                                        <label for="free_item_id" class="col-md-3 control-label"><?= lang("Free Item") ?></label>
+                                        <div class="col-md-9">
+                                            <select class="select2 form-control" id="free_item_id" style="width:100%"></select>
+                                            <span id="free_item_id_err" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fst_unit_free" class="col-md-3 control-label"><?= lang("Unit") ?></label>
+                                        <div class="col-md-9">
+                                            <select id="fst_unit_free" class="form-control" name="fst_unit_free" style="width:100%"></select>
+                                            <span id="fst_unit_free_err" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="fdb_qty_free" class="col-md-3 control-label"><?=lang("Qty")?></label>
+                                        <div class="col-md-9">
+                                            <input type="number" class="form-control text-right numeric" id="fdb_qty_free" value="0">
+                                            <div id="fdb_qty_free_err" class="text-danger"></div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <div class="modal-footer" style="width:100%;padding:10px" class="text-center">
+                                    <button id="btn-add-itemFree" type="button" class="btn btn-primary btn-sm text-center" style="width:15%" ><?=lang("Add")?></button>
+                                    <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var action = '<a class="btn-edit" href="#" data-toggle="" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp; <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+        $(function() {
+            $("#btn-add-free-item").click(function(event) {
+                event.preventDefault();
+				$("#mdlFreeItems").modal('show');
+            });
+            $("#tbl_free_items").DataTable({
+                searching: false,
+                paging: false,
+                info: false,
+                columns: [{
+                        "title": "<?= lang("ID ") ?>",
+                        "width": "5%",
+                        data: "fin_rec_id",
+                        visible: false
+                    },
+                    {
+                        "title": "<?= lang("Item ID ") ?>",
+                        "width": "10%",
+                        data: "fin_item_id",
+                        visible: false,
+                    },
+                    {
+                        "title": "<?= lang("Free Item ") ?>",
+                        "width": "25%",
+                        data: "fst_item_name",
+                        visible: true,
+                    },
+                    {
+                        "title": "<?= lang("Unit ") ?>",
+                        "width": "5%",
+                        data: "fst_unit",
+                        visible: true,
+                    },
+                    {
+                        "title": "<?= lang("Qty ") ?>",
+                        "width": "5%",
+                        data: "fdb_qty_free",
+                        visible: true,
+                    },
+                    {
+                        "title": "<?= lang("Action ") ?>",
+                        "width": "5%",
+                        render: function(data, type, row) {
+                            action = "<a class='btn-delete-free-item edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
+                            return action;
+                        },
+                        "sortable": false,
+                        "className": "dt-body-center text-center"
+                    }
+                ],
+            });
+            $("#tbl_free_items").on("click", ".btn-delete-free-item", function(event) {
+                event.preventDefault();
+                t = $("#tbl_free_items").DataTable();
+                var trRow = $(this).parents('tr');
+                t.row(trRow).remove().draw();
+            });
+			
+			$("#free_item_id").select2({
+				width: '100%',
+				ajax: {
+					url: '<?= site_url() ?>master/promotion/get_data_ItemPromo',
+					dataType: 'json',
+					delay: 250,
+					processResults: function(data) {
+						data2 = [];
+						$.each(data, function(index, value) {
+							data2.push({
+								"id": value.fin_item_id,
+								"text": value.fst_item_name
+							});
+						});
+						console.log(data2);
+						return {
+							results: data2
+						};
+					},
+					cache: true,
+				}
+			});
+
+            $("#free_item_id").change(function(event) {
+                event.preventDefault();
+                $('#fst_unit_free').val(null).trigger('change');
+				
+				$("#fst_unit_free").select2({
+					width: '100%',
+					ajax: {
+						url: '<?= site_url() ?>master/promotion/get_data_unit',
+						dataType: 'json',
+						delay: 250,
+						processResults: function(data) {
+							data2 = [];
+							$.each(data, function(index, value) {
+								data2.push({
+									"id": value.fst_unit,
+									"text": value.fst_unit
+								});
+							});
+							console.log(data2);
+							return {
+								results: data2
+							};
+						},
+						cache: true,
+					}
+				});
+            });
+            $('#free_item_id').on('select2:select', function(e) {
+                selected_freeitem = $('#free_item_id').select2('data')[0];
+                console.log(selected_freeitem);
+            });
+            $('#fst_unit_free').on('select2:select', function(e) {
+                selected_unitFree = $('#fst_unit_free').select2('data')[0];
+                console.log(selected_unitFree);
+            });
+			
+            $("#btn-add-itemFree").click(function(event) {
+                event.preventDefault();
+                t = $('#tbl_free_items').DataTable();
+                addRow = true;
+                var freeItem = $("#free_item_id").val();
+                if (freeItem == null || freeItem == "") {
+                    $("#free_item_id_err").html("Please select item");
+                    $("#free_item_id_err").show();
+                    addRow = false;
+                    return;
+                } else {
+                    $("#free_item_id_err").hide();
+                }
+                var unitFree = $("#fst_unit_free").val();              
+                if (unitFree == null || unitFree == "") {
+                    $("#fst_unit_free_err").html("Please select unit");
+                    $("#fst_unit_free_err").show();
+                    addRow = false;
+                    return;
+                } else {
+                    $("#fst_unit_free_err").hide();
+                }
+
+                t.row.add({
+                    fin_rec_id: 0,
+                    fin_promo_id: 0,
+                    fin_item_id: selected_freeitem.id,
+                    fst_item_name: selected_freeitem.text,
+                    fst_unit: selected_unitFree.text,
+                    fdb_qty_free: $("#fdb_qty_free").val(),
+                    action: action
+                }).draw(false);
+            });
+        });
+    </script>
+</div>
+
 <script type="text/javascript">
     $(function() {
         branchList = [];
@@ -1061,6 +1722,28 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 name: "detailParticipants",
                 value: JSON.stringify(detailParticipants)
             });
+            // save Participants By Area Customer
+            participantsByArea = new Array();
+            b = $('#tbl_customer_area').DataTable();
+            datas = b.data();
+            $.each(datas, function(i, v) {
+                participantsByArea.push(v);
+            });
+            data.push({
+                name: "participantsByArea",
+                value: JSON.stringify(participantsByArea)
+            });
+            // save Participants customer restric / exclude
+            detailParticipantsRestric = new Array();
+            b = $('#tbl_customer_restric').DataTable();
+            datas = b.data();
+            $.each(datas, function(i, v) {
+                detailParticipantsRestric.push(v);
+            });
+            data.push({
+                name: "detailParticipantsRestric",
+                value: JSON.stringify(detailParticipantsRestric)
+            });
             // save Discount per item promo
             detaildiscItem = new Array();
             b = $('#tbl_discount_promo').DataTable();
@@ -1071,6 +1754,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
             data.push({
                 name: "detaildiscItem",
                 value: JSON.stringify(detaildiscItem)
+            });
+            // save Free Items
+            detailfreeItem = new Array();
+            t = $('#tbl_free_items').DataTable();
+            datas = t.data();
+            $.each(datas, function(i, v) {
+                detailfreeItem.push(v);
+            });
+            data.push({
+                name: "detailfreeItem",
+                value: JSON.stringify(detailfreeItem)
             });
             mode = $("#frm-mode").val();
             if (mode == "ADD") {
@@ -1308,6 +2002,53 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         fst_participant_type: val.fst_participant_type,
                         fin_customer_id: val.fin_customer_id,
                         customer_name: val.ParticipantName,
+                        action: action
+                    }).draw(false);
+                })
+
+                //populate Promo Participants By Area
+                $.each(resp.promoparticipantsarea, function(name, val) {
+                    console.log(val);
+                    //event.preventDefault();
+                    t = $('#tbl_customer_area').DataTable();
+                    t.row.add({
+                        fin_rec_id: val.fin_rec_id,
+                        fin_promo_id: val.fin_promo_id,
+                        fst_kode: val.fst_kode_area,
+						fst_nama: val.fst_province_name,
+						fst_nama: val.fst_district_name,
+						fst_nama: val.fst_subdistrict_name,
+						fst_nama: val.fst_village_name,
+                        action: action
+                    }).draw(false);
+                })
+
+                //populate Promo Participants Restric/Exclude
+                $.each(resp.promoParticipantsRestric, function(name, val) {
+                    console.log(val);
+                    //event.preventDefault();
+                    t = $('#tbl_customer_restric').DataTable();
+                    t.row.add({
+                        fin_rec_id: val.fin_rec_id,
+                        fin_promo_id: val.fin_promo_id,
+                        fin_customer_id: val.fin_customer_id,
+                        customer_name: val.ParticipantRestric_Name,
+                        action: action
+                    }).draw(false);
+                })
+
+                //populate prize free items
+                $.each(resp.freeItems, function(name, val) {
+                    console.log(val);
+                    //event.preventDefault();
+                    t = $('#tbl_free_items').DataTable();
+                    t.row.add({
+                        fin_rec_id: val.fin_rec_id,
+                        fin_promo_id: val.fin_promo_id,
+                        fin_item_id: val.fin_item_id,
+                        fst_item_name: val.FreeItem,
+                        fdb_qty_free: val.fdb_qty,
+                        fst_unit: val.fst_unit,
                         action: action
                     }).draw(false);
                 })

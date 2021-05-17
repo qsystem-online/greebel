@@ -195,9 +195,81 @@ class Promotion extends MY_Controller
             $data = [
                 "fin_promo_id" => $insertId,
                 "fst_participant_type" => $promoparticipants->fst_participant_type,
-                "fin_customer_id" => $promoparticipants->fin_customer_id
+                "fin_customer_id" => $promoparticipants->fin_customer_id,
+                "fst_active" => 'A'
             ];
             $this->mspromoitemscustomer_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
+
+        //Save Promo Participants By Area Customer
+
+        $this->load->model("mspromoareas_model");
+        $details = $this->input->post("participantsByArea");
+        $details = json_decode($details);
+        foreach ($details as $promoparticipantsarea) {
+            $data = [
+                "fin_promo_id" => $insertId,
+                "fst_kode_area" => $promoparticipantsarea->fst_kode,
+                "fst_active" => 'A'
+            ];
+            $this->mspromoareas_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
+
+        //Save Promo Participants exclude/restric
+
+        $this->load->model("mspromocustomerrestric_model");
+        $details = $this->input->post("detailParticipantsRestric");
+        $details = json_decode($details);
+        foreach ($details as $promoparticipantsrestric) {
+            $data = [
+                "fin_promo_id" => $insertId,
+                "fin_customer_id" => $promoparticipantsrestric->fin_customer_id,
+                "fst_active" => 'A'
+            ];
+            $this->mspromocustomerrestric_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
+
+        //Save Prize/Free Items
+        $this->load->model("mspromoprizes_model");
+        $details = $this->input->post("detailfreeItem");
+        $details = json_decode($details);
+        foreach ($details as $freeitem) {
+            $data = [
+                "fin_promo_id" => $insertId,
+                "fin_item_id" => $freeitem->fin_item_id,
+                "fdb_qty" => $freeitem->fdb_qty_free,
+                "fst_unit" => $freeitem->fst_unit,
+                "fst_active" => 'A'
+            ];
+
+            $this->mspromoprizes_model->insert($data);
             $dbError  = $this->db->error();
             if ($dbError["code"] != 0) {
                 $this->ajxResp["status"] = "DB_FAILED";
@@ -312,7 +384,7 @@ class Promotion extends MY_Controller
             return;
         }
 
-        //Save Promo Terms
+        //Edit Save Promo Terms
 
         $this->load->model("mspromoitems_model");
         $this->mspromoitems_model->deleteByHeaderId($fin_promo_id);
@@ -340,7 +412,7 @@ class Promotion extends MY_Controller
             }
         }
 
-        //Save Promo Participants
+        //Edit Save Promo Participants
 
         $this->load->model("mspromoitemscustomer_model");
         $this->mspromoitemscustomer_model->deleteByHeaderId($fin_promo_id);
@@ -354,6 +426,55 @@ class Promotion extends MY_Controller
                 "fst_active" => 'A'
             ];
             $this->mspromoitemscustomer_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
+        
+        
+        //Edit Save Promo Participants By Area Customer
+
+        $this->load->model("mspromoareas_model");
+        $this->mspromoareas_model->deleteByHeaderId($fin_promo_id);
+        $details = $this->input->post("participantsByArea");
+        $details = json_decode($details);
+        foreach ($details as $promoparticipantsarea) {
+            $data = [
+                "fin_promo_id" => $fin_promo_id,
+                "fst_kode_area" => $promoparticipantsarea->fst_kode,
+                "fst_active" => 'A'
+            ];
+            $this->mspromoareas_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
+
+        //Edit Save Promo Participants exclude/restric
+
+        $this->load->model("mspromocustomerrestric_model");
+        $this->mspromocustomerrestric_model->deleteByHeaderId($fin_promo_id);
+        $details = $this->input->post("detailParticipantsRestric");
+        $details = json_decode($details);
+        foreach ($details as $promoparticipantsrestric) {
+            $data = [
+                "fin_promo_id" => $fin_promo_id,
+                "fin_customer_id" => $promoparticipantsrestric->fin_customer_id,
+                "fst_active" => 'A'
+            ];
+            $this->mspromocustomerrestric_model->insert($data);
             $dbError  = $this->db->error();
             if ($dbError["code"] != 0) {
                 $this->ajxResp["status"] = "DB_FAILED";
@@ -382,6 +503,32 @@ class Promotion extends MY_Controller
                 "fst_active" => 'A'
             ];
             $this->Mspromodiscperitems_model->insert($data);
+            $dbError  = $this->db->error();
+            if ($dbError["code"] != 0) {
+                $this->ajxResp["status"] = "DB_FAILED";
+                $this->ajxResp["message"] = "Insert Detail Failed";
+                $this->ajxResp["data"] = $this->db->error();
+                $this->json_output();
+                $this->db->trans_rollback();
+                return;
+            }
+        }
+
+        //Edit Save Prize/Free Items
+        $this->load->model("mspromoprizes_model");
+        $this->mspromoprizes_model->deleteByHeaderId($fin_promo_id);
+        $details = $this->input->post("detailfreeItem");
+        $details = json_decode($details);
+        foreach ($details as $freeitem) {
+            $data = [
+                "fin_promo_id" => $fin_promo_id,
+                "fin_item_id" => $freeitem->fin_item_id,
+                "fdb_qty" => $freeitem->fdb_qty_free,
+                "fst_unit" => $freeitem->fst_unit,
+                "fst_active" => 'A'
+            ];
+
+            $this->mspromoprizes_model->insert($data);
             $dbError  = $this->db->error();
             if ($dbError["code"] != 0) {
                 $this->ajxResp["status"] = "DB_FAILED";

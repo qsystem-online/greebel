@@ -34,15 +34,36 @@ class Mspromo_model extends MY_Model
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rsPromoParticipants = $qr->result_array();
 
-        $ssql = "select a.*,b.fst_item_name from mspromodiscperitems a left join msitems b on a.fin_item_id = b.fin_item_id where a.fin_promo_id = ? and a.fst_active = 'A'";
+        $ssql = "SELECT a.*,MID(a.fst_kode_area, 1, 2) AS provincePromo,MID(a.fst_kode_area, 1, 5) AS districtPromo,MID(a.fst_kode_area, 1, 8) AS subdistrictPromo,MID(a.fst_kode_area, 1, 13) AS villagePromo,
+        b.fst_nama AS fst_province_name,c.fst_nama AS fst_district_name,d.fst_nama AS fst_subdistrict_name,e.fst_nama AS fst_village_name FROM mspromoareas a
+        LEFT JOIN msarea b ON MID(a.fst_kode_area, 1, 2) = b.fst_kode
+        LEFT JOIN msarea c ON MID(a.fst_kode_area, 1, 5) = c.fst_kode
+        LEFT JOIN msarea d ON MID(a.fst_kode_area, 1, 8) = d.fst_kode
+        LEFT JOIN msarea e ON MID(a.fst_kode_area, 1, 13) = e.fst_kode
+        WHERE a.fin_promo_id = ? and a.fst_active = 'A' ";
+        $qr = $this->db->query($ssql, [$fin_promo_id]);
+        $rsPromoParticipantArea = $qr->result();
+
+        $ssql = "SELECT a.*,b.fst_relation_name AS ParticipantRestric_Name FROM mspromocustomerrestric a LEFT JOIN msrelations b on a.fin_customer_id = b.fin_relation_id WHERE a.fin_promo_id = ?";
+        $qr = $this->db->query($ssql, [$fin_promo_id]);
+        $rsPromoParticipantsRestric = $qr->result_array();
+
+        $ssql = "SELECT a.*,b.fst_item_name FROM mspromodiscperitems a LEFT JOIN msitems b on a.fin_item_id = b.fin_item_id WHERE a.fin_promo_id = ? AND a.fst_active = 'A'";
         $qr = $this->db->query($ssql, [$fin_promo_id]);
         $rwPromodiscItems = $qr->result_array();
+
+        $ssql = "SELECT a.*,b.fst_item_name AS FreeItem FROM mspromoprizes a LEFT JOIN msitems b ON a.fin_item_id = b.fin_item_id WHERE a.fin_promo_id = ?";
+        $qr = $this->db->query($ssql, [$fin_promo_id]);
+        $rsFreeItems = $qr->result_array();
 
         $data = [
             "mspromo" => $rwPromo,
             "promoTerms" => $rsPromoTerms,
             "promoParticipants" => $rsPromoParticipants,
+            "promoparticipantsarea" => $rsPromoParticipantArea,
+            "promoParticipantsRestric" => $rsPromoParticipantsRestric,
             "promodiscItems" => $rwPromodiscItems,
+            "freeItems" => $rsFreeItems
         ];
 
         return $data;
@@ -73,6 +94,24 @@ class Mspromo_model extends MY_Model
         $rules[] = [
             'field' => 'fst_list_branch_id',
             'label' => 'Branch',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s Required'
+            )
+        ];
+
+        $rules[] = [
+            'field' => 'fdt_start',
+            'label' => 'Periode Awal',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s Required'
+            )
+        ];
+
+        $rules[] = [
+            'field' => 'fdt_end',
+            'label' => 'Periode Akhir',
             'rules' => 'required',
             'errors' => array(
                 'required' => '%s Required'
