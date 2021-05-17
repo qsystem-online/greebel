@@ -343,6 +343,29 @@
 		}
 	}
 
+	function prevPeriod($strPeriod,$mode="month"){
+		$arrPeriod = explode("-",$strPeriod);
+
+		$th = $arrPeriod[0];
+		$bln = $arrPeriod[1];
+
+		if ($mode == "year"){
+			return $th - 1 ."-12";
+		}
+
+		$prevBln = $bln -  1;
+		if ($prevBln == 0){
+			$prevBln = 12;
+			$th = $th - 1;
+		}
+
+		$prevBln = "00" . $prevBln;
+		$prevBln = substr($prevBln,strlen($prevBln)-2);
+		$th = "0000" . $th;
+		$th = substr($th,strlen($th)-4);
+		return $th."-".$prevBln;
+
+	}
 
 	function nextPeriod($strPeriod,$mode="month"){
 		$arrPeriod = explode("-",$strPeriod);

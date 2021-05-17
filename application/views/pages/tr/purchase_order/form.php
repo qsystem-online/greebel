@@ -601,6 +601,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <?php
 	echo $mdlJurnal;
+	echo $mdlEditForm;
 	echo $mdlPrint;
 ?>
 
@@ -637,7 +638,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(event){
 			event.preventDefault();
-			saveAjax();
+			saveAjax(0);
 		});
 
 		$("#btnDelete").click(function(e){
@@ -929,7 +930,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	}
 
-	function saveAjax(){
+	function saveAjax(confirmEdit){
 		data = $("#frmPurchaseOrder").serializeArray();
 		detail = new Array();		
 		t = $('#tblPODetails').DataTable();
@@ -952,6 +953,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			url =  "<?= site_url() ?>tr/purchase_order/ajx_add_save/";
 		}else{
 			url =  "<?= site_url() ?>tr/purchase_order/ajx_edit_save/";
+			if (confirmEdit == 0 && mode != "ADD"){
+				MdlEditForm.saveCallBack = function(){
+					saveAjax(1);
+				};		
+				MdlEditForm.show();
+				return;
+			}
+
+			data.push({
+				name : "fin_user_id_request_by",
+				value: MdlEditForm.user
+			});
+			data.push({
+				name : "fst_edit_notes",
+				value: MdlEditForm.notes
+			});
+
+
 		}
 		
 

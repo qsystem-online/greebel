@@ -126,10 +126,14 @@ class Purchase_order extends MY_Controller{
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 		$mdlJurnal =$this->parser->parse('template/mdlJurnal.php', [], true);
 		$mdlPrint =$this->parser->parse('template/mdlPrint.php', [], true);
+		$edit_modal = $this->parser->parse('template/mdlEditForm', [], true);
+
 		$data["mode"] = $mode;
 		$data["title"] = $mode == "ADD" ? "Add Purchase Order" : "Update Purchase Order";
 		$data["mdlJurnal"] = $mdlJurnal;
 		$data["mdlPrint"] = $mdlPrint;
+		$data["mdlEditForm"] = $edit_modal;
+		
 		if($mode == 'ADD'){
 			$data["fin_po_id"] = 0;
 			$data["fst_po_no"] = $this->trpo_model->GeneratePONo();			

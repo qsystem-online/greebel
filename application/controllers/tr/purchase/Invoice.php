@@ -86,7 +86,8 @@ class Invoice extends MY_Controller{
 			INNER JOIN msrelations c on b.fin_supplier_id = c.fin_relation_id 
 			) a");
 
-        $selectFields = "a.fin_lpbpurchase_id,a.fst_lpbpurchase_no,a.fdt_lpbpurchase_datetime,a.fst_po_no,a.fst_supplier_name,a.fst_memo,a.fdc_total,a.fst_curr_code";
+		$selectFields = "a.fin_lpbpurchase_id,a.fst_lpbpurchase_no,a.fdt_lpbpurchase_datetime,
+			a.fst_po_no,a.fst_supplier_name,a.fst_memo,a.fdc_total + a.fdc_downpayment_claim as fdc_total,a.fst_curr_code";
         $this->datatables->setSelectFields($selectFields);
 
         $Fields = $this->input->get('optionSearch');

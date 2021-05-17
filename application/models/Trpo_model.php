@@ -185,6 +185,7 @@ class Trpo_model extends MY_Model {
 	}
 
 	public function unposting($finPOId){
+
 		$ssql ="select * from trpo where fin_po_id = ?";
 		$qr = $this->db->query($ssql,[$finPOId]);
 		$dataH = $qr->row_array();
@@ -200,7 +201,8 @@ class Trpo_model extends MY_Model {
 			$this->db->query($ssql,[$finProcessId]);
 		}
 
-
+		//Delete Data Approval
+		$this->trverification_model->cancelAuthorize("PO",$finPOId);		
 	}
 
 	public function posting($finPOId){
