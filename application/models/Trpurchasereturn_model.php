@@ -354,9 +354,15 @@ class Trpurchasereturn_model extends MY_Model {
 	   
 		/**
 		 * FALSE CONDITION
-		 * 1. kalau sudah ada penerimaan barang return
+		 * 1. Kalau sudah dibayar kan returnnya ngak bisa di edit
 		 * 
 		 */
+
+		$dataH = $this->getSimpleDataById($finPurchaseReturnId);
+		if ($dataH->fdc_total_claimed >0){
+			throw new CustomException("Return Already Paid !","3003","FAILED",[]);
+		}
+		
 		$resp =["status"=>"SUCCESS","message"=>""];
 		return $resp;
 	}

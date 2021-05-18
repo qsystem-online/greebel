@@ -116,7 +116,15 @@ class Trcbpayment_model extends MY_Model {
                 return null;
             }
             return $rw->fst_salesekspedisi_no;
-        }        
+        }else if($transType == "LPB_RETURN"){
+            $ssql ="select * from trpurchasereturn where fin_purchasereturn_id = ?";
+            $qr =$this->db->query($ssql,[$transId]);
+            $rw = $qr->row();
+            if(!$rw){
+                return null;
+            }
+            return $rw->fst_purchasereturn_no;    
+        }   
     }
 
 
