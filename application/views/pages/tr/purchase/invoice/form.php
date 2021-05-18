@@ -167,7 +167,7 @@
 								<label class="col-md-8 control-label" style="padding-top:0px"><?=lang("Total Disc")?> : </label>
 								<label id="ttlDisc" class="col-md-4 control-label" style="padding-top:0px">0.00</label>
 								
-								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Ppn")?> <label id="ppnPercent" class="control-label"  style="padding-top:0px">10</label>% : </label>
+								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Ppn")?> <label id="ppnPercent" class="control-label"  style="padding-top:0px">0</label>% : </label>
 								<label id="ppnAmount" class="col-md-4 control-label"  style="padding-top:0px">0.00</label>
 
 								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Total")?> : </label>
@@ -531,6 +531,11 @@
 					$("#ttlReturn").text( App.money_format(parseFloat(dataH.fdc_total_return)));
 
 					$("#fst_curr_code").val(dataH.fst_curr_code);
+
+					$("#ppnPercent").text(dataH.fdc_ppn_percent);
+					//$("#ppnAmount").text();
+					calculateTotal();
+					
 
 				}else{
 					$("#btnNew").trigger("click");

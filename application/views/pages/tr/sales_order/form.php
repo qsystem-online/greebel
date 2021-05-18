@@ -889,13 +889,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	function saveAjax(confirmEdit){
 		
-		if (cekPromo == 1){
-			getPromoItem(function(resp){
-				saveAjax(confirmEdit);
-			});
-			return;
-		}
-
+		
 		if (confirmAuthorize == 0){
 			checkAuthorize(function(resp){
 				saveAjax(confirmEdit);
@@ -927,18 +921,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 
 		}
-
-		
-
-		
+			
 		detail = new Array();		
-
-		t = $('#tblSODetails').DataTable();
-
-		t.rows(function(idx,data,node){
-			return data.fin_promo_id != 0 ;
-		}).remove().draw();
-
+		t = $('#tblSODetails').DataTable();	
 		datas = t.data();
 		$.each(datas,function(i,v){
 			detail.push(v);
@@ -949,10 +934,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			value: JSON.stringify(detail)
 		});		
 
-
-		
-
-		//var formData = new FormData($('form')[0])
+	
 		App.blockUIOnAjaxRequest("Please wait while saving data.....");
 		$.ajax({
 			type: "POST",
@@ -971,6 +953,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									$("#btnNew").trigger("click");
 									return;
 								}
+
+								if(resp.status == "CEK_PROMO"){
+									window.location.replace("<?=site_url()?>tr/cek_promo/" + resp.data.insert_id);
+									return;
+								}
+
 							},
 						}
 					});
@@ -985,7 +973,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}else if(resp.status == "SUCCESS") {
 					data = resp.data;
 					$("#fin_salesorder_id").val(data.insert_id);
-					//Clear all previous error
 					$(".text-danger").html("");
 				}
 			},

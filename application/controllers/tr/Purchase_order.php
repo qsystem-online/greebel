@@ -48,7 +48,8 @@ class Purchase_order extends MY_Controller{
 			['title' => 'Memo', 'width' => '120px', 'data' => 'fst_memo'],
 			['title' => 'Total', 'width' => '100px','className'=>'text-right',
 				'render'=>"function(data,type,row){
-					var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount) + parseFloat(row.fdc_ppn_amount);
+					//var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount) + parseFloat(row.fdc_ppn_amount);
+					var total = parseFloat(row.fdc_subttl) + parseFloat(row.fdc_ppn_amount);
 					return row.fst_curr_code + ':' + App.money_format(total);
 				}"
 			],

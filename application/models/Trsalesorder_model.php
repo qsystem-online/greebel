@@ -497,6 +497,10 @@ class Trsalesorder_model extends MY_Model {
     }
 
 
+
+
+
+
     /**
      * PROMOTION RULES
      * + Yang berhak mendapat promo tersebut hanya customer yang terdaftar didalam participan dimana terdapat 4 aturan:
@@ -516,7 +520,7 @@ class Trsalesorder_model extends MY_Model {
      * 
      * 
      */
-    public function getDataPromo($fin_customer_id,$ppnPercent,$isIncludePPN,$details,$trxDate=null){
+    public function DELETE2_getDataPromo($fin_customer_id,$ppnPercent,$isIncludePPN,$details,$trxDate=null){
         $this->load->model("msitemunitdetails_model");
         $this->load->model("msitems_model");
         $this->load->model("msgroupitems_model");
@@ -696,6 +700,131 @@ class Trsalesorder_model extends MY_Model {
         } //End foreach
         return $arrPromo;
     }
+
+    public function getDataPromo($finSalesOrderId){
+        $this->load->model("msrelations_model");
+        $this->load->model("msitems_model");
+
+        $header = $this->getSimpleDataById($finSalesOrderId);
+
+        $customer =$this->msrelations_model->getSimpleDataById($header->fin_relation_id);
+
+        $ssql = "SELECT * FROM trsalesorderdetails where fin_salesorder_id = ? and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finSalesOrderId]);
+        $details =$qr->result();
+
+
+
+        //Get All Promo on Period date
+        $ssql ="SELECT * FROM mspromo WHERE 
+            ? between fdt_start  AND fdt_end
+            AND fst_active ='A' 
+            AND FIND_IN_SET(?,a.fst_list_branch_id)
+            ORDER BY fin_priority ASC";
+
+        $qr = $this->db->query($ssql,[$header->fdt_salesorder_datetime,$this->aauth->get_active_branch_id()]);
+        $rsPromo = $qr->result();
+
+        $arrValidPromo = [];
+
+        foreach($rsPromo as $promo){
+            //Cek Partisipan
+            //Listed on Exclude (Restricted)
+            $ssql = "SELECT * FROM mspromocustomerrestric where fin_promo_id = ? and fin_customer_id =? and fst_active ='A'";
+            $qr = $this->db->query($ssql,[$promo->fin_promo_id,$header->fin_relation_id]);
+            $rw = $qr->row();
+            if ($rw != null){
+                continue;
+            }
+            
+            //Cek Area Partisipant
+            //SELECT * FROM mspromoareas WHERE '33.11' LIKE CONCAT()
+            //$customer->fst_area_code
+            $ssql ="SELECT * FROM mspromoareas where fin_promo_id = ? and ? like CONCAT(fst_kode_area ,'%') and fst_active ='A'";
+            $qr =  $this->db->query($ssql,[$promo->fin_promo_id,$customer->fst_area_code]);
+            $rwCek = $qr->row();
+            if ($rwCek == null){
+                //Cek Member Partisipant (GROUP)
+                $ssql = "SELECT * FROM mspromoitemscustomer WHERE 
+                    fst_participant_type ='RELATION GROUP' 
+                    AND fin_customer_id = ? 
+                    AND fst_active ='A'";
+                $qr = $this->db->query($ssql,[$customer->fin_relation_group_id]);
+                $rwCek = $qr->row();
+                if ($rwCek == null){
+                    //Cek Base on Relation
+                    $ssql = "SELECT * FROM mspromoitemscustomer WHERE 
+                    fst_participant_type ='RELATION' 
+                    AND fin_customer_id = ? 
+                    AND fst_active ='A'";
+                    $qr = $this->db->query($ssql,[$customer->fin_relation_id]);
+                    $rwCek = $this->db->row();
+                    if ($rwCek == null){
+                        continue;
+                    }
+                }
+            }
+
+            //cek fdc_min_total_purchase after disc before tax
+            if ($header->fdc_subttl < $promo->fdc_min_total_purchase){
+                continue;
+            }
+
+            //Cek Promo Terms degan detail (fbl_qty_gabungan & fdb_qty_gabungan)            
+            $qtyGabungan = 0;
+            $satuanGabungan=$promo->fst_unit_gabungan;
+
+            $termValid = false;
+            foreach ($details as $detail){
+                //Cek Item
+                $ssql ="SELECT * FROM mspromoitems 
+                WHERE fst_item_type = 'ITEM'
+                AND fin_promo_id = ?
+                AND fin_item_id = ?
+                AND fst_active = 'A'";
+                
+                $qr = $this->db->query($ssql,[$promo->fin_promo_id,$detail->fin_item_id]);
+                $term = $qr->row();
+
+                if ($term == null){
+                    //Cek Berdasarkan Group Item
+                    $ssql ="SELECT * FROM mspromoitems 
+                    WHERE fst_item_type = 'SUB GROUP'
+                    AND fin_promo_id = ?
+                    AND fin_item_id = ?
+                    AND fst_active = 'A'";
+
+                    $qr = $this->db->query($ssql,[$promo->fin_promo_id,$detail->fin_item_id]);
+                    $term = $qr->row();            
+                }
+
+
+                if ($term != null){
+                    //Convert Satuan 
+                    $targetSatuan = $term->fst_unit;
+                    $sourceSatuan = $details->fst_unit;
+                    $qtyTargetSatuan = $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$detail->fdb_qty,$sourceSatuan,$targetSatuan);
+                    if ($qtyTargetSatuan >= $term->fd_qty){
+                        //Sudah memenuhi syarat Promo ini, tidak perlu cek syarat lain
+                        $termValid = true;
+                        break;
+                    }else{
+                        if ($promo->fbl_qty_gabungan){
+                            $qtyGabungan += $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$detail->fdb_qty,$sourceSatuan,$satuanGabungan);                            
+                        }
+                    }               
+                }          
+            }
+
+            if ($termValid == true){
+                $arrValidPromo[] = $promo;
+            }    
+        }
+
+        return $arrValidPromo;
+    
+    }
+
 
 
     public function getPendingSOList($finCustomerId){

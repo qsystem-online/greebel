@@ -194,232 +194,27 @@ class Sales_order extends MY_Controller{
 		$isHold = ($this->input->post("fbl_is_hold") == false) ? 0 : 1;
 		$exchangeRateIDR = parseNumber($this->input->post("fdc_exchange_rate_idr"));
 
-		//CEK tgl lock dari transaksi yg di kirim
-		$resp = dateIsLock($fdt_salesorder_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
 
-		$vat = 0;
-		$incVat = 0;
-		if (getDbConfig("sales_price_inc_ppn") == "1"){
-			$vat = getDbConfig("sales_ppn_percent");
-			$incVat = 1;
-		}else{
-			$vat =  $this->input->post("fdc_vat_percent");
-		}
-
-
-		//PREPARE DATA
-		$dataH = [
-			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
-            "fst_salesorder_no" => $fst_salesorder_no,
-			"fdt_salesorder_datetime" => $fdt_salesorder_datetime,
-			"fst_curr_code"=>$this->input->post("fst_curr_code"),
-			"fdc_exchange_rate_idr"=> $exchangeRateIDR,
-			"fin_relation_id" => $this->input->post("fin_relation_id"),
-			"fin_terms_payment"=>$this->input->post("fin_terms_payment"),
-			"fin_sales_id" => $this->input->post("fin_sales_id"),
-			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),			
-			"fbl_is_hold" => $isHold,
-			"fbl_is_vat_include" => $incVat,
-			"fin_shipping_address_id" =>$this->input->post("fin_shipping_address_id"),			
-			"fst_memo" =>$this->input->post("fst_memo"),
-			"fdc_subttl"=>0,// calculate from detail
-			"fdc_disc_amount" => 0, //get Total Disc recalculate
-			"fdc_dpp_amount" => 0, // calculate from detail
-			"fdc_vat_percent" => $vat,
-			"fdc_vat_amount" => 0, //total vat recalculate
-			"fdc_total" => 0, //total recalculate
-			"fdc_downpayment" => $fdc_downpayment,
-			"fbl_dp_inc_ppn" => ($this->input->post("fbl_dp_inc_ppn") == null) ? 0 : 1,
-			"fdc_downpayment_paid"=>0,
-			"fbl_is_closed"=>0,
-			"fst_active" => 'S' //JIKA ITEM YANG DI ORDER TIDAK ADA MAKA STATUS BERUBAH JADI SUSPEND
-		];
-		
-
-		$details = $this->input->post("detail");
-		$details = json_decode($details);
-		$arrItem = $this->msitems_model->getDetailbyArray(array_column($details, 'fin_item_id'));
-
-		$subTtl = 0;
-		$ttlDiscAmount = 0;
-		$ttlVATAmount = 0;
-		
-
-
-		for($i = 0; $i < sizeof($details) ; $i++){
-			$item = $details[$i];
-			//remove if promo item
-			if ($details[$i]->fin_promo_id != null){
-				unset($details[$i]);
-				continue;
-			}
-
-			$objItem = $arrItem[$item->fin_item_id];
-			$details[$i]->fst_max_item_discount = $objItem->fst_max_item_discount;
-			//get Price from system
-			$price = $this->msitems_model->getSellingPrice($item->fin_item_id,$item->fst_unit,$dataH["fin_relation_id"]);
-			if ($price == 0 ){ // Bila dimaster harga 0, berarti user boleh menentukan harga sendiri
-				$price = $item->fdc_price;
-			}
-			$details[$i]->fdc_price = $price;						
-
-			$subTtl += $price * $details[$i]->fdb_qty;
-			$ttlDiscAmount += $details[$i]->fdc_disc_amount_per_item * $details[$i]->fdb_qty;			
-		}
-
-		$details = array_values($details);
-
-		if ($dataH["fbl_is_vat_include"] ==  1){
-			$ttlDPPAmount = ($subTtl - $ttlDiscAmount) / (1 + ($dataH["fdc_vat_percent"] / 100)) ;
-		}else{
-			$ttlDPPAmount = $subTtl - $ttlDiscAmount;	
-		}
-
-		$ttlVATAmount  =  $ttlDPPAmount * ($dataH["fdc_vat_percent"] / 100);
-		$dataH["fdc_subttl"] = $subTtl;	
-		$dataH["fdc_disc_amount"] = $ttlDiscAmount;	
-		$dataH["fdc_dpp_amount"] = $ttlDPPAmount;
-		$dataH["fdc_vat_amount"] = $ttlVATAmount;
-		$dataH["fdc_total"] = $ttlDPPAmount + $ttlVATAmount;
-		
-
-		//VALIDATION
-		$this->form_validation->set_rules($this->trsalesorder_model->getRules("ADD", 0));
-		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-		$this->form_validation->set_data($dataH);
-
-		if ($this->form_validation->run() == FALSE) {
-			//print_r($this->form_validation->error_array());
-			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-			$this->ajxResp["message"] = "";
-			$this->ajxResp["data"] = $this->form_validation->error_array();
-			$this->ajxResp["request_data"] = $_POST;
-			$this->json_output();
-			return;
-		}
-
-		foreach($details as $dataD){
-			$this->form_validation->set_rules($this->trsalesorderdetails_model->getRules("ADD",0));
-			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-			$this->form_validation->set_data((array)$dataD);
-			if ($this->form_validation->run() == FALSE){
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = lang("Error Validation Forms");
-				$this->ajxResp["request_data"] = $dataH;
-				$error = [
-					"detail"=> $this->form_validation->error_string(),
-				];
-				$this->ajxResp["data"] = $error;				
-				$this->json_output();
-				return;	
-			}
-		}
-
-		//Get Promo Item		
-		$rsPromoItem = $this->trsalesorder_model->getDataPromo($dataH["fin_relation_id"],$dataH["fdc_vat_percent"],$dataH["fbl_is_vat_include"],$details);
-		
-
-		//** Cek if this transaction need authorization */		
-		$needAuthorizeList = $this->trsalesorder_model->getAuthorizationList($dataH,$details);
-		$dataH["fst_active"] = ($needAuthorizeList["need_authorize"] == true) ? "S" :"A";		
-
-		
 		try{
-			$this->db->trans_start();
-			//SAVE
-			$insertId = $this->trsalesorder_model->insert($dataH);
-			$this->my_model->throwIfDBError();
-
-			foreach($rsPromoItem as $promo){ //Add Detail promo			
-				if ($promo->fin_promo_item_id != null && $promo->fin_promo_item_id != ""){
-					$dataD = new stdClass();
-					$dataD->fin_rec_id = "0";
-					$dataD->fin_promo_id = $promo->fin_promo_id;
-					$dataD->fin_item_id = $promo->fin_promo_item_id;
-					$dataD->fst_item_name = $promo->fst_item_name;
-					$dataD->fst_item_code = $promo->fst_item_code;
-					$dataD->fst_custom_item_name = $promo->fst_item_name;
-					$dataD->fst_max_item_discount = "100";
-					$dataD->fdb_qty = $promo->fdb_promo_qty;
-					$dataD->fst_unit = $promo->fst_promo_unit;
-					$dataD->fdc_price = 1;
-					$dataD->fst_disc_item = 100;
-					$dataD->fdc_disc_amount_per_item = 1;
-					$dataD->fst_memo_item = "";
-					$dataD->total = 0;
-					$dataD->real_stock = 0;
-					$dataD->marketing_stock = 0;
-					$dataD->fdc_conv_to_basic_unit = 1;
-					$dataD->fst_basic_unit = "";				
-					$details[] = $dataD;
-				}
-				if ($promo->fst_other_prize != null && $promo->fst_other_prize != ""){
-					$dataD = new stdClass();
-					$dataD->fin_rec_id = "0";
-					$dataD->fin_promo_id = $promo->fin_promo_id;
-					$dataD->fin_item_id = 0;
-					$dataD->fst_item_name = $promo->fst_other_prize;
-					$dataD->fst_item_code = "PRZ";
-					$dataD->fst_custom_item_name = $promo->fst_other_prize;
-					$dataD->fst_max_item_discount = "100";
-					$dataD->fdb_qty = 1;
-					$dataD->fst_unit = "PCS";
-					$dataD->fdc_price = 1;
-					$dataD->fst_disc_item = 100;
-					$dataD->fdc_disc_amount_per_item = 1;
-					$dataD->fst_memo_item = "";
-					$dataD->total = 0;
-					$dataD->real_stock = 0;
-					$dataD->marketing_stock = 0;
-					$dataD->fdc_conv_to_basic_unit = 1;
-					$dataD->fst_basic_unit = "";				
-					$details[] = $dataD;
-				}
-	
-				if ($promo->fdc_cashback > 0 ){ //Create Cash back Voucher					
-					$this->load->model("trvoucher_model");
-					$dataVoucher = [
-						"fst_transaction_type"=>"SALESORDER",
-						"fin_transaction_id"=>$insertId,
-						"fin_promo_id"=>$promo->fin_promo_id,
-						"fin_branch_id"=>$dataH["fin_branch_id"],
-						"fin_relation_id"=>$dataH["fin_relation_id"],
-						"fdc_value"=> $promo->fdc_cashback,
-						"fst_active"=>$dataH["fst_active"] //Bila tidak active maka diaktifkan pada saat approval SO
-					];
-					$this->trvoucher_model->createVoucher($dataVoucher);
-					/*
-					$dataD = new stdClass();
-					$dataD->fin_rec_id = "0";
-					$dataD->fin_promo_id = $promo->fin_promo_id;
-					$dataD->fin_item_id = 0;
-					$dataD->fst_item_name = lang("Voucher cashback promotion") . "(" .  formatNumber($promo->fdc_cashback) . ")";
-					$dataD->fst_item_code = "CSHBACK";
-					$dataD->fst_custom_item_name = lang("Voucher cashback promotion") . "(" .  formatNumber($promo->fdc_cashback) . ")";
-					$dataD->fst_max_item_discount = "100";
-					$dataD->fdb_qty = 1;
-					$dataD->fst_unit = "";
-					$dataD->fdc_price = 1;
-					$dataD->fst_disc_item = 100;
-					$dataD->fdc_disc_amount = 1;
-					$dataD->fst_memo_item = "";
-					$dataD->total = 0;
-					$dataD->real_stock = 0;
-					$dataD->marketing_stock = 0;
-					$dataD->fdc_conv_to_basic_unit = 1;
-					$dataD->fst_basic_unit = "";	
-					$dataD->fdc_cashback =$promo->fdc_cashback;			
-					$details[] = $dataD;
-					*/
-				}
+			//CEK tgl lock dari transaksi yg di kirim
+			$resp = dateIsLock($fdt_salesorder_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],"3003",$resp["status"],[]);
 			}
 
+			$preparedData = $this->prepareData();
+			$dataH = $preparedData["dataH"];
+			$details = $preparedData["details"];
+			
+			$this->validateData($dataH,$details);
+
+			//** Cek if this transaction need authorization */		
+			$needAuthorizeList = $this->trsalesorder_model->getAuthorizationList($dataH,$details);
+			$dataH["fst_active"] = ($needAuthorizeList["need_authorize"] == true) ? "S" :"A";	
+
+
+			$this->db->trans_start();
+			$insertId = $this->trsalesorder_model->insert($dataH);
 			//Insert Data Detail
 			foreach ($details as $item) {
 				//$dataDetail = (array) $item;
@@ -442,23 +237,39 @@ class Sales_order extends MY_Controller{
 			//Create authorize record
 			$this->trsalesorder_model->generateApprovalData($needAuthorizeList,$insertId,$dataH["fst_salesorder_no"]);
 
-			//POSTING
 			$this->trsalesorder_model->posting($insertId);
-						
-			$this->db->trans_complete();
-			$this->ajxResp["status"] = "SUCCESS";
-			$this->ajxResp["message"] = "Data Saved !";
-			$this->ajxResp["data"]["insert_id"] = $insertId;
-			$this->json_output();
 
+			$this->db->trans_complete();
+
+			//Cek Promo
+			$arrPromo = $this->trsalesorder_model->getDataPromo($insertId);
+
+
+			if (sizeof($arrPromo) > 0){
+				$this->json_output([
+					"status"=>"CEK_PROMO",
+					"message"=>"Data Saved !",
+					"data"=>["insert_id"=>$insertId]
+				]);
+			}else{
+				$this->json_output([
+					"status"=>"SUCCESS",
+					"message"=>"Data Saved !",
+					"data"=>["insert_id"=>$insertId]
+				]);
+			}
+			
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
-			$this->ajxResp["status"] = $e->getStatus();
-			$this->ajxResp["message"] = $e->getMessage();
-			$this->ajxResp["data"] = $e->getData();
-			$this->json_output();
+			$this->json_output([
+				"status"=>$e->getStatus(),
+				"message"=> $e->getMessage(),
+				"data"=> $e->getData()
+			]);
 			return;
 		}
+		
+
 	}
 
 	public function ajx_edit_save(){
@@ -467,11 +278,7 @@ class Sales_order extends MY_Controller{
 		$this->load->model('trvoucher_model');
 		$this->load->model('trverification_model');
 		
-		$fin_salesorder_id = $this->input->post("fin_salesorder_id");
-		$fdt_salesorder_datetime = dBDateTimeFormat($this->input->post("fdt_salesorder_datetime"));
-		$fdc_downpayment = parseNumber($this->input->post("fdc_downpayment"));
-		$isHold = ($this->input->post("fbl_is_hold") == false) ? 0 : 1;
-		$exchangeRateIDR = parseNumber($this->input->post("fdc_exchange_rate_idr"));
+		
 
 		
 		//Is Editable ?
@@ -516,41 +323,8 @@ class Sales_order extends MY_Controller{
 
 			//PREPARE DATA
 			$vat = 0;
-			$incVat = 0;
-			if (getDbConfig("sales_price_inc_ppn") == "1"){
-				$vat = getDbConfig("sales_ppn_percent");
-				$incVat = 1;
-			}else{
-				$vat =  $this->input->post("fdc_vat_percent");
-			}
-
-			$dataH = [
-				"fin_salesorder_id"=>$fin_salesorder_id,
-				"fin_branch_id"=>$this->aauth->get_active_branch_id(),
-				"fst_salesorder_no" => $this->input->post("fst_salesorder_no"),
-				"fdt_salesorder_datetime" => $fdt_salesorder_datetime,
-				"fst_curr_code"=>$this->input->post("fst_curr_code"),
-				"fdc_exchange_rate_idr"=> $exchangeRateIDR,
-				"fin_relation_id" => $this->input->post("fin_relation_id"),
-				"fin_terms_payment"=>$this->input->post("fin_terms_payment"),
-				"fin_sales_id" => $this->input->post("fin_sales_id"),
-				"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),			
-				"fbl_is_hold" => $isHold,
-				"fbl_is_vat_include" => $incVat,
-				"fin_shipping_address_id" =>$this->input->post("fin_shipping_address_id"),			
-				"fst_memo" =>$this->input->post("fst_memo"),
-				"fdc_subttl"=>0,// calculate from detail
-				"fdc_disc_amount" => 0, //get Total Disc recalculate
-				"fdc_dpp_amount" => 0, // calculate from detail
-				"fdc_vat_percent" => $vat,
-				"fdc_vat_amount" => 0, //total vat recalculate
-				"fdc_total" => 0, //total recalculate
-				"fdc_downpayment" => $fdc_downpayment,
-				"fbl_dp_inc_ppn" => ($this->input->post("fbl_dp_inc_ppn") == null) ? 0 : 1,
-				"fdc_downpayment_paid"=>0,
-				"fbl_is_closed"=>0,
-				"fst_active" => 'A'				
-			];
+			
+			
 
 			$details = $this->input->post("detail");
 			$details = json_decode($details);
@@ -746,6 +520,189 @@ class Sales_order extends MY_Controller{
 		}
 	}
 
+	public function prepareData(){
+
+		$fin_salesorder_id = $this->input->post("fin_salesorder_id");
+		$fdt_salesorder_datetime = dBDateTimeFormat($this->input->post("fdt_salesorder_datetime"));
+		$fdc_downpayment = parseNumber($this->input->post("fdc_downpayment"));
+		$isHold = ($this->input->post("fbl_is_hold") == false) ? 0 : 1;
+		$exchangeRateIDR = parseNumber($this->input->post("fdc_exchange_rate_idr"));
+
+		$vat = 0;
+		$incVat = 0;
+		if (getDbConfig("sales_price_inc_ppn") == "1"){
+			$vat = getDbConfig("sales_ppn_percent");
+			$incVat = 1;
+		}else{
+			$vat =  $this->input->post("fdc_vat_percent");
+		}
+
+		//PREPARE DATA
+		$dataH = [
+			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
+            "fst_salesorder_no" => $this->input->post("fst_salesorder_no"),
+			"fdt_salesorder_datetime" => $fdt_salesorder_datetime,
+			"fst_curr_code"=>$this->input->post("fst_curr_code"),
+			"fdc_exchange_rate_idr"=> $exchangeRateIDR,
+			"fin_relation_id" => $this->input->post("fin_relation_id"),
+			"fin_terms_payment"=>$this->input->post("fin_terms_payment"),
+			"fin_sales_id" => $this->input->post("fin_sales_id"),
+			"fin_warehouse_id" => $this->input->post("fin_warehouse_id"),			
+			"fbl_is_hold" => $isHold,
+			"fbl_is_vat_include" => $incVat,
+			"fin_shipping_address_id" =>$this->input->post("fin_shipping_address_id"),			
+			"fst_memo" =>$this->input->post("fst_memo"),
+			"fdc_subttl"=>0,// calculate from detail
+			"fdc_disc_amount" => 0, //get Total Disc recalculate
+			"fdc_dpp_amount" => 0, // calculate from detail
+			"fdc_vat_percent" => $vat,
+			"fdc_vat_amount" => 0, //total vat recalculate
+			"fdc_total" => 0, //total recalculate
+			"fdc_downpayment" => $fdc_downpayment,
+			"fbl_dp_inc_ppn" => ($this->input->post("fbl_dp_inc_ppn") == null) ? 0 : 1,
+			"fdc_downpayment_paid"=>0,
+			"fbl_is_closed"=>0,
+			"fst_active" => 'S' //JIKA ITEM YANG DI ORDER TIDAK ADA MAKA STATUS BERUBAH JADI SUSPEND
+		];
+
+
+		$details = $this->input->post("detail");
+		$details = json_decode($details);
+		
+		$subTotal = 0;
+		$ttlDiscAmount = 0;
+
+		for($i = 0; $i < sizeof($details) ; $i++){
+			$item = $details[$i];
+			//remove if promo item (Clear All Item Promo)
+			if ($details[$i]->fin_promo_id != null){
+				unset($details[$i]);
+				continue;
+			}
+
+			//Get Max Disc
+			$item = $this->msitems_model->getSimpleDataById($item->fin_item_id);
+			$details[$i]->fst_max_item_discount = $item->fst_max_item_discount;
+			
+			//get Price from system
+			$price = $this->msitems_model->getSellingPrice($item->fin_item_id,$item->fst_unit,$dataH["fin_relation_id"]);
+			if ($price == 0 ){ // Bila dimaster harga 0, berarti user boleh menentukan harga sendiri
+				$price = $item->fdc_price;
+			}
+			$details[$i]->fdc_price = $price;						
+
+			
+			$subTotal += $price * $details[$i]->fdb_qty;
+			$ttlDiscAmount += $details[$i]->fdc_disc_amount_per_item * $details[$i]->fdb_qty;			
+		}
+		
+		$hSubTotal = $subTotal - $ttlDiscAmount;
+		$dataH["fdc_subttl"] = $hSubTotal; //Setelah Potong disc 
+		$dataH["fdc_disc_amount"]= $ttlDiscAmount;
+		$dataH["fdc_dpp_amount"]= $incVat == 1 ? ($hSubTotal / (1 + ($vat / 100) ) ) : $hSubTotal;
+		$dataH["fdc_vat_amount"]= $dataH["fdc_dpp_amount"] * ($vat / 100) ;
+		$dataH["fdc_total"]= $dataH["fdc_dpp_amount"] + $dataH["fdc_vat_amount"];
+
+
+		return [
+			"dataH"=>$dataH,
+			"details"=>$details
+		];
+	}
+
+	public function validateData($dataH,$details){
+
+		//VALIDATION
+		$this->form_validation->set_rules($this->trsalesorder_model->getRules("ADD", 0));
+		$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+		$this->form_validation->set_data($dataH);
+		if ($this->form_validation->run() == FALSE) {
+			//print_r($this->form_validation->error_array());
+			$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+			$this->ajxResp["message"] = "";
+			$this->ajxResp["data"] = $this->form_validation->error_array();
+			$this->ajxResp["request_data"] = $_POST;
+			$this->json_output();
+			return;
+		}
+
+
+
+		foreach($details as $dataD){
+			$this->form_validation->set_rules($this->trsalesorderdetails_model->getRules("ADD",0));
+			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
+			$this->form_validation->set_data((array)$dataD);
+			if ($this->form_validation->run() == FALSE){
+				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
+				$this->ajxResp["message"] = lang("Error Validation Forms");
+				$this->ajxResp["request_data"] = $dataH;
+				$error = [
+					"detail"=> $this->form_validation->error_string(),
+				];
+				$this->ajxResp["data"] = $error;				
+				$this->json_output();
+				return;	
+			}
+		}
+
+
+
+
+
+		//Cek Price item kalau di system 0 baru boleh di tetapkan oleh user
+		
+		
+		//Cek Maximal Disc
+
+
+		/*
+		for($i = 0; $i < sizeof($details) ; $i++){
+			$item = $details[$i];
+			//remove if promo item
+			if ($details[$i]->fin_promo_id != null){
+				unset($details[$i]);
+				continue;
+			}
+
+			$objItem = $arrItem[$item->fin_item_id];
+			$details[$i]->fst_max_item_discount = $objItem->fst_max_item_discount;
+			//get Price from system
+			$price = $this->msitems_model->getSellingPrice($item->fin_item_id,$item->fst_unit,$dataH["fin_relation_id"]);
+			if ($price == 0 ){ // Bila dimaster harga 0, berarti user boleh menentukan harga sendiri
+				$price = $item->fdc_price;
+			}
+			$details[$i]->fdc_price = $price;						
+
+			$subTtl += $price * $details[$i]->fdb_qty;
+			$ttlDiscAmount += $details[$i]->fdc_disc_amount_per_item * $details[$i]->fdb_qty;			
+		}
+		*/
+
+
+	}
+
+
+	public function cek_promo($finSalesOrderId){
+		$this->load->library("menus");		
+		
+
+		$main_header = $this->parser->parse('inc/main_header', [], true);
+		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
+		
+				
+		$data["title"] = "Add Items Promo";
+		
+		$page_content = $this->parser->parse('pages/tr/sales_order/form_promo', $data, true);
+		$main_footer = $this->parser->parse('inc/main_footer', [], true);
+
+		$control_sidebar = NULL;
+		$this->data["MAIN_HEADER"] = $main_header;
+		$this->data["MAIN_SIDEBAR"] = $main_sidebar;
+		$this->data["PAGE_CONTENT"] = $page_content;
+		$this->data["MAIN_FOOTER"] = $main_footer;
+		$this->data["CONTROL_SIDEBAR"] = $control_sidebar;
+		$this->parser->parse('template/main', $this->data);
+	}
 
 	public function fetch_list_data(){
 		$this->load->library("datatables");
