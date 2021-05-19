@@ -24,6 +24,7 @@ class Promotion extends MY_Controller
         $this->list['page_name'] = "Sales Promotion";
         $this->list['list_name'] = "Sales Promotion List";
         $this->list['addnew_ajax_url'] = site_url() . 'master/promotion/add';
+        $this->list['addcopy_ajax_url'] = site_url() . 'master/promotion/copy/';
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/promotion/fetch_list_data';
         $this->list['delete_ajax_url'] = site_url() . 'master/promotion/delete/';
@@ -43,7 +44,16 @@ class Promotion extends MY_Controller
             ['title' => 'Promo Name', 'width' => '20%', 'data' => 'fst_promo_name'],
             ['title' => 'Start Date', 'width' => '10%', 'data' => 'fdt_start'],
             ['title' => 'End Date', 'width' => '10%', 'data' => 'fdt_end'],
-            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
+            //['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
+            ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center',
+            'render'=>"function(data,type,row){
+                action = \"<div style='font-size:16px'>\";
+                action += \"<a class='btn-edit' href='#' data-id='\" + row.fin_promo_id + \"'><i style='font-size:16px' class='fa fa-pencil'></i></a> &nbsp;\";
+                action += '<a class=\"btn-copy\" href=\"".site_url()."master/promotion/copy/' + row.fin_promo_id + '\" data-id=\"\"><i class=\"fa fa-clone\"></i></a>';
+                action += \"</div>\";
+                return action;
+            }",
+        ]
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
@@ -71,7 +81,14 @@ class Promotion extends MY_Controller
         $mdlPrint =$this->parser->parse('template/mdlPrint.php', [], true);
 
         $data["mode"] = $mode;
-        $data["title"] = $mode == "ADD" ? "Add Sales Promotion" : "Update Sales Promotion";
+        //$data["title"] = $mode == "ADD" ? "Add Sales Promotion" : "Update Sales Promotion";
+        if ($mode == 'ADD'){
+            $data["title"] ="Add Sales Promotion";
+        }else if ($mode == "EDIT"){
+            $data["title"] ="Update Sales Promotiont";
+        }else if ($mode == "COPY"){
+            $data["title"] ="Add Sales Promotion (Copy)";
+        }
         $data["fin_promo_id"] = $fin_promo_id;
         $data["arrBranch"] = $this->msbranches_model->getAllList();
         $data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>true], true);
@@ -100,6 +117,12 @@ class Promotion extends MY_Controller
     {
         parent::edit($fin_promo_id);
         $this->openForm("EDIT", $fin_promo_id);
+    }
+
+    public function copy($fin_promo_id)
+    {
+        parent::copy($fin_promo_id);
+        $this->openForm("COPY", $fin_promo_id);
     }
 
     public function ajx_add_save()
@@ -568,6 +591,7 @@ class Promotion extends MY_Controller
             //action
             $data["action"]    = "<div style='font-size:16px'>
 					<a class='btn-edit' href='#' data-id='" . $data["fin_promo_id"] . "'><i class='fa fa-pencil'></i></a>
+                    <a class='btn-copy' href='#' data-id='" . $data["fin_promo_id"] . "'><i class='fa fa-clone'></i></a>
 				</div>";
 
             $arrDataFormated[] = $data;

@@ -13,6 +13,7 @@ class Stock_rpt_model extends CI_Model {
 		$item_id = "";
 		$start_date = "";
         $end_date = "";
+		$end_date6 = "";
 		//if (isset($data['fin_item_group_id'])) { $group_id = $data['fin_item_group_id'];}
 		//if (isset($data['fin_item_type_id'])) { $type_id = $data['fin_item_type_id'];}
 		//if (isset($data['fst_linebusiness_id'])) { $lob_id = $data['fst_linebusiness_id'];}
@@ -24,7 +25,8 @@ class Stock_rpt_model extends CI_Model {
         if (isset($data['fin_item_type_id'])) { $type_id = $data['fin_item_type_id'];}
 		if (isset($data['fin_item_id'])) { $item_id = $data['fin_item_id'];}
 		$start_date= $data["fdt_from"] == "" ? "1900-01-01" : $data["fdt_from"];
-        $end_date= $data["fdt_to"] == "" ? "3000-01-01" : $data["fdt_to"];
+		$end_date= $data["fdt_to"] == "" ? "3000-01-01" : $data["fdt_to"];
+        $end_date6= $data["fdt_to"] == "" ? "3000-01-01" : date('Y-m-d 23:59:59', strtotime($data["fdt_to"]));
 
         $swhere = "";
 		$sorderby = "";
@@ -128,7 +130,7 @@ class Stock_rpt_model extends CI_Model {
 				FROM (SELECT a.*,b.fst_unit,b.fdc_price_list FROM msitems a INNER JOIN msitemunitdetails b ON a.fin_item_id = b.fin_item_id WHERE a.fst_active !='D' AND a.fbl_stock = 1 AND b.fbl_is_basic_unit =1) a 
 				LEFT OUTER JOIN (
 					SELECT a.fin_item_id,SUM(a.fdb_qty_in) AS fdb_qty_in,SUM(a.fdb_qty_out) AS fdb_qty_out,a.fin_warehouse_id,a.fdt_trx_datetime FROM trinventory a
-					WHERE a.fin_warehouse_id = '".$warehouse_id."' AND a.fdt_trx_datetime >= '".$start_date."' AND a.fdt_trx_datetime <= '".$end_date."'
+					WHERE a.fin_warehouse_id = '".$warehouse_id."' AND a.fdt_trx_datetime >= '".$start_date."' AND a.fdt_trx_datetime <= '".$end_date6."'
 					GROUP BY a.fin_item_id
 				) b ON a.fin_item_id = b.fin_item_id 
 				LEFT OUTER JOIN (
@@ -147,7 +149,7 @@ class Stock_rpt_model extends CI_Model {
 				FROM (SELECT a.*,b.fst_unit,b.fdc_price_list FROM msitems a INNER JOIN msitemunitdetails b ON a.fin_item_id = b.fin_item_id WHERE a.fst_active !='D' AND a.fbl_stock = 1 AND b.fbl_is_basic_unit =1) a 
 				LEFT OUTER JOIN (
 					SELECT a.fin_item_id,SUM(a.fdb_qty_in) AS fdb_qty_in,SUM(a.fdb_qty_out) AS fdb_qty_out,a.fin_warehouse_id,a.fdt_trx_datetime FROM trinventory a
-					WHERE a.fin_warehouse_id = '".$warehouse_id."' AND a.fdt_trx_datetime >= '".$start_date."' AND a.fdt_trx_datetime <= '".$end_date."'
+					WHERE a.fin_warehouse_id = '".$warehouse_id."' AND a.fdt_trx_datetime >= '".$start_date."' AND a.fdt_trx_datetime <= '".$end_date6."'
 					GROUP BY a.fin_item_id
 				) b ON a.fin_item_id = b.fin_item_id 
 				LEFT OUTER JOIN (
@@ -166,7 +168,7 @@ class Stock_rpt_model extends CI_Model {
 				FROM (SELECT a.*,b.fst_unit FROM msitems a INNER JOIN msitemunitdetails b ON a.fin_item_id = b.fin_item_id WHERE a.fst_active !='D' AND a.fbl_stock = 1 AND b.fbl_is_basic_unit =1) a 
 				LEFT JOIN (
 					SELECT a.fin_item_id,SUM(a.fdb_qty_in) AS fdb_qty_in,SUM(a.fdb_qty_out) AS fdb_qty_out,a.fin_warehouse_id,a.fdc_avg_cost AS fdc_avg_cost_start,a.fdt_trx_datetime FROM trinventory a
-					WHERE a.fin_warehouse_id = '".$warehouse_id."' AND a.fdt_trx_datetime >= '".$start_date."' AND a.fdt_trx_datetime <= '".$end_date."'
+					WHERE a.fin_warehouse_id = '".$warehouse_id."' AND a.fdt_trx_datetime >= '".$start_date."' AND a.fdt_trx_datetime <= '".$end_date6."'
 					GROUP BY a.fin_item_id
 				) b ON a.fin_item_id = b.fin_item_id 
 				LEFT JOIN (
@@ -186,7 +188,7 @@ class Stock_rpt_model extends CI_Model {
 				LEFT JOIN (
 					SELECT a.fin_item_id,a.fin_warehouse_id,b.fdb_qty_balance_after AS end_balance  FROM (
 						SELECT fin_item_id,fin_warehouse_id,MAX(fin_rec_id) AS max_rec_id FROM trinventory 
-						WHERE fdt_trx_datetime <= '".$end_date."' GROUP BY fin_item_id,fin_warehouse_id
+						WHERE fdt_trx_datetime <= '".$end_date6."' GROUP BY fin_item_id,fin_warehouse_id
 					) a
 					INNER JOIN trinventory b ON a.max_rec_id = b.fin_rec_id 
 				) b ON a.fin_item_id = b.fin_item_id 

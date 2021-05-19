@@ -29,6 +29,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
 	.checkbox label, .radio label {
 		font-weight:700;
 	}
+    .detail-terms{
+    display: none;
+    }
+    .flag{
+    display: none;
+    }
 </style>
 
 <section class="content-header">
@@ -75,32 +81,34 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <!--<div class="form-group">
                             <label for="select-promo_item" class="col-md-2 control-label"><?= lang("Free Item") ?></label>
                             <div class="col-md-4">
                                 <select id="select-promo_item" class="form-control" name="fin_promo_item_id"></select>
                             </div>
 
-                            <!--<label for="fin_promo_qty" class="col-md-1 control-label"><?= lang("Free Qty") ?> :</label>-->
+                            <label for="fin_promo_qty" class="col-md-1 control-label"><?= lang("Free Qty") ?> :</label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control text-right" id="fdb_promo_qty" placeholder="<?= lang("0") ?>" name="fdb_promo_qty">
                                 <div id="fdb_promo_qty_err" class="text-danger"></div>
                             </div>
 
-                            <!---<label for="select-promo_unit" class="col-md-1 control-label"><?= lang("Unit") ?> :</label>-->
+                            <label for="select-promo_unit" class="col-md-1 control-label"><?= lang("Unit") ?> :</label>
                             <div class="col-md-2">
                                 <select id="select-promo_unit" class="form-control" name="fst_promo_unit"></select>
                                 <div id="fst_promo_unit_err" class="text-danger"></div>
                             </div>
-                        </div>
+                        </div>-->
                         <div class='form-group'>
                             <label for="fdc_cashback" class="col-md-2 control-label"><?= lang("CashBack") ?></label>
-                            <div class="col-md-2">
+                            <div class="col-md-10">
                                 <input type="text" class="form-control money" id="fdc_cashback" placeholder="<?= lang("0") ?>" name="fdc_cashback">
                                 <div id="fdc_cashback_err" class="text-danger"></div>
                             </div>
+                        </div>
+                        <div class='form-group'>
                             <label for="fst_other_prize" class="col-md-2 control-label"><?= lang("Other Item") ?></label>
-                            <div class="col-md-3">
+                            <div class="col-md-7">
                                 <input type="text" class="form-control" id="fst_other_prize" placeholder="<?= lang("Other Item") ?>" name="fst_other_prize">
                                 <div id="fst_other_prize_err" class="text-danger"></div>
                             </div>
@@ -154,10 +162,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <div class="checkbox col-sm-2 col-md-offset-2">
 								<label><input id="fbl_promo_gabungan" name='fbl_promo_gabungan' type="checkbox" value="1"><?=lang("Allow Other Promo")?></label>
 							</div>
-                            <div class="checkbox col-sm-2 col-md-offset-1">
+                            <div class="checkbox col-sm-2 col-md-offset- flag">
 								<label class="checkbox-inline"><input id="fbl_is_multiples_prize" name='fbl_is_multiples_prize' type="checkbox" value="1"><?=lang("Multiple Prize")?></label>
 							</div>
-                            <div class="checkbox col-sm-2 col-md-offset-1">
+                            <div class="checkbox col-sm-2 col-md-offset-1 flag">
                                 <label class="checkbox-inline"><input id="fbl_disc_per_item" name='fbl_disc_per_item' type="checkbox" value="1"><?=lang("Disk Per Item")?></label>
                             </div>
                         </div>
@@ -294,14 +302,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                             <span id="fin_item_id_err" class="text-danger"></span>
                                         </div>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group detail-terms">
                                         <label for="fst_unit" class="col-md-3 control-label"><?= lang("Unit") ?></label>
                                         <div class="col-md-9">
                                             <select id="fst_unit" class="form-control" name="fst_unit" style="width:100%"></select>
                                             <span id="fst_unit_err" class="text-danger"></span>
                                         </div>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group detail-terms">
                                         <label for="fdb_qty" class="col-md-3 control-label"><?=lang("Qty")?></label>
                                         <div class="col-md-9">
                                             <input type="number" class="form-control text-right numeric" id="fdb_qty" value="0">
@@ -376,13 +384,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         "title": "<?= lang("Unit ") ?>",
                         "width": "5%",
                         data: "fst_unit",
-                        visible: true,
+                        visible: false,
                     },
                     {
                         "title": "<?= lang("Qty ") ?>",
                         "width": "5%",
                         data: "fdb_qty",
-                        visible: true,
+                        visible: false,
                     },
                     {
                         "title": "<?= lang("Action ") ?>",
@@ -580,7 +588,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 } else {
                     $("#fin_item_id_err").hide();
                 }
-                var unitTerms = $("#fst_unit").val();              
+                /*var unitTerms = $("#fst_unit").val();              
                 if (unitTerms == null || unitTerms == "") {
                     $("#fst_unit_err").html("Please select unit");
                     $("#fst_unit_err").show();
@@ -602,15 +610,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     }  
                 }else{
                     $("#fst_unit_err").hide();                    
-                }
+                }*/
                 t.row.add({
                     fin_id: 0,
                     fin_promo_id: 0,
                     fst_item_type: $("#fst_item_type").val(),
                     fin_item_id: selected_itempromo.id,
                     fst_item_name: selected_itempromo.text,
-                    fst_unit: selected_unitdetail.text,
-                    fdb_qty: $("#fdb_qty").val(),
+                    //fst_unit: selected_unitdetail.text,
+                    //fdb_qty: $("#fdb_qty").val(),
+                    fst_unit: '',
+                    fdb_qty: 0,
                     action: action
                 }).draw(false);
             });
@@ -1694,7 +1704,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             });  
         <?php } ?>
 
-        <?php if ($mode == "EDIT") { ?>
+        <?php if ($mode == "EDIT" || $mode == "COPY") { ?>
             init_form($("#fin_promo_id").val());
         <?php } ?>
         $("#btnSubmitAjax").click(function(event) {
@@ -1767,7 +1777,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 value: JSON.stringify(detailfreeItem)
             });
             mode = $("#frm-mode").val();
-            if (mode == "ADD") {
+            if (mode != "EDIT") {
                 url = "<?= site_url() ?>master/promotion/ajx_add_save";
             } else {
                 url = "<?= site_url() ?>master/promotion/ajx_edit_save";

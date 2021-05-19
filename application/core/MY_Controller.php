@@ -91,6 +91,14 @@ class MY_Controller extends CI_Controller
 		}
 	}
 
+	public function copy($id){
+		$isPermit = $this->aauth->is_permit($this->menuName,false,null,"copy");
+		if (!$isPermit){
+			$this->redirect_nopermision();
+			die();
+		}
+	}
+
 	public function ajx_add_save(){
 		$isPermit = $this->aauth->is_permit($this->menuName,false,null,"add");
 		if (!$isPermit){
