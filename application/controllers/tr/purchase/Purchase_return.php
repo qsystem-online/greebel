@@ -433,12 +433,14 @@ class Purchase_return extends MY_Controller{
 			return;
 		}
 
-		$isEditable = $this->trpurchasereturn_model->isEditable($finPurchaseReturnId);
-        if($isEditable["status"] != "SUCCESS"){
-            return $isEditable;
-		}
 		
 		try{
+			
+			$isEditable = $this->trpurchasereturn_model->isEditable($finPurchaseReturnId);
+			if($isEditable["status"] != "SUCCESS"){
+				return $isEditable;
+			}
+			
 
 			$this->db->trans_start();
 			$data =[];
