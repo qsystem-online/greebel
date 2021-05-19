@@ -85,7 +85,7 @@ class Promotion extends MY_Controller
         if ($mode == 'ADD'){
             $data["title"] ="Add Sales Promotion";
         }else if ($mode == "EDIT"){
-            $data["title"] ="Update Sales Promotiont";
+            $data["title"] ="Update Sales Promotion";
         }else if ($mode == "COPY"){
             $data["title"] ="Add Sales Promotion (Copy)";
         }
