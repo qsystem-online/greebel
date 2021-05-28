@@ -72,7 +72,6 @@
 	</div>
 
 	<!-- Detail -->
-
 	<table class="table  table-condensed" style="width:100%;padding-bottom:0px">
 		<thead>
 			<tr>
@@ -83,18 +82,14 @@
 				<th style="width:10%;text-align:right">Qty</th>-->
 			</tr>
 		</thead>
-
 		<tbody>
-
 			<?php foreach($promoTerms as $promoTerm){ ?>
-			
 				<tr>
 					<td><?= $promoTerm["fst_item_type"]  ." - " . $promoTerm["ItemTerms"] ?></td>
 					<!--<td><= $promoTerm["fst_unit"]?> </td>
 					<td class="text-right"><= $promoTerm["fdb_qty"]?> </td>-->
 				</tr>
 			<?php }?>	
-
 		</tbody>	
 	</table>
 
@@ -105,15 +100,18 @@
 				<th style="width:75%">Type - Participant By Customer Name</th>
 			</tr>
 		</thead>
-
 		<tbody>
-
-			<?php foreach($promoParticipants as $promoParticipant){ ?>
-				
+			<?php if(!empty($promoParticipants)){ ?>
+				<?php foreach($promoParticipants as $promoParticipant){ ?>
 				<tr>
-					<td><?= $promoParticipant["fst_participant_type"]  ." - " . $promoParticipant["ParticipantName"] ?></td>
+				<td><?= $promoParticipant["fst_participant_type"]  ." - " . $promoParticipant["ParticipantName"] ?></td>
 				</tr>
-			<?php }?>	
+				<?php }?>
+			<?php }else{?>
+				<tr>
+					<td>-</td>
+				</tr>
+			<?php }?>		
 		</tbody>	
 	</table>
 	<!-- Detail 3 -->
@@ -145,9 +143,15 @@
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach($promoParticipantsRestric as $ParticipantsRestric){ ?>
+			<?php if(!empty($promoParticipantsRestric)){ ?>
+				<?php foreach($promoParticipantsRestric as $ParticipantsRestric){ ?>
 				<tr>
-					<td><?= $ParticipantsRestric["ParticipantRestric_Name"] ?></td>
+				<td><?= $ParticipantsRestric["ParticipantRestric_Name"] ?></td>
+				</tr>
+				<?php }?>
+			<?php }else{?>
+				<tr>
+					<td>-</td>
 				</tr>
 			<?php }?>	
 		</tbody>	
@@ -162,13 +166,19 @@
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach($freeItems as $freeItem){ ?>
+			<?php if(!empty($freeItems)){ ?>
+				<?php foreach($freeItems as $freeItem){ ?>
 				<tr>
 					<td><?= $freeItem["FreeItem"]?></td>
 					<td><?= $freeItem["fdb_qty"]?></td>
 					<td><?= $freeItem["fst_unit"]?> </td>
 				</tr>
-			<?php }?>	
+				<?php }?>
+			<?php }else{?>
+				<tr>
+					<td>-</td>
+				</tr>
+			<?php }?>		
 		</tbody>	
 	</table>
 </div>

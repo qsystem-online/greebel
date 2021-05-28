@@ -196,4 +196,11 @@ class Glaccounts_model extends MY_Model
         $rs = $qr->result();
         return $rs;
     }
+
+    public function getAccountBukubesar(){
+        $ssql = "SELECT * FROM glaccounts WHERE fst_glaccount_level in ('DT','DK','DB') AND fst_active ='A' ORDER BY fst_glaccount_code";
+        $qr = $this->db->query($ssql,[]);		
+        $rs = $qr->result();	
+        return $rs;		
+    }
 }
