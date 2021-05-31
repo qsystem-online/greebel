@@ -20,6 +20,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         border-bottom-color: #3c8dbc;        
         border-bottom-style:fixed;
     }
+	.form-group{
+		margin-bottom: 5px;
+	}
+	.checkbox label, .radio label {
+		font-weight:700;
+	}
 </style>
 
 <section class="content-header">

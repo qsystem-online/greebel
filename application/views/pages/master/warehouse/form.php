@@ -5,6 +5,31 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/datatables.min.css">
 <link rel="stylesheet" href="<?= base_url() ?>bower_components/datatables.net/dataTables.checkboxes.css">
 
+<style type="text/css">
+	.border-0{
+		border: 0px;
+	}
+	td{
+		padding: 2px; !important 		
+	}
+    .nav-tabs-custom>.nav-tabs>li.active>a{
+        font-weight:bold;
+        border-left-color: #3c8dbc;
+        border-right-color: #3c8dbc;
+        border-style:fixed;
+    }
+    .nav-tabs-custom>.nav-tabs{
+        border-bottom-color: #3c8dbc;        
+        border-bottom-style:fixed;
+    }
+	.form-group{
+		margin-bottom: 5px;
+	}
+	.checkbox label, .radio label {
+		font-weight:700;
+	}
+</style>
+
 <section class="content-header">
     <h1><?= lang("Warehouse") ?><small><?= lang("form") ?></small></h1>
     <ol class="breadcrumb">

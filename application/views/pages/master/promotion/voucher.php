@@ -11,97 +11,85 @@
 	}
 	.total{
 		font-size:9pt;
+	}
+	.headerteks{
+	text-align: center;
 	}	
 </style>
 
 <div class='voucher content'>	
-	<div class="row"><h2><?= $title?></h2></div>
+	<div class="row"><h2 class="headerteks"><?=$mspromo["fst_promo_name"]?></h2></div>
 
 	<div class="row">
-		<div class="col" style="width:70%">
-			<div class="inline first-col">Nama Promo</div>			
+		<div class="col" style="width:60%">
+			<div class="inline first-col">Periode</div>
 			<div class="inline" style="width:15px">:</div>
-			<div class="inline"><?=$mspromo["fst_promo_name"]?></div>
-		</div>		
-		<div class="col" style="width:30%">
+			<div class="inline"><?=date("d-M-Y",strtotime($mspromo["fdt_start"]))?></div>
+		</div>	
+		<div class="col" style="width:40%">
             <div class="inline first-col">Cashback</div>			
 			<div class="inline" style="width:15px">:</div>
 			<div class="inline text-right"><?=number_format($mspromo["fdc_cashback"])?></div>
 		</div>
 	</div>
 	<div class="row">
-		<div class="col" style="width:70%">
-			<div class="inline first-col">Free Item</div>
+		<div class="col" style="width:60%">
+			<div class="inline first-col">s/d</div>
 			<div class="inline" style="width:15px">:</div>
-			<div class="inline"><?=$mspromo["fst_item_name"] ?></div>
+			<div class="inline"><?=date("d-M-Y",strtotime($mspromo["fdt_end"]))?></div>
 		</div>
-		<div class="col" style="width:30%">
-			<div class="inline first-col">Periode</div>
+		<div class="col" style="width:40%">
+			<div class="inline first-col">Other Item</div>
 			<div class="inline" style="width:15px">:</div>
 			<div class="inline text-right"><?=$mspromo["fst_other_prize"]?></div>
 		</div>
 	</div>
     <div class="row">
-		<div class="col" style="width:70%">
-			<div class="inline first-col">Qty</div>
+		<div class="col" style="width:60%">
+			<div class="inline first-col">Type</div>
 			<div class="inline" style="width:15px">:</div>
-			<div class="inline"><?=$mspromo["fdb_promo_qty"] ?></div>
+			<div class="inline"><?=$mspromo["fst_promo_type"] ?></div>
 		</div>
-		<div class="col" style="width:30%">
+		<div class="col" style="width:40%">
 			<div class="inline first-col">Nilai</div>
 			<div class="inline" style="width:15px">:</div>
 			<div class="inline text-right"><?=number_format($mspromo["fdc_other_prize_in_value"])?></div>
 		</div>
 	</div>
     <div class="row">
-		<div class="col" style="width:70%">
-			<div class="inline first-col">Satuan</div>
+		<div class="col" style="width:60%">
+			<div class="inline first-col"style="width:80px">Min. Purchase</div>
 			<div class="inline" style="width:15px">:</div>
-			<div class="inline"><?=$mspromo["fst_promo_unit"] ?></div>
-		</div>
-		<div class="col" style="width:30%">
-			<div class="inline first-col">Periode</div>
-			<div class="inline" style="width:15px">:</div>
-			<div class="inline text-right"><?=date("d-M-Y",strtotime($mspromo["fdt_start"]))?></div>
+			<div class="inline"><?=number_format($mspromo["fdc_min_total_purchase"])?></div>
 		</div>
 	</div>
     <div class="row">
-		<div class="col" style="width:70%">
-			<div class="inline first-col">Type</div>
+		<div class="col" style="width:60%">
+			<div class="inline first-col">Min. Qty</div>
 			<div class="inline" style="width:15px">:</div>
-			<div class="inline"><?=$mspromo["fst_promo_type"] ?></div>
-		</div>
-		<div class="col" style="width:30%">
-			<div class="inline first-col">s/d</div>
-			<div class="inline" style="width:15px">:</div>
-			<div class="inline text-right"><?=date("d-M-Y",strtotime($mspromo["fdt_end"]))?></div>
+			<div class="inline"><?=$mspromo["fdb_qty_gabungan"]?> <?=$mspromo["fst_unit_gabungan"]?></div>
 		</div>
 	</div>
 
 	<!-- Detail -->
-
 	<table class="table  table-condensed" style="width:100%;padding-bottom:0px">
 		<thead>
 			<tr>
 				<th style="width:75%">Type - Item Terms</th>
-				<th style="width:5%">Unit</th>
+				<!--<th style="width:5%">Unit</th>
 				<!--<th class="text-right" style="width:12%">Price</th>
-				<th class="text-center" style="width:5%">Disc</th>-->
-				<th style="width:10%;text-align:right">Qty</th>
+				<th class="text-center" style="width:5%">Disc</th>
+				<th style="width:10%;text-align:right">Qty</th>-->
 			</tr>
 		</thead>
-
 		<tbody>
-
 			<?php foreach($promoTerms as $promoTerm){ ?>
-			
 				<tr>
 					<td><?= $promoTerm["fst_item_type"]  ." - " . $promoTerm["ItemTerms"] ?></td>
-					<td><?= $promoTerm["fst_unit"]?> </td>
-					<td class="text-right"><?= $promoTerm["fdb_qty"]?> </td>
+					<!--<td><= $promoTerm["fst_unit"]?> </td>
+					<td class="text-right"><= $promoTerm["fdb_qty"]?> </td>-->
 				</tr>
 			<?php }?>	
-
 		</tbody>	
 	</table>
 
@@ -109,47 +97,90 @@
 	<table class="table  table-condensed" style="width:100%;padding-bottom:0px">
 		<thead>
 			<tr>
-				<th style="width:75%">Type - Participant Name</th>
+				<th style="width:75%">Type - Participant By Customer Name</th>
 			</tr>
 		</thead>
-
 		<tbody>
-
-			<?php foreach($promoParticipants as $promoParticipant){ ?>
-				
+			<?php if(!empty($promoParticipants)){ ?>
+				<?php foreach($promoParticipants as $promoParticipant){ ?>
 				<tr>
-					<td><?= $promoParticipant["fst_participant_type"]  ." - " . $promoParticipant["ParticipantName"] ?></td>
+				<td><?= $promoParticipant["fst_participant_type"]  ." - " . $promoParticipant["ParticipantName"] ?></td>
+				</tr>
+				<?php }?>
+			<?php }else{?>
+				<tr>
+					<td>-</td>
+				</tr>
+			<?php }?>		
+		</tbody>	
+	</table>
+	<!-- Detail 3 -->
+	<table class="table  table-condensed" style="width:100%;padding-bottom:0px">
+		<thead>
+			<tr>
+				<th style="width:75%">Participant By Area</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php if(!empty($promoparticipantsarea)){ ?>
+				<?php foreach($promoparticipantsarea as $row){ ?>
+				<tr>
+					<td><?= $row->fst_province_name ?></td>
+				</tr>
+				<?php }?>
+			<?php }else{?>
+				<tr>
+					<td>-</td>
+				</tr>
+			<?php }?>
+		</tbody>	
+	</table>
+	<!-- Detail 4 -->
+	<table class="table  table-condensed" style="width:100%;padding-bottom:0px">
+		<thead>
+			<tr>
+				<th style="width:75%">Exclude Participant By Customer Name</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php if(!empty($promoParticipantsRestric)){ ?>
+				<?php foreach($promoParticipantsRestric as $ParticipantsRestric){ ?>
+				<tr>
+				<td><?= $ParticipantsRestric["ParticipantRestric_Name"] ?></td>
+				</tr>
+				<?php }?>
+			<?php }else{?>
+				<tr>
+					<td>-</td>
 				</tr>
 			<?php }?>	
 		</tbody>	
 	</table>
-	<!-- Detail 2 -->
+	<!-- Detail 5 -->
 	<table class="table  table-condensed" style="width:100%;padding-bottom:0px">
 		<thead>
 			<tr>
-				<th style="width:65%">Item Name Discount</th>
+				<th style="width:85%">Free Items</th>
 				<th style="width:10%">Qty</th>
 				<th style="width:5%">Unit</th>
-				<th class="text-center" style="width:5%">Disc</th>
-				<th class="text-right" style="width:12%">Disc Amount</th>
 			</tr>
 		</thead>
-
 		<tbody>
-
-			<?php foreach($promodiscItems as $promodiscItem){ ?>
-				
+			<?php if(!empty($freeItems)){ ?>
+				<?php foreach($freeItems as $freeItem){ ?>
 				<tr>
-					<td><?= $promodiscItem["fst_item_name"]?></td>
-					<td><?= $promodiscItem["fin_qty"]?></td>
-					<td><?= $promodiscItem["fst_unit"]?> </td>
-					<td class="text-right"><?= $promodiscItem["fdc_disc_persen"]?> </td>
-					<td class="text-right"><?= formatNumber($promodiscItem["fdc_disc_value"])?> </td>
+					<td><?= $freeItem["FreeItem"]?></td>
+					<td><?= $freeItem["fdb_qty"]?></td>
+					<td><?= $freeItem["fst_unit"]?> </td>
 				</tr>
-			<?php }?>	
+				<?php }?>
+			<?php }else{?>
+				<tr>
+					<td>-</td>
+				</tr>
+			<?php }?>		
 		</tbody>	
 	</table>
-	
 </div>
 
 <htmlpagefooter name="AssigmentFooter">							

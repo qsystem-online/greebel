@@ -648,7 +648,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 }
 
                 if (addRow) {
-                    
                     var dataUnit = {
                         fin_rec_id: 0,
                         fin_item_id: 0,
@@ -662,7 +661,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         fdc_het: HET.value(),
                         action: action
                     }
-
                     if (unit_detail == null){
                         t.row.add(dataUnit).draw(false);
                     }else{

@@ -10,16 +10,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	td{
 		padding: 2px; !important 		
 	}
-
-	.nav-tabs-custom>.nav-tabs>li.active>a{
-		font-weight:bold;
-		border-left-color: #3c8dbc;
-		border-right-color: #3c8dbc;
-		border-style:fixed;
+    .nav-tabs-custom>.nav-tabs>li.active>a{
+        font-weight:bold;
+        border-left-color: #3c8dbc;
+        border-right-color: #3c8dbc;
+        border-style:fixed;
+    }
+    .nav-tabs-custom>.nav-tabs{
+        border-bottom-color: #3c8dbc;        
+        border-bottom-style:fixed;
+    }
+	.form-group{
+		margin-bottom: 5px;
 	}
-	.nav-tabs-custom>.nav-tabs{
-		border-bottom-color: #3c8dbc;        
-		border-bottom-style:fixed;
+	.checkbox label, .radio label {
+		font-weight:700;
 	}
 </style>
 

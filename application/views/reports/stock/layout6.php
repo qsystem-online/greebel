@@ -19,22 +19,11 @@
 		<div>LAPORAN PERSEDIAAN SEMUA GUDANG</div>
 		<br>
 		<?php
-		$fin_warehouse_id = $this->input->post("fin_warehouse_id");
-		$this->load->model("mswarehouse_model");
-		$data = $this->mswarehouse_model->getDataById($fin_warehouse_id);
-		$wareHouse = $data ["warehouse"];
-		if ($wareHouse != null){
-			$name_wareHouse = $wareHouse->fst_warehouse_name;
-		}else{
-			$name_wareHouse = "ALL";
-		}
-		?>
-		<?php
 		$start_date = $this->input->post("fdt_from");
 		if ($start_date != null){
 			$start_date = $start_date;
 		}else{
-			$start_date = "1900-01-01";
+			$start_date = "01-01-1900";
 		}
 		?>
 		<?php
@@ -42,11 +31,10 @@
 		if ($end_date != null){
 			$end_date = $end_date;
 		}else{
-			$end_date = "3000-01-01";
+			$end_date = "01-01-3000";
 		}
 		?>
-		<div>Gudang : <?= $name_wareHouse ?></div>
-		<div>Tanggal: <?= $start_date ?>  s/d <?= $end_date ?></div>                             
+		<div>s/d Tanggal: <?= $end_date ?></div>                             
 		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:2000px">      
 			<thead>
 				<tr style="background-color:navy;color:white">
