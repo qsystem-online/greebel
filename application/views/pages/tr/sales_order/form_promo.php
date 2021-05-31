@@ -22,12 +22,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="box-header with-border">
 					<h3 class="box-title title pull-left"><?=$title?></h3>
 					<div class="btn-group btn-group-sm  pull-right">					
-						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
-						<a id="btnPromo" class="btn btn-primary" href="#" title="<?=lang("Cek Promo")?>"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
-						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
-						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>					
 				</div>
 				<!-- end box header -->
@@ -35,6 +30,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<form id="frmSalesOrder" class="form-horizontal" action="<?=site_url()?>tr/sales_order/add" method="POST" enctype="multipart/form-data">			
 					<div class="box-body">
 						<table id="tblItemsPromo" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+						
+						<br>
+						<label> Claimed Prize :</label>
+						<br>
+						<table id="tblClaimedPrize" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+
 
 					</div>
 					<!-- end box body -->
@@ -47,6 +48,249 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	</div>
 </section>
 
+<div id="myModal" class="modal fade in" role="dialog" style="display: hidden">
+	<div class="modal-dialog" style="display:table;width:650px">
+		<!-- modal content -->
+		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
+			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title"><?=lang("Add SO Detail")?></h4>
+			</div>
+
+			<div class="modal-body">	
+				<div id="dialog-info" class="alert alert-info" style="display:none">
+					<a href="#" class="close" onclick="$('#dialog-info').hide()" aria-label="close">&times;</a>
+					<div class="info-message">
+						<strong>Info!</strong> 
+					</div>
+				</div>
+
+				<form class="form-horizontal">
+					<div class="form-group promo-cashback" >
+						<label for="dfin_item" class="col-md-3 control-label"><?=lang("Cashback")?> : </label>
+						<label class="col-md-6 control-label" id="promo-cashback">0.00</label>
+						<div class="col-md-3">
+							<input id="btn-add-cashback" type="button" class="form-control btn btn-primary" value="Add Casback">
+						</div>
+
+					</div>
+					<div class="form-group promo-other" >
+						<label for="dfin_item" class="col-md-3 control-label"><?=lang("Other Item")?> : </label>
+						<label class="col-md-6 control-label" id="promo-other">-</label>
+						<div class="col-md-3">
+							<input id="btn-add-other" type="button" class="form-control btn btn-primary" value="Add Other">
+						</div>
+
+					</div>
+				
+
+					<div class="form-group promo-freeitem">
+						<label for="dfst_unit" class="col-md-12 control-label"><?=lang("Free Items")?></label>
+						<div class="col-md-12">
+							<table id="tblFreeItems" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+						</div>
+					</div>					
+				</form>													
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript" info="defined">
+		var tblFreeItems;
+
+		frmAdd = {
+			selectedPromo:null,
+			show:function(row){
+				this.selectedPromo=row;
+				var data = tblItemsPromo.row(this.selectedPromo).data();
+
+				var claimData = tblClaimedPrize.data();
+
+
+				if (data.fbl_promo_gabungan == 0  && claimData.length > 0){
+					if (confirm("Promo tidak dapat digabung, hapus daftar hadiah ?") ){
+						tblClaimedPrize.rows().remove().draw(false);						
+					}else{
+						return;
+					}					
+				}
+
+				$.each
+
+
+				$.ajax({
+					url:"<?=site_url()?>tr/sales_order/ajxGetDetailPromo/" + data.fin_promo_id,
+					method:"GET",
+				}).done(function(resp){
+					if (resp.status == "SUCCESS"){
+						var data = resp.data;
+						var promo = data.promo;
+						var freeItems = data.free_items;
+
+						$(".promo-cashback").show();					
+						var cashback = parseFloat(promo.fdc_cashback);
+						if ( cashback <= 0 ){
+							$(".promo-cashback").hide();							
+						}
+						$("#promo-cashback").text(promo.fdc_cashback);
+
+
+						$(".promo-other").show();
+						if (promo.fst_other_prize == "" ){
+							$(".promo-other").hide();							
+						}
+						$("#promo-other").text(promo.fst_other_prize);
+
+
+						$(".promo-freeitem").show();
+						tblFreeItems.clear().draw();
+						if (freeItems.length <= 0){
+							$(".promo-freeitem").hide();
+						}
+						$.each(freeItems,function(i,v){
+							var data=v;
+							tblFreeItems.row.add(data).draw(false);							
+						});
+
+
+						$("#myModal").modal("show");
+					}
+					
+				})
+			},
+			hide:function(){
+				this.selectedPromo=null;
+				$("#myModal").modal("hide");
+			}
+		}
+	</script>
+
+
+	<script type="text/javascript" info="event">
+		$(function(){
+			$("#btn-add-cashback").click(function(e){
+				e.preventDefault();
+				var data = tblItemsPromo.row(this.selectedPromo).data();
+				var cashback = $("#promo-cashback").text();				
+				cashback = App.money_parse(cashback);				
+				addPrize("CSHBCK",0,'CSHBCK',"CASH BACK",cashback);				
+			});
+
+			$("#btn-add-other").click(function(e){
+				e.preventDefault();
+				var data = tblItemsPromo.row(this.selectedPromo).data();
+				var othPrize = $("#promo-other").text();				
+				addPrize("OTH_ITEM",0,"OTHP",othPrize,0);				
+			});
+
+			
+		})
+	</script>
+
+	<script type="text/javascript" info="init">
+		$(function(){
+
+			tblFreeItems = $('#tblFreeItems').on('preXhr.dt', function ( e, settings, data ) {
+				//add aditional data post on ajax call
+				data.sessionId = "TEST SESSION ID";		
+			}).on('init.dt',function(){
+				$(".dataTables_scrollHeadInner").css("min-width","100%");
+				$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+				$(".dataTables_scrollBody").css("position","static");
+			}).DataTable({
+				scrollY: "300px",
+				scrollX: true,			
+				scrollCollapse: true,	
+				order: [],
+				columns:[				
+					{"title" : "id",sortable:false,data:"fin_rec_id",visible:false},				
+					{"title" : "Item","width": "",sortable:false,data:"fst_item_name",className:'text-left'},
+					{"title" : "Unit","width": "25px",sortable:false,data:"fst_unit",className:'text-left'},
+					{"title" : "Qty","width": "25px",sortable:false,data:"fdb_qty",className:'text-right'},
+					{"title" : "Action","width": "60px",sortable:false,className:'dt-body-center text-center',
+						render:function(data,type,row){
+							var action = '<a class="btn-add-free-item" href="#" data-original-title="" title=""><i class="fa fa-plus-square"></i></a>&nbsp;';
+							//action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
+							return action;
+						}
+					},
+					
+				],
+				processing: true,
+				serverSide: false,
+				searching: false,
+				lengthChange: false,
+				paging: false,
+				info:false,
+			}).on('draw',function(){
+				$(".dataTables_scrollHeadInner").css("min-width","100%");
+				$(".dataTables_scrollHeadInner > table").css("min-width","100%");	
+			}).on("click",".btn-add-free-item",function(event){
+				event.preventDefault();					
+				var promo = tblItemsPromo.row(this.selectedPromo).data();
+
+				var trRow = $(this).parents('tr');			
+				var data = tblFreeItems.row(trRow).data();
+
+				addPrize("FREE_ITEM",data.fin_item_id,data.fst_item_code,data.fst_item_name,0);				
+				//myModal.show();
+			});
+
+		});
+	</script>
+
+	<script type="text/javascript" info="function">
+		function addPrize(prizeType,itemId,itemCode,itemName,cashbackValue){
+			var currentPromo = tblItemsPromo.row(frmAdd.selectedPromo).data();
+
+			
+			data = {
+				fin_promo_id:currentPromo.fin_promo_id,
+				fst_promo_name:currentPromo.fst_promo_name,
+				fbl_promo_gabungan:currentPromo.fbl_promo_gabungan,
+				fst_prize_type:prizeType,
+				fin_item_id:itemId,
+				fst_item_code:itemCode,
+				fst_item_name:itemName,
+				fdc_cashback: cashbackValue
+			}
+
+			//Cek If Duplikat
+
+			var dataClaims = tblClaimedPrize.data();
+			var duplicate = false;
+
+			$.each(dataClaims,function(i,v){
+				if (data.fin_promo_id == v.fin_promo_id){
+					if (data.fst_prize_type == v.fst_prize_type &&  data.fst_prize_type != "FREE_ITEM"){
+						duplicate = true;
+						return false;
+					}
+
+					if (data.fst_prize_type == "FREE_ITEM"){
+						//if (data.fin_item_id == v.fin_item_id){
+							alert("tidak bisa ditambah, Free item sudah digunakan !");
+							duplicate = true;
+							return false;
+						//}
+
+					}
+				}				
+			});
+
+			if (duplicate == false){
+				tblClaimedPrize.row.add(data).draw(false);
+			}
+
+			frmAdd.hide();
+			
+
+		}
+	</script>
+</div>
 
 
 
@@ -60,13 +304,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript" info="define">	
 	var tblItemsPromo;
+	var tblClaimedPrize;
+	var selectedPromo;
 </script>
 
 <script type="text/javascript" info="init">
 	$(function(){
 		
 			
-
+		
 		tblItemsPromo = $('#tblItemsPromo').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";		
@@ -80,20 +326,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			scrollCollapse: true,	
 			order: [],
 			columns:[				
-				{"title" : "promo",sortable:false,data:"fin_promo_id",visible:true},				
-				{"title" : "Promo","width": "320px",sortable:false,data:"fst_promo_name"},
-				{"title" : "Start","width": "0px",sortable:false,data:"fdt_start"},
-				{"title" : "End","width": "0px",sortable:false,data:"fdt_end"},
+				{"title" : "promo id",sortable:false,data:"fin_promo_id",visible:false},				
+				{"title" : "Promo","width": "",sortable:false,data:"fst_promo_name"},
+				{"title" : "Start","width": "100px",sortable:false,data:"fdt_start"},
+				{"title" : "End","width": "100px",sortable:false,data:"fdt_end"},
+				{"title" : "Gabungan","width": "25px",sortable:false,data:"fbl_promo_gabungan",className:'text-center',
+					render:function(data,type,row){
+						var checked = "";
+						if (data == 1){
+							checked ="checked";
+						}
+						return "<input type='checkbox' disabled " + checked + "/>";
+					}				
+				},
 				{"title" : "Action","width": "60px",sortable:false,className:'dt-body-center text-center',
 					render:function(data,type,row){
-						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';
-						//action += '<a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
-						if (row.fin_promo_id == 0){
-							return action;
-						}else{
-							return "";
-						}
-
+						var action = '<a class="btn-add-item" href="#" data-original-title="" title=""><i class="fa fa-plus-square"></i></a>&nbsp;';
+						return action;
 					}
 				},
 				
@@ -107,22 +356,63 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).on('draw',function(){
 			$(".dataTables_scrollHeadInner").css("min-width","100%");
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");	
-			calculateTotal();		
-		}).on("click",".btn-delete",function(event){
-			t = $('#tblSODetails').DataTable();
-			var trRow = $(this).parents('tr');
-
-			t.row(trRow).remove().draw();
-			calculateTotal();
-		}).on("click",".btn-edit",function(event){
+		}).on("click",".btn-add-item",function(event){
 			event.preventDefault();					
-			t = tblDetails;
+			
 			var trRow = $(this).parents('tr');			
-			selectedRow = t.row(trRow);
-			myModal.show();
+			frmAdd.show(trRow);
 		});
 
-		//init_form();
+
+		tblClaimedPrize = $('#tblClaimedPrize').on('preXhr.dt', function ( e, settings, data ) {
+		 	//add aditional data post on ajax call
+		 	data.sessionId = "TEST SESSION ID";		
+		}).on('init.dt',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+			$(".dataTables_scrollBody").css("position","static");
+		}).DataTable({
+			scrollY: "300px",
+			scrollX: true,			
+			scrollCollapse: true,	
+			order: [],
+			columns:[				
+				{"title" : "promo id",sortable:false,data:"fin_promo_id",visible:false},				
+				{"title" : "Promo","width": "300px",sortable:false,data:"fst_promo_name"},
+				{"title" : "Items","width": "",sortable:false,data:"fst_item_name",
+					render:function(data,type,row){
+						var item = row.fst_item_code + " - " + row.fst_item_name;
+						if (row.fdc_cashback >0){
+							item += " " + App.money_format(row.fdc_cashback);
+						}
+						return item;
+					}
+				},		
+				{"title" : "Action","width": "60px",sortable:false,className:'dt-body-center text-center',
+					render:function(data,type,row){
+						var action = '<a class="btn-delete-item" href="#" data-original-title="" title=""><i class="fa fa-trash"></i></a>&nbsp;';
+						return action;
+					}
+				},
+				
+			],
+			processing: true,
+			serverSide: false,
+			searching: false,
+			lengthChange: false,
+			paging: false,
+			info:false,
+		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");	
+		}).on("click",".btn-delete-item",function(event){
+			event.preventDefault();	
+			//alert("masuk");							
+			var trRow = $(this).parents('tr');			
+			tblClaimedPrize.row(trRow).remove().draw(false);
+		});
+
+		init_form();
 		App.fixedSelect2();		
 	});
 </script>
@@ -130,73 +420,84 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript" info="event">
 	$(function(){
 
-		
+		$("#btnSubmitAjax").click(function(e){
+			e.preventDefault();
+			saveAjax();
+		});
 
 	});
 </script>
 
 <script type="text/javascript" info="function">	
 
-	function saveAjax(confirmEdit){
+	function saveAjax(){
+
+
+		var details = [];
 		
+		$.each(tblClaimedPrize.data(),function(i,v){
+			details.push(v);
+		});
+
+
+		var data =[];
+
+		data.push({
+			name : SECURITY_NAME,
+			value: SECURITY_VALUE
+		});
+
+		data.push({
+			name : "fin_salesorder_id",
+			value: <?= $fin_salesorder_id?>
+		});
+
+		data.push({
+			name : "details",
+			value: JSON.stringify(details)
+		});
+
+		App.blockUIOnAjaxRequest("Please wait while saving data.....");
+		$.ajax({
+			url:"<?=site_url()?>tr/sales_order/ajx_save_promo",
+			type: "POST",
+			data: data,
+			timeout: 600000
+		}).done(function(resp){
+			console.log(resp);
+
+			if (resp.messages != ""){
+				alert(resp.messages);
+			}
+
+			if (resp.status == "SUCCESS"){			
+				window.location.replace("<?=site_url()?>tr/sales_order")
+			}
+
+		});
 		
 
-	}
-
-	
+	}	
 
 	function init_form(){
-		if ( $("#fin_salesorder_id").val() != 0 ){
-			//fetch data
-			App.blockUIOnAjaxRequest();
-			$.ajax({
-				url:"<?=site_url()?>tr/sales_order/fetch_data/" + $("#fin_salesorder_id").val(),				
-			}).done(function(resp){
-				if(resp.message != ""){
-					alert(resp.message);
-				}
-				if (resp.status == "SUCCESS"){
-					//Fill Forms
-					dataH = resp.data.sales_order;
-					detailData = resp.data.so_details;					
-					App.autoFillForm(dataH);
-					$("#fdt_salesorder_datetime").val(dateTimeFormat(dataH.fdt_salesorder_datetime)).datetimepicker("update");	
-					App.addOptionIfNotExist("<option value='"+ dataH.fin_relation_id +"' selected>" + dataH.fst_relation_name + "</option>","fin_relation_id");
+		<?php
+			//var_dump($promos);				
+			foreach($promos as $promo){
+				?>					
+					var data = {
+						fin_promo_id:<?=$promo->fin_promo_id?>,
+						fst_promo_name:"<?=$promo->fst_promo_name?>",
+						fbl_promo_gabungan:<?=$promo->fbl_promo_gabungan?>,
+						fdt_start:"<?=$promo->fdt_start?>",
+						fdt_end:"<?=$promo->fdt_end?>"
+					};
+					tblItemsPromo.row.add(data).draw(false);
 
-					App.addOptionIfNotExist("<option value='"+ dataH.fin_shipping_address_id +"' selected>" + dataH.fst_address_name + "</option>","fin_shipping_address_id");
-					$("#fst_shipping_address").val(dataH.fst_shipping_address);
-					$("#fin_sales_id").trigger("change");
-					
-					details = [];
-					$.each(detailData , function(i,detail){
-						data = {
-							fin_rec_id: detail.fin_rec_id,
-							fin_promo_id:detail.fin_promo_id,
-							fin_item_id:detail.fin_item_id,
-							fst_item_name:detail.fst_item_name,
-							fst_item_code:detail.fst_item_code,
-							fst_custom_item_name:detail.fst_custom_item_name,
-							fst_max_item_discount:detail.fst_max_item_discount,
-							fdb_qty: detail.fdb_qty,
-							fst_unit: detail.fst_unit,
-							fdc_price : detail.fdc_price,
-							fst_disc_item : detail.fst_disc_item,
-							fdc_disc_amount_per_item: detail.fdc_disc_amount_per_item,
-							fst_memo_item: detail.fst_memo_item,
-							real_stock: detail.real_stock,
-							marketing_stock: detail.marketing_stock,
-							fst_basic_unit: detail.fst_basic_unit,
-							fdc_conv_to_basic_unit: detail.fdc_conv_to_basic_unit,							
-						}
-						details.push(data);
-					});
-					t = tblDetails;
-					t.rows.add(details).draw(false);
-					calculateTotal();
-				}
-			})
-		}
+				<?php
+			}
+		?>
 
+		
 
 	}	
 

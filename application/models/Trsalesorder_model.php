@@ -719,7 +719,7 @@ class Trsalesorder_model extends MY_Model {
         $ssql ="SELECT * FROM mspromo WHERE 
             ? between fdt_start  AND fdt_end
             AND fst_active ='A' 
-            AND FIND_IN_SET(?,a.fst_list_branch_id)
+            AND FIND_IN_SET(?,fst_list_branch_id)
             ORDER BY fin_priority ASC";
 
         $qr = $this->db->query($ssql,[$header->fdt_salesorder_datetime,$this->aauth->get_active_branch_id()]);
@@ -758,7 +758,7 @@ class Trsalesorder_model extends MY_Model {
                     AND fin_customer_id = ? 
                     AND fst_active ='A'";
                     $qr = $this->db->query($ssql,[$customer->fin_relation_id]);
-                    $rwCek = $this->db->row();
+                    $rwCek = $qr->row();
                     if ($rwCek == null){
                         continue;
                     }
@@ -802,9 +802,9 @@ class Trsalesorder_model extends MY_Model {
                 if ($term != null){
                     //Convert Satuan 
                     $targetSatuan = $term->fst_unit;
-                    $sourceSatuan = $details->fst_unit;
+                    $sourceSatuan = $detail->fst_unit;
                     $qtyTargetSatuan = $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$detail->fdb_qty,$sourceSatuan,$targetSatuan);
-                    if ($qtyTargetSatuan >= $term->fd_qty){
+                    if ($qtyTargetSatuan >= $term->fdb_qty){
                         //Sudah memenuhi syarat Promo ini, tidak perlu cek syarat lain
                         $termValid = true;
                         break;

@@ -955,7 +955,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								}
 
 								if(resp.status == "CEK_PROMO"){
-									window.location.replace("<?=site_url()?>tr/cek_promo/" + resp.data.insert_id);
+									window.location.replace("<?=site_url()?>tr/sales_order/cek_promo/" + resp.data.insert_id);
 									return;
 								}
 

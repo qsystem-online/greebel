@@ -82,7 +82,10 @@ class Sales_order extends MY_Controller{
 						return 'Deleted';
 					}else if (data == 'R'){
 						return 'Rejected';
+					}else if (data == 'P'){
+						return 'PENDING PROMO';
 					}
+
 				}"
 			],
 			['title' => 'Closed', 'width' => '50px', 'data' => 'fbl_is_closed','className'=>'text-center',
@@ -233,16 +236,26 @@ class Sales_order extends MY_Controller{
 				];
 				$this->trsalesorderdetails_model->insert($dataDetail);			
 			}
+			
+			//Cek Promo
+			$arrPromo = $this->trsalesorder_model->getDataPromo($insertId);
 
-			//Create authorize record
-			$this->trsalesorder_model->generateApprovalData($needAuthorizeList,$insertId,$dataH["fst_salesorder_no"]);
+			if (sizeof($arrPromo) == 0){
+				//Create authorize record
+				$this->trsalesorder_model->generateApprovalData($needAuthorizeList,$insertId,$dataH["fst_salesorder_no"]);
 
-			$this->trsalesorder_model->posting($insertId);
+				$this->trsalesorder_model->posting($insertId);
+			}else{
+				//Change
+				$ssql ="UPDATE trsalesorder set fst_active = 'P' where fin_salesorder_id = ?";
+				$this->db->query($ssql,[$insertId]);
+			}
+
+			
 
 			$this->db->trans_complete();
 
-			//Cek Promo
-			$arrPromo = $this->trsalesorder_model->getDataPromo($insertId);
+			
 
 
 			if (sizeof($arrPromo) > 0){
@@ -573,7 +586,9 @@ class Sales_order extends MY_Controller{
 		$ttlDiscAmount = 0;
 
 		for($i = 0; $i < sizeof($details) ; $i++){
-			$item = $details[$i];
+			//$dataD = $details[$i];
+			
+
 			//remove if promo item (Clear All Item Promo)
 			if ($details[$i]->fin_promo_id != null){
 				unset($details[$i]);
@@ -581,11 +596,12 @@ class Sales_order extends MY_Controller{
 			}
 
 			//Get Max Disc
-			$item = $this->msitems_model->getSimpleDataById($item->fin_item_id);
+			$item = $this->msitems_model->getSimpleDataById($details[$i]->fin_item_id);
 			$details[$i]->fst_max_item_discount = $item->fst_max_item_discount;
 			
 			//get Price from system
-			$price = $this->msitems_model->getSellingPrice($item->fin_item_id,$item->fst_unit,$dataH["fin_relation_id"]);
+			$price = $this->msitems_model->getSellingPrice($item->fin_item_id,$details[$i]->fst_unit,$dataH["fin_relation_id"]);
+
 			if ($price == 0 ){ // Bila dimaster harga 0, berarti user boleh menentukan harga sendiri
 				$price = $item->fdc_price;
 			}
@@ -681,6 +697,215 @@ class Sales_order extends MY_Controller{
 
 	}
 
+	public function ajx_save_promo(){	
+		$this->load->model("trvoucher_model");	
+
+		
+
+		$finSalesOrderId = $this->input->post("fin_salesorder_id");
+		$dataH = (array) $this->trsalesorder_model->getsimpleDataById($finSalesOrderId);
+		$ssql = "SELECT * FROM trsalesorderdetails where fin_salesorder_id = ? and fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$finSalesOrderId]);
+		$details = $qr->result();
+
+		
+
+
+		try{
+
+			$resp = $this->trsalesorder_model->isEditable($finSalesOrderId);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"], 3003,$resp["status"],[]);
+			}	
+
+
+
+
+			$this->db->trans_start();
+			$this->trsalesorder_model->unposting($finSalesOrderId);
+			//delete item promo and voucher
+			$this->db->query("DELETE FROM trsalesorderdetails where fin_salesorder_id = ? and fin_promo_id != 0",[$finSalesOrderId]);
+			throwIfDBError();
+			//Delete Voucher
+			$this->db->query("DELETE FROM trvoucher where fst_transaction_type ='SALESORDER' and fin_transaction_id = ?",[$finSalesOrderId]);
+			throwIfDBError();
+
+			for($i=0;$i<sizeof($details);$i++){			
+				$detail = $details[$i];
+				$item = $this->msitems_model->getSimpleDataById($detail->fin_item_id);
+				$detail->fst_max_item_discount ="";
+				if ($item != null){
+					$detail->fst_max_item_discount = $item->fst_max_item_discount;
+				}
+				
+				$details[$i] = $detail;
+			}
+
+
+
+		
+			//** Cek if this transaction need authorization */				
+			$needAuthorizeList = $this->trsalesorder_model->getAuthorizationList($dataH,$details);
+			if ($needAuthorizeList["need_authorize"] == true){
+				$this->db->query("Update trsalesorder set fst_active = 'S' where fin_salesorder_id = ?",[$finSalesOrderId]);
+				$this->trsalesorder_model->generateApprovalData($needAuthorizeList,$finSalesOrderId,$dataH["fst_salesorder_no"]);
+			}else{
+				$this->db->query("Update trsalesorder set fst_active = 'A' where fin_salesorder_id = ?",[$finSalesOrderId]);
+			}		
+			
+
+			//get list promo
+			$selectedPromos = json_decode($this->input->post("details"));
+			$arrPromo = $this->trsalesorder_model->getDataPromo($finSalesOrderId);
+
+			//cek all selected is exist
+			for($i=0;$i<sizeof($selectedPromos);$i++){
+				
+				$selectedPromo =$selectedPromos[$i];
+				$found = false;
+
+				foreach($arrPromo as $promo){
+
+					if ($selectedPromo->fin_promo_id == $promo->fin_promo_id){
+
+						if ($selectedPromo->fst_prize_type == "CSHBCK"){
+							if ($selectedPromo->fdc_cashback == $promo->fdc_cashback){
+								
+								$found = true;
+								//$selectedPromo["fin_item_id"]= 0;
+								//$selectedPromo["fst_item_name"] ="Cashback " . $selectedPromo["fdc_cashback"];
+								//$selectedPromos[$i] = $selectedPromo;
+								continue;
+							}
+						}
+
+						if ($selectedPromo->fst_prize_type == "OTH_ITEM"){
+							if ($selectedPromo->fst_item_name == $promo->fst_other_prize){								
+								$found = true;
+								continue;
+							}
+						}
+
+						if ($selectedPromo->fst_prize_type == "FREE_ITEM"){
+							$ssql = "SELECT * FROM mspromoprizes where fin_promo_id =? and fst_active ='A'";
+							$qr = $this->db->query($ssql,[$selectedPromo->fin_promo_id]);
+							$rstemp = $qr->result();
+							foreach($rstemp as $rw){
+								if ($rw->fin_item_id == $selectedPromo->fin_item_id){
+									$selectedPromo->fdb_qty= $rw->fdb_qty;
+									$found = true;
+									continue;
+								}
+
+							}
+						}
+					}
+				}
+				if ($found == false){
+					throw new CustomException("Invalid prize !", 9009, "FAILED",["prize"=>$selectedPromo]);					
+				}
+
+				
+			}
+
+			// All selected Promo is valid add to detail SO
+			foreach($selectedPromos as $selectedPromo){
+
+				if ($selectedPromo->fst_prize_type == "CSHBCK"){
+					
+					$dataVoucher = [
+						"fst_transaction_type"=>"SALESORDER",
+						"fin_transaction_id"=>$finSalesOrderId,
+						"fin_promo_id"=>$selectedPromo->fin_promo_id,
+						"fin_branch_id"=>$dataH["fin_branch_id"],
+						"fin_relation_id"=>$dataH["fin_relation_id"],
+						"fdc_value"=> $selectedPromo->fdc_cashback,
+						"fst_active"=>$dataH["fst_active"] //Bila tidak active maka diaktifkan pada saat approval SO
+					];
+					$this->trvoucher_model->createVoucher($dataVoucher);
+				}
+
+				if ($selectedPromo->fst_prize_type == "OTH_ITEM"){
+					$data = [
+						"fin_promo_id"=>$selectedPromo->fin_promo_id,
+						"fin_salesorder_id"=>$finSalesOrderId,
+						"fst_item_code"=> "PRZ",
+						"fin_item_id" => 0,
+						"fst_custom_item_name"=>$selectedPromo->fst_item_name,
+						"fst_max_item_discount" => "100",
+						"fst_unit"=>"PCS",
+						"fdb_qty"=>1,
+						"fdc_price"=>1,
+						"fst_disc_item"=>"100",
+						"fdc_disc_amount_per_item"=>1,
+						"fst_active"=>"A"
+					];
+					$this->trsalesorderdetails_model->insert($data);
+				}
+
+				if ($selectedPromo->fst_prize_type == "FREE_ITEM"){
+				
+					$ssql = "SELECT a.*,b.fst_item_name,b.fst_item_code FROM mspromoprizes a 
+						INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
+						where a.fin_promo_id = ? and a.fin_item_id = ? and a.fst_active ='A'";
+					$qr = $this->db->query($ssql,[$selectedPromo->fin_promo_id,$selectedPromo->fin_item_id]);
+					$promo = $qr->row();
+					$data = [
+						"fin_promo_id"=>$selectedPromo->fin_promo_id,
+						"fin_salesorder_id"=>$finSalesOrderId,
+						"fst_item_code"=> $promo->fst_item_code,
+						"fst_item_name"=>$promo->fst_item_name,
+						"fin_item_id" => $selectedPromo->fin_item_id,
+						"fst_custom_item_name"=>$selectedPromo->fst_item_name,
+						"fst_max_item_discount" => "100",
+						"fst_unit"=>$promo->fst_unit,
+						"fdb_qty"=>$promo->fdb_qty,
+						"fdc_price"=>1,
+						"fst_disc_item"=>"100",
+						"fdc_disc_amount_per_item"=>1,
+						"fst_active"=>"A"
+					];
+					$this->trsalesorderdetails_model->insert($data);
+				}
+					
+					
+			}
+			$this->trsalesorder_model->posting($finSalesOrderId);
+
+			$this->db->trans_complete();
+			$this->json_output([
+				"status"=>"SUCCESS",
+				"messages"=>"Data Saved !",
+				"data"=>[]
+			]);
+
+
+
+
+		}catch(CustomException $e){
+			$this->db->trans_rollback();
+
+			$this->json_output([
+				"status"=>$e->getStatus(),
+				"messages"=>$e->getMessage(),
+				"data"=>$e->getData()
+			]);
+		}
+		
+		
+
+
+
+
+
+
+		
+		
+		
+
+	}
+
+
 
 	public function cek_promo($finSalesOrderId){
 		$this->load->library("menus");		
@@ -692,6 +917,10 @@ class Sales_order extends MY_Controller{
 				
 		$data["title"] = "Add Items Promo";
 		
+		$arrPromo = $this->trsalesorder_model->getDataPromo($finSalesOrderId);
+		$data["promos"] = $arrPromo;
+		$data["fin_salesorder_id"] = $finSalesOrderId;
+
 		$page_content = $this->parser->parse('pages/tr/sales_order/form_promo', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
 
@@ -900,7 +1129,31 @@ class Sales_order extends MY_Controller{
 		return;
 	}
 	
-	
+	public function ajxGetDetailPromo($promoId){
+		$this->load->model("mspromo_model");
+
+		$promo = $this->mspromo_model->getSimpleDataById($promoId);
+
+		$ssql ="SELECT a.*,b.fst_item_code,b.fst_item_name FROM mspromoprizes a 
+			INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
+			WHERE a.fin_promo_id = ? and a.fst_active = 'A'";
+
+		$qr = $this->db->query($ssql,[$promoId]);
+		$rs = $qr->result();
+
+		$data = [
+			"promo"=>$promo,
+			"free_items"=>$rs
+		];
+
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"messages"=>"",
+			"data"=>$data
+		]);
+
+
+	}
 
 //===== UNHOLD SALES ORDER ==============================================================================================================================================================================
 
