@@ -701,6 +701,8 @@ class Trsalesorder_model extends MY_Model {
         return $arrPromo;
     }
 
+    
+
     public function getDataPromo($finSalesOrderId){
         $this->load->model("msrelations_model");
         $this->load->model("msitems_model");

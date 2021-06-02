@@ -290,38 +290,46 @@ class Sales_order extends MY_Controller{
 		$this->load->model('trsalesorder_model');
 		$this->load->model('trvoucher_model');
 		$this->load->model('trverification_model');
-		
-		
-
-		
-		//Is Editable ?
-		//CEK tgl lock dari transaksi yg di kirim	
-		$resp = dateIsLock($fdt_salesorder_datetime);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;		
-		}
-
-		$salesOrder = $this->trsalesorder_model->createObject($fin_salesorder_id);
-		$resp = dateIsLock($salesOrder->getValue("fdt_salesorder_datetime"));
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
-		$resp = $this->trsalesorder_model->isEditable($fin_salesorder_id);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}	
+				
+		$fin_salesorder_id = $this->input->post("fin_salesorder_id");	
+		$dataHOld = $this->trsalesorder_model->getSimpleDataById($fin_salesorder_id);
+		$fdt_salesorder_datetime = dBDateTimeFormat($this->input->post("fdt_salesorder_datetime"));
 
 		try{
+			
+			//CEK Lock Tanggal
+			$resp = dateIsLock($dataHOld->fdt_salesorder_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],[]);		
+			}
+
+			$resp = dateIsLock($fdt_salesorder_datetime);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],[]);		
+			}
+
+			//Is Editable ?
+			$resp = $this->trsalesorder_model->isEditable($fin_salesorder_id);
+			if ($resp["status"] != "SUCCESS" ){
+				throw new CustomException($resp["message"],3003,$resp["status"],[]);		
+			}	
+
+			$preparedData = $this->prepareData();
+			$dataH = $preparedData["dataH"];
+			$dataH["fin_salesorder_id"] = $dataHOld->fin_salesorder_id;
+			$dataH["fst_salesorder_no"] = $dataHOld->fst_salesorder_no;
+
+			$details = $preparedData["details"];
+
+			$this->validateData($dataH,$details);
+
+			//** Cek if this transaction need authorization */		
+			$needAuthorizeList = $this->trsalesorder_model->getAuthorizationList($dataH,$details);
+			$dataH["fst_active"] = ($needAuthorizeList["need_authorize"] == true) ? "S" :"A";	
+
+
 			$this->db->trans_start();
+			
 			//Unposting
 			$this->trsalesorder_model->unposting($fin_salesorder_id);
 
@@ -331,169 +339,15 @@ class Sales_order extends MY_Controller{
 			throwIfDBError();
 
 			$this->trvoucher_model->deleteVoucher("SALESORDER",$fin_salesorder_id);
-			$this->trverification_model->deleteApproval("SO",$fin_salesorder_id);			
+			$this->trverification_model->deleteApproval("SO",$fin_salesorder_id);	
 
-
-			//PREPARE DATA
-			$vat = 0;
 			
-			
-
-			$details = $this->input->post("detail");
-			$details = json_decode($details);
-			$arrItem = $this->msitems_model->getDetailbyArray(array_column($details, 'fin_item_id'));
-
-			$subTtl = 0;
-			$ttlDiscAmount = 0;
-			$ttlVATAmount = 0;
-
-			for($i = 0; $i < sizeof($details) ; $i++){
-				$item = $details[$i];
-				//remove if promo item
-				if ($details[$i]->fin_promo_id != 0){
-					unset($details[$i]);
-					continue;
-				}
-
-				$objItem = $arrItem[$item->fin_item_id];
-				$details[$i]->fst_max_item_discount = $objItem->fst_max_item_discount;
-				//get Price from system
-				$price = $this->msitems_model->getSellingPrice($item->fin_item_id,$item->fst_unit,$dataH["fin_relation_id"]);
-				if ($price == 0 ){ // Bila dimaster harga 0, berarti user boleh menentukan harga sendiri
-					$price = $item->fdc_price;
-				}
-				$details[$i]->fdc_price = $price;						
-
-				$subTtl += $price * $details[$i]->fdb_qty;
-				//$details[$i]->fdc_disc_amount = calculateDisc($item->fst_disc_item,$subTtl);			
-
-				$ttlDiscAmount += $details[$i]->fdc_disc_amount_per_item * $details[$i]->fdb_qty;
-			}
-			$details = array_values($details);
-
-			if ($dataH["fbl_is_vat_include"] ==  1){
-				$ttlDPPAmount = ($subTtl - $ttlDiscAmount) / (1 + ($dataH["fdc_vat_percent"] / 100)) ;
-			}else{
-				$ttlDPPAmount = $subTtl - $ttlDiscAmount;	
-			}
-
-			$ttlVATAmount  =  $ttlDPPAmount * ($dataH["fdc_vat_percent"] / 100);
-			$dataH["fdc_subttl"] = $subTtl;	
-			$dataH["fdc_disc_amount"] = $ttlDiscAmount;	
-			$dataH["fdc_dpp_amount"] = $ttlDPPAmount;
-			$dataH["fdc_vat_amount"] = $ttlVATAmount;
-			$dataH["fdc_total"] = $ttlDPPAmount + $ttlVATAmount;
-			
-
-			//VALIDATION
-			$this->form_validation->set_rules($this->trsalesorder_model->getRules("ADD", 0));
-			$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-			$this->form_validation->set_data($dataH);
-
-			if ($this->form_validation->run() == FALSE) {
-				//print_r($this->form_validation->error_array());
-				$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-				$this->ajxResp["message"] = "Error Validation Forms 1";
-				$this->ajxResp["data"] = $this->form_validation->error_array();
-				$this->ajxResp["request_data"] = $_POST;
-				$this->json_output();
-				return;
-			}
-
-			foreach($details as $dataD){
-				$this->form_validation->set_rules($this->trsalesorderdetails_model->getRules("ADD",0));
-				$this->form_validation->set_error_delimiters('<div class="text-danger">* ', '</div>');
-				$this->form_validation->set_data((array)$dataD);
-				if ($this->form_validation->run() == FALSE){
-					$this->ajxResp["status"] = "VALIDATION_FORM_FAILED";
-					$this->ajxResp["message"] = lang("Error Validation Forms");
-					$this->ajxResp["request_data"] = $dataH;
-					$error = [
-						"detail"=> $this->form_validation->error_string(),
-					];
-					$this->ajxResp["data"] = $error;				
-					$this->json_output();
-					return;	
-				}
-			}
-
-			//Get Promo Item		
-			$rsPromoItem = $this->trsalesorder_model->getDataPromo($dataH["fin_relation_id"],$dataH["fdc_vat_percent"],$dataH["fbl_is_vat_include"],$details);
-			
-			//** Cek if this transaction need authorization */		
-			$needAuthorizeList = $this->trsalesorder_model->getAuthorizationList($dataH,$details);
-			$dataH["fst_active"] = ($needAuthorizeList["need_authorize"] == true) ? "S" :"A";		
-					
-			//SAVE
-			$insertId = $dataH["fin_salesorder_id"];
 			$this->trsalesorder_model->update($dataH);
-			foreach($rsPromoItem as $promo){ //Add Detail promo			
-				if ($promo->fin_promo_item_id != null && $promo->fin_promo_item_id != ""){
-					$dataD = new stdClass();
-					$dataD->fin_rec_id = "0";
-					$dataD->fin_promo_id = $promo->fin_promo_id;
-					$dataD->fin_item_id = $promo->fin_promo_item_id;
-					$dataD->fst_item_name = $promo->fst_item_name;
-					$dataD->fst_item_code = $promo->fst_item_code;
-					$dataD->fst_custom_item_name = $promo->fst_item_name;
-					$dataD->fst_max_item_discount = "100";
-					$dataD->fdb_qty = $promo->fdb_promo_qty;
-					$dataD->fst_unit = $promo->fst_promo_unit;
-					$dataD->fdc_price = 1;
-					$dataD->fst_disc_item = 100;
-					$dataD->fdc_disc_amount = 1;
-					$dataD->fdc_disc_amount_per_item = 1;
-					$dataD->fst_memo_item = "";
-					$dataD->total = 0;
-					$dataD->real_stock = 0;
-					$dataD->marketing_stock = 0;
-					$dataD->fdc_conv_to_basic_unit = 1;
-					$dataD->fst_basic_unit = "";				
-					$details[] = $dataD;
-				}
-				if ($promo->fst_other_prize != null && $promo->fst_other_prize != ""){
-					$dataD = new stdClass();
-					$dataD->fin_rec_id = "0";
-					$dataD->fin_promo_id = $promo->fin_promo_id;
-					$dataD->fin_item_id = 0;
-					$dataD->fst_item_name = $promo->fst_other_prize;
-					$dataD->fst_item_code = "PRZ";
-					$dataD->fst_custom_item_name = $promo->fst_other_prize;
-					$dataD->fst_max_item_discount = "100";
-					$dataD->fdb_qty = 1;
-					$dataD->fst_unit = "PCS";
-					$dataD->fdc_price = 1;
-					$dataD->fst_disc_item = 100;
-					$dataD->fdc_disc_amount = 1;
-					$dataD->fdc_disc_amount_per_item = 1;
-					$dataD->fst_memo_item = "";
-					$dataD->total = 0;
-					$dataD->real_stock = 0;
-					$dataD->marketing_stock = 0;
-					$dataD->fdc_conv_to_basic_unit = 1;
-					$dataD->fst_basic_unit = "";				
-					$details[] = $dataD;
-				}
-	
-				if ($promo->fdc_cashback > 0 ){ //Create Cash back Voucher					
-					$this->load->model("trvoucher_model");
-					$dataVoucher = [
-						"fst_transaction_type"=>"SALESORDER",
-						"fin_transaction_id"=>$insertId,
-						"fin_promo_id"=>$promo->fin_promo_id,
-						"fin_branch_id"=>$dataH["fin_branch_id"],
-						"fin_relation_id"=>$dataH["fin_relation_id"],
-						"fdc_value"=> $promo->fdc_cashback,
-						"fst_active"=>$dataH["fst_active"] //Bila tidak active maka diaktifkan pada saat approval SO
-					];
-					$this->trvoucher_model->createVoucher($dataVoucher);
-				}
-			}
+			$insertId = $fin_salesorder_id;
 
-			//Insert Data Detail			
+			//Insert Data Detail
 			foreach ($details as $item) {
 				//$dataDetail = (array) $item;
-
 				$dataDetail =[
 					"fin_salesorder_id"=>$insertId,
 					"fin_item_id"=>$item->fin_item_id,
@@ -508,30 +362,50 @@ class Sales_order extends MY_Controller{
 					"fst_active"=> 'A'
 				];
 				$this->trsalesorderdetails_model->insert($dataDetail);			
+				throwIfDBError();
 			}
+			
+			//Cek Promo
+			$arrPromo = $this->trsalesorder_model->getDataPromo($insertId);
 
-			//Create authorize record
-			$this->trsalesorder_model->generateApprovalData($needAuthorizeList,$insertId,$dataH["fst_salesorder_no"]);
+			if (sizeof($arrPromo) == 0){
+				//Create authorize record
+				$this->trsalesorder_model->generateApprovalData($needAuthorizeList,$insertId,$dataH["fst_salesorder_no"]);
 
-			//POSTING
-			$this->trsalesorder_model->posting($insertId);
-			$this->db->trans_complete();
+				$this->trsalesorder_model->posting($insertId);
+			}else{
+				//Change
+				$ssql ="UPDATE trsalesorder set fst_active = 'P' where fin_salesorder_id = ?";
+				$this->db->query($ssql,[$insertId]);
+				throwIfDBError();
+			}			
 
-			$this->ajxResp["status"] = "SUCCESS";
-			$this->ajxResp["message"] = "Data Saved !";
-			$this->ajxResp["data"]["insert_id"] = $insertId;
-			$this->json_output();
+			$this->db->trans_complete();		
+			if (sizeof($arrPromo) > 0){
+				$this->json_output([
+					"status"=>"CEK_PROMO",
+					"message"=>"Data Saved !",
+					"data"=>["insert_id"=>$insertId]
+				]);
+			}else{
+				$this->json_output([
+					"status"=>"SUCCESS",
+					"message"=>"Data Saved !",
+					"data"=>["insert_id"=>$insertId]
+				]);
+			}			
 
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
-			$this->ajxResp["status"] = $e->getStatus();
-			$this->ajxResp["message"] = $e->getMessage();
-			$this->ajxResp["data"] = $e->getData();
-			$this->json_output();
+			$this->json_output([
+				"status"=>$e->getStatus(),
+				"message" => $e->getMessage(),
+				"data" => $e->getData()
+			]);
 			return;
-
 		}
 	}
+
 
 	public function prepareData(){
 
@@ -590,7 +464,7 @@ class Sales_order extends MY_Controller{
 			
 
 			//remove if promo item (Clear All Item Promo)
-			if ($details[$i]->fin_promo_id != null){
+			if ($details[$i]->fin_promo_id != 0 && $details[$i]->fin_promo_id != null){
 				unset($details[$i]);
 				continue;
 			}
