@@ -470,8 +470,10 @@ class Rmout_prod extends MY_Controller{
 				GROUP BY b.fin_pagp_id,a.fin_item_id,a.fst_unit 
 			) b ON a.fin_pagp_id = b.fin_pagp_id AND a.fin_item_id = b.fin_item_id AND a.fst_unit = b.fst_unit 
 			INNER JOIN trmagconfirm c on a.fin_pagp_id = c.fin_mag_confirm_id 
-			WHERE a.fdb_qty_pagp > IFNULL(b.fdb_qty_rmout,0)";
+			WHERE a.fdb_qty_pagp > IFNULL(b.fdb_qty_rmout,0) GROUP BY a.fin_pagp_id";
 		$qr = $this->db->query($ssql,[$finPAGPIds,$finPAGPIds]);
+		//echo $this->db->last_query();
+        //die();
 		$rs =$qr->result();			
 		
 		$this->json_output([

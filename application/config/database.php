@@ -69,7 +69,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | The $query_builder variables lets you determine whether or not to load
 | the query builder class.
 */
-$active_group = 'default_qsystem'; 
+$active_group = 'default_local'; 
 $query_builder = TRUE;
 
 $db['multi_qsystem'] = array(
@@ -122,7 +122,7 @@ $db['default_local'] = array(
 	'hostname' => 'localhost',
 	'username' => 'root',
 	'password' => '',
-	'database' => 'db_greebel_demodata', //'u5538790_edoc',
+	'database' => 'dbgreebelnew', //'u5538790_edoc',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => TRUE,

@@ -392,7 +392,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		$("#btnNew").click(function(e){
 			//e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/fixed_asset/disposal/add");
+			window.location.replace("<?=site_url()?>tr/production/assembling/add");
 		});
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
