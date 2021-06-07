@@ -30,7 +30,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 		font-weight:700;
 	}
     .detail-terms{
-    display: none;
+        display: none;
     }
     .flag{
     display: none;
@@ -78,7 +78,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <div class="col-sm-4">
                                 <select class="form-control" id="fst_promo_type" name="fst_promo_type">
                                     <option value='OFFICE'><?= lang("OFFICE") ?></option>
-                                    <option value='POS'><?= lang("POS") ?></option>
+                                    <option value='PERIODE'><?= lang("PERIODE") ?></option>
+                                    <!-- <option value='POS'><= lang("POS") ?></option> -->                                    
                                 </select>
                             </div>
                         </div>
@@ -340,6 +341,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     <?php
     echo $mdlItemGroup;
     ?>
+
     <script type="text/javascript">
         var action = '<a class="btn-edit" href="#" data-toggle="" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp; <a class="btn-delete" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
         $(function() {
@@ -359,12 +361,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     $("#mdlItemDetails").modal('show');
                 }
             });
-            $("#tbl_item_details").DataTable({
+
+            tblItemDetails = $("#tbl_item_details").DataTable({
                 searching: false,
                 paging: false,
                 info: false,
                 columns: [/*{
-                        "title": "<?= lang("ID ") ?>",
+                        "title": "<= lang("ID ") ?>",
                         "width": "5%",
                         data: "fin_id",
                         visible: false
@@ -451,6 +454,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     select_itemGroup();
                 }
             });
+
             $("#fin_item_id").change(function(event) {
                 event.preventDefault();
                 $('#fst_unit').val(null).trigger('change');
@@ -504,6 +508,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     });
                 }
             });
+
             $('#fin_item_id').on('select2:select', function(e) {
                 //console.log(selected_itempromo);
                 selected_itempromo = $('#fin_item_id').select2('data')[0];
@@ -511,10 +516,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 //var data = e.params.data;
                 //selected_itempromo = data;
             });
+
             $('#fst_unit').on('select2:select', function(e) {
                 selected_unitdetail = $('#fst_unit').select2('data')[0];
                 console.log(selected_unitdetail);
             });
+
             function select_itemDetail(){
                 $("#fin_item_id").select2({
                 width: '100%',
@@ -582,6 +589,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                     });
                 });
             }
+
             $("#btn-add-item").click(function(event) {
                 event.preventDefault();
                 t = $('#tbl_item_details').DataTable();
@@ -595,39 +603,23 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 } else {
                     $("#fin_item_id_err").hide();
                 }
-                /*var unitTerms = $("#fst_unit").val();              
-                if (unitTerms == null || unitTerms == "") {
-                    $("#fst_unit_err").html("Please select unit");
-                    $("#fst_unit_err").show();
-                    addRow = false;
-                    return;
-                } else {
-                    $("#fst_unit_err").hide();
+
+                var unit = null;
+                var qty = 0;
+
+                if ($("#fst_promo_type").val() == "PERIODE"){                
+                    unit = $("#fst_unit").val();
+                    qty = $("#fdb_qty").val();
                 }
-                var unitCombined = $("#fst_unit_gabungan").val();
-                if ($("#fbl_qty_gabungan").is(":checked")){
-                    if (unitCombined != selected_unitdetail.text ) {
-                        alert(selected_unitdetail.text);
-                        $("#fst_unit_err").html("Not match with unit terms");
-                        $("#fst_unit_err").show();
-                        addRow = false;
-                        return;
-                    } else {
-                        $("#fst_unit_err").hide();
-                    }  
-                }else{
-                    $("#fst_unit_err").hide();                    
-                }*/
+
                 t.row.add({
                     fin_id: 0,
                     fin_promo_id: 0,
                     fst_item_type: $("#fst_item_type").val(),
                     fin_item_id: selected_itempromo.id,
                     fst_item_name: selected_itempromo.text,
-                    //fst_unit: selected_unitdetail.text,
-                    //fdb_qty: $("#fdb_qty").val(),
-                    fst_unit: '',
-                    fdb_qty: 0,
+                    fst_unit: $("#fst_unit").val(),
+                    fdb_qty: $("#fdb_qty").val(),
                     action: action
                 }).draw(false);
             });
@@ -1714,6 +1706,36 @@ defined('BASEPATH') or exit('No direct script access allowed');
     </script>
 </div>
 
+<script type="text/javascript" info="defined">
+    var tblItemDetails;
+</script>
+
+<script type="text/javascript" info="event">
+    $(function(){
+        $("#fst_promo_type").change(function(e){
+            e.preventDefault();
+            //alert($("#fst_promo_type").val());
+
+            var columnUnit = tblItemDetails.column(3);
+            var columnQty = tblItemDetails.column(4);
+
+            columnUnit.visible(false);
+            columnQty.visible(false);
+            $(".detail-terms").hide();
+
+            if ($("#fst_promo_type").val() == "PERIODE"){                            
+                columnUnit.visible(true);
+                columnQty.visible(true);
+                $(".detail-terms").show();
+            }
+
+
+        })
+    });
+
+</script>
+
+
 <script type="text/javascript">
     $(function() {
         branchList = [];
@@ -1880,7 +1902,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             $("#select-promo_unit").select2({
                 width: '100%',
                 ajax: {
-                    url: '<?= site_url() ?>master/promotion/get_data_unitPromo/' + $("#select-promo_item").val(),
+                    url: '<= site_url() ?>master/promotion/get_data_unitPromo/' + $("#select-promo_item").val(),
                     dataType: 'json',
                     delay: 250,
                     processResults: function(data) {
@@ -2135,6 +2157,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         action: action
                     }).draw(false);
                 })
+
+                $("#fst_promo_type").trigger("change");
+                
             },
             error: function(e) {
                 $("#result").text(e.responseText);

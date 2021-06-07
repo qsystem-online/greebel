@@ -701,7 +701,7 @@ class Trsalesorder_model extends MY_Model {
         return $arrPromo;
     }
 
-    
+
 
     public function getDataPromo($finSalesOrderId){
         $this->load->model("msrelations_model");
@@ -803,7 +803,8 @@ class Trsalesorder_model extends MY_Model {
 
                 if ($term != null){
                     //Convert Satuan 
-                    $targetSatuan = $term->fst_unit;
+                    //$targetSatuan = $term->fst_unit;
+                    $targetSatuan = $promo->fst_unit_gabungan;
                     $sourceSatuan = $detail->fst_unit;
                     $qtyTargetSatuan = $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$detail->fdb_qty,$sourceSatuan,$targetSatuan);
                     if ($qtyTargetSatuan >= $term->fdb_qty){

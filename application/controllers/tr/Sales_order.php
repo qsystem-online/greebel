@@ -384,7 +384,7 @@ class Sales_order extends MY_Controller{
 			if (sizeof($arrPromo) > 0){
 				$this->json_output([
 					"status"=>"CEK_PROMO",
-					"message"=>"Data Saved !",
+					"message"=>"Add Promo !",
 					"data"=>["insert_id"=>$insertId]
 				]);
 			}else{
