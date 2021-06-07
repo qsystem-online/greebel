@@ -115,7 +115,7 @@
 							<div class="col-md-10">
 								<select id="fin_supplier_id" class="form-control non-editable" name="fin_supplier_id">
 									<?php									
-										$suppliers = $this->msrelations_model->getSupplierList();
+										$suppliers = $this->msrelations_model->getSupplierEkspedisiList();
 										foreach($suppliers as $supplier){										
 											echo "<option value='$supplier->fin_relation_id' $selected>$supplier->fst_relation_name</option>";
 										}									

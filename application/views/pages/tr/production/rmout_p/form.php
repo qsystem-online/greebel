@@ -257,7 +257,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						calculateTotalSerialNo();
 					});
 
-
+				}else{
+					mdlDetail.clear();
 				}
 
 				//$("#mdlDetail").modal("show");
