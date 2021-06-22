@@ -722,6 +722,7 @@ class Trsalesorder_model extends MY_Model {
             ? between fdt_start  AND fdt_end
             AND fst_active ='A' 
             AND FIND_IN_SET(?,fst_list_branch_id)
+            AND fst_promo_type = 'OFFICE'
             ORDER BY fin_priority ASC";
 
         $qr = $this->db->query($ssql,[$header->fdt_salesorder_datetime,$this->aauth->get_active_branch_id()]);

@@ -440,7 +440,8 @@ class Pengiriman_penjualan extends MY_Controller{
                 $qtyReqInBasicUnit = $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$detail->fdb_qty,$detail->fst_unit,$basicUnit);
                 $qtyStockReqUnit =  $this->msitems_model->getQtyConvertUnit($detail->fin_item_id,$qtyStockBasicUnit,$basicUnit,$detail->fst_unit);
                 if ($qtyReqInBasicUnit > $qtyStockBasicUnit ){
-                    throw new CustomException(sprintf(lang("Stock %s tersisa : %d %s") ,$detail->fst_custom_item_name,$qtyStockReqUnit,$detail->fst_unit),3009,"FAILED",null);
+                    //var_dump($item);
+                    throw new CustomException(sprintf(lang("Stock %s tersisa : %d %s") ,$item->fst_item_name,$qtyStockReqUnit,$detail->fst_unit),3009,"FAILED",null);
                 }
 
             }

@@ -102,4 +102,12 @@ class Trassembling_model extends MY_Model{
 		$this->db->query($ssql,[$finAssemblingId]);		
 	}
 
+
+	public function posting($finAssemblingId){
+		//Update Inventory di penerimaan sama pengeluaran gudang		
+	}
+	public function unposting($finAssemblingId){
+		//Update Inventory di penerimaan sama pengeluaran gudang
+	}
+
 }
