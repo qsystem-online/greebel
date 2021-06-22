@@ -31,7 +31,7 @@
 					<?php
 						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:50px'>No.</th>");
 						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:50px'>ID</th>");
-						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:200px'>Supplier/Ekspedisi</th>");
+						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:300px'>Supplier/Ekspedisi</th>");
 						echoIfColSelected(3,$selectedCols,"<th class='col-3 text-right' style='width:100px'>Saldo Awal</th>");
 						echoIfColSelected(4,$selectedCols,"<th class='col-4 text-right' style='width:100px'>Debit</th>");
 						echoIfColSelected(5,$selectedCols,"<th class='col-5 text-right' style='width:100px'>Credit</th>");

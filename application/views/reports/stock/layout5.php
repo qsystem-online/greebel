@@ -47,13 +47,13 @@
 		?>
 		<div>Gudang : <?= $name_wareHouse ?></div>
 		<div>Tanggal: <?= $start_date ?>  s/d <?= $end_date ?></div>                             
-		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1200px">      
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1300px">      
 			<thead>
 				<tr style="background-color:navy;color:white">
 					<?php
-						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:30px'>No.</th>");
-						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:50px'>Kode Item</th>");
-						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:100px'>Nama Item</th>");
+						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:10px'>No.</th>");
+						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:30px'>Kode Item</th>");
+						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:300px'>Nama Item</th>");
 						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:50px'>Q.Awal</th>");
 						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:50px'>Q.Masuk</th>");
 						echoIfColSelected(5,$selectedCols,"<th class='col-5' style='width:50px'>Q.Keluar</th>");

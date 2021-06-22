@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="btn-group btn-group-sm  pull-right">					
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-						<a id="btnPrinted" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+						<!--<a id="btnPrinted" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>-->
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
@@ -792,7 +792,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#select-lineBusiness").select2();
+		//$("#select-lineBusiness").select2();
 
 		$("#select-parentId").select2({
 			width: '100%',
@@ -1280,6 +1280,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		$("#btnPrint").click(function(e){
             layoutColumn = [];
 			url = "<?= site_url() ?>pr/relation/get_printRelation/" + $("#select-relationType").val() + '/' + $("#select-relationIdStart").val() + '/' + $("#select-relationIdEnd").val();
+			alert(url);
             MdlPrint.showPrint(layoutColumn,url);
         });
 

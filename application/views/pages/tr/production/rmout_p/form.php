@@ -121,7 +121,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="mdlDetail" class="amodal fade in" role="dialog" style="display:unset">
+<div id="mdlDetail" class="modal fade in" role="dialog" style="display:gone">
 	<div class="modal-dialog" style="display:table;width:600px">
 		<!-- modal content -->
 		<div class="modal-content">
@@ -261,11 +261,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					mdlDetail.clear();
 				}
 
-				//$("#mdlDetail").modal("show");
+				$("#mdlDetail").modal("show");
 			},
 
 			hide:function(){
-				//$("#mdlDetail").modal("hide");
+				$("#mdlDetail").modal("hide");
 			},
 			clear:function(){
 				mdlDetail.selectedDetail =null;

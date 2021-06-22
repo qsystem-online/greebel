@@ -49,7 +49,7 @@ class Promotion extends MY_Controller
             'render'=>"function(data,type,row){
                 action = \"<div style='font-size:16px'>\";
                 action += \"<a class='btn-edit' href='#' data-id='\" + row.fin_promo_id + \"'><i style='font-size:16px' class='fa fa-pencil'></i></a> &nbsp;\";
-                action += '<a class=\"btn-copy\" href=\"".site_url()."master/promotion/copy/' + row.fin_promo_id + '\" data-id=\"\"><i class=\"fa fa-clone\"></i></a>';
+                action += '<a class=\"btn-copy\" href=\"".site_url()."master/promotion/copy/' + row.fin_promo_id + '\" data-id=\"\"><i title=\"Copy Data\" class=\"fa fa-clone\"></i></a>';
                 action += \"</div>\";
                 return action;
             }",

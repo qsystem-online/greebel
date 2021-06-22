@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-	<h1><?=lang("Master Production Schedule")?><small><?=lang("form")?></small></h1>
+	<h1><?=lang("Workorder")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
 		<li><a href="#"><?= lang("Production") ?></a></li>
@@ -415,6 +415,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				}
 			}).on("select2:select",function(e){		
 				mdlDetailBOMWO.selectedItem = e.params.data;
+			});
+
+			$("#d-bom-wo-fin_item_id").change(function(event){
+				$("#d-bom-wo-fst_unit").empty();
 			});		
 
 			$("#d-bom-wo-fst_unit").select2({
@@ -460,7 +464,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				mdlDetailBOMWO.show();
 			});	
 
-			$("#d-bom-wo-btn-save").click(function(e){								
+			$("#d-bom-wo-btn-save").click(function(e){
+				if($("#d-bom-wo-fst_unit").val() == null || $("#d-bom-wo-fst_unit").val() == ""){
+					alert("<?=lang("Unit harus diisi !") ?>");
+					return;
+				}							
 				var data= {};
 				var mode="new";
 				if (mdlDetailBOMWO.selectedDetail != null){

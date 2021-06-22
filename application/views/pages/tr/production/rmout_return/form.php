@@ -426,6 +426,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				return;
 			}
 
+			if ($("#d-fst_unit").val() == null || $("#d-fst_unit").val() == "" ){
+				alert("<?=lang("Unit harus diisi !") ?>");
+				return;
+			}
+			
+
 			if (item.fbl_is_batch_number == 1){
 				if ($("#fstBatchNo").val() == "" ){
 					alert("Batch Number harus diisi !");
@@ -652,10 +658,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			//calculateTotal();
 		}).on("click",".btn-delete",function(event){
 			event.preventDefault();
-			t = $('#tblSJDetails').DataTable();
+			t = $('#tblDetails').DataTable();
 			var trRow = $(this).parents('tr');
 			t.row(trRow).remove().draw();
-			calculateTotal();
+			//calculateTotal();
 		}).on("click",".btn-edit",function(event){	
             tRow = $(this).parents("tr");
 			//mdlDetail.clear();

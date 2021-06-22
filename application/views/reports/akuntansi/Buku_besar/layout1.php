@@ -30,7 +30,7 @@
 				<tr style="background-color:navy;color:white">
 					<?php
 						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:50px'>No.</th>");
-						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:100px'>Tanggal</th>");
+						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:150px'>Tanggal</th>");
 						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:50px'>SRC</th>");
 						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:100px'>No.Transaksi</th>");
 						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:400px'>Referensi</th>");
