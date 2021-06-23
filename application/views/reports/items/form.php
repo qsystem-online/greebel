@@ -1,3 +1,14 @@
+<style type="text/css">
+	.border-0{
+		border: 0px;
+	}
+	.form-group{
+		margin-bottom: 5px;
+	}
+	.checkbox label, .radio label {
+		font-weight:700;
+	}
+</style>
 <!-- form start -->
 <form id="rptItems" action="<?= site_url() ?>report/items/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">

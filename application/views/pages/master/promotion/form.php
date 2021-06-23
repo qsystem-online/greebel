@@ -1635,16 +1635,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
             $("#free_item_id").change(function(event) {
                 event.preventDefault();
-                $('#fst_unit_free').val(null).trigger('change');
-				
+                $("#fst_unit_free").val(null).trigger('change');
 				$("#fst_unit_free").select2({
 					width: '100%',
 					ajax: {
-						url: '<?= site_url() ?>master/promotion/get_data_unit',
+						url: '<?= site_url() ?>master/promotion/get_data_unitTerms/'+$("#free_item_id").val(),
 						dataType: 'json',
 						delay: 250,
 						processResults: function(data) {
 							data2 = [];
+                            data = data.data;
 							$.each(data, function(index, value) {
 								data2.push({
 									"id": value.fst_unit,

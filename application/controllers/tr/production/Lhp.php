@@ -96,7 +96,7 @@ class Lhp extends MY_Controller{
 		
 
 		$data["mode"] = $mode;
-		$data["title"] = $mode == "ADD" ? "Add Sales Order" : "Update Sales Order";
+		$data["title"] = $mode == "ADD" ? "Add Hasil Produksi" : "Update Hasil Produksi";
 		$data["mdlJurnal"] = $mdlJurnal;
 		$data["mdlPrint"] = $mdlPrint;
 		//$data["mdlConfirmAuthorize"] = $mdlConfirmAuthorize;

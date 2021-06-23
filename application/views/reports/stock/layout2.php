@@ -47,22 +47,22 @@
 		?>
 		<div>Gudang : <?= $name_wareHouse ?></div>
 		<div>Tanggal: <?= $start_date ?>  s/d <?= $end_date ?></div>                             
-		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1500px">      
+		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1450px">      
 			<thead>
 				<tr style="background-color:navy;color:white">
 					<?php
-						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:50px'>No.</th>");
-						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:50px'>Tanggal</th>");
-						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:50px'>Trx Code</th>");
+						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:10px'>No.</th>");
+						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:100px'>Tanggal</th>");
+						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:40px'>Trx Code</th>");
 						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:50px'>No.Transaksi</th>");
-						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:50px'>Referensi</th>");
+						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:100px'>Referensi</th>");
 						echoIfColSelected(5,$selectedCols,"<th class='col-5' style='width:50px'>Q.Awal</th>");
-						echoIfColSelected(6,$selectedCols,"<th class='col-6 text-right' style='width:80px'>Q.Masuk</th>");
-						echoIfColSelected(7,$selectedCols,"<th class='col-7 text-right' style='width:80px'>Q.Keluar</th>");
-						echoIfColSelected(8,$selectedCols,"<th class='col-8 text-right' style='width:80px'>Harga</th>");
+						echoIfColSelected(6,$selectedCols,"<th class='col-6 text-right' style='width:50px'>Q.Masuk</th>");
+						echoIfColSelected(7,$selectedCols,"<th class='col-7 text-right' style='width:50px'>Q.Keluar</th>");
+						echoIfColSelected(8,$selectedCols,"<th class='col-8 text-right' style='width:50px'>Harga</th>");
                         echoIfColSelected(9,$selectedCols,"<th class='col-9 text-right' style='width:80px'>Jumlah</th>");
-                        echoIfColSelected(10,$selectedCols,"<th class='col-10 text-right' style='width:80px'>Q.Sisa</th>");
-						echoIfColSelected(11,$selectedCols,"<th class='col-11 text-right' style='width:80px'>Unit</th>");		
+                        echoIfColSelected(10,$selectedCols,"<th class='col-10 text-right' style='width:50px'>Q.Sisa</th>");
+						echoIfColSelected(11,$selectedCols,"<th class='col-11 text-right' style='width:30px'>Unit</th>");		
 					?>
 				</tr>
 			</thead>

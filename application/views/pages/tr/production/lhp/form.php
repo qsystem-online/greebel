@@ -206,7 +206,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <?php echo $mdlJurnal ?>
 
 
-<div id="mdlDetail" class="amodal fade in" role="dialog" style="display: unset">
+<div id="mdlDetail" class="modal fade in" role="dialog" style="display: gone">
 	<div class="modal-dialog" style="display:table;width:700px">
 		<!-- modal content -->
 		<div class="modal-content">
@@ -328,10 +328,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 				}				
-				//$("#mdlDetail").modal("show");
+				$("#mdlDetail").modal("show");
 			},
 			hide:function(){
-				//$("#mdlDetail").modal("hide");
+				$("#mdlDetail").modal("hide");
 			},
 			clear:function(){
 				mDt.selectedDetail = null;
@@ -632,7 +632,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).on('click','.btn-delete',function(e){
 			e.preventDefault();
 			var trRow = $(this).parents('tr');
-			tblActivity.row(trRow).remove().draw(false);
+			tblDetails.row(trRow).remove().draw(false);
 		});
 
 		
@@ -672,7 +672,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>tr/production/lhp");
 		});
-
+		
+		$("#btnAddActivity").click(function(e){
+			e.preventDefault();
+			selectedDetail = null;		
+			mDt.show();
+			mDt.clear();
+		});
 		
 		$("#fst_unit").change(function(e){
 			e.preventDefault();

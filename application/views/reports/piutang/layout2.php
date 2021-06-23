@@ -30,10 +30,10 @@
 				<tr style="background-color:navy;color:white">
 					<?php
 						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:50px'>No.</th>");
-						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:100px'>ID</th>");
-						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:50px'>Customer/Pelanggan</th>");
-						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:100px'>Saldo Awal</th>");
-						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:200px'>Debit</th>");
+						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:50px'>ID</th>");
+						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:300px'>Customer/Pelanggan</th>");
+						echoIfColSelected(3,$selectedCols,"<th class='col-3 text-right' style='width:100px'>Saldo Awal</th>");
+						echoIfColSelected(4,$selectedCols,"<th class='col-4 text-right' style='width:100px'>Debit</th>");
 						echoIfColSelected(5,$selectedCols,"<th class='col-5 text-right' style='width:100px'>Credit</th>");
 						echoIfColSelected(6,$selectedCols,"<th class='col-6 text-right' style='width:100px'>Saldo Akhir</th>");
 					?>
@@ -77,7 +77,7 @@
                         echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");
                         echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->fin_relation_id</td>");
                         echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->fst_relation_name</td>");
-                        echoIfColSelected(3,$selectedCols,"<td class='col-3'>$saldo_awalNew</td>");
+                        echoIfColSelected(3,$selectedCols,"<td class='col-3' style='text-align: right'>$saldo_awalNew</td>");
                         echoIfColSelected(4,$selectedCols,"<td class='col-4' style='text-align: right'>$Total_Debit</td>");
                         echoIfColSelected(5,$selectedCols,"<td class='col-5' style='text-align: right'>$Total_Credit</td>");
                         echoIfColSelected(6,$selectedCols,"<td class='col-6' style='text-align: right'>$saldo_akhirNew</td>");	                                                                                                                                                                      

@@ -297,6 +297,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 
 			$("#btn-save-detail").click(function(e){
+				if ($("#fst_unit_d").val() == null || $("#fst_unit_d").val() == "" ){
+					alert("<?=lang("Unit harus diisi !") ?>");
+					return;
+				}
 				t = $("#tbldetails").DataTable();
 				var data = {
 					fin_rec_id:0,

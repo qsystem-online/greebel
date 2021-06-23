@@ -161,6 +161,7 @@
 										<label for="fst_unit" class="col-md-3 control-label">Unit</label>
 										<div class="col-md-9">
 											<select id="fst_unit" class="form-control" style="width:100%"></select>
+											<div id="fst_unit_error" class="text-danger"></div>
 										</div>
 									</div>
 
@@ -302,9 +303,17 @@
 			$("#btn-add-detail-save").click(function(e){
 				e.preventDefault();
 				//addRow = true;
+				if ($("#fst_unit").val() == null || $("#fst_unit").val() == "" ){
+					//alert("<?=lang("Unit harus diisi !") ?>");
+					$("#fst_unit_error").html("Unit harus diisi!!!");
+                    $("#fst_unit_error").show();
+					return;
+				}else{
+					$("#fst_unit_error").hide();
+				}
                 var fdt_etd = $("#fdt_etd").val();
                 if (fdt_etd == null || fdt_etd == "") {
-                    $("#fdt_etd_error").html("Expected Target Date Required!!!");
+                    $("#fdt_etd_error").html("Expected Target Date harus diisi!!!");
                     $("#fdt_etd_error").show();
                     //addRow = false;
                     //return;
