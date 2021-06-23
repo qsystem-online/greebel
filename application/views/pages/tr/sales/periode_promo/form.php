@@ -65,7 +65,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>						
                     </div>
 
-					<table id="tblParticipant" class="table table-bordered table-hover table-striped" style="width:100%"></table>
+					<table id="tblTerm" class="table table-bordered table-hover table-striped" style="width:100%"></table>
                     <div id="detail_err" class="text-danger"></div>
                 </div>
 				<div class="box-footer text-right"></div>
@@ -94,7 +94,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 
 <script type="text/javascript" info="define">
-	
+	var finPromoId = "<?= $fin_promo_id?>";
+	var tblTerm;
 </script>
 
 <script type="text/javascript" info="event">
@@ -140,7 +141,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript" info="init">
 	$(function(){	
 		
-		$('#tblInvItems').on('preXhr.dt', function ( e, settings, data ) {
+		tblTerm = $('#tblTerm').on('preXhr.dt', function ( e, settings, data ) {
 		 	//add aditional data post on ajax call
 		 	data.sessionId = "TEST SESSION ID";
 		}).on('init.dt',function(){
@@ -151,31 +152,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			scrollX: true,
             ordering: true,
 			columns:[
-                {"title" : "id","width": "5%",data:"fin_rec_id",visible:true},
-                {"title" : "Items","width": "20%",orderable:false,data:"fin_item_id",
-					render: function(data,type,row){
-						return row.fst_custom_item_name;
-					}
-                },
-				{"title" : "Qty SO","width": "5%",data:"fdb_qty_so",className:'text-right',orderable:false,},
-				{"title" : "Qty SJ","width": "5%",data:"fdb_qty_sj",className:'text-right',orderable:false,},
-				{"title" : "Unit","width": "10%",data:"fst_unit",orderable:false},
-                {"title" : "Price","width": "10%",data:"fdc_price",orderable:false,className:'text-right'},
-                {"title" : "Disc %","width": "10%",data:"fst_disc_item",orderable:false,className:'text-right'},
-                {"title" : "Disc Amount","width": "10%",orderable:false,className:'text-right',
-                    render:function(data,type,row){
-						disc = row.fdc_disc_amount_per_item * row.fdb_qty_sj;
-						return App.money_format(disc);
-                    }
-                },
-                {"title" : "Sub Total","width": "10%",orderable:false,className:'text-right',
-                    render:function(data,type,row){
-						disc = row.fdc_disc_amount_per_item * row.fdb_qty_sj;
-						total = row.fdb_qty_sj * row.fdc_price;
-						//disc = calculateDisc(row.fdb_qty * money_parse(row.fdc_price),row.fst_disc_item);
-                        return App.money_format(total - disc);;
-                    }
-                },                
+				{"title": "<?= lang("Item ID ") ?>","width": "10%",data: "fin_item_id",visible: false},
+				{"title": "<?= lang("Item terms ") ?>","width": "25%",data: "fst_item_name",visible: true},
+				{"title": "<?= lang("Type ") ?>","width": "10%",data: "fst_item_type",visible: true},
+				{"title": "<?= lang("Unit ") ?>","width": "5%",data: "fst_unit",visible: true},
+				{"title": "<?= lang("Qty ") ?>","width": "5%",data: "fdb_qty",visible: true},              
 			],
 			processing: true,
 			serverSide: false,
@@ -185,12 +166,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			info:false,
 			fnRowCallback: function( nRow, aData, iDisplayIndex ) {},
 		}).on('draw',function(){
-			$('.xbtn-delete').confirmation({
-				//rootSelector: '[data-toggle=confirmation]',
-				rootSelector: '.btn-delete',
-				// other options
-			});	
-			calculateTotal();
 		});
 
 		App.fixedSelect2();
@@ -276,7 +251,39 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	function initForm(){
 		
-		
+		var url = "<?= site_url() ?>master/promotion/fetch_data/" + finPromoId;
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function(resp) {
+                console.log(resp);    
+				promo = resp.mspromo;
+				
+				$("#fst_promo_name").text(promo.fst_promo_name);
+				$("#fdt_start").text( dateFormat(promo.fdt_start));
+				$("#fdt_end").text(dateFormat(promo.fdt_end));
+
+				$.each(resp.promoTerms, function(name, val) {
+                    console.log(val);
+                    //event.preventDefault();                    
+                    tblTerm.row.add({
+						fin_id: val.fin_id,
+						fin_promo_id: val.fin_promo_id,
+						fst_item_type: val.fst_item_type,
+						fin_item_id: val.fin_item_id,
+						fst_item_name: val.ItemTerms,
+						fdb_qty: val.fdb_qty,
+						fst_unit: val.fst_unit,
+					}).draw(false);
+                });
+
+
+            },
+            error: function(e) {
+                $("#result").text(e.responseText);
+                console.log("ERROR : ", e);
+            }
+        });		
 	}
 
 	function deleteAjax(confirmDelete){
