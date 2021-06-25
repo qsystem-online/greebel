@@ -147,4 +147,97 @@ class Mspromo_model extends MY_Model
 
     }
 
+
+    public function processPromoPeriod($finPromoId){
+
+        $this->load->model("msitems_model");
+
+        $ssql = "SELECT * FROM mspromo WHERE fin_promo_id = ? and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finPromoId]);
+        $rwPromo =  $qr->row();
+        if ($rwPromo == null){
+            throw new customException("Invalid Promo ID !",3003,"FAILED",[]);
+        }
+
+        $start = $rwPromo->fdt_start;
+        $end = $rwPromo->fdt_end;
+
+        $arrMember = [];
+
+        //Clear Data member achived
+        $ssql ="DELETE FROM mspromoperiodclientachived WHERE fin_promo_id = ?";
+        $this->db->query($ssql,[$finPromoId]);
+
+
+        //Get All Member
+        // Get on Area
+        $ssql = "SELECT * FROM mspromoareas where fin_promo_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$finPromoId]);
+        $rs = $qr->result();
+        foreach($rs as $area){
+            $kodeArea = $area->fst_kode_area;
+            $ssql = "SELECT * FROM msrelations a 
+                LEFT JOIN (SELECT * FROM mspromocustomerrestric where fin_promo_id = ? AND fst_active ='A') b on a.fin_relation_id = b.fin_customer_id
+                WHERE a.fst_area_code like ? and b.fin_rec_id IS NULL 
+                AND a.fst_active = 'A'";
+            $qr = $this->db->query($ssql,[$finPromoId,$kodeArea ."%"]);
+            $rsCust = $qr->result();
+            foreach($rsCust as $cust){
+                $arrMember[$cust->fin_relation_id] = false; 
+            }
+        }
+
+        //Get On Customer
+        $ssql = "SELECT * FROM mspromoitemscustomer a
+            LEFT JOIN (SELECT * FROM mspromocustomerrestric where fin_promo_id = ? AND fst_active ='A') b on a.fin_customer_id = b.fin_customer_id
+            WHERE a.fst_participant_type ='RELATION' 
+            AND a.fst_active ='A' and b.fin_rec_id is null";
+
+        $qr = $this->db->query($ssql,[$finPromoId]);
+        $rsParticipants = $qr->result();
+        foreach($rsParticipants as $cust){
+            if (! isset($arrMember[$cust->fin_customer_id])){
+                $arrMember[$cust->fin_customer_id] = false; 
+            }            
+        }
+
+        //Cek Term
+        $ssql = "SELECT * FROM mspromoitems where fin_promo_id = ? and fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finPromoId]);
+        $rsTerm = $qr->result();
+        foreach($arrMember as $keyCustId => $value){
+            foreach($rsTerm as $term){
+                if ($term->fst_item_type == "ITEM"){
+                    //Get Purchase
+                    $ssql = "SELECT a.* FROM trsalesorderdetails a 
+                        inner join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id 
+                        WHERE b.fst_active ='A' and b.fin_relation_id = ? 
+                        AND a.fin_item_id = ? and b.fdt_salesorder_datetime between ? and ?";
+                    $qr = $this->db->query($ssql,[$keyCustId,$term->fin_item_id,$start,$end]);
+                    $rsTmp = $qr->result();
+                    $totalBaseUnit = 0;
+                    $termUnit = $term->fst_unit;
+
+                    foreach($rsTmp as $tmp){
+                        $totalBaseUnit += $this->msitems_model->getQtyConvertUnit($term->fin_item_id,$tmp->fdb_qty,$tmp->fst_unit,$termUnit);                        
+                    }
+
+                    if ($totalBaseUnit < $term->fdb_qty){
+                        continue 2;
+                    }
+                    $arrMember[$keyCustId] = true;
+                }                
+            }
+        }
+
+        foreach($arrMember as $keyCustId => $value){
+            if ($value == true){
+                $ssql = "INSERT INTO mspromoperiodclientachived (fin_promo_id,fin_customer_id,fst_active,fin_insert_id) values(?,?,?,?)";
+                $this->db->query($ssql,[$finPromoId,$keyCustId,'A',$this->aauth->get_user_id()]);
+            }
+        }        
+
+
+    }
+
 }

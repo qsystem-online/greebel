@@ -6,6 +6,7 @@ class Promo_period extends MY_Controller{
     public function __construct(){
 		parent::__construct();
 		$this->load->library('form_validation');
+        $this->load->model("mspromo_model");
     }
 
     public function index(){
@@ -409,5 +410,29 @@ class Promo_period extends MY_Controller{
         $mpdf->WriteHTML($strHtml);	
         $mpdf->Output();		
 		//echo $strHtml;		
+    }
+
+    public function ajx_process_promo($finPromoId){
+        $this->mspromo_model->processPromoPeriod($finPromoId);
+        $this->json_output([
+            "status"=>"SUCCESS",
+            "messages"=>"",
+            "data"=>[]
+        ]);
+    }
+
+    public function ajx_cust_achived($finPromoId){
+        $ssql = "SELECT a.fin_rec_id,a.fin_customer_id, b.fst_relation_name FROM mspromoperiodclientachived a
+            INNER JOIN msrelations b on a.fin_customer_id = b.fin_relation_id  
+            where fin_promo_id = ?";
+        $qr= $this->db->query($ssql,[$finPromoId]);
+        $rs = $qr->result();
+
+        $this->json_output([
+            "status"=>"SUCCESS",
+            "messages"=>"",
+            "data"=>$rs
+        ]);
+
     }
 }

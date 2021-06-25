@@ -46,6 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <form id="frmH" class="form-horizontal" action="<?=site_url()?>tr/delivery_order/add" method="POST" enctype="multipart/form-data">			
 				<div class="box-body">
 					<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">								
+					<input type="hidden" id="fin_promo_id" value="<?=$fin_promo_id?>">
 					
 					<div class="form-group">
 						<label class="col-md-2 control-label"><?=lang("Promo Name")?> :</label>
@@ -67,6 +68,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<table id="tblTerm" class="table table-bordered table-hover table-striped" style="width:100%"></table>
                     <div id="detail_err" class="text-danger"></div>
+
+
+					<div class="form-group" style="margin-top:10px;margin-bottom:10px">
+						<div class="col-md-2 col-md-offset-10 text-right">
+							<a id="btnProcessPromo" class="btn btn-primary">Process Promo</a>
+						</div>						
+                    </div>
+
+					<table id="tblClient" class="table table-bordered table-hover table-striped" style="width:100%"></table>                    
                 </div>
 				<div class="box-footer text-right"></div>
                 <!-- end box-footer -->
@@ -96,6 +106,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript" info="define">
 	var finPromoId = "<?= $fin_promo_id?>";
 	var tblTerm;
+	var tblClient;
 </script>
 
 <script type="text/javascript" info="event">
@@ -135,6 +146,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			window.location.replace("<?=site_url()?>tr/sales/invoice");
 		});
 
+		$("#btnProcessPromo").click(function(e){
+			e.preventDefault();
+			App.blockUIOnAjaxRequest();
+			$.ajax({
+				url:"<?=site_url()?>tr/sales/promo_period/ajx_process_promo/" + $("#fin_promo_id").val(),
+				method:"GET",				
+			}).done(function(resp){
+				if (resp.status == "SUCCESS"){
+					getCustomerAchived();
+				}
+			})
+		});
+
 	});
 </script>
 
@@ -157,6 +181,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title": "<?= lang("Type ") ?>","width": "10%",data: "fst_item_type",visible: true},
 				{"title": "<?= lang("Unit ") ?>","width": "5%",data: "fst_unit",visible: true},
 				{"title": "<?= lang("Qty ") ?>","width": "5%",data: "fdb_qty",visible: true},              
+			],
+			processing: true,
+			serverSide: false,
+			searching: false,
+			lengthChange: false,
+			paging: false,
+			info:false,
+			fnRowCallback: function( nRow, aData, iDisplayIndex ) {},
+		}).on('draw',function(){
+		});
+
+		tblClient = $('#tblClient').on('preXhr.dt', function ( e, settings, data ) {
+		 	//add aditional data post on ajax call
+		 	data.sessionId = "TEST SESSION ID";
+		}).on('init.dt',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+			$(".dataTables_scrollBody").css("position","static");
+		}).DataTable({
+			scrollX: true,
+            ordering: true,
+			columns:[
+				{"title": "<?= lang("id") ?>","width": "10%",data: "fin_rec_id",visible: false},
+				{"title": "<?= lang("Customer Achived") ?>","width": "25%",data: "fin_customer_id",visible: true,
+					render:function(data,type,row){
+						return row.fst_customer_name;
+					}
+				},
 			],
 			processing: true,
 			serverSide: false,
@@ -252,6 +304,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	function initForm(){
 		
 		var url = "<?= site_url() ?>master/promotion/fetch_data/" + finPromoId;
+		App.blockUIOnAjaxRequest();
         $.ajax({
             type: "GET",
             url: url,
@@ -276,6 +329,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						fst_unit: val.fst_unit,
 					}).draw(false);
                 });
+
+				getCustomerAchived();
 
 
             },
@@ -342,6 +397,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#frm-mode").val("EDIT");  //ADD|EDIT
 				$('#fst_inv_no').prop('readonly', true);				
 			}
+		});
+	}
+
+	function getCustomerAchived(){
+
+		$.ajax({
+			url:"<?=site_url()?>tr/sales/promo_period/ajx_cust_achived/" + $("#fin_promo_id").val(),
+			method:"GET",		
+		}).done(function(resp){
+
+			if(resp.status == "SUCCESS"){
+				data = resp.data;
+				tblClient.clear();
+				$.each(data,function(i,v){
+					tblClient.row.add({
+						fin_rec_id :v.fin_rec_id,
+						fin_customer_id:v.fin_customer_id,
+						fst_customer_name:v.fst_relation_name
+					});
+
+				})
+				tblClient.draw(false);
+			}
+			
 		});
 	}
 
