@@ -42,7 +42,7 @@
 		}
 		?>
 		<div>Gudang : <?= $name_wareHouse ?></div>
-		<div>Tanggal S/O: <?= $this->input->post("fdt_sj_datetime") ?>  s/d <?= $this->input->post("fdt_sj_datetime2") ?></div> 
+		<div>Tanggal S/J: <?= $this->input->post("fdt_sj_datetime") ?>  s/d <?= $this->input->post("fdt_sj_datetime2") ?></div> 
         <div>Customer: <?= $name_relations ?> </div>
 		<div>Type: SO </div>                           
 		<table id="tblReport" cellpadding="0" cellspacing="0" style="width:1300px">      

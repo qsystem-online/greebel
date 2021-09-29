@@ -206,8 +206,20 @@ class Msrelations_model extends MY_Model
         if ($relationId_end == 'null'){
             $relationId_end ="";
         }
-        $ssql = "SELECT * FROM msrelations WHERE fin_branch_id = ? AND fst_relation_type like ?
-                AND fin_relation_id >= '$relationId_start' AND fin_relation_id <= '$relationId_end' ORDER BY fst_relation_name ";
+        $user = $this->aauth->user();
+        $deptActive = $user->fin_department_id;
+		$dept_purchase = getDbConfig("purchase_department_id");
+		$dept_sales = getDbConfig("sales_department_id");
+        if($deptActive == $dept_sales){
+            $ssql = "SELECT * FROM msrelations WHERE find_in_set('1',fst_relation_type) AND fin_branch_id = ? AND fst_relation_type like ?
+            AND fin_relation_id >= '$relationId_start' AND fin_relation_id <= '$relationId_end' ORDER BY fst_relation_name ";
+		}else if($deptActive == $dept_purchase){
+            $ssql = "SELECT * FROM msrelations WHERE (find_in_set('2',fst_relation_type) or find_in_set('3',fst_relation_type)) AND fin_branch_id = ? AND fst_relation_type like ?
+            AND fin_relation_id >= '$relationId_start' AND fin_relation_id <= '$relationId_end' ORDER BY fst_relation_name ";
+		}else{
+            $ssql = "SELECT * FROM msrelations WHERE fin_branch_id = ? AND fst_relation_type like ?
+            AND fin_relation_id >= '$relationId_start' AND fin_relation_id <= '$relationId_end' ORDER BY fst_relation_name ";
+		}
         $query = $this->db->query($ssql,[$this->aauth->get_active_branch_id(),'%'.$type.'%']);
         //echo $this->db->last_query();
         //die();
@@ -235,5 +247,29 @@ class Msrelations_model extends MY_Model
         $ssql = "select * from msrelations where fst_active ='A' and fin_branch_id = ? and find_in_set('2',fst_relation_type) and find_in_set(?,fst_linebusiness_id) ";
         $qr = $this->db->query($ssql,[$finBranchId,$finLineBussiness]);
         return $qr->result();
+    }
+
+    public function is_permit_relation($fin_relation_id){
+        $user = $this->aauth->user();
+        $deptActive = $user->fin_department_id;
+		$dept_purchase = getDbConfig("purchase_department_id");
+		$dept_sales = getDbConfig("sales_department_id");
+		if($deptActive == $dept_sales){
+			$ssql = "SELECT * FROM msrelations WHERE find_in_set('1',fst_relation_type) AND fin_relation_id = ?";
+		}else if($deptActive == $dept_purchase){
+            $ssql = "SELECT * FROM msrelations WHERE (find_in_set('2',fst_relation_type) or find_in_set('3',fst_relation_type)) AND fin_relation_id = ?";
+		}else{
+			$ssql = "SELECT * FROM msrelations WHERE fin_relation_id = ?";
+		}
+        $qr = $this->db->query($ssql,$fin_relation_id);
+        //echo $this->db->last_query();
+        //die();
+        $rw = $qr->row();
+        //cek boleh view / initform master relation
+        if($rw != null){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

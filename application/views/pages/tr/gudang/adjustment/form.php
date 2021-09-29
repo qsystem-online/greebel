@@ -47,7 +47,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="fst_adjustment_no" class="col-md-2 control-label"><?=lang("Adjustment No.")?> #</label>
 						<div class="col-md-4">
-							<input type="text" class="form-control" id="fst_adjustment_no" placeholder="<?=lang("MAG No")?>" name="fst_adjustment_no" value="<?=$fst_adjustment_no?>" readonly>
+							<input type="text" class="form-control" id="fst_adjustment_no" placeholder="<?=lang("Adjustment No")?>" name="fst_adjustment_no" value="<?=$fst_adjustment_no?>" readonly>
 							<div id="fst_adjustment_no_err" class="text-danger"></div>
 						</div>
 						
@@ -665,7 +665,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				isValidData = false;
 				alert ("Serial number " + v.fst_custom_item_name  + " tidak boleh kosong !");
 				return false;
-			}			
+			}		
 			detail.push(v);
 		});
 		if (isValidData == false){				

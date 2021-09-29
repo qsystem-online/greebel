@@ -552,11 +552,12 @@ class Invoice extends MY_Controller{
     public function print_voucher($finInvId){
 		$this->data = $this->trinvoice_model->getDataVoucher($finInvId);
 		//$data=[];
-		$this->data["title"] = "Invoice";		
-		$page_content = $this->parser->parse('pages/tr/sales/invoice/voucher', $this->data, true);
-		$this->data["PAGE_CONTENT"] = $page_content;	
-		$strHtml = $this->parser->parse('template/voucher_pdf', $this->data, true);
-
+        $this->data["company"] = "PT.SURYAMAS CIPTA SENTOSA";	
+		$this->data["title"] = "FAKTUR";		
+		$page_content = $this->parser->parse('pages/tr/sales/invoice/voucher_non_dpp', $this->data, true);
+		$dataMain=["PAGE_CONTENT"=>$page_content];	
+		$this->parser->parse('template/voucher_pdf',$dataMain);
+        /*
 		//$this->parser->parse('template/voucher', $this->data);
 		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
 		$mpdf->useSubstitutions = false;				
@@ -564,6 +565,25 @@ class Invoice extends MY_Controller{
         $mpdf->WriteHTML($strHtml);	
         $mpdf->Output();		
 		//echo $strHtml;
+        */
+    }
+    public function print_voucher_dpp($finInvId){
+		$this->data = $this->trinvoice_model->getDataVoucher($finInvId);
+		//$data=[];
+        $this->data["company"] = "PT.SURYAMAS CIPTA SENTOSA";	
+		$this->data["title"] = "FAKTUR";		
+		$page_content = $this->parser->parse('pages/tr/sales/invoice/voucher', $this->data, true);
+		$dataMain=["PAGE_CONTENT"=>$page_content];	
+		$this->parser->parse('template/voucher_pdf',$dataMain);
+        /*
+		//$this->parser->parse('template/voucher', $this->data);
+		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
+		$mpdf->useSubstitutions = false;				
+		
+        $mpdf->WriteHTML($strHtml);	
+        $mpdf->Output();		
+		//echo $strHtml;
+        */
     }
     
 }

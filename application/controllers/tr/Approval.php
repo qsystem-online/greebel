@@ -32,16 +32,54 @@ class Approval extends MY_Controller{
 		$user = $this->aauth->user();
 
 		$dateRange = parseDateRange($this->input->get('dateRange'));
+		$optionModule = $this->input->get("optionModule");
+		if($optionModule == "" || $optionModule == null){
+			$optionModule ="ALL";
+		}
+		if ($user->fin_group_id == '1'){
+			if ($optionModule != "ALL"){
+				$this->datatables->setTableName(
+					"(select a.*,b.fst_fullname as fst_user_name from trverification a 
+					inner join users b on a.fin_insert_id = b.fin_user_id 
+					where a.fst_verification_status = 'RV' 
+					and a.fin_branch_id = ".$activeBranchId ."
+					and a.fst_controller = '$optionModule'  
+					and a.fdt_insert_datetime >= '$dateRange[from]' and a.fdt_insert_datetime <= '$dateRange[to]') a "
+				);
+			}else{
+				$this->datatables->setTableName(
+					"(select a.*,b.fst_fullname as fst_user_name from trverification a 
+					inner join users b on a.fin_insert_id = b.fin_user_id 
+					where a.fst_verification_status = 'RV' 
+					and a.fin_branch_id = ".$activeBranchId ."
+					and a.fdt_insert_datetime >= '$dateRange[from]' and a.fdt_insert_datetime <= '$dateRange[to]') a "
+				);
+			}
+		}else{
+			if ($optionModule == "ALL"){
+				$this->datatables->setTableName(
+					"(select a.*,b.fst_fullname as fst_user_name from trverification a 
+					inner join users b on a.fin_insert_id = b.fin_user_id 
+					where a.fst_verification_status = 'RV' 
+					and a.fin_branch_id = ".$activeBranchId ."
+					and a.fin_department_id = ". $user->fin_department_id ." 
+					and a.fin_user_group_id = ". $user->fin_group_id . "
+					and a.fdt_insert_datetime >= '$dateRange[from]' and a.fdt_insert_datetime <= '$dateRange[to]') a "
+				);
+			}else{
+				$this->datatables->setTableName(
+					"(select a.*,b.fst_fullname as fst_user_name from trverification a 
+					inner join users b on a.fin_insert_id = b.fin_user_id 
+					where a.fst_verification_status = 'RV' 
+					and a.fin_branch_id = ".$activeBranchId ."
+					and a.fin_department_id = ". $user->fin_department_id ." 
+					and a.fin_user_group_id = ". $user->fin_group_id . "
+					and a.fst_controller = '$optionModule' 
+					and a.fdt_insert_datetime >= '$dateRange[from]' and a.fdt_insert_datetime <= '$dateRange[to]') a "
+				);
+			}
+		}
 
-        $this->datatables->setTableName(
-			"(select a.*,b.fst_fullname as fst_user_name from trverification a 
-			inner join users b on a.fin_insert_id = b.fin_user_id 
-            where a.fst_verification_status = 'RV' 
-            and a.fin_branch_id = ".$activeBranchId ." 
-            and a.fin_department_id = ". $user->fin_department_id ." 
-			and a.fin_user_group_id = ". $user->fin_group_id . "
-			and a.fdt_insert_datetime >= '$dateRange[from]' and a.fdt_insert_datetime <= '$dateRange[to]') a "
-        );
 
 		$selectFields = "a.fin_rec_id,a.fst_controller,a.fin_transaction_id,a.fst_transaction_no,a.fst_message,a.fdt_insert_datetime,a.fst_user_name";
 		$this->datatables->setSelectFields($selectFields);
@@ -73,16 +111,53 @@ class Approval extends MY_Controller{
 		$user = $this->aauth->user();
 
 		$dateRange = parseDateRange($this->input->get('dateRange'));
-
-        $this->datatables->setTableName(
-			"(select a.*,b.fst_fullname as fst_user_name from trverification a 
-			inner join users b on a.fin_insert_id = b.fin_user_id 
-            where a.fst_verification_status in ('VF','RJ','VD')  
-            and a.fin_branch_id = ".$activeBranchId ." 
-            and a.fin_department_id = ". $user->fin_department_id ." 
-			and a.fin_user_group_id = ". $user->fin_group_id . "
-			and a.fdt_insert_datetime >= '$dateRange[from]' and a.fdt_insert_datetime <= '$dateRange[to]') a "
-        );
+		$optionModule = $this->input->get("optionModule");
+		if($optionModule == "" || $optionModule == null){
+			$optionModule ="ALL";
+		}
+		if ($user->fin_group_id == '1'){
+			if ($optionModule != "ALL"){
+				$this->datatables->setTableName(
+					"(select a.*,b.fst_fullname as fst_user_name from trverification a 
+					inner join users b on a.fin_insert_id = b.fin_user_id 
+					where a.fst_verification_status in ('VF','RJ','VD')  
+					and a.fin_branch_id = ".$activeBranchId ."
+					and a.fst_controller = '$optionModule'  
+					and a.fdt_insert_datetime >= '$dateRange[from]' and a.fdt_insert_datetime <= '$dateRange[to]') a "
+				);
+			}else{
+				$this->datatables->setTableName(
+					"(select a.*,b.fst_fullname as fst_user_name from trverification a 
+					inner join users b on a.fin_insert_id = b.fin_user_id 
+					where a.fst_verification_status in ('VF','RJ','VD')  
+					and a.fin_branch_id = ".$activeBranchId ."
+					and a.fdt_insert_datetime >= '$dateRange[from]' and a.fdt_insert_datetime <= '$dateRange[to]') a "
+				);
+			}
+		}else{
+			if ($optionModule != "ALL"){
+				$this->datatables->setTableName(
+					"(select a.*,b.fst_fullname as fst_user_name from trverification a 
+					inner join users b on a.fin_insert_id = b.fin_user_id 
+					where a.fst_verification_status in ('VF','RJ','VD')  
+					and a.fin_branch_id = ".$activeBranchId ."
+					and a.fin_department_id = ". $user->fin_department_id ." 
+					and a.fin_user_group_id = ". $user->fin_group_id . "
+					and a.fst_controller = '$optionModule'
+					and a.fdt_insert_datetime >= '$dateRange[from]' and a.fdt_insert_datetime <= '$dateRange[to]') a "
+				);
+			}else{
+				$this->datatables->setTableName(
+					"(select a.*,b.fst_fullname as fst_user_name from trverification a 
+					inner join users b on a.fin_insert_id = b.fin_user_id 
+					where a.fst_verification_status in ('VF','RJ','VD')  
+					and a.fin_branch_id = ".$activeBranchId ."
+					and a.fin_department_id = ". $user->fin_department_id ." 
+					and a.fin_user_group_id = ". $user->fin_group_id . " 
+					and a.fdt_insert_datetime >= '$dateRange[from]' and a.fdt_insert_datetime <= '$dateRange[to]') a "
+				);
+			}
+		}
 
 		$selectFields = "a.fin_rec_id,a.fst_controller,a.fin_transaction_id,a.fst_transaction_no,a.fst_message,a.fdt_insert_datetime,a.fst_user_name";
 		$this->datatables->setSelectFields($selectFields);

@@ -33,6 +33,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     <label class="control-label">Date Range :</label>
                                     <input id="daterange_needapproval" type="TEXT" class="daterangepicker form-control" style="position:static;display:inline" value='' />
                                 </div>
+                                <div style="float:left">
+                                    <label class="control-label" style="margin-left:10px">Module :</label>
+                                    <select id="module_needapproval" style="margin-left:10px;width:148px;padding:6px">
+                                        <option value="ALL">All Module</option>
+                                        <option value="PO">PO</option>
+                                        <option value="SO">SO</option>
+                                        <option value="PP">PP</option>
+                                    </select>
+                                </div>
                                 <div style="float:right">
                                     <label class="control-label">Search by :</label>
                                     <select id="selectSearch" class="form-control"  style="display:inline;width:148px">
@@ -54,6 +63,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     <label class="control-label">Date Range :</label>
                                     <input id="daterange_historyapproval" type="TEXT" class="daterangepicker form-control" style="position:static;display:inline" value='' />
                                 </div>
+                                <div style="float:left">
+                                    <label class="control-label" style="margin-left:10px">Module :</label>
+                                    <select id="module_historyapproval" style="margin-left:10px;width:148px;padding:6px">
+                                        <option value="ALL">All Module</option>
+                                        <option value="PO">PO</option>
+                                        <option value="SO">SO</option>
+                                        <option value="PP">PP</option>
+                                    </select>
+                                </div>
+                                <div style="clear:both"></div>
                                 <div style="float:right">
                                     <label class="control-label">Search by :</label>
                                     <select id="selectSearchHist" class="form-control"  style="display:inline;width:148px">
@@ -141,6 +160,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             e.preventDefault();
             console.log("daterangepicker change");
         })
+        $("#module_needapproval").change(function(e){
+            e.preventDefault();
+            reloadNeedApproval();
+		});
+        $("#module_historyapproval").change(function(e){
+            e.preventDefault();
+            reloadHistories();
+		});
         
     });
 
@@ -173,6 +200,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			serverSide: true,
         }).on('preXhr.dt', function ( e, settings, data ) {
             data.dateRange = $('#daterange_needapproval').val();
+            data.optionModule = $('#module_needapproval').val();
             data.optionSearch = $('#selectSearch').val();
 		});
         
@@ -236,6 +264,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			serverSide: true,
         }).on('preXhr.dt', function ( e, settings, data ) {
             data.dateRange = $('#daterange_historyapproval').val();
+            data.optionModule = $('#module_historyapproval').val();
             data.optionSearch = $('#selectSearchHist').val();
 		}).on('draw',function(){
             $('.need-confirm').confirmation({

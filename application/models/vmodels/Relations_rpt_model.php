@@ -17,6 +17,11 @@ class Relations_rpt_model extends CI_Model {
         $parent_id = "";
         $start_relation_id = "";
         $end_relation_id = "";
+        $user = $this->aauth->user();
+        $deptActive = $user->fin_department_id;
+		$dept_purchase = getDbConfig("purchase_department_id");
+		$dept_sales = getDbConfig("sales_department_id");
+
         if (isset($data['fin_country_id'])) { $country_id = $data['fin_country_id'];}
         if (isset($data['fst_area_code'])) { $area_code = $data['fst_area_code'];}
         if (isset($data['fin_branch_id'])) { $branch_id = $data['fin_branch_id'];}
@@ -60,11 +65,26 @@ class Relations_rpt_model extends CI_Model {
         if ($end_relation_id > "0") {
             $swhere .= " and a.fin_relation_id <= '". $end_relation_id . "'";
         }
-        if ($swhere != "") {
-            $swhere = " where " . substr($swhere, 5);
-        }
+
+        if($deptActive == $dept_sales){
+            if ($swhere != "") {
+                $swhere = " WHERE find_in_set('1',a.fst_relation_type) AND " . substr($swhere, 5);
+            }else{
+                $swhere = " WHERE find_in_set('1',a.fst_relation_type)" . substr($swhere, 5);
+            }
+		}else if($deptActive == $dept_purchase){
+            if ($swhere != "") {
+                $swhere = " WHERE (find_in_set('2',a.fst_relation_type) or find_in_set('3',a.fst_relation_type)) AND " . substr($swhere, 5);
+            }else{
+                $swhere = " WHERE (find_in_set('2',a.fst_relation_type) or find_in_set('3',a.fst_relation_type))" . substr($swhere, 5);
+            }
+		}else{
+            if ($swhere != "") {
+                $swhere = " where " . substr($swhere, 5);
+            }
+		}
         if ($sorder_by != "") {
-            $sorderby = " order by " .$sorder_by;
+            $sorderby = " ORDER BY " .$sorder_by;
         }
         
         switch($rptLayout) {

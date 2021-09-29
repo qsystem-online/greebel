@@ -82,7 +82,7 @@
                 </div> 
             </div>
             <div class="form-group row">
-                <label for="fdt_datetime" class="col-sm-2 control-label"><?=lang("Date")?></label>
+                <label for="fdt_datetime" class="col-sm-2 control-label"><?=lang("Tanggal")?></label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">

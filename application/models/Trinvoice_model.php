@@ -75,9 +75,10 @@ class Trinvoice_model extends MY_Model {
     }
 
     public function getDataById($invId){
-        $ssql ="SELECT a.*,b.fst_salesorder_no,b.fdt_salesorder_datetime,c.fst_relation_name as fst_customer_name,(b.fdc_downpayment_paid - b.fdc_downpayment_claimed) as fdc_downpayment_rest from trinvoice a 
+        $ssql ="SELECT a.*,b.fst_salesorder_no,b.fdt_salesorder_datetime,c.fst_relation_name as fst_customer_name,(b.fdc_downpayment_paid - b.fdc_downpayment_claimed) as fdc_downpayment_rest,d.fst_username from trinvoice a 
             inner join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id 
-            inner join msrelations c on a.fin_relation_id = c.fin_relation_id 
+            inner join msrelations c on a.fin_relation_id = c.fin_relation_id
+            inner join users d on a.fin_insert_id = d.fin_user_id 
             where a.fin_inv_id = ? and a.fst_active != 'D'";
         
         $qr = $this->db->query($ssql,[$invId]);

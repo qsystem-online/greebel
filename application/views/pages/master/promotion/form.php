@@ -77,7 +77,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <label for="fst_promo_type" class="col-sm-2 control-label"><?= lang("Type") ?></label>
                             <div class="col-sm-4">
                                 <select class="form-control" id="fst_promo_type" name="fst_promo_type">
-                                    <option value='OFFICE'><?= lang("OFFICE") ?></option>
+                                    <option value='OFFICE'><?= lang("BULANAN") ?></option>
                                     <option value='PERIODE'><?= lang("PERIODE") ?></option>
                                     <!-- <option value='POS'><= lang("POS") ?></option> -->                                    
                                 </select>
@@ -1763,6 +1763,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 name: "detail",
                 value: JSON.stringify(detail)
             });
+            alert(detail);
             // save Participants
             detailParticipants = new Array();
             b = $('#tbl_customer_promo').DataTable();
@@ -2025,6 +2026,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     function init_form(fin_promo_id) {
         //alert("Init Form");
         var url = "<?= site_url() ?>master/promotion/fetch_data/" + fin_promo_id;
+        alert(url);
         $.ajax({
             type: "GET",
             url: url,

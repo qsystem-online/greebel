@@ -39,14 +39,15 @@
 					<?php
 						echoIfColSelected(0,$selectedCols,"<th class='col-0' style='width:30px'>No</th>");
 						echoIfColSelected(1,$selectedCols,"<th class='col-1' style='width:100px'>No.Faktur</th>");
-						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:100px'>Tgl</th>");
-						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:200px'>Customer/Pelanggan</th>");
-						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:100px'>Nilai Faktur</th>");
-						echoIfColSelected(5,$selectedCols,"<th class='col-5' style='width:100px'>Klaim DP</th>");
-                        echoIfColSelected(6,$selectedCols,"<th class='col-6' style='width:100px'>Alokasi Retur</th>");
-                        echoIfColSelected(7,$selectedCols,"<th class='col-7' style='width:100px'>No.Kasbank</th>");
-                        echoIfColSelected(8,$selectedCols,"<th class='col-8' style='width:100px'>Tgl</th>");
-                        echoIfColSelected(9,$selectedCols,"<th class='col-9' style='width:100px'>Pembayaran</th>");
+						echoIfColSelected(2,$selectedCols,"<th class='col-2' style='width:100px'>Tgl Faktur</th>");
+						echoIfColSelected(3,$selectedCols,"<th class='col-3' style='width:70px'>Tgl J/T</th>");
+						echoIfColSelected(4,$selectedCols,"<th class='col-4' style='width:200px'>Customer/Pelanggan</th>");
+						echoIfColSelected(5,$selectedCols,"<th class='col-5' style='width:100px'>Nilai Faktur</th>");
+                        echoIfColSelected(6,$selectedCols,"<th class='col-6' style='width:100px'>Klaim DP</th>");
+                        echoIfColSelected(7,$selectedCols,"<th class='col-7' style='width:100px'>Alokasi Retur</th>");
+                        echoIfColSelected(8,$selectedCols,"<th class='col-8' style='width:100px'>No.Kasbank</th>");
+                        echoIfColSelected(9,$selectedCols,"<th class='col-9' style='width:100px'>Tgl</th>");
+						echoIfColSelected(10,$selectedCols,"<th class='col-10' style='width:100px'>Pembayaran</th>");
 					?>
 				</tr>
 			</thead>
@@ -81,10 +82,11 @@
                             echoIfColSelected(0,$selectedCols,"<td class='col-0'>$nou</td>");
                             echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->No_Inv</td>");
                             echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->Inv_Date</td>");
-                            echoIfColSelected(3,$selectedCols,"<td class='col-3'>$row->Relation_Name</td>");
-                            echoIfColSelected(4,$selectedCols,"<td class='col-4'style='text-align: right'>$total_netto</td>");
-                            echoIfColSelected(5,$selectedCols,"<td class='col-5'style='text-align: right'>$fdc_downpayment_claim</td>");
-							echoIfColSelected(6,$selectedCols,"<td class='col-6'style='text-align: right'>$fdc_total_return</td>");
+                            echoIfColSelected(3,$selectedCols,"<td class='col-3'>$row->Jt_Date</td>");
+                            echoIfColSelected(4,$selectedCols,"<td class='col-4'>$row->Relation_Name</td>");
+                            echoIfColSelected(5,$selectedCols,"<td class='col-5'style='text-align: right'>$total_netto</td>");
+							echoIfColSelected(6,$selectedCols,"<td class='col-6'style='text-align: right'>$fdc_downpayment_claim</td>");
+							echoIfColSelected(7,$selectedCols,"<td class='col-7'style='text-align: right'>$fdc_total_return</td>");
                             $ttl_total += $row->fdc_total;
                             $ttl_totalNew = formatNumber ($ttl_total, 2);
                             $ttl_return += $row->fdc_total_return;
@@ -92,13 +94,13 @@
                             $ttl_dp_claim += $row->fdc_downpayment_claim;
                             $ttl_dp_claimNew = formatNumber ($ttl_dp_claim, 2);
 						}else{
-							echo "<td colspan='".totalSelectedCol(7,$selectedCols)."'style='text-align: right;font-weight: bold'></td>";
+							echo "<td colspan='".totalSelectedCol(8,$selectedCols)."'style='text-align: right;font-weight: bold'></td>";
 						}
 						$Receive_Amount = formatNumber ($row->Receive_Amount, 2);
                         
-                        echoIfColSelected(7,$selectedCols,"<td class='col-7'>$row->Receive_No</td>");
-                        echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->Receive_Date</td>");
-                        echoIfColSelected(9,$selectedCols,"<td class='col-9'style='text-align: right'>$Receive_Amount</td>");										                                                                                                                                                                      
+                        echoIfColSelected(8,$selectedCols,"<td class='col-8'>$row->Receive_No</td>");
+                        echoIfColSelected(9,$selectedCols,"<td class='col-9'>$row->Receive_Date</td>");
+                        echoIfColSelected(10,$selectedCols,"<td class='col-10'style='text-align: right'>$Receive_Amount</td>");										                                                                                                                                                                      
 						echo "</tr>";
 						$sub_ttl_paid += $row->Receive_Amount;
 						$sub_ttl_paidNew = formatNumber ($sub_ttl_paid, 2);
@@ -106,17 +108,17 @@
 						$ttl_paidNew = formatNumber ($ttl_paid, 2);
                         
 					}
-					echo "<td colspan='".totalSelectedCol(9,$selectedCols)."'style='text-align: right;font-weight: bold'>Subtotal:</td>";
-					echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$sub_ttl_paidNew</td>");							
+					echo "<td colspan='".totalSelectedCol(10,$selectedCols)."'style='text-align: right;font-weight: bold'>Subtotal:</td>";
+					echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: right'>$sub_ttl_paidNew</td>");							
 					echo "</tr>";
 
-					echo "<td colspan='".totalSelectedCol(4,$selectedCols)."'style='text-align: right;font-weight: bold'>Total Keseluruhan: </td>";
-					echoIfColSelected(4,$selectedCols,"<td class='col-4' style='font-weight: bold;text-align: right'>$ttl_totalNew</td>");
-					echoIfColSelected(5,$selectedCols,"<td class='col-5' style='font-weight: bold;text-align: right'>$ttl_dp_claimNew</td>");
-					echoIfColSelected(6,$selectedCols,"<td class='col-6' style='font-weight: bold;text-align: right'>$ttl_returnNew</td>");
-					echoIfColSelected(7,$selectedCols,"<td class='col-7'></td>");
+					echo "<td colspan='".totalSelectedCol(5,$selectedCols)."'style='text-align: right;font-weight: bold'>Total Keseluruhan: </td>";
+					echoIfColSelected(5,$selectedCols,"<td class='col-5' style='font-weight: bold;text-align: right'>$ttl_totalNew</td>");
+					echoIfColSelected(6,$selectedCols,"<td class='col-6' style='font-weight: bold;text-align: right'>$ttl_dp_claimNew</td>");
+					echoIfColSelected(7,$selectedCols,"<td class='col-7' style='font-weight: bold;text-align: right'>$ttl_returnNew</td>");
 					echoIfColSelected(8,$selectedCols,"<td class='col-8'></td>");
-					echoIfColSelected(9,$selectedCols,"<td class='col-9' style='font-weight: bold;text-align: right'>$ttl_paidNew</td>");										
+					echoIfColSelected(9,$selectedCols,"<td class='col-9'></td>");
+					echoIfColSelected(10,$selectedCols,"<td class='col-10' style='font-weight: bold;text-align: right'>$ttl_paidNew</td>");										
 					echo "</tr>";
 				?>
 			</tbody>

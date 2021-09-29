@@ -159,7 +159,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
                         </div>
 
-                        <div class='form-group'>
+                        <div class="form-group">
                             <label for="fst_sni_no" class="col-md-2 control-label"><?= lang("SNI No") ?></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control" id="fst_sni_no" placeholder="<?= lang("SNI Number") ?>" name="fst_sni_no">
@@ -172,7 +172,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
                         </div>
 
-                        <div class='form-group'>
+                        <div class="form-group">
                             <label for="fdc_min_basic_unit_avg_cost" class="col-md-2 control-label"><?= lang("Min AvgCost") ?></label>
                             <div class="col-md-4">
                                 <input type="text" class="form-control text-left money" id="fdc_min_basic_unit_avg_cost" placeholder="<?= lang("Minimal BasicUnitAvgCost") ?>" value="0" name="fdc_min_basic_unit_avg_cost">
@@ -293,9 +293,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                             <input type="text" class="form-control text-right money" id="fdc_price_list" value="0">
                                             <span id="fdc_price_list_error" class="text-danger"></span>
                                         </div>
-                                        <label for="fdc_het" class="col-md-2 control-label"><?= lang("HET") ?></label>
+                                        <label hidden for="fdc_het" class="col-md-2 control-label"><?= lang("HET") ?></label>
                                         <div class="col-md-4">
-                                            <input type="text" class="form-control text-right money" id="fdc_het" value="0">
+                                            <input type="hidden" class="form-control text-right money" id="fdc_het" value="0">
                                             <span id="fdc_het_error" class="text-danger"></span>
                                         </div>
                                     </div>
@@ -442,7 +442,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         "width": "10%",
                         data: "fdc_het",
                         render: $.fn.dataTable.render.number(',', '.', 2),
-                        className: 'dt-right'
+                        className: 'dt-right',
+                        visible: false
                     },
                     {
                         "title": "<?= lang("Action") ?>",

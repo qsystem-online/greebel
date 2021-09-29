@@ -80,7 +80,7 @@
 					?>				
 					<tr class="have-detail">
                         <td><?= $nou++ ?></td>
-						<td><?= $detail["fst_item_code"] . " - " . $detail["fst_item_name"] ?></td>
+						<td><?= $detail["fst_item_name"] ?></td>
                         <td><?= $detail["fst_in_out"] ?></td>
 						<td class="text-right"><?= formatNumber($detail["fdb_qty"],2) ?></td>
                         <td class="text-right"><?= $detail["fst_unit"] ?></td>

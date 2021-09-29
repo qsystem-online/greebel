@@ -50,11 +50,11 @@
 			</div>
 		</div>  
 		<div class="form-group row">
-			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("From")?></label>
+			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Tanggal")?></label>
 			<div class="col-md-4">
 				<input type="text" class="form-control datepicker" id="fdt_from" name="fdt_from" />
 			</div>
-			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("To")?></label>
+			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("s/d")?></label>
 			<div class="col-md-4">
 			<input type="text" class="form-control datepicker" id="fdt_to" name="fdt_to" />
 			</div>

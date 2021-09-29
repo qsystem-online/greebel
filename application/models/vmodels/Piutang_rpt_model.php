@@ -125,7 +125,8 @@ class Piutang_rpt_model extends CI_Model {
                 $swhere GROUP BY a.fin_relation_id ORDER BY a.fin_sales_id,a.fin_relation_id";
                 break;
             case "3":
-                $ssql = "SELECT a.fin_branch_id,a.fin_inv_id as Id_Inv,a.fst_inv_no as No_Inv, a.fdt_inv_datetime as Inv_Date,a.fdc_downpayment_claim as fdc_downpayment_claim,a.fdc_total as fdc_total,a.fst_curr_code as Mata_Uang, a.fdc_total_return as fdc_total_return, a.fdc_total_paid as fdc_total_paid,(a.fdc_total - a.fdc_total_return) as Total_Netto,
+                $ssql = "SELECT a.fin_branch_id,a.fin_inv_id as Id_Inv,a.fst_inv_no as No_Inv, a.fdt_inv_datetime as Inv_Date,a.fin_terms_payment as TOP,CAST(DATE_ADD(a.fdt_inv_datetime, INTERVAL a.fin_terms_payment DAY) as DATE) as Jt_Date,
+                a.fdc_downpayment_claim as fdc_downpayment_claim,a.fdc_total as fdc_total,a.fst_curr_code as Mata_Uang, a.fdc_total_return as fdc_total_return, a.fdc_total_paid as fdc_total_paid,(a.fdc_total - a.fdc_total_return) as Total_Netto,
                 b.fst_relation_name as Relation_Name,c.fin_kasbank_id as Type_Kasbank,c.fst_cbreceive_no as Receive_No,c.fdt_cbreceive_datetime as Receive_Date,c.fdc_receive_amount as Receive_Amount
                 FROM (SELECT * FROM trinvoice WHERE fst_active !='D') a LEFT OUTER JOIN
                 msrelations b ON a.fin_relation_id = b.fin_relation_id

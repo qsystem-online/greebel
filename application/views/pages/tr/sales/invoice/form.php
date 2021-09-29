@@ -36,7 +36,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="btn-group btn-group-sm  pull-right">					
 					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak Faktur")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 					<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
 					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
@@ -111,13 +111,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						<label class="col-md-2 control-label" style="text-align:left;padding-left:0px">Rupiah </label>
 					</div>
-					
-
-					
-
-					
-
-                    
 					<div class="form-group">						
 						<label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Gudang")?> </label>
 						<div class="col-md-4">
@@ -369,11 +362,49 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             e.preventDefault();
             submitAjax(0);
 		});
-		
-		$("#btnPrint").click(function(e){
-			e.preventDefault();
-			frameVoucher.print("<?=site_url()?>tr/sales/invoice/print_voucher/" + $("#fin_inv_id").val());
+
+		$("#btnPrint").confirmation({
+			onConfirm: function(value) {
+				//value.preventDefault();
+				if(value == 'DPP'){
+					window.open("<?= site_url() ?>tr/sales/invoice/print_voucher_dpp/" +$("#fin_inv_id").val() ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
+				}else{
+					window.open("<?= site_url() ?>tr/sales/invoice/print_voucher/" +$("#fin_inv_id").val() ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
+				}		
+			},
+			onCancel: function() {
+				//alert('You didn\'t choose anything');
+			},
+			buttons: [
+				{
+				class: 'btn btn-sm btn-primary',
+				iconClass: 'material-icons mr-1',
+				iconContent: 'directions_dpp',
+				label: 'DPP',
+				value: 'DPP'
+				},
+				{
+				class: 'btn btn-sm btn-primary',
+				iconClass: 'material-icons mr-1',
+				iconContent: 'directions_NoDPP',
+				label: 'Non DPP',
+				value: 'NODPP'
+				},
+				{
+				class: 'btn btn-sm btn-secondary',
+				iconClass: 'material-icons mr-1',
+				iconContent: 'cancel',
+				label: 'Cancel',
+				cancel: true
+				}
+			]
 		});
+		
+		/*$("#btnPrint").click(function(e){
+			e.preventDefault();
+			window.open("<?= site_url() ?>tr/sales/invoice/print_voucher/" +$("#fin_inv_id").val() ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
+			//frameVoucher.print("<?=site_url()?>tr/sales/invoice/print_voucher/" + $("#fin_inv_id").val());
+		});*/
 
 		$("#btnJurnal").click(function(e){
 			e.preventDefault();
@@ -538,7 +569,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				{"title" : "Qty SO","width": "5%",data:"fdb_qty_so",className:'text-right',orderable:false,},
 				{"title" : "Qty SJ","width": "5%",data:"fdb_qty_sj",className:'text-right',orderable:false,},
 				{"title" : "Unit","width": "10%",data:"fst_unit",orderable:false},
-                {"title" : "Price","width": "10%",data:"fdc_price",orderable:false,className:'text-right'},
+                {"title" : "Price","width": "10%",data:"fdc_price",render: $.fn.dataTable.render.number(',', '.', 2),orderable:false,className:'text-right'},
                 {"title" : "Disc %","width": "10%",data:"fst_disc_item",orderable:false,className:'text-right'},
                 {"title" : "Disc Amount","width": "10%",orderable:false,className:'text-right',
                     render:function(data,type,row){

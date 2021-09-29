@@ -10,18 +10,11 @@
 	}
 </style>
 <!-- form start -->
-<form id="rptPAG" action="<?= site_url() ?>report/gudang/penerimaan_mutasi/process" method="POST" enctype="multipart/form-data">
+<form id="rptAdjustment" action="<?= site_url() ?>report/gudang/adjustment/process" method="POST" enctype="multipart/form-data">
     <div class="box-body">
-        <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
+        <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
             <div class="form-group row">
-                <label for="fbl_date_option" class="col-md-2 control-label"></label>
-                <div class="col-md-10">								
-                    <label class="radio-inline"><input type="radio" id="fbl_mag_date" class="fbl_date_option" name="fbl_date_option" value="0" checked>Tgl Data</label>
-                    <label class="radio-inline"><input type="radio" id="fbl_input_date" class="fbl_date_option" name="fbl_date_option" value="1" >Tgl System</label>
-                </div>
-            </div>                    
-            <div class="form-group row">
-                <label for="active_branch_id" class="col-sm-2 control-label"><?= lang("Branch") ?></label>
+                <label for="active_branch_id" class="col-sm-2 control-label"><?= lang("Branch") ?> :</label>
                 <div class="col-sm-4">
                     <?php
                     $active_user = $this->session->userdata("active_user");			
@@ -42,74 +35,63 @@
                     </select>
                     <div id="fin_branch_id_err" class="text-danger"></div>
                 </div>
-                <label for="select-type" class="col-sm-2 control-label"><?=lang("Jenis MAG")?></label>
+                <label for="select-warehouse" class="col-sm-2 control-label"><?=lang("Warehouse")?> :</label>
                 <div class="col-sm-4">
-                    <select id="select-type" class="form-control non-editable" name="fin_type_id">
-                        <option value='0'><?=lang("All")?></option>
-                        <option value='1'><?=lang("PRODUKSI W/O")?></option>
-						<option value='2'><?=lang("PRODUKSI NON-W/O")?></option>
-                        <option value='3'><?=lang("STANDARD")?></option>
+                    <select id="select-warehouse" class="form-control" name="fin_warehouse_id">
+                        <option value='0'>All</option>
+                        <?php
+                            $warehouseList = $this->mswarehouse_model->getAllList();
+                            foreach($warehouseList as $warehouse){
+                                echo "<option value='".$warehouse->fin_warehouse_id ."'>$warehouse->fst_warehouse_name</option>";
+                            }
+                        ?>
                     </select>
-                    <div id="fin_type_id_err" class="text-danger"></div>
-                </div>   
+                    <div id="fin_warehouse_id_err" class="text-danger"></div>
+                </div>
             </div>
             <div class="form-group row">						
-                <label for="select-warehouse_from" class="col-sm-2 control-label"><?=lang("Asal")?></label>
-                <div class="col-sm-4">
-                    <select id="select-warehouse_from" class="form-control" name="fin_from_warehouse_id">
-                        <option value='0'>All</option>
-                        <?php
-                            $warehouseList = $this->mswarehouse_model->getAllList();
-                            foreach($warehouseList as $warehouse){
-                                echo "<option value='".$warehouse->fin_warehouse_id ."'>$warehouse->fst_warehouse_name</option>";
-                            }
-                        ?>
-                    </select>
-                    <div id="fin_warehouse_id_err" class="text-danger"></div>
+                <label for="select-items" class="col-sm-2 control-label"><?=lang("Item")?></label>
+                <div class="col-sm-10">
+                    <select id="select-items" class="form-control non-editable" name="fst_item_code"></select>
+                    <div id="fst_item_code_err" class="text-danger"></div>
                 </div>
-                <label for="select-warehouse_to" class="col-sm-2 control-label"><?=lang("Tujuan")?></label>
-                <div class="col-sm-4">
-                    <select id="select-warehouse" class="form-control" name="fin_to_warehouse_id">
-                        <option value='0'>All</option>
-                        <?php
-                            $warehouseList = $this->mswarehouse_model->getAllList();
-                            foreach($warehouseList as $warehouse){
-                                echo "<option value='".$warehouse->fin_warehouse_id ."'>$warehouse->fst_warehouse_name</option>";
-                            }
-                        ?>
-                    </select>
-                    <div id="fin_warehouse_id_err" class="text-danger"></div>
-                </div> 
+            </div>
+
+            <div class="form-group row">	
+                <label for="select-items2" class="col-sm-2 control-label"><?=lang("s/d")?></label>
+                <div class="col-sm-10">
+                    <select id="select-items2" class="form-control non-editable" name="fst_item_code2"></select>
+                    <div id="fst_item_code2_err" class="text-danger"></div>
+                </div>             
             </div>
             <div class="form-group row">
-                <label for="fdt_datetime" class="col-sm-2 control-label"><?=lang("Tanggal")?></label>
+                <label for="fdt_adjustment_datetime" class="col-sm-2 control-label"><?=lang("Tanggal")?> *</label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_datetime" name="fdt_datetime"/>
+                        <input type="text" class="form-control datepicker" id="fdt_adjustment_datetime" name="fdt_adjustment_datetime"/>
                     </div>
-                    <div id="fdt_datetime_err" class="text-danger"></div>
+                    <div id="fdt_adjustment_datetime_err" class="text-danger"></div>
                     <!-- /.input group -->
                 </div>
-                <label for="fdt_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?></label>
+                <label for="fdt_adjustment_datetime2" class="col-sm-2 control-label"><?=lang("s/d")?> *</label>
                 <div class="col-sm-4">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        <input type="text" class="form-control datepicker" id="fdt_datetime2" name="fdt_datetime2"/>
+                        <input type="text" class="form-control datepicker" id="fdt_adjustment_datetime2" name="fdt_adjustment_datetime2"/>
                     </div>
-                    <div id="fdt_datetime2_err" class="text-danger"></div>
+                    <div id="fdt_adjustment_datetime2_err" class="text-danger"></div>
                 </div>
                 <div class="col-sm-3"></div>
             </div>
             <div class="form-group row">
                 <label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
                 <div class="col-sm-4">								
-                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan PAG Detail")?></label>
-                    <label class="radio"><input type="radio" id="rpt_layout2" class="rpt_layout" name="rpt_layout" value="2" onclick="handleRadioClick(this);"><?=lang("Laporan PAG Ringkas")?></label>
+                    <label class="radio"><input type="radio" id="rpt_layout1" class="rpt_layout" name="rpt_layout" value="1" checked onclick="handleRadioClick(this);"><?=lang("Laporan Adjustment Stock")?></label>
                 </div>
                 <label for="selected_colums" class="col-sm-2 control-label"><?=lang("Selected Columns")?></label>
                 <div class="container col-sm-4">
@@ -137,8 +119,8 @@
 </form>
 <script type="text/javascript" info="init">
 	$(function(){
-		$("#fdt_datetime").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");
-        $("#fdt_datetime2").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");					
+		$("#fdt_adjustment_datetime").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");
+        $("#fdt_adjustment_datetime2").val(dateFormat("<?= date("Y-m-d")?>")).datepicker("update");					
 	});
 </script>
 <script type="text/javascript">
@@ -169,11 +151,12 @@
         $('#multiple-columns').multiselect('dataprovider', newArray);
         $('#multiple-columns').multiselect('selectAll',false);
 		$('#multiple-columns').multiselect('updateButtonText');
-
-        /*if (myRadio.value == "4"){
-            $('#select-relations').empty();
-            $('#select-relations').append('<option value="0">All</option>');
-        }*/
+        if (myRadio.value == "2"){
+            $('#select-type').val("SO");
+            $('#select-type').prop('disabled',true);
+        }else{
+            $('#select-type').prop('disabled',false);
+        }
         // for(var i=0; i<newArray.length; i++){
         //     alert(newArray[i].label);
         //     console.log(newArray[i].label);
@@ -183,12 +166,88 @@
     }         
     $(function() {
 
+        $("#select-items").select2({
+            minimumInputLength: 2,
+            placeholder:{
+                id: '0', // the value of the option
+                text: 'All'
+            },
+            allowClear: true,
+            ajax:{
+                delay: 250,
+                url: "<?=site_url()?>/report/gudang/stock/ajxListItem",
+                dataType: 'json',
+                processResults: function (result) {
+                    if (result.status == "SUCCESS"){
+                        var data = $.map(result.data, function (obj) {
+                            obj.id = obj.fst_item_code,  
+                            obj.text = obj.fst_item_code + " - "  + obj.fst_item_name;
+                            //obj.fbl_is_batch_number
+                            //obj.fbl_is_serial_number
+                            return obj;
+                        });
+
+                        return {
+                            results: data
+                        };
+                    }else{
+                        return {
+                            result:[]
+                        }
+                    }
+                }
+            }
+        }).on('select2:select',function(e){
+            var data = e.params.data;
+            selectedItem = data;
+            //$("#fstUnit").empty().trigger("change.select2");
+            //showHideBatchSerial();
+        });
+
+        $("#select-items2").select2({
+            minimumInputLength: 2,
+            placeholder:{
+                id: '0', // the value of the option
+                text: 'All'
+            },
+            allowClear: true,
+            ajax:{
+                delay: 250,
+                url: "<?=site_url()?>/report/gudang/stock/ajxListItem",
+                dataType: 'json',
+                processResults: function (result) {
+                    if (result.status == "SUCCESS"){
+                        var data = $.map(result.data, function (obj) {
+                            obj.id = obj.fst_item_code,  
+                            obj.text = obj.fst_item_code + " - "  + obj.fst_item_name;
+                            //obj.fbl_is_batch_number
+                            //obj.fbl_is_serial_number
+                            return obj;
+                        });
+
+                        return {
+                            results: data
+                        };
+                    }else{
+                        return {
+                            result:[]
+                        }
+                    }
+                }
+            }
+        }).on('select2:select',function(e){
+            var data = e.params.data;
+            selectedItem = data;
+            //$("#fstUnit").empty().trigger("change.select2");
+            //showHideBatchSerial();
+        });
+
         $("#btnProcess").click(function(event) {
             event.preventDefault();
             App.blockUIOnAjaxRequest("Please wait while processing data.....");
             //data = new FormData($("#frmBranch")[0]);
-            data = $("#rptPAG").serializeArray();
-            url = "<?= site_url() ?>report/gudang/penerimaan_mutasi/process";
+            data = $("#rptAdjustment").serializeArray();
+            url = "<?= site_url() ?>report/gudang/adjustment/process";
             
             // $("iframe").attr("src",url);
             $.ajax({
@@ -208,7 +267,7 @@
                             buttons: {
                                 OK: function() {
                                     if (resp.status == "SUCCESS") {
-                                        $("#btnProcess").trigger("click");
+                                        $("#btnNew").trigger("click");
                                         alert('OK');
                                         return;
                                     }
@@ -230,13 +289,13 @@
                         // 
                         //Clear all previous error
                         $(".text-danger").html("");
-                        //url = "<?= site_url() ?>report/sales_order/generateexcel";
-                        url = "<?= site_url() ?>report/gudang/penerimaan_mutasi/generatereport";
+                        //url = "<?= site_url() ?>report/adjustment/generateexcel";
+                        url = "<?= site_url() ?>report/gudang/adjustment/generatereport";
                         //alert(url);
                         //$("iframe").attr("src",url);
-                        $("#rptPAG").attr('action', url);
-                        $("#rptPAG").attr('target', 'rpt_iframe');
-                        $("#rptPAG").submit();
+                        $("#rptAdjustment").attr('action', url);
+                        $("#rptAdjustment").attr('target', 'rpt_iframe');
+                        $("#rptAdjustment").submit();
                         $("a#toggle-window").click();
                         // Change to Edit mode
                         // $("#frm-mode").val("EDIT"); //ADD|EDIT
@@ -271,7 +330,7 @@
             var a = document.createElement('a');
             a.href = data_type + ', ' + table_html;
 			//a.download = 'exported_table_' + Math.floor((Math.random() * 9999999) + 1000000) + '.xls';
-			a.download = 'Laporan_PAG' + '.xls';
+			a.download = 'Laporan_Adjustment_Stock' + '.xls';
 			a.click();                        			
 			return;
 		});      

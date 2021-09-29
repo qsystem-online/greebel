@@ -229,17 +229,6 @@ class Tradjustment_model extends MY_Model {
 		return $data;
 	}
 
-	public function checkCloseMag($finAdjustmentId){
-		
-		$ssql = "SELECT * FROM tradjustmentitems where fin_adjustment_id = ? and fdb_qty < fdb_qty_confirm";
-		$qr = $this->db->query($ssql,[$finAdjustmentId]);				
-		$rw = $qr->row();
-		if ($rw == null){
-			$ssql = "UPDATE tradjustment set fbl_closed = 1,fin_closed_by = 0, fdt_closed_datetime = now() where fin_adjustment_id = ?";
-			$this->db->query($ssql,[$finAdjustmentId]);
-		}
-	}
-
 
 
 }

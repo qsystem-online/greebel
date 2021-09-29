@@ -106,7 +106,12 @@ class Relation extends MY_Controller{
 
 	public function edit($fin_relation_id){
 		parent::edit($fin_relation_id);
-		$this->openForm("EDIT", $fin_relation_id);
+		$is_permit_relation = $this->msrelations_model->is_permit_relation($fin_relation_id);
+        if ($is_permit_relation != null){
+            $this->openForm("EDIT", $fin_relation_id);
+        }else{
+            show_404();
+        }
 	}
 
 	public function ajx_add_save(){
@@ -293,7 +298,17 @@ class Relation extends MY_Controller{
 
 	public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("msrelations");
+		$user = $this->aauth->user();
+        $deptActive = $user->fin_department_id;
+		$dept_purchase = getDbConfig("purchase_department_id");
+		$dept_sales = getDbConfig("sales_department_id");
+		if($deptActive == $dept_sales){
+			$this->datatables->setTableName("(SELECT * FROM msrelations WHERE find_in_set('1',fst_relation_type)) a");
+		}else if($deptActive == $dept_purchase){
+			$this->datatables->setTableName("(SELECT * FROM msrelations WHERE (find_in_set('2',fst_relation_type) or find_in_set('3',fst_relation_type))) a");
+		}else{
+			$this->datatables->setTableName("msrelations");
+		}
 
 		$selectFields = "fin_relation_id,fin_relation_group_id,fst_relation_type,fst_relation_name,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
@@ -370,8 +385,8 @@ class Relation extends MY_Controller{
 
 	public function get_provinces($fin_country_id){
 		$term = $this->input->get("term");
-		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 0 ";
-		$qr = $this->db->query($ssql,['%'.$term.'%',$fin_country_id]);
+		$ssql = "SELECT * FROM msarea WHERE fst_nama like ? AND LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 0 ";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
@@ -381,8 +396,8 @@ class Relation extends MY_Controller{
 
 	public function get_dataProvince($fin_country_id){
 		$term = $this->input->get("term");
-		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 0 ";
-		$qr = $this->db->query($ssql,['%'.$term.'%',$fin_country_id]);
+		$ssql = "SELECT * FROM msarea WHERE fst_nama like ? AND LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 0 ";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
@@ -391,8 +406,9 @@ class Relation extends MY_Controller{
 	}
 
 	public function get_district($fst_kode){
-		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 1 and fst_kode like ? ";
-		$qr = $this->db->query($ssql,[$fst_kode .'%']);
+		$term = $this->input->get("term");
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 1 AND fst_kode like ? AND fst_nama like ?";
+		$qr = $this->db->query($ssql,[$fst_kode .'%','%'.$term.'%']);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
@@ -401,8 +417,9 @@ class Relation extends MY_Controller{
 	}
 
 	public function get_subdistrict($fst_kode){
-		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 2 and fst_kode like ? ";
-		$qr = $this->db->query($ssql,[$fst_kode .'%']);
+		$term = $this->input->get("term");
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 2 AND fst_kode like ? AND fst_nama like ?";
+		$qr = $this->db->query($ssql,[$fst_kode .'%','%'.$term.'%']);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
@@ -411,8 +428,9 @@ class Relation extends MY_Controller{
 	}
 
 	public function get_village($fst_kode){
-		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 3 and fst_kode like ? ";
-		$qr = $this->db->query($ssql,[$fst_kode .'%']);
+		$term = $this->input->get("term");
+		$ssql = "SELECT * FROM msarea WHERE LENGTH(fst_kode) - LENGTH(REPLACE(fst_kode, '.', '')) = 3 AND fst_kode like ? AND fst_nama like ? ";
+		$qr = $this->db->query($ssql,[$fst_kode .'%','%'.$term.'%']);
 		$rs = $qr->result();
 		
 		$this->ajxResp["status"] = "SUCCESS";
@@ -444,7 +462,7 @@ class Relation extends MY_Controller{
 
 	public function get_sales_area(){
 		$term = $this->input->get("term");
-		$ssql = "SELECT fin_sales_area_id, fst_name from mssalesarea where fst_name like?";
+		$ssql = "SELECT fin_sales_area_id, fst_name from mssalesarea where fst_name like ?";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		

@@ -166,26 +166,20 @@
 			?>
 				<tr>
 					<td style="width:70%">Terbilang :</td>
-					<td class="text-right" style="width:15%">Sub total :</td>
-					<td class="text-right" style="width:15%"><?=formatNumber($totalFooter)?></td>										
+					<td class="text-right" style="width:15%">TOTAL :</td>
+					<td class="text-right" style="width:15%"><?=formatNumber($total)?></td>											
 				</tr>
 				<tr>
-					<td style="width:70%">#<?=number_to_words($total)?>#</td>
-					<td class="text-right" style="width:15%">DPP :</td>
-					<td class="text-right" style="width:15%"><?=formatNumber($header["fdc_dpp_amount"])?></td>											
+					<td style="width:70%">#<?=number_to_words($total)?>#</td>										
 				</tr>
 				<tr>
-					<td style="width:70%">.</td>
-					<td class="text-right" style="width:15%">PPN :</td>
-					<td class="text-right" style="width:15%"><?=formatNumber($header["fdc_ppn_amount"])?></td>									
+					<td style="width:70%">.</td>									
 				</tr>
 				<tr>
 					<td style="width:70%">Pembayaran dengan transfer ke:</td>									
 				</tr>
 				<tr>
-					<td style="width:70%">BCA a/c 583 042 7777 a/n <?= $company?></td>						
-					<td class="text-right" style="width:15%">TOTAL :</td>
-					<td class="text-right" style="width:15%"><?=formatNumber($total)?></td>					
+					<td style="width:70%">BCA a/c 583 042 7777 a/n <?= $company?></td>									
 				</tr>
 			</table>
 			<table class="assignment" style="width:100%">

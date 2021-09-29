@@ -520,8 +520,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			window.location.replace("<?=site_url()?>tr/gudang/pengiriman_penjualan/add")
 		});
 		$("#btnPrint").click(function(e){
-			e.preventDefault();
-			frameVoucher.print("<?=site_url()?>tr/gudang/pengiriman_penjualan/print_voucher/" + $("#fin_sj_id").val());
+			//e.preventDefault();
+			//frameVoucher.print("<?=site_url()?>tr/gudang/pengiriman_penjualan/print_voucher/" + $("#fin_sj_id").val());
+			window.open("<?= site_url() ?>tr/gudang/pengiriman_penjualan/print_voucher/" +$("#fin_sj_id").val() ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
 		});
 
 		$("#btnSubmitAjax").click(function(e){

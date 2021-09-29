@@ -839,16 +839,87 @@ class Trsuratjalan_model extends MY_Model {
 
 	public function getDataVoucher($finSJId){
 
-		$data = $this->getDataById($finSJId);
-		$header = (array) $data["sj"];	
+		/*$data = $this->getDataById($finSJId);
+		//$header = (array) $data["sj"];	
 
 		
-		$details = (array) $data["sj_details"];	
+		//$details = (array) $data["sj_details"];	
 
 		
 		return [
-			"header"=>$header,
-			"details"=>$details
+			"header"=>(array) $data["sj"],
+			"details"=>(array) $data["sj_details"]
+		];*/
+
+		$ssql = "SELECT a.*,
+		IFNULL(IFNULL(b.fst_salesorder_no,c.fst_purchasereturn_no),g.fst_assembling_no) as fst_trans_no ,
+		IFNULL(IFNULL(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime),g.fdt_assembling_datetime) as fdt_trans_datetime,            
+		d.fin_relation_id,d.fst_relation_name,e.fst_name as fst_shipping_name,e.fst_shipping_address,
+		f.fst_warehouse_name 
+		FROM trsuratjalan a
+		LEFT JOIN trsalesorder b on a.fin_trans_id = b.fin_salesorder_id and a.fst_sj_type = 'SO' 
+		LEFT JOIN trpurchasereturn c on a.fin_trans_id = c.fin_purchasereturn_id and a.fst_sj_type = 'PO_RETURN' 
+		LEFT JOIN trassembling g on a.fin_trans_id = g.fin_assembling_id and a.fst_sj_type = 'ASSEMBLING_OUT'  
+		LEFT JOIN msrelations d on IFNULL(b.fin_relation_id,c.fin_supplier_id)  = d.fin_relation_id 
+		LEFT JOIN msshippingaddress e on a.fin_shipping_address_id = e.fin_shipping_address_id 
+		INNER JOIN mswarehouse f on a.fin_warehouse_id = f.fin_warehouse_id 
+		where a.fin_sj_id = ? and a.fst_active !='D' ";
+
+		$qr = $this->db->query($ssql, [$finSJId]);      
+		
+		throwIfDBError();  
+		$rwSJ = $qr->row_array();
+
+
+		if ($rwSJ["fst_sj_type"] == "SO"){
+
+			$ssql = "SELECT a.*,
+				b.fin_promo_id,
+				b.fst_custom_item_name,
+				c.fbl_is_batch_number,c.fbl_is_serial_number,c.fst_item_code,c.fst_item_name,
+				d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit 
+				FROM trsuratjalandetails a 
+				INNER JOIN trsalesorderdetails b on a.fin_trans_detail_id = b.fin_rec_id 
+				INNER JOIN msitems c on b.fin_item_id = c.fin_item_id  
+				LEFT JOIN msitemunitdetails d on c.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1
+				WHERE a.fin_sj_id = ?";
+
+
+
+		}else if ($rwSJ["fst_sj_type"] == "PO_RETURN"){
+			$ssql = "SELECT a.*,
+				0 as fin_promo_id,b.fst_custom_item_name,
+				c.fbl_is_batch_number,c.fbl_is_serial_number,c.fst_item_code,c.fst_item_name,
+				d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit,
+				FROM trsuratjalandetails a 
+				INNER JOIN trpurchasereturnitems b on a.fin_trans_detail_id = b.fin_rec_id 
+				INNER JOIN msitems c on b.fin_item_id = c.fin_item_id  
+				LEFT JOIN msitemunitdetails d on c.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1
+				WHERE a.fin_sj_id = ?";
+
+		}else if ($rwSJ["fst_sj_type"] == "ASSEMBLING_OUT"){
+			$ssql = "SELECT a.*,
+				0 as fin_promo_id,c.fst_item_name as fst_custom_item_name,
+				c.fbl_is_batch_number,c.fbl_is_serial_number,c.fst_item_code,c.fst_item_name,
+				d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit 
+				FROM trsuratjalandetails a 
+				INNER JOIN msitems c on a.fin_item_id = c.fin_item_id  
+				LEFT JOIN msitemunitdetails d on c.fin_item_id = d.fin_item_id and d.fbl_is_basic_unit = 1
+				WHERE a.fin_sj_id = ?";
+
+		}else{
+			return [
+				"sj" => $rwSJ,
+				"sj_details" => []
+			];
+		}
+
+		$qr = $this->db->query($ssql,[$finSJId]);
+		$rsSJDetails = $qr->result_array();
+		
+		return [
+			"header" => $rwSJ,
+			"details" => $rsSJDetails
 		];
 
 	}

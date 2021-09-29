@@ -62,8 +62,8 @@ class Trverification_model extends MY_Model {
         $rw = $qr->row();
 
         $activeUser = $this->aauth->user();
-        //di approved oleh orang dr departemen dan group sesuai ketentuan
-        if ($rw->fin_department_id == $activeUser->fin_department_id && $rw->fin_user_group_id == $activeUser->fin_group_id){
+        //di approved oleh orang dr departemen dan group sesuai ketentuan atau user group = 1
+        if ($rw->fin_department_id == $activeUser->fin_department_id && $rw->fin_user_group_id == $activeUser->fin_group_id || $activeUser->fin_group_id =='1'){
             if ($isApproved){
                 $data=[
                     "fin_rec_id"=>$finRecId,
@@ -190,7 +190,7 @@ class Trverification_model extends MY_Model {
     public function cancelApprove($finRecId){
         /**
          * Rules :
-         * 1. Hanya user yang sama atau user dr departement sama dan group yang sama
+         * 1. Hanya user yang sama atau user dr departement sama dan group yang sama atau group = 1
          * 2. Hanya bisa di cancel bila tingkatan approval diatasnya belum melakukan approval ataupun rejec
          * 
          */          
@@ -202,8 +202,8 @@ class Trverification_model extends MY_Model {
             throw new CustomException(lang("Id transaksi tidak ditemukan !"),3003,"FAILED",[]);
         }
 
-        if ($rw->fin_department_id == $activeUser->fin_department_id && $rw->fin_user_group_id == $activeUser->fin_group_id){
-            //Cek status diatasnya
+        if (($activeUser->fin_group_id =='1') || $rw->fin_department_id == $activeUser->fin_department_id && $rw->fin_user_group_id == $activeUser->fin_group_id){
+            //Cek status diatasnya atau group =1 bebas
             //NV = Need Verification, RV = Ready to verification, VF=Verified, RJ= Rejected, VD= Void
             $ssql ="SELECT * FROM trverification 
                 WHERE fin_branch_id = ? AND fst_controller = ? AND fst_verification_type = ? AND fin_transaction_id = ? 
@@ -265,8 +265,8 @@ class Trverification_model extends MY_Model {
         $rw = $qr->row();
 
         $activeUser = $this->aauth->user();
-        //di approved oleh orang dr departemen dan group sesuai ketentuan
-        if ($rw->fin_department_id == $activeUser->fin_department_id && $rw->fin_user_group_id == $activeUser->fin_group_id){
+        //di approved oleh orang dr departemen dan group sesuai ketentuan atau group = 1
+        if (($activeUser->fin_group_id =='1') || $rw->fin_department_id == $activeUser->fin_department_id && $rw->fin_user_group_id == $activeUser->fin_group_id){
             $data=[
                 "fin_rec_id"=>$finRecId,
                 "fst_verification_status"=>"RJ" //Verified
