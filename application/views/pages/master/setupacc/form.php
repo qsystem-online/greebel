@@ -165,7 +165,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 				if (this.row == null){
 					//New
-					url = "<?=site_url()?>master/setupaccountlogistic/ajx_add_save";
+					url = "<?=site_url()?>master/setupAccountLogistic/ajx_add_save";
 					data ={
 						fin_rec_id:0,
 						fin_item_group_id:0,
@@ -179,7 +179,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 					}
 				}else{
 					//Edit
-					url = "<?=site_url()?>master/setupaccountlogistic/ajx_edit_save";
+					url = "<?=site_url()?>master/setupAccountLogistic/ajx_edit_save";
 					data = tblList.row(this.row).data();
 				}
 
@@ -241,7 +241,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			$("#fst_persediaan_account_code,#fst_biaya_pabrikasi_account_code,#fst_biaya_umum_account_code").select2({
 				width: '100%',
 				ajax: {
-					url: '<?= site_url() ?>master/setupaccountlogistic/ajxGetGlAccount',
+					url: '<?= site_url() ?>master/setupAccountLogistic/ajxGetGlAccount',
 					dataType: 'json',
 					delay: 250,
 					processResults: function(resp) {
@@ -335,7 +335,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			//dataSrc:"data",
 			processing: true,
 			serverSide: true,
-			ajax: "<?=site_url()?>master/setupaccountlogistic/fetch_list_data"
+			ajax: "<?=site_url()?>master/setupAccountLogistic/fetch_list_data"
 		}).on('draw',function(){
 			$(".dataTables_scrollHeadInner").css("min-width","100%");
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
@@ -355,7 +355,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			var trRow = $(this).parents('tr');
 			var data =  tblList.row(trRow).data();						
 			$.ajax({
-				url:"<?=site_url()?>master/setupaccountlogistic/delete/" + data.fin_rec_id,
+				url:"<?=site_url()?>master/setupAccountLogistic/delete/" + data.fin_rec_id,
 				method:"GET"
 			}).done(function(resp){
 				if (resp.messages != ""){
