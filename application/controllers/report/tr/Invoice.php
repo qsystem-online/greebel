@@ -192,6 +192,7 @@ class Invoice extends MY_Controller
 			"fst_curr_code" => $this->input->post("fst_curr_code"),
 			"fdt_inv_datetime" => $this->input->post("fdt_inv_datetime"),
 			"fdt_inv_datetime2" => $this->input->post("fdt_inv_datetime2"),
+			"fbl_is_fk" => $this->input->post("fbl_is_fk"),
 			"fbl_is_vat_include" => $this->input->post("fbl_is_vat_include"),
 			"rpt_layout" => $this->input->post("rpt_layout"),
 			"selected_columns" => array($this->input->post("selected_columns"))

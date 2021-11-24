@@ -16,10 +16,13 @@ class Home extends MY_Controller {
 		$main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
 
 		$this->data["title"] = "Dashboard";
-		$this->data["ttlApproved"] = formatNumber($this->dashboard_model->getTtlApproved());
-		$this->data["ttlNeedApproval"] = formatNumber($this->dashboard_model->getTtlNeedApproval());
-		$this->data["ttlChangeAfterApproved"] = formatNumber($this->dashboard_model->getTtlChangeAfterApproved());
-		$this->data["ttlVoidAuthorize"] = formatNumber($this->dashboard_model->getTtlVoidAuthorize());
+		//$this->data["ttlApproved"] = formatNumber($this->dashboard_model->getTtlApproved());
+		$this->data["ttlNeedApprovalPO"] = formatNumber($this->dashboard_model->getTtlNeedApproval());
+		$this->data["ttlNeedApprovalSO"] = formatNumber($this->dashboard_model->getTtlNeedApprovalSO());
+		$this->data["ttlNeedApprovalRJ"] = formatNumber($this->dashboard_model->getTtlNeedApprovalRJ());
+		$this->data["ttlNeedApprovalPP"] = formatNumber($this->dashboard_model->getTtlNeedApprovalPP());
+		//$this->data["ttlChangeAfterApproved"] = formatNumber($this->dashboard_model->getTtlChangeAfterApproved());
+		//$this->data["ttlVoidAuthorize"] = formatNumber($this->dashboard_model->getTtlVoidAuthorize());
 
 		$page_content = $this->parser->parse('pages/dashboard/dashboard', $this->data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);

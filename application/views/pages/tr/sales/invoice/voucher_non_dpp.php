@@ -2,6 +2,25 @@
 	//var_dump($header);
 	//echo "<br><br>";
 	//var_dump($details);
+	$full_address = explode(PHP_EOL, $header["fst_address"]);
+	if(!empty($full_address[0])) {
+		$address1 = $full_address[0];
+	}
+	else {
+		$address1 = ".";
+	}
+	if(!empty($full_address[1])) {
+		$address2 = $full_address[1];
+	}
+	else {
+		$address2 = ".";
+	}
+	if(!empty($full_address[2])) {
+		$address3 = $full_address[2];
+	}
+	else {
+		$address3 = ".";
+	}
 ?>
 <style>
 	.header-col{
@@ -17,7 +36,13 @@
 	}
 	.total{
 		font-size:10pt;
-	}	
+	}
+	.padd-1 {
+		padding: 1px;
+	}
+	.hidden {
+		visibility: hidden;
+	}		
 </style>
 <style>
 @media print{
@@ -55,7 +80,7 @@
 		<div class="col" style="width:65%">
 			<div class="inline first-col">Alamat</div>
 			<div class="inline" style="width:25px">:</div>
-			<div class="inline"><?=$header["fst_customer_name"]?></div>
+			<div class="inline"><?= $address1?></div>
 		</div>
 		<div class="col" style="width:35%">
 			<div class="inline first-col">Tanggal</div>			
@@ -65,9 +90,21 @@
 	</div>
 	<div class="row">
 		<div class="col" style="width:65%">
-			<div class="inline first-col"></div>
-			<div class="inline" style="width:25px"></div>
-			<div class="inline"></div>
+			<div class="inline first-col hidden">Alamat2</div>
+			<div class="inline" style="width:25px">:</div>
+			<div class="inline"><?= $address2?></div>
+		</div>
+		<div class="col" style="width:35%">
+			<div class="inline first-col">Sales</div>
+			<div class="inline" style="width:25px">:</div>
+			<div class="inline"><?=$header["sales_name"] ?></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col" style="width:65%">
+			<div class="inline first-col hidden">Alamat3</div>
+			<div class="inline" style="width:25px">:</div>
+			<div class="inline"><?= $address3?></div>
 		</div>
 		<div class="col" style="width:35%">
 			<div class="inline first-col">No. SO</div>
@@ -158,14 +195,14 @@
 			</tr>-->
 
 		</tbody>
-		<div class="assignment">
+		<div class="assignment padd-1">
 			<table class="assignment-total" style="width:100%">
 			<?php
 				//$total  = $totalFooter - $ttlDisc + $header["fdc_ppn_amount"];
 				$total  = $header["fdc_dpp_amount"] + $header["fdc_ppn_amount"] - $header["fdc_downpayment_claim"];
 			?>
 				<tr>
-					<td style="width:70%">Terbilang :</td>
+					<td style="width:70%"><u>Terbilang :</u></td>
 					<td class="text-right" style="width:15%">TOTAL :</td>
 					<td class="text-right" style="width:15%"><?=formatNumber($total)?></td>											
 				</tr>
@@ -173,7 +210,7 @@
 					<td style="width:70%">#<?=number_to_words($total)?>#</td>										
 				</tr>
 				<tr>
-					<td style="width:70%">.</td>									
+					<td class="hidden" style="width:70%">baris antara terbilang dengan transfer</td>									
 				</tr>
 				<tr>
 					<td style="width:70%">Pembayaran dengan transfer ke:</td>									

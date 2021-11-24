@@ -18,7 +18,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-	<h1><?=lang("Invoice")?><small><?=lang("form")?></small></h1>
+	<h1><?=lang("Closing Periode Promo")?><small><?=lang("form")?></small></h1>
 	<ol class="breadcrumb">
 		<li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
 		<li><a href="#"><?= lang("Invoice") ?></a></li>
@@ -33,10 +33,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="box-header with-border">
 				<h3 class="box-title title"><?=$title?></h3>
 				<div class="btn-group btn-group-sm  pull-right">					
-					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
+					<!--<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
 					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
-					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
+					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>-->
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 				</div>				
 			</div>
@@ -111,7 +111,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <script type="text/javascript" info="event">
 	$(function(){
-		$("#btnNew").click(function(e){
+		/*$("#btnNew").click(function(e){
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>tr/sales/invoice/add");
 		});
@@ -141,9 +141,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			e.preventDefault();
 			deleteAjax(0);
 		});
+		*/
 		$("#btnList").click(function(e){
 			e.preventDefault();
-			window.location.replace("<?=site_url()?>tr/sales/invoice");
+			window.location.replace("<?=site_url()?>tr/sales/promo_period");
 		});
 
 		$("#btnProcessPromo").click(function(e){

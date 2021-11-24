@@ -149,7 +149,8 @@ class Stock extends MY_Controller
 			"fin_warehouse_id"=> $this->input->post("fin_warehouse_id"),
 			"fdt_from"=>dbDateFormat($this->input->post("fdt_from")),
 			"fdt_to"=>dbDateFormat($this->input->post("fdt_to")),
-			"fin_item_id" => $this->input->post("fin_item_id"),
+			"item_code_from" => $this->input->post("item_code_from"),
+			"item_code_to" => $this->input->post("item_code_to"),
 			"rpt_layout" => $this->input->post("rpt_layout"),
 			"selected_columns" => array($this->input->post("selected_columns"))
 		];		
@@ -277,7 +278,7 @@ class Stock extends MY_Controller
 	public function ajxListItem(){
 		$this->load->model("msitems_model");
 		$searchKey = $this->input->get("term");
-		$result = $this->msitems_model->getAllList($searchKey,"fin_item_id,fst_item_code,fst_item_name");        
+		$result = $this->msitems_model->getAllListKode($searchKey,"fin_item_id,fst_item_code,fst_item_name");        
 		$this->json_output([
 			"status"=>"SUCCESS",
 			"data"=> $result

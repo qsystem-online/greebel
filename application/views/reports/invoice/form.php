@@ -149,13 +149,18 @@
                         <option value="sql">SQL</option>
                         <option value="jquery">Jquery</option>
                         <option value=".net">.Net</option> -->
-                    </select>             
+                    </select>     
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="checkbox col-md-12">
+                <label for="garis1" class="col-sm-6 control-label"><?=lang("-------------------------------------------------------------------")?></label>
+                <label for="jenis_faktur" class="col-sm-2 control-label"><?=lang("Jenis Faktur")?></label>
+                <label class="radio-inline"><input type="radio" id="jenis_all" class="fbl_is_fk" name="fbl_is_fk" value="ALL" checked>ALL</label>
+                <label class="radio-inline"><input type="radio" id="jenis_fk" class="fbl_is_fk" name="fbl_is_fk" value="1" >FK</label>
+                <label class="radio-inline"><input type="radio" id="jenis_ft" class="fbl_is_fk" name="fbl_is_fk" value="0" >FT</label>
+                <label for="garis2" class="col-sm-6 control-label"><?=lang("-------------------------------------------------------------------")?></label>
+                <div class="checkbox col-sm-6">
                     <label><input id="fbl_is_vat_include" type="checkbox" name="fbl_is_vat_include" value="1"><?= lang("PPN Include") ?></label>
-                </div>                  
+                </div>
+                <label for="garis3" class="col-sm-6 control-label"><?=lang("-------------------------------------------------------------------")?></label>   
             </div>
     </div>
 </form>

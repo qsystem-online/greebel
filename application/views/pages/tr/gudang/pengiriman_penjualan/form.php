@@ -168,7 +168,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<div class="col-sm-6">	
 							<div class="form-group">
 								
-								<div class="col-sm-12">
+								<div class="col-sm-9">
 									<label for="fin_vendor_id" class=""><?=lang("Memo")?></label>
 									<textarea class="form-control" id="fst_sj_memo" placeholder="<?= lang("Memo") ?>" name="fst_sj_memo" rows="5" style="resize:none"></textarea>
 									<div id="fst_sj_memo_err" class="text-danger"></div>
@@ -269,9 +269,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 											<button id="btn-delete-serial" class="btn btn-primary btn-xs">Delete Selected Serial</button>
 										</div>
 									</div>
-
 								</form>
-								
 								<div class="modal-footer">
 									<button id="btn-save-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
 									<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>

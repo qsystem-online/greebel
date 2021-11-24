@@ -15,6 +15,7 @@ class Invoice_rpt_model extends CI_Model {
         $curr_code = "";
         $start_date = "";
         $end_date = "";
+        $jenis_faktur = "";
         $fbl_is_vat_include = "";
 
         if (isset($data['fin_branch_id'])) { $branch_id = $data['fin_branch_id'];}
@@ -25,6 +26,7 @@ class Invoice_rpt_model extends CI_Model {
         if (isset($data['fst_curr_code'])) { $curr_code = $data['fst_curr_code'];}
         if (isset($data['fdt_inv_datetime'])) { $start_date = $data['fdt_inv_datetime'];}
         if (isset($data['fdt_inv_datetime2'])) { $end_date = $data['fdt_inv_datetime2'];}
+        if (isset($data['fbl_is_fk'])) { $jenis_faktur = $data['fbl_is_fk'];}
         if (isset($data['fbl_is_vat_include'])) { $fbl_is_vat_include = $data['fbl_is_vat_include'];}
 
         $swhere = "";
@@ -57,6 +59,9 @@ class Invoice_rpt_model extends CI_Model {
             if (isset($end_date)) {
                 $swhere .= " and a.fdt_inv_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
             }
+            if ($jenis_faktur != "ALL") {
+                $swhere .= " and a.fbl_is_fk = " . $this->db->escape($jenis_faktur);
+            }
             if ($fbl_is_vat_include == 1) {
                 $swhere .= " and a.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
             }
@@ -83,6 +88,9 @@ class Invoice_rpt_model extends CI_Model {
             if (isset($end_date)) {
                 $swhere .= " and a.fdt_inv_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
             }
+            if ($jenis_faktur != "ALL") {
+                $swhere .= " and a.fbl_is_fk = " . $this->db->escape($jenis_faktur);
+            }
             if ($fbl_is_vat_include == 1) {
                 $swhere .= " and a.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
             }
@@ -105,6 +113,9 @@ class Invoice_rpt_model extends CI_Model {
             }
             if (isset($end_date)) {
                 $swhere .= " and b.fdt_inv_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
+            }
+            if ($jenis_faktur != "ALL") {
+                $swhere .= " and b.fbl_is_fk = " . $this->db->escape($jenis_faktur);
             }
             if ($fbl_is_vat_include == 1) {
                 $swhere .= " and b.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
@@ -132,6 +143,9 @@ class Invoice_rpt_model extends CI_Model {
             if (isset($end_date)) {
                 $swhere .= " and b.fdt_inv_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
             }
+            if ($jenis_faktur != "ALL") {
+                $swhere .= " and b.fbl_is_fk = " . $this->db->escape($jenis_faktur);
+            }
             if ($fbl_is_vat_include == 1) {
                 $swhere .= " and b.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
             }
@@ -156,6 +170,9 @@ class Invoice_rpt_model extends CI_Model {
             if (isset($end_date)) {
                 $swhere .= " and b.fdt_inv_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
             }
+            if ($jenis_faktur != "ALL") {
+                $swhere .= " and b.fbl_is_fk = " . $this->db->escape($jenis_faktur);
+            }
             if ($fbl_is_vat_include == 1) {
                 $swhere .= " and b.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);
             }
@@ -176,6 +193,9 @@ class Invoice_rpt_model extends CI_Model {
             }
             if (isset($end_date)) {
                 $swhere .= " and b.fdt_inv_datetime <= '". date('Y-m-d 23:59:59', strtotime($end_date)). "'";
+            }
+            if ($jenis_faktur != "ALL") {
+                $swhere .= " and b.fbl_is_fk = " . $this->db->escape($jenis_faktur);
             }
             if ($fbl_is_vat_include == 1) {
                 $swhere .= " and b.fbl_is_vat_include = " . $this->db->escape($fbl_is_vat_include);

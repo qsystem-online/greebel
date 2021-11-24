@@ -53,6 +53,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<input type="hidden" id="frm-mode" value="<?=$mode?>">
 					<input type="hidden" class="form-control" id="fin_inv_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_inv_id" value="<?=$fin_inv_id?>" readonly>
 
+					<div class="form-group">
+						<label for="fbl_is_fk" class="col-md-2 control-label"></label>
+						<div class="col-md-10">								
+							<label class="radio-inline"><input type="radio" id="fblIsFkTrue" class="fbl_is_fk" name="fbl_is_fk" value="1" checked>Faktur Penjualan(FK)</label>
+							<label class="radio-inline"><input type="radio" id="fblIsFkFalse" class="fbl_is_fk" name="fbl_is_fk" value="0" >Faktur Penjualan Sederhana(FT)</label>
+						</div>
+					</div>
+
 					
 					<div class="form-group">
 						<label for="fst_inv_no" class="col-md-2 control-label"><?=lang("Invoice No.")?> #</label>
@@ -422,6 +430,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			deleteAjax(0);
 		});
 
+		
+		$(".fbl_is_fk").change(function(e){
+
+			$.ajax({
+				url:"<?=site_url()?>tr/sales/invoice/ajxGetInvNo",
+				data:{
+					fbl_is_fk:$(".fbl_is_fk:checked").val()
+				},
+				method:"GET",
+			}).done(function(resp){
+				$("#fst_inv_no").val(resp.data);
+			});
+		});
+
 		$(".term_payment").change(function(e){
 			e.preventDefault();
 			getPaymentDueDate();
@@ -777,6 +799,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#btnNew").trigger("click");					
 				}
 				App.autoFillForm(dataH);
+				$('.fbl_is_fk').attr('disabled', true);
 				$("#fdt_inv_datetime").val(dateTimeFormat(dataH.fdt_inv_datetime)).datetimepicker("update");
 				App.addOptionIfNotExist("<option value='"+dataH.fin_salesorder_id+"'>"+ dataH.fst_salesorder_no +"</option>","fin_salesorder_id");
 				$("#fst_customer_name").val(dataH.fst_customer_name);

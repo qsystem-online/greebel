@@ -1763,7 +1763,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 name: "detail",
                 value: JSON.stringify(detail)
             });
-            alert(detail);
+            //alert(detail);
             // save Participants
             detailParticipants = new Array();
             b = $('#tbl_customer_promo').DataTable();
@@ -2026,7 +2026,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     function init_form(fin_promo_id) {
         //alert("Init Form");
         var url = "<?= site_url() ?>master/promotion/fetch_data/" + fin_promo_id;
-        alert(url);
+        //alert(url);
         $.ajax({
             type: "GET",
             url: url,

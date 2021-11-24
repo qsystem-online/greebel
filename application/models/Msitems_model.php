@@ -108,10 +108,10 @@ class Msitems_model extends MY_Model
         $rules[] = [
             'field' => 'fst_vendor_item_name',
             'label' => 'Vendor Item Name',
-            'rules' => 'required|min_length[5]',
+            'rules' => 'required|min_length[1]',
             'errors' => array(
                 'required' => '%s tidak boleh kosong',
-                'min_length' => 'Panjang %s paling sedikit 5 character'
+                'min_length' => 'Panjang %s paling sedikit 1 character'
             )
         ];
 
@@ -124,6 +124,18 @@ class Msitems_model extends MY_Model
             $qr = $this->db->query($ssql, []);
         }else{
             $ssql = "select $selectCol from " . $this->tableName . " where fst_active = 'A' and (fst_item_code like ? or fst_item_name like ?) order by fst_item_name";
+            $qr = $this->db->query($ssql, ["%$filter%","%$filter%"]);
+        }
+        $rs = $qr->result();
+        return $rs;
+    }
+
+    public function getAllListKode($filter=null,$selectCol = "fin_item_id,fst_item_code,fst_item_name"){        
+        if ($filter ==null){
+            $ssql = "select $selectCol  from " . $this->tableName . " where fst_active = 'A' order by fst_item_code";
+            $qr = $this->db->query($ssql, []);
+        }else{
+            $ssql = "select $selectCol from " . $this->tableName . " where fst_active = 'A' and (fst_item_code like ? or fst_item_name like ?) order by fst_item_code";
             $qr = $this->db->query($ssql, ["%$filter%","%$filter%"]);
         }
         $rs = $qr->result();

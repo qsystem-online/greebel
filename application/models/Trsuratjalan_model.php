@@ -700,14 +700,16 @@ class Trsuratjalan_model extends MY_Model {
 					c.fst_relation_name,d.fst_name as fst_address_name ,d.fst_shipping_address FROM trsalesorder a
 					INNER JOIN trsalesorderdetails b ON a.fin_salesorder_id = b.fin_salesorder_id 
 					INNER JOIN msrelations c ON a.fin_relation_id= c.fin_relation_id 
-					INNER JOIN msshippingaddress d ON a.fin_shipping_address_id = d.fin_shipping_address_id
+					LEFT OUTER JOIN msshippingaddress d ON a.fin_shipping_address_id = d.fin_shipping_address_id
 					WHERE a.fst_active ='A' 
 					AND a.fbl_is_hold = FALSE 
 					AND a.fbl_is_closed = FALSE 
 					AND a.fdc_downpayment <= a.fdc_downpayment_paid
 					AND (a.fst_salesorder_no like ? OR c.fst_relation_name like ? )
 					GROUP BY b.fin_salesorder_id HAVING SUM(b.fdb_qty) > SUM(b.fdb_qty_out)";
-				$qr = $this->db->query($ssql,["%".$term."%","%".$term."%"]);                
+				$qr = $this->db->query($ssql,["%".$term."%","%".$term."%"]);
+				//echo $this->db->last_query();
+        		//die();                
 				return $qr->result();
 				break;
 			case "PO_RETURN":
@@ -852,10 +854,10 @@ class Trsuratjalan_model extends MY_Model {
 		];*/
 
 		$ssql = "SELECT a.*,
-		IFNULL(IFNULL(b.fst_salesorder_no,c.fst_purchasereturn_no),g.fst_assembling_no) as fst_trans_no ,
+		IFNULL(IFNULL(b.fst_salesorder_no,c.fst_purchasereturn_no),g.fst_assembling_no) as fst_trans_no,
 		IFNULL(IFNULL(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime),g.fdt_assembling_datetime) as fdt_trans_datetime,            
-		d.fin_relation_id,d.fst_relation_name,e.fst_name as fst_shipping_name,e.fst_shipping_address,
-		f.fst_warehouse_name 
+		d.fin_relation_id,d.fst_relation_name,d.fst_relation_notes,e.fst_name as fst_shipping_name,e.fst_shipping_address,
+		f.fst_warehouse_name,h.fst_inv_no
 		FROM trsuratjalan a
 		LEFT JOIN trsalesorder b on a.fin_trans_id = b.fin_salesorder_id and a.fst_sj_type = 'SO' 
 		LEFT JOIN trpurchasereturn c on a.fin_trans_id = c.fin_purchasereturn_id and a.fst_sj_type = 'PO_RETURN' 
@@ -863,6 +865,7 @@ class Trsuratjalan_model extends MY_Model {
 		LEFT JOIN msrelations d on IFNULL(b.fin_relation_id,c.fin_supplier_id)  = d.fin_relation_id 
 		LEFT JOIN msshippingaddress e on a.fin_shipping_address_id = e.fin_shipping_address_id 
 		INNER JOIN mswarehouse f on a.fin_warehouse_id = f.fin_warehouse_id 
+		LEFT JOIN (SELECT a.fst_inv_no,b.fin_sj_id FROM trinvoice a INNER JOIN trinvoicedetails b ON a.fin_inv_id = b.fin_inv_id WHERE a.fst_active !='D') h on a.fin_sj_id = h.fin_sj_id
 		where a.fin_sj_id = ? and a.fst_active !='D' ";
 
 		$qr = $this->db->query($ssql, [$finSJId]);      

@@ -175,6 +175,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<li><a data-toggle="tab" href="#activity">Activities</a></li>
 								<li><a data-toggle="tab" href="#mag-pag">MAG / PAG</a></li>
 								<li><a data-toggle="tab" href="#rmout">Info RM-OUT</a></li>
+								<li><a data-toggle="tab" href="#rm-return">Info RM-RETURN</a></li>
 								<li><a data-toggle="tab" href="#lhp">Info LHP</a></li>
 								<li><a data-toggle="tab" href="#batchno">Info Batch-No</a></li>
 							</ul>
@@ -257,6 +258,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									<div class="form-group">
 										<div class="col-md-12">
 											<table id="tblRmout" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
+										</div>
+									</div>
+								</div>
+
+								<div id="rm-return" class="tab-pane fade">
+									<div class="form-group">
+										<div class="col-md-12">
+											<table id="tblRmreturn" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
 										</div>
 									</div>
 								</div>
@@ -1031,6 +1040,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
 		});
 
+		tblRmreturn = $("#tblRmreturn").on('preXhr.dt', function ( e, settings, data ) {
+			data.sessionId = "";
+		}).DataTable({
+			scrollY: "300px",
+			scrollX: true,			
+			scrollCollapse: true,	
+			order: [],
+			columns:[
+				{"title" : "id","width": "0px",sortable:false,data:"fin_rmout_return_id",visible:false},
+				{"title" : "RM-return","width": "70px",sortable:false,data:"fst_rmout_return_no"},
+				{"title" : "Tgl RM-return","width": "80px",sortable:false,data:"fdt_rmout_return_datetime"},
+				{"title" : "Item","width": "100px",sortable:false,data:"fst_item_name"},
+				{"title" : "Unit","width": "50px",sortable:false,data:"fst_unit"},
+				{"title" : "Qty","width": "50px",sortable:false,data:"fdb_qty"},
+			],
+			processing: true,
+			serverSide: false,
+			searching: false,
+			lengthChange: false,
+			paging: false,
+			info:false,				
+		}).on('draw',function(){
+			$(".dataTables_scrollHeadInner").css("min-width","100%");
+			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
+		});
+
 
 		tblLHP = $("#tblLHP").on('preXhr.dt', function ( e, settings, data ) {
 			data.sessionId = "";
@@ -1369,6 +1404,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							tblRmout.row.add(data);
 						});
 						tblRmout.draw(false);
+
+						var detailsRmreturn = data.detailsRmreturn;
+						$.each(detailsRmreturn,function(i,v){
+							var data = {
+								fin_rmout_return_id:v.fin_rmout_return_id,
+								fst_rmout_return_no:v.fst_rmout_return_no,
+								fdt_rmout_return_datetime:v.fdt_rmout_return_datetime,
+								fst_item_name:v.fst_item_name,
+								fst_unit:v.fst_unit,
+								fdb_qty:v.fdb_qty,
+							};
+							tblRmreturn.row.add(data);
+						});
+						tblRmreturn.draw(false);
 
 					
 						var detailsLHP = data.detailsLHP;

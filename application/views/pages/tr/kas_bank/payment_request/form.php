@@ -99,11 +99,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</div>
 							<div id="details_err" class="text-danger"></div>
 						</div>-->
+						<br>
                         <div class="form-group">
-                            							                            
-							<div class="col-sm-6 col-sm-offset-6" style="padding-right:0px">								
-								<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Total")?> : </label>
-								<label id="ttlAmount" class="col-md-4 control-label" style="padding-top:0px" >0.00</label>
+							<div class="col-sm-6">	
+								<div class="form-group">
+									<div class="col-sm-12">
+									<select id="fin_supplier_id" class="form-control non-editable" name="fin_supplier_id">
+									<?php									
+										$suppliers = $this->msrelations_model->getSupplierList();									
+										foreach($suppliers as $supplier){	
+											//$selected = ($fin_supplier_id == $supplier->fin_relation_id) ? "selected" :"";
+											echo "<option value='$supplier->fin_relation_id'>$supplier->fst_relation_name</option>";
+										}									
+									?>
+									</select>
+										<textarea class="form-control" id="fst_pp_memo" placeholder="<?= lang("Memo") ?>" name="fst_pp_memo" rows="3" style="resize:none"></textarea>
+										<div id="fst_pp_memo_err" class="text-danger"></div>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-6">	
+								<div class="form-group">
+									<label class="col-md-8 control-label"  style="padding-top:0px"><?=lang("Total")?> : </label>
+									<label id="ttlAmount" class="col-md-4 control-label" style="padding-top:0px" >0.00</label>
+								</div>
 							</div>
 							
 						</div>
@@ -263,6 +282,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			mdlDetail.show();			
 		});
 
+		$("#fin_supplier_id").change(function(e){
+			e.preventDefault();
+			getAccBank($("#fin_supplier_id").val(),function(resp){
+				acc = resp.acc;
+				acc_no = acc.fst_bank_acc_no;
+				acc_name = acc.fst_bank_acc_name;
+				if (acc_no =="" || acc_no == null){
+					alert("Bank Account Master relasi kosong!");
+				}else{
+					$("#fst_pp_memo").val(acc_no + "\r\n" + "A/N :" + acc_name);
+				}
+			});
+		});
+
 		
 	});
 </script>
@@ -328,6 +361,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </script>
 
 <script type="text/javascript" info="function">
+	function getAccBank(finRelationId,callback){
+		App.getValueAjax({
+			site_url:"<?=site_url()?>",
+			model:"trpaymentrequest_model",
+			func:"getAccBankSupplier",
+			params:[finRelationId],
+			callback:callback
+		});
+	}
 	
 	function submitAjax(confirmEdit){     
 		var mode = "<?=$mode?>";  

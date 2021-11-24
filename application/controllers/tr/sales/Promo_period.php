@@ -42,11 +42,11 @@ class Promo_period extends MY_Controller{
 		];
 
 		$this->list['columns'] = [
-			['title' => 'Promo ID', 'width' => '10%', 'data' => 'fin_promo_id'],
-			['title' => 'Promo Name', 'width' => '', 'data' => 'fst_promo_name'],
-            ['title' => 'Start', 'width' => '15%', 'data' => 'fdt_start'],
-            ['title' => 'End', 'width' => '15%', 'data' => 'fdt_end'],
-            ['title' => 'Status', 'width' => '50px', 'data' => 'fst_active',
+			['title' => 'ID', 'width' => '5%', 'data' => 'fin_promo_id'],
+			['title' => 'Promo Name', 'width' => '50%', 'data' => 'fst_promo_name'],
+            ['title' => 'Start', 'width' => '10%', 'data' => 'fdt_start'],
+            ['title' => 'End', 'width' => '10%', 'data' => 'fdt_end'],
+            ['title' => 'Status', 'width' => '10%', 'data' => 'fst_active',
                 'render'=>"function(data,type,row){
                     if (data == 'A'){
                         return 'Active';
@@ -56,7 +56,7 @@ class Promo_period extends MY_Controller{
                     }                    
                 }"
             ],
-            ['title' => 'Action', 'width' => '15px', 'sortable' => false, 'className' => 'dt-body-center text-center',
+            ['title' => 'Action', 'width' => '10%', 'sortable' => false, 'className' => 'dt-body-center text-center',
                 'render'=>'function( data, type, row, meta ) {
                     return "<div style=\'font-size:16px\'><a data-id=\'" + row.fin_promo_id + "\' class=\'btn-edit\' href='.site_url() . 'tr/sales/promo_period/open/' . '" + row.fin_promo_id  + "\><i class=\'fa fa-cogs\'></i></a></div>";
                 }',

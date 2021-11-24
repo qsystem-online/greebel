@@ -10,7 +10,8 @@ class Stock_rpt_model extends CI_Model {
 		$group_id = "";
 		$type_id = "";
 		$warehouse_id = "";
-		$item_id = "";
+		$item_from= "";
+		$item_to= "";
 		$start_date = "";
         $end_date = "";
 		$end_date6 = "";
@@ -23,7 +24,8 @@ class Stock_rpt_model extends CI_Model {
         if (isset($data['fin_item_group_id'])) { $group_id = $data['fin_item_group_id'];}
         if (isset($data['fin_warehouse_id'])) { $warehouse_id = $data['fin_warehouse_id'];}
         if (isset($data['fin_item_type_id'])) { $type_id = $data['fin_item_type_id'];}
-		if (isset($data['fin_item_id'])) { $item_id = $data['fin_item_id'];}
+		if (isset($data['item_code_from'])) { $item_from = $data['item_code_from'];}
+		if (isset($data['item_code_to'])) { $item_to = $data['item_code_to'];}
 		$start_date= $data["fdt_from"] == "" ? "1900-01-01" : $data["fdt_from"];
 		$end_date= $data["fdt_to"] == "" ? "3000-01-01" : $data["fdt_to"];
         $end_date6= $data["fdt_to"] == "" ? "3000-01-01" : date('Y-m-d 23:59:59', strtotime($data["fdt_to"]));
@@ -40,8 +42,12 @@ class Stock_rpt_model extends CI_Model {
 			if ($type_id > "0" ) {
 				$swhere .= " AND b.fin_item_type_id = " . $this->db->escape($type_id);
 			}
-			if ($item_id > "0" ) {
-				$swhere .= " AND a.fin_item_id = " . $this->db->escape($item_id);
+			if ($item_from > "0" ) {
+				$swhere .= " AND b.fst_item_code >= " . $this->db->escape($item_from);
+			}
+
+			if ($item_to > "0" ) {
+				$swhere .= " AND b.fst_item_code <= " . $this->db->escape($item_to);
 			}
 			if (isset($start_date)) {
 				$swhere .= " AND CAST(a.fdt_trx_datetime AS DATE) BETWEEN '"  . $start_date."'";            
@@ -60,8 +66,12 @@ class Stock_rpt_model extends CI_Model {
 			if ($type_id > "0" ) {
 				$swhere .= " AND b.fin_item_type_id = " . $this->db->escape($type_id);
 			}
-			if ($item_id > "0" ) {
-				$swhere .= " AND a.fin_item_id = " . $this->db->escape($item_id);
+			if ($item_from > "0" ) {
+				$swhere .= " AND b.fst_item_code >= " . $this->db->escape($item_from);
+			}
+
+			if ($item_to > "0" ) {
+				$swhere .= " AND b.fst_item_code <= " . $this->db->escape($item_to);
 			}
 			if (isset($start_date)) {
 				$swhere .= " AND CAST(a.fdt_trx_datetime AS DATE) BETWEEN '"  . $start_date."'";            
@@ -77,8 +87,12 @@ class Stock_rpt_model extends CI_Model {
 			if ($type_id > "0" ) {
 				$swhere .= " AND a.fin_item_type_id = " . $this->db->escape($type_id);
 			}
-			if ($item_id > "0" ) {
-				$swhere .= " AND a.fin_item_id = " . $this->db->escape($item_id);
+			if ($item_from > "0" ) {
+				$swhere .= " AND a.fst_item_code >= " . $this->db->escape($item_from);
+			}
+
+			if ($item_to > "0" ) {
+				$swhere .= " AND a.fst_item_code <= " . $this->db->escape($item_to);
 			}
 		}
 
@@ -89,8 +103,12 @@ class Stock_rpt_model extends CI_Model {
 			if ($type_id > "0" ) {
 				$swhere .= " AND a.fin_item_type_id = " . $this->db->escape($type_id);
 			}
-			if ($item_id > "0" ) {
-				$swhere .= " AND a.fin_item_id = " . $this->db->escape($item_id);
+			if ($item_from > "0" ) {
+				$swhere .= " AND a.fst_item_code >= " . $this->db->escape($item_from);
+			}
+
+			if ($item_to > "0" ) {
+				$swhere .= " AND a.fst_item_code <= " . $this->db->escape($item_to);
 			}
 		}
 
@@ -101,8 +119,12 @@ class Stock_rpt_model extends CI_Model {
 			if ($type_id > "0" ) {
 				$swhere .= " AND a.fin_item_type_id = " . $this->db->escape($type_id);
 			}
-			if ($item_id > "0" ) {
-				$swhere .= " AND a.fin_item_id = " . $this->db->escape($item_id);
+			if ($item_from > "0" ) {
+				$swhere .= " AND a.fst_item_code >= " . $this->db->escape($item_from);
+			}
+
+			if ($item_to > "0" ) {
+				$swhere .= " AND a.fst_item_code <= " . $this->db->escape($item_to);
 			}
 		}
 

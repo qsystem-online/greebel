@@ -2,6 +2,25 @@
 	//var_dump($header);
 	//echo "<br><br>";
 	//var_dump($details);
+	$full_address = explode(PHP_EOL, $header["fst_address"]);
+	if(!empty($full_address[0])) {
+		$address1 = $full_address[0];
+	}
+	else {
+		$address1 = ".";
+	}
+	if(!empty($full_address[1])) {
+		$address2 = $full_address[1];
+	}
+	else {
+		$address2 = ".";
+	}
+	if(!empty($full_address[2])) {
+		$address3 = $full_address[2];
+	}
+	else {
+		$address3 = ".";
+	}
 ?>
 <style>
 	.header-col{
@@ -17,6 +36,9 @@
 	}
 	.total{
 		font-size:10pt;
+	}
+	.hidden {
+		visibility: hidden;
 	}	
 </style>
 <style>
@@ -55,7 +77,7 @@
 		<div class="col" style="width:65%">
 			<div class="inline first-col">Alamat</div>
 			<div class="inline" style="width:25px">:</div>
-			<div class="inline"><?=$header["fst_customer_name"]?></div>
+			<div class="inline"><?= $address1?></div>
 		</div>
 		<div class="col" style="width:35%">
 			<div class="inline first-col">Tanggal</div>			
@@ -65,9 +87,21 @@
 	</div>
 	<div class="row">
 		<div class="col" style="width:65%">
-			<div class="inline first-col"></div>
-			<div class="inline" style="width:25px"></div>
-			<div class="inline"></div>
+			<div class="inline first-col hidden">Alamat2</div>
+			<div class="inline" style="width:25px">:</div>
+			<div class="inline"><?= $address2?></div>
+		</div>
+		<div class="col" style="width:35%">
+			<div class="inline first-col">Sales</div>
+			<div class="inline" style="width:25px">:</div>
+			<div class="inline"><?=$header["sales_name"] ?></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col" style="width:65%">
+			<div class="inline first-col hidden">Alamat3</div>
+			<div class="inline" style="width:25px">:</div>
+			<div class="inline"><?= $address3?></div>
 		</div>
 		<div class="col" style="width:35%">
 			<div class="inline first-col">No. SO</div>
@@ -100,7 +134,6 @@
 			?>
 
 			<?php foreach($details as $detail){ ?>
-				
 				<?php					
 					for($i =0 ;$i < 1;$i++){
 					$totalPerRow = $detail["fdb_qty"] * ($detail["fdc_price"] - $detail["fdc_disc_amount_per_item"]);
@@ -121,42 +154,6 @@
 				<?php } ?>
 			<?php }?>	
 
-			<!--<tr class="total">
-				<td class="text-right" colspan="5">Sub Total</td>
-				<td class="text-right"><?=formatNumber($totalFooter)?></td>
-			</tr>
-			<?php if ($ttlDisc > 0) { ?>
-				<tr class="total">
-					<td class="text-right" colspan="5">Total Disc</td>
-					<td class="text-right"><?=formatNumber($ttlDisc)?></td>
-				</tr>		
-			<?php } ?>
-
-			<?php if ($header["fdc_ppn_amount"] > 0) { ?>
-				<tr class="total">
-					<td class="text-right" colspan="5">Ppn <?= $header["fdc_ppn_percent"] ?> % </td>
-					<td class="text-right"><?=formatNumber($header["fdc_ppn_amount"])?></td>
-				</tr>		
-			<?php } ?>
-
-			<tr class="total">
-				<?php
-					//$total  = $totalFooter - $ttlDisc + $header["fdc_ppn_amount"];
-					//$total  = $totalFooter + $header["fdc_ppn_amount"];
-				?>
-				<td class="text-right" colspan="5">DP</td>
-				<td class="text-right"><?=formatNumber($header["fdc_downpayment_claim"])?></td>
-			</tr>
-
-			<tr class="total">
-				<?php
-					//$total  = $totalFooter - $ttlDisc + $header["fdc_ppn_amount"];
-					$total  = $totalFooter + $header["fdc_ppn_amount"] - $header["fdc_downpayment_claim"];
-				?>
-				<td class="text-right" colspan="5">Total</td>
-				<td class="text-right"><?=formatNumber($total)?></td>
-			</tr>-->
-
 		</tbody>
 		<div class="assignment">
 			<table class="assignment-total" style="width:100%">
@@ -165,7 +162,7 @@
 				$total  = $header["fdc_dpp_amount"] + $header["fdc_ppn_amount"] - $header["fdc_downpayment_claim"];
 			?>
 				<tr>
-					<td style="width:70%">Terbilang :</td>
+					<td style="width:70%"><u>Terbilang :</u></td>
 					<td class="text-right" style="width:15%">Sub total :</td>
 					<td class="text-right" style="width:15%"><?=formatNumber($totalFooter)?></td>										
 				</tr>
@@ -175,7 +172,7 @@
 					<td class="text-right" style="width:15%"><?=formatNumber($header["fdc_dpp_amount"])?></td>											
 				</tr>
 				<tr>
-					<td style="width:70%">.</td>
+					<td class="hidden" style="width:70%">baris antara terbilang dengan transfer</td>
 					<td class="text-right" style="width:15%">PPN :</td>
 					<td class="text-right" style="width:15%"><?=formatNumber($header["fdc_ppn_amount"])?></td>									
 				</tr>

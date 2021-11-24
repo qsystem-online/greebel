@@ -13,8 +13,8 @@ class Production_type extends MY_Controller {
     public function index(){
         parent::index();
         $this->load->library('menus');
-		$this->list['page_name'] = "Master Project";
-        $this->list['list_name'] = "Project List";
+		$this->list['page_name'] = "Master Production Type";
+        $this->list['list_name'] = "Production Type List";
         $this->list['boxTools'] = [
 			"<a id='btnNew'  href='".site_url()."master/production_type/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 		];

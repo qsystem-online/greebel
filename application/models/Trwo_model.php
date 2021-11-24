@@ -116,6 +116,15 @@ class Trwo_model extends MY_Model{
 		$qr = $this->db->query($ssql,[$finWOId]);
 		$detailsRmout = $qr->result();
 
+		//Detail RM-RETURN
+		$ssql = "SELECT a.fin_rmout_return_id,a.fst_rmout_return_no,a.fdt_rmout_return_datetime,c.fst_item_name,b.fst_unit,b.fdb_qty 
+			FROM trrmoutreturn a 
+			INNER JOIN trrmoutreturnitems b on a.fin_rmout_return_id = b.fin_rmout_return_id
+			INNER JOIN msitems c on b.fin_item_id = c.fin_item_id			
+			Where a.fin_wo_id = ? and a.fst_active = 'A'";
+		$qr = $this->db->query($ssql,[$finWOId]);
+		$detailsRmreturn = $qr->result();
+
 
 		//Detail LHP
 		$ssql = "SELECT a.fin_lhp_id,a.fst_lhp_no,a.fdt_lhp_datetime,a.fin_wobatchno_id,b.fst_wobatchno_no,
@@ -143,6 +152,7 @@ class Trwo_model extends MY_Model{
 			"detailsMAGPAG"=>$detailsMAGPAG,
 			"detailsBatchno"=>$detailsBatchno,
 			"detailsRmout"=>$detailsRmout,
+			"detailsRmreturn"=>$detailsRmreturn,
 			"detailsLHP"=>$detailsLHP
 		];
 	}

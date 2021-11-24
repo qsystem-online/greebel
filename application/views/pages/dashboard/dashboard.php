@@ -22,8 +22,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <!-- small box -->
             <div class="small-box bg-aqua">
                 <div class="inner">
-                    <h3>{ttlNeedApproval}</h3>
-                    <p><?=lang("Need Approval")?></p>
+                    <h6>PO = {ttlNeedApprovalPO}</h6>
+                    <h6>SO = {ttlNeedApprovalSO}</h6>
+                    <h6>RJ = {ttlNeedApprovalRJ}</h6>
+                    <h6>PP = {ttlNeedApprovalPP}</h6>
                 </div>
                 <div class="icon">
                     <i class="ion ion-android-checkbox-outline"></i>

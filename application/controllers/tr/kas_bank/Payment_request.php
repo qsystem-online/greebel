@@ -8,7 +8,8 @@ class Payment_request extends MY_Controller{
 		parent::__construct();
 		$this->load->library('form_validation');		
 		$this->load->model("trpaymentrequest_model");		
-		$this->load->model("trpaymentrequestitems_model");		
+		$this->load->model("trpaymentrequestitems_model");
+		$this->load->model("msrelations_model");		
 	}
 
 	public function index(){
@@ -320,6 +321,8 @@ class Payment_request extends MY_Controller{
 			"fdt_payment_due_date"=>$fdt_payment_due_date,
 			"fst_company_code"=>$this->input->post("fst_company_code"),							
 			"fin_branch_id"=>$this->aauth->get_active_branch_id(),
+			"fin_supplier_id"=>$this->input->post("fin_supplier_id"),
+			"fst_pp_memo"=>$this->input->post("fst_pp_memo"),	
 			"fst_active"=>'S'		
 		];
 

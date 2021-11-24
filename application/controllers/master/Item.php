@@ -912,9 +912,11 @@ class Item extends MY_Controller
         $term = "%$term%";
 
         $ssql = "SELECT fin_item_id,fst_item_name,fst_item_code FROM msitems 
-            where fst_item_name like ? and fst_item_code like ? and fst_active ='A'";
+			    WHERE CONCAT(fst_item_code,' - ' ,fst_item_name) LIKE ? 
+			    AND fst_active ='A' 
+			    ORDER BY CONCAT(fst_item_code,' - ' ,fst_item_name)";
 
-        $qr = $this->db->query($ssql,[$term,$term]);
+        $qr = $this->db->query($ssql,[$term]);
         $rs =$qr->result();
         $this->json_output([
             "status"=>"SUCCESS",

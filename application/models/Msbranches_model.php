@@ -65,6 +65,16 @@ class Msbranches_model extends MY_Model
         $rules = [];
 
         $rules[] = [
+            'field' => 'fst_branch_code',
+            'label' => 'Branch Code',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong'
+            )
+        ];
+
+
+        $rules[] = [
             'field' => 'fst_branch_name',
             'label' => 'Branch Name',
             'rules' => 'required',

@@ -2,6 +2,25 @@
 	//var_dump($header);
 	//echo "<br><br>";
 	//var_dump($details);
+	$full_memo = explode(PHP_EOL, $header["fst_pp_memo"]);
+	if(!empty($full_memo[0])) {
+		$memo1 = $full_memo[0];
+	}
+	else {
+		$memo1 = ".";
+	}
+	if(!empty($full_memo[1])) {
+		$memo2 = $full_memo[1];
+	}
+	else {
+		$memo2 = ".";
+	}
+	if(!empty($full_memo[2])) {
+		$memo3 = $full_memo[2];
+	}
+	else {
+		$memo3 = ".";
+	}
 ?>
 <style>
 	.header-col{
@@ -17,7 +36,10 @@
 	}
 	.total{
 		font-size:10pt;
-	}	
+	}
+	.hidden {
+		visibility: hidden;
+	}		
 </style>
 <style>
 @media print{
@@ -99,9 +121,24 @@
 				$total  = $header["fdc_total"];
 			?>
 				<tr>
-					<td style="width:70%">.</td>
+					<td style="width:70%"><u><?=$header["fst_relation_name"]?></u></td>
 					<td class="text-right" style="width:15%">TOTAL :</td>
 					<td class="text-right" style="width:15%"><?=formatNumber($total)?></td>										
+				</tr>
+				<tr>
+					<td style="width:70%"><?= $memo1 ?></td>
+					<td class="text-right hidden" style="width:15%"></td>
+					<td class="text-right hidden" style="width:15%"></td>										
+				</tr>
+				<tr>
+					<td style="width:70%"><?= $memo2 ?></td>
+					<td class="text-right hidden" style="width:15%"></td>
+					<td class="text-right hidden" style="width:15%"></td>										
+				</tr>
+				<tr>
+					<td style="width:70%"><?= $memo3 ?></td>
+					<td class="text-right hidden" style="width:15%"></td>
+					<td class="text-right hidden" style="width:15%"></td>										
 				</tr>
 			</table>
 			<table class="assignment" style="width:100%">

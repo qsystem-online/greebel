@@ -91,6 +91,17 @@ class Trpaymentrequest_model extends MY_Model {
 
 	}
 
+	public function getAccBankSupplier($finRelationId){
+		$ssql ="SELECT fst_bank_acc_no,fst_bank_acc_name FROM msrelations WHERE fin_relation_id = ?";
+		$qr = $this->db->query($ssql,[$finRelationId]);
+		$rs = $qr->row();
+		$result =[
+			"acc"=>$rs
+		];
+
+		return $result;
+	}
+
 	public function unposting($finPaymentRequestId){
 
 		$ssql ="select * from trpaymentrequest where fin_paymentrequest_id = ?";
@@ -266,8 +277,10 @@ class Trpaymentrequest_model extends MY_Model {
 	}
 
 	public function getDataVoucher($finPaymentRequestId){
-		$ssql ="SELECT a.*,b.fst_username FROM trpaymentrequest a INNER JOIN users b on a.fin_insert_id = b.fin_user_id 
-		 WHERE a.fin_paymentrequest_id = ? AND a.fst_active != 'D'";
+		$ssql ="SELECT a.*,b.fst_username,c.fst_relation_name FROM trpaymentrequest a 
+				INNER JOIN users b on a.fin_insert_id = b.fin_user_id 
+				INNER JOIN msrelations c on a.fin_supplier_id = c.fin_relation_id
+				WHERE a.fin_paymentrequest_id = ? AND a.fst_active != 'D'";
 			
 		$qr = $this->db->query($ssql,[$finPaymentRequestId]);
 		$header = $qr->row_array();

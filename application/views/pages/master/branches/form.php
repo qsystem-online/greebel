@@ -61,10 +61,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
                         <div class='form-group'>
                             <label for="fin_branch_id" class="col-sm-2 control-label"><?= lang("Branch ID") ?> #</label>
-                            <div class="col-sm-10">
+                            <div class="col-sm-4">
                                 <input type="text" class="form-control" id="fin_branch_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_branch_id" value="<?= $fin_branch_id ?>" readonly>
                                 <div id="fin_branch_id_err" class="text-danger"></div>
-
+                            </div>
+                            <label for="fst_branch_code" class="col-sm-2 control-label"><?= lang("Branch Code") ?> *</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="fst_branch_code" placeholder="<?= lang("Branch Code") ?>" name="fst_branch_code">
+                                <div id="fst_branch_code_err" class="text-danger"></div>
                             </div>
                         </div>
 

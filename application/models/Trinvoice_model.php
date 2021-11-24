@@ -75,10 +75,11 @@ class Trinvoice_model extends MY_Model {
     }
 
     public function getDataById($invId){
-        $ssql ="SELECT a.*,b.fst_salesorder_no,b.fdt_salesorder_datetime,c.fst_relation_name as fst_customer_name,(b.fdc_downpayment_paid - b.fdc_downpayment_claimed) as fdc_downpayment_rest,d.fst_username from trinvoice a 
+        $ssql ="SELECT a.*,b.fst_salesorder_no,b.fdt_salesorder_datetime,c.fst_relation_name as fst_customer_name,c.fst_address,(b.fdc_downpayment_paid - b.fdc_downpayment_claimed) as fdc_downpayment_rest,d.fst_username,e.fst_username as sales_name from trinvoice a 
             inner join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id 
             inner join msrelations c on a.fin_relation_id = c.fin_relation_id
-            inner join users d on a.fin_insert_id = d.fin_user_id 
+            inner join users d on a.fin_insert_id = d.fin_user_id
+            inner join users e on a.fin_sales_id = e.fin_user_id 
             where a.fin_inv_id = ? and a.fst_active != 'D'";
         
         $qr = $this->db->query($ssql,[$invId]);
@@ -113,7 +114,7 @@ class Trinvoice_model extends MY_Model {
         }   
     }
 
-    public function generateInvoiceNo($trDate = null) {
+    public function generateInvoiceNo($trDate = null,$fkInv=true) {
         /*
         $invDate = ($invDate == null) ? date ("Y-m-d"): $invDate;
         $tahun = date("ym", strtotime ($invDate));
@@ -133,8 +134,12 @@ class Trinvoice_model extends MY_Model {
         if($activeBranch){
             $branchCode = $activeBranch->fst_branch_code;
         }
-        $prefix = getDbConfig("invoice_prefix") . "/" . $branchCode ."/";
-        $query = $this->db->query("SELECT MAX(fst_inv_no) as max_id FROM trinvoice where fst_inv_no like '".$prefix.$tahun."%'");
+        if ($fkInv){
+            $prefix = getDbConfig("invoice_fk_prefix") . "/" . $branchCode ."/";
+        }else{
+            $prefix = getDbConfig("invoice_prefix") . "/" . $branchCode ."/";
+        }
+        $query = $this->db->query("SELECT MAX(fst_inv_no) as max_id FROM trinvoice where fst_inv_no like '".$prefix.$tahun."%' and fst_active !='D'");
         $row = $query->row_array();
 
         $max_id = $row['max_id']; 

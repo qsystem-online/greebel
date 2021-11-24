@@ -25,7 +25,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-    <h1><?= lang("Projects") ?><small><?= lang("form") ?></small></h1>
+    <h1><?= lang("Production Type") ?><small><?= lang("form") ?></small></h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
         <li><a href="#"><?= lang("Projects") ?></a></li>
@@ -49,7 +49,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
             <!-- end box header -->
 
             <!-- form start -->
-            <form id="frmHeader" class="form-horizontal" action="<?= site_url() ?>master/project/add" method="POST" enctype="multipart/form-data">
+            <form id="frmHeader" class="form-horizontal" action="<?= site_url() ?>master/production_type/add" method="POST" enctype="multipart/form-data">
                 <div class="box-body">
                     <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
                     <input type="hidden" class="form-control" id="fin_rec_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_rec_id" value="<?=$fin_rec_id?>" readonly>

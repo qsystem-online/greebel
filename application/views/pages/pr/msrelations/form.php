@@ -181,11 +181,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<div id="fst_fax_err" class="text-danger"></div>
 							</div>
 						</div>
+						<div class="form-group">
+							<label for="fst_bank_acc_no" class="col-md-2 control-label"><?=lang("Bank Account")?></label>
+							<div class="col-md-4">
+								<input type="text" class="form-control" id="fst_bank_acc_no" placeholder="<?=lang("Bank Account")?>" name="fst_bank_acc_no">
+								<div id="fst_bank_acc_no_err" class="text-danger"></div>
+							</div>
+
+							<label for="fst_bank_acc_name" class="col-md-2 control-label"><?=lang("Account Name")?></label>
+							<div class="col-md-4">
+								<input type="text" class="form-control" id="fst_bank_acc_name" placeholder="<?=lang("Account Name")?>" name="fst_bank_acc_name">
+								<div id="fst_bank_acc_name_err" class="text-danger"></div>
+							</div>
+						</div>
 
 						<div class="form-group">
 							<label for="fst_address" class="col-md-2 control-label"><?=lang("Address")?></label>
-							<div class="col-md-10">
-								<textarea class="form-control" id="fst_address" placeholder="<?=lang("Address")?>" name="fst_address"></textarea>
+							<div class="col-md-5">
+								<textarea class="form-control" id="fst_address" placeholder="<?=lang("Address")?>" name="fst_address" rows="3"></textarea>
 								<div id="fst_address_err" class="text-danger"></div>
 							</div>
 						</div>
@@ -288,7 +301,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 						
 						<div class="form-group">
-							<label for="fst_relation_notes" class="col-md-2 control-label"><?=lang("Relation Notes")?></label>
+							<label for="fst_relation_notes" class="col-md-2 control-label"><?=lang("Delivery Option (SJ)")?></label>
 							<div class="col-md-8">
 								<select id="select-notes" class="form-control" name="fst_relation_notes">
 									<option value="0">-- <?=lang("select")?> --</option>
@@ -416,11 +429,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 									<div class="form-group">
 										<label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Shipping Address")?></label>
-										<div class="col-md-10">
-											<textarea class="form-control" id="fst_shipping_address" name="fst_shipping_address"></textarea>
+										<div class="col-md-6">
+											<textarea class="form-control" id="fst_shipping_address" name="fst_shipping_address" rows="3" style="resize:none"></textarea>
 											<div id="fst_shipping_address_err" class="text-danger"></div>
 										</div>
-									</div>
+									</div>	
 								</form>
 
 								<div class="modal-footer" style="width:100%;padding:10px" class="text-center">
@@ -449,12 +462,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				paging: false,
 				info:false,
 				columns:[
-					{"title": "<?=lang("Shipping Address ID")?>","width": "15%",data: "fin_shipping_address_id",visible: true},
+					{"title": "<?=lang("ID")?>","width": "5%",data: "fin_shipping_address_id",visible: true},
 					{"title": "<?=lang("Relation ID")?>","width": "10%",data: "fin_relation_id",visible: false},
 					{"title": "<?=lang("Name")?>","width": "20%",data: "fst_name",visible: true},
 					{"title": "<?=lang("Area Code")?>","width": "5%",data: "fst_area_code",visible: false},
 					{"title": "<?=lang("Area")?>","width": "15%",data: "fst_kode",visible: true},
-					{"title": "<?=lang("Shipping Address")?>","width": "20%",data: "fst_shipping_address", visible: true},
+					{"title": "<?=lang("Shipping Address")?>","width": "30%",data: "fst_shipping_address", visible: true},
 					{"title": "<?= lang("Action")?>","width": "10%",render: function(data, type, row) {
                             action = "<a class='btn-delete-shipping-details edit-mode' href='#'><i class='fa fa-trash'></i></a>&nbsp;";
                             return action;
@@ -469,6 +482,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				var trRow = $(this).parents('tr');
 				t.row(trRow).remove().draw();
 			});
+
 
 			$("#select-country").change(function(event){
 				event.preventDefault();
@@ -623,66 +637,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});	
 	</script>
+
 </div>
 
 <!--- // END TAB SHIPPING ADDRESS \\ ------------------------------------------------------------------------------------------------------------------>
-
-<div id="modal_Printed" class="modal fade in" role="dialog" style="display: none">
-    <div class="modal-dialog" style="display:table;width:60%;min-width:600px;max-width:100%">
-        <!-- modal content -->
-		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
-            <div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title"><?= lang("Relation List") ?></h4>
-			</div>
-
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12" >
-                        <div style="border:1px inset #f0f0f0;border-radius:10px;padding:5px">
-                            <fieldset style="padding:10px">
-
-                            <form class="form-horizontal">
-                                <div class="form-group">
-                                    <label for="select-relationType" class="col-md-3 control-label"><?= lang("Type") ?> :</label>
-                                    <div class="col-md-7">
-                                        <select id="select-relationType" class="form-control" name="fst_relation_type">
-                                            <option value="ALL">-- <?= lang("ALL") ?> --</option>
-											<option value="1"><?=lang("Customer")?></option>
-											<option value="2"><?=lang("Supplier/Vendor")?></option>
-											<option value="3"><?=lang("Expedisi")?></option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="select-relationIdStart" class="col-md-3 control-label"><?= lang("Relation ID") ?> :</label>
-                                    <div class="col-md-3">
-                                        <select id="select-relationIdStart" class="form-control" name="fin_relation_id">
-                                            <option value="0">--  <?= lang("select") ?>  --</option>
-                                        </select>
-                                    </div>
-                                    <label for="select-relationIdEnd" class="col-md-1 control-label"><?= lang("s/d") ?> :</label>
-                                    <div class="col-md-3">
-                                        <select id="select-relationIdEnd" class="form-control" name="fin_relation_id">
-                                            <option value="0">--  <?= lang("select") ?>  --</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <div class="modal-footer" style="width:100%;padding:10px" class="text-center">
-                                <button id="btnPrint" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Print")?></button>
-                                <button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
-                            </div>
-
-                            </fieldset>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <?php
     echo $mdlPrint;
@@ -774,7 +732,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		//$("#select-lineBusiness").select2();
 		
-		$(":input").inputmask();
+		//$("input").inputmask();
+		jQuery(document).ready(function($) { 
+			$("input").inputmask(); 
+		});
 
 		$("#select-parentId").select2({
 			width: '100%',

@@ -199,8 +199,12 @@ class Invoice extends MY_Controller{
             if($salesOrder == null){
                 throw new CustomException(lang("ID Sales Order tidak dikenal !"),3003,"VALIDATION_FORM_FAILED",["fin_salesorder_id"=>lang("ID Sales Order tidak dikenal !")]);
             }
+            if ($this->input->post("fbl_is_fk") == "1"){
+                $fstInvNo = $this->trinvoice_model->generateInvoiceNo($fdt_inv_datetime,true);
+            }else{
+                $fstInvNo = $this->trinvoice_model->generateInvoiceNo($fdt_inv_datetime,false);
+            }
 
-            $fstInvNo = $this->trinvoice_model->generateInvoiceNo();
             $dataH = [
                 "fst_inv_no"=>$fstInvNo,
                 "fdt_inv_datetime"=>$fdt_inv_datetime,
@@ -221,6 +225,7 @@ class Invoice extends MY_Controller{
                 "fdc_downpayment_claim"=>$this->input->post("fdc_downpayment_claim"),
                 "fdc_total"=>0,
                 "fst_reff_no"=>$this->input->post("fst_reff_no"),
+                "fbl_is_fk"=>$this->input->post("fbl_is_fk"),
                 "fst_active"=>"A",
             ];
 
@@ -547,6 +552,17 @@ class Invoice extends MY_Controller{
         }
 
 
+    }
+
+    public function ajxGetInvNo(){
+        $fkInv = $this->input->get("fbl_is_fk");
+        $InvNo = $this->trinvoice_model->generateInvoiceNo(null,$fkInv);
+        $this->json_output([
+            "status"=>"SUCCESS",
+            "messages"=>"",
+            "data"=>$InvNo
+        ]);
+    
     }
 
     public function print_voucher($finInvId){

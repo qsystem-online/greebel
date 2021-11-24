@@ -41,7 +41,8 @@ class Branch extends MY_Controller
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Branch ID', 'width' => '5%', 'data' => 'fin_branch_id'],
+			['title' => 'ID', 'width' => '5%', 'data' => 'fin_branch_id'],
+			['title' => 'Branch Code', 'width' => '10%', 'data' => 'fst_branch_code'],
 			['title' => 'Branch Name', 'width' => '15%', 'data' => 'fst_branch_name'],
 			['title' => 'Phone', 'width' => '10%', 'data' => 'fst_branch_phone'],
 			['title' => 'Notes', 'width' => '15%', 'data' => 'fst_notes'],
@@ -118,6 +119,7 @@ class Branch extends MY_Controller
 		}
 
 		$data = [
+			"fst_branch_code" => $this->input->post("fst_branch_code"),
 			"fst_branch_name" => $this->input->post("fst_branch_name"),
 			"fst_address" => $this->input->post("fst_address"),
 			"fst_postalcode" => $this->input->post("fst_postalcode"),
@@ -191,6 +193,7 @@ class Branch extends MY_Controller
 
 		$data = [
 			"fin_branch_id" => $fin_branch_id,
+			"fst_branch_code" => $this->input->post("fst_branch_code"),
 			"fst_branch_name" => $this->input->post("fst_branch_name"),
 			"fst_address" => $this->input->post("fst_address"),
 			"fst_postalcode" => $this->input->post("fst_postalcode"),
@@ -228,7 +231,7 @@ class Branch extends MY_Controller
 		$this->load->library("datatables");
 		$this->datatables->setTableName("msbranches");
 
-		$selectFields = "fin_branch_id,fst_branch_name,fst_branch_phone,fst_notes,'action' as action";
+		$selectFields = "fin_branch_id,fst_branch_code,fst_branch_name,fst_branch_phone,fst_notes,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$Fields = $this->input->get('optionSearch');

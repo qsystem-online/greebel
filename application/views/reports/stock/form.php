@@ -12,14 +12,16 @@
 <!-- form start -->
 <form id="rptStock" action="<?= site_url() ?>report/gudang/stock/process" method="POST" enctype="multipart/form-data">
 	<div class="box-body">
-		<input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">                    
+		<input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
 		<div class="form-group row">
 			<label for="select-GroupItemId" class="col-md-2 control-label"><?= lang("Group") ?></label>
-			<div class="col-md-4">
+			<div class="col-md-10">
 				<select id="select-GroupItemId" class="form-control" name="fin_item_group_id"></select>
 				<div id="fin_item_group_id_err" class="text-danger"></div>
 			</div>
-			<label for="fin_item_type_id" class="col-md-2 control-label"><?= lang("Item Type") ?></label>
+		</div>                    
+		<div class="form-group row">
+			<label for="fin_item_type_id" class="col-md-2 control-label"><?= lang("Type") ?></label>
 			<div class="col-md-4">
 				<select class="form-control" id="fin_item_type_id" name="fin_item_type_id">
 					<option value='0'><?= lang("All") ?></option>
@@ -30,9 +32,7 @@
 					<option value='5'><?= lang("Logistic") ?></option>
 				</select>
 			</div>
-		</div>
-		<div class="form-group row">
-			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
+			<label for="select-warehouse" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
 			<div class="col-md-4">
 				<select class="form-control select2" id="fin_warehouse_id" name="fin_warehouse_id">
 				<?php
@@ -43,22 +43,34 @@
 				?>
 				</select>
 			</div>
-			<label for="select-items" class="col-sm-2 control-label"><?=lang("Item")?></label>
-			<div class="col-sm-4">
-				<select id="select-items" class="form-control non-editable" name="fin_item_id"></select>
-				<div id="fin_item_id_err" class="text-danger"></div>
-			</div>
-		</div>  
+		</div>
+ 
 		<div class="form-group row">
-			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("Tanggal")?></label>
+			<label for="select-date" class="col-md-2 control-label"><?=lang("Start Date")?></label>
 			<div class="col-md-4">
 				<input type="text" class="form-control datepicker" id="fdt_from" name="fdt_from" />
 			</div>
-			<label for="select-lineBusiness" class="col-md-2 control-label"><?=lang("s/d")?></label>
+			<label for="select-date" class="col-md-2 control-label"><?=lang("End Date")?></label>
 			<div class="col-md-4">
 			<input type="text" class="form-control datepicker" id="fdt_to" name="fdt_to" />
 			</div>
-		</div>		        
+		</div>
+		
+		<div class="form-group row">
+			<label for="select-items" class="col-sm-2 control-label"><?=lang("From [item code]")?></label>
+			<div class="col-sm-10">
+				<select id="item_from" class="form-control non-editable" name="item_code_from"></select>
+				<div id="item_code_from_err" class="text-danger"></div>
+			</div>
+		</div> 
+
+		<div class="form-group row">
+			<label for="select-items" class="col-sm-2 control-label"><?=lang("To   [item code]")?></label>
+			<div class="col-sm-10">
+				<select id="item_to" class="form-control non-editable" name="item_code_to"></select>
+				<div id="item_code_to_err" class="text-danger"></div>
+			</div>
+		</div> 
 	
 		<div class="form-group row">
 			<label for="rpt_layout" class="col-sm-2 control-label"><?=lang("Report Layout")?></label>
@@ -177,7 +189,7 @@
 			});
 		});
 
-        $("#select-items").select2({
+        $("#item_from").select2({
             minimumInputLength: 2,
             placeholder:{
                 id: '0', // the value of the option
@@ -191,7 +203,45 @@
                 processResults: function (result) {
                     if (result.status == "SUCCESS"){
                         var data = $.map(result.data, function (obj) {
-                            obj.id = obj.fin_item_id,  
+                            obj.id = obj.fst_item_code,  
+                            obj.text = obj.fst_item_code + " - "  + obj.fst_item_name;
+                            //obj.fbl_is_batch_number
+                            //obj.fbl_is_serial_number
+                            return obj;
+                        });
+
+                        return {
+                            results: data
+                        };
+                    }else{
+                        return {
+                            result:[]
+                        }
+                    }
+                }
+            }
+        }).on('select2:select',function(e){
+            var data = e.params.data;
+            selectedItem = data;
+            //$("#fstUnit").empty().trigger("change.select2");
+            //showHideBatchSerial();
+        });
+
+		$("#item_to").select2({
+            minimumInputLength: 2,
+            placeholder:{
+                id: '0', // the value of the option
+                text: 'All'
+            },
+            allowClear: true,
+            ajax:{
+                delay: 250,
+                url: "<?=site_url()?>/report/gudang/stock/ajxListItem",
+                dataType: 'json',
+                processResults: function (result) {
+                    if (result.status == "SUCCESS"){
+                        var data = $.map(result.data, function (obj) {
+                            obj.id = obj.fst_item_code,  
                             obj.text = obj.fst_item_code + " - "  + obj.fst_item_name;
                             //obj.fbl_is_batch_number
                             //obj.fbl_is_serial_number
