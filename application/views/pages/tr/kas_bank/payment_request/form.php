@@ -87,11 +87,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</div>
 						</div>			
 						
+						<?php if ($mode != "VIEW") { ?>
 						<div class="form-group" style="margin-bottom:0px">
 							<div class="col-md-12" style="text-align:right">
 								<button id="btn-add-detail" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>Tambah Item</button>
 							</div>
 						</div>
+						<?php } ?>
+						
 						<table id="tbldetails" class="table table-bordered table-hover table-striped nowarp row-border" style="min-width:100%"></table>
 						<!--<div class="form-group">
 							<div class="col-sm-12">
@@ -282,18 +285,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			mdlDetail.show();			
 		});
 
+		//Supplier		
+		$("#fin_supplier_id").select2({
+			placeholder: "<?= lang("Supplier")?>",
+			allowClear: true,
+			//data:arrSupplier,
+		});
+		$("#fin_supplier_id").val(null).change();
+
 		$("#fin_supplier_id").change(function(e){
 			e.preventDefault();
-			getAccBank($("#fin_supplier_id").val(),function(resp){
-				acc = resp.acc;
-				acc_no = acc.fst_bank_acc_no;
-				acc_name = acc.fst_bank_acc_name;
-				if (acc_no =="" || acc_no == null){
-					alert("Bank Account Master relasi kosong!");
-				}else{
-					$("#fst_pp_memo").val(acc_no + "\r\n" + "A/N :" + acc_name);
-				}
-			});
+			supp_id = $("#fin_supplier_id").val();
+			if (supp_id != null){
+				getAccBank(supp_id,function(resp){
+					acc = resp.acc;
+					acc_no = acc.fst_bank_acc_no;
+					acc_name = acc.fst_bank_acc_name;
+					if (acc_no =="" || acc_no == null){
+						alert("Bank Account Master relasi kosong!");
+					}else{
+						$("#fst_pp_memo").val(acc_no + "\r\n" + "A/N :" + acc_name);
+					}
+				});
+			}
+
 		});
 
 		
@@ -474,7 +489,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#fst_status").text("#NEED APPROVAL")
 				}else if(dataH.fst_active =='A'){
 					$("#fst_status").text("#APPROVED")
-				}else if(dataH.fst_active =='D'){
+				}else if(dataH.fst_active =='R'){
 					$("#fst_status").text("#REJECTED")
 				}
 

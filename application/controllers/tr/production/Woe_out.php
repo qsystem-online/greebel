@@ -33,14 +33,14 @@ class Woe_out extends MY_Controller{
 		
 
 		$this->list['columns'] = [
-			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_woeout_id'],
-			['title' => 'No.', 'width' => '60px', 'data' => 'fst_woeout_no'],
-			['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_woeout_datetime'],
+			['title' => 'ID.', 'width' => '10px','visible' => 'false', 'data' => 'fin_woeout_id'],
+			['title' => 'No.', 'width' => '50px', 'data' => 'fst_woeout_no'],
+			['title' => 'Tanggal', 'width' => '80px', 'data' => 'fdt_woeout_datetime'],
 			['title' => 'WO', 'width' => '50px', 'data' => 'fst_wo_no'],
-			['title' => 'Item', 'width' => '50px', 'data' => 'fst_item_name'],
-			['title' => 'Qty WO', 'width' => '50px', 'data' => 'fdb_qty_wo'],
-			['title' => 'Qty out', 'width' => '50px', 'data' => 'fdb_qty'],
-			['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Item', 'width' => '150px', 'data' => 'fst_item_name'],
+			['title' => 'Qty WO', 'width' => '30px', 'data' => 'fdb_qty_wo'],
+			['title' => 'Qty out', 'width' => '30px', 'data' => 'fdb_qty'],
+			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/production/woe_out/edit/' + row.fin_woeout_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';

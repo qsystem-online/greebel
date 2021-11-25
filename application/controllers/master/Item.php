@@ -40,10 +40,10 @@ class Item extends MY_Controller
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'Item ID', 'width' => '10%', 'data' => 'fin_item_id'],
+            ['title' => 'ID', 'width' => '4%', 'data' => 'fin_item_id'],
             ['title' => 'Item Code', 'width' => '10%', 'data' => 'fst_item_code'],
-            ['title' => 'Item Name', 'width' => '15%', 'data' => 'fst_item_name'],
-            ['title' => 'Vendor Item Name', 'width' => '15%', 'data' => 'fst_vendor_item_name'],
+            ['title' => 'Item Name', 'width' => '30%', 'data' => 'fst_item_name'],
+            ['title' => 'Vendor Item Name', 'width' => '30%', 'data' => 'fst_vendor_item_name'],
             ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);

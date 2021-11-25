@@ -39,14 +39,14 @@ class Woe_inv extends MY_Controller{
 		
 
 		$this->list['columns'] = [
-			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_woeinv_id'],
-			['title' => 'No.', 'width' => '60px', 'data' => 'fst_woeinv_no'],
+			['title' => 'ID.', 'width' => '10px','visible' => 'false', 'data' => 'fin_woeinv_id'],
+			['title' => 'No.', 'width' => '40px', 'data' => 'fst_woeinv_no'],
 			['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_woeinv_datetime'],
 			['title' => 'WO', 'width' => '50px', 'data' => 'fst_wo_no'],
-			['title' => 'Supplier', 'width' => '50px', 'data' => 'fst_supplier_name'],
-			['title' => 'Item', 'width' => '50px', 'data' => 'fst_item_name'],
+			['title' => 'Supplier', 'width' => '150px', 'data' => 'fst_supplier_name'],
+			['title' => 'Item', 'width' => '150px', 'data' => 'fst_item_name'],
 			['title' => 'Total', 'width' => '50px', 'data' => 'fdc_total','className' => 'text-right'],
-			['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/production/woe_inv/edit/' + row.fin_woeinv_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';

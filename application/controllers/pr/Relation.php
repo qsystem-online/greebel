@@ -38,9 +38,9 @@ class Relation extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Relation ID', 'width' => '15%', 'data' => 'fin_relation_id'],
-			['title' => 'Relation Name', 'width' => '20%', 'data' => 'fst_relation_name'],
-			['title' => 'Relation Type', 'width' => '15%', 'data' => 'fst_relation_type',
+			['title' => 'ID', 'width' => '3%', 'data' => 'fin_relation_id'],
+			['title' => 'Relation Name', 'width' => '30%', 'data' => 'fst_relation_name'],
+			['title' => 'Relation Type', 'width' => '10%', 'data' => 'fst_relation_type',
 				'render' => "function (data,type,row){
 					var fst_relation_type = data.split(\",\");
 					var nama = \"\";
@@ -56,6 +56,7 @@ class Relation extends MY_Controller{
 					return nama.substring(1);
 				}"
 			],
+			['title' => 'Phone', 'width' => '10%', 'data' => 'fst_phone'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 
@@ -314,7 +315,7 @@ class Relation extends MY_Controller{
 			$this->datatables->setTableName("msrelations");
 		}
 
-		$selectFields = "fin_relation_id,fin_relation_group_id,fst_relation_type,fst_relation_name,'action' as action";
+		$selectFields = "fin_relation_id,fin_relation_group_id,fst_relation_type,fst_relation_name,fst_phone,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];

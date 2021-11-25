@@ -40,6 +40,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <option value="PO">PO</option>
                                         <option value="SO">SO</option>
                                         <option value="PP">PP</option>
+                                        <option value="RJ">RJ</option>
                                     </select>
                                 </div>
                                 <div style="float:right">
@@ -70,6 +71,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <option value="PO">PO</option>
                                         <option value="SO">SO</option>
                                         <option value="PP">PP</option>
+                                        <option value="RJ">RJ</option>
                                     </select>
                                 </div>
                                 <div style="clear:both"></div>
@@ -181,8 +183,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 url:"<?=site_url()?>tr/approval/fetch_need_approval_list",
             },
 			columns:[
-				{"title" : "id","width": "10%",sortable:true,data:"fin_rec_id",visible:true},
-				{"title" : "Module","width": "10%",sortable:false,data:"fst_controller",visible:true},				
+				{"title" : "id","width": "5%",sortable:true,data:"fin_rec_id",visible:true},
+				{"title" : "Module","width": "5%",sortable:false,data:"fst_controller",visible:true},				
                 {"title" : "Transaction no","width": "10%",sortable:false,data:"fst_transaction_no"},
                 {"title" : "Message","width": "40%",sortable:false,data:"fst_message",visible:true},
                 {"title" : "Insert time","width": "10%",sortable:false,data:"fdt_insert_datetime",visible:true},
@@ -245,8 +247,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 url:"<?=site_url()?>tr/approval/fetch_hist_approval_list",
             },
 			columns:[
-				{"title" : "id","width": "10%",sortable:true,data:"fin_rec_id",visible:true},
-				{"title" : "Module","width": "10%",sortable:false,data:"fst_controller",visible:true},				
+				{"title" : "id","width": "5%",sortable:true,data:"fin_rec_id",visible:true},
+				{"title" : "Module","width": "5%",sortable:false,data:"fst_controller",visible:true},				
                 {"title" : "Transaction no","width": "10%",sortable:false,data:"fst_transaction_no"},
                 {"title" : "Message","width": "40%",sortable:false,data:"fst_message",visible:true},
                 {"title" : "Insert time","width": "10%",sortable:false,data:"fdt_insert_datetime",visible:true},

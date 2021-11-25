@@ -39,7 +39,7 @@ class Trlpbsalesreturn_model extends MY_Model {
 		$ssql = "SELECT a.*,b.fst_relation_name,c.fst_warehouse_name FROM trlpbsalesreturn a
 			INNER JOIN msrelations b on a.fin_customer_id = b.fin_relation_id
 			INNER JOIN mswarehouse c on a.fin_warehouse_id = c.fin_warehouse_id
-			WHERE a.fin_lpbsalesreturn_id = ? and a.fst_active ='A'";
+			WHERE a.fin_lpbsalesreturn_id = ? and (a.fst_active ='A' or a.fst_active ='S' or a.fst_active ='R')";
 
 		$qr = $this->db->query($ssql, [$finLPBSalesReturnId]);
 		//var_dump($this->db->error());
@@ -122,7 +122,7 @@ class Trlpbsalesreturn_model extends MY_Model {
 				}
 
 				if ($rwInv->fdb_qty < $rwInv->fdb_qty_return +  $rw->fdb_qty){
-					throw new CustomException(lang("Qty retur tidak boleh melebih qty faktur yang ditentukan!"),3003,"FAILED",[]);
+					throw new CustomException(lang("Qty retur tidak boleh melebihi qty faktur yang ditentukan!"),3003,"FAILED",[]);
 				}
 				$ssql = "UPDATE trinvoiceitems set fdb_qty_return = fdb_qty_return + ? where fin_rec_id = ?";
 				$this->db->query($ssql,[$rw->fdb_qty,$rwInv->fin_rec_id]);			
@@ -228,7 +228,167 @@ class Trlpbsalesreturn_model extends MY_Model {
 		parent::delete($finLPBSalesReturnId,$softDelete,$data);
 
 		return ["status" => "SUCCESS","message"=>""];
-	}	
+	}
+
+	public function update($dataH){
+		//Delete Field yang tidak boleh berubah
+		//unset($data["fin_relation_id"]);
+		unset($dataH["fst_lpbsalesreturn_no"]);
+		parent::update($dataH);        
+	}
+
+	/*public function approvedXX($finLPBSalesReturnId){
+
+        $data = [
+            "fin_lpbsalesreturn_id"=>$finLPBSalesReturnId,
+            "fst_active"=>"A"
+        ];
+        parent::update($data);
+        
+
+        //Cek kalau semua proses verification sudah selesai
+        $ssql = "select * from trverification 
+        where fst_controller ='RJ' 
+        and fin_transaction_id = ? 
+        and fst_verification_status != 'VF' 
+        and fst_active='A'" ;
+
+        $qr = $this->db->query($ssql,[$finLPBSalesReturnId]);
+        $rw = $qr->row();
+        if ($rw == false){
+            $this->posting($finLPBSalesReturnId);
+        }
+    }*/
+	public function approved($finLPBSalesReturnId,$approved = true){
+		
+		if($approved){
+			$data = [
+				"fin_lpbsalesreturn_id"=>$finLPBSalesReturnId,
+				"fst_active"=>"A"
+			];        
+			parent::update($data);            
+			//$result = $this->posting($finLPBSalesReturnId);            
+		}else{
+			$data = [
+				"fin_lpbsalesreturn_id"=>$finLPBSalesReturnId,
+				"fst_active"=>"R"
+			];        
+			parent::update($data);            
+		}
+		
+
+		return [
+			"status"=>"SUCCESS",
+			"message"=>"Success!"
+		] ;      
+	}
+    public function cancelApproval($finLPBSalesReturnId){
+        /**
+         * Approval hanya bisa dicancel bila belum tarik ke Nota Retur
+         * 
+         */ 
+        $ssql = "select * from trlpbsalesreturn where fin_lpbsalesreturn_id = ? and fst_active = 'A'";
+        $qr = $this->db->query($ssql,[$finLPBSalesReturnId]);
+        $rw =$qr->row();
+        if($rw == null){
+            throw new CustomException(lang("ID RJ tidak dikenal / Status bukan Active !"),3003,"FAILED",null);            
+            //$resp =["status"=>"FAILED","message"=>lang("ID SO tidak dikenal !")];
+            //return $resp;
+        }        
+ 
+
+        //cek bila sudah tarik Nota retur
+        $ssql = "SELECT a.fin_lpbsalesreturn_id,a.fst_lpbsalesreturn_no,b.fst_lpbsalesreturn_id_list,b.fst_salesreturn_no FROM trlpbsalesreturn a INNER JOIN trsalesreturn b
+				ON JSON_SEARCH(b.fst_lpbsalesreturn_id_list,'one',a.fin_lpbsalesreturn_id) IS NOT NULL WHERE a.fin_lpbsalesreturn_id = ? AND b.fst_active ='A'";
+        $qr = $this->db->query($ssql,[$finLPBSalesReturnId]);
+        $rw = $qr->row();
+
+        if ($rw != null){
+            throw new CustomException(lang("Status approval RJ tidak dapat dirubah karena sudah tarik ke Retur Penjualan !"),3003,"FAILED",null);
+            //$resp =["status"=>"FAILED","message"=>lang("Status approval SO tidak dapat dirubah karena sudah terjadi pengiriman barang !")];
+            //return $resp;
+        }
+
+        $ssql = "UPDATE trlpbsalesreturn SET fst_active ='S' WHERE fin_lpbsalesreturn_id = ?";
+        $this->db->query($ssql,[$finLPBSalesReturnId]);
+		
+		return ["status"=>"SUCCESS","Success!"];
+        //$this->cancelposting($finLPBSalesReturnId);
+    }
+	
+	/*public function cancelposting($finLPBSalesReturnId){
+
+        $ssql = "UPDATE trlpbsalesreturn SET fst_active ='S' WHERE fin_lpbsalesreturn_id = ?";
+        $this->db->query($ssql,[$finLPBSalesReturnId]);
+        $this->my_model->throwIfDBError();      
+           
+    }*/
+
+	
+    public function show_transaction($finLPBSalesReturnId){
+        redirect(site_url()."tr/gudang/penerimaan_return/view/$finLPBSalesReturnId", 'refresh');
+    }
+
+	
+	public function getAuthorizationList($dataH,$details){
+		$this->load->model("msitems_model");
+
+        $needAuthorize = false;
+        $needAuthorizeList = [
+            "default"=>[],
+            "non_faktur"=>[],
+        ];
+
+        //Authorize Default
+
+        //Authorize if item return non faktur
+		$authorizeNonFaktur = false;
+		$arrNonFaktur=[];
+		$arrItem = $this->msitems_model->getDetailbyArray(array_column($details, 'fin_item_id'));
+		foreach ($details as $item){	
+			$item =(object) $item;
+			$master = $arrItem[$item->fin_item_id];
+			if($item->fin_inv_id =="" || $item->fin_inv_id == null){
+				$authorizeNonFaktur = true;
+				$needAuthorize = true;
+				$arrNonFaktur[] = [
+					"fin_item_id"=>$item->fin_item_id,
+					"fst_item_name"=>$master->fst_item_name,
+					"fst_unit"=>$item->fst_unit,
+					"fdb_qty"=>$item->fdb_qty,
+				];
+			}
+        }
+        if ($authorizeNonFaktur){
+            $needAuthorizeList["non_faktur"] = $arrNonFaktur;
+        }
+
+        return [
+            "need_authorize" => $needAuthorize,
+            "authorize_list" => $needAuthorizeList
+        ];
+    }
+
+	public function generateApprovalData($needAuthorizeList,$insertId,$fst_lpbsalesreturn_no){
+        if ($needAuthorizeList["need_authorize"] == true){
+            //$authorizeOutofStock
+            //Get Master
+            $this->load->model("trverification_model");
+
+            $authorizeList = $needAuthorizeList["authorize_list"];
+            //OutOfStock
+            $strMessage ="";
+            foreach($authorizeList["non_faktur"] as $item){
+                $strMessage .= "Retur Non Faktur : "  . $item["fst_item_name"] . " Qty :" . $item["fdb_qty"] . " " . $item["fst_unit"] . "<br>";
+            };
+            if ($strMessage != ""){
+                //createAuthorize($controller,$module,$transactionId,$message,$notes = null,$transactionNo = null)
+                $this->trverification_model->createAuthorize("RJ","NonFaktur",$insertId,$strMessage,null,$fst_lpbsalesreturn_no);
+            }
+            
+        }
+
+    }
 }
 
 

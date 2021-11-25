@@ -46,10 +46,9 @@ class Sales_order extends MY_Controller{
 		];
 		$this->list['columns'] = [
 			['title' => 'Sales Order ID.', 'width' => '10px', 'visible' => 'false', 'data' => 'fin_salesorder_id'],
-			['title' => 'Sales Order No.', 'width' => '120px', 'data' => 'fst_salesorder_no'],
-			['title' => 'Sales Order Date', 'width' => '80px', 'data' => 'fdt_salesorder_datetime'],
+			['title' => 'S/O No.', 'width' => '120px', 'data' => 'fst_salesorder_no'],
+			['title' => 'S/O Date', 'width' => '80px', 'data' => 'fdt_salesorder_datetime'],
 			['title' => 'Customer', 'width' => '130px', 'data' => 'fst_customer'],
-			['title' => 'Memo', 'width' => '120px', 'data' => 'fst_memo'],
 			
 			['title' => 'Total', 'width' => '100px','className'=>'text-right',
 				'render'=>"function(data,type,row){
@@ -62,12 +61,12 @@ class Sales_order extends MY_Controller{
 					return row.fst_curr_code + ':' + App.money_format(total);
 				}"
 			],
-			['title' => 'DP', 'width' => '80px', 'data' => 'fdc_downpayment','className' => 'text-right',
+			['title' => 'DP', 'width' => '70px', 'data' => 'fdc_downpayment','className' => 'text-right',
 				'render'=>"function(data,type,row){
 					return App.money_format(data);
 				}"
 			],
-			['title' => 'DP paid', 'width' => '80px', 'data' => 'fdc_downpayment_paid','className' => 'text-right',
+			['title' => 'DP paid', 'width' => '70px', 'data' => 'fdc_downpayment_paid','className' => 'text-right',
 				'render'=>"function(data,type,row){
 					return App.money_format(data);
 				}"
@@ -88,7 +87,7 @@ class Sales_order extends MY_Controller{
 
 				}"
 			],
-			['title' => 'Closed', 'width' => '50px', 'data' => 'fbl_is_closed','className'=>'text-center',
+			['title' => 'Closed', 'width' => '20px', 'data' => 'fbl_is_closed','className'=>'text-center',
 				'render'=>"function(data,type,row){
 					if(data == 1){
 						return '<input class=\"isClosed\" type=\"checkbox\" value=\"1\" checked>';
@@ -98,7 +97,7 @@ class Sales_order extends MY_Controller{
 				}"
 			],
 
-			['title' => 'Action', 'width' => '60px', 'sortable' => false, 'className' => 'dt-body-center text-center',
+			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'dt-body-center text-center',
 				'render'=>"function(data,type,row){
 					action = \"<div style='font-size:16px'>\";
 					action += \"<a class='btn-edit' href='#' data-id='\" + row.fin_salesorder_id + \"'><i class='fa fa-pencil'></i></a>\";

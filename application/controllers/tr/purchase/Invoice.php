@@ -40,11 +40,10 @@ class Invoice extends MY_Controller{
 
         $this->list['columns'] = [
 			['title' => 'ID. LPB Pembelian', 'width' => '10px','visible'=>'false', 'data' => 'fin_lpbpurchase_id'],
-            ['title' => 'No. LPB Pembelian', 'width' => '100px', 'data' => 'fst_lpbpurchase_no'],
+            ['title' => 'No. LPB Pembelian', 'width' => '80px', 'data' => 'fst_lpbpurchase_no'],
             ['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_lpbpurchase_datetime'],
             ['title' => 'Purchase Order No.', 'width' => '100px', 'data' => 'fst_po_no'],
 			['title' => 'Supplier', 'width' => '150px', 'data' => 'fst_supplier_name'],
-			['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
 			['title' => 'Total Amount', 'width' => '80px', 'data' => 'fdc_total','className'=>'text-right',
 				'render'=>"function(data,type,row){
 					return row.fst_curr_code + ':' + App.money_format(data);

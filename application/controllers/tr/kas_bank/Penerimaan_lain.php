@@ -42,9 +42,9 @@ class Penerimaan_lain extends MY_Controller{
 
         $this->list['columns'] = [
 			['title' => 'ID. ', 'width' => '10px','visible'=>'false', 'data' => 'fin_cbreceiveoth_id'],
-            ['title' => 'Receive No.', 'width' => '100px', 'data' => 'fst_cbreceiveoth_no'],
-            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_cbreceiveoth_datetime'],
-            ['title' => 'Customer', 'width' => '150px', 'data' => 'fst_receive_from'],		
+            ['title' => 'Receive No.', 'width' => '120px', 'data' => 'fst_cbreceiveoth_no'],
+            ['title' => 'Tanggal', 'width' => '80px', 'data' => 'fdt_cbreceiveoth_datetime'],
+            ['title' => 'Terima Dari', 'width' => '150px', 'data' => 'fst_receive_from'],		
 			['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
 			['title' => 'Currency', 'width' => '50px', 'data' => 'fst_curr_code'],
 			['title' => 'Nominal', 'width' => '80px', 'data' => 'fdc_nominal','className'=>'text-right',

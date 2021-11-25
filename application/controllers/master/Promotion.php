@@ -40,8 +40,8 @@ class Promotion extends MY_Controller
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'Promo ID', 'width' => '10%', 'data' => 'fin_promo_id'],
-            ['title' => 'Promo Name', 'width' => '20%', 'data' => 'fst_promo_name'],
+            ['title' => 'ID', 'width' => '2%', 'data' => 'fin_promo_id'],
+            ['title' => 'Promo Name', 'width' => '30%', 'data' => 'fst_promo_name'],
             ['title' => 'Start Date', 'width' => '10%', 'data' => 'fdt_start'],
             ['title' => 'End Date', 'width' => '10%', 'data' => 'fdt_end'],
             //['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']

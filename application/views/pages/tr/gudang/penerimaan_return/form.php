@@ -27,6 +27,7 @@
             <div class="box box-info">
 				<div class="box-header with-border">
 					<h3 class="box-title title pull-left"><?=$title?></h3>
+					<?php if ($mode != "VIEW") { ?>
 					<div class="btn-group btn-group-sm  pull-right">					
 						<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 						<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
@@ -34,6 +35,7 @@
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
+					<?php } ?>
 				</div>
 				<!-- end box header -->
 
@@ -42,6 +44,10 @@
 					<div class="box-body">
 						<input type="hidden" name = "<?=$this->security->get_csrf_token_name()?>" value="<?=$this->security->get_csrf_hash()?>">	
 						<input type="hidden" class="form-control" id="fin_lpbsalesreturn_id" placeholder="<?=lang("(Autonumber)")?>" name="fin_lpbsalesreturn_id" value="<?=$fin_lpbsalesreturn_id?>" readonly>
+
+						<div class="form-group">
+							<label class="col-md-12 control-label" id="fst_status" name="fst_status" style="font-style: italic;">#</label>
+						</div>
 
                         <div class="form-group">
 							<label for="fst_lpbsalesreturn_no" class="col-md-2 control-label"><?=lang("No. Penerimaan Retur")?></label>	
@@ -91,11 +97,13 @@
 							</div>							                    
 						</div>						
 
+						<?php if ($mode != "VIEW") { ?>
 						<div class="form-group" style="margin-bottom:0px">
 							<div class="col-md-12" style="text-align:right">
 								<button id="btn-add-items" class="btn btn-primary btn-sm non-assembling"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;Tambah Item</button>
 							</div>
 						</div>
+						<?php } ?>
 
 						<div class="form-group">							
 							<div class="col-sm-12">
@@ -655,13 +663,16 @@
 				},
 				{"title" : "Unit","width": "100px",sortable:false,data:"fst_unit"},
 				{"title" : "Qty","width": "50px",sortable:false,data:"fdb_qty",className:'text-right'},
+
+				<?php if ($mode != "VIEW") { ?>
 				{"title" : "Action","width": "40px",sortable:false,className:'dt-body-center text-center',
 					render: function(data,type,row){
 						var action = '<a class="btn-edit" href="#" data-original-title="" title=""><i class="fa fa-pencil"></i></a>&nbsp;';												
 						action += '<a class="btn-delete non-assembling" href="#" data-toggle="confirmation" data-original-title="" title=""><i class="fa fa-trash"></i></a>';
 						return action;
 					}
-				},								
+				},
+				<?php } ?>									
 			],
 			processing: true,
 			serverSide: false,
@@ -917,6 +928,14 @@
 					
 					App.addOptionIfNotExist("<option value='"+dataH.fin_customer_id+"'>"+dataH.fst_relation_name+"</option>","fin_customer_id");
 					App.addOptionIfNotExist("<option value='"+dataH.fin_warehouse_id+"'>"+dataH.fst_warehouse_name+"</option>","fin_warehouse_id");
+
+					if(dataH.fst_active =='S'){
+						$("#fst_status").text("#NEED APPROVAL")
+					}else if(dataH.fst_active =='A'){
+						$("#fst_status").text("#APPROVED")
+					}else if(dataH.fst_active =='R'){
+						$("#fst_status").text("#REJECTED")
+					}
 										
 					tbldetails.rows().clear();
 					$.each(details,function(i,v){

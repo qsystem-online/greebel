@@ -279,10 +279,12 @@ class Trpaymentrequest_model extends MY_Model {
 	public function getDataVoucher($finPaymentRequestId){
 		$ssql ="SELECT a.*,b.fst_username,c.fst_relation_name FROM trpaymentrequest a 
 				INNER JOIN users b on a.fin_insert_id = b.fin_user_id 
-				INNER JOIN msrelations c on a.fin_supplier_id = c.fin_relation_id
+				LEFT OUTER JOIN msrelations c on a.fin_supplier_id = c.fin_relation_id
 				WHERE a.fin_paymentrequest_id = ? AND a.fst_active != 'D'";
 			
 		$qr = $this->db->query($ssql,[$finPaymentRequestId]);
+		//echo $this->db->last_query();
+        //die();
 		$header = $qr->row_array();
 		
 		$ssql = "SELECT * FROM trpaymentrequestitems WHERE fin_paymentrequest_id = ?";

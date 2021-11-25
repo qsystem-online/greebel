@@ -45,7 +45,6 @@ class Purchase_order extends MY_Controller{
             ['title' => 'No. Order Pembelian', 'width' => '120px', 'data' => 'fst_po_no'],
             ['title' => 'Tanggal', 'width' => '80px', 'data' => 'fdt_po_datetime'],
             ['title' => 'Supplier', 'width' => '100px', 'data' => 'fst_supplier_name'],
-			['title' => 'Memo', 'width' => '120px', 'data' => 'fst_memo'],
 			['title' => 'Total', 'width' => '100px','className'=>'text-right',
 				'render'=>"function(data,type,row){
 					//var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount) + parseFloat(row.fdc_ppn_amount);
@@ -53,17 +52,17 @@ class Purchase_order extends MY_Controller{
 					return row.fst_curr_code + ':' + App.money_format(total);
 				}"
 			],
-			['title' => 'DP', 'width' => '80px', 'data' => 'fdc_downpayment','className' => 'text-right',
+			['title' => 'DP', 'width' => '70px', 'data' => 'fdc_downpayment','className' => 'text-right',
 				'render'=>"function(data,type,row){
 					return App.money_format(data);
 				}"
 			],
-			['title' => 'DP paid', 'width' => '80px', 'data' => 'fdc_downpayment_paid','className' => 'text-right',
+			['title' => 'DP paid', 'width' => '70px', 'data' => 'fdc_downpayment_paid','className' => 'text-right',
 				'render'=>"function(data,type,row){
 					return App.money_format(data);
 				}"
 			],
-			['title' => 'Status', 'width' => '60px', 'data' => 'fst_active','className'=>'text-center',
+			['title' => 'Status', 'width' => '40px', 'data' => 'fst_active','className'=>'text-center',
 				'render'=>"function(data,type,row){
 					if(data == 'A'){
 						return 'Active';
@@ -76,7 +75,7 @@ class Purchase_order extends MY_Controller{
 					}
 				}"
 			],
-			['title' => 'Closed', 'width' => '50px', 'data' => 'fbl_is_closed','className'=>'text-center',
+			['title' => 'Closed', 'width' => '30px', 'data' => 'fbl_is_closed','className'=>'text-center',
 				'render'=>"function(data,type,row){
 					if(data == 1){
 						return '<input class=\"isClosed\" type=\"checkbox\" value=\"1\" checked>';
@@ -86,11 +85,11 @@ class Purchase_order extends MY_Controller{
 				}"
 			],
 			
-			['title' => 'Action', 'width' => '70px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/purchase_order/edit/' + row.fin_po_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
-					action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
+					//action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';*/
 					action += '<div>';
 					return action;
 				}"

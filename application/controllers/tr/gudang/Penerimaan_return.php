@@ -40,12 +40,25 @@ class Penerimaan_return extends MY_Controller{
 		
 
 		$this->list['columns'] = [			
-			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_lpbsalesreturn_id'],
-			['title' => 'No. Penerimaan Retur', 'width' => '60px', 'data' => 'fst_lpbsalesreturn_no'],
-			['title' => 'Tanggal', 'width' => '50px', 'data' => 'fdt_lpbsalesreturn_datetime'],
-			['title' => 'Relation', 'width' => '100px', 'data' => 'fst_customer_name'],
-			['title' => 'Gudang', 'width' => '100px', 'data' => 'fst_warehouse_name'],
-			['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'ID.', 'width' => '10px','visible' => 'false', 'data' => 'fin_lpbsalesreturn_id'],
+			['title' => 'No. Penerimaan Retur', 'width' => '40px', 'data' => 'fst_lpbsalesreturn_no'],
+			['title' => 'Tanggal', 'width' => '70px', 'data' => 'fdt_lpbsalesreturn_datetime'],
+			['title' => 'Relation', 'width' => '150px', 'data' => 'fst_customer_name'],
+			['title' => 'Gudang', 'width' => '80px', 'data' => 'fst_warehouse_name'],
+			['title' => 'Status', 'width' => '50px', 'data' => 'fst_active','className'=>'text-center',
+			'render'=>"function(data,type,row){
+				if(data == 'A'){
+					return 'Active';
+				}else if (data == 'S'){
+					return 'Suspend';
+				}else if (data == 'D'){
+					return 'Deleted';
+				}else if (data == 'R'){
+					return 'Rejected';
+				}
+			}"
+		],
+			['title' => 'Action', 'width' => '70px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/gudang/penerimaan_return/edit/' + row.fin_lpbsalesreturn_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
@@ -82,7 +95,7 @@ class Penerimaan_return extends MY_Controller{
 			INNER JOIN mswarehouse c on a.fin_warehouse_id  = c.fin_warehouse_id
 		) a");
 
-		$selectFields = "fin_lpbsalesreturn_id,fst_lpbsalesreturn_no,fdt_lpbsalesreturn_datetime,fst_customer_name,fst_warehouse_name";
+		$selectFields = "fin_lpbsalesreturn_id,fst_lpbsalesreturn_no,fdt_lpbsalesreturn_datetime,fst_customer_name,fst_warehouse_name,fst_active";
 
 		$this->datatables->setSelectFields($selectFields);
 
@@ -112,6 +125,10 @@ class Penerimaan_return extends MY_Controller{
 		$this->openForm("EDIT", $finLPBGudangId);
 
 	}
+	public function view($finLPBGudangId){
+		$this->openForm("VIEW", $finLPBGudangId);
+	}
+
 
 
 	private function openForm($mode = "ADD", $id = 0){
@@ -135,7 +152,9 @@ class Penerimaan_return extends MY_Controller{
 			$data["fst_lpbsalesreturn_no"]=$this->trlpbsalesreturn_model->generateNo(); 
 		}else if($mode == 'EDIT'){
 			$data["fst_lpbsalesreturn_no"]="";		
-		}        
+		}else if($mode == 'VIEW'){
+			$data["fst_lpbsalesreturn_no"]="";
+		}	        
 		
 		$page_content = $this->parser->parse('pages/tr/gudang/penerimaan_return/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -174,6 +193,11 @@ class Penerimaan_return extends MY_Controller{
 		}		
 
 		try{
+
+			//** Cek if this transaction need authorization */	
+			$needAuthorizeList = $this->trlpbsalesreturn_model->getAuthorizationList($dataH,$details);
+			$dataH["fst_active"] = ($needAuthorizeList["need_authorize"] == true) ? "S" :"A";
+			
 			$this->db->trans_start();
 			$insertId = $this->trlpbsalesreturn_model->insert($dataH);
 
@@ -187,7 +211,13 @@ class Penerimaan_return extends MY_Controller{
 				$dataD["fst_active"] = "A";			
 				
 				$this->trlpbsalesreturnitems_model->insert($dataD);			
-			}			
+			}
+
+
+			if ($needAuthorizeList["need_authorize"] == true){
+				$this->trlpbsalesreturn_model->generateApprovalData($needAuthorizeList,$insertId,$dataH["fst_lpbsalesreturn_no"]);
+			}
+
 			$this->trlpbsalesreturn_model->posting($insertId);			
 			$this->db->trans_complete();
 			$this->ajxResp["status"] = "SUCCESS";
@@ -208,6 +238,7 @@ class Penerimaan_return extends MY_Controller{
 	public function ajx_edit_save(){			
 
 		parent::ajx_edit_save();
+		$this->load->model('trverification_model');
 		try{
 			$finLPBSalesReturnId = $this->input->post("fin_lpbsalesreturn_id");
 
@@ -236,17 +267,25 @@ class Penerimaan_return extends MY_Controller{
 		}
 
 		try{
-			$this->db->trans_start();
 
-			$this->trlpbsalesreturn_model->unposting($finLPBSalesReturnId);
-			$this->trlpbsalesreturn_model->deleteDetail($finLPBSalesReturnId);
 			$preparedData = $this->prepareData();
 			$dataH = $preparedData["dataH"];
 			$dataH["fin_lpbsalesreturn_id"] = $finLPBSalesReturnId;
 			$dataH["fst_lpbsalesreturn_no"] = $dataHOld->fst_lpbsalesreturn_no;
 						
 			$details = $preparedData["details"];
-			$this->validateData($dataH,$details);			
+			$this->validateData($dataH,$details);
+
+			//** Cek if this transaction need authorization */	
+			$needAuthorizeList = $this->trlpbsalesreturn_model->getAuthorizationList($dataH,$details);
+			$dataH["fst_active"] = ($needAuthorizeList["need_authorize"] == true) ? "S" :"A";
+
+			$this->db->trans_start();
+
+			$this->trlpbsalesreturn_model->unposting($finLPBSalesReturnId);
+			$this->trlpbsalesreturn_model->deleteDetail($finLPBSalesReturnId);
+			$this->trverification_model->deleteApproval("RJ",$finLPBSalesReturnId);
+
 			$this->trlpbsalesreturn_model->update($dataH);
 			
 			//Insert Data Detail Transaksi
@@ -255,6 +294,10 @@ class Penerimaan_return extends MY_Controller{
 				$detail["fin_lpbsalesreturn_id"] = $dataH["fin_lpbsalesreturn_id"];
 				$detail["fst_active"] = "A";					
 				$this->trlpbsalesreturnitems_model->insert($detail);			
+			}
+
+			if ($needAuthorizeList["need_authorize"] == true){
+				$this->trlpbsalesreturn_model->generateApprovalData($needAuthorizeList,$finLPBSalesReturnId,$dataH["fst_lpbsalesreturn_no"]);
 			}
 
 			$this->trlpbsalesreturn_model->posting($finLPBSalesReturnId);
@@ -544,4 +587,20 @@ class Penerimaan_return extends MY_Controller{
 			"data"=>$rs,
 		]);        
 	}
+
+	public function check_authorization(){
+		$dataH = $this->input->post();
+		unset($dataH["detail"]);
+		$details = $this->input->post("detail");
+		$details = json_decode($details);
+		
+		$needAuthorizeList = $this->trlpbsalesreturn_model->getAuthorizationList($dataH,$details);
+		
+		$this->ajxResp["status"] = "SUCCESS";
+		$this->ajxResp["message"] = "";
+		$this->ajxResp["data"] = $needAuthorizeList;
+		$this->json_output();
+		return;
+	}
+
 }    

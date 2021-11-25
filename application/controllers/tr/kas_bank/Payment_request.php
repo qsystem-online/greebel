@@ -45,7 +45,18 @@ class Payment_request extends MY_Controller{
 					return App.money_format(data);
 				}"
 			],
-			['title' => 'Action', 'width' => '10px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Status', 'width' => '30px', 'data' => 'fst_active','className'=>'text-center',
+			'render'=>"function(data,type,row){
+				if(data == 'A'){
+					return 'OK';
+				}else if (data == 'S'){
+					return 'Suspend';
+				}else if (data == 'R'){
+					return 'Rejected';
+				}
+			}"
+		],
+			['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/kas_bank/payment_request/edit/' + row.fin_paymentrequest_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
@@ -394,7 +405,7 @@ class Payment_request extends MY_Controller{
 			
 			$dataHOld = $this->trpaymentrequest_model->getDataHeaderById($finPaymentRequestId);
 			if ($dataHOld == null){
-				throw new CustomException(lang("Invalid ADJUSTMENT ID"),3003,"FAILED",null);
+				throw new CustomException(lang("Invalid PP ID"),3003,"FAILED",null);
 			}
 
 			$resp = $this->trpaymentrequest_model->isDeletable($dataHOld->fin_paymentrequest_id);

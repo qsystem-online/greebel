@@ -49,14 +49,14 @@ class Jurnal_umum extends MY_Controller{
         $this->list['columns'] = [
             ['title' => 'Jurnal Id', 'width' => '10px','visible'=>'false', 'data' => 'fin_journal_id'],
             ['title' => 'Type', 'width' => '20px','visible'=>'true', 'data' => 'fst_journal_type'],
-            ['title' => 'No. Jurnal', 'width' => '120px', 'data' => 'fst_journal_no'],
+            ['title' => 'No. Jurnal', 'width' => '80px', 'data' => 'fst_journal_no'],
             ['title' => 'Tanggal', 'width' => '80px', 'data' => 'fdt_journal_datetime'],
             ['title' => 'Memo', 'width' => '120px', 'data' => 'fst_desc'],
 			['title' => 'Action', 'width' => '70px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/jurnal_umum/edit/' + row.fin_journal_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
-					action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
+					//action += '<a class=\"btn-delete\" href=\"#\" data-id=\"\" data-toggle=\"confirmation\" ><i class=\"fa fa-trash\"></i></a>';
 					action += '<div>';
 					return action;
 				}"

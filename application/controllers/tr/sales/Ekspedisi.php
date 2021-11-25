@@ -39,13 +39,17 @@ class Ekspedisi extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Ekspedisi ID', 'width' => '10%', 'data' => 'fin_salesekspedisi_id'],
+			['title' => 'Ekspedisi ID', 'width' => '10%','visible' => 'false', 'data' => 'fin_salesekspedisi_id'],
 			['title' => 'Ekspedisi No', 'width' => '10%', 'data' => 'fst_salesekspedisi_no'],
             ['title' => 'Date', 'width' => '15%', 'data' => 'fdt_salesekspedisi_datetime'],
             ['title' => 'Customer', 'width' => '20%', 'data' => 'fst_customer_name'],
             ['title' => 'Ekspedisi', 'width' => '20%', 'data' => 'fst_ekspedisi_name'],
-            ['title' => 'Total', 'width' => '20%', 'data' => 'fdc_total'],
-            ['title' => 'Action', 'width' => '10%', 'sortable' => false, 'className' => 'dt-body-center text-center',
+            ['title' => 'Total', 'width' => '10%', 'data' => 'fdc_total','className' => 'text-right',
+            'render'=>"function(data,type,row){
+                return App.money_format(data);
+            }"
+        ],
+            ['title' => 'Action', 'width' => '15%', 'sortable' => false, 'className' => 'dt-body-center text-center',
                 'render'=>'function( data, type, row, meta ) {
                     //return "<div style=\'font-size:16px\'><a data-id=\'" + row.fin_inv_id + "\' class=\'btn-edit\' href=\'#\'><i class=\'fa fa-pencil\'></i></a><a class=\'btn-delete\' href=\'#\'><i class=\'fa fa-trash\'></i></a></div>";
                     return "<div style=\'font-size:16px\'><a data-id=\'" + row.fin_inv_id + "\' class=\'btn-edit\' href=\'#\'><i class=\'fa fa-pencil\'></i></a></div>";

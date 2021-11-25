@@ -42,11 +42,11 @@ class Pengeluaran_lain extends MY_Controller{
 
         $this->list['columns'] = [
 			['title' => 'ID. ', 'width' => '10px','visible'=>'false', 'data' => 'fin_cbpaymentoth_id'],
-            ['title' => 'Receive No.', 'width' => '100px', 'data' => 'fst_cbpaymentoth_no'],
-            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_cbpaymentoth_datetime'],
-            ['title' => 'Customer', 'width' => '150px', 'data' => 'fst_give_to'],		
+            ['title' => 'Receive No.', 'width' => '120px', 'data' => 'fst_cbpaymentoth_no'],
+            ['title' => 'Tanggal', 'width' => '80px', 'data' => 'fdt_cbpaymentoth_datetime'],
+            ['title' => 'Dikeluarkan Kepada', 'width' => '150px', 'data' => 'fst_give_to'],		
 			['title' => 'Memo', 'width' => '150px', 'data' => 'fst_memo'],
-			['title' => 'Currency', 'width' => '50px', 'data' => 'fst_curr_code'],
+			['title' => 'Currency', 'width' => '30px', 'data' => 'fst_curr_code'],
 			['title' => 'Nominal', 'width' => '80px', 'data' => 'fdc_nominal','className'=>'text-right',
 				'render'=>"function(data,type,row){
 					return App.money_format(data);

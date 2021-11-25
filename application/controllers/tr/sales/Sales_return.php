@@ -20,7 +20,7 @@ class Sales_return extends MY_Controller{
 		parent::index();
 		$this->load->library('menus');
         $this->list['page_name'] = "Sales - Return";
-        $this->list['list_name'] = "Invoice Retur Pembelian List";
+        $this->list['list_name'] = "Invoice Retur Penjualan List";
         $this->list['boxTools'] = [
 			"<a id='btnNew'  href='".site_url()."tr/sales/sales_return/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 		];

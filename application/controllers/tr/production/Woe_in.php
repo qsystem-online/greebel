@@ -31,16 +31,16 @@ class Woe_in extends MY_Controller{
 		
 
 		$this->list['columns'] = [
-			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_woein_id'],
-			['title' => 'No.', 'width' => '60px', 'data' => 'fst_woein_no'],
-			['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_woein_datetime'],
+			['title' => 'ID.', 'width' => '10px','visible' => 'false', 'data' => 'fin_woein_id'],
+			['title' => 'No.', 'width' => '40px', 'data' => 'fst_woein_no'],
+			['title' => 'Tanggal', 'width' => '80px', 'data' => 'fdt_woein_datetime'],
             //['title' => 'WO', 'width' => '50px', 'data' => 'fst_wo_no'],
-            ['title' => 'Extrenal WO Out', 'width' => '50px', 'data' => 'fst_woeout_no'],
-			['title' => 'Item', 'width' => '50px', 'data' => 'fst_item_name'],
-            ['title' => 'Unit', 'width' => '50px', 'data' => 'fst_unit'],
-            ['title' => 'Qty Balance', 'width' => '50px', 'data' => 'fdb_qty_woebalance'],
+            ['title' => 'Extrenal WO Out', 'width' => '40px', 'data' => 'fst_woeout_no'],
+			['title' => 'Item', 'width' => '150px', 'data' => 'fst_item_name'],
+            ['title' => 'Unit', 'width' => '30px', 'data' => 'fst_unit'],
+            ['title' => 'Qty Balance', 'width' => '80px', 'data' => 'fdb_qty_woebalance'],
 			['title' => 'Qty In', 'width' => '50px', 'data' => 'fdb_qty'],
-			['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/production/woe_in/edit/' + row.fin_woein_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';

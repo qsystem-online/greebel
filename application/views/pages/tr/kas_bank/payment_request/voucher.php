@@ -2,24 +2,27 @@
 	//var_dump($header);
 	//echo "<br><br>";
 	//var_dump($details);
-	$full_memo = explode(PHP_EOL, $header["fst_pp_memo"]);
+	if(empty($header["fst_pp_memo"])){
+		$header["fst_pp_memo"] = "";
+	}
+	$full_memo = array_filter(explode(PHP_EOL, $header["fst_pp_memo"]));
 	if(!empty($full_memo[0])) {
 		$memo1 = $full_memo[0];
 	}
 	else {
-		$memo1 = ".";
+		$memo1 = "";
 	}
 	if(!empty($full_memo[1])) {
 		$memo2 = $full_memo[1];
 	}
 	else {
-		$memo2 = ".";
+		$memo2 = "";
 	}
 	if(!empty($full_memo[2])) {
 		$memo3 = $full_memo[2];
 	}
 	else {
-		$memo3 = ".";
+		$memo3 = "";
 	}
 ?>
 <style>
