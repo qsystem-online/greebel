@@ -225,7 +225,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					t.row(selectedDetail).data(data).draw(false);
 				}
 				mdlDetail.clear();	
-				mdlDetail.hide();		
+				//mdlDetail.hide();		
 			});
 
 		});

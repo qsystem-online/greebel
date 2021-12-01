@@ -154,11 +154,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     
 					
 						
-					<div class="form-group non-assembling" style="margin-bottom:0px">
+					<!--<div class="form-group non-assembling" style="margin-bottom:0px">
 						<div class="col-md-12" style="text-align:right">
 							<button id="btn-add-items" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;Tambah Item</button>
 						</div>
-					</div>
+					</div>-->
 					
 					<table id="tblSJDetails" class="table table-bordered table-hover table-striped" style="width:100%"></table>
                     <div id="detail_err" class="text-danger"></div>
@@ -555,12 +555,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		})
 
-		$("#btn-add-items").click(function(e){
+		/*$("#btn-add-items").click(function(e){
 			e.preventDefault();
 			selectedDetail = null;		
 			mdlDetail.show();
 			mdlDetail.clear();
-		});
+		});*/
 
 		$("#fst_sj_type").change(function(e){
 			$("#fin_trans_id").val(null).trigger("change");

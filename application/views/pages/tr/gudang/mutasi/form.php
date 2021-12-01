@@ -194,7 +194,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									<div class="form-group batchNoBlock">
 										<label for="" class="col-md-3 control-label"><?=lang("Batch Number")?></label>
 										<div class="col-md-9">
-											<select  id="fstBatchNo" class="form-control"></select>
+											<select  id="fstBatchNo" class="form-control" style="width:100%"> </select>
 										</div>
 									</div>
 
@@ -212,7 +212,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 									<div class="form-group serialNoBlock">
 										<label for="" class="col-md-3 control-label"></label>
-										<div class="col-md-4" >
+										<div class="col-md-9" >
 											<label for="" class=""><?=lang("Total Serial")?></label>
 											<label id="ttlSerial" class="">0</label>
 
@@ -405,7 +405,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 			selectedDetail = null;
 			mdlDetail.clear();
-			mdlDetail.hide();
+			//mdlDetail.hide();
 			
 
 		});

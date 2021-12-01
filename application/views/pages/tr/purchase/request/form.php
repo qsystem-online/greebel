@@ -269,7 +269,7 @@
 				}				
 				selectedDetail = null;
 				mdlDetail.clearForm();
-				mdlDetail.hide();				
+				//mdlDetail.hide();				
 			}
 		};
 

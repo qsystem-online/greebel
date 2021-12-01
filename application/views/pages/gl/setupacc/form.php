@@ -228,7 +228,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 						return row.fst_glaccount_code + " - " + row.fst_glaccount_name;
 					}
 				},				
-				{title:"Action",width:"25px",orderable:true,className:"text-center",visible:true,
+				{title:"Action",width:"80px",orderable:true,className:"text-center",visible:true,
 					render:function(data,type,row){
 						var sstr =  "<a class='btn-edit' href='#' data-id='"  + row.fin_rec_id + "'><i class='fa fa-pencil'></i></a>";
 						return sstr;

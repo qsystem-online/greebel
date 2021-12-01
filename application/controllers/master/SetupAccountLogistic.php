@@ -2,7 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 class SetupAccountLogistic extends MY_Controller
 {
-    public $menuName="SetupAccLogAsset"; 
+    public $menuName="setupaccountlogistic"; 
     public function __construct()
     {
         parent::__construct();

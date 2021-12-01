@@ -154,30 +154,30 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <div class="checkbox col-md-3 col-md-offset-2">
-                                <label><input id="fbl_is_allow_in_cash_bank_module" type="checkbox" name="fbl_is_allow_in_cash_bank_module" value="1"><?= lang("Allow In CashBank Module") ?></label><br>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="checkbox col-md-2 col-md-offset-2">
-                                <label><input id="fbl_pc_divisi" type="checkbox" name="fbl_pc_divisi" value="1"><?= lang("Analisa Divisi") ?></label><br>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="checkbox col-md-2 col-md-offset-2">
-                                <label><input id="fbl_pc_customer" type="checkbox" name="fbl_pc_customer" value="1"><?= lang("Analisa Customer") ?></label><br>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="checkbox col-md-2 col-md-offset-2">
-                                <label><input id="fbl_pc_project" type="checkbox" name="fbl_pc_project" value="1"><?= lang("Analisa Project") ?></label><br>
-                            </div>
-                        </div>
                         <!-- end box body -->
 
-                        <div class="box-footer text-right">
-                            
+                        <div class="box-footer text-left">
+                            <div class="form-group">
+                                <div class="checkbox col-md-4 col-md-offset-2">
+                                    <label><input id="fbl_pc_divisi" type="checkbox" name="fbl_pc_divisi" value="1"><?= lang("Analisa Divisi") ?></label><br>
+                                </div>
+                                <div class="checkbox col-md-4 col-md-offset-2">
+                                    <label><input id="fbl_is_allow_in_cash_bank_module" type="checkbox" name="fbl_is_allow_in_cash_bank_module" value="1"><?= lang("Allow In CashBank Module") ?></label><br>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="checkbox col-md-4 col-md-offset-2">
+                                    <label><input id="fbl_pc_customer" type="checkbox" name="fbl_pc_customer" value="1"><?= lang("Analisa Customer") ?></label><br>
+                                </div>
+                                <div class="checkbox col-md-4 col-md-offset-2">
+                                    <label><input id="fbl_controll_card_relation" type="checkbox" name="fbl_controll_card_relation" value="1"><?= lang("Kontrol Kartu Hutang/Piutang") ?></label><br>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="checkbox col-md-4 col-md-offset-2">
+                                    <label><input id="fbl_pc_project" type="checkbox" name="fbl_pc_project" value="1"><?= lang("Analisa Project") ?></label><br>
+                                </div>
+                            </div>
                         </div>
                         <!-- end box-footer -->
                 </form>

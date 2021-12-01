@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class piutang extends MY_Controller
+class Piutang extends MY_Controller
 {
 
 	public $menuName="report_piutang";

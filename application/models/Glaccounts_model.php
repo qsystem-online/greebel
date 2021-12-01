@@ -149,6 +149,20 @@ class Glaccounts_model extends MY_Model
         return $rs;		
     }
 
+    public function getAccountBiayaPembelian(){
+        $ssql = "SELECT a.* FROM glaccounts a
+            INNER JOIN glaccountmaingroups b on a.fin_glaccount_maingroup_id = b.fin_glaccount_maingroup_id 
+            WHERE a.fst_glaccount_level in ('DT','DK','DB') AND
+            (b.fin_glaccount_maingroup_id ='5' OR
+            b.fin_glaccount_maingroup_id ='6' OR
+            b.fin_glaccount_maingroup_id ='7' OR
+            b.fin_glaccount_maingroup_id ='9')
+            AND a.fst_active ='A'";
+        $qr = $this->db->query($ssql,[]);		
+        $rs = $qr->result();	
+        return $rs;		
+    }
+
     public function getBiayaList(){
         $prefixBiaya = "6";
         $ssql = "select fst_glaccount_code,fst_glaccount_name from glaccounts 

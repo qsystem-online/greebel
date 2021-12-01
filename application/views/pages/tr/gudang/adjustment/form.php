@@ -383,7 +383,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}
 			selectedDetail = null;
 			mdlDetail.clear();
-			mdlDetail.hide();
+			//mdlDetail.hide();
 			
 
 		});

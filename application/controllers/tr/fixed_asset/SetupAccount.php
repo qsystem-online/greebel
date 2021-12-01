@@ -26,7 +26,7 @@ class SetupAccount extends MY_Controller
         //$mdlPrint = $this->parser->parse('template/mdlPrint.php', [], true);
 
         $data["title"] = "Setup Fixed Asset GL Account";
-        $data["fetch_list_data"] = site_url() ."tr/fixed_assets/setupAccount/fetch_list_data";
+        $data["fetch_list_data"] = site_url() ."tr/fixed_asset/setupAccount/fetch_list_data";
         $data["save_url"] = site_url() ."tr/fixed_assets/setupAccount/ajx_edit_save";
         //$data["mdlItemGroup"] =$this->parser->parse('template/mdlItemGroup', ["readOnly"=>1], TRUE);
         //$data["mdlPrint"] = $mdlPrint;
@@ -40,6 +40,7 @@ class SetupAccount extends MY_Controller
         $this->data["MAIN_FOOTER"] = $main_footer;
         $this->data["CONTROL_SIDEBAR"] = $control_sidebar;
         $this->parser->parse('template/main', $this->data);
+        
     }
 
     public function ajx_edit_save(){        

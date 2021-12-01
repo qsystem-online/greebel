@@ -89,36 +89,33 @@ defined('BASEPATH') or exit('No direct script access allowed');
 								<div id="fst_delivery_address_err" class="text-danger"></div>
 							</div>
 						</div>
-                        <div class="form-group">
-                            <div class="col-md-3 col-md-offset-3">
-                                <label class="checkbox-inline"><input id="fbl_is_external" type="checkbox" name="fbl_is_external" value="1"><?= lang("External") ?></label>
-                                <div id="fbl_is_external_err" class="text-danger" style="padding-left:200px"></div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-3 col-md-offset-3">
-                                <label class="checkbox-inline"><input id="fbl_is_main" type="checkbox" name="fbl_is_main" value="1"><?= lang("Main Warehouse") ?></label>
-                                <div id="fbl_is_main_err" class="text-danger" style="padding-left:200px"></div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-3 col-md-offset-3">
-                                <label class="checkbox-inline"><input id="fbl_logistic" type="checkbox" name="fbl_logistic" value="1"><?= lang("Logistic") ?></label>
-                                <div id="fbl_logistic_err" class="text-danger" style="padding-left:200px"></div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-3 col-md-offset-3">
-                                <label class="checkbox-inline"><input id="fbl_is_production" type="checkbox" name="fbl_is_production" value="1"><?= lang("Production") ?></label>
-                                <div id="fbl_is_production_err" class="text-danger" style="padding-left:200px"></div>
-                            </div>
-                        </div>
+
 
                         
                         <!-- end box body -->
 
-                        <div class="box-footer text-right">
-                            
+                        <div class="box-footer text-left">
+                            <div class="form-group">
+                                <div class="col-md-3 col-md-offset-3">
+                                    <label class="checkbox-inline"><input id="fbl_is_external" type="checkbox" name="fbl_is_external" value="1"><?= lang("External") ?></label>
+                                    <div id="fbl_is_external_err" class="text-danger" style="padding-left:200px"></div>
+                                </div>
+                                <div class="col-md-3 col-md-offset-3">
+                                    <label class="checkbox-inline"><input id="fbl_is_main" type="checkbox" name="fbl_is_main" value="1"><?= lang("Main Warehouse") ?></label>
+                                    <div id="fbl_is_main_err" class="text-danger" style="padding-left:200px"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-3 col-md-offset-3">
+                                    <label class="checkbox-inline"><input id="fbl_logistic" type="checkbox" name="fbl_logistic" value="1"><?= lang("Logistic") ?></label>
+                                    <div id="fbl_logistic_err" class="text-danger" style="padding-left:200px"></div>
+                                </div>
+                                <div class="col-md-3 col-md-offset-3">
+                                    <label class="checkbox-inline"><input id="fbl_is_production" type="checkbox" name="fbl_is_production" value="1"><?= lang("Production") ?></label>
+                                    <div id="fbl_is_production_err" class="text-danger" style="padding-left:200px"></div>
+                                </div>
+                            </div>
                         </div>
                         <!-- end box-footer -->
                 </form>

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class hutang extends MY_Controller
+class Hutang extends MY_Controller
 {
 
 	public $menuName="report_hutang";

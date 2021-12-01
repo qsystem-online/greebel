@@ -316,6 +316,12 @@
 				mdlDetail.selectedItem = null;
 				mdlDetail.selectedUnit = null;
 				selectedRow = null;
+				$("#dfin_inv_id").val(null).trigger("change.select2");
+				$("#dfin_item_id").val(null).trigger("change.select2");
+				$("#dfst_unit").val(null).trigger("change.select2");
+				$("#dfdb_qty").val(1);
+				$("#dfst_basic_unit").val("");
+				$("#dfdb_qty_basic").val(1);
 				$(".batchNoBlock").hide();
 				$(".serialNoBlock").hide();
 			},			
@@ -540,7 +546,7 @@
 					selectedRow.data(data).draw(false);
 				}
 				mdlDetail.clear();
-				mdlDetail.hide();
+				//mdlDetail.hide();
 			});
 
 		});

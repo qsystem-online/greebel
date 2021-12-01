@@ -460,7 +460,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#fdb_qty").val(1);
 				$("#fdc_price").val(0);
 				$("#fdc_disc_amount").val(0);
-				$("#fst_notes").val("");
+				$("#fst_notes_detail").val("");
 				//selectedDetail = null;
 				//clearDetailForm();	
 			},

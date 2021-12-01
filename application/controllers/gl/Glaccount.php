@@ -135,6 +135,7 @@ class Glaccount extends MY_Controller
             "fbl_pc_divisi" => ($this->input->post("fbl_pc_divisi") == null) ? 0 : 1,
             "fbl_pc_customer" => ($this->input->post("fbl_pc_customer") == null) ? 0 : 1,
             "fbl_pc_project" => ($this->input->post("fbl_pc_project") == null) ? 0 : 1,
+            "fbl_controll_card_relation" => ($this->input->post("fbl_controll_card_relation") == null) ? 0 : 1,
             "fst_active" => 'A'
         ];
 
@@ -198,6 +199,7 @@ class Glaccount extends MY_Controller
             "fbl_pc_divisi" => $this->input->post("fbl_pc_divisi"),
             "fbl_pc_customer" => $this->input->post("fbl_pc_customer"),
             "fbl_pc_project" => $this->input->post("fbl_pc_project"),
+            "fbl_controll_card_relation" => $this->input->post("fbl_controll_card_relation"),
             "fst_active" => 'A'
         ];
 

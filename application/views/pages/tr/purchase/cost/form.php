@@ -179,7 +179,7 @@
 											<select id="fst_glaccount_code" class="form-control " style="width:100%">
 											<?php
 												//$costList = $this->glaccounts_model->getAccountRabaRugi();
-												$costList = $this->glaccounts_model->getAccountAll();
+												$costList = $this->glaccounts_model->getAccountBiayaPembelian();
 												foreach($costList as $cost){
 													echo "<option value='".$cost->fst_glaccount_code ."' data-pcdiv='$cost->fbl_pc_divisi' data-pccust='$cost->fbl_pc_customer' data-pcproj='$cost->fbl_pc_project' >". $cost->fst_glaccount_code . " - " . $cost->fst_glaccount_name . "</option>";
 												}
@@ -355,7 +355,7 @@
 					t.row(rowDetail).data(data).draw(false);
 				}				
 				calculateTotal();
-				$("#mdlDetail").modal("hide");				
+				//$("#mdlDetail").modal("hide");				
 				rowDetail = null;
 			})
 		})

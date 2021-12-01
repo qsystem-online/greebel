@@ -326,7 +326,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			}).on('select2:select',function(e){
 				var data = e.params.data;
 				mdlDetail.selectedItem = data;
-				$("#fstUnit").empty().trigger("change.select2");
+				$("#d-fst_unit").empty().trigger("change.select2");
 				showHideBatchSerial();
 			});
 
@@ -522,7 +522,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			t.draw(false);
 			mdlDetail.clear();
-			mdlDetail.hide();		
+			//mdlDetail.hide();		
 		});
 
 	</script>

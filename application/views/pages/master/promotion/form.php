@@ -142,30 +142,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                                 <div id="fst_list_branch_id_err" class="text-danger"></div>
                             </div>
                         </div>
-                        <div class="form-group">
-						<label for="fst_other_prizes" class="col-md-2 control-label"><h6><i>*<?=lang("Other optional Free prize")?>  :</i></h6></label>
-					    </div>
-                        <div class='form-group'>
-                            <label for="fdc_cashback" class="col-md-2 control-label"><?= lang("CashBack") ?></label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control money" id="fdc_cashback" placeholder="<?= lang("0") ?>" name="fdc_cashback">
-                                <div id="fdc_cashback_err" class="text-danger"></div>
-                            </div>
-                        </div>
-                        <div class='form-group'>
-                            <label for="fst_other_prize" class="col-md-2 control-label"><?= lang("Other Item") ?></label>
-                            <div class="col-md-10">
-                                <input type="text" class="form-control" id="fst_other_prize" placeholder="<?= lang("Other Item") ?>" name="fst_other_prize">
-                                <div id="fst_other_prize_err" class="text-danger"></div>
-                            </div>
-                        </div>
-                        <div class='form-group'>
-                            <label for="fdc_other_prize_in_value" class="col-md-2 control-label"><?= lang("Value") ?></label>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control money" id="fdc_other_prize_in_value" placeholder="<?= lang("0") ?>" name="fdc_other_prize_in_value">
-                                <div id="fdc_other_prize_in_value_err" class="text-danger"></div>
-                            </div>
-                        </div>
+
                         <div class='form-group'>
                             <div class="checkbox col-sm-2 col-md-offset- flag">
 								<label class="checkbox-inline"><input id="fbl_is_multiples_prize" name='fbl_is_multiples_prize' type="checkbox" value="1"><?=lang("Multiple Prize")?></label>
@@ -176,7 +153,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
-						<label for="fdc_min_total_purchase" class="col-md-2 control-label"><h6><i>*<?=lang("Terms Of Promotion")?> :</i></h6></label>
+						<label for="fdc_min_total_purchase" class="col-md-2 control-label"><u><h6><i>*<?=lang("Terms Of Promotion")?> :</i></h6></u></label>
 					    </div>
 
                         <div class="form-group">				
@@ -266,8 +243,31 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
                         <!-- /.tab-content -->
 
-                        <div class="box-footer text-right">
-                            
+                        <div class="box-footer text-left">
+                            <div class="form-group">
+                            <label for="fst_other_prizes" class="col-md-2 control-label"><u><h6><i>*<?=lang("Other optional Free prize")?>  :</i></h6></u></label>
+                            </div>
+                            <div class='form-group'>
+                                <label for="fdc_cashback" class="col-md-2 control-label"><?= lang("CashBack") ?></label>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control money" id="fdc_cashback" placeholder="<?= lang("0") ?>" name="fdc_cashback">
+                                    <div id="fdc_cashback_err" class="text-danger"></div>
+                                </div>
+                            </div>
+                            <div class='form-group'>
+                                <label for="fst_other_prize" class="col-md-2 control-label"><?= lang("Other Item") ?></label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" id="fst_other_prize" placeholder="<?= lang("Other Item") ?>" name="fst_other_prize">
+                                    <div id="fst_other_prize_err" class="text-danger"></div>
+                                </div>
+                            </div>
+                            <div class='form-group'>
+                                <label for="fdc_other_prize_in_value" class="col-md-2 control-label"><?= lang("Value") ?></label>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control money" id="fdc_other_prize_in_value" placeholder="<?= lang("0") ?>" name="fdc_other_prize_in_value">
+                                    <div id="fdc_other_prize_in_value_err" class="text-danger"></div>
+                                </div>
+                            </div>
                         </div>
                         <!-- end box-footer -->
                 </form>
