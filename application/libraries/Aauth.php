@@ -26,7 +26,12 @@ class Aauth {
 
 	}
 
-	public function user(){
+	public function user($refresh = false){
+
+		if ($refresh == true){
+			$this->CI->load->model("users_model");		
+			$this->user = $this->CI->users_model->getDataById($this->user->fin_user_id)["user"];
+		}
 		return $this->user;
 	}
 
@@ -72,11 +77,11 @@ class Aauth {
 		if ($permission_name == "dashboard_v2"){
 			return false;	
 		}
+
 		if ($user == null){
-			$user = $this->CI->aauth->user();
+			$user = $this->CI->aauth->user($refresh = false);
 		}
-
-
+		
 		if ($user->fbl_admin == 1){
 			return true;
 		}
@@ -98,6 +103,9 @@ class Aauth {
 					break;
 				case "delete":
 					return $rw->fbl_delete;
+					break;
+				case "print":
+					return $rw->fbl_print;
 					break;
 				default:
 					return $notRecordDefault;
@@ -123,12 +131,16 @@ class Aauth {
 					case "delete":
 						return $rw->fbl_delete;
 						break;
+					case "print":
+						return $rw->fbl_print;
+						break;
 					default:
 						return $notRecordDefault;
 						break;
 				}
 			}
-		}	
+		}
+
 		return $notRecordDefault;
 	}
 
