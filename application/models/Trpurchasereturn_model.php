@@ -406,14 +406,16 @@ class Trpurchasereturn_model extends MY_Model {
 
 	public function getDataVoucher($finReturnId){
 		$ssql ="SELECT a.*,b.fst_relation_name AS fst_supplier_name,c.fst_curr_name,
-			d.fst_lpbpurchase_no,d.fdt_lpbpurchase_datetime 
+			d.fst_lpbpurchase_no,d.fdt_lpbpurchase_datetime
 			FROM trpurchasereturn a
 			INNER JOIN msrelations b ON a.fin_supplier_id = b.fin_relation_id
 			INNER JOIN mscurrencies c ON a.fst_curr_code = c.fst_curr_code 
-			LEFT JOIN trlpbpurchase d ON a.fin_lpbpurchase_id = d.fin_lpbpurchase_id
+			LEFT OUTER JOIN trlpbpurchase d ON a.fin_lpbpurchase_id = d.fin_lpbpurchase_id
 			WHERE fin_purchasereturn_id = ?";
 			
 		$qr = $this->db->query($ssql,[$finReturnId]);
+		//echo $this->db->last_query();
+       // die();
 		$header = $qr->row_array();
 		
 		$ssql = "SELECT a.*,b.fst_item_code FROM trpurchasereturnitems a
@@ -421,14 +423,12 @@ class Trpurchasereturn_model extends MY_Model {
 			WHERE fin_purchasereturn_id = ?";
 
 		$qr = $this->db->query($ssql,[$finReturnId]);
-
-
 		$details = $qr->result_array();
 
-		return [
-			"header"=>$header,
-			"details"=>$details
-		];
+        return [
+            "header"=>$header,
+            "details"=>$details,
+        ];
 	}
 	
 

@@ -26,10 +26,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-    <h1><?= lang("Activity") ?><small><?= lang("form") ?></small></h1>
+    <h1><?= lang("Workstation") ?><small><?= lang("form") ?></small></h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
-        <li><a href="#"><?= lang("Activity") ?></a></li>
+        <li><a href="#"><?= lang("Workstation") ?></a></li>
         <li class="active title"><?= $title ?></li>
     </ol>
 </section>
@@ -57,16 +57,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         <input type="hidden" id="frm-mode" value="<?= $mode ?>">
 
                         <div class='form-group'>
-                            <label for="fin_activity_id" class="col-md-3 control-label"><?= lang("Activity ID") ?> :</label>
+                            <label for="fin_activity_id" class="col-md-3 control-label"><?= lang("Workstation ID") ?> :</label>
                             <div class="col-md-9">
                                 <input type="text" class="form-control" id="fin_activity_id" placeholder="<?= lang("(Autonumber)") ?>" name="fin_activity_id" value="<?= $fin_activity_id ?>" readonly>
                                 <div id="fin_activity_id_err" class="text-danger"></div>
                             </div>
                         </div>
                         <div class='form-group'>
-                            <label for="fst_name" class="col-md-3 control-label"><?= lang("Activity Name") ?> :</label>
+                            <label for="fst_name" class="col-md-3 control-label"><?= lang("Workstation Name") ?> :</label>
                             <div class="col-md-9">
-                                <input type="text" class="form-control" id="fst_name" placeholder="<?= lang("Activity Name") ?>" name="fst_name">
+                                <input type="text" class="form-control" id="fst_name" placeholder="<?= lang("Workstation Name") ?>" name="fst_name">
                                 <div id="fst_name_err" class="text-danger"></div>
                             </div>
                         </div>

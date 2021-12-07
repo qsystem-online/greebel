@@ -122,8 +122,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</div>
 
 					<div class="form-group">
-                        <label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
-						<div class="col-md-10">
+					
+					</div>
+
+                    <div class="form-group non-assembling">
+                        <label for="fin_shipping_address_id" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?></label>
+						<div class="col-md-4">
+							<select class="select2 form-control" name="fin_shipping_address_id" id="fin_shipping_address_id" style="width:100%"></select>
+							<div id="fin_shipping_address_id_err" class="text-danger"></div>
+						</div>
+						<label for="fin_warehouse_id" class="col-md-2 control-label"><?=lang("Warehouse")?></label>
+						<div class="col-md-4">
 							<select id="fin_warehouse_id" class="form-control" name="fin_warehouse_id">
 								<?php
 									$warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
@@ -133,21 +142,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								?>
 							</select>
 							<div id="fin_warehouse_id_err" class="text-danger"></div>
-						</div>						
+						</div>															
 					</div>
 
-                    <div class="form-group non-assembling">
-                        <label for="fst_shipping_address" class="col-md-2 control-label"><?=lang("Alamat Pengiriman")?></label>
-						<div class="col-md-10">
-							<select class="select2 form-control" name="fin_shipping_address_id" id="fin_shipping_address_id" style="width:100%"></select>
-							<div id="fst_shipping_address_err" class="text-danger"></div>
-						</div>														
-					</div>
-
-					<div class="form-group non-assembling">
-						<label class="col-md-2 control-label"></label>
-                        <div class="col-md-10">
-							<textarea class="form-control" id="fst_shipping_address" style="width:100%" rows="5" readonly></textarea>
+					<div class="form-group">
+						<label class="col-md-2"></label>
+                        <div class="col-md-6">
+							<textarea class="form-control" id="fst_shipping_address" name="fst_shipping_address" style="width:100%" rows="3" readonly></textarea>
 							<div id="fst_shipping_address_err" class="text-danger"></div>
 						</div>
 					</div>
@@ -525,6 +526,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#btnSubmitAjax").click(function(e){
             e.preventDefault();
+			$("#fst_shipping_address").prop('readonly', false);
             submitAjax(0);
 		});
 		
@@ -793,12 +795,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript" info="function">
 	function submitAjax(confirmEdit){
 		if ($("#fin_trans_id").val() == "" || $("#fin_trans_id").val() == null ){
+			$("#fst_shipping_address").prop('readonly', true);
 			alert("No Transaksi tidak boleh kosong !");
 			return;
 		}
+		if ($("#fin_sj_id").val() != 0){
+			$("#fst_sj_type").prop('disabled', false);	
+			$("#fin_trans_id").prop('disabled', false);
+		}
 
         data = $("#frmDeliveryOrder").serializeArray();
-		detail = new Array();		
+		detail = new Array();	
 		t = $('#tblSJDetails').DataTable();
 		datas = t.data();
 		var isValidData = true;
@@ -832,9 +839,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					submitAjax(1);
 				};		
 				MdlEditForm.show();
+				$("#fst_sj_type").prop('disabled', true);	
+				$("#fin_trans_id").prop('disabled', true);
 				return;
 			}
-
 			url = "<?=site_url()?>tr/gudang/pengiriman_penjualan/ajx_edit_save";
 		}
 		
@@ -868,6 +876,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					for (key in errors) {
 						$("#"+key+"_err").html(errors[key]);
 					}
+					$("#fst_shipping_address").prop('readonly', true);
 				}else if(resp.status == "SUCCESS") {
 					data = resp.data;
 					$("#fin_sj_id").val(data.insert_id);
@@ -877,10 +886,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					// Change to Edit mode
 					$("#frm-mode").val("EDIT");  //ADD|EDIT
 					$('#fst_sj_no').prop('readonly', true);
+					$("#fst_shipping_address").prop('readonly', true);
 					$("#tabs-so-detail").show();
 				}
         }).always(function(resp){
 			//$.unblockUI();
+			$("#fst_shipping_address").prop('readonly', true);
 		});
 
 	}
@@ -902,9 +913,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 				$("#fdt_sj_datetime").val(dateTimeFormat(dataH.fdt_sj_datetime)).datetimepicker("update");
-				$("#fst_sj_type").trigger("change");				
+				$("#fst_sj_type").trigger("change");
+				$("#fst_sj_type").prop('disabled', true);				
 				App.addOptionIfNotExist("<option value='"+dataH.fin_trans_id+"' selected>"+dataH.fst_trans_no+"</option>","fin_trans_id");
 				$("#fin_trans_id").trigger("change.select2");
+				$("#fin_trans_id").prop('disabled', true);
 				
 				
 				
@@ -929,8 +942,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#fdt_trans_datetime").val(dateTimeFormat(dataH.fdt_trans_datetime)).datetimepicker("update");		
 				$("#fst_relation_name").html(dataH.fst_relation_name);
 				
+				
 				App.addOptionIfNotExist("<option value='" + dataH.fin_shipping_address_id +"'>"+ dataH.fst_shipping_name +"</option>","fin_shipping_address_id");
+				/*
 				$("#fst_shipping_address").val(dataH.fst_shipping_address );
+				*/
 
 				/*
 				initShippingAddress(dataH.fin_relation_id,function(){

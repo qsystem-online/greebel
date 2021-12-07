@@ -42,17 +42,17 @@ class Pengiriman_penjualan extends MY_Controller{
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Surat Jalan ID.', 'width' => '20px', 'data' => 'fin_sj_id'],
-            ['title' => 'Surat Jalan No.', 'width' => '20px', 'data' => 'fst_sj_no'],
+			['title' => 'S/J Id.', 'width' => '5px', 'data' => 'fin_sj_id'],
+            ['title' => 'S/J No.', 'width' => '10px', 'data' => 'fst_sj_no'],
             
-            ['title' => 'Surat Jalan Date.', 'width' => '50px', 'data' => 'fdt_sj_datetime',
+            ['title' => 'S/J Date.', 'width' => '50px', 'data' => 'fdt_sj_datetime',
                 'render'=>"function(data,type,row){
                     return App.dateTimeFormat(data);
                 }",
             ],
-            ['title' => 'Type', 'width' => '20px', 'data' => 'fst_sj_type'],
-            ['title' => 'Trans No.', 'width' => '20px', 'data' => 'fst_trans_no'],
-            ['title' => 'Trans Date.', 'width' => '20px', 'data' => 'fdt_trans_datetime',
+            ['title' => 'Type', 'width' => '10px', 'data' => 'fst_sj_type'],
+            ['title' => 'Trans No.', 'width' => '10px', 'data' => 'fst_trans_no'],
+            ['title' => 'Trans Date.', 'width' => '50px', 'data' => 'fdt_trans_datetime',
                 'render'=>"function(data,type,row){
                     return App.dateTimeFormat(data);
                 }",
@@ -312,12 +312,16 @@ class Pengiriman_penjualan extends MY_Controller{
 
     private function prepareData(){
         //PREPARE DATA
-        $fdt_sj_datetime = dBDateTimeFormat($this->input->post("fdt_sj_datetime"));		        
+        $fdt_sj_datetime = dBDateTimeFormat($this->input->post("fdt_sj_datetime"));
+        $shipping_address = $this->input->post("fst_shipping_address");
+        //echo($shipping_address);
+        //die();		        
 
         $dataH = $this->input->post();        
         $dataH["fdt_sj_datetime"] = $fdt_sj_datetime;
         $dataH["fbl_is_hold"] = isset($dataH["fbl_is_hold"]) ? 1 : 0;
-        $dataH["fst_sj_no"] = $this->trsuratjalan_model->GenerateSJNo();	
+        $dataH["fst_sj_no"] = $this->trsuratjalan_model->GenerateSJNo();
+        $dataH["fst_shipping_address"] = $shipping_address;	
         $dataH["fst_active"] = "A";            
         unset($dataH["detail"]);
 

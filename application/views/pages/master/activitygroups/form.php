@@ -26,10 +26,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-    <h1><?= lang("ActivityGroups") ?><small><?= lang("form") ?></small></h1>
+    <h1><?= lang("Workstation Groups") ?><small><?= lang("form") ?></small></h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
-        <li><a href="#"><?= lang("ActivityGroups") ?></a></li>
+        <li><a href="#"><?= lang("Workstation Groups") ?></a></li>
         <li class="active title"><?= $title ?></li>
     </ol>
 </section>
@@ -105,7 +105,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
                             <fieldset style="padding:10px">
                                 <form class="form-horizontal ">
                                     <div class="form-group">
-                                        <label for="select-activity_id" class="col-md-3 control-label"><?=lang("Activity")?></label>
+                                        <label for="select-activity_id" class="col-md-3 control-label"><?=lang("Workstation")?></label>
                                         <div class="col-md-9">
                                             <select id="fin_activity_id" class="form-control" name="fin_activity_id"></select>
                                             <div id="fin_activity_id_err" class="text-danger"></div>
@@ -142,13 +142,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         visible: false
                     },*/
                     {
-                        "title": "<?= lang("Activity ID") ?>",
+                        "title": "<?= lang("Workstation ID") ?>",
                         "width": "5%",
                         data: "fin_activity_id",
                         visible: true,
                     },
                     {
-                        "title": "<?= lang("Activity Name") ?>",
+                        "title": "<?= lang("Workstation Name") ?>",
                         "width": "20%",
                         data: "activity_name",
                         visible: true,

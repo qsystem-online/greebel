@@ -2,7 +2,11 @@
 	//var_dump($header);
 	//echo "<br><br>";
 	//var_dump($details);
-	$full_address = explode(PHP_EOL, $header["fst_address"]);
+	if(empty($header["fst_address"])){
+		$header["fst_address"] = "";
+	}
+	$full_address = array_filter(explode(PHP_EOL, $header["fst_address"]));
+
 	if(!empty($full_address[0])) {
 		$address1 = $full_address[0];
 	}

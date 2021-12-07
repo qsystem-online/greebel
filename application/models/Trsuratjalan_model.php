@@ -112,7 +112,7 @@ class Trsuratjalan_model extends MY_Model {
 			$ssql = "SELECT a.*,
 				0 as fin_promo_id,b.fst_custom_item_name,
 				c.fbl_is_batch_number,c.fbl_is_serial_number,c.fst_item_code,c.fst_item_name,
-				d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit,
+				d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit
 				FROM trsuratjalandetails a 
 				INNER JOIN trpurchasereturnitems b on a.fin_trans_detail_id = b.fin_rec_id 
 				INNER JOIN msitems c on b.fin_item_id = c.fin_item_id  
@@ -893,7 +893,7 @@ class Trsuratjalan_model extends MY_Model {
 			$ssql = "SELECT a.*,
 				0 as fin_promo_id,b.fst_custom_item_name,
 				c.fbl_is_batch_number,c.fbl_is_serial_number,c.fst_item_code,c.fst_item_name,
-				d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit,
+				d.fst_unit as fst_basic_unit,d.fdc_conv_to_basic_unit
 				FROM trsuratjalandetails a 
 				INNER JOIN trpurchasereturnitems b on a.fin_trans_detail_id = b.fin_rec_id 
 				INNER JOIN msitems c on b.fin_item_id = c.fin_item_id  

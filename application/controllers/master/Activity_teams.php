@@ -19,8 +19,8 @@ class Activity_teams extends MY_Controller
     public function lizt()
     {
         $this->load->library('menus');
-        $this->list['page_name'] = "Master Team Activity";
-        $this->list['list_name'] = "Master Team Activity List";
+        $this->list['page_name'] = "Master Team Workstation";
+        $this->list['list_name'] = "Master Team Workstation List";
         $this->list['addnew_ajax_url'] = site_url() . 'master/activity_teams/add';
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/activity_teams/fetch_list_data';
@@ -34,7 +34,7 @@ class Activity_teams extends MY_Controller
 
         $this->list['breadcrumbs'] = [
             ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-            ['title' => 'Master Team Activity', 'link' => '#', 'icon' => ''],
+            ['title' => 'Master Team Workstation', 'link' => '#', 'icon' => ''],
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
@@ -68,7 +68,7 @@ class Activity_teams extends MY_Controller
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 
         $data["mode"] = $mode;
-        $data["title"] = $mode == "ADD" ? "Add Team Activity" : "Update Team Activity";
+        $data["title"] = $mode == "ADD" ? "Add Team Workstation" : "Update Team Workstation";
         $data["fin_team_id"] = $fin_team_id;
 
 
@@ -306,7 +306,7 @@ class Activity_teams extends MY_Controller
     public function print_voucher($fin_team_id){
 		$this->data = $this->msactivityteams_model->getDataById($fin_team_id);
 		//$data=[];
-		$this->data["title"] = "ActivityTeams";		
+		$this->data["title"] = "Workstation Teams";		
 		$page_content = $this->parser->parse('pages/master/activityteams/voucher', $this->data, true);
 		$this->data["PAGE_CONTENT"] = $page_content;	
 		$strHtml = $this->parser->parse('template/voucher_pdf', $this->data, true);

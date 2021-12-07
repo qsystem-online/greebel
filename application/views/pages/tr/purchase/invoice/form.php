@@ -253,7 +253,7 @@
 
 				var claimDP = parseFloat(header.fdc_downpayment_paid) - parseFloat(header.fdc_downpayment_claimed);
 				$("#ttlRemainingDP").text(App.money_format(claimDP));
-				$("#fdc_downpayment_claim").val(App.money_format(0));
+				$("#fdc_downpayment_claim").val(App.money_format(claimDP));
 				calculateTotal();
 			});
 		});

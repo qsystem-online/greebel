@@ -21,26 +21,26 @@ class Activity extends MY_Controller
     {
         parent::index();
         $this->load->library('menus');
-        $this->list['page_name'] = "Activity";
-        $this->list['list_name'] = "Activity List";
+        $this->list['page_name'] = "Workstation";
+        $this->list['list_name'] = "Workstation List";
         $this->list['addnew_ajax_url'] = site_url() . 'master/activity/add';
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/activity/fetch_list_data';
         $this->list['delete_ajax_url'] = site_url() . 'master/activity/delete/';
         $this->list['edit_ajax_url'] = site_url() . 'master/activity/edit/';
         $this->list['arrSearch'] = [
-            'fin_activity_id' => 'Activity ID',
-            'fst_name' => 'Activity Name'
+            'fin_activity_id' => 'Workstation ID',
+            'fst_name' => 'Workstation Name'
         ];
 
         $this->list['breadcrumbs'] = [
             ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-            ['title' => 'Master Activity', 'link' => '#', 'icon' => ''],
+            ['title' => 'Master Workstation', 'link' => '#', 'icon' => ''],
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'Activity ID', 'width' => '10%', 'data' => 'fin_activity_id'],
-            ['title' => 'Activity Name', 'width' => '20%', 'data' => 'fst_name'],
+            ['title' => 'Workstation ID', 'width' => '10%', 'data' => 'fin_activity_id'],
+            ['title' => 'Workstation Name', 'width' => '20%', 'data' => 'fst_name'],
             ['title' => 'Team', 'width' => '10%', 'data' => 'fst_team'],
             ['title' => 'Type', 'width' => '10%', 'data' => 'fst_type'],
             ['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
@@ -70,7 +70,7 @@ class Activity extends MY_Controller
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 
         $data["mode"] = $mode;
-        $data["title"] = $mode == "ADD" ? "Add Activity" : "Update Activity";
+        $data["title"] = $mode == "ADD" ? "Add Workstation" : "Update Workstation";
         $data["fin_activity_id"] = $fin_activity_id;
 
 

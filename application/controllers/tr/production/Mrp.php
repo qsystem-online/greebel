@@ -20,7 +20,7 @@ class Mrp extends MY_Controller{
 		$this->list['page_name'] = "Material Requeriment Plan";
 		$this->list['list_name'] = "Material Requeriment Plan List";
 		$this->list['boxTools'] = [
-			"<a id='btnNew'  href='".site_url()."tr/fixed_asset/disposal/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
+			"<a id='btnNew'  href='".site_url()."tr/production/mrp/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 			//"<a id='btnPrint'  href='".site_url()."tr/gudang/penerimaan_pembelian/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> Print </a>"
 		];
 		$this->list['pKey'] = "id";

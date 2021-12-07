@@ -1,9 +1,9 @@
 <?php
-	/*$full_address = $header["fst_shipping_address"];
-	$address1 = substr($full_address,0,60);
-	$address2 = substr($full_address,60,60);
-	$address3 = substr($full_address,120,60);*/
-	$full_address = explode(PHP_EOL, $header["fst_shipping_address"]);
+	if(empty($header["fst_shipping_address"])){
+		$header["fst_shipping_address"] = "";
+	}
+	$full_address = array_filter(explode(PHP_EOL, $header["fst_shipping_address"]));
+
 	if(!empty($full_address[0])) {
 		$address1 = $full_address[0];
 	}
@@ -56,8 +56,8 @@
 	}
 	.rowFooter {
 	display: flex;
-	margin-left:-5px;
-	margin-right:-5px;
+	margin-left:-2px;
+	margin-right:-2px;
 	}
 
 	.columnFooter1 {

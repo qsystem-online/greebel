@@ -42,7 +42,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</div>
 							<div style="clear:both"></div>
 						</div>
-                            <table id="tblMonitoring" class="display nowrap" style="width:100%"></table>
+                            <table id="tblMonitoring" class="display table-bordered table-hover table-striped nowrap row-border" style="width:100%"></table>
                         </div> <!-- /.tab-pane -->
 
                         <div class="tab-pane fade" id="tab_2">
@@ -58,7 +58,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							</div>
 							<div style="clear:both"></div>
 						</div>
-                            <table id="tblHistMonitoring" class="display nowrap" style="width:100%"></table>
+                            <table id="tblHistMonitoring" class="display table-bordered table-hover table-striped nowrap row-border" style="width:100%"></table>
                         </div><!-- /.tab-pane -->
                                             
                     </div> <!-- /.tab-content -->                    
@@ -285,6 +285,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$('#fst_sj_return_resi_no').val(row.fst_sj_return_resi_no);
 			$('#fst_sj_return_memo').val(row.fst_sj_return_memo);
 			$("#fdt_sj_return_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
+		});
+		$("#tblMonitoring").on("hover",".btn-resi",function(e){
+			alert("HOVER");
+			e.preventDefault();
+			t = $('#tblMonitoring').DataTable();
+			var trRow = $(this).parents('tr');
+			update_sj = t.row(trRow);
+			row = update_sj.data();
 		});
 	});
 	

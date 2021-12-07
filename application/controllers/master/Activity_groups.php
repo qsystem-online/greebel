@@ -21,26 +21,26 @@ class Activity_groups extends MY_Controller
     {
         parent::index();
         $this->load->library('menus');
-        $this->list['page_name'] = "Master ActivityGroups";
-        $this->list['list_name'] = "Master ActivityGroups List";
+        $this->list['page_name'] = "Master Workstation Groups";
+        $this->list['list_name'] = "Master Workstation Groups List";
         $this->list['addnew_ajax_url'] = site_url() . 'master/activity_groups/add';
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'master/activity_groups/fetch_list_data';
         $this->list['delete_ajax_url'] = site_url() . 'master/activity_groups/delete/';
         $this->list['edit_ajax_url'] = site_url() . 'master/activity_groups/edit/';
         $this->list['arrSearch'] = [
-            'fin_activity_group_id' => 'ActivityGroups ID',
-            'fst_activity_group_name' => 'ActivityGroups Name'
+            'fin_activity_group_id' => 'Workstation Groups ID',
+            'fst_activity_group_name' => 'Workstation Groups Name'
         ];
 
         $this->list['breadcrumbs'] = [
             ['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-            ['title' => 'Master Activity', 'link' => '#', 'icon' => ''],
+            ['title' => 'Master Workstation', 'link' => '#', 'icon' => ''],
             ['title' => 'List', 'link' => NULL, 'icon' => ''],
         ];
         $this->list['columns'] = [
-            ['title' => 'ActivityGroups ID', 'width' => '5%', 'data' => 'fin_activity_group_id'],
-            ['title' => 'ActivityGroups Name', 'width' => '20%', 'data' => 'fst_activity_group_name'],
+            ['title' => 'Workstation Groups ID', 'width' => '5%', 'data' => 'fin_activity_group_id'],
+            ['title' => 'Workstation Groups Name', 'width' => '20%', 'data' => 'fst_activity_group_name'],
             ['title' => 'Action', 'width' => '5%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
         ];
         $main_header = $this->parser->parse('inc/main_header', [], true);
@@ -68,7 +68,7 @@ class Activity_groups extends MY_Controller
         $main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);
 
         $data["mode"] = $mode;
-        $data["title"] = $mode == "ADD" ? "Add ActivityGroups" : "Update ActivityGroups";
+        $data["title"] = $mode == "ADD" ? "Add Workstation Groups" : "Update Workstation Groups";
         $data["fin_activity_group_id"] = $fin_activity_group_id;
 
 

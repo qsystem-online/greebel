@@ -512,22 +512,21 @@ class Purchase_return extends MY_Controller{
 	public function print_voucher($finPurchaseReturnId){
 		$this->data = $this->trpurchasereturn_model->getDataVoucher($finPurchaseReturnId);
 		//$data=[];
-		$this->data["title"] = "Purchase Return";		
+        $this->data["company"] = "PT.SURYAMAS CIPTA SENTOSA";	
+		$this->data["title"] = "RETUR PEMBELIAN";		
 		$page_content = $this->parser->parse('pages/tr/purchase/return/voucher', $this->data, true);
-		$this->data["PAGE_CONTENT"] = $page_content;	
-
-		
-		$strHtml = $this->parser->parse('template/voucher_pdf', $this->data, true);
-
+		$dataMain=["PAGE_CONTENT"=>$page_content];			
+		$this->parser->parse('template/voucher_pdf',$dataMain);
+        /*
 		//$this->parser->parse('template/voucher', $this->data);
 		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
-		$mpdf->useSubstitutions = false;		
+		$mpdf->useSubstitutions = false;				
+		
+        $mpdf->WriteHTML($strHtml);	
+        $mpdf->Output();		
 		//echo $strHtml;
-
-		$mpdf->WriteHTML($strHtml);	
-		$mpdf->Output();
+        */
 	}
-
 
 
 

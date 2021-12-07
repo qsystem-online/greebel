@@ -26,10 +26,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-    <h1><?= lang("Team Activity") ?><small><?= lang("form") ?></small></h1>
+    <h1><?= lang("Team Workstation") ?><small><?= lang("form") ?></small></h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
-        <li><a href="#"><?= lang("Team Activity") ?></a></li>
+        <li><a href="#"><?= lang("Team Workstation") ?></a></li>
         <li class="active title"><?= $title ?></li>
     </ol>
 </section>
