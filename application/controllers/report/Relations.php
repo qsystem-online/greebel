@@ -5,6 +5,7 @@ class Relations extends MY_Controller
 {
 
 	public $layout_columns =[]; 
+	public $menuName="relation_customer_vendor";
 
 	public function __construct()
 	{
@@ -71,6 +72,12 @@ class Relations extends MY_Controller
 
 	public function index()
 	{
+		$isPermit = $this->aauth->is_permit($this->menuName,false,null,"print");
+		if (!$isPermit){
+			$this->redirect_nopermision();
+			die();
+		}
+
 		$this->loadForm();
 	}
 
