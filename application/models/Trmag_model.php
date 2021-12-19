@@ -306,16 +306,39 @@ class Trmag_model extends MY_Model {
 	}
 
 	public function getDataVoucher($finMagId){
-		$data = $this->getDataById($finMagId);
+		//$data = $this->getDataById($finMagId);
 
-		$header =  $data["header"];
+		$ssql = "SELECT a.*,b.fst_warehouse_name as fst_from_warehouse_name,c.fst_warehouse_name as fst_to_warehouse_name,
+		d.fst_wo_no,e.fst_username AS sopir
+		FROM trmag a 
+		INNER JOIN mswarehouse b ON a.fin_from_warehouse_id = b.fin_warehouse_id
+		INNER JOIN mswarehouse c ON a.fin_to_warehouse_id = c.fin_warehouse_id
+		LEFT JOIN trwo d ON a.fin_wo_id = d.fin_wo_id
+		LEFT JOIN users e ON a.fin_driver_id = e.fin_user_id
+		where a.fin_mag_id = ? and a.fst_active != 'D'";
+		$qr = $this->db->query($ssql, [$finMagId]);      
 
-		
-		$header->fst_from_warehouse_name=$this->mswarehouse_model->getValue($header->fin_from_warehouse_id,"fst_warehouse_name");
-		$header->fst_to_warehouse_name=$this->mswarehouse_model->getValue($header->fin_to_warehouse_id,"fst_warehouse_name");
-		$data["header"] = (array) $header;
+		throwIfDBError();  
+		$header = $qr->row_array();
 
-		return $data;
+		//$header =  $rwMAG["header"];
+		$header["fst_from_warehouse_name"]=$this->mswarehouse_model->getValue($header["fin_from_warehouse_id"],"fst_warehouse_name");
+		$header["fst_to_warehouse_name"]=$this->mswarehouse_model->getValue($header["fin_to_warehouse_id"],"fst_warehouse_name");
+		//$rwMAG["header"] = (array) $header;
+
+		$ssql = "SELECT a.*,
+		b.fst_item_code,b.fst_item_name,fbl_is_batch_number,fbl_is_serial_number
+		FROM trmagitems a 
+		INNER JOIN msitems b on a.fin_item_id = b.fin_item_id 
+		WHERE fin_mag_id = ?";
+
+		$qr = $this->db->query($ssql,[$finMagId]);
+		$rsMAGDetails = $qr->result_array();
+
+		return [
+			"header" => $header,
+			"details" => $rsMAGDetails
+		];
 	}
 
 

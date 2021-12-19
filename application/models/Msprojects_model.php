@@ -37,8 +37,9 @@ class Msprojects_model extends MY_Model{
     }
 
     public function getAllList(){
-        $ssql = "select * from msprojects where fst_active = 'A' and fin_branch_id = ?  order by fst_project_name";
-        $qr = $this->db->query($ssql,[$this->aauth->get_active_branch_id()]);
+        $today = date ("Y-m-d");
+        $ssql = "select * from msprojects where fst_active = 'A' and fin_branch_id = ? and fdt_project_end >= ?  order by fst_project_name";
+        $qr = $this->db->query($ssql,[$this->aauth->get_active_branch_id(),$today]);
         $rs = $qr->result();
         return $rs;
     }

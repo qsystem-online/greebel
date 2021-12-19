@@ -150,15 +150,15 @@
 		</div>
 	</div>
 	<div class="row padd-5">
-		<div class="col" style="width:55%">
+		<div class="col" style="width:65%">
 			<div class="inline">Bersama ini kami kirimkan brg dengan mobil no</div>
 			<div class="inline" style="width:15px">:</div>
 			<div class="inline"><?=$header["fst_no_polisi"]?></div>
 		</div>
-		<div class="col" style="width:45%">
+		<div class="col" style="width:35%">
 			<div class="inline">Supir</div>
 			<div class="inline" style="width:15px">:</div>
-			<div class="inline"></div>
+			<div class="inline"><?=$header["sopir"]?></div>
 		</div>
 	</div>
 

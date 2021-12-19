@@ -35,7 +35,7 @@ class Mutasi extends MY_Controller{
 
 		$this->list['columns'] = [
 			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_mag_id'],
-			['title' => 'No. LPB', 'width' => '60px', 'data' => 'fst_mag_no'],
+			['title' => 'No. MAG', 'width' => '60px', 'data' => 'fst_mag_no'],
 			['title' => 'Tanggal', 'width' => '50px', 'data' => 'fdt_mag_datetime'],
 			['title' => 'From', 'width' => '60px', 'data' => 'fin_from_warehouse_id',
 				'render'=>'function(data,type,row){
@@ -82,6 +82,7 @@ class Mutasi extends MY_Controller{
 				SELECT a.*,b.fst_warehouse_name as fst_from_warehouse_name,c.fst_warehouse_name as fst_to_warehouse_name FROM trmag a
 				INNER JOIN mswarehouse b on a.fin_from_warehouse_id = b.fin_warehouse_id
 				INNER JOIN mswarehouse c on a.fin_to_warehouse_id = c.fin_warehouse_id
+				WHERE a.fbl_mag_production = 0
 			) a");
 
 		$selectFields = "a.*";
@@ -475,20 +476,14 @@ class Mutasi extends MY_Controller{
 	}
 
 	public function print_voucher($finMagId){
-		$data = $this->trmag_model->getDataVoucher($finMagId);
+		$this->data = $this->trmag_model->getDataVoucher($finMagId);
 
-		$data["title"]= "Mutasi Antar Gudang";
-		$this->data["title"]= $data["title"];
+        //$this->data["company"] = "PT.SURYAMAS CIPTA SENTOSA";
+		$this->data["title"] = "SURAT JALAN (S/J)";	
 
-		$page_content = $this->parser->parse('pages/tr/gudang/mutasi/voucher', $data, true);
-		$this->data["PAGE_CONTENT"] = $page_content;
-		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
-		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
-		$mpdf->useSubstitutions = false;		
-		
-		//echo $data;	
-		$mpdf->WriteHTML($data);
-		$mpdf->Output();
+		$page_content = $this->parser->parse('pages/tr/gudang/mutasi/voucher', $this->data, true);
+		$dataMain=["PAGE_CONTENT"=>$page_content];	
+	    $this->parser->parse('template/voucher_pdf',$dataMain);
 
 	}
 	

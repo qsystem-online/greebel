@@ -280,8 +280,9 @@ class Penerimaan_mutasi extends MY_Controller{
 	}
 
 	private function prepareData(){
+		$fin_mag_id =$this->input->post("fin_mag_id");
 		$fdt_mag_confirm_datetime = dBDateTimeFormat($this->input->post("fdt_mag_confirm_datetime"));
-		$fst_mag_confirm_no = $this->trmagconfirm_model->GenerateNo($fdt_mag_confirm_datetime);	
+		$fst_mag_confirm_no = $this->trmagconfirm_model->GenerateNoByMAG($fin_mag_id);	
 		$dataH = [
 			"fin_mag_confirm_id"=>$this->input->post("fin_mag_confirm_id"),
 			"fst_mag_confirm_no"=>$fst_mag_confirm_no,
@@ -336,7 +337,6 @@ class Penerimaan_mutasi extends MY_Controller{
 				//print_r($this->form_validation->error_array());
 				throw new CustomException("Error Validation Details",3003,"VALIDATION_FORM_FAILED",$this->form_validation->error_array());
 			}
-
 			$itemInfo = $this->msitems_model->getSimpleDataById($dataD->fin_item_id);
 
 			//Cek is item have batch number
@@ -423,7 +423,19 @@ class Penerimaan_mutasi extends MY_Controller{
 			$this->json_output();
 			return;
 		}
-	}	
+	}
+	
+	public function ajxListMAGStandar(){
+		$term = $this->input->get("term");
+		$ssql ="select a.fin_mag_id,a.fst_mag_no
+			from trmag a 
+			where fbl_mag_production = false and fbl_closed = false and fst_mag_no like ?";
+		$qr = $this->db->query($ssql,['%'.$term.'%']);
+		$this->json_output([
+			"status"=>"SUCCESS",
+			"data"=>$qr->result()
+		]);
+	}
 
 	public function ajxListMAG(){
 		$term = $this->input->get("term");

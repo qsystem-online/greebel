@@ -172,7 +172,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								<li class="active"><a data-toggle="tab" href="#bom-master">BOM Master</a></li>																
 								<li><a data-toggle="tab" href="#bom-wo">BOM WO</a></li>
 								<li><a data-toggle="tab" href="#mr-wo">Material Requirment WO</a></li>
-								<li><a data-toggle="tab" href="#activity">Activities</a></li>
+								<li><a data-toggle="tab" href="#activity">Workstation</a></li>
 								<li><a data-toggle="tab" href="#mag-pag">MAG / PAG</a></li>
 								<li><a data-toggle="tab" href="#rmout">Info RM-OUT</a></li>
 								<li><a data-toggle="tab" href="#rm-return">Info RM-RETURN</a></li>
@@ -220,7 +220,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 								<div id="activity" class="tab-pane fade">
 									<div class="form-group">
-										<label for="fin_activity_group_id" class="col-md-2 control-label"><?=lang("Activity Group")?></label>
+										<label for="fin_activity_group_id" class="col-md-2 control-label"><?=lang("Workstation Group")?></label>
 										<div class="col-md-10">
 											<select id="fin_activity_group_id" name="fin_activity_group_id" class="form-control">
 												<?php
@@ -237,7 +237,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 										<div class="col-md-12 text-right">
 											<button id="btn-add-activity" class="btn btn-primary btn-sm">
 												<i class="fa fa-cart-plus" aria-hidden="true"></i>
-												<?=lang("Tambah Activity")?>
+												<?=lang("Tambah Workstation")?>
 											</button>
 										</div>
 										<div class="col-md-12">
@@ -544,14 +544,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<div class="modal-content">
 			<div class="modal-header" style="padding:7px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 5px;border-top-right-radius: 5px;">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title"><?=lang("Tambah Activity")?></h4>
+				<h4 class="modal-title"><?=lang("Tambah Workstation")?></h4>
 			</div>
 
 			<div class="modal-body">				        
 				<form class="form-horizontal">
 				
 					<div class="form-group">
-						<label class="col-md-2 control-label"><?=lang("Activity")?>:</label>						
+						<label class="col-md-2 control-label"><?=lang("Workstation")?>:</label>						
 						<div class="col-md-10">
 							<select class="form-control" id="d-activity-fin_activity_id" style="width:100%"></select>
 						</div>
@@ -840,7 +840,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		$("#fin_activity_group_id").select2({
 			width:"100%",
-			placeholder: "Select activity group",
+			placeholder: "Select Workstation group",
     		allowClear: true,
 		}).val(null).trigger("change");				
 		
@@ -955,7 +955,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			order: [],
 			columns:[
 				{"title" : "id","width": "0px",sortable:false,data:"fin_rec_id",visible:false},
-				{"title" : "Activity","width": "300px",sortable:false,data:"fin_activity_id",
+				{"title" : "Workstation","width": "300px",sortable:false,data:"fin_activity_id",
 					"render":function(data,type,row){
 						return row.fst_name; 
 					}

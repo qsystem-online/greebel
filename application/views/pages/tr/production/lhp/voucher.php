@@ -75,51 +75,34 @@
 			<div class="inline header-col" style="text-align:center"><?=$title ?></div>
 		</div>
 	</div>
-	<div class="row">
-		<div class="col" style="width:65%">
-			<div class="inline first-col">No. S/J</div>
-			<div class="inline" style="width:15px">:</div>
-			<div class="inline" style="font-weight: bold"><?=$header["fst_mag_no"]?></div>
+	<div class="row padd-5">
+		<div class="col" style="width:100%">
+			<div class="inline header-col" style="text-align:center"><?=$header["fst_lhp_no"]?></div>
 		</div>
-		<div class="col" style="width:35%">
-			<div class="inline first-col">Dari Gudang</div>			
-			<div class="inline" style="width:15px">:</div>
-			<div class="inline"><?=$header["fst_from_warehouse_name"]?></div>
-		</div>	
 	</div>
 	<div class="row">
 		<div class="col" style="width:65%">
 			<div class="inline first-col">Tanggal</div>
 			<div class="inline" style="width:15px">:</div>
-			<div class="inline"><?=date("d-M-Y",strtotime($header["fdt_mag_datetime"]))?></div>
+			<div class="inline"><?=date("d-M-Y",strtotime($header["fdt_lhp_datetime"]))?></div>
 		</div>
 		<div class="col" style="width:35%">
 			<div class="inline first-col">Ke Gudang</div>			
 			<div class="inline" style="width:15px">:</div>
-			<div class="inline"><?=$header["fst_to_warehouse_name"]?></div>
+			<div class="inline"><?=$header["fst_warehouse_name"]?></div>
 		</div>
 	</div>
 
-	<?php if($header["fbl_mag_production"]== 1){ ?>
 	<div class="row">
-		<div class="col" style="width:100%">
+		<div class="col" style="width:65%">
 			<div class="inline first-col">No.W/O</div>
 			<div class="inline" style="width:15px">:</div>
 			<div class="inline"><?=$header["fst_wo_no"]?></div>
 		</div>
-	</div>
-	<?php }?>	
-
-	<div class="row padd-5">
-		<div class="col" style="width:65%">
-			<div class="inline">Bersama ini kami kirimkan brg dengan mobil no</div>
+        <div class="col" style="width:35%">
+			<div class="inline first-col">Kilo/Barang</div>
 			<div class="inline" style="width:15px">:</div>
-			<div class="inline"><?=$header["fst_no_polisi"]?></div>
-		</div>
-		<div class="col" style="width:35%">
-			<div class="inline">Supir</div>
-			<div class="inline" style="width:15px">:</div>
-			<div class="inline"><?=$header["sopir"]?></div>
+			<div class="inline"><?=$header["fdb_gramasi"]?></div>
 		</div>
 	</div>
 
@@ -129,10 +112,11 @@
 		<thead>
 			<tr>
 				<th style="width:5%;text-align:center">No</th>
-				<th style="width:45%">Nama Barang</th>
-				<th style="width:8%;text-align:right">Qty</th>
+				<th style="width:45%">Produk Jadi</th>
+				<th style="width:10%;text-align:right">Qty</th>
+                <th style="width:10%;text-align:right">Target</th>
+                <th style="width:10%;text-align:right">Sisa Target</th>
 				<th style="width:5%;text-align:right">Unit</th>
-				<th style="width:15%;text-align:right">Keterangan</th>
 			</tr>
 		</thead>
 
@@ -141,24 +125,18 @@
 				$nou =1;
 			?>
 
-			<?php foreach($details as $detail){ ?>
-				<?php					
-					for($i =0 ;$i < 1;$i++){
-					$totalPerRow = $detail["fdb_qty"];
-				?>
-				<tr class="have-detail">
-					<td style="text-align:center"><?= $nou++ ?></td>
-					<td><?= $detail["fst_item_name"] ?></td>
-					<td class="text-right"><?= $detail["fdb_qty"]?> </td>
-					<td class="text-right"><?= $detail["fst_unit"]?> </td>
-					<td class="text-right">-</td>
-				</tr>
-				<?php } ?>
-			<?php }?>
+            <tr class="have-detail">
+                <td style="text-align:center"><?= $nou++ ?></td>
+                <td><?= $header["fst_item_name"] ?></td>
+                <td class="text-right"><?= $header["fdb_qty"]?> </td>
+                <td class="text-right"><?= $header["fdb_qty_wo"]?> </td>
+                <td class="text-right"><?= $header["fdb_qty_sisa"]?> </td>
+                <td class="text-right"><?= $header["fst_unit"]?> </td>
+            </tr>
 
 		</tbody>
 		<?php
-			$full_memo = explode(PHP_EOL, $header["fst_memo"]);
+			$full_memo = explode(PHP_EOL, $header["fst_notes"]);
 			if(!empty($full_memo[0])) {
 				$memo1 = $full_memo[0];
 			}
@@ -190,18 +168,6 @@
 				$memo5 = ".";
 			}
 		?>
-		<!-- DIV dibawah ini jangan dibuang , utk mecah 2 kotak (memo dan keterangan) rowFooter dibawahnya -->
-		<!--<div class="rowFooter">
-			<div class="columnFooter">
-				<table class="floatedTable">
-
-				</table>
-			</div>
-			<div class="columnFooter">
-				<table class="floatedTable">
-				</table>
-			</div>
-		</div>-->
 		<div class="rowFooter">
 			<div class="columnFooter1">
 				<table class="floatedTable">
@@ -226,24 +192,6 @@
 				</table>
 			</div>
 		</div>
-	</table>
-	<table class="assignment" style="width:100%">
-		<tr>
-			<td style="width:25%">Dibuat Oleh,</td>					
-			<td style="width:25%">Mengetahui,</td>
-			<td style="width:25%">Diterima Oleh,</td>
-			<td style="width:25%">Pengirim,</td>						
-		</tr>
-		<tr>
-			<td class="asign-col"><td>					
-			<td class="asign-col"><td>					
-		</tr>
-		<tr>
-			<td>(.................)</td>
-			<td>(.................)</td>
-			<td>(.................)</td>
-			<td>(.................)</td>
-		</tr>		
 	</table>
 </section>
 </div>

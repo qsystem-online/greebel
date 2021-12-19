@@ -400,69 +400,66 @@ class Lhp extends MY_Controller{
 		}
 	}
 
-	public function delete($finSalesOrderId){
-		$this->load->model("trsalesorder_model");
-		$this->load->model('trsalesorder_model');
-		$this->load->model('trvoucher_model');
-		$this->load->model('trverification_model');
-		
-		
-		$salesOrder = $this->trsalesorder_model->createObject($finSalesOrderId);
+	public function delete($fin_lhp_id){
+		parent::delete($fin_lhp_id);
+		try{
+			
+			$dataHOld = $this->trlhp_model->getDataHeaderById($fin_lhp_id);
+			if ($dataHOld == null){
+				throw new CustomException(lang("Invalid LHP ID"),3003,"FAILED",null);
+			}
 
-		//Is Editable ?		
-		//CEK tgl lock dari transaksi yg di kirim	
-		$resp = dateIsLock($salesOrder->getValue("fdt_salesorder_datetime"));
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
-			$this->json_output();
-			return;
-		}
-		$resp = $this->trsalesorder_model->isEditable($finSalesOrderId);
-		if ($resp["status"] != "SUCCESS" ){
-			$this->ajxResp["status"] = $resp["status"];
-			$this->ajxResp["message"] = $resp["message"];
+			$resp = dateIsLock($dataHOld->fdt_lhp_datetime);
+			if ($resp["status"] != "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}
+									
+			$resp = $this->trlhp_model->isEditable($fin_lhp_id,$dataHOld);
+			if ($resp["status"] != "SUCCESS"){
+				throw new CustomException($resp["message"],3003,"FAILED",null);
+			}			
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"] = $e->getData();
 			$this->json_output();
 			return;
 		}
 
 		try{
 			$this->db->trans_start();
-			$this->trsalesorder_model->unposting($finSalesOrderId);
-			$this->trsalesorder_model->delete($finSalesOrderId);
-			$this->db->trans_complete();
+			
+			$this->trlhp_model->unposting($fin_lhp_id);			
+			$resp = $this->trlhp_model->delete($fin_lhp_id,true,null);	
+
+			$this->db->trans_complete();	
 
 			$this->ajxResp["status"] = "SUCCESS";
-			$this->ajxResp["message"] = lang("Data dihapus !");
+			$this->ajxResp["message"] = "";
 			$this->json_output();
+
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
 			$this->ajxResp["status"] = $e->getStatus();
 			$this->ajxResp["message"] = $e->getMessage();
-			$this->ajxResp["data"] = $e->getData();
+			$this->ajxResp["data"] = $e->getData();			
 			$this->json_output();
+			return;
 		}
         
 	}	
 
-	public function print_voucher($finSalesOrderId){
-		$data = $this->trsalesorder_model->getDataVoucher($finSalesOrderId);
+	public function print_voucher($fin_lhp_id){
+		$data = $this->trlhp_model->getDataVoucher($fin_lhp_id);
 
-		$data["title"]= "Sales Order";
-		$this->data["title"]= $data["title"];
-
-		$page_content = $this->parser->parse('pages/tr/sales_order/voucher', $data, true);
-		$this->data["PAGE_CONTENT"] = $page_content;
-		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
-		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
-		$mpdf->useSubstitutions = false;		
+		//$this->data["title"] = "HASIL PRODUKSI";
 		
-		//echo $data;
+		$data["title"]= "HASIL PRODUKSI";
+		$this->data["title"]= $data["title"];	
 
-			
-		//$mpdf->SetHTMLHeaderByName('MyFooter');
-		$mpdf->WriteHTML($data);
-		$mpdf->Output();
+		$page_content = $this->parser->parse('pages/tr/production/lhp/voucher', $data, true);
+		$dataMain=["PAGE_CONTENT"=>$page_content];	
+	    $this->parser->parse('template/voucher_pdf',$dataMain);
 
     }
     

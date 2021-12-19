@@ -13,8 +13,8 @@ class Production_type extends MY_Controller {
     public function index(){
         parent::index();
         $this->load->library('menus');
-		$this->list['page_name'] = "Master Production Type";
-        $this->list['list_name'] = "Production Type List";
+		$this->list['page_name'] = "Master RM-OUT Type (Non Produksi) ";
+        $this->list['list_name'] = "RM-OUT Type (Non Produksi) List";
         $this->list['boxTools'] = [
 			"<a id='btnNew'  href='".site_url()."master/production_type/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 		];
@@ -25,13 +25,13 @@ class Production_type extends MY_Controller {
 		];
         $this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-			['title' => 'Project', 'link' => '#', 'icon' => ''],
+			['title' => 'RM-OUT Type', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
 			['title' => 'ID.', 'width' => '10%', 'data' => 'fin_rec_id'],
-			['title' => 'Production Type', 'width' => '', 'data' => 'fst_production_type'],
-            ['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'RM-OUT Type (Non Produksi)', 'width' => '150', 'data' => 'fst_production_type'],
+            ['title' => 'Action', 'width' => '40px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."master/production_type/edit/' + row.fin_rec_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
@@ -61,7 +61,7 @@ class Production_type extends MY_Controller {
         $main_sidebar = $this->parser->parse('inc/main_sidebar',[],true);
 
         $data["mode"] = $mode;
-        $data["title"] = $mode == "ADD" ? "Add Production Type" : "Update Production Type";
+        $data["title"] = $mode == "ADD" ? "Add RM-OUT Type (Non Produksi)" : "Update RM-OUT Type (Non Produksi)";
         $data["fin_rec_id"] = $fin_rec_id;
 
         $page_content = $this->parser->parse('pages/master/production_type/form',$data,true);

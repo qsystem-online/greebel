@@ -17,8 +17,8 @@ class Cust_pricing_group extends MY_Controller{
 	public function lizt(){
 		parent::index();
 		$this->load->library('menus');
-		$this->list['page_name'] = "Master Cust Pricing Groups";
-		$this->list['list_name'] = "Master Cust Pricing Groups List";
+		$this->list['page_name'] = "Customer Pricing Groups";
+		$this->list['list_name'] = "Customer Pricing Groups List";
 		$this->list['addnew_ajax_url'] = site_url() . 'pr/cust_pricing_group/add';
 		$this->list['pKey'] = "id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'pr/cust_pricing_group/fetch_list_data';
@@ -31,17 +31,17 @@ class Cust_pricing_group extends MY_Controller{
 
 		$this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-			['title' => 'Master Cust Pricing Groups', 'link' => '#', 'icon' => ''],
+			['title' => 'Master Pricing Groups', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Pricing Group Id', 'width' => '20%', 'data' => 'fin_cust_pricing_group_id'],
-            ['title' => 'Pricing Group Name', 'width' => '30%', 'data' => 'fst_cust_pricing_group_name'],
-            ['title' => 'Percent (%)', 'width' => '10%', 'data' => 'fdc_percent_of_price_list'],
+			['title' => 'ID', 'width' => '10%', 'data' => 'fin_cust_pricing_group_id'],
+            ['title' => 'Pricing Group Name', 'width' => '80%', 'data' => 'fst_cust_pricing_group_name'],
+            /*['title' => 'Percent (%)', 'width' => '10%', 'data' => 'fdc_percent_of_price_list'],
 			['title' => 'Amount', 'width' => '15%', 'data' => 'fdc_difference_in_amount',
 				'render' => '$.fn.dataTable.render.number( DIGIT_GROUP, DECIMAL_SEPARATOR, DECIMAL_DIGIT)'
-			],
-			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
+			],*/
+			['title' => 'Action', 'width' => '20%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 		$main_header = $this->parser->parse('inc/main_header', [], true);
 		$main_sidebar = $this->parser->parse('inc/main_sidebar', [], true);

@@ -158,6 +158,14 @@ class Trlhp_model extends MY_Model {
 		];
 
 	}
+	public function getDataHeaderById($finLHPId){
+		$ssql = "SELECT * FROM trlhp a
+			where fin_lhp_id = ? and fst_active != 'D'";
+
+		$qr = $this->db->query($ssql,[$finLHPId]);		
+		$header = $qr->row();
+		return $header;
+	}
 	
 	public function unposting($finLHPId){		
 		$this->load->model("trinventory_model");
@@ -209,7 +217,9 @@ class Trlhp_model extends MY_Model {
 			throw new CustomException(lang("LHP tidak bisa dirubah, status WO batch number closed !"),3003,"FAILED",[]);
 		}
 
-
+		return [
+			"status"=>"SUCCESS"
+		];
 	
 	}
 		
@@ -219,7 +229,41 @@ class Trlhp_model extends MY_Model {
 		throwIfDBError();
 	}
 
-	
+	public function delete($finLHPId, $softdelete = TRUE,$data=null){
+        
+
+        $ssql ="select * from trlhp where fin_lhp_id = ? and fst_active != 'D'";
+        $qr= $this->db->query($ssql,[$finLHPId]);
+        $dataH = $qr->row();
+        if ($dataH == null){
+            return;
+        }
+
+        $this->deleteDetail($dataH->fin_lhp_id);        
+        parent::delete($finLHPId,$softdelete,$data);
+    }
+
+	public function getDataVoucher($finLHPId){
+		//$data = $this->getDataById($finMagId);
+
+		$ssql = "SELECT a.*,b.fst_wo_no,b.fdb_qty AS fdb_qty_wo,c.fst_warehouse_name,
+		d.fst_item_name
+		FROM trlhp a 
+		INNER JOIN trwo b ON a.fin_wo_id = b.fin_wo_id
+		INNER JOIN mswarehouse c ON a.fin_warehouse_id = c.fin_warehouse_id
+		LEFT JOIN msitems d ON a.fin_item_id = d.fin_item_id
+		where a.fin_lhp_id = ? and a.fst_active != 'D'";
+		$qr = $this->db->query($ssql, [$finLHPId]); 
+		//echo $this->db->last_query();
+        //die();     
+
+		//throwIfDBError();  
+		$header = $qr->row_array();
+
+		return [
+			"header" => $header,
+			"detail" => $header		];
+	}
 
 
 

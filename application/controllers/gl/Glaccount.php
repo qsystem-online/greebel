@@ -320,7 +320,7 @@ class Glaccount extends MY_Controller
     }
 
     public function delete($fst_glaccount_code){
-        parent::delete();
+        parent::delete($fst_glaccount_code);
 
 		if (!$this->aauth->is_permit("")) {
 			$this->ajxResp["status"] = "NOT_PERMIT";

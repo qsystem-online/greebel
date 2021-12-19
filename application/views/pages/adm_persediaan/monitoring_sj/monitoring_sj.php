@@ -241,7 +241,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				},
 				{"title" : "Unhold DateTime","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:false},
-				{"title" : "Surat Jalan Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,className:'btn-resi'},
+				{"title" : "Surat Jalan Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,className:'btn-resi',
+					render: function(data,type,row){
+						if (row.fst_sj_return_resi_no == null || row.fst_sj_return_resi_no == ""){
+							return '<a href title="Untuk No :'+row.fst_sj_no+'" data-toggle="tooltip">update no resi</a>';
+						}else{
+							return '<a href title="Untuk No :'+row.fst_sj_no+'" data-toggle="tooltip">'+row.fst_sj_return_resi_no+'</a>';
+						}
+					}
+				},
 				{"title" : "Surat Jalan Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
 				{"title" : "Surat Jalan Return Date","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
 				{"title" : "Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:false},
@@ -251,10 +259,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			serverSide: true,
 			scrollX: true,
 			scrollCollapse: true,
+			/*drawCallback: function (settings, json) {
+				console.log(json);
+				$('[data-toggle="tooltip"]').tooltip('update');
+				//$("#list-of-product tbody tr > td").tooltip('hide');
+			},*/
 		}).on('draw',function(){
 			$(".dataTables_scrollHeadInner").css("min-width","100%");
 			$(".dataTables_scrollHeadInner > table").css("min-width","100%");
 			$(".dataTables_scrollBody").css("position","static");
+			//$('a[data-toggle="tooltip"]').tooltip("update");
 		});
 		
 		$("#fdt_sj_return_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
@@ -286,14 +300,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			$('#fst_sj_return_memo').val(row.fst_sj_return_memo);
 			$("#fdt_sj_return_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		});
-		$("#tblMonitoring").on("hover",".btn-resi",function(e){
-			alert("HOVER");
-			e.preventDefault();
-			t = $('#tblMonitoring').DataTable();
-			var trRow = $(this).parents('tr');
-			update_sj = t.row(trRow);
-			row = update_sj.data();
-		});
+
 	});
 	
 	function doUnhold(element){
@@ -368,7 +375,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				},
 				{"title" : "Unhold DateTime","width": "20%",sortable:true,data:"fdt_unhold_datetime",visible:false},
-				{"title" : "Surat Jalan Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,className:'btn-edit'},
+				{"title" : "Surat Jalan Resi No","width": "20%",sortable:true,data:"fst_sj_return_resi_no",visible:true,className:'btn-edit',
+					render: function(data,type,row){
+						if (row.fst_sj_return_resi_no == null || row.fst_sj_return_resi_no == ""){
+							return '<a href title="Untuk No :'+row.fst_sj_no+'" data-toggle="tooltip">update no resi</a>';
+						}else{
+							return '<a href title="Untuk No :'+row.fst_sj_no+'" data-toggle="tooltip">'+row.fst_sj_return_resi_no+'</a>';
+						}
+					}
+				},
 				{"title" : "Surat Jalan Return Memo","width": "20%",sortable:true,data:"fst_sj_return_memo",visible:true},
 				{"title" : "Surat Jalan Return Date","width": "20%",sortable:true,data:"fdt_sj_return_datetime",visible:true},
 				{"title" : "Return By ID","width": "20%",sortable:true,data:"fin_sj_return_by_id",visible:false},
@@ -404,3 +419,4 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- DataTables -->
 <script src="<?=base_url()?>bower_components/datatables.net/datatables.min.js"></script>
 <script src="<?=base_url()?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>

@@ -206,7 +206,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
 			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title"><?=lang("Add ")?></h4>
+				<h4 class="modal-title"><?=lang("Edit Detail ")?></h4>
 			</div>
 
 			<div class="modal-body">
@@ -272,7 +272,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 								</form>
 								<div class="modal-footer">
-									<button id="btn-save-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Add")?></button>
+									<button id="btn-save-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Update")?></button>
 									<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
 								</div>
 							</fieldset>
@@ -580,8 +580,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script type="text/javascript" info="init">
 	$(function(){
 		$("#fdt_sj_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
-		
-		
 
 		$("#fin_trans_id").select2({
 			dropdownAutoWidth : true,
@@ -863,6 +861,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							OK : function(){
 								if(resp.status == "SUCCESS"){
 									$("#btnNew").trigger("click");
+									window.open("<?= site_url() ?>tr/gudang/pengiriman_penjualan/print_voucher/" +$("#fin_sj_id").val() ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
 									return false;
 								}
 							},
@@ -944,6 +943,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				
 				
 				App.addOptionIfNotExist("<option value='" + dataH.fin_shipping_address_id +"'>"+ dataH.fst_shipping_name +"</option>","fin_shipping_address_id");
+				//$("#fin_shipping_address_id").val(dataH.fin_shipping_address_id).trigger("change.select2");
+				
+				$("#fin_shipping_address_id").select2({
+					data:dataH.fst_shipping_name
+				});	
 				/*
 				$("#fst_shipping_address").val(dataH.fst_shipping_address );
 				*/

@@ -76,7 +76,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 
-                    <div class="form-group">
+                    <div class="form-group hidden">
 					<label for="fdc_percent_of_price_list" class="col-md-3 control-label text-right"><?= lang("Percent Of Price List")?> (%)</label>
 						<div class="col-md-2">
 							<input type="text" class="form-control text-right" id="fdc_percent_of_price_list" name="fdc_percent_of_price_list">

@@ -522,7 +522,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			t.draw(false);
 			mdlDetail.clear();
-			//mdlDetail.hide();		
+			mdlDetail.hide();		
 		});
 
 	</script>
@@ -820,6 +820,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							OK : function(){
 								if(resp.status == "SUCCESS"){
 									$("#btnNew").trigger("click");
+									window.open("<?= site_url() ?>tr/gudang/mutasi/print_voucher/" + data.insert_id ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
 									return false;
 								}
 							},

@@ -273,6 +273,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					convertQty();
 					$("#fdbQty").val(data.fdb_qty);
 
+					if (selectedItem.fbl_is_batch_number == 1){
+						$(".batchNoBlock").show();
+						getBatchNoList(  $("#fin_warehouse_id").val(),  $("#fstItem").val(), function(){});
+					}else{
+						$(".batchNoBlock").hide();
+					}
+
+					if (selectedItem.fbl_is_serial_number == 1){
+						$(".serialNoBlock").show();
+					}else{
+						$(".serialNoBlock").hide();
+					}
+
 					App.addOptionIfNotExist("<option value='"+data.fst_batch_number+"'>"+data.fst_batch_number+"</option>","fstBatchNo");
 					$("#fstBatchNo").val(data.fst_batch_number).trigger("change.select2");
 					getSerialNoList($("#fin_from_warehouse_id").val(),  $("#fstItem").val(),$("#fstBatchNo").val(),function(){
@@ -576,8 +589,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			window.location.replace("<?=site_url()?>tr/gudang/mutasi/add")
 		});
 		$("#btnPrint").click(function(e){
-			e.preventDefault();
-			frameVoucher.print("<?=site_url()?>tr/gudang/mutasi/print_voucher/" + $("#fin_mag_id").val());
+			//e.preventDefault();
+			window.open("<?= site_url() ?>tr/gudang/mutasi/print_voucher/" +$("#fin_mag_id").val() ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
 		});
 
 		$("#btnSubmitAjax").click(function(e){
@@ -732,6 +745,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							OK : function(){
 								if(resp.status == "SUCCESS"){
 									$("#btnNew").trigger("click");
+									window.open("<?= site_url() ?>tr/gudang/mutasi/print_voucher/" + data.insert_id ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
 									return false;
 								}
 							},

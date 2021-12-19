@@ -24,7 +24,8 @@ class Payment_request extends MY_Controller{
 		$this->list['pKey'] = "id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/kas_bank/payment_request/fetch_list_data';
 		$this->list['arrSearch'] = [
-			'fst_paymentrequest_no' => 'No Payment Request'
+			'fst_paymentrequest_no' => 'No Payment Request',
+			'fst_relation_name' => 'Supplier'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -36,11 +37,12 @@ class Payment_request extends MY_Controller{
 
 		$this->list['columns'] = [
 			['title' => 'ID.', 'width' => '0px','visible'=>'false', 'data' => 'fin_paymentrequest_id'],
-			['title' => 'Company', 'width' => '20px', 'data' => 'fst_company_code'],
-			['title' => 'No. Payment Request', 'width' => '50px', 'data' => 'fst_paymentrequest_no'],
+			['title' => 'Company', 'width' => '5px', 'data' => 'fst_company_code'],
+			['title' => 'No. Payment Request', 'width' => '20px', 'data' => 'fst_paymentrequest_no'],
 			['title' => 'Tgl Pengajuan', 'width' => '40px', 'data' => 'fdt_paymentrequest_datetime'],
-            ['title' => 'Jatuh Tempo', 'width' => '20px', 'data' => 'fdt_payment_due_date'],
-			['title' => 'Total', 'width' => '40px', 'data' => 'fdc_total','className' => 'text-right',
+            ['title' => 'J/T', 'width' => '40px', 'data' => 'fdt_payment_due_date'],
+			['title' => 'Supplier', 'width' => '180px', 'data' => 'fst_relation_name'],
+			['title' => 'Total', 'width' => '30px', 'data' => 'fdc_total','className' => 'text-right',
 				'render'=>"function(data,type,row){
 					return App.money_format(data);
 				}"
@@ -50,13 +52,13 @@ class Payment_request extends MY_Controller{
 				if(data == 'A'){
 					return 'OK';
 				}else if (data == 'S'){
-					return 'Suspend';
+					return 'Need Approval';
 				}else if (data == 'R'){
 					return 'Rejected';
 				}
 			}"
 		],
-			['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/kas_bank/payment_request/edit/' + row.fin_paymentrequest_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
@@ -89,9 +91,9 @@ class Payment_request extends MY_Controller{
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("(
-				SELECT a.fin_paymentrequest_id,a.fst_company_code,a.fst_paymentrequest_no,a.fdt_paymentrequest_datetime,a.fdt_payment_due_date,a.fdc_total,a.fst_active 
-                FROM trpaymentrequest a) a");
-		$selectFields = "a.fin_paymentrequest_id,a.fst_company_code,a.fst_paymentrequest_no,a.fdt_paymentrequest_datetime,a.fdt_payment_due_date,a.fdc_total,a.fst_active";
+				SELECT a.fin_paymentrequest_id,a.fst_company_code,a.fst_paymentrequest_no,a.fdt_paymentrequest_datetime,a.fdt_payment_due_date,a.fdc_total,a.fst_active,b.fst_relation_name
+                FROM trpaymentrequest a LEFT OUTER JOIN msrelations b ON a.fin_supplier_id = b.fin_relation_id) a");
+		$selectFields = "a.fin_paymentrequest_id,a.fst_company_code,a.fst_paymentrequest_no,a.fdt_paymentrequest_datetime,a.fdt_payment_due_date,a.fst_relation_name,a.fdc_total,a.fst_active";
 		$this->datatables->setSelectFields($selectFields);
 
 		$Fields = $this->input->get('optionSearch');

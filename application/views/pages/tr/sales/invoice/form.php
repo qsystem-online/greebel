@@ -763,7 +763,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					buttons : {
 						OK : function(){
 							if(resp.status == "SUCCESS"){
+								/*if (confirm('Cetak Invoice ?')) {
+									console.log('ok');
+									var answer = window.confirm("Cetak DPP dan PPN ?");
+									if (answer) {
+										window.open("<?= site_url() ?>tr/sales/invoice/print_voucher_dpp/" + resp.data.insert_id ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
+										$("#btnNew").trigger("click");
+									} else {
+										
+										window.open("<?= site_url() ?>tr/sales/invoice/print_voucher/" + resp.data.insert_id ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
+										$("#btnNew").trigger("click");
+									}
+								}else{
+									console.log('cancel')
+									$("#btnNew").trigger("click");
+								}*/
 								$("#btnNew").trigger("click");
+								return;
+								
 							}
 						},
 					}
@@ -776,7 +793,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				for (key in errors) {
 					$("#"+key+"_err").html(errors[key]);
 				}
-			}else if(resp.status == "SUCCESS") {					
+			}else if(resp.status == "SUCCESS") {
+				data = resp.data;
+				$("#fin_inv_id").val(data.insert_id);					
 			}
 
         }).always(function(resp){

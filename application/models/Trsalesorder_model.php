@@ -1408,15 +1408,23 @@ class Trsalesorder_model extends MY_Model {
 		$ssql ="SELECT a.*,
             b.fst_relation_name as fst_cust_name,
             c.fst_curr_name,
-            d.fst_shipping_address 
+            d.fst_shipping_address,
+            e.fst_username AS sales,
+            f.fst_warehouse_name 
 			FROM trsalesorder a
-            INNER JOIN msrelations b on a.fin_relation_id = b.fin_relation_id 
-            INNER JOIN mscurrencies c on a.fst_curr_code = c.fst_curr_code
-            INNER JOIN msshippingaddress d on a.fin_shipping_address_id = d.fin_shipping_address_id 
-			WHERE a.fin_salesorder_id = ? and a.fst_active = 'A' ";
+            INNER JOIN msrelations b ON a.fin_relation_id = b.fin_relation_id 
+            INNER JOIN mscurrencies c ON a.fst_curr_code = c.fst_curr_code
+            INNER JOIN msshippingaddress d ON a.fin_shipping_address_id = d.fin_shipping_address_id
+            LEFT JOIN users e ON a.fin_sales_id = e.fin_user_id
+            LEFT JOIN mswarehouse f on a.fin_warehouse_id = f.fin_warehouse_id   
+			WHERE a.fin_salesorder_id = ? ";
 			
         $qr = $this->db->query($ssql,[$finSalesOrderId]);
+        //echo $this->db->last_query();
+        //die();  
+        throwIfDBError();
         $header = $qr->row_array();
+
         $details =[];
 		if ($header != null){      
             $ssql = "SELECT a.*,

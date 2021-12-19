@@ -182,7 +182,7 @@ class Msitems_model extends MY_Model
             }
 
         }else{
-            return 0 ;
+            return 0;
         }
 
         return 0;

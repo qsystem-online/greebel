@@ -190,6 +190,10 @@ class Sales_order extends MY_Controller{
 	
 	public function ajx_add_save(){		
 		parent::ajx_add_save();
+		/*$this->load->model('trsalesorder_model');
+		$this->load->model('trvoucher_model');
+		$this->load->model('trverification_model');
+		*/
 		$fst_salesorder_no = $this->trsalesorder_model->GenerateSONo();
 		$fdt_salesorder_datetime = dBDateTimeFormat($this->input->post("fdt_salesorder_datetime"));
 		$fdc_downpayment = parseNumber($this->input->post("fdc_downpayment"));
@@ -233,7 +237,8 @@ class Sales_order extends MY_Controller{
 					"fin_promo_id"=>$item->fin_promo_id,
 					"fst_active"=> 'A'
 				];
-				$this->trsalesorderdetails_model->insert($dataDetail);			
+				$this->trsalesorderdetails_model->insert($dataDetail);
+				throwIfDBError();			
 			}
 			
 			//Cek Promo
@@ -476,7 +481,7 @@ class Sales_order extends MY_Controller{
 			$price = $this->msitems_model->getSellingPrice($item->fin_item_id,$details[$i]->fst_unit,$dataH["fin_relation_id"]);
 
 			if ($price == 0 ){ // Bila dimaster harga 0, berarti user boleh menentukan harga sendiri
-				$price = $item->fdc_price;
+				$price = $details[$i]->fdc_price;
 			}
 			$details[$i]->fdc_price = $price;						
 
@@ -573,16 +578,11 @@ class Sales_order extends MY_Controller{
 	public function ajx_save_promo(){	
 		$this->load->model("trvoucher_model");	
 
-		
-
 		$finSalesOrderId = $this->input->post("fin_salesorder_id");
 		$dataH = (array) $this->trsalesorder_model->getsimpleDataById($finSalesOrderId);
 		$ssql = "SELECT * FROM trsalesorderdetails where fin_salesorder_id = ? and fst_active = 'A'";
 		$qr = $this->db->query($ssql,[$finSalesOrderId]);
 		$details = $qr->result();
-
-		
-
 
 		try{
 
@@ -590,9 +590,6 @@ class Sales_order extends MY_Controller{
 			if ($resp["status"] != "SUCCESS" ){
 				throw new CustomException($resp["message"], 3003,$resp["status"],[]);
 			}	
-
-
-
 
 			$this->db->trans_start();
 			$this->trsalesorder_model->unposting($finSalesOrderId);
@@ -614,9 +611,6 @@ class Sales_order extends MY_Controller{
 				$details[$i] = $detail;
 			}
 
-
-
-		
 			//** Cek if this transaction need authorization */				
 			$needAuthorizeList = $this->trsalesorder_model->getAuthorizationList($dataH,$details);
 			if ($needAuthorizeList["need_authorize"] == true){
@@ -753,8 +747,6 @@ class Sales_order extends MY_Controller{
 			]);
 
 
-
-
 		}catch(CustomException $e){
 			$this->db->trans_rollback();
 
@@ -764,21 +756,8 @@ class Sales_order extends MY_Controller{
 				"data"=>$e->getData()
 			]);
 		}
-		
-		
-
-
-
-
-
-
-		
-		
-		
 
 	}
-
-
 
 	public function cek_promo($finSalesOrderId){
 		$this->load->library("menus");		
@@ -923,7 +902,7 @@ class Sales_order extends MY_Controller{
 		$ssql = "SELECT fin_item_id, fst_item_code,fst_item_name,fst_max_item_discount 
 			FROM msitems 
 			WHERE CONCAT(fst_item_code,' - ' ,fst_item_name) LIKE ? 
-			AND fst_active ='A' 
+			AND fin_item_type_id='4' AND fst_active ='A' 
 			ORDER BY CONCAT(fst_item_code,' - ' ,fst_item_name)";
 
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
@@ -1140,23 +1119,13 @@ class Sales_order extends MY_Controller{
 	}
 
 	public function print_voucher($finSalesOrderId){
-		$data = $this->trsalesorder_model->getDataVoucher($finSalesOrderId);
 
-		$data["title"]= "Sales Order";
-		$this->data["title"]= $data["title"];
+		$this->data = $this->trsalesorder_model->getDataVoucher($finSalesOrderId);
 
-		$page_content = $this->parser->parse('pages/tr/sales_order/voucher', $data, true);
-		$this->data["PAGE_CONTENT"] = $page_content;
-		$data = $this->parser->parse('template/voucher_pdf', $this->data, true);
-		$mpdf = new \Mpdf\Mpdf(getMpdfSetting());		
-		$mpdf->useSubstitutions = false;		
-		
-		//echo $data;
-
-			
-		//$mpdf->SetHTMLHeaderByName('MyFooter');
-		$mpdf->WriteHTML($data);
-		$mpdf->Output();
+		$this->data["title"] = "SALES ORDER S/O";		
+		$page_content = $this->parser->parse('pages/tr/sales_order/voucher', $this->data, true);
+		$dataMain=["PAGE_CONTENT"=>$page_content];	
+	    $this->parser->parse('template/voucher_pdf',$dataMain);
 
 	}
 }

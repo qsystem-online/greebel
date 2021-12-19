@@ -46,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					<div class="form-group">
 						<label for="fst_mag_no_confirm" class="col-md-2 control-label"><?=lang("PAG No.")?> #</label>
 						<div class="col-md-4">
-							<input type="text" class="form-control" id="fst_mag_confirm_no" placeholder="<?=lang("PAG No")?>" name="fst_mag_confirm_no" value="<?=$fst_mag_confirm_no?>" readonly>
+							<input type="text" class="form-control" id="fst_mag_confirm_no" placeholder="<?=lang("PAG No")?>" name="fst_mag_confirm_no" value="" readonly>
 							<div id="fst_mag_no_confirm_err" class="text-danger"></div>
 						</div>	
 
@@ -132,7 +132,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
 			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title"><?=lang("Add ")?></h4>
+				<h4 class="modal-title"><?=lang("Edit Detail ")?></h4>
 			</div>
 			<div class="modal-body">
 				<div class="row">
@@ -151,9 +151,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 									</div>
 
 									<div class="form-group">
-										<label for="fdbQty" class="col-md-3 control-label"><?=lang("Qty")?> :</label>
+										<label for="fdbQty" class="col-md-3 control-label"><?=lang("Qty MAG")?> :</label>
 										<label id="fdbQty" class="col-md-9 control-label" style="text-align:left">1</label>
-									</div>								
+									</div>						
+									
+									<div class="form-group">
+										<label for="fdb_qty_confirm" class="col-md-3 control-label"><?=lang("Qty PAG")?></label>
+										<div class="col-md-9">
+											<input type='TEXT' id="fdb_qty_confirm" class="money form-control" value="1"/>
+										</div>
+									</div>	
 
 									<div class="form-group batchNoBlock">
 										<label for="fstBatchNo" class="col-md-3 control-label"><?=lang("Batch Number")?> :</label>
@@ -186,7 +193,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</form>
 								
 								<div class="modal-footer">
-									<button id="btn-save-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Save")?></button>
+									<button id="btn-save-detail" type="button" class="btn btn-primary btn-sm text-center" style="width:15%"><?=lang("Update")?></button>
 									<button type="button" class="btn btn-default btn-sm text-center" style="width:15%" data-dismiss="modal"><?=lang("Close")?></button>
 								</div>
 							</fieldset>
@@ -209,14 +216,32 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#fstItemName").text(data.fst_item_code + " - " +data.fst_item_name);
 					$("#fstUnit").text(data.fst_unit);
 					$("#fdbQty").text(data.fdb_qty);
-					$("#fstBatchNo").text(data.fst_batch_number);	
+					if (data.fdb_qty_confirm == null || data.fdb_qty_confirm == ""){
+						$("#fdb_qty_confirm").val(data.fdb_qty);
+					}else{
+						$("#fdb_qty_confirm").val(data.fdb_qty_confirm);
+					}
+					
+					if (data.fst_batch_number == "" || data.fst_batch_number == null){
+						$(".batchNoBlock").hide();
+					}else{
+						$(".batchNoBlock").show();
+						$("#fstBatchNo").text(data.fst_batch_number);
+					}
+						
 
 					availableSerialList = data.fst_serial_number_list;
-
-					console.log(data.fst_serial_number_list_confirm);
-					$.each(data.fst_serial_number_list_confirm,function(i,v){
-						$("#fstSerialNoList").prepend("<option value='"+v+"'>"+v+"</option>");
-					});
+					
+					if (!availableSerialList.length){
+						$(".serialNoBlock").hide();				
+					}else{				
+						$(".serialNoBlock").show();
+						
+						console.log(availableSerialList);
+						$.each(availableSerialList,function(i,v){
+							$("#fstSerialNoList").prepend("<option value='"+v+"'>"+v+"</option>");
+						});
+					}
 				}
 				$("#mdlDetail").modal("show");
 			},
@@ -294,7 +319,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			t = $("#tblDetails").DataTable();
 			
-			item.fdb_qty_confirm = $("#fstSerialNoList option").length;
+			item.fdb_qty_confirm = $("#fdb_qty_confirm").val();;
 			item.fst_serial_number_list_confirm = arrSerial;
 			console.log(item);
 			
@@ -420,12 +445,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(function(){
 		$("#fdt_mag_confirm_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 
-
 		$("#fin_mag_id").select2({
 			minimumInputLength: 2,
 				ajax:{
 					delay: 250,
-					url: "<?=site_url()?>/tr/gudang/penerimaan_mutasi/ajxListMAG",
+					url: "<?=site_url()?>/tr/gudang/penerimaan_mutasi/ajxListMAGStandar",
 					dataType: 'json',
 					processResults: function (result) {
 						if (result.status == "SUCCESS"){
@@ -451,6 +475,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		}).on('select2:select',function(e){
 			var data = e.params.data;
 			selectedMAG = data;
+            generatePAGPNo();
 
 			getMAGDetail(loadMAGDetail);
 		});
@@ -501,7 +526,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			calculateTotal();
 		}).on("click",".btn-delete",function(event){
 			event.preventDefault();
-			t = $('#tblSJDetails').DataTable();
+			t = $('#tblDetails').DataTable();
 			var trRow = $(this).parents('tr');
 			t.row(trRow).remove().draw();
 			calculateTotal();
@@ -834,6 +859,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});	
 
 	}
+
+	function generatePAGPNo(){
+        $("#fst_mag_confirm_no").val(selectedMAG.text + "-01"); 
+    }
 
 </script>
 <!-- Select2 -->

@@ -167,6 +167,10 @@ class Trmagconfirm_model extends MY_Model {
 		$rw = $qr->row();
 		if ($rw != null){
 			throw new CustomException(lang("PAG telah di gunakan oleh RMOUT :") . $rw->fst_rmout_no , 3003,"FAILED",[]);						
+		}else{
+			return [
+				"status"=>"SUCCESS"
+			];
 		}
 		
 	}
@@ -222,7 +226,7 @@ class Trmagconfirm_model extends MY_Model {
 		$this->load->model("mswarehouse_model");
 		$bufferWarehouse = $this->mswarehouse_model->getBufferWarehouseId();
 
-		foreach($details as $dataD){			
+		foreach($details as $dataD){
 			//Mutasi OUT barang dari buffer warehouse 			
 			$data = [
 				"fin_warehouse_id"=>$bufferWarehouse,//$dataH->fin_from_warehouse_id,

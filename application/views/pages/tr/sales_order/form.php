@@ -817,7 +817,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 
 		$("#btnPrint").click(function(e){
-			frameVoucher.print("<?=site_url()?>tr/sales_order/print_voucher/" + $("#fin_salesorder_id").val());
+			//frameVoucher.print("<?=site_url()?>tr/sales_order/print_voucher/" + $("#fin_salesorder_id").val());
+			window.open("<?= site_url() ?>tr/sales_order/print_voucher/" +$("#fin_salesorder_id").val() ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
 		});		
 
 		$("#btnSubmitAjax").click(function(event){
@@ -951,6 +952,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							OK : function(){
 								if(resp.status == "SUCCESS"){
 									$("#btnNew").trigger("click");
+									window.open("<?= site_url() ?>tr/sales_order/print_voucher/" + resp.data.insert_id ,"_blank","menubar=0,resizable=0,scrollbars=0,status=0,width=900,height=500");
 									return;
 								}
 

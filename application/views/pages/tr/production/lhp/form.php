@@ -34,7 +34,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="btn-group btn-group-sm  pull-right">					
 					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-					<a id="btnPrint" class="btn btn-primary hide" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+					<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Group")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 				</div>
@@ -169,7 +169,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					
 					<div class="form-group" style="margin-bottom:0px">
 						<div class="col-md-12" style="text-align:right">
-							<button id="btnAddActivity" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;Tambah Activity</button>
+							<button id="btnAddActivity" class="btn btn-primary btn-sm"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;&nbsp;Tambah Workstation</button>
 						</div>
 					</div>
 					
@@ -212,14 +212,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<div class="modal-content">
 			<div class="modal-header" style="padding:7px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 5px;border-top-right-radius: 5px;">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title"><?=lang("Tambah Activity")?></h4>
+				<h4 class="modal-title"><?=lang("Tambah Workstation")?></h4>
 			</div>
 
 			<div class="modal-body">				        
 				<form class="form-horizontal">
 				
 					<div class="form-group">
-						<label class="col-md-2 control-label"><?=lang("Activity")?>:</label>						
+						<label class="col-md-2 control-label"><?=lang("Workstation")?>:</label>						
 						<div class="col-md-10">
 							<select  id="dfin_activity_id" class="form-control" style="width:100%"></select>
 						</div>
@@ -380,7 +380,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				//tblDetails.row(selectedDetail).data(data).draw(false);
 
 				mDt.clear();	
-				mDt.hide();		
+				//mDt.hide();		
 			});
 
 		});
@@ -585,7 +585,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			order: [],
 			columns:[
 				{"title" : "id","width": "0px",sortable:false,data:"fin_rec_id",visible:false},
-				{"title" : "Activity","width": "200px",sortable:false,data:"fin_activity_id",
+				{"title" : "Workstation","width": "200px",sortable:false,data:"fin_activity_id",
 					"render":function(data,type,row){
 						return row.fst_activity_name; 
 					}
@@ -650,7 +650,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		});
 		$("#btnPrint").click(function(e){
 			e.preventDefault();
-			frameVoucher.print("<?=site_url()?>tr/gudang/mutasi/print_voucher/" + $("#fin_lhp_id").val());
+			frameVoucher.print("<?=site_url()?>tr/production/lhp/print_voucher/" + $("#fin_lhp_id").val());
 		});
 		
 		$("#btnSubmitAjax").click(function(e){
@@ -900,7 +900,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			value: MdlEditForm.notes
 		});
 
-		var url =  "<?= site_url() ?>tr/production/wo/delete/" + $("#fin_wo_id").val();
+		var url =  "<?= site_url() ?>tr/production/lhp/delete/" + $("#fin_lhp_id").val();
 		$.ajax({
 			url:url,
 			method:"POST",

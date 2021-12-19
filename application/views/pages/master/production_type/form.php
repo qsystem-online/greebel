@@ -25,10 +25,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </style>
 
 <section class="content-header">
-    <h1><?= lang("Production Type") ?><small><?= lang("form") ?></small></h1>
+    <h1><?= lang("RM-OUT Type (Non Produksi)") ?><small><?= lang("form") ?></small></h1>
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> <?= lang("Home") ?></a></li>
-        <li><a href="#"><?= lang("Projects") ?></a></li>
+        <li><a href="#"><?= lang("RM-OUT Type") ?></a></li>
         <li class="active title"><?= $title ?></li>
     </ol>
 </section>
