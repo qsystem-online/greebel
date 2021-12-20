@@ -113,7 +113,7 @@ class Trrmoutreturn_model extends MY_Model{
 
 		//Cek kalau item return merupakan non component
 		$ssql = "select * from msitemnoncomponentdetails where fin_item_id = ? and fin_nc_item_id = ? and fst_active = 'A'";
-		$qr = $this->db->query($ssql,[$finItemId,$finreturnItemId]);
+		$qr = $this->db->query($ssql,[$finItemId,$finReturnItemId]);
 		$rw = $qr->row();
 		if ($rw){
 			

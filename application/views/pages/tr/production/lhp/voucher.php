@@ -123,6 +123,10 @@
 		<tbody>
 			<?php
 				$nou =1;
+				if($header["fst_unit"] =='KILO'){
+					$header["fdb_qty_wo"] = formatNumber($header["fdb_qty_wo"] * $header["fdc_conv_to_basic_unit"] * $header["fdb_gramasi"],2);
+					$header["fdb_qty_sisa"] = formatNumber($header["fdb_qty_sisa"] * $header["fdc_conv_to_basic_unit"] * $header["fdb_gramasi"],2);
+				}
 			?>
 
             <tr class="have-detail">

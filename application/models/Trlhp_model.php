@@ -247,11 +247,12 @@ class Trlhp_model extends MY_Model {
 		//$data = $this->getDataById($finMagId);
 
 		$ssql = "SELECT a.*,b.fst_wo_no,b.fdb_qty AS fdb_qty_wo,c.fst_warehouse_name,
-		d.fst_item_name
+		d.fst_item_name,d.fdb_gramasi,e.fdc_conv_to_basic_unit 
 		FROM trlhp a 
 		INNER JOIN trwo b ON a.fin_wo_id = b.fin_wo_id
 		INNER JOIN mswarehouse c ON a.fin_warehouse_id = c.fin_warehouse_id
 		LEFT JOIN msitems d ON a.fin_item_id = d.fin_item_id
+		LEFT JOIN msitemunitdetails e on a.fin_item_id  = e.fin_item_id and a.fst_wo_unit = e.fst_unit 
 		where a.fin_lhp_id = ? and a.fst_active != 'D'";
 		$qr = $this->db->query($ssql, [$finLHPId]); 
 		//echo $this->db->last_query();
@@ -262,7 +263,8 @@ class Trlhp_model extends MY_Model {
 
 		return [
 			"header" => $header,
-			"detail" => $header		];
+			"detail" => $header		
+		];
 	}
 
 

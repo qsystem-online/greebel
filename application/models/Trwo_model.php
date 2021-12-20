@@ -242,7 +242,9 @@ class Trwo_model extends MY_Model{
 			if ($scale == 0){
 				$bom->fdb_qty_real = 0;
 			}else{
-				$bom->fdb_qty_real = ($fdbQtyInBasic/$scale) * $bom->fdb_qty;
+				//--masih belum paham hitungan dibawah ini
+				//$bom->fdb_qty_real = ($fdbQtyInBasic/$scale) * $bom->fdb_qty;
+				$bom->fdb_qty_real = ($fdbQty* $bom->fdb_qty) / $scale;
 			}
 			
 

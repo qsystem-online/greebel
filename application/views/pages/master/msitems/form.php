@@ -152,8 +152,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
                         </div>
 
                         <div class="form-group">
+                            <label for="fdb_gramasi" class="col-md-2 control-label"><?= lang("Gramasi") ?></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="fdb_gramasi" placeholder="<?= lang("Gramasi") ?>" name="fdb_gramasi">
+                                <div id="fdb_gramasi_err" class="text-danger"></div>
+                            </div>
                             <label for="fst_storage_rack_info" class="col-md-2 control-label"><?= lang("Storage Rack Info") ?></label>
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 <input type="text" class="form-control" id="fst_storage_rack_info" placeholder="<?= lang("Storage Rack Info") ?>" name="fst_storage_rack_info">
                                 <div id="fst_storage_rack_info_err" class="text-danger"></div>
                             </div>

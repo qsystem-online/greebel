@@ -467,7 +467,7 @@ class Lhp extends MY_Controller{
         $term = $this->input->get("term");
         $term = "%$term%";
 
-        $ssql = "SELECT a.fin_wo_id,a.fst_wo_no,a.fin_item_id,b.fst_item_name,a.fst_unit,a.fdb_qty,a.fdb_qty_lhp,
+        $ssql = "SELECT a.fin_wo_id,a.fst_wo_no,a.fin_item_id,b.fst_item_name,b.fdb_gramasi AS gramasi_master,a.fst_unit,a.fdb_qty,a.fdb_qty_lhp,
 			b.fbl_is_batch_number,b.fbl_is_serial_number,
             a.fin_warehouse_target,c.fdc_conv_to_basic_unit 
             FROM trwo a             

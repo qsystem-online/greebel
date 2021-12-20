@@ -140,7 +140,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					
 					<div class="form-group">					
 						<label for="fin_item_id" class="col-md-2 control-label"><?=lang("Item")?></label>
-						<div class="col-md-5">
+						<div class="col-md-7">
 							<select  class="form-control" id="fin_item_id" name="fin_item_id" placeholder="<?=lang("Item")?>" style="width:100%"></select>
 							<div id="fin_item_id_err" class="text-danger"></div>
 						</div>
@@ -149,21 +149,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							<select  class="form-control" id="fst_unit" name="fst_unit" placeholder="<?=lang("Unit Production")?>" style="width:100%"></select>
 							<div id="fst_unit_err" class="text-danger"></div>
 						</div>
-						<label for="fdb_qty" class="col-md-1 control-label"><?=lang("Qty")?></label>
-						<div class="col-md-1">
-							<input class="form-control text-right" id="fdb_qty" name="fdb_qty" placeholder="<?=lang("qty")?>" value="1"></input>
-							<div id="fdb_qty_err" class="text-danger"></div>
-						</div>
+
 					</div>
 
 					
 					<div class="form-group">
+
 						<label for="fdb_qty_sisa" class="col-md-2 control-label"><?=lang("Qty Sisa")?></label>
-						<div class="col-md-1">
+						<div class="col-md-2">
 							<input type="text" class="form-control text-right" id="fdb_qty_sisa" name="fdb_qty_sisa" value="0" readonly/>
 							<div id="fst_notes_err" class="text-danger"></div>
 						</div>	
-						<label id="fst_wo_unit" class="col-md-9 control-label" style="text-align:left;padding-left:0px"><?=lang("Satuan WO")?></label>	
+						<label id="fst_wo_unit" class="col-md-4 control-label" style="text-align:left;padding-left:1px"><?=lang("Satuan WO")?></label>
+
+						<label for="fdb_qty" class="col-md-2 control-label"><?=lang("Qty")?></label>
+						<div class="col-md-2">
+							<input class="form-control text-right" id="fdb_qty" name="fdb_qty" placeholder="<?=lang("qty")?>" value="1"></input>
+							<div id="fdb_qty_err" class="text-danger"></div>
+						</div>	
 					</div>   	
 					
 					
@@ -517,6 +520,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								"fdb_qty":value.fdb_qty,
 								"fdb_qty_lhp":value.fdb_qty_lhp,
 								"fdc_conv_to_basic_unit":value.fdc_conv_to_basic_unit,
+								"gramasi_master":value.gramasi_master,
 							});
 						});
 						return {
@@ -543,6 +547,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 			$("#fdb_qty").val(selectedWO.fdb_qty - selectedWO.fdb_qty_lhp);
 			$("#fst_wo_unit").text(selectedWO.fst_unit);
+			$("#fdb_gramasi").val(selectedWO.gramasi_master);
 
 		});
 
