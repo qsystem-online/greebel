@@ -36,7 +36,7 @@ class Msitemdiscounts_model extends MY_Model {
     }
 
     public function getItemDiscountList(){
-        $ssql ="select * from " . $this->tableName ." where fst_active ='A'";
+        $ssql ="select * from " . $this->tableName ." where fst_active ='A' order by fst_item_discount";
         $qr = $this->db->query($ssql,[]);
         $rs = $qr->result();
         return $rs;

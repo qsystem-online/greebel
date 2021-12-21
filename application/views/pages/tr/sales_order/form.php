@@ -297,7 +297,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 
-					<div class="form-group">
+					<div class="form-group disc-plus" style="display:none">
 						<label class="col-md-3 control-label"><?=lang("Disc ++")?></label>
 						<div class="col-md-9">
 							<select id="dfst_disc_item" class="form-control text-right">
@@ -309,6 +309,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								?>
 							</select>
 							<div id="fst_disc_item_err" class="text-danger"></div>
+						</div>
+					</div>
+
+					<div class="form-group disc-persen" style="display:none">
+						<label  class="col-md-3 control-label"><?=lang("Disc % -> Manual")?></label>
+						<div class="col-md-9">
+							<input type="text" class="form-control text-right" id="dfdb_disc_item" value="0">
 						</div>
 					</div>
 
@@ -366,8 +373,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					$("#dfdb_qty").val(money_format(data.fdb_qty));
 					$("#dfdc_selling_price").val(money_format(data.fdc_price));
 					$("#dfst_disc_item").val(data.fst_disc_item);
+					$("#dfdb_disc_item").val(data.fst_disc_item);
 					$("#dfdc_disc_amount_per_item").val(money_format(data.fdc_disc_amount_per_item));
-					$("#dfst_memo_item").val(data.fst_memo_item);					
+					$("#dfst_memo_item").val(data.fst_memo_item);
+
+					if($("#fin_sales_id option:selected").text() =='ONLINE'){
+						$(".disc-plus").hide();
+						$(".disc-persen").show();
+					}else{
+						$(".disc-persen").hide();
+						$(".disc-plus").show();
+					}					
 				}else{
 					myModal.clear();
 				}
@@ -384,10 +400,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#dfdb_qty").val("1");
 				$("#dfdc_selling_price").val(App.money_format(0));
 				$("#dfst_disc_item").val(0);
+				$("#dfdb_disc_item").val(0);
 				$("#dfdc_disc_amount_per_item").val(App.money_format(0));
 				$("#dfst_memo_item").val("");	
 				$("#dialog-info").hide();			
 				selectedRow = null;
+
+				if($("#fin_sales_id option:selected").text() =='ONLINE'){
+					$(".disc-plus").hide();
+					$(".disc-persen").show();
+				}else{
+					$(".disc-persen").hide();
+					$(".disc-plus").show();
+				}
 			}
 		}
 	</script>
@@ -488,6 +513,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$("#dfdc_disc_amount_per_item").val(App.money_format(discAmount));				
 			});
 
+			$("#dfdb_disc_item").change(function(e){
+				e.preventDefault();
+				console.log(myModal.selectedItem);
+				//Cek Max Disc
+				var discManual = $("#dfdb_disc_item").val();
+				if(discManual == null || discManual ==""){
+					discManual = 0;
+				}
+				var price = money_parse($("#dfdc_selling_price").val());
+				var maxDiscAmount = App.calculateDisc(price,myModal.selectedItem.fst_max_item_discount);
+				var discAmount = App.calculateDisc(price,discManual);
+				if (maxDiscAmount < discAmount){
+					alert("Disc Melebih Max Disc (" + myModal.selectedItem.fst_max_item_discount + " %)");
+				}
+				$("#dfdc_disc_amount_per_item").val(App.money_format(discAmount));
+				$("#dfst_disc_item").val((discManual));
+				//alert($("#dfst_disc_item").val()); 	
+			});
+
 			$("#btn-add-so-detail").click(function(e){
 				e.preventDefault();
 				var data = {};
@@ -503,10 +547,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					data.fdb_qty = App.money_parse($("#dfdb_qty").val()),
 					data.fst_unit= $("#dfst_unit").val(),
 					data.fdc_price = App.money_parse($("#dfdc_selling_price").val()),
-					data.fst_disc_item = $("#dfst_disc_item").val(),
 					data.fdc_disc_amount_per_item = money_parse($("#dfdc_disc_amount_per_item").val()),
 					data.fst_memo_item = $("#dfst_memo_item").val()
 					
+					if($("#dfst_disc_item").val() == null || $("#dfst_disc_item").val() ==""){
+						data.fst_disc_item = $("#dfdb_disc_item").val();
+					}else{
+						data.fst_disc_item = $("#dfst_disc_item").val();
+					};
 					selectedRow.data(data).draw(false);
 					myModal.clear();
 					myModal.hide();
@@ -522,10 +570,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						fdb_qty:App.money_parse($("#dfdb_qty").val()),
 						fst_unit:$("#dfst_unit").val(),
 						fdc_price:App.money_parse($("#dfdc_selling_price").val()),
-						fst_disc_item:$("#dfst_disc_item").val(),
 						fdc_disc_amount_per_item:money_parse($("#dfdc_disc_amount_per_item").val()),
 						fst_memo_item:$("#dfst_memo_item").val()
 					}
+					
+					if($("#dfst_disc_item").val() == null || $("#dfst_disc_item").val() ==""){
+						data.fst_disc_item = $("#dfdb_disc_item").val();
+					}else{
+						data.fst_disc_item = $("#dfst_disc_item").val();
+					};
 					tblDetails.row.add(data).draw(false);
 					myModal.clear();
 				}		
