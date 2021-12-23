@@ -261,7 +261,7 @@ class Trlpbgudang_model extends MY_Model {
 
 
    
-	public function unposting($finLPBGudangId,$unpostingDateTime =""){
+	public function unposting($finLPBGudangId,$unpostingDateTime ="",$forceStockMinus = false){
 		$this->load->model("trinventory_model");               
 		$unpostingDateTime = $unpostingDateTime == "" ? date("Y-m-d H:i:s") : $unpostingDateTime;
 
@@ -303,7 +303,7 @@ class Trlpbgudang_model extends MY_Model {
 
 
 		//delete Inventory
-		$this->trinventory_model->deleteByCodeId($invCode,$finLPBGudangId);
+		$this->trinventory_model->deleteByCodeId($invCode,$finLPBGudangId,$forceStockMinus);
 
 		//Delete itemdetails
 		$this->trinventory_model->deleteInsertSerial($invDetailCode,$finLPBGudangId);

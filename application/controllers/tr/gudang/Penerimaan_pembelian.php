@@ -229,9 +229,8 @@ class Penerimaan_pembelian extends MY_Controller{
 	}
 
 	public function ajx_edit_save(){		
-		parent::ajx_edit_save();	
+		parent::ajx_edit_save();
 
-		
 		try{
 			$finLPBGudangId = $this->input->post("fin_lpbgudang_id");
 
@@ -254,7 +253,8 @@ class Penerimaan_pembelian extends MY_Controller{
 			$resp = $this->trlpbgudang_model->isEditable($finLPBGudangId,$dataHOld);
 			if ($resp["status"] != "SUCCESS"){
 				throw new CustomException($resp["message"],3003,"FAILED",null);
-			}			
+			}
+
 		}catch(CustomException $e){
 			$this->ajxResp["status"] = $e->getStatus();
 			$this->ajxResp["message"] = $e->getMessage();
@@ -266,7 +266,7 @@ class Penerimaan_pembelian extends MY_Controller{
 		try{
 			$this->db->trans_start();
 			
-			$this->trlpbgudang_model->unposting($finLPBGudangId);
+			$this->trlpbgudang_model->unposting($finLPBGudangId,"", true);
 			$this->trlpbgudang_model->deleteDetail($finLPBGudangId);
 			$preparedData = $this->prepareData();
 			$dataH = $preparedData["dataH"];
