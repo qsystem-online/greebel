@@ -5,7 +5,11 @@
 	if(empty($header["fst_address"])){
 		$header["fst_address"] = "";
 	}
-	$full_address = array_filter(explode(PHP_EOL, $header["fst_address"]));
+	//--compatible on OS Windows
+	$full_address = array_filter(explode("\n", $header["fst_address"]));
+	//--compatible on OS Linux
+	//$full_address = array_filter(explode(PHP_EOL, $header["fst_address"]));
+	
 	if(!empty($full_address[0])) {
 		$address1 = $full_address[0];
 	}

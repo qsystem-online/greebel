@@ -110,6 +110,15 @@ class Msrelations_model extends MY_Model
         ];
 
         $rules[] = [
+            'field' => 'fin_branch_id',
+            'label' => 'Branch',
+            'rules' => 'required',
+            'errors' => array(
+                'required' => '%s tidak boleh kosong'
+            )
+        ];
+
+        $rules[] = [
             'field' => 'fin_top_komisi',
             'label' => 'Top Commission',
             'rules' => 'required|numeric',
@@ -175,7 +184,7 @@ class Msrelations_model extends MY_Model
     public function getCustomerList(){
         $term = $this->input->get("term");
         $term = "%".$term."%";
-        $ssql = "select * from msrelations where find_in_set('1',fst_relation_type) and fin_branch_id = ? and fst_relation_name like ?";
+        $ssql = "select * from msrelations where find_in_set('1',fst_relation_type) and fin_branch_id = ? and fst_relation_name like ? order by fst_relation_name";
         //$ssql = "select fin_relation_id,fst_relation_name from msrelations where fin_branch_id = ? and fst_relation_name like ?";
         $query = $this->db->query($ssql, [$this->aauth->get_active_branch_id(),$term]);
 

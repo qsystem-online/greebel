@@ -53,7 +53,7 @@ class Sales_order extends MY_Controller{
 			['title' => 'Total', 'width' => '100px','className'=>'text-right',
 				'render'=>"function(data,type,row){
 
-					var total = parseFloat(row.fdc_subttl) - parseFloat(row.fdc_disc_amount);
+					var total = parseFloat(row.fdc_total);
 					if (row.fbl_is_vat_include == 0){
 						total +=  parseFloat(row.fdc_vat_amount);						
 					}
@@ -789,7 +789,7 @@ class Sales_order extends MY_Controller{
 		$this->load->library("datatables");
 		$this->datatables->setTableName("(select a.*,b.fst_relation_name as fst_customer from trsalesorder a inner join msrelations b on a.fin_relation_id = b.fin_relation_id) a");
 
-		$selectFields = "a.fin_salesorder_id,a.fst_salesorder_no,a.fdt_salesorder_datetime,a.fst_memo,a.fst_customer,a.fst_active,a.fdc_subttl,a.fdc_disc_amount,a.fdc_vat_amount,a.fst_curr_code,a.fdc_downpayment,a.fdc_downpayment_paid,a.fbl_is_closed,'action' as action";
+		$selectFields = "a.fin_salesorder_id,a.fst_salesorder_no,a.fdt_salesorder_datetime,a.fst_memo,a.fst_customer,a.fst_active,a.fdc_total,a.fdc_disc_amount,a.fdc_vat_amount,a.fst_curr_code,a.fdc_downpayment,a.fdc_downpayment_paid,a.fbl_is_closed,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];

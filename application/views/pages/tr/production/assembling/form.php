@@ -92,7 +92,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 					<div class="form-group">					
 						<?php
-							$warehouseList = $this->mswarehouse_model->getWarehouseList();
+							$warehouseList = $this->mswarehouse_model->getNonLogisticWarehouseList();
 						?>
 						<label for="fin_source_warehouse_id" class="col-md-2 control-label"><?=lang("Gudang Asal")?></label>
 						<div class="col-md-4">
