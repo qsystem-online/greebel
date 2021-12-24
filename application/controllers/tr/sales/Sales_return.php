@@ -20,15 +20,15 @@ class Sales_return extends MY_Controller{
 		parent::index();
 		$this->load->library('menus');
         $this->list['page_name'] = "Sales - Return";
-        $this->list['list_name'] = "Invoice Retur Penjualan List";
+        $this->list['list_name'] = "Faktur Retur Penjualan List";
         $this->list['boxTools'] = [
 			"<a id='btnNew'  href='".site_url()."tr/sales/sales_return/add' class='btn btn-primary btn-sm'><i class='fa fa-plus' aria-hidden='true'></i> New Record</a>",
 		];
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales/sales_return/fetch_list_data';
         $this->list['arrSearch'] = [
-			'fst_purchasereturn_no' => 'No Retur Pembelian',
-			'fst_supplier_name' => 'Supplier'
+			'fst_salesreturn_no' => 'No. Faktur Retur',
+			'fst_customer_name' => 'Customer'
         ];
 
         $this->list['breadcrumbs'] = [
@@ -39,23 +39,24 @@ class Sales_return extends MY_Controller{
 		
 
         $this->list['columns'] = [			
-			['title' => 'No. Retur Penjualan', 'width' => '100px', 'data' => 'fst_salesreturn_no'],
-            ['title' => 'Tanggal', 'width' => '100px', 'data' => 'fdt_salesreturn_datetime'],
+			['title' => 'No. Faktur Retur', 'width' => '15px', 'data' => 'fst_salesreturn_no'],
+            ['title' => 'Tanggal', 'width' => '15px', 'data' => 'fdt_salesreturn_datetime'],
             ['title' => 'Customer', 'width' => '100px', 'data' => 'fst_customer_name'],
-			['title' => 'Memo', 'width' => '200px', 'data' => 'fst_memo'],
-			['title' => 'Total Amount', 'width' => '100px', 'data' => 'fdc_total','className'=>'text-right',
+			['title' => 'Total Amount', 'width' => '20px', 'data' => 'fdc_total','className'=>'text-right',
 				'render'=>"function(data,type,row){
 					return App.money_format(data);
 				}",
 			],
-			['title' => 'Closed', 'width' => '30px', 'data' => 'fbl_is_closed','className'=>'text-center',
+			['title' => 'Closed', 'width' => '20px', 'data' => 'fbl_is_closed','className'=>'text-center',
 				'render'=>"function(data,type,row){
 					var checked = data == 1 ? 'checked' : '';
 					return '<input type=\"checkbox\" ' + checked + ' disabled/>';
 				}",
 			],
+
+			['title' => 'No.Kas/Bank', 'width' => '15px', 'data' => 'fst_cbreceive_no'],
 			
-			['title' => 'Action', 'width' => '100px', 'sortable' => false, 'className' => 'text-center',
+			['title' => 'Action', 'width' => '50px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
 					action += '<a class=\"btn-edit\" href=\"".site_url()."tr/sales/sales_return/edit/' + row.fin_salesreturn_id + '\" data-id=\"\"><i class=\"fa fa-pencil\"></i></a>&nbsp;';
@@ -81,6 +82,34 @@ class Sales_return extends MY_Controller{
         $this->data['PAGE_CONTENT'] = $page_content;
         $this->data['MAIN_FOOTER'] = $main_footer;
         $this->parser->parse('template/main', $this->data);
+	}
+
+
+	public function fetch_list_data(){
+		$this->load->library("datatables");
+        $this->datatables->setTableName("(
+			SELECT a.*,b.fst_relation_name as fst_customer_name,d.fst_cbreceive_no FROM trsalesreturn a 
+			INNER JOIN msrelations b on a.fin_customer_id = b.fin_relation_id
+			LEFT JOIN trcbreceiveitems c on a.fin_salesreturn_id = c.fin_trans_id AND c.fst_trans_type ='RETURN_SO' 
+			LEFT JOIN trcbreceive d on c.fin_cbreceive_id = d.fin_cbreceive_id) a");
+
+        $selectFields = "a.fin_salesreturn_id,a.fst_salesreturn_no,a.fdt_salesreturn_datetime,a.fst_customer_name,a.fdc_total,a.fbl_is_closed,a.fst_cbreceive_no";
+        $this->datatables->setSelectFields($selectFields);
+
+        $Fields = $this->input->get('optionSearch');
+        $searchFields = [$Fields];
+        $this->datatables->setSearchFields($searchFields);
+        
+        // Format Data
+        $datasources = $this->datatables->getData();
+        $arrData = $datasources["data"];
+        $arrDataFormated = [];
+        foreach ($arrData as $data) {        
+            $arrDataFormated[] = $data;
+        }
+        $datasources["data"] = $arrDataFormated;
+		$this->json_output($datasources);
+		
 	}
 
 
@@ -449,32 +478,6 @@ class Sales_return extends MY_Controller{
 			return;
 		}
 
-	}
-
-	public function fetch_list_data(){
-		$this->load->library("datatables");
-        $this->datatables->setTableName("(
-			SELECT a.*,c.fst_relation_name as fst_customer_name FROM trsalesreturn a 
-			INNER JOIN msrelations c on a.fin_customer_id = c.fin_relation_id 
-			) a");
-
-        $selectFields = "a.fin_salesreturn_id,a.fst_salesreturn_no,a.fdt_salesreturn_datetime,a.fst_customer_name,a.fst_memo,a.fdc_total,a.fbl_is_closed";
-        $this->datatables->setSelectFields($selectFields);
-
-        $Fields = $this->input->get('optionSearch');
-        $searchFields = [$Fields];
-        $this->datatables->setSearchFields($searchFields);
-        
-        // Format Data
-        $datasources = $this->datatables->getData();
-        $arrData = $datasources["data"];
-        $arrDataFormated = [];
-        foreach ($arrData as $data) {        
-            $arrDataFormated[] = $data;
-        }
-        $datasources["data"] = $arrDataFormated;
-		$this->json_output($datasources);
-		
 	}
 
 

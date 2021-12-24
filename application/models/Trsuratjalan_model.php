@@ -857,7 +857,7 @@ class Trsuratjalan_model extends MY_Model {
 		IFNULL(IFNULL(b.fst_salesorder_no,c.fst_purchasereturn_no),g.fst_assembling_no) as fst_trans_no,
 		IFNULL(IFNULL(b.fdt_salesorder_datetime,c.fdt_purchasereturn_datetime),g.fdt_assembling_datetime) as fdt_trans_datetime,            
 		d.fin_relation_id,d.fst_relation_name,d.fst_relation_notes,e.fst_name as fst_shipping_name,e.fst_shipping_address,
-		f.fst_warehouse_name,h.fst_inv_no,i.fst_username AS sopir
+		f.fst_warehouse_name,h.fst_inv_no,i.fst_username AS sopir,j.fst_username AS user_input
 		FROM trsuratjalan a
 		LEFT JOIN trsalesorder b on a.fin_trans_id = b.fin_salesorder_id and a.fst_sj_type = 'SO' 
 		LEFT JOIN trpurchasereturn c on a.fin_trans_id = c.fin_purchasereturn_id and a.fst_sj_type = 'PO_RETURN' 
@@ -867,6 +867,7 @@ class Trsuratjalan_model extends MY_Model {
 		INNER JOIN mswarehouse f on a.fin_warehouse_id = f.fin_warehouse_id 
 		LEFT JOIN (SELECT a.fst_inv_no,b.fin_sj_id FROM trinvoice a INNER JOIN trinvoicedetails b ON a.fin_inv_id = b.fin_inv_id WHERE a.fst_active !='D') h on a.fin_sj_id = h.fin_sj_id
 		LEFT JOIN users i ON a.fin_driver_id = i.fin_user_id
+		LEFT JOIN users j ON a.fin_insert_id = j.fin_user_id
 		where a.fin_sj_id = ? and a.fst_active !='D' ";
 
 		$qr = $this->db->query($ssql, [$finSJId]);      

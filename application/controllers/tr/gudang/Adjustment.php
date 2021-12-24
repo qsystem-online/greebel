@@ -23,7 +23,9 @@ class Adjustment extends MY_Controller{
 		$this->list['pKey'] = "id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/gudang/adjustment/fetch_list_data';
 		$this->list['arrSearch'] = [
-			'fst_adjustment_no' => 'No Adjustment'
+			'fst_adjustment_no' => 'No Adjustment',
+			'fst_reff' => 'No Reff',
+			'fst_warehouse_name' => 'Gudang'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -37,7 +39,7 @@ class Adjustment extends MY_Controller{
 			['title' => 'ID.', 'width' => '30px', 'data' => 'fin_adjustment_id'],
 			['title' => 'No. Adjustment', 'width' => '60px', 'data' => 'fst_adjustment_no'],
 			['title' => 'Tanggal', 'width' => '50px', 'data' => 'fdt_adjustment_datetime'],
-            ['title' => 'No Ref', 'width' => '60px', 'data' => 'fst_reff'],
+            ['title' => 'No Reff', 'width' => '60px', 'data' => 'fst_reff'],
 			['title' => 'Gudang', 'width' => '60px', 'data' => 'fin_warehouse_id',
 				'render'=>'function(data,type,row){
 					return row.fst_warehouse_name;
@@ -237,7 +239,7 @@ class Adjustment extends MY_Controller{
 		try{
 			$this->db->trans_start();
 			
-			$this->tradjustment_model->unposting($finAdjustmentId);
+			$this->tradjustment_model->unposting($finAdjustmentId,"", true);
 			$this->tradjustment_model->deleteDetail($finAdjustmentId);
 
 			$preparedData = $this->prepareData();
@@ -410,7 +412,7 @@ class Adjustment extends MY_Controller{
 		try{
 			$this->db->trans_start();
 			
-			$this->tradjustment_model->unposting($finAdjustmentId);			
+			$this->tradjustment_model->unposting($finAdjustmentId,"", true);			
 			$resp = $this->tradjustment_model->delete($finAdjustmentId,true,null);	
 
 			$this->db->trans_complete();	

@@ -473,7 +473,7 @@ class Lhp extends MY_Controller{
             FROM trwo a             
             INNER JOIN msitems b on a.fin_item_id = b.fin_item_id
             INNER JOIN msitemunitdetails c on a.fin_item_id  = c.fin_item_id and a.fst_unit = c.fst_unit 
-            where a.fst_active ='A' and a.fbl_closed = 0 and a.fst_wo_no like ?";
+            where a.fst_active ='A' and a.fbl_closed = 0 and a.fst_wo_no like ? order by a.fin_wo_id";
         $qr = $this->db->query($ssql,[$term]);
 
         $rs = $qr->result();

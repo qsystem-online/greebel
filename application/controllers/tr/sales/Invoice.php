@@ -25,29 +25,30 @@ class Invoice extends MY_Controller{
         $this->load->library('menus');
         parent::index();
 
-		$this->list['page_name'] = "Invoice ";
-		$this->list['list_name'] = "Invoice List";
+		$this->list['page_name'] = "Faktur Penjualan ";
+		$this->list['list_name'] = "Faktur Penjualan List";
 		$this->list['addnew_ajax_url'] = site_url() . 'tr/sales/invoice/add';
 		$this->list['pKey'] = "id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales/invoice/fetch_list_data';
 		$this->list['delete_ajax_url'] = site_url() . 'tr/sales/invoice/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'tr/sales/invoice/edit/';
 		$this->list['arrSearch'] = [
-            'fst_inv_no' => 'Invoice No',
+            'fst_inv_no' => 'No. Faktur',
             'fst_relation_name'=>'Customer'            
 		];
 
 		$this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-			['title' => 'Surat Jalan', 'link' => '#', 'icon' => ''],
+			['title' => 'Faktur Penjualan', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Invoice ID', 'width' => '10%', 'data' => 'fin_inv_id'],
-			['title' => 'Invoice No', 'width' => '10%', 'data' => 'fst_inv_no'],
-            ['title' => 'Invoice Date', 'width' => '15%', 'data' => 'fdt_inv_datetime'],
-            ['title' => 'Customer', 'width' => '20%', 'data' => 'fst_relation_name'],
-            ['title' => 'Memo', 'width' => '20%', 'data' => 'fst_inv_memo'],
+			['title' => 'ID', 'width' => '5%', 'data' => 'fin_inv_id'],
+			['title' => 'No. Faktur', 'width' => '10%', 'data' => 'fst_inv_no'],
+            ['title' => 'Tanggal', 'width' => '10%', 'data' => 'fdt_inv_datetime'],
+            ['title' => 'Customer', 'width' => '40%', 'data' => 'fst_relation_name'],
+            ['title' => 'Print', 'width' => '5%', 'data' => 'fin_print_no'],
+            ['title' => 'No. Penerimaan', 'width' => '15%', 'data' => 'fst_cbreceive_no'],
             ['title' => 'Action', 'width' => '10%', 'sortable' => false, 'className' => 'dt-body-center text-center',
                 'render'=>'function( data, type, row, meta ) {
                     //return "<div style=\'font-size:16px\'><a data-id=\'" + row.fin_inv_id + "\' class=\'btn-edit\' href=\'#\'><i class=\'fa fa-pencil\'></i></a><a class=\'btn-delete\' href=\'#\'><i class=\'fa fa-trash\'></i></a></div>";
@@ -70,9 +71,12 @@ class Invoice extends MY_Controller{
 
     public function fetch_list_data(){
 		$this->load->library("datatables");
-		$this->datatables->setTableName("(select a.*,b.fst_relation_name from trinvoice a inner join msrelations b on a.fin_relation_id = b.fin_relation_id) a");
+		$this->datatables->setTableName("(select a.fin_inv_id,a.fst_inv_no,a.fdt_inv_datetime,a.fin_print_no,a.fst_active,b.fst_relation_name,d.fst_cbreceive_no from trinvoice a 
+                                            inner join msrelations b on a.fin_relation_id = b.fin_relation_id 
+                                            left join trcbreceiveitems c on a.fin_inv_id = c.fin_trans_id and c.fst_trans_type ='INV_SO'
+                                            left join trcbreceive d on c.fin_cbreceive_id = d.fin_cbreceive_id) a");
 
-		$selectFields = "a.fin_inv_id,a.fst_inv_no,a.fdt_inv_datetime,a.fst_inv_memo,a.fst_relation_name";
+		$selectFields = "a.fin_inv_id,a.fst_inv_no,a.fdt_inv_datetime,a.fst_relation_name,a.fin_print_no,a.fst_cbreceive_no";
 		$this->datatables->setSelectFields($selectFields);
 
 		$searchFields =[];

@@ -138,7 +138,7 @@
 </section>
 
 <!-- modal atau popup "ADD" -->
-<div id="mdlDetail" class="modal fade in" role="dialog" style="display: none">
+<div id="mdlDetail" class="modal fade in" role="dialog" style="display: none" data-backdrop="static">
 	<div class="modal-dialog" style="display:table;width:600px">
 		<!-- modal content -->
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
