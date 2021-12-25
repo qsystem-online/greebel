@@ -372,10 +372,19 @@
 				ajax:{
 					url:"<?=site_url()?>tr/gudang/penerimaan_return/ajxGetItemList",
 					dataType: 'json',
-					delay: 250,
+					delay: 500,
 					data:function(params){
-						params.fin_inv_id = $("#dfin_inv_id").val();
-						return params;
+
+						var query = {
+							term: params.term,
+							page: params.page || 1,
+							fin_inv_id: $("#dfin_inv_id").val()
+						}
+						// Query parameters will be ?search=[term]&page=[page]
+						return query;
+
+						//params.fin_inv_id = $("#dfin_inv_id").val();
+						//return params;
 					},
 					processResults: function(resp) {
 						if (resp.status == "SUCCESS"){
@@ -393,7 +402,10 @@
 								});
 							});
 							return {
-								results: result
+								results: result,
+								pagination: {
+									"more": true
+								}
 							};
 						}else{
 							alert(resp.messages);

@@ -531,17 +531,41 @@ class Penerimaan_return extends MY_Controller{
 	public function ajxGetItemList(){
 		$this->load->model("msitems_model");
 
-		$term = $this->input->get("term");
-		$term = "%$term%";
+		//$getVal = $this->input->get();
+		//var_dump($getVal);
+		//return;
+		$limit = 10;
+		
+
+		$term = $this->input->get("term");		
 		$finInvId = $this->input->get("fin_inv_id");
+		$page =$this->input->get("page");
+		$offset = $limit * ($page - 1);
 
 		if ($finInvId == ""){
+			$term = "%$term%";
 			$ssql = "SELECT fin_item_id,fst_item_code,fst_item_name,fbl_is_batch_number,fbl_is_serial_number FROM msitems 
 				WHERE fst_active ='A' 
 				AND CONCAT(fst_item_code,fst_item_name) like ? 
-				AND fin_item_type_id in (1,2,3,4) ";
+				AND fin_item_type_id in (1,2,3,4)
+				LIMIT $limit OFFSET $offset";
+			
+			/*
+			kalau pake cara full text search
+			$term = "$term*";
+			$ssql = "SELECT fin_item_id,fst_item_code,fst_item_name,fbl_is_batch_number,fbl_is_serial_number FROM msitems 
+				WHERE fst_active ='A' 
+				AND fin_item_type_id in (1,2,3,4) 
+				AND MATCH(fst_item_code,fst_item_name) AGAINST (? IN NATURAL LANGUAGE MODE)
+				LIMIT $limit OFFSET $offset";
+			*/	
+
+
+
 			$qr = $this->db->query($ssql,[$term]);
 		}else{
+			$term = "%$term%";
+
 			$ssql ="SELECT distinct b.fin_item_id,b.fst_item_code,b.fst_item_name,b.fbl_is_batch_number,b.fbl_is_serial_number 
 			FROM trinvoiceitems a
 			INNER JOIN msitems b ON a.fin_item_id = b.fin_item_id 
