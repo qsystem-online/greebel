@@ -1038,17 +1038,4 @@ class Trinventory_model extends MY_Model
 		}
 		
 	}
-
-
-	public function foundStockMinus(){
-		$ssql = "SELECT * FROM trinventory fdb_qty_balance_after < 0 limit 1";
-		$qr = $this->bd->query($ssql,[]);
-		$rw = $qr->row_array();
-		if (!$rw){
-			return true;
-		}else{
-			return false;
-		}
-
-	}
 }

@@ -28,7 +28,9 @@ class Invoice extends MY_Controller{
         $this->list['pKey'] = "id";
         $this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/purchase/invoice/fetch_list_data';
         $this->list['arrSearch'] = [
-            'fst_lpbpurchase_no' => 'No LPB Pembelian'
+            'fst_lpbpurchase_no' => 'No LPB Pembelian',
+			'fst_po_no' => 'No Purchase Order',
+			'fst_supplier_name' => 'Supplier'
         ];
 
         $this->list['breadcrumbs'] = [
@@ -42,7 +44,7 @@ class Invoice extends MY_Controller{
 			['title' => 'ID. LPB Pembelian', 'width' => '10px','visible'=>'false', 'data' => 'fin_lpbpurchase_id'],
             ['title' => 'No. LPB Pembelian', 'width' => '80px', 'data' => 'fst_lpbpurchase_no'],
             ['title' => 'Tanggal', 'width' => '60px', 'data' => 'fdt_lpbpurchase_datetime'],
-            ['title' => 'Purchase Order No.', 'width' => '100px', 'data' => 'fst_po_no'],
+            ['title' => 'No. Purchase Order', 'width' => '100px', 'data' => 'fst_po_no'],
 			['title' => 'Supplier', 'width' => '150px', 'data' => 'fst_supplier_name'],
 			['title' => 'Total Amount', 'width' => '80px', 'data' => 'fdc_total','className'=>'text-right',
 				'render'=>"function(data,type,row){

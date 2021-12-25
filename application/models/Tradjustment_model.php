@@ -180,8 +180,9 @@ class Tradjustment_model extends MY_Model {
 
 	}
 
-	public function unposting($finAdjustmentId){		
+	public function unposting($finAdjustmentId,$unpostingDateTime ="",$forceStockMinus = false){		
 		$this->load->model("trinventory_model");
+		$unpostingDateTime = $unpostingDateTime == "" ? date("Y-m-d H:i:s") : $unpostingDateTime;
 		
 		$ssql ="SELECT * FROM tradjustment where fin_adjustment_id = ?";
 		$qr = $this->db->query($ssql,[$finAdjustmentId]);
@@ -190,7 +191,7 @@ class Tradjustment_model extends MY_Model {
 			throw new CustomException(lang("invalid Adjustment id"),404,"FAILED",[]);	
 		}
 		//delete Inventory
-		$this->trinventory_model->deleteByCodeId("ADJ",$finAdjustmentId);
+		$this->trinventory_model->deleteByCodeId("ADJ",$finAdjustmentId,$forceStockMinus);
 
 		//Delete itemdetails
 		$this->trinventory_model->deleteInsertSerial("ADJ",$finAdjustmentId);
