@@ -138,7 +138,7 @@
 
 <!-- modal atau popup "ADD" -->
 <div id="mdlDetail" class="modal fade in" role="dialog" style="display: none" data-backdrop="static">
-	<div class="modal-dialog" style="display:table;width:600px">
+	<div class="modal-dialog" style="display:table;width:800px">
 		<!-- modal content -->
 		<div class="modal-content" style="border-top-left-radius:15px;border-top-right-radius:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;">
 			<div class="modal-header" style="padding:15px;background-color:#3c8dbc;color:#ffffff;border-top-left-radius: 15px;border-top-right-radius: 15px;">
@@ -368,7 +368,7 @@
 			});
 
 			$("#dfin_item_id").select2({
-				minimumInputLength:5,
+				minimumInputLength:3,
 				ajax:{
 					url:"<?=site_url()?>tr/gudang/penerimaan_return/ajxGetItemList",
 					dataType: 'json',

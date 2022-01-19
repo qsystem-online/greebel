@@ -120,10 +120,10 @@
                     echo "<tr>";
                     echoIfColSelected(0,$selectedCols,"<td class='col-0'>$row->Code_Bom</td>");
                     echoIfColSelected(1,$selectedCols,"<td class='col-1'>$row->Name_Bom</td>");
-                    echoIfColSelected(2,$selectedCols,"<td class='col-2'>$row->Qty_Bom</td>");
-                    echoIfColSelected(3,$selectedCols,"<td class='col-3'>$Qty_TotalNew</td>");
-                    echoIfColSelected(4,$selectedCols,"<td class='col-4'>$Qty_RealNew</td>");
-                    echoIfColSelected(5,$selectedCols,"<td class='col-5'>$Qty_SelisihNew</td>");
+                    echoIfColSelected(2,$selectedCols,"<td class='col-2' style='text-align: right'>$row->Qty_Bom</td>");
+                    echoIfColSelected(3,$selectedCols,"<td class='col-3' style='text-align: right'>$Qty_TotalNew</td>");
+                    echoIfColSelected(4,$selectedCols,"<td class='col-4' style='text-align: right'>$Qty_RealNew</td>");
+                    echoIfColSelected(5,$selectedCols,"<td class='col-5' style='text-align: right'>$Qty_SelisihNew</td>");
 					echoIfColSelected(6,$selectedCols,"<td class='col-6'>$row->Unit_Bom</td>");						
                     echo "</tr>";
 					$Qty_Total = 0;

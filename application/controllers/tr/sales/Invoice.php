@@ -72,9 +72,9 @@ class Invoice extends MY_Controller{
     public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("(select a.fin_inv_id,a.fst_inv_no,a.fdt_inv_datetime,a.fin_print_no,a.fst_active,b.fst_relation_name,d.fst_cbreceive_no from trinvoice a 
-                                            inner join msrelations b on a.fin_relation_id = b.fin_relation_id 
-                                            left join trcbreceiveitems c on a.fin_inv_id = c.fin_trans_id and c.fst_trans_type ='INV_SO'
-                                            left join trcbreceive d on c.fin_cbreceive_id = d.fin_cbreceive_id) a");
+        inner join msrelations b on a.fin_relation_id = b.fin_relation_id 
+        left join trcbreceiveitems c on a.fin_inv_id = c.fin_trans_id and c.fst_trans_type ='INV_SO'
+        left join trcbreceive d on c.fin_cbreceive_id = d.fin_cbreceive_id) a");
 
 		$selectFields = "a.fin_inv_id,a.fst_inv_no,a.fdt_inv_datetime,a.fst_relation_name,a.fin_print_no,a.fst_cbreceive_no";
 		$this->datatables->setSelectFields($selectFields);

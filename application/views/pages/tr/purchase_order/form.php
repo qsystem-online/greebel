@@ -55,7 +55,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						<a id="btnPrint" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
 						<a id="btnJurnal" class="btn btn-primary" href="#" title="<?=lang("Jurnal")?>" style="display:<?= $mode == "ADD" ? "none" : "inline-block" ?>"><i class="fa fa-align-left" aria-hidden="true"></i></a>
 						<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
-						<a id="btnClose" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
+						<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 					</div>
 					<?php } ?>
 
@@ -641,32 +641,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			saveAjax(0);
 		});
 
+		$("#btnDelete").confirmation({
+			title:"<?=lang("Hapus data ini ?")?>",
+			rootSelector: '#btnDelete',
+			placement: 'left',
+		});
+
 		$("#btnDelete").click(function(e){
 			e.preventDefault();
-			blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
-			$.ajax({
-				url:"<?= site_url() ?>tr/purchase_order/delete/" + $("#fin_po_id").val(),
-			}).done(function(resp){
-				//consoleLog(resp);
-				$.unblockUI();
-				if (resp.message != "")	{
-					$.alert({
-						title: 'Message',
-						content: resp.message,
-						buttons : {
-							OK : function() {
-								if (resp.status == "SUCCESS") {
-									window.location.href = "<?= site_url() ?>tr/purchase_order/lizt";
-									//return;
-								}
-							},
-						}
-					});
-				}
-			});
+			deleteAjax(0);
 		});
 		
-		$("#btnClose").click(function(e){
+		$("#btnList").click(function(e){
 			e.preventDefault();
 			window.location.replace("<?=site_url()?>tr/purchase_order/");
 		});
@@ -734,13 +720,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		
 		$("#fdt_po_datetime").val(dateTimeFormat("<?= date("Y-m-d H:i:s")?>")).datetimepicker("update");
 		$("#fdc_exchange_rate_idr").val(App.money_format(1));
-
-
-		$("#btnDelete").confirmation({
-			title:"<?=lang("Hapus data ini ?")?>",
-			rootSelector: '#btnDelete',
-			placement: 'left',
-		});
 
 		//Supplier		
 		$("#fin_supplier_id").select2({
@@ -1062,6 +1041,65 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				t.draw(false);
 			}
 		})
+	}
+
+	function deleteAjax(confirmDelete){
+
+		if (confirmDelete == 0){
+			MdlEditForm.saveCallBack = function(){
+				deleteAjax(1);
+			};		
+			MdlEditForm.show();
+			return;
+		}
+		var dataSubmit = [];		
+		dataSubmit.push({
+			name : SECURITY_NAME,
+			value: SECURITY_VALUE
+		});
+		dataSubmit.push({
+			name : "fin_user_id_request_by",
+			value: MdlEditForm.user
+		});
+		dataSubmit.push({
+			name : "fst_edit_notes",
+			value: MdlEditForm.notes
+		});
+
+		blockUIOnAjaxRequest("<h5>Deleting ....</h5>");
+		$.ajax({
+			url:"<?= site_url() ?>tr/purchase_order/delete/" + $("#fin_po_id").val(),
+			method:"POST",
+			data:dataSubmit,
+
+		}).done(function(resp){
+			consoleLog(resp);
+			$.unblockUI();
+			if (resp.message != "")	{
+				$.alert({
+					title: 'Message',
+					content: resp.message,
+					buttons : {
+						OK : function(){
+							if(resp.status == "SUCCESS"){
+								$("#btnList").trigger("click");
+							}
+						},
+					}
+				});
+			}
+
+			if(resp.status == "SUCCESS") {
+				data = resp.data;
+				$("#fin_po_id").val(data.insert_id);
+
+				//Clear all previous error
+				$(".text-danger").html("");
+				// Change to Edit mode
+				$("#frm-mode").val("EDIT");  //ADD|EDIT
+				$('#fst_po_no').prop('readonly', true);				
+			}
+		});
 	}
 
 </script>

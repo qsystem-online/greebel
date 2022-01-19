@@ -29,8 +29,8 @@ class User extends MY_Controller
 		$this->list['delete_ajax_url'] = site_url() . 'user/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'user/edit/';
 		$this->list['arrSearch'] = [
-			'fin_user_id' => 'User ID',
-			'fst_username' => 'User Name'
+			'fin_user_id' => 'User',
+			'fst_username' => 'Department'
 		];
 
 		$this->list['breadcrumbs'] = [
@@ -40,11 +40,11 @@ class User extends MY_Controller
 		];
 
 		$this->list['columns'] = [
-			['title' => 'User ID', 'width' => '10%', 'data' => 'fin_user_id'],
+			['title' => 'ID', 'width' => '2%','visible' => 'false', 'data' => 'fin_user_id'],
+			['title' => 'User', 'width' => '13%', 'data' => 'fst_username'],
 			['title' => 'Full Name', 'width' => '25%', 'data' => 'fst_fullname'],
-			['title' => 'Gender', 'width' => '10%', 'data' => 'fst_gender'],
-			['title' => 'Birthdate', 'width' => '15%', 'data' => 'fdt_birthdate'],
-			['title' => 'Birthplace', 'width' => '15%', 'data' => 'fst_birthplace'],
+			['title' => 'Department', 'width' => '15%', 'data' => 'fst_department_name'],
+			['title' => 'Group', 'width' => '15%', 'data' => 'fst_group_name'],
 			['title' => 'Action', 'width' => '10%', 'data' => 'action', 'sortable' => false, 'className' => 'dt-body-center text-center']
 		];
 
@@ -85,6 +85,8 @@ class User extends MY_Controller
 		$data["arrBranch"] = $this->msbranches_model->getAllList();
 		$data["arrGroup"] = $this->usersgroup_model->getAllList();
 		$data["finSalesDepartmentId"] = getDbConfig("sales_department_id");
+		$activeUser = $this->session->userdata('active_user');
+		$data["specialAccess"] = $activeUser->fbl_admin;
 
 		$page_content = $this->parser->parse('pages/user/form', $data, true);
 		$main_footer = $this->parser->parse('inc/main_footer', [], true);
@@ -329,12 +331,14 @@ class User extends MY_Controller
 	public function fetch_list_data()
 	{
 		$this->load->library("datatables");
-		$this->datatables->setTableName("users");
+		$this->datatables->setTableName("(select a.*,b.fst_department_name,c.fst_group_name from users a 
+		left join departments b on a.fin_department_id = b.fin_department_id
+		left join usersgroup c on a.fin_group_id = c.fin_group_id) a");
 
-		$selectFields = "fin_user_id,fst_fullname,fst_gender,fdt_birthdate,fst_birthplace,'action' as action";
+		$selectFields = "fin_user_id,fst_username,fst_fullname,fst_department_name,fst_group_name,'action' as action";
 		$this->datatables->setSelectFields($selectFields);
 
-		$searchFields = ["fin_user_id", "fst_username"];
+		$searchFields = ["fst_username", "fst_department_name"];
 		$this->datatables->setSearchFields($searchFields);
 
 		// Format Data
@@ -342,8 +346,8 @@ class User extends MY_Controller
 		$arrData = $datasources["data"];
 		$arrDataFormated = [];
 		foreach ($arrData as $data) {
-			$birthdate = strtotime($data["fdt_birthdate"]);
-			$data["fdt_insert_datetime"] = dBDateFormat("fdt_birthdate");
+			//$birthdate = strtotime($data["fdt_birthdate"]);
+			//$data["fdt_insert_datetime"] = dBDateFormat("fdt_birthdate");
 
 			//action
 			$data["action"]	= "<div style='font-size:16px'>

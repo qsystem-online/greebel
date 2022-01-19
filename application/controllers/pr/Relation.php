@@ -8,6 +8,7 @@ class Relation extends MY_Controller{
 		$this->load->library('form_validation');
 		$this->load->model('msrelations_model');
 		$this->load->model('mslinebusiness_model');
+		$this->load->model('users_model');
 	}
 
 	public function index(){
@@ -478,7 +479,7 @@ class Relation extends MY_Controller{
 
 	public function get_sales_id(){
 		$term = $this->input->get("term");
-		$ssql = "SELECT fin_user_id, fst_username from users where fin_department_id = 2 ";
+		$ssql = "SELECT fin_user_id, fst_username from users where fin_department_id = 23 ";
 		$qr = $this->db->query($ssql,['%'.$term.'%']);
 		$rs = $qr->result();
 		

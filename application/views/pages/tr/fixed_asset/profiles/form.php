@@ -69,10 +69,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 										<option value="">--</option>
 										<option value="PURCHASE">Purchase</option>
 										<option value="MUTASI">Mutasi</option>
+										<option value="AMORTISASI">Amortisasi</option>
 									</select>
 								</div>															
 							</div>
-
 
 							<div class="form-group source-purchase" style="display:none">
 								<label for="fst_fa_profile_name" class="col-md-2 control-label"><?=lang("Invoice")?> #</label>

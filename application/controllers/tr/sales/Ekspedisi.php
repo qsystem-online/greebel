@@ -21,27 +21,28 @@ class Ekspedisi extends MY_Controller{
     public function lizt(){
         parent::index();
 		$this->load->library('menus');
-		$this->list['page_name'] = "Ekspedisi";
-		$this->list['list_name'] = "Ekspedisi List";
+		$this->list['page_name'] = "Transaksi Ekspedisi";
+		$this->list['list_name'] = "Transaksi Ekspedisi List";
 		$this->list['addnew_ajax_url'] = site_url() . 'tr/sales/ekspedisi/add';
 		$this->list['pKey'] = "fin_salesekspedisi_id";
 		$this->list['fetch_list_data_ajax_url'] = site_url() . 'tr/sales/ekspedisi/fetch_list_data';
 		$this->list['delete_ajax_url'] = site_url() . 'tr/sales/ekspedisi/delete/';
 		$this->list['edit_ajax_url'] = site_url() . 'tr/sales/ekspedisi/edit/';
 		$this->list['arrSearch'] = [
-            'fst_inv_no' => 'Invoice No',
-            'fst_relation_name'=>'Customer'            
+            'fst_salesekspedisi_no' => 'No Transaksi',
+            'fst_customer_name'=>'Customer',
+            'fst_ekspedisi_name'=>'Ekspedisi'            
 		];
 
 		$this->list['breadcrumbs'] = [
 			['title' => 'Home', 'link' => '#', 'icon' => "<i class='fa fa-dashboard'></i>"],
-			['title' => 'Surat Jalan', 'link' => '#', 'icon' => ''],
+			['title' => 'Ekspedisi', 'link' => '#', 'icon' => ''],
 			['title' => 'List', 'link' => NULL, 'icon' => ''],
 		];
 		$this->list['columns'] = [
-			['title' => 'Ekspedisi ID', 'width' => '10%','visible' => 'false', 'data' => 'fin_salesekspedisi_id'],
-			['title' => 'Ekspedisi No', 'width' => '10%', 'data' => 'fst_salesekspedisi_no'],
-            ['title' => 'Date', 'width' => '15%', 'data' => 'fdt_salesekspedisi_datetime'],
+			['title' => 'ID', 'width' => '10%','visible' => 'false', 'data' => 'fin_salesekspedisi_id'],
+			['title' => 'No Transaksi', 'width' => '10%', 'data' => 'fst_salesekspedisi_no'],
+            ['title' => 'Tanggal', 'width' => '15%', 'data' => 'fdt_salesekspedisi_datetime'],
             ['title' => 'Customer', 'width' => '20%', 'data' => 'fst_customer_name'],
             ['title' => 'Ekspedisi', 'width' => '20%', 'data' => 'fst_ekspedisi_name'],
             ['title' => 'Total', 'width' => '10%', 'data' => 'fdc_total','className' => 'text-right',

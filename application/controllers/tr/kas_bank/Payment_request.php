@@ -38,7 +38,7 @@ class Payment_request extends MY_Controller{
 		$this->list['columns'] = [
 			['title' => 'ID.', 'width' => '0px','visible'=>'false', 'data' => 'fin_paymentrequest_id'],
 			['title' => 'Company', 'width' => '5px', 'data' => 'fst_company_code'],
-			['title' => 'No. Payment Request', 'width' => '20px', 'data' => 'fst_paymentrequest_no'],
+			['title' => 'No. Request', 'width' => '10px', 'data' => 'fst_paymentrequest_no'],
 			['title' => 'Tgl Pengajuan', 'width' => '40px', 'data' => 'fdt_paymentrequest_datetime'],
             ['title' => 'J/T', 'width' => '40px', 'data' => 'fdt_payment_due_date'],
 			['title' => 'Supplier', 'width' => '180px', 'data' => 'fst_relation_name'],
@@ -48,16 +48,25 @@ class Payment_request extends MY_Controller{
 				}"
 			],
 			['title' => 'Status', 'width' => '30px', 'data' => 'fst_active','className'=>'text-center',
-			'render'=>"function(data,type,row){
-				if(data == 'A'){
-					return 'OK';
-				}else if (data == 'S'){
-					return 'Need Approval';
-				}else if (data == 'R'){
-					return 'Rejected';
-				}
-			}"
-		],
+				'render'=>"function(data,type,row){
+					if(data == 'A'){
+						return 'OK';
+					}else if (data == 'S'){
+						return 'Need Approval';
+					}else if (data == 'R'){
+						return 'Rejected';
+					}
+				}"
+			],
+			['title' => 'Done', 'width' => '10px', 'data' => 'fbl_is_closed','className'=>'text-center',
+				'render'=>"function(data,type,row){
+					if(data == 1){
+						return '<input class=\"isCompleted\" type=\"checkbox\" value=\"1\" checked>';
+					}else{
+						return '<input class=\"isCompleted\" type=\"checkbox\" value=\"0\" >';
+					}					
+				}"
+			],
 			['title' => 'Action', 'width' => '80px', 'sortable' => false, 'className' => 'text-center',
 				'render'=>"function(data,type,row){
 					action = '<div style=\"font-size:16px\">';
@@ -91,9 +100,9 @@ class Payment_request extends MY_Controller{
 	public function fetch_list_data(){
 		$this->load->library("datatables");
 		$this->datatables->setTableName("(
-				SELECT a.fin_paymentrequest_id,a.fst_company_code,a.fst_paymentrequest_no,a.fdt_paymentrequest_datetime,a.fdt_payment_due_date,a.fdc_total,a.fst_active,b.fst_relation_name
+				SELECT a.fin_paymentrequest_id,a.fst_company_code,a.fst_paymentrequest_no,a.fdt_paymentrequest_datetime,a.fdt_payment_due_date,a.fdc_total,a.fbl_is_closed,a.fst_active,b.fst_relation_name
                 FROM trpaymentrequest a LEFT OUTER JOIN msrelations b ON a.fin_supplier_id = b.fin_relation_id) a");
-		$selectFields = "a.fin_paymentrequest_id,a.fst_company_code,a.fst_paymentrequest_no,a.fdt_paymentrequest_datetime,a.fdt_payment_due_date,a.fst_relation_name,a.fdc_total,a.fst_active";
+		$selectFields = "a.fin_paymentrequest_id,a.fst_company_code,a.fst_paymentrequest_no,a.fdt_paymentrequest_datetime,a.fdt_payment_due_date,a.fst_relation_name,a.fdc_total,a.fst_active,a.fbl_is_closed";
 		$this->datatables->setSelectFields($selectFields);
 
 		$Fields = $this->input->get('optionSearch');
@@ -447,7 +456,35 @@ class Payment_request extends MY_Controller{
 			$this->json_output();
 			return;
 		}
-	}	
+	}
+	
+	public function process_closing($isCompleted){	
+		$fstClosedNotes = $this->input->post("fst_closed_note");
+		$finPaymentRequestId = $this->input->post("fin_paymentrequest_id");
+		try{
+			if($isCompleted){
+				$this->db->trans_start();
+				$this->trpaymentrequest_model->completed($fstClosedNotes,$finPaymentRequestId);
+				$this->db->trans_complete();
+			}else{
+				$this->db->trans_start();
+				$this->trpaymentrequest_model->cancelCompleted($finPaymentRequestId);
+				$this->db->trans_complete();
+			}
+
+			$this->ajxResp["status"] = "SUCCESS";
+			$this->ajxResp["message"] = "";
+			$this->ajxResp["data"]= [];
+			$this->json_output();
+
+		}catch(CustomException $e){
+			$this->ajxResp["status"] = $e->getStatus();
+			$this->ajxResp["message"] = $e->getMessage();
+			$this->ajxResp["data"]= $e->getData();
+			$this->json_output();
+			return;
+		}
+	}
 
 	public function print_voucher($finPaymentRequestId){
 		$data = $this->trpaymentrequest_model->getDataVoucher($finPaymentRequestId);

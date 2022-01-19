@@ -240,6 +240,7 @@
 				header = resp.po;
 				$("#fdt_po_datetime").val(dateTimeFormat(header.fdt_po_datetime)).datetimepicker("update");
 				$("#fst_supplier_name").val(header.fst_supplier_name);
+				$("#fst_memo").val(header.fst_memo);
 				listLPBGudang = resp.lpbgudang_list;
 				
 				$("#fin_lpbgudang_id").empty();

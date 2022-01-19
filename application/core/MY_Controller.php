@@ -104,7 +104,8 @@ class MY_Controller extends CI_Controller
 		if (!$isPermit){
 			echo $this->json_output([
 				"status"=>"FAILED",
-				"messages"=>lang("Anda Tidak memiliki otoritas !"),
+				"messages"=>lang(""),
+				"message"=>lang("Anda Tidak memiliki otoritas !"),
 				"data"=>[]
 			]);
 			die();
@@ -116,7 +117,8 @@ class MY_Controller extends CI_Controller
 		if (!$isPermit){
 			echo $this->json_output([
 				"status"=>"FAILED",
-				"messages"=>lang("Anda Tidak memiliki otoritas !"),
+				"messages"=>lang(""),
+				"message"=>lang("Anda Tidak memiliki otoritas !"),
 				"data"=>[]
 			]);
 			die();
@@ -128,7 +130,8 @@ class MY_Controller extends CI_Controller
 		if (!$isPermit){
 			echo $this->json_output([
 				"status"=>"FAILED",
-				"messages"=>lang("Anda Tidak memiliki otoritas !"),
+				"messages"=>lang(""),
+				"message"=>lang("Anda Tidak memiliki otoritas !"),
 				"data"=>[]
 			]);
 			die();

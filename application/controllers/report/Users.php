@@ -18,9 +18,9 @@ class Users extends MY_Controller
 		$this->layout_columns = [
             ['layout' => 1, 'label'=>'Nou.', 'value'=>'0', 'selected'=>false,'sum_total'=>false],
             ['layout' => 1, 'label'=>'ID', 'value'=>'1', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Nama', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'User', 'value'=>'2', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Nama Lengkap', 'value'=>'3', 'selected'=>false,'sum_total'=>false],
-			['layout' => 1, 'label'=>'Jenis Kelamin', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Gender', 'value'=>'4', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Tgl Lahir', 'value'=>'5', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Alamat', 'value'=>'6', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Telephone', 'value'=>'7', 'selected'=>false,'sum_total'=>false],
@@ -28,6 +28,7 @@ class Users extends MY_Controller
 			['layout' => 1, 'label'=>'Cabang', 'value'=>'9', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Departemen', 'value'=>'10', 'selected'=>false,'sum_total'=>false],
 			['layout' => 1, 'label'=>'Group', 'value'=>'11', 'selected'=>false,'sum_total'=>false],
+			['layout' => 1, 'label'=>'Special Access', 'value'=>'12', 'selected'=>false,'sum_total'=>false],
 		];
 
 	}
@@ -171,13 +172,13 @@ class Users extends MY_Controller
 						$repTitle = "LAPORAN DAFTAR USER";
 						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
                         $repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
-                        $fullColumn = 12;
+                        $fullColumn = 13;
 						break;
 					default:
 						$repTitle = "LAPORAN DAFTAR USER";
 						$repPaperSize=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_LEGAL;
                         $repOrientation=\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE;
-                        $fullColumn = 12;
+                        $fullColumn = 13;
 						break;
 				}	
 
@@ -222,16 +223,17 @@ class Users extends MY_Controller
 				if  ($data['rpt_layout'] ==  1){
                     $sheet->setCellValue("A3","Nou.");
                     $sheet->setCellValue("B3","ID");
-                    $sheet->setCellValue("C3","Nama");
+                    $sheet->setCellValue("C3","User");
                     $sheet->setCellValue("D3","Nama Lengkap");
-                    $sheet->setCellValue("E3","Jenis Kelamin");
-                    $sheet->setCellValue("F3","Tanggal Lahir");
+                    $sheet->setCellValue("E3","Gender");
+                    $sheet->setCellValue("F3","Tgl Lahir");
                     $sheet->setCellValue("G3","Alamat");
                     $sheet->setCellValue("H3","Telephone");
                     $sheet->setCellValue("I3","Email");
                     $sheet->setCellValue("J3","Cabang");
                     $sheet->setCellValue("K3","Department");
                     $sheet->setCellValue("L3","Group");
+					$sheet->setCellValue("M3","Special Access");
                     $sheet->getColumnDimension("A")->setAutoSize(false);
                     $sheet->getColumnDimension("B")->setAutoSize(true);
                     $sheet->getColumnDimension("C")->setAutoSize(true);
@@ -244,6 +246,7 @@ class Users extends MY_Controller
                     $sheet->getColumnDimension("J")->setAutoSize(true);
                     $sheet->getColumnDimension("K")->setAutoSize(true);
                     $sheet->getColumnDimension("L")->setAutoSize(true);
+					$sheet->getColumnDimension("M")->setAutoSize(true);
 					$nou = 0;
 					//$noSO = "";
 					$cellRow = 4;
@@ -258,6 +261,16 @@ class Users extends MY_Controller
 					
 					foreach($dataReport as $row){
 						//$idx++;
+						if($row->fst_gender =="F"){
+							$row->fst_gender ="Female";
+						}else{
+							$row->fst_gender ="Male";
+						}
+						if($row->fbl_admin =="1"){
+							$row->fbl_admin ="YES";
+						}else{
+							$row->fbl_admin ="NO";
+						}
                         $nou++;
                         $sheet->setCellValue("A".$cellRow,$nou);
                         $sheet->setCellValue("B".$cellRow,$row->fin_user_id);
@@ -270,7 +283,8 @@ class Users extends MY_Controller
                         $sheet->setCellValue("I".$cellRow,$row->fst_email);
                         $sheet->setCellValue("J".$cellRow,$row->fst_branch_name);
                         $sheet->setCellValue("K".$cellRow,$row->fst_department_name);
-                        $sheet->setCellValue("L".$cellRow,$row->fst_group_name);                             
+                        $sheet->setCellValue("L".$cellRow,$row->fst_group_name);
+						$sheet->setCellValue("M".$cellRow,$row->fbl_admin);                             
 						$cellRow++;
 					}
 					
@@ -295,7 +309,7 @@ class Users extends MY_Controller
 							],
 						],
 					];
-					$sheet->getStyle('A3:L'.$cellRow)->applyFromArray($styleArray);
+					$sheet->getStyle('A3:M'.$cellRow)->applyFromArray($styleArray);
 		
 					//FONT BOLD & Center
 					$styleArray = [
@@ -307,7 +321,7 @@ class Users extends MY_Controller
 						]
 					];
 					// $sheet->getStyle('A2')->applyFromArray($styleArray);
-					$sheet->getStyle('A3:L3')->applyFromArray($styleArray);
+					$sheet->getStyle('A3:M3')->applyFromArray($styleArray);
 					$sheet->getStyle('A3:A'.$cellRow)->applyFromArray($styleArray);
 
 					//$styleArray = [
@@ -341,7 +355,7 @@ class Users extends MY_Controller
 				} //end if layout 1
 
 				if ($isPreview != 1) {
-					$this->phpspreadsheet->save("hasil.xls" ,$spreadsheet);
+					$this->phpspreadsheet->save("User_List.xls" ,$spreadsheet);
 					// $this->phpspreadsheet->savePDF();
 				}else {
 					//$this->phpspreadsheet->savePDF();

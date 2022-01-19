@@ -76,7 +76,7 @@ class Trinvoice_model extends MY_Model {
 
     public function getDataById($invId){
         $ssql ="SELECT a.*,b.fst_salesorder_no,b.fdt_salesorder_datetime,c.fst_relation_name as fst_customer_name,c.fst_address,(b.fdc_downpayment_paid - b.fdc_downpayment_claimed) as fdc_downpayment_rest,d.fst_username,e.fst_username as sales_name from trinvoice a 
-            inner join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id 
+            LEFT join trsalesorder b on a.fin_salesorder_id = b.fin_salesorder_id 
             inner join msrelations c on a.fin_relation_id = c.fin_relation_id
             inner join users d on a.fin_insert_id = d.fin_user_id
             inner join users e on a.fin_sales_id = e.fin_user_id 
@@ -87,7 +87,7 @@ class Trinvoice_model extends MY_Model {
         
 
         $ssql = "select a.*,b.fst_sj_no from trinvoicedetails a 
-            INNER JOIN trsuratjalan b on a.fin_sj_id = b.fin_sj_id 
+            LEFT JOIN trsuratjalan b on a.fin_sj_id = b.fin_sj_id 
             where a.fin_inv_id = ?";
         $qr = $this->db->query($ssql,[$invId]);
         $rs = $qr->result();
@@ -188,7 +188,7 @@ class Trinvoice_model extends MY_Model {
             b.fst_custom_item_name,b.fdc_price,b.fst_disc_item,
             b.fbl_is_promo_disc,b.fin_promo_id            
             from trsuratjalandetails a
-            inner join trsalesorderdetails b on a.fin_trans_detail_id = b.fin_rec_id
+            left join trsalesorderdetails b on a.fin_trans_detail_id = b.fin_rec_id
             where a.fin_sj_id = ?";
         $qr = $this->db->query($ssql,[$fin_sj_id]);
         $rsDetail = $qr->result();
@@ -199,7 +199,7 @@ class Trinvoice_model extends MY_Model {
     public function getDetailSJ($arrSJId){
         $ssql ="SELECT b.fin_promo_id,b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item,b.fdb_qty as fdb_qty_so,sum(a.fdb_qty) as fdb_qty_sj 
             FROM trsuratjalandetails a 
-            INNER JOIN trsalesorderdetails b on a.fin_trans_detail_id = b.fin_rec_id            
+            LEFT JOIN trsalesorderdetails b on a.fin_trans_detail_id = b.fin_rec_id            
             WHERE fin_sj_id IN ?
             GROUP BY b.fin_promo_id,b.fin_item_id,b.fst_custom_item_name,b.fst_unit,b.fdc_price,b.fst_disc_item,b.fdc_disc_amount_per_item,b.fdb_qty";
 
@@ -511,10 +511,10 @@ class Trinvoice_model extends MY_Model {
          * 
          */
         if ($dataH->fdc_total_paid > 0 ){
-            throw new CustomException(lang("Invoice tidak dapat di rubah karena sudah dilakukan pembayaran !"),3003,"FAILED",null);            
+            throw new CustomException(lang("Invoice tidak dapat di rubah/hapus karena sudah dilakukan pembayaran !"),3003,"FAILED",null);            
         }
         if ($dataH->fdc_total_return > 0 ){
-            throw new CustomException(lang("Invoice tidak dapat di rubah karena sudah ada transakis return !"),3003,"FAILED",null);            
+            throw new CustomException(lang("Invoice tidak dapat di rubah/hapus karena sudah ada transakis return !"),3003,"FAILED",null);            
         }
 
     }

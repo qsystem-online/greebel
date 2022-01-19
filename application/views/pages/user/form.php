@@ -46,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="btn-group btn-group-sm  pull-right">					
 					<a id="btnNew" class="btn btn-primary" href="#" title="<?=lang("Tambah Baru")?>"><i class="fa fa-plus" aria-hidden="true"></i></a>
 					<a id="btnSubmitAjax" class="btn btn-primary" href="#" title="<?=lang("Simpan")?>"><i class="fa fa-floppy-o" aria-hidden="true"></i></a>
-					<a id="btnPrinted" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>
+					<!--<a id="btnPrinted" class="btn btn-primary" href="#" title="<?=lang("Cetak")?>"><i class="fa fa-print" aria-hidden="true"></i></a>-->
 					<a id="btnDelete" class="btn btn-primary" href="#" title="<?=lang("Hapus")?>"><i class="fa fa-trash" aria-hidden="true"></i></a>
 					<a id="btnList" class="btn btn-primary" href="#" title="<?=lang("Daftar Transaksi")?>"><i class="fa fa-list" aria-hidden="true"></i></a>												
 				</div>
@@ -190,10 +190,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 
-					<div class="form-group">
+					<div class="form-group special-access" style="display:none">
 						<label for="fbl_admin" class="col-sm-2 control-label"><?=lang("Admin")?></label>
 						<div class="col-md-2">
-							<label class="checkbox-inline"><input id="fbl_admin" name='fbl_admin' type="checkbox" value="1"><?=lang("Admin")?></label>
+							<label class="checkbox-inline"><input id="fbl_admin" name='fbl_admin' type="checkbox" value="1"><?=lang("Admin/Special Access")?></label>
 						</div>
 					</div>
 				</div>
@@ -304,6 +304,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<?php } ?>
 		<?php if($mode == "EDIT"){?>
 			init_form($("#fin_user_id").val());
+		<?php } ?>
+		<?php if($specialAccess){?>
+			$(".special-access").show();
 		<?php } ?>
 
 		$("#btnSubmitAjax").click(function(event){
@@ -581,7 +584,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			});
 		});
 
-		$("#btnPrinted").click(function(e){
+		/*$("#btnPrinted").click(function(e){
 			$("#modal_Printed").modal("toggle");
 		});
 
@@ -595,7 +598,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			];
 			url = "<?= site_url() ?>user/get_printUser/" + $("#select-branch_R").val() + '/' + $("#select-department_R").val() + '/' + $("#select-userId_start").val() + '/' + $("#select-userId_end").val();
 			MdlPrint.showPrint(layoutColumn,url);
-		});
+		});*/
 
 		$("#btnList").click(function(e){
 			e.preventDefault();
@@ -631,6 +634,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							console.log(val);
 					}
 				});
+
+				if (resp.user.fbl_admin == "1"){
+					$("#fbl_admin").prop("checked",true);
+				}else{
+					$("#fbl_admin").prop("checked",false);
+				}	
 
 				$("#fdt_birthdate").datepicker('update', dateFormat(resp.user.fdt_birthdate));
 

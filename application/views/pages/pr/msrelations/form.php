@@ -262,10 +262,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 								</select>
 								<div id="fst_nama__err" class="text-danger"></div>
 							</div>
-							<label for="select-salesId" class="col-md-2 control-label"><?=lang("Sales Name")?></label>
+							<!--<label for="select-salesId" class="col-md-2 control-label"><?=lang("Sales Name")?></label>
 							<div class="col-md-4">
 								<select id="select-salesId" class="form-control" name="fin_sales_id">
 									<option value="0">-- <?=lang("select")?> --</option>
+								</select>
+								<div id="fin_sales_id_err" class="text-danger"></div>
+							</div>-->
+							<label for="fin_sales_id" class="col-md-2 control-label"><?=lang("Sales")?></label>
+							<div class="col-md-4">
+								<select id="fin_sales_id" class="form-control" name="fin_sales_id">
+									<?php
+										$salesList = $this->users_model->getSalesList();
+										foreach($salesList as $sales){
+											echo "<option value='$sales->fin_user_id'>$sales->fst_username</option>";
+										}										
+									?>
 								</select>
 								<div id="fin_sales_id_err" class="text-danger"></div>
 							</div>
@@ -1321,7 +1333,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				//$('#select-salesArea').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.SalesName, resp.ms_relations.fin_sales_id, true, true);
-				$('#select-salesId').append(newOption).trigger('change');
+				$('#fin_sales_id').append(newOption).trigger('change');
 
 				var newOption = new Option(resp.ms_relations.fst_warehouse_name, resp.ms_relations.fin_warehouse_id, true, true);
 				$('#select-warehouse').append(newOption).trigger('change');

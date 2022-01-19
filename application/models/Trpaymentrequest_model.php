@@ -276,6 +276,42 @@ class Trpaymentrequest_model extends MY_Model {
 		return $resp;
 	}
 
+	public function completed($fstClosedNotes,$finPaymentRequestId){
+		$ssql = "select * from trpaymentrequest where fin_paymentrequest_id = ? and fst_active = 'A' ";
+		$qr = $this->db->query($ssql,[$finPaymentRequestId]);
+
+		$rw = $qr->row();
+		
+		if ($rw == null){
+			throw new CustomException(lang("FAILED,CEK STATUS PAYMENT REQUEST!!!"),3003,"FAILED",[]);
+		}else{
+			$ssql = "UPDATE trpaymentrequest SET fbl_is_closed = true,fst_closed_notes = ? where fin_paymentrequest_id = ?";
+			$this->db->query($ssql,[$fstClosedNotes,$finPaymentRequestId]);
+			//echo $this->db->last_query();
+        	//die();
+			return ["status"=>"SUCCESS",""];
+		}
+		
+	}
+
+	public function cancelCompleted($finPaymentRequestId){
+		$ssql = "select * from trpaymentrequest where fin_paymentrequest_id = ?";
+		$qr = $this->db->query($ssql,[$finPaymentRequestId]);
+		//echo $this->db->last_query();
+        //die();
+		$rw = $qr->row();
+		
+		if ($rw == null){
+			throw new CustomException(lang("CEK STATUS PAYMENT REQUEST!!!"),3003,"FAILED",[]);
+		}else{
+			$ssql = "UPDATE trpaymentrequest SET fbl_is_closed = false,fst_closed_notes = null where fin_paymentrequest_id = ?";
+			$this->db->query($ssql,[$finPaymentRequestId]);
+			
+			return ["status"=>"SUCCESS",""];
+		}
+		
+	}
+
 	public function getDataVoucher($finPaymentRequestId){
 		$ssql ="SELECT a.*,b.fst_username,c.fst_relation_name FROM trpaymentrequest a 
 				INNER JOIN users b on a.fin_insert_id = b.fin_user_id 
